@@ -1,6 +1,6 @@
 {
     "web_server":{
-        "name":"sms",
+        "name":"school",
         "description":"学校综合管理系统",
         "version":"0.0.1"
     }
