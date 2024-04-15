@@ -2,41 +2,46 @@ from pydantic import BaseModel, Field
 
 
 class School(BaseModel):
-    school_name: str = Field(..., title="学校名称", description="1-20字符")
-    school_no: str = Field(..., title="学校编号", description="1-20字符")
-    school_operation_license_number: str = Field(..., title="Application Description",
-                                                 description="Application Description")
-    block: str = Field(..., title="Application Author", description="Application Author")
-    borough: str = Field(..., title="Application Author Email", description="Application Author Email")
-    school_type: str = Field(..., title="Application Copyright", description="Application Copyright")
+    school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
+    school_no: str = Field(..., title="学校编号", description="学校编号",examples=['SC2032633'])
+    school_operation_license_number: str = Field(..., title=" Description",
+                                                 description="办学许可证号",examples=['EDU2024012569'])
+    block: str = Field(..., title=" Author", description="地域管辖区",examples=['铁西区'])
+    borough: str = Field(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
+    school_type: str = Field(..., title="", description=" 学校类型",examples=['中小学'])
 
-    school_operation_type: str = Field(..., title="Application Copyright", description="Application Copyright")
-    school_operation_type_lv2: str = Field(..., title="Application Copyright", description="Application Copyright")
-    school_operation_type_lv3: str = Field(..., title="Application Copyright", description="Application Copyright")
-    school_org_type: str = Field(..., title="Application Copyright", description="Application Copyright")
-    school_level: str = Field(..., title="Application Copyright", description="Application Copyright")
-    school_nature: str = Field(..., title="Application Copyright", description="Application Copyright")
-    status: str = Field(..., title="Application Copyright", description="Application Copyright")
-    school_code: str = Field(..., title="Application Copyright", description="Application Copyright")
-    kg_level: str = Field(..., title="Application Copyright", description="Application Copyright")
-    created_uid: str = Field(..., title="Application Copyright", description="Application Copyright")
-    updated_uid: str = Field(..., title="Application Copyright", description="Application Copyright")
-    created_at: str = Field(..., title="Application Copyright", description="Application Copyright")
-    updated_at: str = Field(..., title="Application Copyright", description="Application Copyright")
-    deleted: str = Field(..., title="Application Copyright", description="Application Copyright")
-    school_short_name: str = Field(..., title="Application Copyright", description="Application Copyright")
-    school_en_name: str = Field(..., title="Application Copyright", description="Application Copyright")
-    create_school_date: str = Field(..., title="Application Copyright", description="Application Copyright")
-    social_credit_code: str = Field(..., title="Application Copyright", description="Application Copyright")
-    founder_type: str = Field(..., title="Application Copyright", description="Application Copyright")
-    founder_name: str = Field(..., title="Application Copyright", description="Application Copyright")
-    founder_code: str = Field(..., title="Application Copyright", description="Application Copyright")
-    urban_rural_nature: str = Field(..., title="Application Copyright", description="Application Copyright")
-    school_org_form: str = Field(..., title="Application Copyright", description="Application Copyright")
-    school_closure_date: str = Field(..., title="Application Copyright", description="Application Copyright")
-    department_unit_number: str = Field(..., title="Application Copyright", description="Application Copyright")
-    sy_zones: str = Field(..., title="Application Copyright", description="Application Copyright")
-    historical_evolution: str = Field(..., title="Application Copyright", description="Application Copyright")
+    school_operation_type: str = Field(..., title="", description="办学类型/学校性质",examples=['学前教育'])
+    school_operation_type_lv2: str = Field(..., title="", description=" 办学类型二级",examples=['小学'])
+    school_operation_type_lv3: str = Field(..., title="", description=" 办学类型三级",examples=['附设小学班'])
+    school_org_type: str = Field(..., title="", description=" 学校办别",examples=['民办'])
+    school_level: str = Field(..., title="", description=" 学校星级",examples=['5'])
+    status: str = Field(..., title="", description=" 状态",examples=['正常'])
+    school_code: str = Field(..., title="", description=" 园所标识码",examples=['SC562369322SG'])
+    kg_level: str = Field(..., title="", description="星级",examples=['5'])
+    created_uid: str = Field(..., title="", description="创建人",examples=['1'])
+    updated_uid: str = Field(..., title="", description="操作人",examples=['21'])
+    created_at: str = Field(..., title="", description="创建时间",examples=['2021-10-10 00:00:00'])
+    updated_at: str = Field(..., title="", description="更新时间",examples=['2021-10-10 00:00:00'])
+    deleted: str = Field(..., title="", description="删除态",examples=['0'])
+    school_short_name: str = Field(..., title="", description="园所简称",examples=['MXXX'])
+    school_en_name: str = Field(..., title="", description="园所英文名称",examples=['MinxingPrimarySCHOOL'])
+    create_school_date: str = Field(..., title="", description="建校年月",examples=['2021-10-10 00:00:00'])
+    social_credit_code: str = Field(..., title="", description="统一社会信用代码",examples=['XH423423876867'])
+    founder_type: str = Field(..., title="", description="举办者类型",examples=['地方'])
+    founder_name: str = Field(..., title="", description="举办者名称",examples=['上海教育局'])
+    founder_code: str = Field(..., title="", description="举办者识别码",examples=['SC562369322SG'])
+    urban_rural_nature: str = Field(..., title="", description="城乡性质",examples=['城镇'])
+    school_org_form: str = Field(..., title="", description="办学组织形式",examples=['教学点'])
+    school_closure_date: str = Field(..., title="", description="学校关闭日期",examples=[''])
+    department_unit_number: str = Field(..., title="", description="属地管理行政部门单位号",examples=['SC562369322SG'])
+    sy_zones: str = Field(..., title="", description="属地管理行政部门所在地地区",examples=['铁西区'])
+    historical_evolution: str = Field(..., title="", description="历史沿革",examples=['xxxxxxxxxxxxxxxxxxxx'])
+    sy_zones_pro: str = Field(..., title="", description="属地管理教育行政部门所在地（省级）",examples=['沈阳'])
+    primary_school_system: str = Field(..., title="", description="小学学制",examples=['6'])
+    primary_school_entry_age: str = Field(..., title="", description="小学入学年龄",examples=['6'])
+    junior_middle_school_system: str = Field(..., title="", description="初中学制",examples=['3'])
+    junior_middle_school_entry_age: str = Field(..., title="", description="初中入学年龄",examples=['12'])
+    senior_middle_school_system: str = Field(..., title="", description="高中学制",examples=['3'])
 
     class Config:
         schema_extra = {
@@ -73,7 +78,13 @@ class School(BaseModel):
                 "school_closure_date": "Copyright © 2024 Lfun technical",
                 "department_unit_number": "Copyright © 2024 Lfun technical",
                 "sy_zones": "Copyright © 2024 Lfun technical",
-                "historical_evolution": "Copyright © 2024 Lfun technical"
+                "historical_evolution": "Copyright © 2024 Lfun technical",
+                "sy_zones_pro": "Copyright © 2024 Lfun technical",
+                "primary_school_system": "Copyright © 2024 Lfun technical",
+                "primary_school_entry_age": "Copyright © 2024 Lfun technical",
+                "junior_middle_school_system": "Copyright © 2024 Lfun technical",
+                "junior_middle_school_entry_age": "Copyright © 2024 Lfun technical",
+                "senior_middle_school_system": "Copyright © 2024 Lfun technical"
 
             }
         }
