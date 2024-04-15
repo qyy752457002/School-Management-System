@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 class PlanningSchool(BaseModel):
     planning_school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
-    planning_school_no: str = Field(..., title="学校编号", description="学校编号",examples=['SC2032633'])
+    planning_school_no: str = Field(..., title="学校编号", description="学校编号/园所代码",examples=['SC2032633'])
     planning_school_operation_license_number: str = Field(..., title=" Description",
                                                  description="办学许可证号",examples=['EDU2024012569'])
     block: str = Field(..., title=" Author", description="地域管辖区",examples=['铁西区'])

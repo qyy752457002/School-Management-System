@@ -6,6 +6,7 @@ from views.models.planning_school import PlanningSchool
 from views.models.school import School
 # from fastapi import Field
 from fastapi import Query
+from pydantic import BaseModel, Field
 
 
 class PlanningSchoolView(BaseView):
@@ -62,9 +63,22 @@ class PlanningSchoolView(BaseView):
         print(planning_school)
         return  planning_school
     # 修改 关键信息
-    async def put(self,planning_school:PlanningSchool):
-        print(planning_school)
-        return  planning_school
+    async def put(self,planning_school_id:str= Query(None, title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
+                  planning_school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633'),
+                  borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区']),
+                  block: str = Query(..., title=" Author", description="地域管辖区",examples=['铁西区']),
+                  planning_school_name: str = Query(..., title="学校名称", description="园所名称",examples=['XX小学']),
+                  planning_school_type: str = Query(..., title="", description=" 学校类型",examples=['中小学']),
+                  planning_school_operation_type: str = Query(..., title="", description="办学类型/学校性质",examples=['学前教育']),
+                  planning_school_operation_type_lv2: str = Query(..., title="", description=" 办学类型二级",examples=['小学']),
+                  planning_school_operation_type_lv3: str = Query(..., title="", description=" 办学类型三级",examples=['附设小学班']),
+                  planning_school_org_type: str = Query(..., title="", description=" 学校办别",examples=['民办']),
+                  planning_school_level: str = Query(..., title="", description=" 学校星级",examples=['5'])
+
+
+                  ):
+        # print(planning_school)
+        return  [planning_school_no,borough,block ]
     async def delete(self,planning_school:PlanningSchool):
         print(planning_school)
         return  planning_school
