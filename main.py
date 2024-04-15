@@ -11,7 +11,7 @@ def main():
     from mini_framework.web.app_context import ApplicationContextManager
     application_context_manager = ApplicationContextManager()
     application_context_manager.initialize()
-    application_context_manager.run()
+    application_context_manager.run(host="0.0.0.0", port=8000)
 
 
 # Press the green button in the gutter to run the script.
