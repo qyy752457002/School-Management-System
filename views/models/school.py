@@ -41,8 +41,8 @@ class School(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "school_name": "School Management System",
-                "school_no": "1.0.0",
+                "school_name": "xx学校",
+                "school_no": "EDU202403256",
                 "school_operation_license_number": "A school management system",
                 "block": "Lfun technical",
                 "borough": "cloud@lfun.cn",

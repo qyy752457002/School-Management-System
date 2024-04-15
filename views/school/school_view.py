@@ -49,6 +49,6 @@ class SchoolView(BaseView):
         )
         return  res
 
-    async def post(self,school=School):
+    async def post(self,school:School):
         print(school)
         return  school
