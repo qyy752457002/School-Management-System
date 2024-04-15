@@ -2,8 +2,8 @@ from pydantic import BaseModel, Field
 
 
 class School(BaseModel):
-    school_name: str = Field(..., title="Application Name", description="Application Description")
-    school_no: str = Field(..., title="Application Version", description="Application Version")
+    school_name: str = Field(..., title="学校名称", description="1-20字符")
+    school_no: str = Field(..., title="学校编号", description="1-20字符")
     school_operation_license_number: str = Field(..., title="Application Description",
                                                  description="Application Description")
     block: str = Field(..., title="Application Author", description="Application Author")

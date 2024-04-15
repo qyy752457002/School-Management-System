@@ -1,13 +1,19 @@
+
+
 from mini_framework.web.views import BaseView
 
 from views.models.school import School
+# from fastapi import Field
+from fastapi import Query
 
 
 class SchoolView(BaseView):
-    async def get(self):
-        return School(
-            school_name= "School Management System",
-            school_no= "1.0.0",
+    async def get(self,school_no:str= Query(None, title="学校编号", description="1-20字符",min_length=1,max_length=20),
+                  school_name:str= Query(None, title="学校名称", description="1-20字符",min_length=1,max_length=20),
+                  ):
+        res = School(
+            school_name=school_name,
+            school_no=  school_no,
             school_operation_license_number= "A school management system",
             block= "Lfun technical",
             borough= "cloud@lfun.cn",
@@ -41,9 +47,8 @@ class SchoolView(BaseView):
             historical_evolution= "Copyright ? 2024 Lfun technical",
 
         )
-    async def post(self):
-        return School(
-            name="School Management Systemxxxxx", version="1.0.0",
-            description="A school management system", author="Lfun technical",
-            author_email="cloud@lfun.cn", copyright="Copyright © 2024 Lfun technical"
-        )
+        return  res
+
+    async def post(self,school=School):
+        print(school)
+        return  school
