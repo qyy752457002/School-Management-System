@@ -8,8 +8,8 @@ from fastapi import Query
 
 
 class SchoolView(BaseView):
-    async def get(self,school_no:str= Query(None, title="学校编号", description="1-20字符",min_length=1,max_length=20),
-                  school_name:str= Query(None, title="学校名称", description="1-20字符",min_length=1,max_length=20),
+    async def get(self,school_no:str= Query(None, title="学校编号", description="学校编号",min_length=1,max_length=20,example='SC2032633'),
+                  school_name:str= Query(None, description="学校名称" ,min_length=1,max_length=20,example='XX小学'),
                   ):
         res = School(
             school_name=school_name,
