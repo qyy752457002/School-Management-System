@@ -2,7 +2,7 @@ import os
 
 from mini_framework.context import env
 
-from router import init_router
+from views.router import init_router
 
 
 def main():
