@@ -1,0 +1,7 @@
+{
+    "web_server":{
+        "name":"test",
+        "description":"test web application",
+        "version":"1.0.0"
+    }
+}
