@@ -1,7 +1,7 @@
 {
     "web_server":{
-        "name":"test",
-        "description":"test web application",
-        "version":"1.0.0"
+        "name":"sms",
+        "description":"学校综合管理系统",
+        "version":"0.0.1"
     }
 }
