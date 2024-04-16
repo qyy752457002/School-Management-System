@@ -291,21 +291,10 @@ class StudentEduInfo(BaseModel):
 
 
 class GraduationStudents(BaseModel):
-    """
-    学生姓名：student_name
-    报名号：enrollment_number
-    性别：gender
-    证件类别：id_type
-    证件号码：id_number
-    学校：school
-    登记时间：enrollment_date
-    区县：county
-    状态：status
-    """
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
     gender: str = Field(..., title="性别", description="性别")
     school: str = Field(..., title="学校", description="学校")
-    county: str = Field(..., title="区县", description="区县")
-    status: str = Field(..., title="状态", description="状态")
-
+    county: str = Field(..., title="", description="行政属地")
+    edu_number: str = Field(..., title="", description="学籍号码")
+    class_id: str = Field(..., title="", description="班级")
 
