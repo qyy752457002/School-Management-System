@@ -5,9 +5,10 @@ from mini_framework.web.views import BaseView
 from views.models.planning_school import PlanningSchool
 from views.models.school import School
 # from fastapi import Field
-from fastapi import Query
+from fastapi import Query, Depends
 from pydantic import BaseModel, Field
 from mini_framework.web.std_models.page import PageRequest
+from mini_framework.web.std_models.page import PaginatedResponse
 
 
 class PlanningSchoolView(BaseView):
@@ -94,7 +95,7 @@ class PlanningSchoolView(BaseView):
 
 
     async def page(self,
-                   page_request: PageRequest,
+                   page_request= Depends(PageRequest),
                    # planning_school_no:str= Query(None, title="学校编号", description="学校编号",min_length=1,max_length=20,example='SC2032633'),
                   # planning_school_name:str= Query(None, description="学校名称" ,min_length=1,max_length=20,example='XX小学'),
 
@@ -103,6 +104,7 @@ class PlanningSchoolView(BaseView):
 
                   ):
         print(page_request)
+        items=[]
 
         res = PlanningSchool(
             planning_school_name='',
@@ -148,7 +150,38 @@ class PlanningSchoolView(BaseView):
 
 
         )
-        return  [res]
+        for i in range(0,page_request.per_page):
+            items.append(res)
+
+        return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
