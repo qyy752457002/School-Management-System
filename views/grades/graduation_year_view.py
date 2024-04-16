@@ -16,6 +16,10 @@ class GraduationYearView(BaseView):
     async def put(self, graduationyear: GraduationYear ,graduationyear_id:str = Query(...,   description="届别id",min_length=1,max_length=20,example='SC2032633'), ):
         print(graduationyear)
         return graduationyear
+    async def delete(self,  graduationyear_id:str = Query(...,   description="届别id",min_length=1,max_length=20,example='SC2032633'), ):
+        # print(graduationyear)
+        return graduationyear_id
+
 
 
 
