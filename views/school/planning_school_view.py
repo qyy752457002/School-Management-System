@@ -101,9 +101,12 @@ class PlanningSchoolView(BaseView):
 
 
     async def page(self,
+                   # planning_school_baseinfo:PlanningSchoolBaseInfo,
                    page_request= Depends(PageRequest),
-                   # planning_school_no:str= Query(None, title="学校编号", description="学校编号",min_length=1,max_length=20,example='SC2032633'),
-                  # planning_school_name:str= Query(None, description="学校名称" ,min_length=1,max_length=20,example='XX小学'),
+
+                   planning_school_no:str= Query(None, title="学校编号", description="学校编号",min_length=1,max_length=20,example='SC2032633'),
+                  planning_school_name:str= Query(None, description="学校名称" ,min_length=1,max_length=20,example='XX小学'),
+
 
 
 
