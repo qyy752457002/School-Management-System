@@ -1,3 +1,5 @@
+from typing import List
+
 from mini_framework.web.views import BaseView
 
 from views.models.students import NewStudents, NewStudentsQuery, StudentsKeyinfo, StudentsBaseInfo
@@ -76,6 +78,16 @@ class CurrentStudentsView(BaseView):
                                          ):
         # print(new_students_key_info)
         return transferin_audit_id
+
+
+
+    # 在校生 发起毕业 todo  支持传入部门学生ID或者  / all年级毕业
+    async def patch_graduate(self,
+                                           student_id: List[str]=Query(...,   description="学生ID",min_length=1,max_length=20,example='SC2032633'),
+
+                                           ):
+        # print(new_students_key_info)
+        return student_id
 
 
 
