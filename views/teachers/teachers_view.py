@@ -11,7 +11,7 @@ from mini_framework.web.std_models.page import PaginatedResponse
 class TeachersView(BaseView):
 
     # 分页查询
-    async def page(self, new_teacher: NewTeacher, page_request=Depends(PageRequest)):
+    async def page(self,  page_request=Depends(PageRequest)):
         print(page_request)
         items = []
 
