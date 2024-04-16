@@ -13,7 +13,7 @@ from mini_framework.web.std_models.page import PaginatedResponse
 
 
 
-class SchoolView(BaseView):
+class CampusView(BaseView):
     async def get(self,school_no:str= Query(None, title="学校编号", description="学校编号",min_length=1,max_length=20,example='SC2032633'),
                   school_name:str= Query(None, description="学校名称" ,min_length=1,max_length=20,example='XX小学'),
                   ):
