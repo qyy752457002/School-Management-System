@@ -12,7 +12,7 @@ def routers():
     router = Router()
     router.include_api_view_class(SchoolView, "/v1/school", response_cls=School , description="学校管理")
 
-    router.include_api_view_class(PlanningSchoolView, "/v1/planningschool", response_cls=PlanningSchool , description="规划校管理")
+    router.include_api_view_class(PlanningSchoolView, "/v1/planningschool",   description="规划校管理")
 
 
 
