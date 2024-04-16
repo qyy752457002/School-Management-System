@@ -85,6 +85,8 @@ class PlanningSchoolView(BaseView):
 
                   ):
         # print(planning_school)
+        # todo 记录操作日志到表   参数发进去
+
         return  {planning_school_no,borough,block }
     # 删除
     async def delete(self, planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),):
@@ -168,7 +170,7 @@ class PlanningSchoolView(BaseView):
         # print(planning_school)
         return  planning_school_id
 
-    # 导入
+    # 导入 todo 任务队列的
     async def importing(self,planning_school:PlanningSchool):
         print(planning_school)
         return  planning_school
