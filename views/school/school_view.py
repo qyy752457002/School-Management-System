@@ -2,7 +2,7 @@
 
 from mini_framework.web.views import BaseView
 
-from views.models.planning_school import PlanningSchool,PlanningSchoolBaseInfo
+from views.models.planning_school import PlanningSchoolBaseInfo
 from views.models.school import School
 # from fastapi import Field
 
@@ -109,6 +109,49 @@ class SchoolView(BaseView):
                    ):
         print(page_request)
         items=[]
+        for i in range(page_request.per_page):
+            items.append(School(
+                school_name='xxxxxxxxxxxxxxxxxxxx',
+                school_no='SC562369322SG',
+                school_operation_license_number='EDU2024012569',
+                block='铁西区',
+                borough='铁西区',
+                school_type='中小学',
+                school_operation_type='学前教育',
+                school_operation_type_lv2='小学',
+               school_operation_type_lv3='附设小学班',
+                school_org_type='民办',
+                school_level='5',
+                status='正常',
+                school_code='SC562369322SG',
+                kg_level='5',
+                created_uid='1',
+                updated_uid='21',
+                created_at='2021-10-10 00:00:00',
+                updated_at='2021-10-10 00:00:00',
+                deleted='0',
+                school_short_name='MXXX',
+                school_en_name='MinxingPrimarySCHOOL',
+                create_school_date='2021-10-10 00:00:00',
+                social_credit_code='XH423423876867',
+                founder_type='地方',
+                founder_name='上海教育局',
+                founder_code='SC562369322SG',
+                urban_rural_nature='城镇',
+                school_org_form='教学点',
+                school_closure_date='',
+               department_unit_number='SC562369322SG',
+                sy_zones='铁西区',
+                sy_zones_pro='沈阳',
+                primary_school_system='6',
+                primary_school_entry_age='6',
+                junior_middle_school_system='3',
+                junior_middle_school_entry_age='12',
+                senior_middle_school_system='3',
+                historical_evolution='xxxxxxxxxxxxxxxxxxxx',
+
+            ))
+
 
         tt= {
             "school_name": "xx学校",
@@ -153,9 +196,9 @@ class SchoolView(BaseView):
 
         }
 
-
-        for i in range(0,page_request.per_page):
-            items.append(**tt)
+        #
+        # for i in range(0,page_request.per_page):
+        #     items.append(**tt)
 
         return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
     # 开办
@@ -169,7 +212,7 @@ class SchoolView(BaseView):
         return  school_id
 
     # 导入 todo 任务队列的
-    async def importing(self,school:PlanningSchool):
+    async def importing(self,school:School):
         print(school)
         return  school
     #
