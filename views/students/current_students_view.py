@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
 from datetime import date
+from views.models.students import StudentEduInfo
 
 
 class CurrentStudentsView(BaseView):
@@ -17,6 +18,13 @@ class CurrentStudentsView(BaseView):
                             ):
         # print(new_students_key_info)
         return student_id
+
+    # 在校生转入  todo 届别 班级
+    async def patch_transferin(self,StudentEduInfo:StudentEduInfo
+
+                            ):
+        # print(new_students_key_info)
+        return StudentEduInfo
 
 
 

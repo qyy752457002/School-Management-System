@@ -1,3 +1,4 @@
+from fastapi import Query
 from pydantic import BaseModel, Field
 from datetime import date
 
@@ -208,4 +209,19 @@ class StudentsBaseInfo(BaseModel):
             }
         }
 
+
+
+class StudentEduInfo(BaseModel):
+    student_id: str = Query(...,   description="学生id",min_length=1,max_length=20,examples=["1234567890"]),
+    school_id: str = Field(..., title="", description="学校ID",examples=["1234567890"])
+    school_name: str = Field(..., title="", description="学校名称",examples=["XXxiaoxue"])
+    graduation_year: str = Field(..., title="", description="届别",examples=["2003"])
+    attached_class: str = Field(..., title="", description="附设班",examples=["3班"])
+    grade_id: str = Field(..., title="", description="年级ID",examples=["1"])
+    grade_name: str = Field(..., title="", description="年级",examples=["2年级"])
+    class_id: str = Field(..., title="", description="班级id",examples=["125"])
+    classes: str = Field(..., title="", description="班级",examples=["二2班"])
+    major_id: str = Field(..., title="", description="专业",examples=["农业"])
+    transferin_time    :str= Query(..., description="转入时间" ,min_length=1,max_length=20,examples=["2020-10-10"]),
+    transferin_reason   :str= Query(..., description="转入原因" ,min_length=1,max_length=20,examples=["家庭搬迁..."]),
 
