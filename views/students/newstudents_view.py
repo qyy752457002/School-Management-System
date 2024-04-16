@@ -67,6 +67,8 @@ class NewsStudentsView(BaseView):
             id_type=id_type,
             id_number=id_number,
             photo=photo,
+            enrollment_number=enrollment_number,
+            ethnicity=ethnicity,
         )
         return res
 
