@@ -1,10 +1,12 @@
 from pydantic import BaseModel, Field
 
 class Grades(BaseModel):
-    school_id: str = Field(..., title="学校ID", description="1-20字符")
-    grade_no: str = Field(..., title="年级编号", description="1-20字符")
-    grade_name: str = Field(..., title="Grade_name",description="Grade_name")
-    grade_alias: str = Field(..., title="Grade_alias",description="Grade_alias")
+    school_id: str = Field(..., title="学校ID", description="学校ID",examples=[''])
+    grade_no: str = Field(..., title="年级编号", description="年级编号",examples=['一年级'])
+    grade_name: str = Field(..., title="Grade_name",description="Grade_name",examples=['一年级'])
+    grade_alias: str = Field(...,  description="Grade_alias",examples=['一年级'])
+    description: str = Field(None,  description="简介",examples=['fsdfdsfsdxxx'])
+
 
     class Config:
         schema_extra = {

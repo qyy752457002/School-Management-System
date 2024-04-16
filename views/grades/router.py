@@ -8,5 +8,5 @@ from views.grades.grades_view import GradesView
 
 def routers():
     router = Router()
-    router.include_api_view_class(GradesView, "/v1/grades", response_cls=Grades , description="年级管理")
+    router.include_api_view_class(GradesView, "/v1/grades",   description="年级管理")
     return router
