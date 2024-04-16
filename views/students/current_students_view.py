@@ -84,7 +84,8 @@ class CurrentStudentsView(BaseView):
     # 在校生 发起毕业 todo  支持传入部门学生ID或者  / all年级毕业
     async def patch_graduate(self,
                                            student_id: List[str]=Query(...,   description="学生ID",min_length=1,max_length=20,example='SC2032633'),
-
+                             graduate_status:  str =Query(...,   description="毕业状态",min_length=1,max_length=20,example='结业'),
+                             graduate_picture:  str =Query(...,   description="毕业照url",min_length=1,max_length=20,example=''),
                                            ):
         # print(new_students_key_info)
         return student_id
