@@ -27,4 +27,12 @@ class CurrentStudentsView(BaseView):
         return StudentEduInfo
 
 
+    # 在校生转入   审批
+    async def patch_transferin_audit(self,transferin_audit_id:str=Query(...,   description="转入申请id",min_length=1,max_length=20,example='SC2032633'),
+
+                               ):
+        # print(new_students_key_info)
+        return transferin_audit_id
+
+
 
