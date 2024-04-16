@@ -36,3 +36,16 @@ class CurrentStudentsView(BaseView):
 
 
 
+    # 在校生转入   系统外转入
+    async def patch_transferin_fromoutside(self,StudentEduInfo:StudentEduInfo,
+                                           NewStudents:NewStudents,
+                                           StudentoutEduInfo:StudentEduInfo,
+
+
+
+                               ):
+        # print(new_students_key_info)
+        return StudentEduInfo
+
+
+
