@@ -2,8 +2,6 @@ from pydantic import BaseModel, Field
 
 
 class OperationRecord(BaseModel):
-    """
-    """
     action_target_id: str = Field(..., title="操作对象ID", description="操作对象ID",examples=[''])
     action_type: str = Field(..., title="操作类型", description="操作类型",examples=[''])
     ip: str = Field(..., title=" Description",  description="操作IP",examples=[''])

@@ -11,7 +11,7 @@ from views.system.operation_record_view import OperationRecordView
 
 def routers():
     router = Router()
-    router.include_api_view_class(OperationRecordView, "/v1/system", response_cls=OperationRecord , description="操作日志管理")
+    router.include_api_view_class(OperationRecordView, "/v1/system",   description="操作日志管理")
 
 
 
