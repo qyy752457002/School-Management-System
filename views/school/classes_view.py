@@ -34,3 +34,16 @@ class ClassesView(BaseView):
 
 
         return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
+
+    # 删除
+    async def delete(self, class_id:str= Query(..., title="", description="班级id",min_length=1,max_length=20,example='SC2032633'),):
+        print(class_id)
+        return  class_id
+
+    # 修改 关键信息
+    async def put(self,classes:Classes
+                  ):
+        # print(planning_school)
+        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+
+        return  classes
