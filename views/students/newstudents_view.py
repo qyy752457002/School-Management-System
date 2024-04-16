@@ -1,6 +1,6 @@
 from mini_framework.web.views import BaseView
 
-from views.models.students import NewStudents, NewStudentsQuery, StudentsKeyinfo, StudentsBaseInfo
+from views.models.students import NewStudents, NewStudentsQuery, StudentsKeyinfo, StudentsBaseInfo,StudentsFamilyInfo
 # from fastapi import Field
 from fastapi import Query, Depends
 from pydantic import BaseModel, Field
@@ -158,4 +158,63 @@ class NewsStudentsView(BaseView):
     async def patch(self, new_students_base_info: StudentsBaseInfo):
         print(new_students_base_info)
         return new_students_base_info
+
+
+    #新生新增家庭信息
+    async def post_newstudentfamilyinfo(self, new_students_family_info: StudentsFamilyInfo):
+        print(new_students_family_info)
+        return new_students_family_info
+
+    #新生编辑家庭信息
+    async def patch_newstudentfamilyinfo(self, new_students_family_info: StudentsFamilyInfo):
+        print(new_students_family_info)
+        return new_students_family_info
+
+    #新生删除家庭信息
+    async def delete_newstudentfamilyinfo(self, new_students_family_info: StudentsFamilyInfo):
+        print(new_students_family_info)
+        return new_students_family_info
+
+    #新生显示家庭信息
+    async def page_newstudentfamilyinfo(self, student_name: str = Query(None, title="学生姓名", description="学生姓名", example="John Doe"),
+                   page_request=Depends(PageRequest)):
+        print(page_request)
+        items = []
+
+        res = StudentsFamilyInfo(
+            name="John Doe",
+            gender="男",
+            relationship="父子",
+            is_guardian="True",
+            identification_type="身份证",
+            identification_number="1234567890",
+            phone_number="12345678901",
+            ethnicity="汉族",
+        )
+        for i in range(0, page_request.per_page):
+            items.append(res)
+
+        return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10,
+                                 per_page=page_request.per_page, total=100, items=items)
+    #查询新生家庭详细信息
+    async def get_newstudentfamilyinfo(self,
+                                    student_name: str = Query(None, title="姓名", description="姓名", example="John Doe")):
+        res = StudentsFamilyInfo(
+            name="John Doe",
+            gender="男",
+            relationship="父子",
+            is_guardian="True",
+            identification_type="身份证",
+            identification_number="1234567890",
+            birthday="2000-01-01",
+            phone_number="12345678901",
+            ethnicity="汉族",
+            health_status="良好",
+            political_status="党员",
+            nationality="中国",
+            contact_address="北京市朝阳区",
+            workplace="ABC公司",
+            family_member_occupation="教师"
+        )
+        return res
 

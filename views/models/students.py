@@ -104,7 +104,6 @@ class StudentsKeyinfo(BaseModel):
         }
 
 
-
 class StudentsBaseInfo(BaseModel):
     """
     姓名拼音：name_pinyin
@@ -209,3 +208,58 @@ class StudentsBaseInfo(BaseModel):
         }
 
 
+#学生家庭成员信息模型
+class StudentsFamilyInfo(BaseModel):
+    """
+    姓名：name
+    性别：gender
+    关系：relationship
+    是否监护人：is_guardian
+    证件类型：identification_type
+    证件号码：identification_number
+    出生日期：birthday
+    手机号码：phone_number
+    民族：ethnicity
+    健康状态：health_status
+    国籍：nationality
+    政治面貌：political_status
+    联系地址：contact_address
+    工作单位：workplace
+    家庭成员职业：family_member_occupation
+    """
+    name: str = Field(..., title="姓名", description="姓名")
+    gender: str = Field(..., title="性别", description="性别")
+    relationship: str = Field(..., title="关系", description="关系")
+    is_guardian: bool = Field(..., title="是否监护人", description="是否监护人")
+    identification_type: str = Field(..., title="证件类型", description="证件类型")
+    identification_number: str = Field(..., title="证件号码", description="证件号码")
+    birthday: str = Field(..., title="出生日期", description="出生日期")
+    phone_number: str = Field(..., title="手机号码", description="手机号码")
+    ethnicity: str = Field(..., title="民族", description="民族")
+    health_status: str = Field(..., title="健康状态", description="健康状态")
+    nationality: str = Field(..., title="国籍", description="国籍")
+    political_status: str = Field(..., title="政治面貌", description="政治面貌")
+    contact_address: str = Field(..., title="联系地址", description="联系地址")
+    workplace: str = Field(..., title="工作单位", description="工作单位")
+    family_member_occupation: str = Field(..., title="家庭成员职业", description="家庭成员职业")
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "name": "John Doe",
+                "gender": "Male",
+                "relationship": "Parent",
+                "is_guardian": "True",
+                "identification_type": "ID Card",
+                "identification_number": "1234567890",
+                "birthday": "2000-01-01 00:00:00",
+                "phone_number": "12345678901",
+                "ethnicity": "Han",
+                "health_status": "Good",
+                "nationality": "China",
+                "political_status": "Party Member",
+                "contact_address": "123 Main Street, Beijing",
+                "workplace": "ABC Company",
+                "family_member_occupation": "Teacher",
+            }
+        }
