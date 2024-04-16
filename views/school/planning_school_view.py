@@ -15,6 +15,7 @@ class PlanningSchoolView(BaseView):
 
     async def get(self,planning_school_no:str= Query(None, title="学校编号", description="学校编号",min_length=1,max_length=20,example='SC2032633'),
                   planning_school_name:str= Query(None, description="学校名称" ,min_length=1,max_length=20,example='XX小学'),
+                  school_id:str= Query(None, description="学校id|根据学校查规划校" ,min_length=1,max_length=20,example='SJD1256526'),
 
                   ):
 
@@ -84,6 +85,7 @@ class PlanningSchoolView(BaseView):
                   ):
         # print(planning_school)
         return  [planning_school_no,borough,block ]
+    # 删除
     async def delete(self,planning_school:PlanningSchool):
         print(planning_school)
         return  planning_school
@@ -155,7 +157,20 @@ class PlanningSchoolView(BaseView):
             items.append(res)
 
         return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
+    # 开办
+    async def open(self,planning_school:PlanningSchool):
+        print(planning_school)
+        return  planning_school
 
+    # 关闭
+    async def close(self,planning_school:PlanningSchool):
+        print(planning_school)
+        return  planning_school
+
+    # 导入
+    async def importing(self,planning_school:PlanningSchool):
+        print(planning_school)
+        return  planning_school
 
 
 

@@ -1,4 +1,4 @@
 -i https://mirror.f123.pub/repository/pypi/simple
 
-lfun-mini-framework==0.0.7
+lfun-mini-framework==0.0.9
 pydantic~=2.7.0
