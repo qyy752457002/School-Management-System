@@ -2,7 +2,7 @@
 
 from mini_framework.web.views import BaseView
 
-from views.models.planning_school import PlanningSchool
+from views.models.planning_school import PlanningSchool,PlanningSchoolBaseInfo
 from views.models.school import School
 # from fastapi import Field
 from fastapi import Query, Depends
@@ -88,9 +88,10 @@ class PlanningSchoolView(BaseView):
         print(planning_school)
         return  planning_school
     # 修改 变更 基本信息
-    async def patch(self,planning_school:PlanningSchool):
-        print(planning_school)
-        return  planning_school
+    async def patch(self, planning_school_baseinfo:PlanningSchoolBaseInfo, planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),   ):
+        # print(planning_school)
+        return   planning_school_baseinfo
+
 
 
 

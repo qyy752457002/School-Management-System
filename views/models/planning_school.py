@@ -88,3 +88,23 @@ class PlanningSchool(BaseModel):
 
             }
         }
+
+# 规划校的 基本信息模型   视图的额模型是按需提供的
+class PlanningSchoolBaseInfo(BaseModel):
+    planning_school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
+    planning_school_short_name: str = Field(..., title="", description="园所简称",examples=['MXXX'])
+    planning_school_code: str = Field(..., title="", description=" 园所标识码",examples=['SC562369322SG'])
+    create_planning_school_date: str = Field(..., title="", description="建校年月",examples=['2021-10-10 00:00:00'])
+    founder_type: str = Field(..., title="", description="举办者类型",examples=['地方'])
+    founder_name: str = Field(..., title="", description="举办者名称",examples=['上海教育局'])
+    urban_rural_nature: str = Field(..., title="", description="城乡性质",examples=['城镇'])
+    planning_school_operation_type: str = Field(..., title="", description="办学类型/学校性质",examples=['学前教育'])
+    planning_school_org_form: str = Field(..., title="", description="办学组织形式",examples=['教学点'])
+
+    planning_school_operation_type_lv2: str = Field(..., title="", description=" 办学类型二级",examples=['小学'])
+    planning_school_operation_type_lv3: str = Field(..., title="", description=" 办学类型三级",examples=['附设小学班'])
+    department_unit_number: str = Field(..., title="", description="属地管理行政部门单位号",examples=['SC562369322SG'])
+    sy_zones: str = Field(..., title="", description="属地管理行政部门所在地地区",examples=['铁西区'])
+    historical_evolution: str = Field(..., title="", description="历史沿革",examples=['xxxxxxxxxxxxxxxxxxxx'])
+
+
