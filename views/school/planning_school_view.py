@@ -85,7 +85,7 @@ class PlanningSchoolView(BaseView):
 
                   ):
         # print(planning_school)
-        # todo 记录操作日志到表   参数发进去
+        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
 
         return  {planning_school_no,borough,block }
     # 删除
