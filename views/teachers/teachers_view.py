@@ -39,13 +39,14 @@ class TeachersView(BaseView):
         return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10,
                                  per_page=page_request.per_page, total=100, items=items)
 
+    # 教职工基本信息的增删改查
     # 新增教职工基本信息
     async def post_teacherinfo(self, teacher_info: TeacherInfo):
         print(teacher_info)
         return teacher_info
 
-    # 获取新增教职工基本信息
-    async def get(self, name: str = Query(None, title="教师名称", description="教师名称", min_length=1, max_length=20,
+    # 获取教职工基本信息
+    async def get_teacherinfo(self, name: str = Query(None, title="教师名称", description="教师名称", min_length=1, max_length=20,
                                           example='张三')):
         res = TeacherInfo(
             name=name,
@@ -93,14 +94,19 @@ class TeachersView(BaseView):
 
         return res
 
-    # 修改教职工基本信息
+    # 编辑教职工基本信息
     async def put_teacherinfo(self, teacher_info: TeacherInfo):
         print(teacher_info)
         return teacher_info
+
+    # 删除教职工基本信息
+    async def delete_teacherinfo(self,
+                                 teacher_id: str = Query(..., title="教师编号", description="教师编号", min_length=1,
+                                                         max_length=20, example='123456')):
+        print(teacher_id)
+        return teacher_id
 
     # 批量导入
     async def importing(self, teachers: Teachers):
         print(teachers)
         return teachers
-
-
