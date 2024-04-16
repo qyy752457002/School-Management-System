@@ -267,6 +267,14 @@ class StudentsFamilyInfo(BaseModel):
 
 class StudentEduInfo(BaseModel):
     student_id: str = Query(...,   description="学生id",min_length=1,max_length=20,examples=["1234567890"]),
+    province_id: str = Query(...,   description="省份",min_length=1,max_length=20,examples=["1234567890"]),
+    city_id: str = Query(...,   description="市",min_length=1,max_length=20,examples=["1234567890"]),
+    area_id: str = Query(...,   description="区",min_length=1,max_length=20,examples=["1234567890"]),
+    district_id: str = Query(...,   description="区县",min_length=1,max_length=20,examples=["1234567890"]),
+    transfer_in_type: str = Query(...,   description="转入类型",min_length=1,max_length=20,examples=["指定日期转入"]),
+    natural_edu_no: str = Query(...,   description="国家学籍号码",min_length=1,max_length=20,examples=[""]),
+
+
     school_id: str = Field(..., title="", description="学校ID",examples=["1234567890"])
     school_name: str = Field(..., title="", description="学校名称",examples=["XXxiaoxue"])
     graduation_year: str = Field(..., title="", description="届别",examples=["2003"])

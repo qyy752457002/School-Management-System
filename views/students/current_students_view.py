@@ -48,4 +48,16 @@ class CurrentStudentsView(BaseView):
         return StudentEduInfo
 
 
+    # 在校生 系统外转出
+    async def patch_transferout_tooutside(self,StudentEduInfo:StudentEduInfo,
+                                           NewStudents:NewStudents,
+                                           StudentoutEduInfo:StudentEduInfo,
+
+
+
+                                           ):
+        # print(new_students_key_info)
+        return StudentEduInfo
+
+
 
