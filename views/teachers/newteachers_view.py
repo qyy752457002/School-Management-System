@@ -2,7 +2,6 @@ from mini_framework.web.views import BaseView
 
 from views.models.teachers import Teachers, NewTeacher, TeacherInfo
 from fastapi import Query, Depends
-from pydantic import BaseModel, Field
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
 
@@ -15,7 +14,7 @@ class NewTeachersView(BaseView):
         return teachers
 
     # 分页查询
-    async def page(self, new_teacher: NewTeacher, page_request=Depends(PageRequest)):
+    async def page(self, page_request=Depends(PageRequest)):
         print(page_request)
         items = []
 
