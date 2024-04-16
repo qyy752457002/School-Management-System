@@ -3,6 +3,7 @@ from mini_framework.web.router import Router
 from views.models.school import School
 from views.models.test import ApplicationInfo
 from views.school.classes_view import ClassesView
+from views.school.major_view import MajorView
 from views.school.school_view import SchoolView
 from views.tests.test_view import TestView
 from views.models.planning_school import PlanningSchool
@@ -23,5 +24,6 @@ def routers():
 
     router.include_api_view_class(ClassesView, "/v1/classes",   description="班级管理")
 
+    router.include_api_view_class(MajorView, "/v1/major",   description="专业管理")
 
     return router
