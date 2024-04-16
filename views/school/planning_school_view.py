@@ -2,7 +2,7 @@
 
 from mini_framework.web.views import BaseView
 
-from views.models.planning_school import PlanningSchool
+from views.models.planning_school import PlanningSchool,PlanningSchoolBaseInfo
 from views.models.school import School
 # from fastapi import Field
 from fastapi import Query, Depends
@@ -10,11 +10,12 @@ from pydantic import BaseModel, Field
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
 
-
+# 当前工具包里支持get  patch前缀的 方法的自定义使用
 class PlanningSchoolView(BaseView):
 
     async def get(self,planning_school_no:str= Query(None, title="学校编号", description="学校编号",min_length=1,max_length=20,example='SC2032633'),
                   planning_school_name:str= Query(None, description="学校名称" ,min_length=1,max_length=20,example='XX小学'),
+                  school_id:str= Query(None, description="学校id|根据学校查规划校" ,min_length=1,max_length=20,example='SJD1256526'),
 
                   ):
 
@@ -84,13 +85,15 @@ class PlanningSchoolView(BaseView):
                   ):
         # print(planning_school)
         return  [planning_school_no,borough,block ]
+    # 删除
     async def delete(self,planning_school:PlanningSchool):
         print(planning_school)
         return  planning_school
     # 修改 变更 基本信息
-    async def patch(self,planning_school:PlanningSchool):
-        print(planning_school)
-        return  planning_school
+    async def patch_baseinfo(self, planning_school_baseinfo:PlanningSchoolBaseInfo, planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),   ):
+        # print(planning_school)
+        return   planning_school_baseinfo
+
 
 
 
@@ -154,7 +157,24 @@ class PlanningSchoolView(BaseView):
             items.append(res)
 
         return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
+    # 开办
+    async def patch_open(self,planning_school:PlanningSchool):
+        print(planning_school)
+        return  planning_school
 
+    # 关闭
+    async def patch_close(self,planning_school:PlanningSchool):
+        print(planning_school)
+        return  planning_school
+
+    # 导入
+    async def importing(self,planning_school:PlanningSchool):
+        print(planning_school)
+        return  planning_school
+    #
+    # async def get_extinfo(self):
+    #     #
+    #     return [ ]
 
 
 
