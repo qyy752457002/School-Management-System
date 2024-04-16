@@ -61,3 +61,21 @@ class CurrentStudentsView(BaseView):
 
 
 
+    # 在校生转入   审批同意
+    async def patch_transferin_auditpass(self,
+                                         transferin_audit_id:str=Query(...,   description="转入申请id",min_length=1,max_length=20,example='SC2032633'),
+                                         remark:str=Query(...,   description="备注",min_length=1,max_length=20,example='SC2032633'),
+                                     ):
+        # print(new_students_key_info)
+        return transferin_audit_id
+
+    # 在校生转入   审批拒绝
+    async def patch_transferin_auditrefuse(self,
+                                         transferin_audit_id:str=Query(...,   description="转入申请id",min_length=1,max_length=20,example='SC2032633'),
+                                         remark:str=Query(...,   description="备注",min_length=1,max_length=20,example='SC2032633'),
+                                         ):
+        # print(new_students_key_info)
+        return transferin_audit_id
+
+
+
