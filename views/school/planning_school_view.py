@@ -65,6 +65,7 @@ class PlanningSchoolView(BaseView):
         )
         return  res
 
+    #  新增的实际结果  ID赋值
     async def post(self,planning_school:PlanningSchool):
         print(planning_school)
         return  planning_school
@@ -84,11 +85,13 @@ class PlanningSchoolView(BaseView):
 
                   ):
         # print(planning_school)
-        return  [planning_school_no,borough,block ]
+        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+
+        return  {planning_school_no,borough,block }
     # 删除
-    async def delete(self,planning_school:PlanningSchool):
-        print(planning_school)
-        return  planning_school
+    async def delete(self, planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),):
+        print(planning_school_id)
+        return  planning_school_id
     # 修改 变更 基本信息
     async def patch_baseinfo(self, planning_school_baseinfo:PlanningSchoolBaseInfo, planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),   ):
         # print(planning_school)
@@ -158,16 +161,16 @@ class PlanningSchoolView(BaseView):
 
         return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
     # 开办
-    async def patch_open(self,planning_school:PlanningSchool):
-        print(planning_school)
-        return  planning_school
+    async def patch_open(self,planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633')):
+        # print(planning_school)
+        return  planning_school_id
 
     # 关闭
-    async def patch_close(self,planning_school:PlanningSchool):
-        print(planning_school)
-        return  planning_school
+    async def patch_close(self,planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633')):
+        # print(planning_school)
+        return  planning_school_id
 
-    # 导入
+    # 导入 todo 任务队列的
     async def importing(self,planning_school:PlanningSchool):
         print(planning_school)
         return  planning_school
