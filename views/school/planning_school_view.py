@@ -125,3 +125,17 @@ class PlanningSchoolView(BaseView):
 
         return res
 
+    # 新增 教学信息
+    async def post_eduinfo(self,
+                            planning_school: PlanningSchoolCommunications,
+                            # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
+
+                            ):
+        # print(planning_school)
+
+        res = await self.planning_school_communication_rule.add_planning_school_communication(planning_school)
+
+        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+
+        return res
+
