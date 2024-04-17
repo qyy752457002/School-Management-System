@@ -48,9 +48,11 @@ class PlanningSchoolView(BaseView):
 
         return  res
     # 删除
-    async def delete(self, planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),):
+    async def delete(self, planning_school_id:int= Query(..., title="", description="学校id/园所id",example='SC2032633'),):
         print(planning_school_id)
-        return  planning_school_id
+        res = await self.planning_school_rule.softdelete_planning_school(planning_school_id)
+
+        return  res
     # 修改 变更 基本信息
     async def patch_baseinfo(self, planning_school_baseinfo:PlanningSchoolBaseInfo, planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),   ):
         # print(planning_school)

@@ -102,6 +102,14 @@ class PlanningSchoolRule(object):
         planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
         return planning_school
 
+    async def softdelete_planning_school(self, planning_school_id):
+        exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
+        if not exists_planning_school:
+            raise Exception(f"规划校{planning_school_id}不存在")
+        planning_school_db = await self.planning_school_dao.softdelete_planning_school(exists_planning_school)
+        # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
+        return planning_school_db
+
     async def get_all_planning_schools(self):
         return await self.planning_school_dao.get_all_planning_schools()
 

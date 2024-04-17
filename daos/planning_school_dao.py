@@ -53,6 +53,17 @@ class PlanningSchoolDAO(DAOBase):
         await session.commit()
         return planning_school
 
+    async def softdelete_planning_school(self, planning_school):
+        session = await self.master_db()
+        deleted_status= 1
+        update_stmt = update(PlanningSchool).where(PlanningSchool.id == planning_school.id).values(
+            deleted= deleted_status,
+        )
+        await session.execute(update_stmt)
+        # await session.delete(planning_school)
+        await session.commit()
+        return planning_school
+
     async def get_all_planning_schools(self):
         session = await self.slave_db()
         result = await session.execute(select(PlanningSchool))
