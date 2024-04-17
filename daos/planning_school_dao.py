@@ -47,11 +47,13 @@ class PlanningSchoolDAO(DAOBase):
         result = await session.execute(select(func.count()).select_from(PlanningSchool))
         return result.scalar()
 
-    async def query_planning_school_with_page(self, planning_school_name,planning_school_id, page_request: PageRequest) -> Paging:
+    async def query_planning_school_with_page(self, planning_school_name,planning_school_id,planning_school_no, page_request: PageRequest) -> Paging:
         query = select(PlanningSchool)
         if planning_school_name:
             query = query.where(PlanningSchool.planning_school_name == planning_school_name)
         if planning_school_id:
             query = query.where(PlanningSchool.id == planning_school_id)
+        if planning_school_no:
+            query = query.where(PlanningSchool.planning_school_no == planning_school_no)
         paging = await self.query_page(query, page_request)
         return paging
