@@ -17,18 +17,18 @@ class TeachersRule(object):
         return teachers
 
     async def add_teachers(self, teachers: TeachersModel):
-        exists_teachers = await self.teachers_dao.get_teachers_by_id(teachers.id)
-        # if exists_teachers:
-        #     raise Exception(f"编号为{teachers.id}教师已存在")
+        # exists_teachers = await self.teachers_dao.get_teachers_by_id(teachers.id)
+        # # if exists_teachers:
+        # #     raise Exception(f"编号为{teachers.id}教师已存在")
         teachers_db = Teacher()
-        teachers_db.name=teachers.name
+        teachers_db.teacher_name=teachers.teacher_name
         teachers_db.teacher_gender=teachers.teacher_gender
         teachers_db.teacher_id_type=teachers.teacher_id_type
         teachers_db.teacher_id_number=teachers.teacher_id_number
         teachers_db.teacher_date_of_birth=teachers.teacher_date_of_birth
         teachers_db.teacher_employer=teachers.teacher_employer
         teachers_db.teacher_avatar=teachers.teacher_avatar
-        teachers_db.teacher_approval_status=teachers.teacher_approval_status
+
 
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])

@@ -6,6 +6,7 @@ from fastapi import Query
 
 class Teachers(BaseModel):
     """
+    教师ID:id
     姓名：teacher_name
     性别：teacher_gender
     证件类型：teacher_id_type
@@ -14,6 +15,7 @@ class Teachers(BaseModel):
     任职单位：teacher_employer
     头像：teacher_avatar
     """
+    id: int = Field(None, title="教师ID", description="教师ID")
     teacher_name: str = Field(..., title="教师名称", description="教师名称")
     teacher_gender: str = Field(..., title="教师性别", description="教师性别")
     teacher_id_type: str = Field(None, title="证件类型", description="证件类型")

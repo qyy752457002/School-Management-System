@@ -9,7 +9,6 @@ from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 from models.teachers import Teacher
 from rules.teachers_rule import TeachersRule
-from views.models.teachers import Teachers
 
 
 class TeachersView(BaseView):

@@ -22,7 +22,7 @@ class NewTeachersView(BaseView):
     async def post_newteacher(self, teachers: Teachers):
         print(teachers)
         res = await self.grade_rule.add_teachers(teachers)
-        return
+        return res
 
     # 查询单个教职工登记信息
     async def get_newteacher(self, id: str = Query(None, title="教师编号", description="教师编号", min_length=1)):
