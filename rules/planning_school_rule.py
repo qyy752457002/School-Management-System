@@ -77,7 +77,19 @@ class PlanningSchoolRule(object):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school.id)
         if not exists_planning_school:
             raise Exception(f"规划校{planning_school.id}不存在")
-        planning_school_db = await self.planning_school_dao.update_planning_school(planning_school)
+        planning_school_db = PlanningSchool()
+        planning_school_db.id = planning_school.id
+        planning_school_db.planning_school_no = planning_school.planning_school_no
+        planning_school_db.planning_school_name = planning_school.planning_school_name
+        planning_school_db.block = planning_school.block
+        planning_school_db.borough = planning_school.borough
+        planning_school_db.planning_school_type = planning_school.planning_school_type
+        planning_school_db.planning_school_operation_type = planning_school.planning_school_operation_type
+        planning_school_db.planning_school_operation_type_lv2 = planning_school.planning_school_operation_type_lv2
+        planning_school_db.planning_school_operation_type_lv3 = planning_school.planning_school_operation_type_lv3
+        planning_school_db.planning_school_org_type = planning_school.planning_school_org_type
+        planning_school_db.planning_school_level = planning_school.planning_school_level
+        planning_school_db = await self.planning_school_dao.update_planning_school(planning_school_db)
         planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""])
         return planning_school
 
