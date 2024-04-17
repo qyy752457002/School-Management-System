@@ -12,7 +12,8 @@ class GradeRule(object):
 
     async def get_grade_by_id(self, grade_id):
         grade_db = await self.grade_dao.get_grade_by_id(grade_id)
-        grade = orm_model_to_view_model(grade_db, GradeModel, exclude=[""])
+        # 可选 , exclude=[""]
+        grade = orm_model_to_view_model(grade_db, GradeModel)
         return grade
 
     async def get_grade_by_grade_name(self, grade_name):
