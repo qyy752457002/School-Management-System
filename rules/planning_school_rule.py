@@ -152,3 +152,4 @@ class PlanningSchoolRule(object):
         planning_school_db = await self.planning_school_dao.update_planning_school_status(exists_planning_school,status)
         # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
         return planning_school_db
+

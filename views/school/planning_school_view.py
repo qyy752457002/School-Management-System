@@ -2,6 +2,7 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo
+from views.models.planning_school_communications import PlanningSchoolCommunications
 from views.models.school import School
 # from fastapi import Field
 from fastapi import Query, Depends
@@ -108,3 +109,17 @@ class PlanningSchoolView(BaseView):
     # async def get_extinfo(self):
     #     #
     #     return [ ]
+    # 修改 通信信息
+    async def put_comminfo(self,
+                  planning_school: PlanningSchoolCommunications,
+                  # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
+
+                  ):
+        # print(planning_school)
+
+        res = await self.planning_school_rule.update_planning_school(planning_school,3)
+
+        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+
+        return res
+
