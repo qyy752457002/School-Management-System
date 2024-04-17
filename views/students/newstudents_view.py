@@ -1,3 +1,5 @@
+from typing import List
+
 from mini_framework.web.views import BaseView
 
 from views.models.students import NewStudents, NewStudentsQuery, StudentsKeyinfo, StudentsBaseInfo,StudentsFamilyInfo
@@ -67,6 +69,8 @@ class NewsStudentsView(BaseView):
             id_type=id_type,
             id_number=id_number,
             photo=photo,
+            enrollment_number=enrollment_number,
+            ethnicity=ethnicity,
         )
         return res
 
@@ -217,4 +221,10 @@ class NewsStudentsView(BaseView):
             family_member_occupation="教师"
         )
         return res
+
+
+    # 正式入学
+    async def patch_formaladmission(self, student_id:List[str] = Query(..., description="学生id",min_length=1,max_length=20,example=["SC2032633"]),):
+        print(student_id)
+        return student_id
 

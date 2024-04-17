@@ -1,3 +1,4 @@
+from fastapi import Query
 from pydantic import BaseModel, Field
 from datetime import date
 
@@ -263,3 +264,37 @@ class StudentsFamilyInfo(BaseModel):
                 "family_member_occupation": "Teacher",
             }
         }
+
+class StudentEduInfo(BaseModel):
+    student_id: str = Query(...,   description="学生id",min_length=1,max_length=20,examples=["1234567890"]),
+    province_id: str = Query(...,   description="省份",min_length=1,max_length=20,examples=["1234567890"]),
+    city_id: str = Query(...,   description="市",min_length=1,max_length=20,examples=["1234567890"]),
+    area_id: str = Query(...,   description="区",min_length=1,max_length=20,examples=["1234567890"]),
+    district_id: str = Query(...,   description="区县",min_length=1,max_length=20,examples=["1234567890"]),
+    transfer_in_type: str = Query(...,   description="转入类型",min_length=1,max_length=20,examples=["指定日期转入"]),
+    natural_edu_no: str = Query(...,   description="国家学籍号码",min_length=1,max_length=20,examples=[""]),
+
+
+    school_id: str = Field(..., title="", description="学校ID",examples=["1234567890"])
+    school_name: str = Field(..., title="", description="学校名称",examples=["XXxiaoxue"])
+    graduation_year: str = Field(..., title="", description="届别",examples=["2003"])
+    attached_class: str = Field(..., title="", description="附设班",examples=["3班"])
+    grade_id: str = Field(..., title="", description="年级ID",examples=["1"])
+    grade_name: str = Field(..., title="", description="年级",examples=["2年级"])
+    class_id: str = Field(..., title="", description="班级id",examples=["125"])
+    classes: str = Field(..., title="", description="班级",examples=["二2班"])
+    major_id: str = Field(..., title="", description="专业",examples=["农业"])
+    transferin_time    :str= Query(..., description="转入时间" ,min_length=1,max_length=20,examples=["2020-10-10"]),
+    transferin_reason   :str= Query(..., description="转入原因" ,min_length=1,max_length=20,examples=["家庭搬迁..."]),
+
+
+
+
+class GraduationStudents(BaseModel):
+    student_name: str = Field(..., title="学生姓名", description="学生姓名")
+    gender: str = Field(..., title="性别", description="性别")
+    school: str = Field(..., title="学校", description="学校")
+    county: str = Field(..., title="", description="行政属地")
+    edu_number: str = Field(..., title="", description="学籍号码")
+    class_id: str = Field(..., title="", description="班级")
+

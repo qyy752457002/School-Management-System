@@ -2,14 +2,12 @@ from pydantic import BaseModel, Field
 
 
 class School(BaseModel):
-    school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
+    school_name: str = Field(..., title="学校名称", description="学校名称",examples=['XX小学'])
     school_no: str = Field(..., title="学校编号", description="学校编号",examples=['SC2032633'])
-    school_operation_license_number: str = Field(..., title=" Description",
-                                                 description="办学许可证号",examples=['EDU2024012569'])
+    school_operation_license_number: str = Field(..., title=" Description", description="办学许可证号",examples=['EDU2024012569'])
     block: str = Field(..., title=" Author", description="地域管辖区",examples=['铁西区'])
     borough: str = Field(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
     school_type: str = Field(..., title="", description=" 学校类型",examples=['中小学'])
-
     school_operation_type: str = Field(..., title="", description="办学类型/学校性质",examples=['学前教育'])
     school_operation_type_lv2: str = Field(..., title="", description=" 办学类型二级",examples=['小学'])
     school_operation_type_lv3: str = Field(..., title="", description=" 办学类型三级",examples=['附设小学班'])
@@ -88,3 +86,24 @@ class School(BaseModel):
 
             }
         }
+
+
+# 规划校的 基本信息模型   视图的额模型是按需提供的
+class SchoolBaseInfo(BaseModel):
+    school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
+    school_short_name: str = Field(..., title="", description="园所简称",examples=['MXXX'])
+    school_code: str = Field(..., title="", description=" 园所标识码",examples=['SC562369322SG'])
+    create_school_date: str = Field(..., title="", description="建校年月",examples=['2021-10-10 00:00:00'])
+    founder_type: str = Field(..., title="", description="举办者类型",examples=['地方'])
+    founder_name: str = Field(..., title="", description="举办者名称",examples=['上海教育局'])
+    urban_rural_nature: str = Field(..., title="", description="城乡性质",examples=['城镇'])
+    school_operation_type: str = Field(..., title="", description="办学类型/学校性质",examples=['学前教育'])
+    school_org_form: str = Field(..., title="", description="办学组织形式",examples=['教学点'])
+
+    school_operation_type_lv2: str = Field(..., title="", description=" 办学类型二级",examples=['小学'])
+    school_operation_type_lv3: str = Field(..., title="", description=" 办学类型三级",examples=['附设小学班'])
+    department_unit_number: str = Field(..., title="", description="属地管理行政部门单位号",examples=['SC562369322SG'])
+    sy_zones: str = Field(..., title="", description="属地管理行政部门所在地地区",examples=['铁西区'])
+    historical_evolution: str = Field(..., title="", description="历史沿革",examples=['xxxxxxxxxxxxxxxxxxxx'])
+
+
