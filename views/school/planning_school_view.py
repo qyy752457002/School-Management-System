@@ -13,6 +13,7 @@ from mini_framework.web.std_models.page import PaginatedResponse
 from models.grade import Grade
 from rules.planning_school_rule import PlanningSchoolRule
 from views.models.grades import Grades
+from rules.planning_school_communication_rule import PlanningSchoolCommunicationRule
 
 
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
@@ -20,6 +21,7 @@ class PlanningSchoolView(BaseView):
     def __init__(self):
         super().__init__()
         self.planning_school_rule = get_injector(PlanningSchoolRule)
+        self.planning_school_communication_rule = get_injector(PlanningSchoolCommunicationRule)
 
     async def get(self, planning_school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1,
                                                         max_length=20, example='SC2032633'),
@@ -109,15 +111,15 @@ class PlanningSchoolView(BaseView):
     # async def get_extinfo(self):
     #     #
     #     return [ ]
-    # 修改 通信信息
-    async def put_comminfo(self,
+    # 新增 通信信息
+    async def post_comminfo(self,
                   planning_school: PlanningSchoolCommunications,
                   # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
 
                   ):
         # print(planning_school)
 
-        res = await self.planning_school_rule.update_planning_school(planning_school,3)
+        res = await self.planning_school_communication_rule.add_planning_school_communication(planning_school)
 
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
 
