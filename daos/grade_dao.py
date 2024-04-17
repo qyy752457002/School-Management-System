@@ -47,9 +47,11 @@ class GradeDAO(DAOBase):
         result = await session.execute(select(func.count()).select_from(Grade))
         return result.scalar()
 
-    async def query_grade_with_page(self, grade_name, page_request: PageRequest) -> Paging:
+    async def query_grade_with_page(self, grade_name,school_id, page_request: PageRequest) -> Paging:
         query = select(Grade)
         if grade_name:
             query = query.where(Grade.grade_name == grade_name)
+        if school_id:
+            query = query.where(Grade.school_id == school_id)
         paging = await self.query_page(query, page_request)
         return paging
