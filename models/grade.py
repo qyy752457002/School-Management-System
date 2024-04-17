@@ -11,7 +11,7 @@ class Grade(BaseDBModel):
     __tablename__ = 'lfun_grade'
     __table_args__ = {'comment': '年级表模型'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="年级ID")
+    id: Mapped[int] = mapped_column(primary_key=True, comment="年级ID",autoincrement=True)
     school_id: Mapped[int] = mapped_column( comment="学校ID")
     grade_no: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级编号")
     grade_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级名称")

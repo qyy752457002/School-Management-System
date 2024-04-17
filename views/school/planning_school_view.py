@@ -1,7 +1,7 @@
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
-from views.models.planning_school import PlanningSchool,PlanningSchoolBaseInfo
+from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo
 from views.models.school import School
 # from fastapi import Field
 from fastapi import Query, Depends
@@ -20,7 +20,7 @@ class PlanningSchoolView(BaseView):
 
     async def get(self,planning_school_no:str= Query(None, title="学校编号", description="学校编号",min_length=1,max_length=20,example='SC2032633'),
                   planning_school_name:str= Query(None, description="学校名称" ,min_length=1,max_length=20,example='XX小学'),
-                  planning_school_id:str= Query(..., description="学校id|根据学校查规划校" ,min_length=1,max_length=20,example='SJD1256526'),
+                  planning_school_id:int= Query(..., description="学校id|根据学校查规划校" ,example='1'),
 
                   ):
         planning_school = await self.planning_school_rule.get_planning_school_by_id(planning_school_id)
@@ -34,28 +34,25 @@ class PlanningSchoolView(BaseView):
 
         return  res
     # 修改 关键信息
-    async def put(self,planning_school_id:str= Query(None, title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
-                  planning_school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633'),
-                  borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区']),
-                  block: str = Query(..., title=" Author", description="地域管辖区",examples=['铁西区']),
-                  planning_school_name: str = Query(..., title="学校名称", description="园所名称",examples=['XX小学']),
-                  planning_school_type: str = Query(..., title="", description=" 学校类型",examples=['中小学']),
-                  planning_school_operation_type: str = Query(..., title="", description="办学类型/学校性质",examples=['学前教育']),
-                  planning_school_operation_type_lv2: str = Query(..., title="", description=" 办学类型二级",examples=['小学']),
-                  planning_school_operation_type_lv3: str = Query(..., title="", description=" 办学类型三级",examples=['附设小学班']),
-                  planning_school_org_type: str = Query(..., title="", description=" 学校办别",examples=['民办']),
-                  planning_school_level: str = Query(..., title="", description=" 学校星级",examples=['5'])
-
+    async def put(self,
+                  planning_school:PlanningSchoolKeyInfo,
+                  # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
 
                   ):
         # print(planning_school)
+
+
+        res = await self.planning_school_rule.update_planning_school(planning_school)
+
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
 
-        return  {planning_school_no,borough,block }
+        return  res
     # 删除
-    async def delete(self, planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),):
+    async def delete(self, planning_school_id:int= Query(..., title="", description="学校id/园所id",example='SC2032633'),):
         print(planning_school_id)
-        return  planning_school_id
+        res = await self.planning_school_rule.softdelete_planning_school(planning_school_id)
+
+        return  res
     # 修改 变更 基本信息
     async def patch_baseinfo(self, planning_school_baseinfo:PlanningSchoolBaseInfo, planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),   ):
         # print(planning_school)

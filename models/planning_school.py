@@ -13,7 +13,7 @@ class PlanningSchool(BaseDBModel):
     __tablename__ = 'lfun_planning_school'
     __table_args__ = {'comment': '规划校'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="ID")
+    id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True)
     # school_id: Mapped[int] = mapped_column( comment="学校ID")
     planning_school_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="学校名称")
     planning_school_no: Mapped[str] = mapped_column(String(64), nullable=False, comment="学校编号")

@@ -5,32 +5,32 @@
         "version":"0.0.1"
     },
     "databases": {
-            "default": {
-                "async_driver": "postgresql+asyncpg",
-                "sync_driver":"postgresql+psycopg",
-                "master": {
-                    "host": "10.0.5.100",
-                    "port": 5432,
-                    "user": "bytebase",
-                    "password": "6?bG=XA^PD53n_NVs?xG",
-                    "database": "bytebase"
+        "default": {
+            "async_driver": "kingbase+asyncpg",
+            "sync_driver":"kingbase",
+            "master": {
+                "host": "10.0.0.42",
+                "port": 54321,
+                "user": "lfun",
+                "password": "J16s10Wp08yfEskmVAJH",
+                "database": "yuanhong"
+            },
+            "slaves": [
+                {
+                    "host": "10.0.0.42",
+                    "port": 54321,
+                    "user": "lfun",
+                    "password": "J16s10Wp08yfEskmVAJH",
+                    "database": "yuanhong"
                 },
-                "slaves": [
-                    {
-                        "host": "10.0.5.100",
-                        "port": 5432,
-                        "user": "bytebase",
-                        "password": "6?bG=XA^PD53n_NVs?xG",
-                        "database": "bytebase"
-                    },
-                    {
-                        "host": "10.0.5.100",
-                        "port": 5432,
-                        "user": "bytebase",
-                        "password": "6?bG=XA^PD53n_NVs?xG",
-                        "database": "bytebase"
-                    }
-                ]
-            }
+                {
+                    "host": "10.0.0.42",
+                    "port": 54321,
+                    "user": "lfun",
+                    "password": "J16s10Wp08yfEskmVAJH",
+                    "database": "yuanhong"
+                }
+            ]
         }
+    }
 }
