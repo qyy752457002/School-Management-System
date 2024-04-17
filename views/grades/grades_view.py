@@ -24,7 +24,7 @@ class GradesView(BaseView):
                   grade_id: str = Query(None, title="", description="年级ID", min_length=1, max_length=20,
                                          example='SC2032633'),
                   ):
-        account = await self.grade_rule.get_account_by_id(grade_id)
+        account = await self.grade_rule.get_grade_by_id(grade_id)
 
         res = Grades(
             school_id=school_id,
