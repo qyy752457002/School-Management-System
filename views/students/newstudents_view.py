@@ -85,7 +85,7 @@ class NewsStudentsView(BaseView):
         return new_students_key_info
 
     #新生查询基本信息
-    async def get(self,
+    async def get_newstudentbaseinfo(self,
                   name_pinyin: str = Query(None, title="姓名拼音", description="姓名拼音", example="john_doe"),
                   session: str = Query(None, title="届别", description="届别", example="2022"),
                   grade: str = Query(None, title="年级", description="年级", example="10"),
