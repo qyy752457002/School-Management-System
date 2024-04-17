@@ -4,3 +4,10 @@
  分页的示例
  /api/school/v1/planningschool/page
 
+
+确保安装如下包
+pip install --upgrade pip
+
+pip install "psycopg[binary,pool]"
+
+
