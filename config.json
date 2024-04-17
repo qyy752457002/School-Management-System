@@ -3,5 +3,34 @@
         "name":"school",
         "description":"学校综合管理系统",
         "version":"0.0.1"
-    }
+    },
+    "databases": {
+            "default": {
+                "async_driver": "kingbase+asyncpg",
+                "sync_driver":"kingbase",
+                "master": {
+                    "host": "10.0.0.42",
+                    "port": 54321,
+                    "user": "lfun",
+                    "password": "J16s10Wp08yfEskmVAJH",
+                    "database": "yuanhong"
+                },
+                "slaves": [
+                    {
+                        "host": "10.0.0.42",
+                        "port": 54321,
+                        "user": "lfun",
+                        "password": "J16s10Wp08yfEskmVAJH",
+                        "database": "yuanhong"
+                    },
+                    {
+                        "host": "10.0.0.42",
+                        "port": 54321,
+                        "user": "lfun",
+                        "password": "J16s10Wp08yfEskmVAJH",
+                        "database": "yuanhong"
+                    }
+                ]
+            }
+        }
 }
