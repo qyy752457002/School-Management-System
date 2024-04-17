@@ -92,6 +92,7 @@ class PlanningSchool(BaseModel):
 
 # 规划校的 基本信息模型   视图的额模型是按需提供的
 class PlanningSchoolBaseInfo(BaseModel):
+    id:int= Query(None, title="", description="规划校id", example='1'),
     planning_school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
     planning_school_short_name: str = Field(..., title="", description="园所简称",examples=['MXXX'])
     planning_school_code: str = Field(..., title="", description=" 园所标识码",examples=['SC562369322SG'])
