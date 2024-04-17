@@ -1,14 +1,15 @@
-from sqlalchemy import select, func,update
+from sqlalchemy import select, func, update
 
 from mini_framework.databases.entities.dao_base import DAOBase
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 from models.teachers_info import TeacherInfo
+from models.teachers import Teacher
 from views.models.teachers import TeacherInfo as TeacherInfoModel
 
 
 class TeachersInfoDao(DAOBase):
-    #新增教师基本信息
+    # 新增教师基本信息
     async def add_teachers_info(self, teachers_info):
         session = await self.master_db()
         session.add(teachers_info)
@@ -16,8 +17,8 @@ class TeachersInfoDao(DAOBase):
         await session.refresh(teachers_info)
         return teachers_info
 
-    #编辑教师基本信息
-    async def update_teachers_info(self, teachers_info:TeacherInfoModel):
+    # 编辑教师基本信息
+    async def update_teachers_info(self, teachers_info: TeacherInfoModel):
         session = await self.master_db()
         update_stmt = update(TeacherInfo).where(TeacherInfo.id == teachers_info.id).values(
             nationality=teachers_info.nationality,
@@ -64,19 +65,40 @@ class TeachersInfoDao(DAOBase):
         await session.commit()
         return teachers_info
 
-    #删除教师基本信息
-    async def softdelete_teachers_info(self, teachers_info:TeacherInfoModel):
+    # 删除教师基本信息
+    async def soft_delete_teachers_info(self, teachers_info: TeacherInfoModel):
         session = await self.master_db()
-        deleted_status= 1
+        deleted_status = 1
         update_stmt = update(TeacherInfo).where(TeacherInfo.id == teachers_info.id).values(
-            deleted= deleted_status,
+            deleted=deleted_status,
         )
         await session.execute(update_stmt)
         await session.commit()
         return teachers_info
 
-    #获取单个教师基本信息
+    # 获取单个教师基本信息
     async def get_teachers_info_by_id(self, teachers_info_id):
         session = await self.slave_db()
         result = await session.execute(select(TeacherInfo).where(TeacherInfo.id == teachers_info_id))
         return result.scalar_one_or_none()
+
+    # 尝试联合多表分页查询
+    async def query_teacher_with_page(self, page_request: PageRequest, **kwargs) -> Paging:
+        query = select(Teacher.teacher_name, Teacher.teacher_id_number, Teacher.teacher_gender,
+                       Teacher.teacher_employer, Teacher.teacher_approval_status, TeacherInfo.highest_education,
+                       TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
+                       TeacherInfo.enter_school_time).select_from(
+            Teacher.join(TeacherInfo, Teacher.id == TeacherInfo.teacher_number)
+        )
+        conditions = []
+        for key, value in kwargs.items():
+            if hasattr(Teacher, key):
+                conditions.append(getattr(Teacher, key) == value)
+            if hasattr(TeacherInfo, key):
+                conditions.append(getattr(TeacherInfo, key) == value)
+        if conditions:
+            query = query.where(*conditions)
+        paging = await self.query_page(query, page_request)
+        return paging
+
+

@@ -85,6 +85,7 @@ class TeacherInfo(BaseModel):  # 基本信息
     教职工号：teacher_number
     """
     id: str = Field(..., title="教师ID", description="教师ID", example="123456789012345678")
+    teacher_id: str = Field(..., title="教师ID", description="教师ID", example="123456789012345678")
     ethnicity: str = Field(..., title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家地区", description="国家地区", example="中国")
     political_status: str = Field(..., title="政治面貌", description="政治面貌", example="党员")
@@ -141,6 +142,7 @@ class TeacherInfo(BaseModel):  # 基本信息
 class NewTeacher(BaseModel):
     """
     姓名：name
+    教师ID：teacher_id
     身份证号：id_number
     性别：gender
     任职单位：employer

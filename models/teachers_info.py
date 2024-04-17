@@ -6,7 +6,8 @@ from mini_framework.databases.entities import BaseDBModel
 from datetime import datetime
 class TeacherInfo(BaseDBModel):
     """
-        教师ID：id
+        ID：id
+        教师ID：teacher_id
        国家地区：nationality
        民族：ethnicity
        政治面貌：political_status

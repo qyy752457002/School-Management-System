@@ -121,3 +121,14 @@ class TeachersInfoRule(object):
         teachers_info_db = await self.teachers_info_dao.soft_delete_teachers_info(exists_teachers_info)
         return teachers_info_db
 
+    # 分页查询
+    async def query_teacher_with_page(self, page_request:PageRequest,condition):
+        """
+        分页查询
+
+        """
+        paging = await self.teachers_info_dao.query_teacher_with_page(page_request, condition)
+        paging_result = PaginatedResponse.from_paging(paging, TeachersInfoModel)
+        return paging_result
+
+

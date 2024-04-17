@@ -7,11 +7,16 @@ from sqlalchemy import select
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
-from models.teachers import Teacher
 from rules.teachers_rule import TeachersRule
+from views.models.teachers import Teachers, TeacherInfo
+from rules.teachers_info_rule import TeachersInfoRule
 
 
 class TeachersView(BaseView):
+    def __init__(self):
+        super().__init__()
+        self.teacher_rule = get_injector(TeachersRule)
+        self.teacher_info_rule = get_injector(TeachersInfoRule)
 
     # 分页查询
     async def page(self,  page_request=Depends(PageRequest)):
@@ -39,62 +44,24 @@ class TeachersView(BaseView):
 
     # 在职教职工信息
     # 获取教职工基本信息
-    async def get_teacherinfo(self, name: str = Query(None, title="教师名称", description="教师名称", min_length=1, max_length=20,
-                                          example='张三')):
-        res = TeacherInfo(
-            name=name,
-            teacher_id="123456",
-            nationality="中国",
-            ethnic="汉族",
-            political_status="党员",
-            native_place="沈阳",
-            birth_place="沈阳",
-            former_name="张三",
-            marital_status="已婚",
-            health_condition="良好",
-            highest_education="本科",
-            institution_of_highest_education="沈阳师范大学",
-            special_education_start_time="2021-10-10",
-            start_working_date="2010-01-01",
-            enter_school_time="2010-01-01",
-            source_of_staff="招聘",
-            staff_category="教师",
-            in_post="是",
-            employment_form="合同",
-            contract_signing_status="已签",
-            current_post_type="教师",
-            current_post_level="5",
-            current_technical_position="教师",
-            full_time_special_education_major_graduate="是",
-            received_preschool_education_training="是",
-            full_time_normal_major_graduate="是",
-            received_special_education_training="是",
-            has_special_education_certificate="是",
-            information_technology_application_ability="良好",
-            free_normal_college_student="是",
-            participated_in_basic_service_project="是",
-            basic_service_start_date="2021-10-10",
-            basic_service_end_date="2021-10-10",
-            special_education_teacher="是",
-            dual_teacher="是",
-            has_occupational_skill_level_certificate="是",
-            enterprise_work_experience="5",
-            county_level_backbone="是",
-            psychological_health_education_teacher="是",
-            recruitment_method="招聘",
-            teacher_number="123456"
-        )
-
+    async def get_teacherinfo(self, id: str = Query(None, title="教师名称", description="教师名称", min_length=1,
+                                                       max_length=20,
+                                                       example='张三')):
+        res = await self.teacher_info_rule.get_teachers_info_by_id(id)
         return res
 
+
     # 编辑教职工基本信息
-    async def put_teacherinfo(self, teacher_info: TeacherInfo):
-        print(teacher_info)
-        return teacher_info
+    async def put_teacherinfo(self, teacherinfo: TeacherInfo):
+        print(teacherinfo)
+        res = await self.teacher_info_rule.add_teachers_info(teacherinfo)
+        return res
 
     # 删除教职工基本信息
-    async def delete_teacherinfo(self,
-                                 teacher_id: str = Query(..., title="教师编号", description="教师编号", min_length=1,
-                                                         max_length=20, example='123456')):
-        print(teacher_id)
-        return teacher_id
+    async def delete_teacherinfo(self, id: str = Query(None, title="教师名称", description="教师名称", min_length=1,
+                                                       max_length=20,
+                                                       example='张三')):
+        res = await self.teacher_info_rule.delete_teachers_info(id)
+        return res
+
+
