@@ -18,24 +18,24 @@ class PlanningSchoolDAO(DAOBase):
         result = await session.execute(select(PlanningSchool).where(PlanningSchool.planning_school_name == planning_school_name))
         return result.first()
 
-    async def add_planning_school(self, grade):
+    async def add_planning_school(self, planning_school):
         session = await self.master_db()
-        session.add(grade)
+        session.add(planning_school)
         await session.commit()
-        await session.refresh(grade)
-        return grade
+        await session.refresh(planning_school)
+        return planning_school
 
-    async def update_planning_school(self, grade):
+    async def update_planning_school(self, planning_school):
         session = await self.master_db()
-        session.add(grade)
+        session.add(planning_school)
         await session.commit()
-        return grade
+        return planning_school
 
-    async def delete_planning_school(self, grade):
+    async def delete_planning_school(self, planning_school):
         session = await self.master_db()
-        await session.delete(grade)
+        await session.delete(planning_school)
         await session.commit()
-        return grade
+        return planning_school
 
     async def get_all_planning_schools(self):
         session = await self.slave_db()
@@ -47,11 +47,11 @@ class PlanningSchoolDAO(DAOBase):
         result = await session.execute(select(func.count()).select_from(PlanningSchool))
         return result.scalar()
 
-    async def query_planning_school_with_page(self, planning_school_name,school_id, page_request: PageRequest) -> Paging:
+    async def query_planning_school_with_page(self, planning_school_name,planning_school_id, page_request: PageRequest) -> Paging:
         query = select(PlanningSchool)
         if planning_school_name:
             query = query.where(PlanningSchool.planning_school_name == planning_school_name)
-        if school_id:
-            query = query.where(PlanningSchool.school_id == school_id)
+        if planning_school_id:
+            query = query.where(PlanningSchool.id == planning_school_id)
         paging = await self.query_page(query, page_request)
         return paging

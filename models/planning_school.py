@@ -1,4 +1,6 @@
-from sqlalchemy import String
+from datetime import datetime
+
+from sqlalchemy import String, DateTime
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -46,8 +48,10 @@ class PlanningSchool(BaseDBModel):
     junior_middle_planning_school_system: Mapped[str] = mapped_column(String(64), nullable=False, comment="初中学制")
     junior_middle_planning_school_entry_age: Mapped[str] = mapped_column(String(64), nullable=False, comment="初中入学年龄")
     senior_middle_planning_school_system: Mapped[str] = mapped_column(String(64), nullable=False, comment="高中学制")
-    created_uid: Mapped[str] = mapped_column(String(64), nullable=False, comment="创建人")
-    updated_uid: Mapped[str] = mapped_column(String(64), nullable=False, comment="操作人")
-    created_at: Mapped[str] = mapped_column(String(64), nullable=False, comment="创建时间")
-    updated_at: Mapped[str] = mapped_column(String(64), nullable=False, comment="更新时间")
-    deleted: Mapped[str] = mapped_column(String(64), nullable=False, comment="删除态")
+    created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)
+    updated_uid: Mapped[int] = mapped_column( nullable=True , comment="操作人",default=0)
+    # created_at: Mapped[str] = mapped_column(String(64), nullable=False, comment="创建时间")
+    # updated_at: Mapped[str] = mapped_column(String(64), nullable=False, comment="更新时间",)
+    deleted: Mapped[int] = mapped_column( nullable=True  , comment="删除态",default=0)
+    created_at = mapped_column(DateTime, default=datetime.now, nullable=False, comment="创建时间")
+    updated_at = mapped_column(DateTime, onupdate=datetime.now, default=datetime.now, nullable=False, comment="更新时间")
