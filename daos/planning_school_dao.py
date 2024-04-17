@@ -105,3 +105,19 @@ class PlanningSchoolDAO(DAOBase):
             query = query.where(PlanningSchool.planning_school_no == planning_school_no)
         paging = await self.query_page(query, page_request)
         return paging
+
+    async def update_planning_school_status(self, planning_school,status):
+        session = await self.master_db()
+        next_status= 1
+        if status == 1:
+            next_status= '正常'
+        else:
+            next_status= '已关闭'
+
+        update_stmt = update(PlanningSchool).where(PlanningSchool.id == planning_school.id).values(
+            status= next_status,
+        )
+        await session.execute(update_stmt)
+        # await session.delete(planning_school)
+        await session.commit()
+        return planning_school

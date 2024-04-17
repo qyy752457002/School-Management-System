@@ -143,3 +143,12 @@ class PlanningSchoolRule(object):
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, PlanningSchoolModel)
         return paging_result
+
+
+    async def update_planning_school_status(self, planning_school_id, status):
+        exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
+        if not exists_planning_school:
+            raise Exception(f"规划校{planning_school_id}不存在")
+        planning_school_db = await self.planning_school_dao.update_planning_school_status(exists_planning_school,status)
+        # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
+        return planning_school_db

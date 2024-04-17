@@ -53,7 +53,7 @@ class PlanningSchoolView(BaseView):
 
     # 删除
     async def delete(self, planning_school_id: int = Query(..., title="", description="学校id/园所id",
-                                                           example='SC2032633'), ):
+                                                           example='2203'), ):
         print(planning_school_id)
         res = await self.planning_school_rule.softdelete_planning_school(planning_school_id)
 
@@ -88,13 +88,17 @@ class PlanningSchoolView(BaseView):
     async def patch_open(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
                                                                min_length=1, max_length=20, example='SC2032633')):
         # print(planning_school)
-        return planning_school_id
+        res = await self.planning_school_rule.update_planning_school_status(planning_school_id,1)
+
+        return res
 
     # 关闭
     async def patch_close(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
                                                                 min_length=1, max_length=20, example='SC2032633')):
         # print(planning_school)
-        return planning_school_id
+        res = await self.planning_school_rule.update_planning_school_status(planning_school_id,2)
+
+        return res
 
     # 导入 todo 任务队列的
     async def importing(self, planning_school: PlanningSchool):
