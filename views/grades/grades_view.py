@@ -59,10 +59,11 @@ class GradesView(BaseView):
     async def query(self, grade_name: str = Query(..., description="年级名称", min_length=1, max_length=20)):
         from mini_framework.databases.conn_managers.db_manager import db_connection_manager
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(Grade))
+        result = await session.execute(select(Grade).where(Grade.grade_name == grade_name))
+        res= result.scalars().all()
 
         lst = []
-        for row in result:
+        for row in res:
             account = Grades(school_id=row.school_id,
                              grade_no=row.grade_no,
                              grade_name=row.grade_name,
