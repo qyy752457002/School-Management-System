@@ -1,4 +1,4 @@
-from sqlalchemy import select, func
+from sqlalchemy import select, func, update
 
 from mini_framework.databases.entities.dao_base import DAOBase
 from mini_framework.databases.queries.pages import Paging
@@ -19,7 +19,16 @@ class TeachersDao(DAOBase):
 
     async def update_teachers(self, teachers):
         session = await self.master_db()
-        session.add(teachers)
+        update_stmt = update(Teacher).where(Teacher.id == teachers.id).values(
+            teacher_name=teachers.teacher_name,
+            teacher_gender=teachers.teacher,
+            teacher_id_type=teachers.teacher_id_type,
+            teacher_id_number=teachers.teacher_id_number,
+            teacher_date_of_birth=teachers.teacher_date_of_birth,
+            teacher_employer=teachers.teacher_employer,
+            teacher_avatar=teachers.teacher_avatar,
+        )
+        await session.execute(update_stmt)
         await session.commit()
         return teachers
 

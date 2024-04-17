@@ -33,6 +33,7 @@ class Teacher(BaseDBModel):
     teacher_employer: Mapped[str] = mapped_column(String(64), nullable=False, comment="任职单位")
     teacher_avatar: Mapped[str] = mapped_column(String(64), nullable=True, comment="头像") #图像处理再定
     teacher_approval_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="审批状态",default="通过")#审批状态待定
+    deleted: Mapped[int] = mapped_column(nullable=True, comment="删除态", default=0)
 
 
 
