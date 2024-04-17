@@ -3,6 +3,7 @@ from mini_framework.web.views import BaseView
 
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo
 from views.models.planning_school_communications import PlanningSchoolCommunications
+from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
 from views.models.school import School
 # from fastapi import Field
 from fastapi import Query, Depends
@@ -15,6 +16,7 @@ from rules.planning_school_rule import PlanningSchoolRule
 from views.models.grades import Grades
 from rules.planning_school_communication_rule import PlanningSchoolCommunicationRule
 
+from rules.planning_school_eduinfo_rule import PlanningSchoolEduinfoRule
 
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
 class PlanningSchoolView(BaseView):
@@ -22,6 +24,8 @@ class PlanningSchoolView(BaseView):
         super().__init__()
         self.planning_school_rule = get_injector(PlanningSchoolRule)
         self.planning_school_communication_rule = get_injector(PlanningSchoolCommunicationRule)
+        self.planning_school_eduinfo_rule = get_injector(PlanningSchoolEduinfoRule)
+
 
     async def get(self, planning_school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1,
                                                         max_length=20, example='SC2032633'),
@@ -127,13 +131,13 @@ class PlanningSchoolView(BaseView):
 
     # 新增 教学信息
     async def post_eduinfo(self,
-                            planning_school: PlanningSchoolCommunications,
+                            planning_school: PlanningSchoolEduInfo,
                             # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
 
                             ):
         # print(planning_school)
 
-        res = await self.planning_school_communication_rule.add_planning_school_communication(planning_school)
+        res = await self.planning_school_eduinfo_rule.add_planning_school_eduinfo(planning_school)
 
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
 
