@@ -27,22 +27,42 @@ class PlanningSchoolDAO(DAOBase):
         await session.refresh(planning_school)
         return planning_school
 
-    async def update_planning_school(self, planning_school):
+    async def update_planning_school(self, planning_school,ctype=1):
         session = await self.master_db()
         # session.add(planning_school)
-        update_stmt = update(PlanningSchool).where(PlanningSchool.id == planning_school.id).values(
-            planning_school_no=planning_school.planning_school_no,
-            planning_school_name=planning_school.planning_school_name,
-            block=planning_school.block,
-            borough=planning_school.borough,
-            planning_school_type=planning_school.planning_school_type,
-            planning_school_operation_type=planning_school.planning_school_operation_type,
-            planning_school_operation_type_lv2=planning_school.planning_school_operation_type_lv2,
-            planning_school_operation_type_lv3=planning_school.planning_school_operation_type_lv3,
-            planning_school_org_type=planning_school.planning_school_org_type,
-            planning_school_level=planning_school.planning_school_level,
+        if ctype == 1:
+            update_stmt = update(PlanningSchool).where(PlanningSchool.id == planning_school.id).values(
+                planning_school_no=planning_school.planning_school_no,
+                planning_school_name=planning_school.planning_school_name,
+                block=planning_school.block,
+                borough=planning_school.borough,
+                planning_school_type=planning_school.planning_school_type,
+                planning_school_operation_type=planning_school.planning_school_operation_type,
+                planning_school_operation_type_lv2=planning_school.planning_school_operation_type_lv2,
+                planning_school_operation_type_lv3=planning_school.planning_school_operation_type_lv3,
+                planning_school_org_type=planning_school.planning_school_org_type,
+                planning_school_level=planning_school.planning_school_level,
 
-        )
+            )
+        else:
+            update_stmt = update(PlanningSchool).where(PlanningSchool.id == planning_school.id).values(
+                planning_school_name=planning_school.planning_school_name,
+                planning_school_short_name=planning_school.planning_school_short_name,
+                planning_school_code=planning_school.planning_school_code,
+                create_planning_school_date=planning_school.create_planning_school_date,
+                founder_type=planning_school.founder_type,
+                founder_name=planning_school.founder_name,
+                urban_rural_nature=planning_school.urban_rural_nature,
+                planning_school_operation_type=planning_school.planning_school_operation_type,
+                planning_school_org_form=planning_school.planning_school_org_form,
+                planning_school_operation_type_lv2=planning_school.planning_school_operation_type_lv2,
+                planning_school_operation_type_lv3=planning_school.planning_school_operation_type_lv3,
+                department_unit_number=planning_school.department_unit_number,
+                sy_zones=planning_school.sy_zones,
+                historical_evolution=planning_school.historical_evolution,
+            )
+
+
         await session.execute(update_stmt)
         await session.commit()
         return planning_school

@@ -62,7 +62,7 @@ class PlanningSchoolView(BaseView):
     # 修改 变更 基本信息
     async def patch_baseinfo(self, planning_school_baseinfo: PlanningSchoolBaseInfo, ):
         # print(planning_school_baseinfo,type( planning_school_baseinfo))
-        res = await self.planning_school_rule.update_planning_school(planning_school_baseinfo, 'baseinfo')
+        res = await self.planning_school_rule.update_planning_school(planning_school_baseinfo,2)
 
         return res
 
