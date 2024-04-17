@@ -1,11 +1,15 @@
-from mini_framework.web.views import BaseView
-
-from views.models.teachers import Teachers, NewTeacher, TeacherInfo
-# from fastapi import Field
+from views.models.teachers import  NewTeacher, TeacherInfo
 from fastapi import Query, Depends
-from pydantic import BaseModel, Field
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
+
+from sqlalchemy import select
+from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
+from mini_framework.web.views import BaseView
+from models.teachers import Teacher
+from rules.teachers_rule import TeachersRule
+from views.models.teachers import Teachers
 
 
 class TeachersView(BaseView):
