@@ -58,7 +58,7 @@ class SchoolView(BaseView):
         return res
         # return  school_id
     # 修改 变更 基本信息
-    async def patch_baseinfo(self, school_baseinfo:SchoolBaseInfo, school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),   ):
+    async def patch_baseinfo(self, school_baseinfo:SchoolBaseInfo ):
         # print(school)
         res = await self.school_rule.update_school(school_baseinfo,2)
 

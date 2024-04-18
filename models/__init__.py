@@ -5,5 +5,7 @@ from . import planning_school_communication
 from . import planning_school_eduinfo
 from . import institution
 from . import school
+from . import school_eduinfo
+from . import school_communication
 
 metadata = BaseDBModel.metadata
