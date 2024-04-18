@@ -1,12 +1,13 @@
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
-from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo
+from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
+    PlanningSchoolStatus
 from views.models.planning_school_communications import PlanningSchoolCommunications
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
 from views.models.school import School
 # from fastapi import Field
-from fastapi import Query, Depends
+from fastapi import Query, Depends, Body
 from pydantic import BaseModel, Field
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
@@ -81,6 +82,8 @@ class PlanningSchoolView(BaseView):
                                                    max_length=20, example='SC2032633'),
                    planning_school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
                                                      example='XX小学'),
+                   status: PlanningSchoolStatus = Query(None, title="状态", description="状态")
+
                    ):
         print(page_request)
         items = []

@@ -30,7 +30,7 @@ class MajorDAO(DAOBase):
 		result = await session.execute(select(Major).where(Major.id == id))
 		return result.scalar_one_or_none()
 
-	async def query_major_with_page(self, **kwargs, page_request: PageRequest):
+	async def query_major_with_page(self,page_request: PageRequest, **kwargs, ):
 		query = select(Major)
 		for key, value in kwargs.items():
 		   query = query.where(getattr(Major, key) == value)

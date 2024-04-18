@@ -1,5 +1,22 @@
+from enum import Enum
+
 from fastapi import Query
 from pydantic import BaseModel, Field
+
+
+
+class PlanningSchoolStatus(str, Enum):
+    """
+    状态
+    """
+    DRAFT = "草稿"
+    OPENING = "开设中"
+    NORMAL = "正常"
+    CLOSED = "已关闭"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.DRAFT, cls.OPENING, cls.NORMAL, cls.CLOSED]
 
 
 class PlanningSchool(BaseModel):
