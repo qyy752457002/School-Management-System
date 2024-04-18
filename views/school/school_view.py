@@ -73,8 +73,9 @@ class SchoolView(BaseView):
         # return  res
 
     async def post(self,school:School):
-        print(school)
         res = await self.school_rule.add_school(school)
+        print(res)
+
 
         return res
         # return  school

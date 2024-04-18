@@ -72,7 +72,7 @@ class SchoolRule(object):
         # school_db.updated_at = school.updated_at
 
         school_db = await self.school_dao.add_school(school_db)
-        school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""])
+        school = orm_model_to_view_model(school_db, SchoolModel, exclude=["created_at",'updated_at'])
         return school
 
     async def update_school(self, school,ctype=1):
