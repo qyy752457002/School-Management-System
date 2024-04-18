@@ -5,18 +5,10 @@
         "version":"0.0.1"
     },
     "databases": {
-        "default": {
-            "async_driver": "kingbase+asyncpg",
-            "sync_driver":"kingbase",
-            "master": {
-                "host": "10.0.0.42",
-                "port": 54321,
-                "user": "lfun",
-                "password": "J16s10Wp08yfEskmVAJH",
-                "database": "yuanhong"
-            },
-            "slaves": [
-                {
+            "default": {
+                "async_driver": "kingbase+asyncpg",
+                "sync_driver":"kingbase",
+                "master": {
                     "host": "10.0.0.42",
                     "port": 54321,
                     "user": "schooloms",
@@ -41,5 +33,4 @@
                 ]
             }
         }
-    }
 }
