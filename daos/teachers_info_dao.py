@@ -83,15 +83,16 @@ class TeachersInfoDao(DAOBase):
         return result.scalar_one_or_none()
 
     # 尝试联合多表分页查询
-    async def query_teacher_with_page(self, page_request: PageRequest, **kwargs) -> Paging:
+    async def query_teacher_with_page(self, page_request: PageRequest, condition) -> Paging:
         query = select(Teacher.teacher_name, Teacher.teacher_id_number, Teacher.teacher_gender,
                        Teacher.teacher_employer, Teacher.teacher_approval_status, TeacherInfo.highest_education,
                        TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
                        TeacherInfo.enter_school_time).select_from(
             Teacher.join(TeacherInfo, Teacher.id == TeacherInfo.teacher_number)
         )
+        properties = vars(condition)
         conditions = []
-        for key, value in kwargs.items():
+        for key, value in properties.items():
             if hasattr(Teacher, key):
                 conditions.append(getattr(Teacher, key) == value)
             if hasattr(TeacherInfo, key):
