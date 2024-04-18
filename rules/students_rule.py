@@ -50,3 +50,18 @@ class StudentsRule(object):
             raise Exception(f"编号为{students_id}学生不存在")
         students_db = await self.students_dao.delete_students(exists_students)
         return students_db
+
+    async def get_all_students(self):
+        """
+        获取所有学生信息
+        """
+        students_db = await self.students_dao.get_all_students()
+        students = orm_model_to_view_model(students_db, StudentsKeyinfoModel, exclude=[""])
+        return students
+
+    async def get_student_count(self):
+        """
+        获取学生总数
+        """
+        return await self.students_dao.get_student_count()
+

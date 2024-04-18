@@ -40,3 +40,13 @@ class StudentsFamilyInfoDao(DAOBase):
         session = self.master_db()
         return await self.delete(session, students)
 
+    async def get_all_students_family_info(self):
+        session = await self.slave_db()
+        result = await session.execute(select(StudentFamilyInfo))
+        return result.scalars().all()
+
+    async def get_student_family_info_count(self):
+        session = await self.slave_db()
+        result = await session.execute(select(func.count()).select_from(StudentFamilyInfo))
+        return result.scalar()
+

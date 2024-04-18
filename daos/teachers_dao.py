@@ -55,4 +55,17 @@ class TeachersDao(DAOBase):
         session = self.master_db()
         return await self.delete(session, teachers)
 
+    #获取所有教师信息
+    async def get_all_teachers(self):
+        session = await self.slave_db()
+        result = await session.execute(select(Teacher))
+        return result.scalars().all()
+
+    #获取教师数量
+    async def get_teachers_count(self):
+        session = await self.slave_db()
+        result = await session.execute(select(func.count()).select_from(Teacher))
+        return result.scalar()
+
+
 

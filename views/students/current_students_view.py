@@ -13,6 +13,8 @@ from rules.students_base_info_rule import StudentsBaseInfoRule
 from mini_framework.design_patterns.depend_inject import get_injector
 from rules.students_base_info_rule import StudentsBaseInfoRule
 from rules.students_rule import StudentsRule
+from rules.student_session_rule import StudentSessionRule
+from views.models.students import StudentSession
 
 
 class CurrentStudentsView(BaseView):
@@ -21,6 +23,29 @@ class CurrentStudentsView(BaseView):
         self.students_rule = get_injector(StudentsRule)
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
         self.students_rule = get_injector(StudentsRule)
+        self.student_session_rule = get_injector(StudentSessionRule)
+
+    async def get_student_session(self,sessions_id: str = Query(None, title="届别编号", description="届别编号",
+                                                                   example="2023届")):
+        """
+        在校生 查询届别信息
+        """
+        res = await self.student_session_rule.get_student_session_by_id(sessions_id)
+        return res
+
+    async def post_student_session(self,student_session: StudentSession):
+        """
+        在校生 新增届别信息
+        """
+        res = await self.student_session_rule.add_student_session(student_session)
+        return res
+
+    async def patch_student_session(self,student_session: StudentSession):
+        """
+        在校生 编辑届别信息
+        """
+        res = await self.student_session_rule.add_student_session(student_session)
+        return res
 
     # 在校生转入  todo 届别 班级
     async def patch_transferin(self, student_edu_info: StudentEduInfo):

@@ -18,8 +18,11 @@ class TeachersView(BaseView):
         self.teacher_rule = get_injector(TeachersRule)
         self.teacher_info_rule = get_injector(TeachersInfoRule)
 
-    async def get_teacher(self, id: str = Query(None, title="教师编号", description="教师编号", min_length=1)):
-        res = await self.teacher_rule.get_teachers_by_id(id)
+    async def get_teacher(self, teacher_id: int = Query(..., title="教师编号", description="教师编号", min_length=1)):
+        """
+        获取单个教职工信息
+        """
+        res = await self.teacher_rule.get_teachers_by_id(teacher_id)
         return res
 
     # 编辑新教职工登记信息
@@ -30,7 +33,7 @@ class TeachersView(BaseView):
 
     async def page(self, condition: NewTeacher = Depends(NewTeacher), page_request=Depends(PageRequest)):
         """
-        新生分页查询
+        老师分页查询
         """
         paging_result = await self.teacher_info_rule.query_teacher_with_page(page_request, condition)
         return paging_result
@@ -38,9 +41,9 @@ class TeachersView(BaseView):
     # 在职教职工信息
     # 获取教职工基本信息
     async def get_teacherinfo(self,
-                              teacher_id: str = Query(None, title="教师名称", description="教师名称", min_length=1,
+                              teacher_id: int = Query(..., title="教师名称", description="教师名称", min_length=1,
                                                       max_length=20,
-                                                      example='张三')):
+                                                      example=123)):
         res = await self.teacher_info_rule.get_teachers_info_by_id(teacher_id)
         return res
 
@@ -52,8 +55,11 @@ class TeachersView(BaseView):
 
     # 删除教职工基本信息
     async def delete_teacherinfo(self,
-                                 teacher_id: str = Query(None, title="教师名称", description="教师名称", min_length=1,
+                                 teacher_id: int = Query(..., title="教师名称", description="教师名称", min_length=1,
                                                          max_length=20,
-                                                         example='张三')):
+                                                         example=123)):
         res = await self.teacher_info_rule.soft_delete_teachers_info(teacher_id)
         return res
+
+
+

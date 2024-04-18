@@ -48,3 +48,20 @@ class StudentsFamilyInfoRule(object):
             raise Exception(f"编号为{students_id}学生不存在")
         students_family_info_db = await self.students_family_info_dao.delete_students_family_info(exists_students_family_info)
         return students_family_info_db
+
+    async def get_all_students_family_info(self):
+        """
+        获取所有学生家庭信息
+        """
+        students_family_info_db = await self.students_family_info_dao.get_all_students_family_info()
+        students_family_info = orm_model_to_view_model(students_family_info_db, StudentsFamilyInfoModel, exclude=[""])
+        return students_family_info
+
+    async def get_student_family_info_count(self):
+        """
+        获取学生家庭信息总数
+        """
+        students_family_info_count = await self.students_family_info_dao.get_student_family_info_count()
+        return students_family_info_count
+
+

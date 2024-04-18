@@ -109,3 +109,15 @@ class TeachersInfoDao(DAOBase):
             query = query.where(*conditions)
         paging = await self.query_page(query, page_request)
         return paging
+
+    # 获取所有教师基本信息
+    async def get_all_teachers_info(self):
+        session = await self.slave_db()
+        result = await session.execute(select(TeacherInfo))
+        return result.scalars().all()
+
+    # 获取教师基本信息总数
+    async def get_teachers_info_count(self):
+        session = await self.slave_db()
+        result = await session.execute(select(func.count()).select_from(TeacherInfo))
+        return result.scalar()

@@ -19,18 +19,6 @@ class NewStudents(BaseModel):
     id_type: str = Field(None, title="证件类别", description="证件类别")
     id_number: str = Field(None, title="证件号码", description="证件号码")
 
-    class Config:
-        schema_extra = {
-            "example": {
-                "student_name": "John Doe",
-                "enrollment_number": "20220001",
-                "birthday": "2000-01-01 00:00:00",
-                "gender": "Male",
-                "id_type": "ID Card",
-                "id_number": "12345678",
-            }
-        }
-
 
 class NewStudentsQuery(BaseModel):
     """
@@ -54,21 +42,6 @@ class NewStudentsQuery(BaseModel):
     county: str = Field(..., title="区县", description="区县")
     status: str = Field(..., title="状态", description="状态")
 
-    class Config:
-        schema_extra = {
-            "example": {
-                "student_name": "John Doe",
-                "enrollment_number": "20220001",
-                "gender": "Male",
-                "id_type": "ID Card",
-                "id_number": "12345678",
-                "school": "清华",
-                "enrollment_date": "2000-01-01 00:00:00",
-                "county": "朝阳区",
-                "status": "流出",
-            }
-        }
-
 
 class StudentsKeyinfo(BaseModel):
     """
@@ -89,8 +62,6 @@ class StudentsKeyinfo(BaseModel):
     id_type: str = Field(..., title="证件类别", description="证件类别")
     id_number: str = Field(..., title="证件号码", description="证件号码")
     photo: str = Field(..., title="照片", description="照片")
-
-
 
 
 class StudentsBaseInfo(BaseModel):
@@ -208,27 +179,6 @@ class StudentsFamilyInfo(BaseModel):
     workplace: str = Field(..., title="工作单位", description="工作单位")
     family_member_occupation: str = Field(..., title="家庭成员职业", description="家庭成员职业")
 
-    # class Config:
-    #     schema_extra = {
-    #         "example": {
-    #             "name": "John Doe",
-    #             "gender": "Male",
-    #             "relationship": "Parent",
-    #             "is_guardian": "True",
-    #             "identification_type": "ID Card",
-    #             "identification_number": "1234567890",
-    #             "birthday": "2000-01-01 00:00:00",
-    #             "phone_number": "12345678901",
-    #             "ethnicity": "Han",
-    #             "health_status": "Good",
-    #             "nationality": "China",
-    #             "political_status": "Party Member",
-    #             "contact_address": "123 Main Street, Beijing",
-    #             "workplace": "ABC Company",
-    #             "family_member_occupation": "Teacher",
-    #         }
-    #     }
-
 class StudentEduInfo(BaseModel):
     student_id: str = Query(...,   description="学生id",min_length=1,max_length=20,examples=["1234567890"]),
     province_id: str = Query(...,   description="省份",min_length=1,max_length=20,examples=["1234567890"]),
@@ -270,3 +220,4 @@ class StudentSession(BaseModel):
     session_id: str = Query(...,   description="届别id",min_length=1,max_length=20,examples=["1234567890"]),
     session_name: str = Query(...,   description="届别名称",min_length=1,max_length=20,examples=["2020级"]),
     session_alias: str = Query(...,   description="届别别名",min_length=1,max_length=20,examples=["2020届别"]),
+    session_status: str = Query(...,   description="届别状态",min_length=1,max_length=20,examples=["开"])

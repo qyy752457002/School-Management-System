@@ -60,3 +60,18 @@ class StudentsBaseInfoRule(object):
         paging = await self.students_base_info_dao.query_students_with_page(page_request, condition)
         paging_result = PaginatedResponse.from_paging(paging, StudentsKeyinfoModel)
         return paging_result
+
+    async def get_all_students_base_info(self):
+        """
+        获取所有学生信息
+        """
+        students_base_info_db = await self.students_base_info_dao.get_all_students_base_info()
+        students_base_info = orm_model_to_view_model(students_base_info_db, StudentsKeyinfoModel, exclude=[""])
+        return students_base_info
+
+    async def get_students_base_info_count(self):
+        """
+        获取学生信息数量
+        """
+        count = await self.students_base_info_dao.get_student_base_info_count()
+        return count

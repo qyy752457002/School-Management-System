@@ -58,3 +58,13 @@ class StudentsBaseInfoDao(DAOBase):
             query = query.where(*conditions)
         paging = await self.query_page(query, page_request)
         return paging
+
+    async def get_all_students_base_info(self):
+        session = await self.slave_db()
+        result = await session.execute(select(StudentBaseInfo))
+        return result.scalars().all()
+
+    async def get_student_base_info_count(self):
+        session = await self.slave_db()
+        result = await session.execute(select(func.count()).select_from(StudentBaseInfo))
+        return result.scalar()

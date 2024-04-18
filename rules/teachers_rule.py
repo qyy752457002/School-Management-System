@@ -39,7 +39,7 @@ class TeachersRule(object):
         return teachers
 
     async def update_teachers(self, teachers):
-        exists_teachers = await self.teachers_dao.get_teachers_by_id(teachers.id)
+        exists_teachers = await self.teachers_dao.get_teachers_by_id(teachers.teacher_id)
         if not exists_teachers:
             raise Exception(f"编号为{teachers.id}教师不存在")
         need_update_list = []
