@@ -11,6 +11,8 @@ from mini_framework.web.std_models.page import PaginatedResponse
 from rules.campus_rule import CampusRule
 from views.models.campus_communications import CampusCommunications
 from rules.campus_communication_rule import CampusCommunicationRule
+from views.models.campus_eduinfo import CampusEduInfo
+from rules.campus_eduinfo_rule import CampusEduinfoRule
 
 
 class CampusView(BaseView):
@@ -18,6 +20,8 @@ class CampusView(BaseView):
         super().__init__()
         self.campus_rule = get_injector( CampusRule)
         self.campus_communication_rule = get_injector( CampusCommunicationRule)
+        self.campus_eduinfo_rule = get_injector( CampusEduinfoRule)
+
 
 
 
@@ -102,6 +106,18 @@ class CampusView(BaseView):
                             ):
 
         res = await self.campus_communication_rule.add_campus_communication(campus)
+
+        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+
+        return res
+
+    # 新增 教学信息
+    async def post_eduinfo(self,
+                           school: CampusEduInfo,
+
+                           ):
+
+        res = await self.campus_eduinfo_rule.add_campus_eduinfo(school)
 
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
 
