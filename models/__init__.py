@@ -13,5 +13,6 @@ from . import campus_communication
 
 from . import campus_eduinfo
 
+from . import classes
 
 metadata = BaseDBModel.metadata

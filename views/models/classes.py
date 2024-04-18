@@ -1,9 +1,18 @@
+from fastapi import Query
 from pydantic import BaseModel, Field
 
 class Classes(BaseModel):
-    school_id: str = Field(..., title="学校ID", description="学校ID",examples=[''])
+    """
+    班级表
+
+    is_att_class: Mapped[str] = mapped_column(String(24), nullable=False, comment="是否附设班")
+    att_class_type: Mapped[str] = mapped_column(String(24), nullable=False, comment="附设班类型")
+    """
+    id:int= Query(None, title="", description="id", example='1'),
+
+    school_id: int = Field(None, title="学校ID", description="学校ID",examples=['1'])
     grade_no: str = Field(..., title="年级编号", description="年级编号",examples=['一年级'])
-    grade_id: str = Field(..., title="年级ID", description="年级ID",examples=['一年级'])
+    grade_id: int = Field(..., title="年级ID", description="年级ID",examples=['2'])
 
     class_name: str = Field(..., title="Grade_name",description="班级名称",examples=['一年级'])
     class_number: str = Field(...,  description="班号",examples=['一年级'])
@@ -18,4 +27,8 @@ class Classes(BaseModel):
     major_for_vocational: str = Field(None,  description="中职班级专业",examples=['fsdfdsfsdxxx'])
     bilingual_teaching_mode: str = Field(None,  description="双语教学模式",examples=['fsdfdsfsdxxx'])
     ethnic_language: str = Field(None,  description="少数民族语言",examples=['fsdfdsfsdxxx'])
+    is_att_class: str = Field(None,  description="是否附设班",examples=['是否附设班'])
+    att_class_type: str = Field(None,  description="附设班类型",examples=['附设班类型'])
+
+
 
