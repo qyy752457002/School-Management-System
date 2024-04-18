@@ -9,6 +9,7 @@ from . import school_eduinfo
 from . import school_communication
 from . import campus
 
+from . import campus_communication
 
 
 

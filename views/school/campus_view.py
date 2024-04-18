@@ -9,13 +9,18 @@ from pydantic import BaseModel, Field
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
 from rules.campus_rule import CampusRule
-
+from views.models.campus_communications import CampusCommunications
+from rules.campus_communication_rule import CampusCommunicationRule
 
 
 class CampusView(BaseView):
     def __init__(self):
         super().__init__()
         self.campus_rule = get_injector( CampusRule)
+        self.campus_communication_rule = get_injector( CampusCommunicationRule)
+
+
+
     async def get(self,
                   campus_id: int = Query(..., description="校区id", example='1'),
 
@@ -90,3 +95,14 @@ class CampusView(BaseView):
     # async def get_extinfo(self):
     #     #
     #     return [ ]
+    # 新增 通信信息
+    async def post_comminfo(self,
+                            campus: CampusCommunications,
+
+                            ):
+
+        res = await self.campus_communication_rule.add_campus_communication(campus)
+
+        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+
+        return res
