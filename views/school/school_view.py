@@ -1,7 +1,9 @@
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
-# from views.models.school import PlanningSchoolBaseInfo
+from views.models.school_communications import SchoolCommunications
+from views.models.school_eduinfo import SchoolEduInfo
+# from views.models.school import SchoolBaseInfo
 from views.models.school import School, SchoolBaseInfo,SchoolKeyInfo
 # from fastapi import Field
 
@@ -11,14 +13,17 @@ from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
 
 
-# from rules.school_eduinfo_rule import PlanningSchoolEduinfoRule
+from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 
+from rules.school_communication_rule import SchoolCommunicationRule
 
 class SchoolView(BaseView):
     def __init__(self):
         super().__init__()
         self.school_rule = get_injector(SchoolRule)
+        self.school_eduinfo_rule = get_injector(SchoolEduinfoRule)
+        self.school_communication_rule = get_injector(SchoolCommunicationRule)
     async def get(self,school_no:str= Query(None, title="学校编号", description="学校编号",min_length=1,max_length=20,example=''),
                   school_name:str= Query(None, description="学校名称" ,min_length=1,max_length=20,example=''),
                   school_id: int = Query(..., description="学校id|根据学校查规划校", example='1'),
@@ -115,25 +120,25 @@ class SchoolView(BaseView):
     #     #
     #     return [ ]
     # 新增 通信信息
-    # async def post_comminfo(self,
-    #                         school: PlanningSchoolCommunications,
-    #
-    #                         ):
-    #
-    #     res = await self.school_communication_rule.add_school_communication(school)
-    #
-    #     # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-    #
-    #     return res
-    #
-    # # 新增 教学信息
-    # async def post_eduinfo(self,
-    #                        school: PlanningSchoolEduInfo,
-    #
-    #                        ):
-    #
-    #     res = await self.school_eduinfo_rule.add_school_eduinfo(school)
-    #
-    #     # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-    #
-    #     return res
+    async def post_comminfo(self,
+                            school: SchoolCommunications,
+
+                            ):
+
+        res = await self.school_communication_rule.add_school_communication(school)
+
+        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+
+        return res
+
+    # 新增 教学信息
+    async def post_eduinfo(self,
+                           school: SchoolEduInfo,
+
+                           ):
+
+        res = await self.school_eduinfo_rule.add_school_eduinfo(school)
+
+        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+
+        return res

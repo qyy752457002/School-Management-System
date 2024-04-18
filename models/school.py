@@ -14,6 +14,8 @@ class School(BaseDBModel):
     __table_args__ = {'comment': '学校'}
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True,)
+    planning_school_id: Mapped[int] = mapped_column( nullable=True  , comment="规划校id",default=0)
+
     school_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="学校名称")
     school_no: Mapped[str] = mapped_column(String(30), nullable=False, comment="学校编号")
     school_code: Mapped[str] = mapped_column(String(30), nullable=False, comment="学校标识码")

@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 
 class School(BaseModel):
     id:int= Query(None, title="", description="学校id", example='1'),
+    planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
 
     school_name: str = Field(..., title="学校名称", description="学校名称",examples=['XX小学'])
     school_no: str = Field(..., title="学校编号", description="学校编号",examples=['SC2032633'])
