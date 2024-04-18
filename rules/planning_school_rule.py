@@ -3,6 +3,8 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+
+from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from daos.planning_school_dao import PlanningSchoolDAO
 from models.planning_school import PlanningSchool
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel
@@ -16,6 +18,8 @@ class PlanningSchoolRule(object):
 
     async def get_planning_school_by_id(self, planning_school_id):
         planning_school_db = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
+        if not planning_school_db:
+            raise PlanningSchoolNotFoundError()
         # 可选 , exclude=[""]
         planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel)
         return planning_school
@@ -78,7 +82,7 @@ class PlanningSchoolRule(object):
     async def update_planning_school(self, planning_school,ctype=1):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school.id)
         if not exists_planning_school:
-            raise Exception(f"规划校{planning_school.id}不存在")
+            raise PlanningSchoolNotFoundError()
         if ctype==1:
             planning_school_db = PlanningSchool()
             planning_school_db.id = planning_school.id
@@ -119,7 +123,7 @@ class PlanningSchoolRule(object):
     async def delete_planning_school(self, planning_school_id):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
         if not exists_planning_school:
-            raise Exception(f"规划校{planning_school_id}不存在")
+            raise PlanningSchoolNotFoundError()
         planning_school_db = await self.planning_school_dao.delete_planning_school(exists_planning_school)
         planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
         return planning_school
@@ -127,7 +131,7 @@ class PlanningSchoolRule(object):
     async def softdelete_planning_school(self, planning_school_id):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
         if not exists_planning_school:
-            raise Exception(f"规划校{planning_school_id}不存在")
+            raise PlanningSchoolNotFoundError()
         planning_school_db = await self.planning_school_dao.softdelete_planning_school(exists_planning_school)
         # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
         return planning_school_db
@@ -150,7 +154,7 @@ class PlanningSchoolRule(object):
     async def update_planning_school_status(self, planning_school_id, status):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
         if not exists_planning_school:
-            raise Exception(f"规划校{planning_school_id}不存在")
+            raise PlanningSchoolNotFoundError()
         planning_school_db = await self.planning_school_dao.update_planning_school_status(exists_planning_school,status)
         # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
         return planning_school_db
