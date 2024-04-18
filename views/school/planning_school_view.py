@@ -1,3 +1,5 @@
+from typing import List
+
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
@@ -40,6 +42,11 @@ class PlanningSchoolView(BaseView):
 
     #  新增的实际结果  ID赋值
     async def post(self, planning_school: PlanningSchool):
+        print(planning_school)
+        res = await self.planning_school_rule.add_planning_school(planning_school)
+
+        return res
+    async def post_by_keyinfo(self, planning_school: PlanningSchoolKeyInfo):
         print(planning_school)
         res = await self.planning_school_rule.add_planning_school(planning_school)
 
@@ -104,7 +111,11 @@ class PlanningSchoolView(BaseView):
 
     # 关闭
     async def patch_close(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
-                                                                min_length=1, max_length=20, example='SC2032633')):
+                                                                min_length=1, max_length=20, example='SC2032633'),
+                          action_reason   :str= Query(None, description="原因" ,min_length=1,max_length=20,example='家庭搬迁'),
+                          related_license_upload   :List[str]= Query(None, description="相关证照上传" ,min_length=1,max_length=60,example=''),
+
+                          ):
         # print(planning_school)
         res = await self.planning_school_rule.update_planning_school_status(planning_school_id,2)
 
