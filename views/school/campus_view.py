@@ -39,13 +39,14 @@ class CampusView(BaseView):
 
         return  res
     # 删除
-    async def delete(self, campus_id:str= Query(..., title="校区编号", description="校区id/园所id",min_length=1,max_length=20,example='SC2032633'),):
+    async def delete(self, campus_id:str= Query(..., title="校区编号", description="校区id/园所id",min_length=1,max_length=20,example='1'),):
         print(campus_id)
         res = await self.campus_rule.softdelete_campus(campus_id)
 
-        return  campus_id
+        return  res
     # 修改 变更 基本信息
-    async def patch_baseinfo(self, campus_baseinfo:CampusBaseInfo, campus_id:str= Query(..., title="校区编号", description="校区id/园所id",min_length=1,max_length=20,example='SC2032633'),   ):
+    async def patch_baseinfo(self, campus_baseinfo:CampusBaseInfo
+                               ):
         # print(campus)
         res = await self.campus_rule.update_campus(campus_baseinfo,2)
         return   res
@@ -68,14 +69,14 @@ class CampusView(BaseView):
 
 
     # 开办
-    async def patch_open(self,campus_id:str= Query(..., title="校区编号", description="校区id/园所id",min_length=1,max_length=20,example='SC2032633')):
+    async def patch_open(self,campus_id:str= Query(..., title="校区编号", description="校区id/园所id",min_length=1,max_length=20,example='1')):
         # print(campus)
         res = await self.campus_rule.update_campus_status(campus_id , 1)
 
         return  res
 
     # 关闭
-    async def patch_close(self,campus_id:str= Query(..., title="校区编号", description="校区id/园所id",min_length=1,max_length=20,example='SC2032633')):
+    async def patch_close(self,campus_id:str= Query(..., title="校区编号", description="校区id/园所id",min_length=1,max_length=20,example='1')):
         # print(campus)
         res = await self.campus_rule.update_campus_status(campus_id , 2)
 

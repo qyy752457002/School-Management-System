@@ -50,6 +50,9 @@ campus_leader_position
     historical_evolution: Mapped[str] = mapped_column(String(300), nullable=False, comment="历史沿革")
     campus_leader_name: Mapped[str] = mapped_column(String(20), nullable=False, comment="校区负责人姓名")
     campus_leader_position: Mapped[str] = mapped_column(String(20), nullable=False, comment="校区负责人职位")
+    location_city: Mapped[str] = mapped_column(String(32), nullable=False, comment="校区所在地(省市)")
+    location_district: Mapped[str] = mapped_column(String(32), nullable=False, comment="校区所在地(区县)")
+
 
     sy_zones_pro: Mapped[str] = mapped_column(String(64), nullable=False, comment="属地管理教育行政部门所在地（省级）")
     primary_campus_system: Mapped[str] = mapped_column(String(20), nullable=False, comment="小学学制")
