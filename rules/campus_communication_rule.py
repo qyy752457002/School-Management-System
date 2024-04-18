@@ -5,7 +5,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.campus_communication_dao import CampusCommunicationDAO
 from models.campus_communication import CampusCommunication
-from views.models.campus import Campus  as CampusCommunicationModel
+from views.models.campus_communications import CampusCommunications  as CampusCommunicationModel
 
 
 
@@ -25,7 +25,6 @@ class CampusCommunicationRule(object):
         if exists_campus:
             raise Exception(f"校区通信信息{campus.campus_communication_name}已存在")
         campus_communication_db = view_model_to_orm_model(campus, CampusCommunication,    exclude=["id"])
-
 
         campus_communication_db = await self.campus_communication_dao.add_campus_communication(campus_communication_db)
         campus = orm_model_to_view_model(campus_communication_db, CampusCommunicationModel, exclude=["created_at",'updated_at'])
