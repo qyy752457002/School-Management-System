@@ -4,6 +4,19 @@ import fire
 from mini_framework.context import env
 
 
+def generate_dao():
+    env.sync_type = "sync"
+    env.app_root = os.path.dirname(os.path.abspath(__file__))
+    model_list = [
+
+    ]
+    dao_files_path = os.path.join(env.app_root, "daos_test")
+    # 增加当前目录到sys.path
+    from mini_framework.databases.toolkit.dao_generator import generate_dao_files
+    generate_dao_files(model_list, dao_files_path)
+    print("Generate DAO files successfully!")
+
+
 def generate_db():
     env.sync_type = "sync"
     env.app_root = os.path.dirname(os.path.abspath(__file__))
@@ -30,6 +43,8 @@ def main(service="web"):
         web()
     elif service == "db-init":
         generate_db()
+    elif service == "dao-gen":
+        generate_dao()
     else:
         raise ValueError(f"Unknown service: {service}")
 
