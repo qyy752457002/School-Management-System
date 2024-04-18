@@ -95,7 +95,7 @@ class SchoolRule(object):
             if value:
                 need_update_list.append(key)
 
-        school_db = await self.school_dao.update_school(school, *need_update_list)
+        school_db = await self.school_dao.update_school_byargs(school, *need_update_list)
 
         # 更新不用转换   因为得到的对象不熟全属性
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""])

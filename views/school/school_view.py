@@ -48,7 +48,7 @@ class SchoolView(BaseView):
 
                   ):
         # print(school)
-        res = await self.school_rule.update_school(school)
+        res = await self.school_rule.update_school_byargs(school)
 
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
 

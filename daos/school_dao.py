@@ -28,7 +28,7 @@ class SchoolDAO(DAOBase):
         return school
 
     async def update_school_byargs(self, school: School, *args, is_commit: bool = True):
-        session = self.master_db()
+        session =await self.master_db()
         update_contents = get_update_contents(school, *args)
         query = update(School).where(School.id == school.id).values(**update_contents)
         return await self.update(session, query, school, update_contents, is_commit=is_commit)
