@@ -29,7 +29,7 @@ class Institutions(BaseModel):
     location_economic_attribute: str = Field(...,   description=" 所在地经济属性",examples=['镇'])
     leg_repr_certificatenumber: str = Field(...,   description=" 法人证书号",examples=['DF1256565656'])
     is_entity: str = Field(...,   description=" 是否实体",examples=['是'])
-    website_uRL: str = Field(...,   description=" 网址",examples=['WWW.BDIUFD.COM'])
+    website_url: str = Field(...,   description=" 网址",examples=['WWW.BDIUFD.COM'])
     status: str = Field(...,   description=" 状态",examples=[''])
     membership_no: str = Field(...,   description=" 隶属单位号",examples=['DFF1565165656'])
     membership_category: str = Field(...,   description=" 隶属单位类型",examples=['行政'])
