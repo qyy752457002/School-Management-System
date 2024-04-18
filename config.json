@@ -11,26 +11,27 @@
             "master": {
                 "host": "10.0.0.42",
                 "port": 54321,
-                "user": "lfun",
+                "user": "schooloms",
                 "password": "J16s10Wp08yfEskmVAJH",
-                "database": "yuanhong"
+                "database": "schooloms"
             },
             "slaves": [
                 {
                     "host": "10.0.0.42",
                     "port": 54321,
-                    "user": "lfun",
+                    "user": "schooloms",
                     "password": "J16s10Wp08yfEskmVAJH",
-                    "database": "yuanhong"
+                    "database": "schooloms"
                 },
                 {
                     "host": "10.0.0.42",
                     "port": 54321,
-                    "user": "lfun",
+                    "user": "schooloms",
                     "password": "J16s10Wp08yfEskmVAJH",
-                    "database": "yuanhong"
+                    "database": "schooloms"
                 }
             ]
+
         }
     }
 }
