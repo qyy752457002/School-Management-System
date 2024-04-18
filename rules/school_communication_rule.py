@@ -24,38 +24,11 @@ class SchoolCommunicationRule(object):
             school.school_id)
         if exists_school:
             raise Exception(f"学校通信信息{school.school_communication_name}已存在")
-        school_communication_db = SchoolCommunication()
-        school_communication_db.school_id = school.school_id
-        school_communication_db.postal_code = school.postal_code
-        school_communication_db.fax_number = school.fax_number
-        school_communication_db.email = school.email
-        school_communication_db.contact_number = school.contact_number
-        school_communication_db.area_code = school.area_code
+        school_communication_db = view_model_to_orm_model(school, SchoolCommunication,    exclude=["id"])
 
-        school_communication_db.long = school.long
-        school_communication_db.lat = school.lat
-        school_communication_db.leg_repr_name = school.leg_repr_name
-        school_communication_db.party_leader_name = school.party_leader_name
-        school_communication_db.party_leader_position = school.party_leader_position
-        school_communication_db.adm_leader_name = school.adm_leader_name
-        school_communication_db.adm_leader_position = school.adm_leader_position
-        school_communication_db.loc_area = school.loc_area
-        school_communication_db.loc_area_pro = school.loc_area_pro
-        school_communication_db.detailed_address = school.detailed_address
-        school_communication_db.related_license_upload = school.related_license_upload
-        school_communication_db.school_web_url = school.school_web_url
-        school_communication_db.deleted = 0
-        school_communication_db.status = '正常'
-        school_communication_db.created_uid = 0
-        school_communication_db.updated_uid = 0
-
-
-        school_communication_db.status = '正常'
-        school_communication_db.created_uid = 0
-        school_communication_db.updated_uid = 0
 
         school_communication_db = await self.school_communication_dao.add_school_communication(school_communication_db)
-        school = orm_model_to_view_model(school_communication_db, SchoolCommunicationModel, exclude=[""])
+        school = orm_model_to_view_model(school_communication_db, SchoolCommunicationModel, exclude=["created_at",'updated_at'])
         return school
 
     async def update_school_communication(self, school,ctype=1):

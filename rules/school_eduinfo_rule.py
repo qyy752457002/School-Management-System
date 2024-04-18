@@ -24,34 +24,10 @@ class SchoolEduinfoRule(object):
             school.school_id)
         if exists_school:
             raise Exception(f"学校教育信息{school.school_eduinfo_name}已存在")
-        school_eduinfo_db = SchoolEduinfo()
-        school_eduinfo_db.is_ethnic_school = school.is_ethnic_school
-        school_eduinfo_db.is_att_class = school.is_att_class
-        school_eduinfo_db.att_class_type = school.att_class_type
-        school_eduinfo_db.is_province_feat = school.is_province_feat
-        school_eduinfo_db.is_bilingual_clas = school.is_bilingual_clas
-        school_eduinfo_db.minority_lang_code = school.minority_lang_code
-        school_eduinfo_db.is_profitable = school.is_profitable
-        school_eduinfo_db.prof_org_name = school.prof_org_name
-        school_eduinfo_db.is_prov_demo = school.is_prov_demo
-        school_eduinfo_db.is_latest_year = school.is_latest_year
-        school_eduinfo_db.is_town_kinderg = school.is_town_kinderg
-        school_eduinfo_db.is_incl_kinderg = school.is_incl_kinderg
-        school_eduinfo_db.is_affil_school = school.is_affil_school
-        school_eduinfo_db.affil_univ_code = school.affil_univ_code
-        school_eduinfo_db.affil_univ_name = school.affil_univ_name
-        school_eduinfo_db.is_last_yr_revok = school.is_last_yr_revok
-        school_eduinfo_db.is_school_counted = school.is_school_counted
-
-        school_eduinfo_db.school_id = school.school_id
-
-        school_eduinfo_db.deleted = 0
-        school_eduinfo_db.created_uid = 0
-        school_eduinfo_db.updated_uid = 0
-
+        school_eduinfo_db = view_model_to_orm_model(school, SchoolEduinfo,    exclude=["id"])
 
         school_eduinfo_db = await self.school_eduinfo_dao.add_school_eduinfo(school_eduinfo_db)
-        school = orm_model_to_view_model(school_eduinfo_db, SchoolEduinfoModel, exclude=[""])
+        school = orm_model_to_view_model(school_eduinfo_db, SchoolEduinfoModel, exclude=["created_at",'updated_at'])
         return school
 
     async def update_school_eduinfo(self, school,ctype=1):
