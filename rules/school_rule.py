@@ -35,7 +35,7 @@ class SchoolRule(object):
             raise Exception(f"学校{school.school_name}已存在")
         #  other_mapper={"password": "hash_password"},
         #                                              exclude=["first_name", "last_name"]
-        school_db = view_model_to_orm_model(school, School,)
+        school_db = view_model_to_orm_model(school, School,    exclude=["id"])
 
         # school_db = School()
         # school_db.school_name = school.school_name
