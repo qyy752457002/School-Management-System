@@ -3,7 +3,7 @@ from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
 
-from datetime import datetime
+from datetime import date
 class TeacherInfo(BaseDBModel):
     """
         ID：id
@@ -52,7 +52,7 @@ class TeacherInfo(BaseDBModel):
     __table_args__ = {'comment': '教师基本信息表模型'}
 
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="教师ID",autoincrement=True)
+    id: Mapped[int] = mapped_column(primary_key=True, comment="教师ID",autoincrement=True)#与教师表关联，关系为一对一
     ethnicity: Mapped[str] = mapped_column(String(64), nullable=False, comment="民族")
     nationality: Mapped[str] = mapped_column(String(64), nullable=False, comment="国家地区")
     political_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="政治面貌")
@@ -63,9 +63,9 @@ class TeacherInfo(BaseDBModel):
     health_condition: Mapped[str] = mapped_column(String(64), nullable=True, comment="健康状况")
     highest_education: Mapped[str] = mapped_column(String(64), nullable=True, comment="最高学历")
     institution_of_highest_education: Mapped[str] = mapped_column(String(64), nullable=True, comment="获得最高学历的院校或者机构")
-    special_education_start_time: Mapped[datetime.date] = mapped_column(Date, nullable=False, comment="特教开时时间")
-    start_working_date: Mapped[datetime.date] = mapped_column(Date, nullable=False, comment="参加工作年月")
-    enter_school_time: Mapped[datetime.date] = mapped_column(Date, nullable=False, comment="进本校时间")
+    special_education_start_time: Mapped[date] = mapped_column(Date, nullable=False, comment="特教开时时间")
+    start_working_date: Mapped[date] = mapped_column(Date, nullable=False, comment="参加工作年月")
+    enter_school_time: Mapped[date] = mapped_column(Date, nullable=False, comment="进本校时间")
     source_of_staff: Mapped[str] = mapped_column(String(64), nullable=False, comment="教职工来源")
     staff_category: Mapped[str] = mapped_column(String(64), nullable=False, comment="教职工类别")
     in_post: Mapped[str] = mapped_column(String(64), nullable=False, comment="是否在编")
@@ -83,8 +83,8 @@ class TeacherInfo(BaseDBModel):
 
     free_normal_college_student: Mapped[str] = mapped_column(String(64), nullable=False, comment="是否免费师范生")
     participated_in_basic_service_project: Mapped[str] = mapped_column(String(64), nullable=False, comment="是否参加基层服务项目")
-    basic_service_start_date: Mapped[datetime.date] = mapped_column(Date, nullable=True, comment="基层服务起始日期")
-    basic_service_end_date: Mapped[datetime.date] = mapped_column(Date, nullable=True, comment="基层服务结束日期")
+    basic_service_start_date: Mapped[date] = mapped_column(Date, nullable=True, comment="基层服务起始日期")
+    basic_service_end_date: Mapped[date] = mapped_column(Date, nullable=True, comment="基层服务结束日期")
     special_education_teacher: Mapped[str] = mapped_column(String(64), nullable=False, comment="是否特教")
     dual_teacher: Mapped[str] = mapped_column(String(64), nullable=False, comment="是否双师型")
     has_occupational_skill_level_certificate: Mapped[str] = mapped_column(String(64), nullable=False, comment="是否具备职业技能等级证书")

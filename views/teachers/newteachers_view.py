@@ -12,7 +12,6 @@ from rules.teachers_rule import TeachersRule
 from views.models.teachers import Teachers, TeacherInfo
 from rules.teachers_info_rule import TeachersInfoRule
 
-
 class NewTeachersView(BaseView):
     def __init__(self):
         super().__init__()
@@ -69,5 +68,5 @@ class NewTeachersView(BaseView):
     async def delete_newteacherinfo(self,
                                     id: str = Query(..., title="教师编号", description="教师编号", min_length=1,
                                                     max_length=20, example='123456')):
-        res = await self.teacher_info_rule.soft_delete_teachers_info(id)
+        res = await self.teacher_info_rule.delete_teachers_info(id)
         return res
