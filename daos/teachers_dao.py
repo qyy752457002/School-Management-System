@@ -36,13 +36,13 @@ class TeachersDao(DAOBase):
     async def update_teachers(self, teachers: Teacher, *args, is_commit: bool = True):
         session = await self.master_db()
         update_contents = get_update_contents(teachers, *args)
-        query = update(Teacher).where(Teacher.id == teachers.id).values(**update_contents)
+        query = update(Teacher).where(Teacher.teacher_id == teachers.teacher_id).values(**update_contents)
         return await self.update(session, query, teachers, update_contents, is_commit=is_commit)
 
     # 获取单个教师信息
     async def get_teachers_by_id(self, teachers_id):
         session = await self.slave_db()
-        result = await session.execute(select(Teacher).where(Teacher.id == teachers_id))
+        result = await session.execute(select(Teacher).where(Teacher.teacher_id == teachers_id))
         return result.scalar_one_or_none()
 
     async def get_teachers_by_name(self, teachers_name):

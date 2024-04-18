@@ -10,7 +10,7 @@ from datetime import date
 class Teacher(BaseDBModel):
     """
     教师表
-    教师ID：id
+    教师ID：teacher_id
     姓名：teacher_name
     性别：teacher_gender
     证件类型：teacher_id_type
@@ -24,7 +24,7 @@ class Teacher(BaseDBModel):
     __tablename__ = 'lfun_teachers'
     __table_args__ = {'comment': '教师表模型'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="教师ID",autoincrement=True)
+    teacher_id: Mapped[int] = mapped_column(primary_key=True, comment="教师ID",autoincrement=True)
     teacher_gender: Mapped[str] = mapped_column(String(64), nullable=False, comment="教师性别")
     teacher_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="教师名称")
     teacher_id_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="证件类型")

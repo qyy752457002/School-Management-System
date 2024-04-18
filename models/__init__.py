@@ -3,4 +3,7 @@ from . import grade
 from . import planning_school
 from . import teachers
 from . import teachers_info
+from . import students
+from . import students_base_info
+from . import students_family_info
 metadata = BaseDBModel.metadata

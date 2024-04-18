@@ -14,15 +14,18 @@ from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 from models.students import Student
 from rules.students_rule import StudentsRule
+from rules.students_base_info_rule import StudentsBaseInfoRule
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
 from views.models.students import NewStudentsFlowOut
 from datetime import date
-
+from rules.students_base_info_rule import StudentsBaseInfoRule
 
 
 class NewsStudentsView(BaseView):
     def __init__(self):
         super().__init__()
+        self.students_rule = get_injector(StudentsRule)
+        self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
         self.students_rule = get_injector(StudentsRule)
 
     async def post_newstudent(self, students: StudentsKeyinfoModel):
@@ -34,34 +37,14 @@ class NewsStudentsView(BaseView):
         return res
 
     # 分页查询
-    async def page(self, student_name: str = Query(None, title="学生姓名", description="学生姓名", example="John Doe"),
-                   enrollment_number: str = Query(None, title="报名号", description="报名号", example="20220001"),
-                   gender: str = Query(None, title="性别", description="性别", example="Male"),
-                   id_type: str = Query(None, title="证件类别", description="证件类别", example="ID Card"),
-                   school: str = Query(None, title="学校", description="学校", example="清华"),
-                   enrollment_date: date = Query(None, title="登记时间", description="登记时间",
-                                                 example="2000-01-01 00:00:00"),
-                   status: str = Query(None, title="状态", description="状态", example="流出"),
-                   page_request=Depends(PageRequest)):
-        print(page_request)
-        items = []
-
-        res = NewStudentsQuery(
-            student_name=student_name,
-            enrollment_number=enrollment_number,
-            gender=gender,
-            id_type=id_type,
-            id_number="123456789",
-            status=status,
-            school="清华",
-            county="朝阳区"
-        )
-        for i in range(0, page_request.per_page):
-            items.append(res)
-
-        return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10,
-                                 per_page=page_request.per_page, total=100, items=items)
-
+    #
+    async def page_newstudent(self, condition: NewStudentsQuery = Depends(NewStudentsQuery),
+                              page_request=Depends(PageRequest)):
+        """
+        分页查询
+        """
+        paging_result = await self.students_base_info_rule.query_students_base_info_with_page(page_request, condition)
+        return paging_result
 
     async def get_newstudentkeyinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号",
                                                                   example="SC2032633")):
@@ -69,18 +52,15 @@ class NewsStudentsView(BaseView):
         res = await self.students_rule.get_students_by_id(student_id)
         return res
 
-
-
-
     async def patch_newstudentkeyinfo(self, new_students_key_info: StudentsKeyinfo):
         """"
         新生编辑关键信息
         """
         print(new_students_key_info)
-        res = await self.students_rule.update_students(new_students_key_info)
+        res = await self.students_rule.add_students(new_students_key_info)
         return res
 
-    async def delete_newstudentkeyinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号",)):
+    async def delete_newstudentkeyinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号", )):
         """
         删除新生关键信息
         """
@@ -91,183 +71,74 @@ class NewsStudentsView(BaseView):
         """
         新生流出
         """
-        res_status=await self.students_rule.flow_out_students(new_students_flow_out)  #修改关键信息中的状态
+        res_base_info = await self.students_base_info_rule.update_students_base_info(
+            new_students_flow_out)  # 修改基本信息中的流出时间等
+        return  res_base_info
 
-        return res_status
-
-
-    # 新生查询基本信息
-    async def get_newstudentbaseinfo(self,
-                                     name_pinyin: str = Query(None, title="姓名拼音", description="姓名拼音",
-                                                              example="john_doe"),
-                                     session: str = Query(None, title="届别", description="届别", example="2022"),
-                                     grade: str = Query(None, title="年级", description="年级", example="10"),
-                                     classroom: str = Query(None, title="班级", description="班级", example="A"),
-                                     class_number: str = Query(None, title="班号", description="班号", example="1"),
-                                     school: str = Query(None, title="学校", description="学校", example="ABC School"),
-                                     registration_date: str = Query(None, title="登记日期", description="登记日期",
-                                                                    example="2024-04-16 00:00:00"),
-                                     residence_district: str = Query(None, title="户口所在行政区",
-                                                                     description="户口所在行政区", example="Beijing"),
-                                     birthplace_district: str = Query(None, title="出生地行政区",
-                                                                      description="出生地行政区", example="Shanghai"),
-                                     native_place_district: str = Query(None, title="籍贯行政区",
-                                                                        description="籍贯行政区", example="Shanxi"),
-                                     religious_belief: str = Query(None, title="宗教信仰", description="宗教信仰",
-                                                                   example="Christian"),
-                                     residence_nature: str = Query(None, title="户口性质", description="户口性质",
-                                                                   example="Urban"),
-                                     enrollment_date: str = Query(None, title="入学日期", description="入学日期",
-                                                                  example="2023-09-01 00:00:00"),
-                                     contact_number: str = Query(None, title="联系电话", description="联系电话",
-                                                                 example="12345678901"),
-                                     health_condition: str = Query(None, title="健康状况", description="健康状况",
-                                                                   example="Good"),
-                                     political_status: str = Query(None, title="政治面貌", description="政治面貌",
-                                                                   example="Party Member"),
-                                     blood_type: str = Query(None, title="血型", description="血型", example="O"),
-                                     home_phone_number: str = Query(None, title="家庭电话", description="家庭电话",
-                                                                    example="1234567890"),
-                                     email_or_other_contact: str = Query(None, title="电子信箱/其他联系方式",
-                                                                         description="电子信箱/其他联系方式",
-                                                                         example="johndoe@example.com"),
-                                     migrant_children: bool = Query(None, title="是否随迁子女",
-                                                                    description="是否随迁子女", example="1"),
-                                     disabled_person: bool = Query(None, title="是否残疾人", description="是否残疾人",
-                                                                   example="False"),
-                                     only_child: bool = Query(None, title="是否独生子女", description="是否独生子女",
-                                                              example="1"),
-                                     left_behind_children: bool = Query(None, title="是否留守儿童",
-                                                                        description="是否留守儿童", example="False"),
-                                     floating_population: bool = Query(None, title="是否流动人口",
-                                                                       description="是否流动人口", example="False"),
-                                     residence_address_detail: str = Query(None, title="户口所在地（详细）",
-                                                                           description="户口所在地（详细）",
-                                                                           example="123 Main Street, Beijing"),
-                                     communication_district: str = Query(None, title="通信地址行政区",
-                                                                         description="通信地址行政区",
-                                                                         example="Beijing"),
-                                     postal_code: str = Query(None, title="邮政编码", description="邮政编码",
-                                                              example="100000"),
-                                     communication_address: str = Query(None, title="通信地址", description="通信地址",
-                                                                        example="123 Main Street, Beijing"),
-                                     photo_upload_time: str = Query(None, title="照片上传时间",
-                                                                    description="照片上传时间",
-                                                                    example="2024-04-16 00:00:00"),
-                                     identity_card_validity_period: str = Query(None, title="身份证件有效期",
-                                                                                description="身份证件有效期",
-                                                                                example="2024-04-16 to 2034-04-16"),
-                                     remark: str = Query(None, title="备注", description="备注",
-                                                         example="This is a remark"),
-                                     ):
-        res = StudentsBaseInfo(
-            name_pinyin=name_pinyin,
-            session=session,
-            grade=grade,
-            classroom=classroom,
-            class_number=class_number,
-            school=school,
-            registration_date=registration_date,
-            residence_district=residence_district,
-            birthplace_district=birthplace_district,
-            native_place_district=native_place_district,
-            religious_belief=religious_belief,
-            residence_nature=residence_nature,
-            enrollment_date=enrollment_date,
-            contact_number=contact_number,
-            health_condition=health_condition,
-            political_status=political_status,
-            blood_type=blood_type,
-            home_phone_number=home_phone_number,
-            email_or_other_contact=email_or_other_contact,
-            migrant_children=migrant_children,
-            disabled_person=disabled_person,
-            only_child=only_child,
-            left_behind_children=left_behind_children,
-            floating_population=floating_population,
-            residence_address_detail=residence_address_detail,
-            communication_district=communication_district,
-            postal_code=postal_code,
-            communication_address=communication_address,
-            photo_upload_time=photo_upload_time,
-            identity_card_validity_period=identity_card_validity_period,
-            remark=remark,
-        )
+    async def get_newstudentbaseinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号",
+                                                                   example="SC2032633")):
+        """
+        查询新生基本信息
+        """
+        res = await self.students_base_info_rule.get_students_base_info_by_id(student_id)
         return res
 
-    # 新生新增基本信息
-    async def post(self, new_students_base_info: StudentsBaseInfo):
-        print(new_students_base_info)
-        return new_students_base_info
+    async def post_newstudentbaseinfo(self, new_students_base_info: StudentsBaseInfo):
+        """
+        新生新增基本信息
+        """
+        res = await self.students_base_info_rule.add_students_base_info(new_students_base_info)
+        return res
 
-    # 新生编辑基本信息
-    async def patch(self, new_students_base_info: StudentsBaseInfo):
-        print(new_students_base_info)
-        return new_students_base_info
+    async def patch_newstudentbaseinfo(self, new_students_base_info: StudentsBaseInfo):
+        """
+        新生编辑基本信息
+        """
+        res = await self.students_base_info_rule.add_students_base_info(new_students_base_info)
+        return res
 
-    # 新生新增家庭信息
+    async def delete_newstudentbaseinfo(self,
+                                        student_id: str = Query(None, title="学生编号", description="学生编号", )):
+        """
+        新生删除基本信息
+        """
+        res = await self.students_base_info_rule.delete_students_base_info(student_id)
+        return res
+
     async def post_newstudentfamilyinfo(self, new_students_family_info: StudentsFamilyInfo):
-        print(new_students_family_info)
-        return new_students_family_info
+        """
+        新生增加家庭信息
+        """
+        res = await self.students_base_info_rule.add_students_family_info(new_students_family_info)
 
-    # 新生编辑家庭信息
-    async def patch_newstudentfamilyinfo(self, new_students_family_info: StudentsFamilyInfo):
-        print(new_students_family_info)
-        return new_students_family_info
-
-    # 新生删除家庭信息
-    async def delete_newstudentfamilyinfo(self, new_students_family_info: StudentsFamilyInfo):
-        print(new_students_family_info)
-        return new_students_family_info
-
-    # 新生显示家庭信息
-    async def page_newstudentfamilyinfo(self, student_name: str = Query(None, title="学生姓名", description="学生姓名",
-                                                                        example="John Doe"),
-                                        page_request=Depends(PageRequest)):
-        print(page_request)
-        items = []
-
-        res = StudentsFamilyInfo(
-            name="John Doe",
-            gender="男",
-            relationship="父子",
-            is_guardian="True",
-            identification_type="身份证",
-            identification_number="1234567890",
-            phone_number="12345678901",
-            ethnicity="汉族",
-        )
-        for i in range(0, page_request.per_page):
-            items.append(res)
-
-        return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10,
-                                 per_page=page_request.per_page, total=100, items=items)
-
-    # 查询新生家庭详细信息
-    async def get_newstudentfamilyinfo(self,
-                                       student_name: str = Query(None, title="姓名", description="姓名",
-                                                                 example="John Doe")):
-        res = StudentsFamilyInfo(
-            name="John Doe",
-            gender="男",
-            relationship="父子",
-            is_guardian="True",
-            identification_type="身份证",
-            identification_number="1234567890",
-            birthday="2000-01-01",
-            phone_number="12345678901",
-            ethnicity="汉族",
-            health_status="良好",
-            political_status="党员",
-            nationality="中国",
-            contact_address="北京市朝阳区",
-            workplace="ABC公司",
-            family_member_occupation="教师"
-        )
         return res
 
-    # 正式入学
+    async def patch_newstudentfamilyinfo(self, new_students_family_info: StudentsFamilyInfo):
+        """
+        新生编辑家庭信息
+        """
+        res = await self.students_base_info_rule.add_students_family_info(new_students_family_info)
+        return res
+
+    async def delete_newstudentfamilyinfo(self,
+                                          student_id: str = Query(None, title="学生编号", description="学生编号", )):
+        """
+        新生删除家庭信息
+        """
+        res = await self.students_base_info_rule.delete_students_family_info(student_id)
+        return res
+
+    async def get_newstudentfamilyinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号", )):
+        """
+        新生查询家庭信息
+        """
+        res = await self.students_base_info_rule.get_students_family_info_by_id(student_id)
+        return res
+
+    # todo 仅仅修改一个状态就行
+
     async def patch_formaladmission(self, student_id: List[str] = Query(..., description="学生id", min_length=1,
-                                                                        max_length=20, example=["SC2032633"]), ):
+                                                                        max_length=20, example=["SC2032633"]),
+    ):
         print(student_id)
         return student_id

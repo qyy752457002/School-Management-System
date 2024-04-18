@@ -239,15 +239,15 @@ class StudentEduInfo(BaseModel):
     natural_edu_no: str = Query(...,   description="国家学籍号码",min_length=1,max_length=20,examples=[""]),
     school_id: str = Field(..., title="", description="学校ID",examples=["1234567890"])
     school_name: str = Field(..., title="", description="学校名称",examples=["XXxiaoxue"])
-    graduation_year: str = Field(..., title="", description="届别",examples=["2003"])
+    session: str = Field(..., title="", description="届别",examples=["2003"])
     attached_class: str = Field(..., title="", description="附设班",examples=["3班"])
     grade_id: str = Field(..., title="", description="年级ID",examples=["1"])
     grade_name: str = Field(..., title="", description="年级",examples=["2年级"])
     class_id: str = Field(..., title="", description="班级id",examples=["125"])
     classes: str = Field(..., title="", description="班级",examples=["二2班"])
     major_id: str = Field(..., title="", description="专业",examples=["农业"])
-    transferin_time    :str= Query(..., description="转入时间" ,min_length=1,max_length=20,examples=["2020-10-10"]),
-    transferin_reason   :str= Query(..., description="转入原因" ,min_length=1,max_length=20,examples=["家庭搬迁..."]),
+    transferin_time:str= Query(..., description="转入时间" ,min_length=1,max_length=20,examples=["2020-10-10"]),
+    transferin_reason:str= Query(..., description="转入原因" ,min_length=1,max_length=20,examples=["家庭搬迁..."]),
 
 
 
@@ -265,4 +265,8 @@ class NewStudentsFlowOut(BaseModel):
     student_id: str = Query(...,   description="学生id",min_length=1,max_length=20,examples=["1234567890"]),
     flow_out_time: str = Query(...,   description="流出时间",min_length=1,max_length=20,examples=["2020-10-10"]),
     flow_out_reason: str = Query(None,   description="流出原因",min_length=1,max_length=20,examples=["家庭搬迁"]),
-    approval_status: str = Query("流出",   description="审批状态",min_length=1,max_length=20,examples=["流出"]),
+
+class StudentSession(BaseModel):
+    session_id: str = Query(...,   description="届别id",min_length=1,max_length=20,examples=["1234567890"]),
+    session_name: str = Query(...,   description="届别名称",min_length=1,max_length=20,examples=["2020级"]),
+    session_alias: str = Query(...,   description="届别别名",min_length=1,max_length=20,examples=["2020届别"]),

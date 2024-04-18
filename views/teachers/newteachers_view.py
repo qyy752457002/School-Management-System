@@ -32,7 +32,7 @@ class NewTeachersView(BaseView):
     # 编辑新教职工登记信息
     async def put_newteacher(self, teachers: Teachers):
         print(teachers)
-        res = await self.teacher_rule.update_teachers(teachers)
+        res = await self.teacher_rule.add_teachers(teachers)
         return res
 
     # 分页查询
@@ -60,7 +60,7 @@ class NewTeachersView(BaseView):
 
     # 编辑教职工基本信息
     async def put_newteacherinfo(self, teacher_info: TeacherInfo):
-        res = await self.teacher_info_rule.update_teachers_info(teacher_info)
+        res = await self.teacher_info_rule.add_teachers_info(teacher_info)
 
         return res
 
@@ -70,3 +70,4 @@ class NewTeachersView(BaseView):
                                                     max_length=20, example='123456')):
         res = await self.teacher_info_rule.delete_teachers_info(id)
         return res
+

@@ -71,7 +71,7 @@ class TeachersInfoDao(DAOBase):
     async def update_teachers_info(self, teachers_info: TeacherInfo, *args, is_commit: bool = True):
         session = await self.master_db()
         update_contents = get_update_contents(teachers_info, *args)
-        query = update(Teacher).where(Teacher.id == teachers_info.id).values(**update_contents)
+        query = update(Teacher).where(Teacher.teacher_id == teachers_info.teacher_id).values(**update_contents)
         return await self.update(session, query, teachers_info, update_contents, is_commit=is_commit)
 
     # 删除教师基本信息
@@ -82,7 +82,7 @@ class TeachersInfoDao(DAOBase):
     # 获取单个教师基本信息
     async def get_teachers_info_by_id(self, teachers_info_id):
         session = await self.slave_db()
-        result = await session.execute(select(TeacherInfo).where(TeacherInfo.id == teachers_info_id))
+        result = await session.execute(select(TeacherInfo).where(TeacherInfo.teacher_id == teachers_info_id))
         return result.scalar_one_or_none()
 
     # async def get_teachers_info_by_name(self, teachers_name):
@@ -96,7 +96,7 @@ class TeachersInfoDao(DAOBase):
                        Teacher.teacher_employer, Teacher.teacher_approval_status, TeacherInfo.highest_education,
                        TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
                        TeacherInfo.enter_school_time).select_from(
-            Teacher.join(TeacherInfo, Teacher.id == TeacherInfo.teacher_number)
+            Teacher.join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id)
         )
         properties = vars(condition)
         conditions = []
