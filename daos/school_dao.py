@@ -27,6 +27,12 @@ class SchoolDAO(DAOBase):
         await session.refresh(school)
         return school
 
+    async def update_school_byargs(self, school: School, *args, is_commit: bool = True):
+        session = self.master_db()
+        update_contents = get_update_contents(school, *args)
+        query = update(School).where(School.id == school.id).values(**update_contents)
+        return await self.update(session, query, school, update_contents, is_commit=is_commit)
+
     async def update_school(self, school,ctype=1):
         session = await self.master_db()
         # session.add(school)
@@ -68,16 +74,14 @@ class SchoolDAO(DAOBase):
         return school
 
     async def delete_school(self, school):
-        session = await self.master_db()
-        await session.delete(school)
-        await session.commit()
-        return school
+        session = self.master_db()
+        return await self.delete(session, school)
 
     async def softdelete_school(self, school):
         session = await self.master_db()
         deleted_status= 1
         update_stmt = update(School).where(School.id == school.id).values(
-            deleted= deleted_status,
+            is_deleted= deleted_status,
         )
         await session.execute(update_stmt)
         # await session.delete(school)
