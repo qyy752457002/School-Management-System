@@ -7,5 +7,9 @@ from . import institution
 from . import school
 from . import school_eduinfo
 from . import school_communication
+from . import campus
+
+
+
 
 metadata = BaseDBModel.metadata
