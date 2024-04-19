@@ -5,6 +5,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
+from business_exceptions.planning_school_eduinfo import PlanningSchoolEduinfoNotFoundError
 from daos.planning_school_eduinfo_dao import PlanningSchoolEduinfoDAO
 from models.planning_school_eduinfo import PlanningSchoolEduinfo
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo  as PlanningSchoolEduinfoModel
@@ -114,9 +115,14 @@ class PlanningSchoolEduinfoRule(object):
 
 
     async def update_planning_school_eduinfo_byargs(self, planning_school_eduinfo,ctype=1):
-        exists_planning_school_eduinfo = await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_id(planning_school_eduinfo.id)
+        if planning_school_eduinfo.planning_school_id >0:
+            # exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school_eduinfo.planning_school_id)
+            exists_planning_school_eduinfo = await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_planning_school_id(planning_school_eduinfo.planning_school_id)
+
+        else:
+            exists_planning_school_eduinfo = await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_id(planning_school_eduinfo.id)
         if not exists_planning_school_eduinfo:
-            raise PlanningSchoolNotFoundError()
+            raise PlanningSchoolEduinfoNotFoundError()
         need_update_list = []
         for key, value in planning_school_eduinfo.dict().items():
             if value:

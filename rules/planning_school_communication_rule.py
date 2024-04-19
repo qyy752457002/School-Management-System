@@ -5,6 +5,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
+from business_exceptions.planning_school_communication import PlanningSchoolCommunicationNotFoundError
 from daos.planning_school_communication_dao import PlanningSchoolCommunicationDAO
 from models.planning_school_communication import PlanningSchoolCommunication
 from views.models.planning_school_communications import PlanningSchoolCommunications  as PlanningSchoolCommunicationModel
@@ -115,9 +116,16 @@ class PlanningSchoolCommunicationRule(object):
 
 
     async def update_planning_school_communication_byargs(self, planning_school_communication,ctype=1):
-        exists_planning_school_communication = await self.planning_school_communication_dao.get_planning_school_communication_by_id(planning_school_communication.id)
+        if planning_school_communication.planning_school_id>0:
+            # planning_school = await self.planning_school_rule.get_planning_school_by_id(planning_school_communication.planning_school_id)
+            exists_planning_school_communication = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(planning_school_communication.planning_school_id)
+
+
+        else:
+
+            exists_planning_school_communication = await self.planning_school_communication_dao.get_planning_school_communication_by_id(planning_school_communication.id)
         if not exists_planning_school_communication:
-            raise PlanningSchoolNotFoundError()
+            raise PlanningSchoolCommunicationNotFoundError()
         need_update_list = []
         for key, value in planning_school_communication.dict().items():
             if value:

@@ -193,13 +193,18 @@ class PlanningSchoolView(BaseView):
 
     # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性
     async def put(self,
+
                   planning_school: PlanningSchoolBaseInfo,
                   planning_school_communication: PlanningSchoolCommunications,
                   planning_school_eduinfo: PlanningSchoolEduInfo,
-                  # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
+                  planning_school_id:int= Query(..., title="", description="学校id/园所id" ,example='38'),
+
 
                   ):
         # print(planning_school)
+        planning_school.id=  planning_school_id
+        planning_school_communication.planning_school_id=  planning_school_id
+        planning_school_eduinfo.planning_school_id=  planning_school_id
 
         res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
         res_com = await self.planning_school_communication_rule.update_planning_school_communication_byargs(planning_school_communication)

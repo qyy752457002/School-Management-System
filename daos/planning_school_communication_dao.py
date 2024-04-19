@@ -107,5 +107,11 @@ class PlanningSchoolCommunicationDAO(DAOBase):
     async def update_planning_school_communication_byargs(self, planning_school_communication: PlanningSchoolCommunication, *args, is_commit: bool = True):
         session =await self.master_db()
         update_contents = get_update_contents(planning_school_communication, *args)
-        query = update(PlanningSchoolCommunication).where(PlanningSchoolCommunication.id == planning_school_communication.id).values(**update_contents)
+        if planning_school_communication.planning_school_id>0:
+            # update_contents['planning_school_id'] = planning_school_communication.planning_school_id
+            query = update(PlanningSchoolCommunication).where(PlanningSchoolCommunication.planning_school_id == planning_school_communication.planning_school_id).values(**update_contents)
+
+        else:
+
+            query = update(PlanningSchoolCommunication).where(PlanningSchoolCommunication.id == planning_school_communication.id).values(**update_contents)
         return await self.update(session, query, planning_school_communication, update_contents, is_commit=is_commit)

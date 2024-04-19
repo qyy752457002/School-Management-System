@@ -99,5 +99,8 @@ class PlanningSchoolEduinfoDAO(DAOBase):
     async def update_planning_school_eduinfo_byargs(self, planning_school_eduinfo: PlanningSchoolEduinfo, *args, is_commit: bool = True):
         session =await self.master_db()
         update_contents = get_update_contents(planning_school_eduinfo, *args)
-        query = update(PlanningSchoolEduinfo).where(PlanningSchoolEduinfo.id == planning_school_eduinfo.id).values(**update_contents)
+        if planning_school_eduinfo.planning_school_id>0:
+            query = update(PlanningSchoolEduinfo).where(PlanningSchoolEduinfo.planning_school_id == planning_school_eduinfo.planning_school_id).values(**update_contents)
+        else:
+            query = update(PlanningSchoolEduinfo).where(PlanningSchoolEduinfo.id == planning_school_eduinfo.id).values(**update_contents)
         return await self.update(session, query, planning_school_eduinfo, update_contents, is_commit=is_commit)
