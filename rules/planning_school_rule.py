@@ -3,6 +3,7 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from sqlalchemy import select
 
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from daos.planning_school_dao import PlanningSchoolDAO
@@ -10,6 +11,7 @@ from models.planning_school import PlanningSchool
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus
 
 from views.models.planning_school import PlanningSchoolBaseInfo
+from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 
 
 @dataclass_inject
@@ -107,10 +109,8 @@ class PlanningSchoolRule(object):
     async def get_planning_school_count(self):
         return await self.planning_school_dao.get_planning_school_count()
 
-    async def query_planning_school_with_page(self, page_request: PageRequest, planning_school_name=None,
-                                              planning_school_id=None,planning_school_no=None ):
-        paging = await self.planning_school_dao.query_planning_school_with_page(planning_school_name, planning_school_id,planning_school_no,
-                                                                                page_request)
+    async def query_planning_school_with_page(self, page_request: PageRequest, page_search  ):
+        paging = await self.planning_school_dao.query_planning_school_with_page(page_search,  page_request)
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, PlanningSchoolModel)
         return paging_result
@@ -167,3 +167,21 @@ class PlanningSchoolRule(object):
         return planning_school_db
 
 
+
+
+    async def query_planning_schools(self,planning_school_name):
+
+        session = await db_connection_manager.get_async_session("default", True)
+        result = await session.execute(select(PlanningSchool).where(PlanningSchool.planning_school_name.like(f'{planning_school_name}%') ))
+        res= result.scalars().all()
+        lst = []
+        for row in res:
+            planning_school = orm_model_to_view_model(row, PlanningSchoolModel)
+            # account = PlanningSchool(school_id=row.school_id,
+            #                  grade_no=row.grade_no,
+            #                  grade_name=row.grade_name,
+            #                  grade_alias=row.grade_alias,
+            #                  description=row.description)
+            lst.append(planning_school)
+        return lst
+        # return await self.planning_school_dao.get_all_planning_schools()

@@ -1,14 +1,31 @@
 from enum import Enum
+from typing import List, Optional
 
 from fastapi import Query
 from pydantic import BaseModel, Field
 
 
 
+class PlanningSchoolFounderType(str, Enum):
+    """
+    举办者类型 一级
+    """
+    LOCAL = "local"
+    CENTRAL = "central"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.LOCAL, cls.CENTRAL]
+class SchoolStatus(Enum):
+    DRAFT = "draft"
+    OPENING = "opening"
+    NORMAL = "normal"
+    CLOSED = "closed"
 class PlanningSchoolStatus(str, Enum):
     """
     状态
     """
+    ALL = "All"
     DRAFT = "draft"
     OPENING = "opening"
     NORMAL = "normal"
@@ -48,6 +65,10 @@ class PlanningSchool(BaseModel):
     create_planning_school_date: str = Field(..., title="", description="建校年月",examples=['2021-10-10 00:00:00'])
     social_credit_code: str = Field(..., title="", description="统一社会信用代码",examples=['XH423423876867'])
     founder_type: str = Field(..., title="", description="举办者类型",examples=['地方'])
+    founder_type_lv2: str = Field(..., title="", description="举办者类型二级",examples=['教育部门'])
+
+    founder_type_lv3: str = Field(..., title="", description="举办者类型三级",examples=['县级教育部门'])
+
     founder_name: str = Field(..., title="", description="举办者名称",examples=['上海教育局'])
     founder_code: str = Field(..., title="", description="举办者识别码",examples=['SC562369322SG'])
     urban_rural_nature: str = Field(..., title="", description="城乡性质",examples=['城镇'])
@@ -98,6 +119,27 @@ class PlanningSchoolKeyInfo(BaseModel):
     planning_school_operation_type_lv3: str = Query(..., title="", description=" 办学类型三级",examples=['附设小学班']),
     planning_school_org_type: str = Query(..., title="", description=" 学校办别",examples=['民办']),
     planning_school_level: str = Query(..., title="", description=" 学校星级",examples=['5'])
+
+
+
+class PlanningSchoolPageSearch(BaseModel):
+    block: str = Query("", title=" ", description="地域管辖区", ),
+    planning_school_code: str = Query("", title="", description=" 园所标识码", )
+    planning_school_level: str = Query("", title="", description=" 学校星级", )
+    planning_school_name: str = Query("", title="学校名称", description="1-20字符",)
+    planning_school_no:str= Query("", title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,),
+    borough:str=Query("", title="  ", description=" 行政管辖区", ),
+    # status: Optional[str] = Query(None,enum=SchoolStatus, title="", description=" 状态", )
+    status: PlanningSchoolStatus = Query("", title="", description=" 状态",examples=['正常'])
+    # founder_type: List[ PlanningSchoolFounderType]  = Query("", title="", description="举办者类型",examples=['地方'])
+    # founder_type_lv2:  List[ PlanningSchoolFounderType] = Query("", title="", description="举办者类型二级",examples=['教育部门'])
+    # founder_type_lv3:  List[ PlanningSchoolFounderType] = Query("", title="", description="举办者类型三级",examples=['县级教育部门'])
+
+
+
+
+
+
 
 
 

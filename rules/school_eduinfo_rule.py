@@ -19,12 +19,30 @@ class SchoolEduinfoRule(object):
         school = orm_model_to_view_model(school_eduinfo_db, SchoolEduinfoModel)
         return school
 
-    async def add_school_eduinfo(self, school: SchoolEduinfoModel):
+    async def get_school_eduinfo_by_school_id(self, school_eduinfo_id):
+        school_eduinfo_db = await self.school_eduinfo_dao.get_school_eduinfo_by_school_id(school_eduinfo_id)
+        # 可选 , exclude=[""]
+        school = orm_model_to_view_model(school_eduinfo_db, SchoolEduinfoModel)
+        return school
+
+    async def add_school_eduinfo(self, school: SchoolEduinfoModel,convertmodel=True):
         exists_school = await self.school_eduinfo_dao.get_school_eduinfo_by_id(
             school.school_id)
         if exists_school:
             raise Exception(f"学校教育信息{school.school_eduinfo_name}已存在")
-        school_eduinfo_db = view_model_to_orm_model(school, SchoolEduinfo,    exclude=["id"])
+        if convertmodel:
+            school_eduinfo_db = view_model_to_orm_model(school, SchoolEduinfo,    exclude=["id"])
+
+        else:
+            school_eduinfo_db = SchoolEduinfo()
+            school_eduinfo_db.id = None
+            school_eduinfo_db.school_id= school.school_id
+
+        school_eduinfo_db.deleted = 0
+        school_eduinfo_db.status = '正常'
+        school_eduinfo_db.created_uid = 0
+        school_eduinfo_db.updated_uid = 0
+
 
         school_eduinfo_db = await self.school_eduinfo_dao.add_school_eduinfo(school_eduinfo_db)
         school = orm_model_to_view_model(school_eduinfo_db, SchoolEduinfoModel, exclude=["created_at",'updated_at'])

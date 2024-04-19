@@ -30,12 +30,34 @@ class SchoolView(BaseView):
                   ):
 
         school = await self.school_rule.get_school_by_id(school_id)
-        return school
+        school_communication = await self.school_communication_rule.get_school_communication_by_school_id(school_id)
+        school_eduinfo = await self.school_eduinfo_rule.get_school_eduinfo_by_school_id(school_id)
+
+        return {'school':school,'school_communication':school_communication ,'school_eduinfo':school_eduinfo }
 
 
-    async def post(self,school:School):
+    async def post(self,school:SchoolKeyInfo):
         res = await self.school_rule.add_school(school)
         print(res)
+        resc = SchoolCommunications(id=0)
+        # logging.debug(resc,'模型2', res.id, type( res.id ))
+        newid = str(res.id)
+        print(resc, '模型23', res.id, type(res.id))
+        # str( res.id).copy()
+
+        resc.school_id = int(newid)
+        print(resc, newid, '||||||||')
+
+        # 保存通信信息
+        res_comm = await self.school_communication_rule.add_school_communication(resc,
+                                                                                                   convertmodel=False)
+        print(res_comm, '模型2 res')
+        #
+        resedu = SchoolEduInfo(id=0)
+        resedu.school_id = res.id
+        # 保存教育信息
+        res_edu = await self.school_eduinfo_rule.add_school_eduinfo(resedu, convertmodel=False)
+        print(res_edu)
 
 
         return res
@@ -142,3 +164,15 @@ class SchoolView(BaseView):
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
 
         return res
+
+
+    async def get_search(self,
+                         school_name: str = Query("", title="学校名称", description="1-20字符",),
+
+                         page_request=Depends(PageRequest) ):
+        print(page_request,)
+        items = []
+        # exit(1)
+        # return page_search
+        paging_result = await self.school_rule.query_schools(school_name)
+        return paging_result
