@@ -168,8 +168,19 @@ class EnumValueRule(object):
         )
 
         res= result.scalars().all()
-        lst = []
+        listids=  []
         for row in res:
-            enum_value = orm_model_to_view_model(row, EnumValueModel,exclude=["sort_number"])
-            lst.append(enum_value)
+            # enum_value = orm_model_to_view_model(row, EnumValueModel,exclude=["sort_number"])
+            # lst.append(enum_value)
+            listids.append(row.id)
+        result2 = await session.execute(
+            select(EnumValue).where(EnumValue.parent_id.in_( listids ) )
+        )
+
+        res2= result2.scalars().all()
+        lst =  []
+        for row in res2:
+            # enum_value = orm_model_to_view_model(row, EnumValueModel,exclude=["sort_number",'description'])
+            lst.append(row)
+
         return lst
