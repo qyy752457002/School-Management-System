@@ -43,7 +43,7 @@ class TeachersCreatModel(BaseModel):
     teacher_avatar: str = Field(None, title="头像", description="头像")
 
 
-class TeacherInfo(BaseModel):  # 基本信息
+class TeacherInfoCreateModel(BaseModel):  # 基本信息
     """
     姓名：name
     教师ID：teacher_id
@@ -139,7 +139,7 @@ class TeacherInfo(BaseModel):  # 基本信息
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field(None, title="教职工号", description="教职工号", example="123456789012345678")
 
-class TeacherInfoCreateModel(BaseModel):  # 基本信息
+class TeacherInfo(BaseModel):  # 基本信息
     """
     姓名：name
     国家地区：nationality

@@ -11,6 +11,9 @@ class TeachersRule(object):
     teachers_dao: TeachersDao
 
     async def get_teachers_by_id(self, teachers_id):
+        exists_teachers= await self.teachers_dao.get_teachers_by_id(teachers_id)
+        if not exists_teachers:
+            raise AccountNotFoundError()
         teachers_db = await self.teachers_dao.get_teachers_by_id(teachers_id)
         # 可选 ,
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
