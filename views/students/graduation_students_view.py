@@ -25,7 +25,7 @@ class GraduationStudentsView(BaseView):
         print(page_request)
         items = []
 
-        res = GraduationStudents(student_name='xxx', gender='1', school='xxx', edu_number='fsdfsd', class_id='12', country='xx')
+        res = GraduationStudents(student_name='xxx', gender='1', school='xxx', edu_number='fsdfsd', class_id='12', county='行政属地')
 
         for i in range(0, page_request.per_page):
             items.append(res)
