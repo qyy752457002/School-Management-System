@@ -95,7 +95,9 @@ class PlanningSchoolDAO(DAOBase):
         return result.scalar()
 
     async def query_planning_school_with_page(self, page_request: PageRequest, planning_school_name,planning_school_no,planning_school_code,
-                                              block,planning_school_level,borough,status ) -> Paging:
+                                              block,planning_school_level,borough,status,founder_type,
+                                              founder_type_lv2,
+                                              founder_type_lv3 ) -> Paging:
         query = select(PlanningSchool)
 
 

@@ -110,9 +110,13 @@ class PlanningSchoolRule(object):
         return await self.planning_school_dao.get_planning_school_count()
 
     async def query_planning_school_with_page(self, page_request: PageRequest,  planning_school_name,planning_school_no,planning_school_code,
-                                              block,planning_school_level,borough,status  ):
+                                              block,planning_school_level,borough,status ,founder_type,
+                                              founder_type_lv2,
+                                              founder_type_lv3 ):
         paging = await self.planning_school_dao.query_planning_school_with_page(  page_request, planning_school_name,planning_school_no,planning_school_code,
-                                                                                  block,planning_school_level,borough,status )
+                                                                                  block,planning_school_level,borough,status,founder_type,
+                                                                                  founder_type_lv2,
+                                                                                  founder_type_lv3 )
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, PlanningSchoolModel)
         return paging_result
