@@ -145,3 +145,15 @@ class SchoolView(BaseView):
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
 
         return res
+
+
+    async def get_search(self,
+                         school_name: str = Query("", title="学校名称", description="1-20字符",),
+
+                         page_request=Depends(PageRequest) ):
+        print(page_request,)
+        items = []
+        # exit(1)
+        # return page_search
+        paging_result = await self.school_rule.query_schools(school_name)
+        return paging_result

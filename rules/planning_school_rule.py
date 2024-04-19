@@ -172,14 +172,11 @@ class PlanningSchoolRule(object):
     async def query_planning_schools(self,planning_school_name):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(PlanningSchool).where(PlanningSchool.planning_school_name.like(f'%{planning_school_name}%') ))
+        result = await session.execute(select(PlanningSchool).where(PlanningSchool.planning_school_name.like(f'{planning_school_name}%') ))
         res= result.scalars().all()
-
-
         lst = []
         for row in res:
             planning_school = orm_model_to_view_model(row, PlanningSchoolModel)
-
             # account = PlanningSchool(school_id=row.school_id,
             #                  grade_no=row.grade_no,
             #                  grade_name=row.grade_name,

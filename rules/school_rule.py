@@ -1,10 +1,13 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 import hashlib
 
 import shortuuid
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from sqlalchemy import select
+
 from daos.school_dao import SchoolDAO
 from models.school import School
 from views.models.school import School as SchoolModel
@@ -140,3 +143,22 @@ class SchoolRule(object):
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""],)
         return school_db
 
+
+
+    async def query_schools(self,planning_school_name):
+
+        session = await db_connection_manager.get_async_session("default", True)
+        result = await session.execute(select(School).where(School.school_name.like(f'{planning_school_name}%') ))
+        res= result.scalars().all()
+
+        lst = []
+        for row in res:
+            planning_school = orm_model_to_view_model(row, SchoolModel)
+
+            # account = PlanningSchool(school_id=row.school_id,
+            #                  grade_no=row.grade_no,
+            #                  grade_name=row.grade_name,
+            #                  grade_alias=row.grade_alias,
+            #                  description=row.description)
+            lst.append(planning_school)
+        return lst
