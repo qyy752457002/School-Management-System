@@ -24,31 +24,11 @@ class PlanningSchoolEduinfoRule(object):
             planning_school.planning_school_id)
         if exists_planning_school:
             raise Exception(f"规划校教育信息{planning_school.planning_school_eduinfo_name}已存在")
-        planning_school_eduinfo_db = PlanningSchoolEduinfo()
-        planning_school_eduinfo_db.is_ethnic_school = planning_school.is_ethnic_school
-        planning_school_eduinfo_db.is_att_class = planning_school.is_att_class
-        planning_school_eduinfo_db.att_class_type = planning_school.att_class_type
-        planning_school_eduinfo_db.is_province_feat = planning_school.is_province_feat
-        planning_school_eduinfo_db.is_bilingual_clas = planning_school.is_bilingual_clas
-        planning_school_eduinfo_db.minority_lang_code = planning_school.minority_lang_code
-        planning_school_eduinfo_db.is_profitable = planning_school.is_profitable
-        planning_school_eduinfo_db.prof_org_name = planning_school.prof_org_name
-        planning_school_eduinfo_db.is_prov_demo = planning_school.is_prov_demo
-        planning_school_eduinfo_db.is_latest_year = planning_school.is_latest_year
-        planning_school_eduinfo_db.is_town_kinderg = planning_school.is_town_kinderg
-        planning_school_eduinfo_db.is_incl_kinderg = planning_school.is_incl_kinderg
-        planning_school_eduinfo_db.is_affil_school = planning_school.is_affil_school
-        planning_school_eduinfo_db.affil_univ_code = planning_school.affil_univ_code
-        planning_school_eduinfo_db.affil_univ_name = planning_school.affil_univ_name
-        planning_school_eduinfo_db.is_last_yr_revok = planning_school.is_last_yr_revok
-        planning_school_eduinfo_db.is_school_counted = planning_school.is_school_counted
 
-        planning_school_eduinfo_db.planning_school_id = planning_school.planning_school_id
-
+        planning_school_eduinfo_db = view_model_to_orm_model(planning_school, PlanningSchoolEduinfo,    exclude=["id"])
         planning_school_eduinfo_db.deleted = 0
         planning_school_eduinfo_db.created_uid = 0
         planning_school_eduinfo_db.updated_uid = 0
-
 
         planning_school_eduinfo_db = await self.planning_school_eduinfo_dao.add_planning_school_eduinfo(planning_school_eduinfo_db)
         planning_school = orm_model_to_view_model(planning_school_eduinfo_db, PlanningSchoolEduinfoModel, exclude=[""])

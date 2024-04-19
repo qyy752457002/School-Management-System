@@ -60,6 +60,18 @@ class PlanningSchoolView(BaseView):
     async def post(self, planning_school: PlanningSchoolKeyInfo):
         print(planning_school)
         res = await self.planning_school_rule.add_planning_school(planning_school)
+        resc = PlanningSchoolCommunications()
+        resc.planning_school_id = res.id
+
+        res_comm = await self.planning_school_communication_rule.add_planning_school_communication(resc,convertmodel=False)
+        print(res_comm,)
+
+        resedu = PlanningSchoolEduInfo()
+        resedu.planning_school_id = res.id
+
+
+        # res_edu = await self.planning_school_eduinfo_rule.add_planning_school_eduinfo(resedu)
+        # print(res_edu)
 
         return res
 

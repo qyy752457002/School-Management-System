@@ -19,40 +19,23 @@ class PlanningSchoolCommunicationRule(object):
         planning_school = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel)
         return planning_school
 
-    async def add_planning_school_communication(self, planning_school: PlanningSchoolCommunicationModel):
+    async def add_planning_school_communication(self, planning_school: PlanningSchoolCommunicationModel,convertmodel=True):
         exists_planning_school = await self.planning_school_communication_dao.get_planning_school_communication_by_id(
             planning_school.planning_school_id)
         if exists_planning_school:
             raise Exception(f"规划校通信信息{planning_school.planning_school_communication_name}已存在")
-        planning_school_communication_db = PlanningSchoolCommunication()
-        planning_school_communication_db.planning_school_id = planning_school.planning_school_id
-        planning_school_communication_db.postal_code = planning_school.postal_code
-        planning_school_communication_db.fax_number = planning_school.fax_number
-        planning_school_communication_db.email = planning_school.email
-        planning_school_communication_db.contact_number = planning_school.contact_number
-        planning_school_communication_db.area_code = planning_school.area_code
+        if convertmodel:
+            planning_school_communication_db = view_model_to_orm_model(planning_school, PlanningSchoolCommunication,    exclude=["id"])
+        else:
+            # planning_school_communication_db = PlanningSchoolCommunication(**planning_school.dict())
+            planning_school_communication_db = PlanningSchoolCommunication()
+            planning_school_communication_db.planning_school_id= planning_school.id
 
-        planning_school_communication_db.long = planning_school.long
-        planning_school_communication_db.lat = planning_school.lat
-        planning_school_communication_db.leg_repr_name = planning_school.leg_repr_name
-        planning_school_communication_db.party_leader_name = planning_school.party_leader_name
-        planning_school_communication_db.party_leader_position = planning_school.party_leader_position
-        planning_school_communication_db.adm_leader_name = planning_school.adm_leader_name
-        planning_school_communication_db.adm_leader_position = planning_school.adm_leader_position
-        planning_school_communication_db.loc_area = planning_school.loc_area
-        planning_school_communication_db.loc_area_pro = planning_school.loc_area_pro
-        planning_school_communication_db.detailed_address = planning_school.detailed_address
-        planning_school_communication_db.related_license_upload = planning_school.related_license_upload
-        planning_school_communication_db.school_web_url = planning_school.school_web_url
         planning_school_communication_db.deleted = 0
         planning_school_communication_db.status = '正常'
         planning_school_communication_db.created_uid = 0
         planning_school_communication_db.updated_uid = 0
-
-
-        planning_school_communication_db.status = '正常'
-        planning_school_communication_db.created_uid = 0
-        planning_school_communication_db.updated_uid = 0
+        print(planning_school_communication_db)
 
         planning_school_communication_db = await self.planning_school_communication_dao.add_planning_school_communication(planning_school_communication_db)
         planning_school = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel, exclude=[""])
