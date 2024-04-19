@@ -19,6 +19,12 @@ class SchoolEduinfoRule(object):
         school = orm_model_to_view_model(school_eduinfo_db, SchoolEduinfoModel)
         return school
 
+    async def get_school_eduinfo_by_school_id(self, school_eduinfo_id):
+        school_eduinfo_db = await self.school_eduinfo_dao.get_school_eduinfo_by_school_id(school_eduinfo_id)
+        # 可选 , exclude=[""]
+        school = orm_model_to_view_model(school_eduinfo_db, SchoolEduinfoModel)
+        return school
+
     async def add_school_eduinfo(self, school: SchoolEduinfoModel):
         exists_school = await self.school_eduinfo_dao.get_school_eduinfo_by_id(
             school.school_id)

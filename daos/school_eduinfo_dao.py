@@ -14,6 +14,11 @@ class SchoolEduinfoDAO(DAOBase):
         result = await session.execute(select(SchoolEduinfo).where(SchoolEduinfo.id == school_eduinfo_id))
         return result.scalar_one_or_none()
 
+    async def get_school_eduinfo_by_school_id(self, school_eduinfo_id):
+        session = await self.slave_db()
+        result = await session.execute(select(SchoolEduinfo).where(SchoolEduinfo.school_id == school_eduinfo_id))
+        return result.scalar_one_or_none()
+
     async def add_school_eduinfo(self, school_eduinfo):
         session = await self.master_db()
         session.add(school_eduinfo)

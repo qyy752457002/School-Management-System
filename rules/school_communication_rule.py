@@ -18,6 +18,11 @@ class SchoolCommunicationRule(object):
         # 可选 , exclude=[""]
         school = orm_model_to_view_model(school_communication_db, SchoolCommunicationModel)
         return school
+    async def get_school_communication_by_school_id(self, school_communication_id):
+        school_communication_db = await self.school_communication_dao.get_school_communication_by_school_id(school_communication_id)
+        # 可选 , exclude=[""]
+        school = orm_model_to_view_model(school_communication_db, SchoolCommunicationModel)
+        return school
 
     async def add_school_communication(self, school: SchoolCommunicationModel):
         exists_school = await self.school_communication_dao.get_school_communication_by_id(
