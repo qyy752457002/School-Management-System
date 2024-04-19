@@ -14,6 +14,18 @@ class PlanningSchoolCommunicationDAO(DAOBase):
         result = await session.execute(select(PlanningSchoolCommunication).where(PlanningSchoolCommunication.id == planning_school_communication_id))
         return result.scalar_one_or_none()
 
+
+    async def get_planning_school_communication_by_planning_shool_id(self, planning_school_communication_id):
+        session = await self.slave_db()
+        result = await session.execute(select(PlanningSchoolCommunication).where(PlanningSchoolCommunication.planning_school_id == planning_school_communication_id))
+        return result.scalar_one_or_none()
+
+
+
+
+
+
+
     async def add_planning_school_communication(self, planning_school_communication):
         session = await self.master_db()
         session.add(planning_school_communication)

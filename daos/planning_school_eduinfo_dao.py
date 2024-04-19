@@ -13,6 +13,10 @@ class PlanningSchoolEduinfoDAO(DAOBase):
         session = await self.slave_db()
         result = await session.execute(select(PlanningSchoolEduinfo).where(PlanningSchoolEduinfo.id == planning_school_eduinfo_id))
         return result.scalar_one_or_none()
+    async def get_planning_school_eduinfo_by_planning_school_id(self, planning_school_eduinfo_id):
+        session = await self.slave_db()
+        result = await session.execute(select(PlanningSchoolEduinfo).where(PlanningSchoolEduinfo.planning_school_id == planning_school_eduinfo_id))
+        return result.scalar_one_or_none()
 
     async def add_planning_school_eduinfo(self, planning_school_eduinfo):
         session = await self.master_db()

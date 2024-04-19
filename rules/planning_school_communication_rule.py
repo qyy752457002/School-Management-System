@@ -19,6 +19,13 @@ class PlanningSchoolCommunicationRule(object):
         planning_school = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel)
         return planning_school
 
+    async def get_planning_school_communication_by_planning_shcool_id(self, planning_school_communication_id):
+        planning_school_communication_db = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(planning_school_communication_id)
+        # 可选 , exclude=[""]
+        planning_school = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel)
+        return planning_school
+
+
     async def add_planning_school_communication(self, planning_school: PlanningSchoolCommunicationModel,convertmodel=True):
         exists_planning_school = await self.planning_school_communication_dao.get_planning_school_communication_by_id(
             planning_school.planning_school_id)

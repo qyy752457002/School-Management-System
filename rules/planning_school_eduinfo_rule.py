@@ -19,6 +19,13 @@ class PlanningSchoolEduinfoRule(object):
         planning_school = orm_model_to_view_model(planning_school_eduinfo_db, PlanningSchoolEduinfoModel)
         return planning_school
 
+    async def get_planning_school_eduinfo_by_planning_school_id(self, planning_school_eduinfo_id):
+        planning_school_eduinfo_db = await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_planning_school_id(planning_school_eduinfo_id)
+        # 可选 , exclude=[""]
+        planning_school = orm_model_to_view_model(planning_school_eduinfo_db, PlanningSchoolEduinfoModel)
+        return planning_school
+
+
     async def add_planning_school_eduinfo(self, planning_school: PlanningSchoolEduinfoModel,convertmodel=True):
         exists_planning_school = await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_id(
             planning_school.planning_school_id)

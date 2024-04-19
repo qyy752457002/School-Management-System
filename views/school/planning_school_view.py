@@ -40,7 +40,10 @@ class PlanningSchoolView(BaseView):
 
                   ):
         planning_school = await self.planning_school_rule.get_planning_school_by_id(planning_school_id)
-        return planning_school
+        planning_school_communication = await self.planning_school_communication_rule.get_planning_school_communication_by_planning_shcool_id(planning_school_id)
+        planning_school_eduinfo = await self.planning_school_eduinfo_rule.get_planning_school_eduinfo_by_planning_school_id(planning_school_id)
+
+        return {'planning_school':planning_school,'planning_school_communication':planning_school_communication ,'planning_school_eduinfo':planning_school_eduinfo }
     # 获取单个详情
     # async def get_detail(self, planning_school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1,
     #                                                     max_length=20, example='SC2032633'),
