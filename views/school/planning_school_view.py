@@ -121,11 +121,12 @@ class PlanningSchoolView(BaseView):
         return res
 
     async def page(self, page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),  page_request=Depends(PageRequest) ):
-        print(page_request)
+        print(page_request,page_search)
         items = []
         # exit(1)
-        paging_result = await self.planning_school_rule.query_planning_school_with_page(page_request, page_search)
-        return paging_result
+        return page_search
+        # paging_result = await self.planning_school_rule.query_planning_school_with_page(page_request, page_search)
+        # return paging_result
 
         # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
 

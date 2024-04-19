@@ -94,13 +94,13 @@ class PlanningSchoolDAO(DAOBase):
         result = await session.execute(select(func.count()).select_from(PlanningSchool))
         return result.scalar()
 
-    async def query_planning_school_with_page(self, PlanningSchoolPageSearch,page_request: PageRequest) -> Paging:
+    async def query_planning_school_with_page(self, page_search,page_request: PageRequest) -> Paging:
         query = select(PlanningSchool)
         need_update_list = []
-        for key, value in PlanningSchoolPageSearch.dict().items():
+        for key, value in page_search.dict().items():
             if value:
                 need_update_list.append(key)
-                query = query.where(PlanningSchool.key == PlanningSchoolPageSearch.value)
+                # query = query.where(PlanningSchool.key == PlanningSchoolPageSearch.value)
 
         #
         # if planning_school_name:
