@@ -100,6 +100,8 @@ class PlanningSchoolDAO(DAOBase):
                                               founder_type_lv3 ) -> Paging:
         query = select(PlanningSchool)
 
+        # todo 根据举办者类型  1及 -3级  处理为条件   1  2ji全部转换为 3级  最后in 3级查询
+
 
 
         if planning_school_name:
