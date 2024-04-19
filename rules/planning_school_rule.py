@@ -1,18 +1,15 @@
-# from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-
-from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
-
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from daos.planning_school_dao import PlanningSchoolDAO
 from models.planning_school import PlanningSchool
+from rules import enum_value_rule
+from rules.enum_value_rule import EnumValueRule
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus
-
 from views.models.planning_school import PlanningSchoolBaseInfo
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
-
 
 @dataclass_inject
 class PlanningSchoolRule(object):
@@ -113,6 +110,22 @@ class PlanningSchoolRule(object):
                                               block,planning_school_level,borough,status ,founder_type,
                                               founder_type_lv2,
                                               founder_type_lv3 ):
+        # todo 根据举办者类型  1及 -3级  处理为条件   1  2ji全部转换为 3级  最后in 3级查询
+        enum_value_rule = get_injector(EnumValueRule)
+        if founder_type:
+            if len(founder_type) > 0:
+
+                founder_type_lv2_res= await enum_value_rule.get_next_level_enum_values('founder_type'  ,founder_type)
+                for item in founder_type_lv2_res:
+                    founder_type_lv2.append(item.enum_value)
+
+
+            # query = query.where(PlanningSchool.founder_type_lv2 == founder_type_lv2)
+        if len(founder_type_lv2)>0:
+            founder_type_lv3_res= await enum_value_rule.get_next_level_enum_values('founder_type_lv2'  ,founder_type_lv2)
+            for item in founder_type_lv3_res:
+                founder_type_lv3.append(item.enum_value)
+
         paging = await self.planning_school_dao.query_planning_school_with_page(  page_request, planning_school_name,planning_school_no,planning_school_code,
                                                                                   block,planning_school_level,borough,status,founder_type,
                                                                                   founder_type_lv2,
@@ -139,18 +152,11 @@ class PlanningSchoolRule(object):
 
         need_update_list = []
         need_update_list.append('status')
-        #
-        # for key, value in exists_planning_school.dict().items():
-        #     if value:
-        #         need_update_list.append(key)
-
 
         print(exists_planning_school.status,2222222)
         planning_school_db = await self.planning_school_dao.update_planning_school_byargs(exists_planning_school,*need_update_list)
         # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
         return planning_school_db
-
-
 
     async def update_planning_school_byargs(self, planning_school,ctype=1):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school.id)
@@ -173,8 +179,6 @@ class PlanningSchoolRule(object):
         return planning_school_db
 
 
-
-
     async def query_planning_schools(self,planning_school_name):
 
         session = await db_connection_manager.get_async_session("default", True)
@@ -183,11 +187,5 @@ class PlanningSchoolRule(object):
         lst = []
         for row in res:
             planning_school = orm_model_to_view_model(row, PlanningSchoolModel)
-            # account = PlanningSchool(school_id=row.school_id,
-            #                  grade_no=row.grade_no,
-            #                  grade_name=row.grade_name,
-            #                  grade_alias=row.grade_alias,
-            #                  description=row.description)
             lst.append(planning_school)
         return lst
-        # return await self.planning_school_dao.get_all_planning_schools()
