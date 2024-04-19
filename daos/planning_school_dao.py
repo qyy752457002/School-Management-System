@@ -94,21 +94,29 @@ class PlanningSchoolDAO(DAOBase):
         result = await session.execute(select(func.count()).select_from(PlanningSchool))
         return result.scalar()
 
-    async def query_planning_school_with_page(self, page_search,page_request: PageRequest) -> Paging:
+    async def query_planning_school_with_page(self, page_request: PageRequest, planning_school_name,planning_school_no,planning_school_code,
+                                              block,planning_school_level,borough,status ) -> Paging:
         query = select(PlanningSchool)
-        need_update_list = []
-        for key, value in page_search.dict().items():
-            if value:
-                need_update_list.append(key)
-                # query = query.where(PlanningSchool.key == PlanningSchoolPageSearch.value)
 
-        #
-        # if planning_school_name:
-        #     query = query.where(PlanningSchool.planning_school_name == planning_school_name)
-        # if planning_school_id:
-        #     query = query.where(PlanningSchool.id == planning_school_id)
-        # if planning_school_no:
-        #     query = query.where(PlanningSchool.planning_school_no == planning_school_no)
+
+
+        if planning_school_name:
+            query = query.where(PlanningSchool.planning_school_name == planning_school_name)
+        if planning_school_no:
+            query = query.where(PlanningSchool.planning_school_no == planning_school_no)
+        if planning_school_code:
+            query = query.where(PlanningSchool.planning_school_code == planning_school_code)
+        if block:
+            query = query.where(PlanningSchool.block == block)
+        if planning_school_level:
+            query = query.where(PlanningSchool.planning_school_level == planning_school_level)
+        if borough:
+            query = query.where(PlanningSchool.borough == borough)
+
+        if status:
+            query = query.where(PlanningSchool.status == status)
+
+
         paging = await self.query_page(query, page_request)
         return paging
 

@@ -120,12 +120,25 @@ class PlanningSchoolView(BaseView):
 
         return res
 
-    async def page(self, page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),  page_request=Depends(PageRequest) ):
-        print(page_request,page_search)
+    async def page(self,
+                   # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
+                   block: str = Query("", title=" ", description="地域管辖区", ),
+                   planning_school_code: str = Query("", title="", description=" 园所标识码", ),
+        planning_school_level: str = Query("", title="", description=" 学校星级", ),
+    planning_school_name: str = Query("", title="学校名称", description="1-20字符",),
+    planning_school_no:str= Query("", title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,),
+    borough:str=Query("", title="  ", description=" 行政管辖区", ),
+    status: PlanningSchoolStatus = Query("", title="", description=" 状态",examples=['正常']),
+
+                   page_request=Depends(PageRequest) ):
+        print(page_request,)
         items = []
         # exit(1)
         # return page_search
-        paging_result = await self.planning_school_rule.query_planning_school_with_page(page_request, page_search)
+        paging_result = await self.planning_school_rule.query_planning_school_with_page(page_request,planning_school_name,planning_school_no,planning_school_code,
+                                                                                        block,planning_school_level,borough,status
+
+                                                                                        )
         return paging_result
 
         # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
