@@ -24,12 +24,25 @@ class SchoolCommunicationRule(object):
         school = orm_model_to_view_model(school_communication_db, SchoolCommunicationModel)
         return school
 
-    async def add_school_communication(self, school: SchoolCommunicationModel):
+    async def add_school_communication(self, school: SchoolCommunicationModel,convertmodel=True):
         exists_school = await self.school_communication_dao.get_school_communication_by_id(
             school.school_id)
         if exists_school:
             raise Exception(f"学校通信信息{school.school_communication_name}已存在")
-        school_communication_db = view_model_to_orm_model(school, SchoolCommunication,    exclude=["id"])
+
+
+        if convertmodel:
+            school_communication_db = view_model_to_orm_model(school, SchoolCommunication,    exclude=["id"])
+
+        else:
+            school_communication_db = SchoolCommunication()
+            school_communication_db.id = None
+            school_communication_db.school_id= school.school_id
+
+        school_communication_db.deleted = 0
+        school_communication_db.status = '正常'
+        school_communication_db.created_uid = 0
+        school_communication_db.updated_uid = 0
 
 
         school_communication_db = await self.school_communication_dao.add_school_communication(school_communication_db)
@@ -108,8 +121,8 @@ class SchoolCommunicationRule(object):
             if value:
                 need_update_list.append(key)
 
-        planning_school_communication_db = await self.planning_school_communication_dao.update_planning_school_communication_byargs(planning_school_communication, *need_update_list)
+        school_communication_db = await self.planning_school_communication_dao.update_planning_school_communication_byargs(planning_school_communication, *need_update_list)
 
         # 更新不用转换   因为得到的对象不熟全属性
-        # planning_school_communication = orm_model_to_view_model(planning_school_communication_db, SchoolModel, exclude=[""])
-        return planning_school_communication_db
+        # planning_school_communication = orm_model_to_view_model(school_communication_db, SchoolModel, exclude=[""])
+        return school_communication_db

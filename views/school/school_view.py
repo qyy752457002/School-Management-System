@@ -36,9 +36,28 @@ class SchoolView(BaseView):
         return {'school':school,'school_communication':school_communication ,'school_eduinfo':school_eduinfo }
 
 
-    async def post(self,school:School):
+    async def post(self,school:SchoolKeyInfo):
         res = await self.school_rule.add_school(school)
         print(res)
+        resc = SchoolCommunications(id=0)
+        # logging.debug(resc,'模型2', res.id, type( res.id ))
+        newid = str(res.id)
+        print(resc, '模型23', res.id, type(res.id))
+        # str( res.id).copy()
+
+        resc.school_id = int(newid)
+        print(resc, newid, '||||||||')
+
+        # 保存通信信息
+        res_comm = await self.school_communication_rule.add_school_communication(resc,
+                                                                                                   convertmodel=False)
+        print(res_comm, '模型2 res')
+        #
+        resedu = SchoolEduInfo(id=0)
+        resedu.school_id = res.id
+        # 保存教育信息
+        res_edu = await self.school_eduinfo_rule.add_school_eduinfo(resedu, convertmodel=False)
+        print(res_edu)
 
 
         return res
