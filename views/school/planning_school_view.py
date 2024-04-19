@@ -30,6 +30,7 @@ class PlanningSchoolView(BaseView):
         self.planning_school_eduinfo_rule = get_injector(PlanningSchoolEduinfoRule)
 
 
+    #todo  包含3部分信息 1.基本信息 2.通讯信息 3.教育信息
     async def get(self, planning_school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1,
                                                         max_length=20, example='SC2032633'),
                   planning_school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
@@ -39,21 +40,31 @@ class PlanningSchoolView(BaseView):
                   ):
         planning_school = await self.planning_school_rule.get_planning_school_by_id(planning_school_id)
         return planning_school
+    # 获取单个详情
+    # async def get_detail(self, planning_school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1,
+    #                                                     max_length=20, example='SC2032633'),
+    #               planning_school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
+    #                                                 example='XX小学'),
+    #               planning_school_id: int = Query(..., description="学校id|根据学校查规划校", example='1'),
+    #
+    #               ):
+    #     planning_school = await self.planning_school_rule.get_planning_school_by_id(planning_school_id)
+    #     return planning_school
 
     #  新增的实际结果  ID赋值
-    async def post(self, planning_school: PlanningSchool):
+    # async def post(self, planning_school: PlanningSchool):
+    #     print(planning_school)
+    #     res = await self.planning_school_rule.add_planning_school(planning_school)
+    #
+    #     return res
+    async def post(self, planning_school: PlanningSchoolKeyInfo):
         print(planning_school)
         res = await self.planning_school_rule.add_planning_school(planning_school)
 
         return res
-    async def post_by_keyinfo(self, planning_school: PlanningSchoolKeyInfo):
-        print(planning_school)
-        res = await self.planning_school_rule.add_planning_school(planning_school)
 
-        return res
-
-    # 修改 关键信息
-    async def put(self,
+    # # 修改 关键信息
+    async def put_keyinfo(self,
                   planning_school: PlanningSchoolKeyInfo,
                   # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
 
@@ -101,7 +112,7 @@ class PlanningSchoolView(BaseView):
 
         # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
 
-    # 开办
+    # 开办 todo 校验合法性等  业务逻辑
     async def patch_open(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
                                                                min_length=1, max_length=20, example='SC2032633')):
         # print(planning_school)
@@ -130,28 +141,44 @@ class PlanningSchoolView(BaseView):
     #     #
     #     return [ ]
     # 新增 通信信息
-    async def post_comminfo(self,
-                  planning_school: PlanningSchoolCommunications,
+    # async def post_comminfo(self,
+    #               planning_school: PlanningSchoolCommunications,
+    #               # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
+    #
+    #               ):
+    #     # print(planning_school)
+    #
+    #     res = await self.planning_school_communication_rule.add_planning_school_communication(planning_school)
+    #
+    #     # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+    #
+    #     return res
+
+    # 新增 教学信息
+    # async def post_eduinfo(self,
+    #                         planning_school: PlanningSchoolEduInfo,
+    #                         # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
+    #
+    #                         ):
+    #     # print(planning_school)
+    #
+    #     res = await self.planning_school_eduinfo_rule.add_planning_school_eduinfo(planning_school)
+    #
+    #     # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+    #
+    #     return res
+
+
+    # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性
+    async def put(self,
+                          PlanningSchoolKeyInfo: PlanningSchoolKeyInfo,
+                  planning_school: PlanningSchoolKeyInfo,
                   # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
 
                   ):
         # print(planning_school)
 
-        res = await self.planning_school_communication_rule.add_planning_school_communication(planning_school)
-
-        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-
-        return res
-
-    # 新增 教学信息
-    async def post_eduinfo(self,
-                            planning_school: PlanningSchoolEduInfo,
-                            # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
-
-                            ):
-        # print(planning_school)
-
-        res = await self.planning_school_eduinfo_rule.add_planning_school_eduinfo(planning_school)
+        res = await self.planning_school_rule.update_planning_school(planning_school)
 
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
 
