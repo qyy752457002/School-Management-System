@@ -143,7 +143,7 @@ class PlanningSchoolView(BaseView):
 
         return res
 
-    # 关闭
+    # 关闭  todo  附件 和 原因的保存 到日志 
     async def patch_close(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
                                                                 min_length=1, max_length=20, example='SC2032633'),
                           action_reason   :str= Query(None, description="原因" ,min_length=1,max_length=20,example='家庭搬迁'),
