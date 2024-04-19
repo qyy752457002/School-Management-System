@@ -41,5 +41,6 @@ class PlanningSchoolEduinfo(BaseDBModel):
 
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)
     updated_uid: Mapped[int] = mapped_column( nullable=True , comment="操作人",default=0)
-    deleted: Mapped[int] = mapped_column( nullable=True  , comment="删除态",default=0)
+    is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)
+
 

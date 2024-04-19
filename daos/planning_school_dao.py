@@ -77,7 +77,7 @@ class PlanningSchoolDAO(DAOBase):
         session = await self.master_db()
         deleted_status= 1
         update_stmt = update(PlanningSchool).where(PlanningSchool.id == planning_school.id).values(
-            deleted= deleted_status,
+            is_deleted= deleted_status,
         )
         await session.execute(update_stmt)
         # await session.delete(planning_school)
