@@ -122,15 +122,25 @@ class PlanningSchoolRule(object):
             raise PlanningSchoolNotFoundError()
         # 判断运来的状态 进行后续的更新
         if status== PlanningSchoolStatus.NORMAL.value and exists_planning_school.status== PlanningSchoolStatus.OPENING.value:
-
+            # 开办
             exists_planning_school.status= PlanningSchoolStatus.NORMAL.value
         elif status== PlanningSchoolStatus.CLOSED.value and exists_planning_school.status== PlanningSchoolStatus.NORMAL.value:
+            # 关闭
             exists_planning_school.status= PlanningSchoolStatus.CLOSED.value
         else:
             # exists_planning_school.status= PlanningSchoolStatus.OPENING.value
             raise Exception(f"规划校当前状态不支持您的操作")
 
-        planning_school_db = await self.planning_school_dao.update_planning_school_byargs(exists_planning_school,status)
+        need_update_list = []
+        need_update_list.append('status')
+        #
+        # for key, value in exists_planning_school.dict().items():
+        #     if value:
+        #         need_update_list.append(key)
+
+
+        print(exists_planning_school.status,2222222)
+        planning_school_db = await self.planning_school_dao.update_planning_school_byargs(exists_planning_school,*need_update_list)
         # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
         return planning_school_db
 
