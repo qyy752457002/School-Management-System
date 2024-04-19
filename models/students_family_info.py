@@ -46,3 +46,4 @@ class StudentFamilyInfo(BaseDBModel):
     workplace: Mapped[str] = mapped_column(String(64), nullable=False, comment="工作单位")
     family_member_occupation: Mapped[str] = mapped_column(String(64), nullable=False, comment="家庭成员职业")
     deleted: Mapped[int] = mapped_column(nullable=True, comment="删除态", default=0)
+    is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")

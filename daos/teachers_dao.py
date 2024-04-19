@@ -16,22 +16,6 @@ class TeachersDao(DAOBase):
         await session.refresh(teachers)
         return teachers
 
-    # 编辑教师关键信息
-
-    # async def update_teachers(self, teachers):
-    #     session = await self.master_db()
-    #     update_stmt = update(Teacher).where(Teacher.id == teachers.id).values(
-    #         teacher_name=teachers.teacher_name,
-    #         teacher_gender=teachers.teacher,
-    #         teacher_id_type=teachers.teacher_id_type,
-    #         teacher_id_number=teachers.teacher_id_number,
-    #         teacher_date_of_birth=teachers.teacher_date_of_birth,
-    #         teacher_employer=teachers.teacher_employer,
-    #         teacher_avatar=teachers.teacher_avatar,
-    #     )
-    #     await session.execute(update_stmt)
-    #     await session.commit()
-    #     return teachers
 
     async def update_teachers(self, teachers: Teacher, *args, is_commit: bool = True):
         session = await self.master_db()
@@ -45,14 +29,14 @@ class TeachersDao(DAOBase):
         result = await session.execute(select(Teacher).where(Teacher.teacher_id == teachers_id))
         return result.scalar_one_or_none()
 
-    async def get_teachers_by_name(self, teachers_name):
-        session = await self.slave_db()
-        result = await session.execute(select(Teacher).where(Teacher.teachers_name) == teachers_name)
-        return result.scalar_one_or_none()
+    # async def get_teachers_by_username(self, username):
+    #     session = await self.slave_db()
+    #     result = await session.execute(select(Teacher).where(Teacher.username) == username)
+    #     return result.scalar_one_or_none()
 
     #删除单个教师信息
     async def delete_teachers(self, teachers: Teacher):
-        session = self.master_db()
+        session = await self.master_db()
         return await self.delete(session, teachers)
 
     #获取所有教师信息
@@ -66,6 +50,15 @@ class TeachersDao(DAOBase):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(Teacher))
         return result.scalar()
+
+    # async def query_teacher_with_page(self,username, page_request: PageRequest):
+    #     query = select(Teacher)
+    #     if username:
+    #         query = query.where(Teacher.username == username)
+    #     paging = await self.query_page(query, page_request)
+    #     return paging
+
+
 
 
 

@@ -8,8 +8,8 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 from rules.teachers_rule import TeachersRule
-from views.models.teachers import Teachers, TeacherInfo
 from rules.teachers_info_rule import TeachersInfoRule
+from views.models.teachers import Teachers, TeacherInfo,TeachersCreatModel,TeacherInfoCreateModel
 
 
 class TeachersView(BaseView):
@@ -28,7 +28,7 @@ class TeachersView(BaseView):
     # 编辑新教职工登记信息
     async def put_teacher(self, teachers: Teachers):
         print(teachers)
-        res = await self.teacher_rule.add_teachers(teachers)
+        res = await self.teacher_rule.update_teachers(teachers)
         return res
 
     async def page(self, condition: NewTeacher = Depends(NewTeacher), page_request=Depends(PageRequest)):
@@ -38,19 +38,16 @@ class TeachersView(BaseView):
         paging_result = await self.teacher_info_rule.query_teacher_with_page(page_request, condition)
         return paging_result
 
-    # 在职教职工信息
+
     # 获取教职工基本信息
-    async def get_teacherinfo(self,
-                              teacher_id: int = Query(..., title="教师名称", description="教师名称", min_length=1,
-                                                      max_length=20,
-                                                      example=123)):
+    async def get_newteacherinfo(self, teacher_id: int = Query(..., title="教师名称", description="教师名称",
+                                                       example=123)):
         res = await self.teacher_info_rule.get_teachers_info_by_id(teacher_id)
         return res
 
     # 编辑教职工基本信息
-    async def put_teacherinfo(self, teacherinfo: TeacherInfo):
-        print(teacherinfo)
-        res = await self.teacher_info_rule.add_teachers_info(teacherinfo)
+    async def put_newteacherinfo(self, teacher_info: TeacherInfoCreateModel):
+        res = await self.teacher_info_rule.update_teachers_info(teacher_info)
         return res
 
     # 删除教职工基本信息
@@ -58,8 +55,7 @@ class TeachersView(BaseView):
                                  teacher_id: int = Query(..., title="教师名称", description="教师名称", min_length=1,
                                                          max_length=20,
                                                          example=123)):
-        res = await self.teacher_info_rule.soft_delete_teachers_info(teacher_id)
-        return res
-
+        await self.teacher_info_rule.delete_teachers_info(teacher_id)
+        return str(teacher_id)
 
 
