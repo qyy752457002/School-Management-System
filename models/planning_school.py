@@ -34,6 +34,8 @@ class PlanningSchool(BaseDBModel):
     create_planning_school_date: Mapped[str] = mapped_column(String(64), nullable=True, comment="建校年月",default='')
     social_credit_code: Mapped[str] = mapped_column(String(64), nullable=True, comment="统一社会信用代码",default='')
     founder_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="founder_type",default='')
+    founder_type_lv2: Mapped[str] = mapped_column(String(64), nullable=True, comment="举办者类型二级",default='')
+    founder_type_lv3: Mapped[str] = mapped_column(String(64), nullable=True, comment="举办者类型三级",default='')
     founder_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="举办者名称",default='')
     founder_code: Mapped[str] = mapped_column(String(64), nullable=True, comment="举办者识别码",default='')
     urban_rural_nature: Mapped[str] = mapped_column(String(64), nullable=True, comment="城乡性质",default='')

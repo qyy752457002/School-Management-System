@@ -5,7 +5,7 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
-    PlanningSchoolStatus
+    PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch
 from views.models.planning_school_communications import PlanningSchoolCommunications
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
 from views.models.school import School
@@ -116,21 +116,16 @@ class PlanningSchoolView(BaseView):
         return res
 
     async def page(self,
-                   # planning_school_baseinfo:PlanningSchoolBaseInfo,
+                   PlanningSchoolPageSearch:PlanningSchoolPageSearch,
                    page_request=Depends(PageRequest),
 
-                   planning_school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1,
-                                                   max_length=20, example='SC2032633'),
-                   planning_school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
-                                                     example='XX小学'),
-                   status: PlanningSchoolStatus = Query(None, title="状态", description="状态")
+
+
 
                    ):
         print(page_request)
         items = []
-        paging_result = await self.planning_school_rule.query_planning_school_with_page(page_request,
-                                                                                        planning_school_name, None,
-                                                                                        planning_school_no, )
+        paging_result = await self.planning_school_rule.query_planning_school_with_page(page_request, PlanningSchoolPageSearch )
         return paging_result
 
         # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
