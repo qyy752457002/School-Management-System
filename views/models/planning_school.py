@@ -9,10 +9,10 @@ class PlanningSchoolStatus(str, Enum):
     """
     状态
     """
-    DRAFT = "草稿"
-    OPENING = "开设中"
-    NORMAL = "正常"
-    CLOSED = "已关闭"
+    DRAFT = "draft"
+    OPENING = "opening"
+    NORMAL = "normal"
+    CLOSED = "closed"
 
     @classmethod
     def to_list(cls):

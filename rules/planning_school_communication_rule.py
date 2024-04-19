@@ -23,23 +23,24 @@ class PlanningSchoolCommunicationRule(object):
         exists_planning_school = await self.planning_school_communication_dao.get_planning_school_communication_by_id(
             planning_school.planning_school_id)
         if exists_planning_school:
-            raise Exception(f"规划校通信信息{planning_school.planning_school_communication_name}已存在")
+            raise Exception(f"规划校通信信息{planning_school.planning_school_id}已存在")
         if convertmodel:
             planning_school_communication_db = view_model_to_orm_model(planning_school, PlanningSchoolCommunication,    exclude=["id"])
         else:
             # planning_school_communication_db = PlanningSchoolCommunication(**planning_school.dict())
             planning_school_communication_db = PlanningSchoolCommunication()
-            planning_school_communication_db.planning_school_id= planning_school.id
+            planning_school_communication_db.id = None
+            planning_school_communication_db.planning_school_id= planning_school.planning_school_id
 
         planning_school_communication_db.deleted = 0
         planning_school_communication_db.status = '正常'
         planning_school_communication_db.created_uid = 0
         planning_school_communication_db.updated_uid = 0
-        print(planning_school_communication_db)
+        print(planning_school_communication_db,'模型2db')
 
         planning_school_communication_db = await self.planning_school_communication_dao.add_planning_school_communication(planning_school_communication_db)
-        planning_school = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel, exclude=[""])
-        return planning_school
+        # planning_school = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel, exclude=["created_at",'updated_at'])
+        return planning_school_communication_db
 
     async def update_planning_school_communication(self, planning_school,ctype=1):
         exists_planning_school = await self.planning_school_communication_dao.get_planning_school_communication_by_id(planning_school.id)
