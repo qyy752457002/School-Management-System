@@ -19,19 +19,26 @@ class PlanningSchoolEduinfoRule(object):
         planning_school = orm_model_to_view_model(planning_school_eduinfo_db, PlanningSchoolEduinfoModel)
         return planning_school
 
-    async def add_planning_school_eduinfo(self, planning_school: PlanningSchoolEduinfoModel):
+    async def add_planning_school_eduinfo(self, planning_school: PlanningSchoolEduinfoModel,convertmodel=True):
         exists_planning_school = await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_id(
             planning_school.planning_school_id)
         if exists_planning_school:
-            raise Exception(f"规划校教育信息{planning_school.planning_school_eduinfo_name}已存在")
+            raise Exception(f"规划校教育信息{planning_school.planning_school_id}已存在")
+        if convertmodel:
+            planning_school_eduinfo_db = view_model_to_orm_model(planning_school, PlanningSchoolEduinfo,    exclude=["id"])
 
-        planning_school_eduinfo_db = view_model_to_orm_model(planning_school, PlanningSchoolEduinfo,    exclude=["id"])
+        else:
+            planning_school_eduinfo_db = PlanningSchoolEduinfo(**planning_school.__dict__)
+            planning_school_eduinfo_db.id = None
+            planning_school_eduinfo_db.planning_school_id= planning_school.planning_school_id
+
+
         planning_school_eduinfo_db.deleted = 0
         planning_school_eduinfo_db.created_uid = 0
         planning_school_eduinfo_db.updated_uid = 0
 
         planning_school_eduinfo_db = await self.planning_school_eduinfo_dao.add_planning_school_eduinfo(planning_school_eduinfo_db)
-        planning_school = orm_model_to_view_model(planning_school_eduinfo_db, PlanningSchoolEduinfoModel, exclude=[""])
+        planning_school = orm_model_to_view_model(planning_school_eduinfo_db, PlanningSchoolEduinfoModel, exclude=["created_at",'updated_at'])
         return planning_school
 
     async def update_planning_school_eduinfo(self, planning_school,ctype=1):

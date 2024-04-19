@@ -73,12 +73,12 @@ class PlanningSchoolView(BaseView):
         res_comm = await self.planning_school_communication_rule.add_planning_school_communication(resc,convertmodel=False)
         print(res_comm,'模型2 res')
         #
-        # resedu = PlanningSchoolEduInfo()
-        # resedu.planning_school_id = res.id
+        resedu = PlanningSchoolEduInfo(id=0)
+        resedu.planning_school_id = res.id
 
 
-        # res_edu = await self.planning_school_eduinfo_rule.add_planning_school_eduinfo(resedu)
-        # print(res_edu)
+        res_edu = await self.planning_school_eduinfo_rule.add_planning_school_eduinfo(resedu,convertmodel=False)
+        print(res_edu)
 
         return res
 
