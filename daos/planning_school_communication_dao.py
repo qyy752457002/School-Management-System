@@ -1,6 +1,6 @@
 from sqlalchemy import select, func, update
 
-from mini_framework.databases.entities.dao_base import DAOBase
+from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
@@ -103,3 +103,9 @@ class PlanningSchoolCommunicationDAO(DAOBase):
         paging = await self.query_page(query, page_request)
         return paging
 
+
+    async def update_planning_school_communication_byargs(self, planning_school_communication: PlanningSchoolCommunication, *args, is_commit: bool = True):
+        session =await self.master_db()
+        update_contents = get_update_contents(planning_school_communication, *args)
+        query = update(PlanningSchoolCommunication).where(PlanningSchoolCommunication.id == planning_school_communication.id).values(**update_contents)
+        return await self.update(session, query, planning_school_communication, update_contents, is_commit=is_commit)

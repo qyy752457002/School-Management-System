@@ -124,3 +124,21 @@ class PlanningSchoolRule(object):
         # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
         return planning_school_db
 
+
+
+    async def update_planning_school_byargs(self, planning_school,ctype=1):
+        exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school.id)
+        if not exists_planning_school:
+            raise PlanningSchoolNotFoundError()
+        need_update_list = []
+        for key, value in planning_school.dict().items():
+            if value:
+                need_update_list.append(key)
+
+        planning_school_db = await self.planning_school_dao.update_planning_school_byargs(planning_school, *need_update_list)
+
+        # 更新不用转换   因为得到的对象不熟全属性
+        # planning_school = orm_model_to_view_model(planning_school_db, SchoolModel, exclude=[""])
+        return planning_school_db
+
+

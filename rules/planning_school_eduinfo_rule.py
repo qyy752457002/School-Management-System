@@ -3,6 +3,8 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+
+from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from daos.planning_school_eduinfo_dao import PlanningSchoolEduinfoDAO
 from models.planning_school_eduinfo import PlanningSchoolEduinfo
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo  as PlanningSchoolEduinfoModel
@@ -109,3 +111,19 @@ class PlanningSchoolEduinfoRule(object):
         paging_result = PaginatedResponse.from_paging(paging, PlanningSchoolEduinfoModel)
         return paging_result
 
+
+
+    async def update_planning_school_eduinfo_byargs(self, planning_school_eduinfo,ctype=1):
+        exists_planning_school_eduinfo = await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_id(planning_school_eduinfo.id)
+        if not exists_planning_school_eduinfo:
+            raise PlanningSchoolNotFoundError()
+        need_update_list = []
+        for key, value in planning_school_eduinfo.dict().items():
+            if value:
+                need_update_list.append(key)
+
+        planning_school_eduinfo_db = await self.planning_school_eduinfo_dao.update_planning_school_eduinfo_byargs(planning_school_eduinfo, *need_update_list)
+
+        # 更新不用转换   因为得到的对象不熟全属性
+        # planning_school = orm_model_to_view_model(planning_school_db, SchoolModel, exclude=[""])
+        return planning_school_eduinfo_db

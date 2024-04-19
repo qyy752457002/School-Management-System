@@ -121,3 +121,10 @@ class PlanningSchoolDAO(DAOBase):
         # await session.delete(planning_school)
         await session.commit()
         return planning_school
+
+
+    async def update_planning_school_byargs(self, planning_school: PlanningSchool, *args, is_commit: bool = True):
+        session =await self.master_db()
+        update_contents = get_update_contents(planning_school, *args)
+        query = update(PlanningSchool).where(PlanningSchool.id == planning_school.id).values(**update_contents)
+        return await self.update(session, query, planning_school, update_contents, is_commit=is_commit)
