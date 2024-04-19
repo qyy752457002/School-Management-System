@@ -25,7 +25,7 @@ class PlanningSchoolStatus(str, Enum):
     """
     状态
     """
-    ALL = "All"
+    # ALL = "All"
     DRAFT = "draft"
     OPENING = "opening"
     NORMAL = "normal"
@@ -104,6 +104,24 @@ class PlanningSchoolBaseInfo(BaseModel):
     historical_evolution: str = Field(..., title="", description="历史沿革",examples=['xxxxxxxxxxxxxxxxxxxx'])
     status: str = Field(None, title="", description="",examples=[''])
 
+class PlanningSchoolKeyAddInfo(BaseModel):
+    id:int= Query(None, title="", description="规划校id", example='1'),
+
+    planning_school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
+    # planning_school_short_name: str = Field(..., title="", description="园所简称",examples=['MXXX'])
+    planning_school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633'),
+    borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区']),
+    block: str = Query(..., title=" Author", description="地域管辖区",examples=['铁西区']),
+    planning_school_type: str = Query(..., title="", description=" 学校类型",examples=['中小学']),
+    planning_school_operation_type: str = Query(..., title="", description="办学类型/学校性质",examples=['学前教育']),
+    planning_school_operation_type_lv2: str = Query(..., title="", description=" 办学类型二级",examples=['小学']),
+    planning_school_operation_type_lv3: str = Query(..., title="", description=" 办学类型三级",examples=['附设小学班']),
+    planning_school_org_type: str = Query(..., title="", description=" 学校办别",examples=['民办']),
+    planning_school_level: str = Query(..., title="", description=" 学校星级",examples=['5'])
+    planning_school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
+
+
+
 class PlanningSchoolKeyInfo(BaseModel):
     id:int= Query(None, title="", description="规划校id", example='1'),
 
@@ -129,8 +147,9 @@ class PlanningSchoolPageSearch(BaseModel):
     planning_school_name: str = Query("", title="学校名称", description="1-20字符",)
     planning_school_no:str= Query("", title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,),
     borough:str=Query("", title="  ", description=" 行政管辖区", ),
-    # status: Optional[str] = Query(None,enum=SchoolStatus, title="", description=" 状态", )
     status: PlanningSchoolStatus = Query("", title="", description=" 状态",examples=['正常'])
+
+    # status: Optional[str] = Query(None,enum=SchoolStatus, title="", description=" 状态", )
     # founder_type: List[ PlanningSchoolFounderType]  = Query("", title="", description="举办者类型",examples=['地方'])
     # founder_type_lv2:  List[ PlanningSchoolFounderType] = Query("", title="", description="举办者类型二级",examples=['教育部门'])
     # founder_type_lv3:  List[ PlanningSchoolFounderType] = Query("", title="", description="举办者类型三级",examples=['县级教育部门'])

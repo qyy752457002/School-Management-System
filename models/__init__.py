@@ -18,5 +18,6 @@ from . import campus_communication
 from . import campus_eduinfo
 
 from . import classes
+from . import enum_value
 
 metadata = BaseDBModel.metadata
