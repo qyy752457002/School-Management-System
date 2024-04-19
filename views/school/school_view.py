@@ -65,7 +65,7 @@ class SchoolView(BaseView):
     # 修改 变更 基本信息
     async def patch_baseinfo(self, school_baseinfo:SchoolBaseInfo ):
         # print(school)
-        res = await self.school_rule.update_school(school_baseinfo,2)
+        res = await self.school_rule.update_school_byargs(school_baseinfo,2)
 
         return res
         # return   school_baseinfo

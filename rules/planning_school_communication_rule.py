@@ -3,6 +3,9 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+
+from business_exceptions.planning_school import PlanningSchoolNotFoundError
+from business_exceptions.planning_school_communication import PlanningSchoolCommunicationNotFoundError
 from daos.planning_school_communication_dao import PlanningSchoolCommunicationDAO
 from models.planning_school_communication import PlanningSchoolCommunication
 from views.models.planning_school_communications import PlanningSchoolCommunications  as PlanningSchoolCommunicationModel
@@ -19,44 +22,35 @@ class PlanningSchoolCommunicationRule(object):
         planning_school = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel)
         return planning_school
 
-    async def add_planning_school_communication(self, planning_school: PlanningSchoolCommunicationModel):
+    async def get_planning_school_communication_by_planning_shcool_id(self, planning_school_communication_id):
+        planning_school_communication_db = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(planning_school_communication_id)
+        # 可选 , exclude=[""]
+        planning_school = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel)
+        return planning_school
+
+
+    async def add_planning_school_communication(self, planning_school: PlanningSchoolCommunicationModel,convertmodel=True):
         exists_planning_school = await self.planning_school_communication_dao.get_planning_school_communication_by_id(
             planning_school.planning_school_id)
         if exists_planning_school:
-            raise Exception(f"规划校通信信息{planning_school.planning_school_communication_name}已存在")
-        planning_school_communication_db = PlanningSchoolCommunication()
-        planning_school_communication_db.planning_school_id = planning_school.planning_school_id
-        planning_school_communication_db.postal_code = planning_school.postal_code
-        planning_school_communication_db.fax_number = planning_school.fax_number
-        planning_school_communication_db.email = planning_school.email
-        planning_school_communication_db.contact_number = planning_school.contact_number
-        planning_school_communication_db.area_code = planning_school.area_code
+            raise Exception(f"规划校通信信息{planning_school.planning_school_id}已存在")
+        if convertmodel:
+            planning_school_communication_db = view_model_to_orm_model(planning_school, PlanningSchoolCommunication,    exclude=["id"])
+        else:
+            # planning_school_communication_db = PlanningSchoolCommunication(**planning_school.dict())
+            planning_school_communication_db = PlanningSchoolCommunication()
+            planning_school_communication_db.id = None
+            planning_school_communication_db.planning_school_id= planning_school.planning_school_id
 
-        planning_school_communication_db.long = planning_school.long
-        planning_school_communication_db.lat = planning_school.lat
-        planning_school_communication_db.leg_repr_name = planning_school.leg_repr_name
-        planning_school_communication_db.party_leader_name = planning_school.party_leader_name
-        planning_school_communication_db.party_leader_position = planning_school.party_leader_position
-        planning_school_communication_db.adm_leader_name = planning_school.adm_leader_name
-        planning_school_communication_db.adm_leader_position = planning_school.adm_leader_position
-        planning_school_communication_db.loc_area = planning_school.loc_area
-        planning_school_communication_db.loc_area_pro = planning_school.loc_area_pro
-        planning_school_communication_db.detailed_address = planning_school.detailed_address
-        planning_school_communication_db.related_license_upload = planning_school.related_license_upload
-        planning_school_communication_db.school_web_url = planning_school.school_web_url
         planning_school_communication_db.deleted = 0
         planning_school_communication_db.status = '正常'
         planning_school_communication_db.created_uid = 0
         planning_school_communication_db.updated_uid = 0
-
-
-        planning_school_communication_db.status = '正常'
-        planning_school_communication_db.created_uid = 0
-        planning_school_communication_db.updated_uid = 0
+        print(planning_school_communication_db,'模型2db')
 
         planning_school_communication_db = await self.planning_school_communication_dao.add_planning_school_communication(planning_school_communication_db)
-        planning_school = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel, exclude=[""])
-        return planning_school
+        # planning_school = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel, exclude=["created_at",'updated_at'])
+        return planning_school_communication_db
 
     async def update_planning_school_communication(self, planning_school,ctype=1):
         exists_planning_school = await self.planning_school_communication_dao.get_planning_school_communication_by_id(planning_school.id)
@@ -118,4 +112,28 @@ class PlanningSchoolCommunicationRule(object):
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, PlanningSchoolCommunicationModel)
         return paging_result
+
+
+
+    async def update_planning_school_communication_byargs(self, planning_school_communication,ctype=1):
+        if planning_school_communication.planning_school_id>0:
+            # planning_school = await self.planning_school_rule.get_planning_school_by_id(planning_school_communication.planning_school_id)
+            exists_planning_school_communication = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(planning_school_communication.planning_school_id)
+
+
+        else:
+
+            exists_planning_school_communication = await self.planning_school_communication_dao.get_planning_school_communication_by_id(planning_school_communication.id)
+        if not exists_planning_school_communication:
+            raise PlanningSchoolCommunicationNotFoundError()
+        need_update_list = []
+        for key, value in planning_school_communication.dict().items():
+            if value:
+                need_update_list.append(key)
+
+        planning_school_communication_db = await self.planning_school_communication_dao.update_planning_school_communication_byargs(planning_school_communication, *need_update_list)
+
+        # 更新不用转换   因为得到的对象不熟全属性
+        # planning_school = orm_model_to_view_model(planning_school_db, SchoolModel, exclude=[""])
+        return planning_school_communication_db
 
