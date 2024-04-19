@@ -63,6 +63,7 @@ class PlanningSchoolView(BaseView):
     #     return res
     async def post(self, planning_school: PlanningSchoolKeyInfo):
         # print(planning_school)
+        # 保存 模型
         res = await self.planning_school_rule.add_planning_school(planning_school)
         resc = PlanningSchoolCommunications(id=0)
         # logging.debug(resc,'模型2', res.id, type( res.id ))
@@ -73,13 +74,13 @@ class PlanningSchoolView(BaseView):
         resc.planning_school_id =   int(newid)
         print(resc,newid,'||||||||')
 
+        # 保存通信信息
         res_comm = await self.planning_school_communication_rule.add_planning_school_communication(resc,convertmodel=False)
         print(res_comm,'模型2 res')
         #
         resedu = PlanningSchoolEduInfo(id=0)
         resedu.planning_school_id = res.id
-
-
+        # 保存教育信息
         res_edu = await self.planning_school_eduinfo_rule.add_planning_school_eduinfo(resedu,convertmodel=False)
         print(res_edu)
 
@@ -138,7 +139,7 @@ class PlanningSchoolView(BaseView):
     async def patch_open(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
                                                                min_length=1, max_length=20, example='SC2032633')):
         # print(planning_school)
-        res = await self.planning_school_rule.update_planning_school_status(planning_school_id,1)
+        res = await self.planning_school_rule.update_planning_school_status(planning_school_id,PlanningSchoolStatus.OPENING.value)
 
         return res
 
@@ -150,7 +151,7 @@ class PlanningSchoolView(BaseView):
 
                           ):
         # print(planning_school)
-        res = await self.planning_school_rule.update_planning_school_status(planning_school_id,2)
+        res = await self.planning_school_rule.update_planning_school_status(planning_school_id,PlanningSchoolStatus.CLOSED.value)
 
         return res
 
@@ -163,18 +164,18 @@ class PlanningSchoolView(BaseView):
     #     #
     #     return [ ]
     # 新增 通信信息
-    async def post_comminfo(self,
-                  planning_school: PlanningSchoolCommunications,
-                  # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
-
-                  ):
-        # print(planning_school)
-
-        res = await self.planning_school_communication_rule.add_planning_school_communication(planning_school)
-
-        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-
-        return res
+    # async def post_comminfo(self,
+    #               planning_school: PlanningSchoolCommunications,
+    #               # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
+    #
+    #               ):
+    #     # print(planning_school)
+    #
+    #     res = await self.planning_school_communication_rule.add_planning_school_communication(planning_school)
+    #
+    #     # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+    #
+    #     return res
 
     # 新增 教学信息
     # async def post_eduinfo(self,

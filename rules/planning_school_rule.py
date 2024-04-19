@@ -7,7 +7,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from daos.planning_school_dao import PlanningSchoolDAO
 from models.planning_school import PlanningSchool
-from views.models.planning_school import PlanningSchool as PlanningSchoolModel
+from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus
 
 from views.models.planning_school import PlanningSchoolBaseInfo
 
@@ -36,7 +36,7 @@ class PlanningSchoolRule(object):
         if exists_planning_school:
             raise Exception(f"规划校{planning_school.planning_school_name}已存在")
         planning_school_db = view_model_to_orm_model(planning_school, PlanningSchool,    exclude=["id"])
-        planning_school_db.status = '正常'
+        planning_school_db.status =  PlanningSchoolStatus.DRAFT.value
         planning_school_db.created_uid = 0
         planning_school_db.updated_uid = 0
 
@@ -120,7 +120,17 @@ class PlanningSchoolRule(object):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
-        planning_school_db = await self.planning_school_dao.update_planning_school_status(exists_planning_school,status)
+        # 判断运来的状态 进行后续的更新
+        if status== PlanningSchoolStatus.NORMAL.value and exists_planning_school.status== PlanningSchoolStatus.OPENING.value:
+
+            exists_planning_school.status= PlanningSchoolStatus.NORMAL.value
+        elif status== PlanningSchoolStatus.CLOSED.value and exists_planning_school.status== PlanningSchoolStatus.NORMAL.value:
+            exists_planning_school.status= PlanningSchoolStatus.CLOSED.value
+        else:
+            # exists_planning_school.status= PlanningSchoolStatus.OPENING.value
+            raise Exception(f"规划校当前状态不支持您的操作")
+
+        planning_school_db = await self.planning_school_dao.update_planning_school_byargs(exists_planning_school,status)
         # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
         return planning_school_db
 
@@ -134,6 +144,11 @@ class PlanningSchoolRule(object):
         for key, value in planning_school.dict().items():
             if value:
                 need_update_list.append(key)
+
+        if exists_planning_school.status== PlanningSchoolStatus.DRAFT.value:
+            planning_school.status= PlanningSchoolStatus.OPENING.value
+        else:
+            pass
 
         planning_school_db = await self.planning_school_dao.update_planning_school_byargs(planning_school, *need_update_list)
 

@@ -81,6 +81,7 @@ class PlanningSchoolBaseInfo(BaseModel):
     department_unit_number: str = Field(..., title="", description="属地管理行政部门单位号",examples=['SC562369322SG'])
     sy_zones: str = Field(..., title="", description="属地管理行政部门所在地地区",examples=['铁西区'])
     historical_evolution: str = Field(..., title="", description="历史沿革",examples=['xxxxxxxxxxxxxxxxxxxx'])
+    status: str = Field(None, title="", description="",examples=[''])
 
 class PlanningSchoolKeyInfo(BaseModel):
     id:int= Query(None, title="", description="规划校id", example='1'),
