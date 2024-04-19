@@ -19,18 +19,6 @@ class NewStudents(BaseModel):
     id_type: str = Field(None, title="证件类别", description="证件类别")
     id_number: str = Field(None, title="证件号码", description="证件号码")
 
-    class Config:
-        schema_extra = {
-            "example": {
-                "student_name": "John Doe",
-                "enrollment_number": "20220001",
-                "birthday": "2000-01-01 00:00:00",
-                "gender": "Male",
-                "id_type": "ID Card",
-                "id_number": "12345678",
-            }
-        }
-
 
 class NewStudentsQuery(BaseModel):
     """
@@ -54,59 +42,31 @@ class NewStudentsQuery(BaseModel):
     county: str = Field(..., title="区县", description="区县")
     status: str = Field(..., title="状态", description="状态")
 
-    class Config:
-        schema_extra = {
-            "example": {
-                "student_name": "John Doe",
-                "enrollment_number": "20220001",
-                "gender": "Male",
-                "id_type": "ID Card",
-                "id_number": "12345678",
-                "school": "清华",
-                "enrollment_date": "2000-01-01 00:00:00",
-                "county": "朝阳区",
-                "status": "流出",
-            }
-        }
-
 
 class StudentsKeyinfo(BaseModel):
     """
+    学生id：student_id
     学生姓名：student_name
     报名号：enrollment_number
     生日：birthday
     性别：gender
     证件类别：id_type
     证件号码：id_number
-    民族：ethnicity
     照片：photo
     """
+    student_id: str = Field(..., title="学生id", description="学生id")
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
     enrollment_number: str = Field(..., title="报名号", description="报名号")
     birthday: str = Field(..., title="生日", description="生日")
     gender: str = Field(..., title="性别", description="性别")
     id_type: str = Field(..., title="证件类别", description="证件类别")
     id_number: str = Field(..., title="证件号码", description="证件号码")
-    ethnicity: str = Field(..., title="民族", description="民族")
     photo: str = Field(..., title="照片", description="照片")
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "student_name": "John Doe",
-                "enrollment_number": "20220001",
-                "birthday": "2000-01-01 00:00:00",
-                "gender": "Male",
-                "id_type": "ID Card",
-                "id_number": "12345678",
-                "ethnicity": "Han",
-                "photo": "photo.jpg",
-            }
-        }
 
 
 class StudentsBaseInfo(BaseModel):
     """
+    学生id：student_id
     姓名拼音：name_pinyin
     届别：session
     年级：grade
@@ -114,6 +74,7 @@ class StudentsBaseInfo(BaseModel):
     班号：class_number
     学校：school
     登记日期：registration_date
+    户籍地址：residence_address
     户口所在行政区：residence_district
     出生地行政区：birthplace_district
     籍贯行政区：native_place_district
@@ -123,6 +84,7 @@ class StudentsBaseInfo(BaseModel):
     联系电话：contact_number
     健康状况：health_condition
     政治面貌：political_status
+    民族：ethnicity
     血型：blood_type
     家庭电话：home_phone_number
     电子信箱/其他联系方式：email_or_other_contact
@@ -137,8 +99,10 @@ class StudentsBaseInfo(BaseModel):
     通信地址：communication_address
     照片上传时间：photo_upload_time
     身份证件有效期：identity_card_validity_period
+    常住地址：permanent_address
     备注：remark
     """
+    student_id: str = Field(None, title="学生id", description="学生id")
     name_pinyin: str = Field(..., title="姓名拼音", description="姓名拼音")
     session: str = Field(..., title="届别", description="届别")
     grade: str = Field(..., title="年级", description="年级")
@@ -146,72 +110,42 @@ class StudentsBaseInfo(BaseModel):
     class_number: str = Field(..., title="班号", description="班号")
     school: str = Field(..., title="学校", description="学校")
     registration_date: str = Field(..., title="登记日期", description="登记日期")
+    residence_address: str = Field(..., title="户籍地址", description="户籍地址")
     residence_district: str = Field(..., title="户口所在行政区", description="户口所在行政区")
     birthplace_district: str = Field(..., title="出生地行政区", description="出生地行政区")
     native_place_district: str = Field(..., title="籍贯行政区", description="籍贯行政区")
-    religious_belief: str = Field(..., title="宗教信仰", description="宗教信仰")
+    religious_belief: str = Field(None, title="宗教信仰", description="宗教信仰")
     residence_nature: str = Field(..., title="户口性质", description="户口性质")
     enrollment_date: str = Field(..., title="入学日期", description="入学日期")
     contact_number: str = Field(..., title="联系电话", description="联系电话")
     health_condition: str = Field(..., title="健康状况", description="健康状况")
-    political_status: str = Field(..., title="政治面貌", description="政治面貌")
-    blood_type: str = Field(..., title="血型", description="血型")
+    political_status: str = Field(None, title="政治面貌", description="政治面貌")
+    ethnicity: str = Field(None, title="民族", description="民族")
+    blood_type: str = Field(None, title="血型", description="血型")
     home_phone_number: str = Field(..., title="家庭电话", description="家庭电话")
     email_or_other_contact: str = Field(..., title="电子信箱/其他联系方式", description="电子信箱/其他联系方式")
     migrant_children: bool = Field(..., title="是否随迁子女", description="是否随迁子女")
-    disabled_person: bool = Field(..., title="是否残疾人", description="是否残疾人")
+    disabled_person: bool = Field(None, title="是否残疾人", description="是否残疾人")
     only_child: bool = Field(..., title="是否独生子女", description="是否独生子女")
     left_behind_children: bool = Field(..., title="是否留守儿童", description="是否留守儿童")
     floating_population: bool = Field(..., title="是否流动人口", description="是否流动人口")
-    residence_address_detail: str = Field(..., title="户口所在地（详细）", description="户口所在地（详细）")
+    overseas_chinese: bool = Field(..., title="是否港澳台侨胞", description="是否港澳台侨胞")
+    residence_address_detail: str = Field(None, title="户口所在地（详细）", description="户口所在地（详细）")
     communication_district: str = Field(..., title="通信地址行政区", description="通信地址行政区")
-    postal_code: str = Field(..., title="邮政编码", description="邮政编码")
-    communication_address: str = Field(..., title="通信地址", description="通信地址")
+    postal_code: str = Field(None, title="邮政编码", description="邮政编码")
+    communication_address: str = Field(None, title="通信地址", description="通信地址")
     photo_upload_time: str = Field(..., title="照片上传时间", description="照片上传时间")
     identity_card_validity_period: str = Field(..., title="身份证件有效期", description="身份证件有效期")
-    remark: str = Field(..., title="备注", description="备注")
+    specialty: str = Field(None, title="特长", description="特长")
+    permanent_address: str = Field(None, title="常住地址", description="常住地址")
+    remark: str = Field(None, title="备注", description="备注", max_length=50)
 
-    class Config:
-        schema_extra = {
-            "example": {
-                "name_pinyin": "john_doe",
-                "session": "2022",
-                "grade": "10",
-                "classroom": "A",
-                "class_number": "1",
-                "school": "ABC School",
-                "registration_date": "2024-04-16 00:00:00",
-                "residence_district": "Beijing",
-                "birthplace_district": "Shanghai",
-                "native_place_district": "Shanxi",
-                "religious_belief": "Christian",
-                "residence_nature": "Urban",
-                "enrollment_date": "2023-09-01 00:00:00",
-                "contact_number": "12345678901",
-                "health_condition": "Good",
-                "political_status": "Party Member",
-                "blood_type": "O",
-                "home_phone_number": "1234567890",
-                "email_or_other_contact": "johndoe@example.com",
-                "migrant_children": "1",
-                "disabled_person": "False",
-                "only_child": "1",
-                "left_behind_children": "False",
-                "floating_population": "False",
-                "residence_address_detail": "123 Main Street, Beijing",
-                "communication_district": "Beijing",
-                "postal_code": "100000",
-                "communication_address": "123 Main Street, Beijing",
-                "photo_upload_time": "2024-04-16 00:00:00",
-                "identity_card_validity_period": "2024-04-16 to 2034-04-16",
-                "remark": "This is a remark",
-            }
-        }
 
 
 #学生家庭成员信息模型
 class StudentsFamilyInfo(BaseModel):
     """
+    学生id：student_id
     姓名：name
     性别：gender
     关系：relationship
@@ -228,6 +162,7 @@ class StudentsFamilyInfo(BaseModel):
     工作单位：workplace
     家庭成员职业：family_member_occupation
     """
+    student_id: str = Field(None, title="学生id", description="学生id")
     name: str = Field(..., title="姓名", description="姓名")
     gender: str = Field(..., title="性别", description="性别")
     relationship: str = Field(..., title="关系", description="关系")
@@ -244,27 +179,6 @@ class StudentsFamilyInfo(BaseModel):
     workplace: str = Field(..., title="工作单位", description="工作单位")
     family_member_occupation: str = Field(..., title="家庭成员职业", description="家庭成员职业")
 
-    class Config:
-        schema_extra = {
-            "example": {
-                "name": "John Doe",
-                "gender": "Male",
-                "relationship": "Parent",
-                "is_guardian": "True",
-                "identification_type": "ID Card",
-                "identification_number": "1234567890",
-                "birthday": "2000-01-01 00:00:00",
-                "phone_number": "12345678901",
-                "ethnicity": "Han",
-                "health_status": "Good",
-                "nationality": "China",
-                "political_status": "Party Member",
-                "contact_address": "123 Main Street, Beijing",
-                "workplace": "ABC Company",
-                "family_member_occupation": "Teacher",
-            }
-        }
-
 class StudentEduInfo(BaseModel):
     student_id: str = Query(...,   description="学生id",min_length=1,max_length=20,examples=["1234567890"]),
     province_id: str = Query(...,   description="省份",min_length=1,max_length=20,examples=["1234567890"]),
@@ -273,24 +187,23 @@ class StudentEduInfo(BaseModel):
     district_id: str = Query(...,   description="区县",min_length=1,max_length=20,examples=["1234567890"]),
     transfer_in_type: str = Query(...,   description="转入类型",min_length=1,max_length=20,examples=["指定日期转入"]),
     natural_edu_no: str = Query(...,   description="国家学籍号码",min_length=1,max_length=20,examples=[""]),
-
-
     school_id: str = Field(..., title="", description="学校ID",examples=["1234567890"])
     school_name: str = Field(..., title="", description="学校名称",examples=["XXxiaoxue"])
-    graduation_year: str = Field(..., title="", description="届别",examples=["2003"])
+    session: str = Field(..., title="", description="届别",examples=["2003"])
     attached_class: str = Field(..., title="", description="附设班",examples=["3班"])
     grade_id: str = Field(..., title="", description="年级ID",examples=["1"])
     grade_name: str = Field(..., title="", description="年级",examples=["2年级"])
     class_id: str = Field(..., title="", description="班级id",examples=["125"])
     classes: str = Field(..., title="", description="班级",examples=["二2班"])
     major_id: str = Field(..., title="", description="专业",examples=["农业"])
-    transferin_time    :str= Query(..., description="转入时间" ,min_length=1,max_length=20,examples=["2020-10-10"]),
-    transferin_reason   :str= Query(..., description="转入原因" ,min_length=1,max_length=20,examples=["家庭搬迁..."]),
+    transferin_time:str= Query(..., description="转入时间" ,min_length=1,max_length=20,examples=["2020-10-10"]),
+    transferin_reason:str= Query(..., description="转入原因" ,min_length=1,max_length=20,examples=["家庭搬迁..."]),
 
 
 
 
 class GraduationStudents(BaseModel):
+    student_id: str = Field(..., title="学生id", description="学生id")
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
     gender: str = Field(..., title="性别", description="性别")
     school: str = Field(..., title="学校", description="学校")
@@ -298,3 +211,13 @@ class GraduationStudents(BaseModel):
     edu_number: str = Field(..., title="", description="学籍号码")
     class_id: str = Field(..., title="", description="班级")
 
+class NewStudentsFlowOut(BaseModel):
+    student_id: str = Query(...,   description="学生id",min_length=1,max_length=20,examples=["1234567890"]),
+    flow_out_time: str = Query(...,   description="流出时间",min_length=1,max_length=20,examples=["2020-10-10"]),
+    flow_out_reason: str = Query(None,   description="流出原因",min_length=1,max_length=20,examples=["家庭搬迁"]),
+
+class StudentSession(BaseModel):
+    session_id: str = Query(...,   description="届别id",min_length=1,max_length=20,examples=["1234567890"]),
+    session_name: str = Query(...,   description="届别名称",min_length=1,max_length=20,examples=["2020级"]),
+    session_alias: str = Query(...,   description="届别别名",min_length=1,max_length=20,examples=["2020届别"]),
+    session_status: str = Query(...,   description="届别状态",min_length=1,max_length=20,examples=["开"])
