@@ -4,7 +4,7 @@ from mini_framework.web.views import BaseView
 from views.models.school_communications import SchoolCommunications
 from views.models.school_eduinfo import SchoolEduInfo
 # from views.models.school import SchoolBaseInfo
-from views.models.school import School, SchoolBaseInfo,SchoolKeyInfo
+from views.models.school import School, SchoolBaseInfo, SchoolKeyInfo, SchoolKeyAddInfo
 # from fastapi import Field
 
 from fastapi import Query, Depends
@@ -36,7 +36,7 @@ class SchoolView(BaseView):
         return {'school':school,'school_communication':school_communication ,'school_eduinfo':school_eduinfo }
 
 
-    async def post(self,school:SchoolKeyInfo):
+    async def post(self,school:SchoolKeyAddInfo):
         res = await self.school_rule.add_school(school)
         print(res)
         resc = SchoolCommunications(id=0)

@@ -10,7 +10,8 @@ from sqlalchemy import select
 
 from daos.school_dao import SchoolDAO
 from models.school import School
-from views.models.school import School as SchoolModel
+from views.models.planning_school import PlanningSchoolStatus
+from views.models.school import School as SchoolModel, SchoolKeyAddInfo
 
 from views.models.school import SchoolBaseInfo
 
@@ -40,12 +41,12 @@ class SchoolRule(object):
         #                                              exclude=["first_name", "last_name"]
         school_db = view_model_to_orm_model(school, School,    exclude=["id"])
 
-        school_db.status = '正常'
+        school_db.status =  PlanningSchoolStatus.DRAFT.value
         school_db.created_uid = 0
         school_db.updated_uid = 0
 
         school_db = await self.school_dao.add_school(school_db)
-        school = orm_model_to_view_model(school_db, SchoolModel, exclude=["created_at",'updated_at'])
+        school = orm_model_to_view_model(school_db, SchoolKeyAddInfo, exclude=["created_at",'updated_at'])
         return school
 
     async def update_school(self, school,ctype=1):
