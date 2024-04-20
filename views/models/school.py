@@ -115,6 +115,7 @@ class SchoolKeyInfo(BaseModel):
     id:int= Query(None, title="", description="学校id", example='1'),
 
     school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633'),
+    planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
     borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区']),
     block: str = Query(..., title=" Author", description="地域管辖区",examples=['铁西区']),
     school_name: str = Query(..., title="学校名称", description="园所名称",examples=['XX小学']),
