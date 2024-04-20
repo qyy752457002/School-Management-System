@@ -33,7 +33,7 @@ class School(BaseDBModel):
     school_short_name: Mapped[str] = mapped_column(String(20), nullable=True,default='', comment="园所简称")
     school_en_name: Mapped[str] = mapped_column(String(30), nullable=True,default='', comment="园所英文名称")
     create_school_date: Mapped[str] = mapped_column(String(30), nullable=True,default='', comment="建校年月")
-    social_credit_code: Mapped[str] = mapped_column(String(32), nullable=True, comment="统一社会信用代码")
+    social_credit_code: Mapped[str] = mapped_column(String(32), nullable=True,default='', comment="统一社会信用代码")
     founder_type: Mapped[str] = mapped_column(String(20), nullable=True,default='', comment="举办者类型")
     founder_type_lv2: Mapped[str] = mapped_column(String(64), nullable=True, comment="举办者类型二级",default='')
     founder_type_lv3: Mapped[str] = mapped_column(String(64), nullable=True, comment="举办者类型三级",default='')
