@@ -29,6 +29,10 @@ class GraduationStudentDAO(DAOBase):
 		session = await self.slave_db()
 		result = await session.execute(select(GraduationStudent).where(GraduationStudent.id == id))
 		return result.scalar_one_or_none()
+	async def get_graduationstudent_by_name(self, name):
+		session = await self.slave_db()
+		result = await session.execute(select(GraduationStudent).where(GraduationStudent.student_name == name))
+		return result.scalar_one_or_none()
 
 	async def query_graduationstudent_with_page(self, page_request: PageRequest, **kwargs):
 		query = select(GraduationStudent)
@@ -42,3 +46,13 @@ class GraduationStudentDAO(DAOBase):
 		update_contents = get_update_contents(graduationstudent, *args)
 		query = update(GraduationStudent).where(GraduationStudent.id == graduationstudent.id).values(**update_contents)
 		return await self.update(session, query, graduationstudent, update_contents, is_commit=is_commit)
+
+	async def softdelete_graduationstudent(self, graduationstudent):
+		session = await self.master_db()
+		deleted_status= True
+		update_stmt = update(GraduationStudent).where(GraduationStudent.id == graduationstudent.id).values(
+			is_deleted= deleted_status,
+		)
+		await session.execute(update_stmt)
+		await session.commit()
+		return graduationstudent
