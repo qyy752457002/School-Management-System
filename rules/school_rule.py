@@ -52,8 +52,24 @@ class SchoolRule(object):
         return school
 
 
-    async def add_school_from_planning_school(self, school: PlanningSchool):
-        school = orm_model_to_view_model(school, SchoolModel, exclude=["id"])
+    async def add_school_from_planning_school(self, planning_school: PlanningSchool):
+        # todo 这里的值转换 用 数据库db类型直接赋值  模型转容易报错   另 其他2个表的写入
+        return None
+        school = orm_model_to_view_model(planning_school, SchoolKeyAddInfo, exclude=["id"])
+        school.school_name = planning_school.planning_school_name
+        school.planning_school_id = planning_school.id
+
+        school.school_no = planning_school.planning_school_no
+        school.borough = planning_school.borough
+        school.block = planning_school.block
+        school.school_type = planning_school.planning_school_type
+        school.school_operation_type = planning_school.planning_school_operation_type
+        school.school_operation_type_lv2 = planning_school.planning_school_operation_type_lv2
+        school.school_operation_type_lv3 = planning_school.planning_school_operation_type_lv3
+        school.school_org_type = planning_school.planning_school_org_type
+        school.school_level = planning_school.planning_school_level
+        school.school_code = planning_school.planning_school_code
+
         exists_school = await self.school_dao.get_school_by_school_name(
             school.school_name)
         if exists_school:
@@ -65,6 +81,7 @@ class SchoolRule(object):
         school_db.status =  PlanningSchoolStatus.DRAFT.value
         school_db.created_uid = 0
         school_db.updated_uid = 0
+        print(school_db)
 
         school_db = await self.school_dao.add_school(school_db)
         school = orm_model_to_view_model(school_db, SchoolKeyAddInfo, exclude=["created_at",'updated_at'])
