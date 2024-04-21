@@ -41,7 +41,7 @@ class MajorView(BaseView):
         # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
 
     # 删除
-    async def delete(self, major_id:str= Query(..., title="", description="专业id",min_length=1,max_length=20,example='SC2032633'),):
+    async def delete(self, major_id:int= Query(..., title="", description="专业id", )):
         print(major_id)
         res = await self.major_rule.softdelete_major(major_id)
 
