@@ -130,9 +130,9 @@ class PlanningSchoolView(BaseView):
     borough:str=Query("", title="  ", description=" 行政管辖区", ),
     status: PlanningSchoolStatus = Query("", title="", description=" 状态",examples=['正常']),
 
-                   founder_type: List[ PlanningSchoolFounderType]  = Query("", title="", description="举办者类型",examples=['地方']),
-                   founder_type_lv2:  List[ str] = Query("", title="", description="举办者类型二级",examples=['教育部门']),
-                   founder_type_lv3:  List[ str] = Query("", title="", description="举办者类型三级",examples=['县级教育部门']),
+                   founder_type: List[ PlanningSchoolFounderType]  = Query([], title="", description="举办者类型",examples=['地方']),
+                   founder_type_lv2:  List[ str] = Query([], title="", description="举办者类型二级",examples=['教育部门']),
+                   founder_type_lv3:  List[ str] = Query([], title="", description="举办者类型三级",examples=['县级教育部门']),
 
                    page_request=Depends(PageRequest) ):
         print(page_request,)
@@ -154,7 +154,7 @@ class PlanningSchoolView(BaseView):
                                                                min_length=1, max_length=20, example='SC2032633')):
         # print(planning_school)
         res = await self.planning_school_rule.update_planning_school_status(planning_school_id,
-                                                                            PlanningSchoolStatus.NORMAL.value)
+                                                                            PlanningSchoolStatus.NORMAL.value,'open')
 
         return res
 

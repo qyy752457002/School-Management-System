@@ -1,10 +1,13 @@
+from typing import List
+
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
+from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
 from views.models.school_communications import SchoolCommunications
 from views.models.school_eduinfo import SchoolEduInfo
 # from views.models.school import SchoolBaseInfo
-from views.models.school import School, SchoolBaseInfo,SchoolKeyInfo
+from views.models.school import School, SchoolBaseInfo, SchoolKeyInfo, SchoolKeyAddInfo
 # from fastapi import Field
 
 from fastapi import Query, Depends
@@ -36,7 +39,7 @@ class SchoolView(BaseView):
         return {'school':school,'school_communication':school_communication ,'school_eduinfo':school_eduinfo }
 
 
-    async def post(self,school:SchoolKeyInfo):
+    async def post(self,school:SchoolKeyAddInfo):
         res = await self.school_rule.add_school(school)
         print(res)
         resc = SchoolCommunications(id=0)
@@ -63,19 +66,20 @@ class SchoolView(BaseView):
         return res
         # return  school
 
-    # 修改 关键信息
-    async def put(self,
-                  school: SchoolKeyInfo,
 
+    # # 修改 关键信息
+    async def put_keyinfo(self,
+                          school: SchoolKeyInfo,
+                          # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
 
-                  ):
-        # print(school)
-        res = await self.school_rule.update_school_byargs(school)
+                          ):
+        # print(planning_school)
+
+        res = await self.school_rule.update_school(school)
 
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
 
         return res
-
         # return  {school_no,borough,block }
     # 删除
     async def delete(self, school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),):
@@ -97,21 +101,29 @@ class SchoolView(BaseView):
 
     async def page(self,
                    page_request= Depends(PageRequest),
+                   block: str = Query("", title=" ", description="地域管辖区", ),
+                   school_code: str = Query("", title="", description=" 园所标识码", ),
+                   school_level: str = Query("", title="", description=" 学校星级", ),
+                   borough:str=Query("", title="  ", description=" 行政管辖区", ),
+                   status: PlanningSchoolStatus = Query("", title="", description=" 状态",examples=['正常']),
 
+                   founder_type: List[ PlanningSchoolFounderType]  = Query([], title="", description="举办者类型",examples=['地方']),
+                   founder_type_lv2:  List[ str] = Query([], title="", description="举办者类型二级",examples=['教育部门']),
+                   founder_type_lv3:  List[ str] = Query([], title="", description="举办者类型三级",examples=['县级教育部门']),
 
-                   # school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1,
-                   #                                 max_length=20, example='SC2032633'),
-                   # school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
-                   #                                   example='XX小学'),
                    school_no:str= Query(None, title="学校编号", description="学校编号",min_length=1,max_length=20,example='SC2032633'),
                    school_name:str= Query(None, description="学校名称" ,min_length=1,max_length=20,example='XX小学'),
+                   planning_school_id:int= Query(None, description="规划校ID" , example='1'),
+
                    ):
         print(page_request)
         items=[]
 
         paging_result = await self.school_rule.query_school_with_page(page_request,
-                                                                                        school_name, None,
-                                                                                        school_no, )
+                                                                      school_name,school_no,school_code,
+                                                                      block,school_level,borough,status,founder_type,
+                                                                      founder_type_lv2,
+                                                                      founder_type_lv3,planning_school_id )
         return paging_result
 
 
@@ -119,16 +131,21 @@ class SchoolView(BaseView):
     # 开办
     async def patch_open(self,school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633')):
         # print(school)
-        res = await self.school_rule.update_school_status(school_id,1)
+        res = await self.school_rule.update_school_status(school_id,PlanningSchoolStatus.NORMAL.value,'open')
 
         return res
         # return  school_id
 
     # 关闭
-    async def patch_close(self,school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633')):
+    async def patch_close(self,school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
+                          action_reason: str = Query(None, description="原因", min_length=1, max_length=20,
+                                                     example='家庭搬迁'),
+                          related_license_upload: List[str] = Query(None, description="相关证照上传", min_length=1,
+                                                                    max_length=60, example=''),
+                          ):
         # print(school)
 
-        res = await self.school_rule.update_school_status(school_id,2)
+        res = await self.school_rule.update_school_status(school_id,PlanningSchoolStatus.CLOSED.value)
 
         return res
         # return  school_id
@@ -141,25 +158,25 @@ class SchoolView(BaseView):
     # async def get_extinfo(self):
     #     #
     #     return [ ]
-    # 新增 通信信息
-    async def post_comminfo(self,
-                            school: SchoolCommunications,
 
-                            ):
+    # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性
+    async def put(self,
 
-        res = await self.school_communication_rule.add_school_communication(school)
+                  school: SchoolBaseInfo,
+                  school_communication: SchoolCommunications,
+                  school_eduinfo: SchoolEduInfo,
+                  school_id: int = Query(..., title="", description="学校id/园所id", example='38'),
 
-        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+                  ):
+        # print(planning_school)
+        school.id = school_id
+        school_communication.school_id = school_id
+        school_eduinfo.school_id = school_id
 
-        return res
-
-    # 新增 教学信息
-    async def post_eduinfo(self,
-                           school: SchoolEduInfo,
-
-                           ):
-
-        res = await self.school_eduinfo_rule.add_school_eduinfo(school)
+        res = await self.school_rule.update_school_byargs(school)
+        res_com = await self.school_communication_rule.update_school_communication_byargs(
+            school_communication)
+        res_edu = await self.school_eduinfo_rule.update_school_eduinfo_byargs(school_eduinfo)
 
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
 

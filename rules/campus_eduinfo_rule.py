@@ -3,6 +3,8 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+
+from business_exceptions.campus_eduinfo import CampusEduinfoNotFoundError
 from daos.campus_eduinfo_dao import CampusEduinfoDAO
 from models.campus_eduinfo import CampusEduinfo
 from views.models.campus_eduinfo import CampusEduInfo  as CampusEduinfoModel
@@ -19,12 +21,32 @@ class CampusEduinfoRule(object):
         campus = orm_model_to_view_model(campus_eduinfo_db, CampusEduinfoModel)
         return campus
 
-    async def add_campus_eduinfo(self, campus: CampusEduinfoModel):
+    async def get_campus_eduinfo_by_campus_id(self, campus_eduinfo_id):
+        campus_eduinfo_db = await self.campus_eduinfo_dao.get_campus_eduinfo_by_campus_id(campus_eduinfo_id)
+        # 可选 , exclude=[""]
+        campus = orm_model_to_view_model(campus_eduinfo_db, CampusEduinfoModel)
+        return campus
+
+    async def add_campus_eduinfo(self, campus: CampusEduinfoModel,convertmodel=True):
         exists_campus = await self.campus_eduinfo_dao.get_campus_eduinfo_by_id(
             campus.campus_id)
         if exists_campus:
             raise Exception(f"校区教育信息{campus.campus_eduinfo_name}已存在")
-        campus_eduinfo_db = view_model_to_orm_model(campus, CampusEduinfo,    exclude=["id"])
+
+        if convertmodel:
+            campus_eduinfo_db = view_model_to_orm_model(campus, CampusEduinfo,    exclude=["id"])
+
+        else:
+            campus_eduinfo_db = CampusEduinfo()
+            campus_eduinfo_db.id = None
+            campus_eduinfo_db.campus_id= campus.campus_id
+
+        campus_eduinfo_db.deleted = 0
+        campus_eduinfo_db.status = '正常'
+        campus_eduinfo_db.created_uid = 0
+        campus_eduinfo_db.updated_uid = 0
+
+        # campus_eduinfo_db = view_model_to_orm_model(campus, CampusEduinfo,    exclude=["id"])
 
         campus_eduinfo_db = await self.campus_eduinfo_dao.add_campus_eduinfo(campus_eduinfo_db)
         campus = orm_model_to_view_model(campus_eduinfo_db, CampusEduinfoModel, exclude=["created_at",'updated_at'])
@@ -90,4 +112,24 @@ class CampusEduinfoRule(object):
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, CampusEduinfoModel)
         return paging_result
+
+    async def update_campus_eduinfo_byargs(self, campus_eduinfo,ctype=1):
+        if campus_eduinfo.campus_id>0:
+            exists_campus_eduinfo = await self.campus_eduinfo_dao.get_campus_eduinfo_by_campus_id(campus_eduinfo.campus_id)
+
+
+        else:
+
+            exists_campus_eduinfo = await self.campus_eduinfo_dao.get_campus_eduinfo_by_id(campus_eduinfo.id)
+        if not exists_campus_eduinfo:
+            raise CampusEduinfoNotFoundError()
+        need_update_list = []
+        for key, value in campus_eduinfo.dict().items():
+            if value:
+                need_update_list.append(key)
+
+        campus_eduinfo_db = await self.campus_eduinfo_dao.update_campus_eduinfo_byargs(campus_eduinfo, *need_update_list)
+
+        # 更新不用转换   因为得到的对象不熟全属性
+        return campus_eduinfo_db
 

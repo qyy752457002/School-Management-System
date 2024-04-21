@@ -29,6 +29,10 @@ class MajorDAO(DAOBase):
 		session = await self.slave_db()
 		result = await session.execute(select(Major).where(Major.id == id))
 		return result.scalar_one_or_none()
+	async def get_major_by_name(self, name):
+		session = await self.slave_db()
+		result = await session.execute(select(Major).where(Major.major_name == name))
+		return result.scalar_one_or_none()
 
 	async def query_major_with_page(self,page_request: PageRequest, **kwargs, ):
 		query = select(Major)

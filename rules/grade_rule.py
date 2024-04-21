@@ -1,8 +1,11 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from sqlalchemy import select
+
 from daos.grade_dao import GradeDAO
 from models.grade import Grade
 from views.models.grades import Grades as GradeModel
@@ -65,3 +68,19 @@ class GradeRule(object):
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, GradeModel)
         return paging_result
+
+
+
+    async def query_grade(self,grade_name):
+
+        session = await db_connection_manager.get_async_session("default", True)
+        result = await session.execute(select(Grade).where(Grade.grade_name.like(f'{grade_name}%') ))
+        res= result.scalars().all()
+
+        lst = []
+        for row in res:
+            planning_school = orm_model_to_view_model(row, GradeModel)
+
+            lst.append(planning_school)
+        return lst
+
