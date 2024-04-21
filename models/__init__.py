@@ -31,6 +31,8 @@ from . import data_sync_records
 from . import sub_db_info
 
 from . import attach_relations
+from . import permission_menu
+from . import upload_records
 
 from . import leader_info
 
