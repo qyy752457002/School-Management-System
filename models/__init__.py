@@ -19,5 +19,7 @@ from . import campus_eduinfo
 
 from . import classes
 from . import enum_value
+from . import major
+
 
 metadata = BaseDBModel.metadata
