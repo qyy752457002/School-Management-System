@@ -67,8 +67,25 @@ class GraduationStudentRule(object):
 
     async def query_graduation_student_with_page(self, page_request: PageRequest,  student_name,school_id,gender,edu_number,class_id ):
         # todo  转换条件 为args
-        paging = await self.graduation_student_dao.query_graduationstudent_with_page(page_request,
-                                                                                )
+        kdict = {
+            "student_name": student_name,
+            "school_id": school_id,
+            "gender": gender,
+            "edu_number": edu_number,
+            "class_id": class_id,
+        }
+        if not kdict["student_name"]:
+            del kdict["student_name"]
+        if not kdict["school_id"]:
+            del kdict["school_id"]
+        if not kdict["gender"]:
+            del kdict["gender"]
+        if not kdict["edu_number"]:
+            del kdict["edu_number"]
+        if not kdict["class_id"]:
+            del kdict["class_id"]
+
+        paging = await self.graduation_student_dao.query_graduationstudent_with_page(page_request,**kdict     )
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, GraduationStudentModel)
         return paging_result

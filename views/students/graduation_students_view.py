@@ -26,10 +26,10 @@ class GraduationStudentsView(BaseView):
         return res
 
     # 分页查询
-    async def page(self, student_name: str = Query(None, title="学生姓名", description="学生姓名", example="John Doe"),
-                   school_id: str = Query(None, title="", description="学校", example="John Doe"),
+    async def page(self, student_name: str = Query(None, title="学生姓名", description="学生姓名", example=""),
+                   school_id: str = Query(None, title="", description="学校", example=""),
                    gender: str = Query(None, title="性别", description="性别", example="Male"),
-                   edu_number: str = Query(None, title="", description="学籍号码", example="ID Card"),
+                   edu_number: str = Query(None, title="", description="学籍号码", example=""),
                    class_id: str = Query(None, title="", description="班级", example=""),
 
                    page_request=Depends(PageRequest)):
