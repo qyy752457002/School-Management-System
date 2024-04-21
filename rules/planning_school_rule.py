@@ -162,15 +162,17 @@ class PlanningSchoolRule(object):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school.id)
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
+
+        if exists_planning_school.status== PlanningSchoolStatus.DRAFT.value:
+            planning_school.status= PlanningSchoolStatus.OPENING.value
+            planning_school.status= PlanningSchoolStatus.OPENING.value
+        else:
+            pass
         need_update_list = []
         for key, value in planning_school.dict().items():
             if value:
                 need_update_list.append(key)
 
-        if exists_planning_school.status== PlanningSchoolStatus.DRAFT.value:
-            planning_school.status= PlanningSchoolStatus.OPENING.value
-        else:
-            pass
 
         planning_school_db = await self.planning_school_dao.update_planning_school_byargs(planning_school, *need_update_list)
 
