@@ -16,7 +16,7 @@ class MajorView(BaseView):
 
     async def post(self, major: Majors):
         print(major)
-        res =await  self.major_rule.add_major(major)
+        res =await self.major_rule.add_major(major)
 
         return res
 
