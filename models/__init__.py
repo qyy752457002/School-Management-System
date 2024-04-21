@@ -22,5 +22,7 @@ from . import enum_value
 from . import major
 
 from . import course
+from . import operation_record
+from . import sub_system
 
 metadata = BaseDBModel.metadata
