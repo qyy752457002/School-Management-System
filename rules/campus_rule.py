@@ -107,7 +107,7 @@ class CampusRule(object):
             if value:
                 need_update_list.append(key)
 
-        campus_db = await self.campus_dao.update_campus(campus, *need_update_list)
+        campus_db = await self.campus_dao.update_campus_byargs(campus, *need_update_list)
 
         # 更新不用转换   因为得到的对象不熟全属性
         # campus = orm_model_to_view_model(campus_db, CampusModel, exclude=[""])

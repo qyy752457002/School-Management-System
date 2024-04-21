@@ -96,7 +96,7 @@ class CampusView(BaseView):
                    campus_no:str= Query(None, title="校区编号", description="校区编号",min_length=1,max_length=20,example='SC2032633'),
                    campus_name:str= Query(None, description="校区名称" ,min_length=1,max_length=20,example='XX小学'),
                    block: str = Query("", title=" ", description="地域管辖区", ),
-                   campus_code: str = Query("", title="", description=" 园所标识码", ),
+                   campus_code: str = Query("", title="", description=" 校区标识码", ),
                    campus_level: str = Query("", title="", description=" 学校星级", ),
                    borough:str=Query("", title="  ", description=" 行政管辖区", ),
                    status: PlanningSchoolStatus = Query("", title="", description=" 状态",examples=['正常']),
@@ -105,7 +105,7 @@ class CampusView(BaseView):
                    founder_type_lv2:  List[ str] = Query([], title="", description="举办者类型二级",examples=['教育部门']),
                    founder_type_lv3:  List[ str] = Query([], title="", description="举办者类型三级",examples=['县级教育部门']),
 
-                   school_id:int= Query(None, description="规划校ID" , example='1'),
+                   school_id:int= Query(None, description="学校ID" , example='1'),
 
                    ):
         print(page_request)

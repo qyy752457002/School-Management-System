@@ -24,7 +24,7 @@ class Campus(BaseModel):
     campus_short_name: str = Field(..., title="", description="园所简称",examples=['MXXX'])
     campus_en_name: str = Field(..., title="", description="园所英文名称",examples=['MinxingPrimarycampus'])
     create_campus_date: str = Field(..., title="", description="建校年月",examples=['2021-10-10 00:00:00'])
-    social_credit_code: str = Field(..., title="", description="统一社会信用代码",examples=['XH423423876867'])
+    social_credit_code: str = Field(None, title="", description="统一社会信用代码",examples=['XH423423876867'])
     founder_type: str = Field(..., title="", description="举办者类型",examples=['地方'])
     founder_name: str = Field(..., title="", description="举办者名称",examples=['上海教育局'])
     founder_code: str = Field(..., title="", description="举办者识别码",examples=['SC562369322SG'])
