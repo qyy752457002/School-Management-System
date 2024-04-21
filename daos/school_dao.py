@@ -98,17 +98,37 @@ class SchoolDAO(DAOBase):
         result = await session.execute(select(func.count()).select_from(School))
         return result.scalar()
 
-    async def query_school_with_page(self, school_name, school_id, school_no,
-                                              page_request: PageRequest) -> Paging:
+
+
+    async def query_school_with_page(self, page_request: PageRequest, school_name,school_no,school_code,
+                                              block,school_level,borough,status,founder_type,
+                                              founder_type_lv2,
+                                              founder_type_lv3 ) -> Paging:
         query = select(School)
+
         if school_name:
             query = query.where(School.school_name == school_name)
-        if school_id:
-            query = query.where(School.id == school_id)
         if school_no:
             query = query.where(School.school_no == school_no)
+        if school_code:
+            query = query.where(School.school_code == school_code)
+        if block:
+            query = query.where(School.block == block)
+        if school_level:
+            query = query.where(School.school_level == school_level)
+        if borough:
+            query = query.where(School.borough == borough)
+
+        if status:
+            query = query.where(School.status == status)
+
+        if len(founder_type_lv3)>0:
+            query = query.where(School.founder_type_lv3.in_(founder_type_lv3))
+
+
         paging = await self.query_page(query, page_request)
         return paging
+
 
     async def update_school_status(self, school,status):
         session = await self.master_db()

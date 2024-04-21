@@ -4,12 +4,13 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 import hashlib
 
 import shortuuid
-from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 
 from daos.school_dao import SchoolDAO
 from models.school import School
+from rules.enum_value_rule import EnumValueRule
 from views.models.planning_school import PlanningSchoolStatus
 from views.models.school import School as SchoolModel, SchoolKeyAddInfo
 
@@ -127,10 +128,31 @@ class SchoolRule(object):
     async def get_school_count(self):
         return await self.school_dao.get_school_count()
 
-    async def query_school_with_page(self, page_request: PageRequest, school_name=None,
-                                              school_id=None,school_no=None ):
-        paging = await self.school_dao.query_school_with_page(school_name, school_id,school_no,
-                                                                                page_request)
+    async def query_school_with_page(self, page_request: PageRequest,   school_name,school_no,school_code,
+                                     block,school_level,borough,status,founder_type,
+                                     founder_type_lv2,
+                                     founder_type_lv3 ):
+        #  根据举办者类型  1及 -3级  处理为条件   1  2ji全部转换为 3级  最后in 3级查询
+        enum_value_rule = get_injector(EnumValueRule)
+        if founder_type:
+            if len(founder_type) > 0:
+
+                founder_type_lv2_res= await enum_value_rule.get_next_level_enum_values('founder_type'  ,founder_type)
+                for item in founder_type_lv2_res:
+                    founder_type_lv2.append(item.enum_value)
+
+
+            # query = query.where(PlanningSchool.founder_type_lv2 == founder_type_lv2)
+        if len(founder_type_lv2)>0:
+            founder_type_lv3_res= await enum_value_rule.get_next_level_enum_values('founder_type_lv2'  ,founder_type_lv2)
+            for item in founder_type_lv3_res:
+                founder_type_lv3.append(item.enum_value)
+
+        paging = await self.school_dao.query_school_with_page(page_request,  school_name,school_no,school_code,
+                                                                block,school_level,borough,status,founder_type,
+                                                                founder_type_lv2,
+                                                                founder_type_lv3,
+                                                                                )
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, SchoolModel)
         return paging_result

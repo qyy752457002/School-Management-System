@@ -80,19 +80,6 @@ class SchoolView(BaseView):
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
 
         return res
-    # # 修改 关键信息
-    # async def put(self,
-    #               school: SchoolKeyInfo,
-    #
-    #
-    #               ):
-    #     # print(school)
-    #     res = await self.school_rule.update_school_byargs(school)
-    #
-    #     # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-    #
-    #     return res
-
         # return  {school_no,borough,block }
     # 删除
     async def delete(self, school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),):
@@ -124,12 +111,6 @@ class SchoolView(BaseView):
                    founder_type_lv2:  List[ str] = Query([], title="", description="举办者类型二级",examples=['教育部门']),
                    founder_type_lv3:  List[ str] = Query([], title="", description="举办者类型三级",examples=['县级教育部门']),
 
-
-
-                   # school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1,
-                   #                                 max_length=20, example='SC2032633'),
-                   # school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
-                   #                                   example='XX小学'),
                    school_no:str= Query(None, title="学校编号", description="学校编号",min_length=1,max_length=20,example='SC2032633'),
                    school_name:str= Query(None, description="学校名称" ,min_length=1,max_length=20,example='XX小学'),
                    ):
@@ -137,8 +118,10 @@ class SchoolView(BaseView):
         items=[]
 
         paging_result = await self.school_rule.query_school_with_page(page_request,
-                                                                                        school_name, None,
-                                                                                        school_no, )
+                                                                      school_name,school_no,school_code,
+                                                                      block,school_level,borough,status,founder_type,
+                                                                      founder_type_lv2,
+                                                                      founder_type_lv3 )
         return paging_result
 
 
