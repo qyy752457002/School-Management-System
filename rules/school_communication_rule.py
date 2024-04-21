@@ -3,6 +3,8 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+
+from business_exceptions.school_communication import SchoolCommunicationNotFoundError
 from daos.school_communication_dao import SchoolCommunicationDAO
 from models.school_communication import SchoolCommunication
 from views.models.school_communications import SchoolCommunications  as SchoolCommunicationModel
@@ -112,17 +114,26 @@ class SchoolCommunicationRule(object):
 
 
 
-    async def update_planning_school_communication_byargs(self, planning_school_communication,ctype=1):
-        exists_planning_school_communication = await self.planning_school_communication_dao.get_planning_school_communication_by_id(planning_school_communication.id)
-        if not exists_planning_school_communication:
-            raise PlanningSchoolNotFoundError()
+
+    async def update_school_communication_byargs(self, school_communication,ctype=1):
+        if school_communication.school_id>0:
+            # planning_school = await self.planning_school_rule.get_planning_school_by_id(planning_school_communication.planning_school_id)
+            exists_school_communication = await self.school_communication_dao.get_school_communication_by_school_id(school_communication.school_id)
+
+
+        else:
+
+            exists_school_communication = await self.school_communication_dao.get_school_communication_by_id(school_communication.id)
+        if not exists_school_communication:
+            raise SchoolCommunicationNotFoundError()
         need_update_list = []
-        for key, value in planning_school_communication.dict().items():
+        for key, value in school_communication.dict().items():
             if value:
                 need_update_list.append(key)
 
-        school_communication_db = await self.planning_school_communication_dao.update_planning_school_communication_byargs(planning_school_communication, *need_update_list)
+        school_communication_db = await self.school_communication_dao.update_school_communication_byargs(school_communication, *need_update_list)
 
         # 更新不用转换   因为得到的对象不熟全属性
-        # planning_school_communication = orm_model_to_view_model(school_communication_db, SchoolModel, exclude=[""])
+        # planning_school = orm_model_to_view_model(planning_school_db, SchoolModel, exclude=[""])
         return school_communication_db
+

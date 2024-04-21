@@ -3,6 +3,8 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+
+from business_exceptions.school_eduinfo import SchoolEduinfoNotFoundError
 from daos.school_eduinfo_dao import SchoolEduinfoDAO
 from models.school_eduinfo import SchoolEduinfo
 from views.models.school_eduinfo import SchoolEduInfo  as SchoolEduinfoModel
@@ -108,4 +110,30 @@ class SchoolEduinfoRule(object):
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, SchoolEduinfoModel)
         return paging_result
+
+
+
+    async def update_school_eduinfo_byargs(self, school_eduinfo,ctype=1):
+        if school_eduinfo.school_id>0:
+            # planning_school = await self.planning_school_rule.get_planning_school_by_id(planning_school_eduinfo.planning_school_id)
+            exists_school_eduinfo = await self.school_eduinfo_dao.get_school_eduinfo_by_school_id(school_eduinfo.school_id)
+
+
+        else:
+
+            exists_school_eduinfo = await self.school_eduinfo_dao.get_school_eduinfo_by_id(school_eduinfo.id)
+        if not exists_school_eduinfo:
+            raise SchoolEduinfoNotFoundError()
+        need_update_list = []
+        for key, value in school_eduinfo.dict().items():
+            if value:
+                need_update_list.append(key)
+
+        school_eduinfo_db = await self.school_eduinfo_dao.update_school_eduinfo_byargs(school_eduinfo, *need_update_list)
+
+        # 更新不用转换   因为得到的对象不熟全属性
+        # planning_school = orm_model_to_view_model(planning_school_db, SchoolModel, exclude=[""])
+        return school_eduinfo_db
+
+
 
