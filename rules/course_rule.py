@@ -3,6 +3,8 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+
+from business_exceptions.course import CourseNotFoundError, CourseAlreadyExistError
 from daos.Course_dao import CourseDAO
 from models.course import Course
 from views.models.course import Course  as CourseModel
@@ -28,7 +30,7 @@ class CourseRule(object):
         exists_course = await self.course_dao.get_course_by_name(
             course.course_name)
         if exists_course:
-            raise Exception(f"课程信息{course.course_name}已存在")
+            raise CourseAlreadyExistError()
         course_db = view_model_to_orm_model(course, Course,    exclude=["id"])
 
         course_db = await self.course_dao.add_course(course_db)
@@ -38,7 +40,7 @@ class CourseRule(object):
     async def update_course(self, course,ctype=1):
         exists_course = await self.course_dao.get_course_by_id(course.id)
         if not exists_course:
-            raise Exception(f"课程信息{course.id}不存在")
+            raise CourseNotFoundError()
         need_update_list = []
         for key, value in course.dict().items():
             if value:

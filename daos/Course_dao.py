@@ -31,7 +31,7 @@ class CourseDAO(DAOBase):
 		return result.scalar_one_or_none()
 
 	async def query_course_with_page(self,  page_request: PageRequest,**kwargs):
-		query = select(Course)
+		query = select(Course).where(Course.is_deleted == False)
 		for key, value in kwargs.items():
 		   query = query.where(getattr(Course, key) == value)
 		paging = await self.query_page(query, page_request)
