@@ -27,7 +27,8 @@ class TransferDetails(BaseDBModel):
     __table_args__ = {'comment': '调动明细表'}
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID",autoincrement=True)
-    teacher_id: Mapped[int] = mapped_column(primary_key=True, comment="教师ID", autoincrement=True)
+    teacher_id: Mapped[int] = mapped_column(nullable=True , comment="教师ID",default=0)  # 与教师表关联，关系为一对n
+
     old_unit: Mapped[str] = mapped_column(String(255),  nullable=True, comment="原单位",default='')
     old_post: Mapped[str] = mapped_column(String(255),  nullable=True, comment="原岗位",default='')
     new_unit: Mapped[str] = mapped_column(String(255),  nullable=True, comment="现单位",default='')
