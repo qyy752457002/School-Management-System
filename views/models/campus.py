@@ -46,55 +46,6 @@ class Campus(BaseModel):
 
     campus_leader_position: str = Field(..., title="", description="校区负责人职位",examples=['3'])
 
-
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "campus_name": "xx校区",
-                "campus_no": "EDU202403256",
-                "campus_operation_license_number": "A campus management system",
-                "block": "Lfun technical",
-                "borough": "cloud@lfun.cn",
-                "campus_type": "Copyright © 2024 Lfun technical",
-                "campus_operation_type":"Copyright © 2024 Lfun technical",
-                "campus_operation_type_lv2": "Copyright © 2024 Lfun technical",
-                "campus_operation_type_lv3": "Copyright © 2024 Lfun technical",
-                "campus_org_type": "Copyright © 2024 Lfun technical",
-                "campus_level": "Copyright © 2024 Lfun technical",
-                "campus_nature": "Copyright © 2024Lfun technical",
-                "status": "Copyright © 2024 Lfun technical",
-                "campus_code": "Copyright © 2024 Lfun technical",
-                "kg_level": "Copyright © 2024 Lfun technical",
-                "created_uid": "Copyright © 2024 Lfun technical",
-                "updated_uid": "Copyright © 2024 Lfun technical",
-                "created_at": "Copyright © 2024 Lfun technical",
-                "updated_at": "Copyright © 2024 Lfun technical",
-                "deleted": "Copyright © 2024 Lfun technical",
-                "campus_short_name": "Copyright © 2024 Lfun technical",
-                "campus_en_name": "Copyright © 2024 Lfun technical",
-                "create_campus_date": "Copyright © 2024 Lfun technical",
-                "social_credit_code": "Copyright © 2024 Lfun technical",
-                "founder_type": "Copyright © 2024 Lfun technical",
-                "founder_name": "Copyright © 2024 Lfun technical",
-                "founder_code": "Copyright © 2024 Lfun technical",
-                "urban_rural_nature": "Copyright © 2024 Lfun technical",
-                "campus_org_form": "Copyright © 2024 Lfun technical",
-                "campus_closure_date": "Copyright © 2024 Lfun technical",
-                "department_unit_number": "Copyright © 2024 Lfun technical",
-                "sy_zones": "Copyright © 2024 Lfun technical",
-                "historical_evolution": "Copyright © 2024 Lfun technical",
-                "sy_zones_pro": "Copyright © 2024 Lfun technical",
-                "primary_campus_system": "Copyright © 2024 Lfun technical",
-                "primary_campus_entry_age": "Copyright © 2024 Lfun technical",
-                "junior_middle_campus_system": "Copyright © 2024 Lfun technical",
-                "junior_middle_campus_entry_age": "Copyright © 2024 Lfun technical",
-                "senior_middle_campus_system": "Copyright © 2024 Lfun technical"
-
-            }
-        }
-
-
 # 规划校的 基本信息模型   视图的额模型是按需提供的
 class CampusBaseInfo(BaseModel):
     id:int= Query(..., title="", description="id", example='1'),
