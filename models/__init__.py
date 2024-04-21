@@ -20,6 +20,7 @@ from . import campus_eduinfo
 from . import classes
 from . import enum_value
 from . import major
+from . import graduation_student
 
 from . import course
 from . import operation_record
