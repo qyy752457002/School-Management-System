@@ -30,7 +30,11 @@ from . import attachments
 from . import data_sync_records
 from . import sub_db_info
 
+from . import attach_relations
 
+from . import leader_info
 
+from . import teacher_transaction
+from . import transfer_details
 
 metadata = BaseDBModel.metadata
