@@ -90,6 +90,7 @@ class StudentBaseInfo(BaseDBModel):
     deleted: Mapped[int] = mapped_column(nullable=True, comment="删除态", default=0)
     flow_out_time: Mapped[date] = mapped_column(Date, nullable=True, comment="流出时间")
     flow_out_reason: Mapped[str] = mapped_column(String(64), nullable=True, comment="流出原因")
+    is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
 
 
 

@@ -48,6 +48,8 @@ class TeacherInfo(BaseDBModel):
        是否心理健康教育教师：psychological_health_education_teacher
        招聘方式：recruitment_method
        教职工号：teacher_number
+       用户名：username
+        密码：hash_password
        """
     __tablename__ = 'lfun_teachers_info'
     __table_args__ = {'comment': '教师基本信息表模型'}
@@ -103,3 +105,5 @@ class TeacherInfo(BaseDBModel):
     recruitment_method: Mapped[str] = mapped_column(String(64), nullable=False, comment="招聘方式")
     teacher_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="教职工号")
     deleted: Mapped[int] = mapped_column(nullable=True, comment="删除态", default=0)
+    # username: Mapped[str] = mapped_column(String(64), nullable=False, comment="用户名")
+    # hash_password: Mapped[str] = mapped_column(String(128), nullable=False, comment="密码")
