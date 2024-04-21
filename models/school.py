@@ -42,7 +42,7 @@ class School(BaseDBModel):
     founder_code: Mapped[str] = mapped_column(String(32), nullable=True,default='', comment="举办者识别码")
     urban_rural_nature: Mapped[str] = mapped_column(String(20), nullable=True,default='', comment="城乡性质")
     school_org_form: Mapped[str] = mapped_column(String(20), nullable=True,default='', comment="办学组织形式")
-    school_closure_date: Mapped[str] = mapped_column(String(20), nullable=True, comment="学校关闭日期")
+    school_closure_date: Mapped[str] = mapped_column(String(20), nullable=True,default='', comment="学校关闭日期")
     department_unit_number: Mapped[str] = mapped_column(String(32), nullable=True,default='', comment="属地管理行政部门单位号")
     sy_zones: Mapped[str] = mapped_column(String(32), nullable=True,default='', comment="属地管理行政部门所在地地区")
     historical_evolution: Mapped[str] = mapped_column(String(300), nullable=True,default='', comment="历史沿革")

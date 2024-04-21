@@ -29,7 +29,7 @@ class SchoolEduinfoRule(object):
         exists_school = await self.school_eduinfo_dao.get_school_eduinfo_by_id(
             school.school_id)
         if exists_school:
-            raise Exception(f"学校教育信息{school.school_eduinfo_name}已存在")
+            raise Exception(f"学校教育信息{school.school_id}已存在")
         if convertmodel:
             school_eduinfo_db = view_model_to_orm_model(school, SchoolEduinfo,    exclude=["id"])
 

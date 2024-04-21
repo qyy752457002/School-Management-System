@@ -28,7 +28,7 @@ class SchoolCommunicationRule(object):
         exists_school = await self.school_communication_dao.get_school_communication_by_id(
             school.school_id)
         if exists_school:
-            raise Exception(f"学校通信信息{school.school_communication_name}已存在")
+            raise Exception(f"学校通信信息{school.school_id}已存在")
 
 
         if convertmodel:
