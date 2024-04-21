@@ -20,15 +20,15 @@ class GraduationStudentRule(object):
         # 可选 , exclude=[""]
         graduation_student = orm_model_to_view_model(graduation_student_db, GraduationStudentModel)
         return graduation_student
-    async def get_graduation_student_by_name(self, graduation_student_name):
-        graduation_student_db = await self.graduation_student_dao.get_graduationstudent_by_name(graduation_student_name)
+    async def get_graduation_student_by_name(self, student_name):
+        graduation_student_db = await self.graduation_student_dao.get_graduationstudent_by_name(student_name)
         # 可选 , exclude=[""]
         graduation_student = orm_model_to_view_model(graduation_student_db, GraduationStudentModel)
         return graduation_student
 
     async def add_graduation_student(self, graduation_student: GraduationStudentModel):
         exists_graduation_student = await self.graduation_student_dao.get_graduationstudent_by_name(
-            graduation_student.graduation_student_name)
+            graduation_student.student_name)
         if exists_graduation_student:
             raise GraduationStudentAlreadyExistError()
         graduation_student_db = view_model_to_orm_model(graduation_student, GraduationStudent,    exclude=["id"])
