@@ -45,7 +45,7 @@ class GraduationStudentsView(BaseView):
 
 
         # 删除
-    async def delete(self, graduation_student_id:int= Query(..., title="", description="课程id", example='SC2032633'),):
+    async def delete(self, graduation_student_id:int= Query(..., title="", description="毕业生id", example='1'),):
         # print(graduation_student_id)
         # return  graduation_student_id
         res = await self.graduation_student_rule.softdelete_graduation_student(graduation_student_id)

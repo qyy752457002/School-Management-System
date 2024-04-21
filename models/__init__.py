@@ -26,4 +26,11 @@ from . import course
 from . import operation_record
 from . import sub_system
 
+from . import attachments
+from . import data_sync_records
+from . import sub_db_info
+
+
+
+
 metadata = BaseDBModel.metadata
