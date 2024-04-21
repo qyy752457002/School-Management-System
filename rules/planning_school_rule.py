@@ -7,9 +7,11 @@ from daos.planning_school_dao import PlanningSchoolDAO
 from models.planning_school import PlanningSchool
 from rules import enum_value_rule
 from rules.enum_value_rule import EnumValueRule
+from rules.school_rule import SchoolRule
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus
 from views.models.planning_school import PlanningSchoolBaseInfo
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
+
 
 @dataclass_inject
 class PlanningSchoolRule(object):
@@ -135,13 +137,13 @@ class PlanningSchoolRule(object):
         return paging_result
 
 
-    async def update_planning_school_status(self, planning_school_id, status):
+    async def update_planning_school_status(self, planning_school_id, status,action=None):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
         # 判断运来的状态 进行后续的更新
         if status== PlanningSchoolStatus.NORMAL.value and exists_planning_school.status== PlanningSchoolStatus.OPENING.value:
-            # 开办
+            # 开办 自动创建一条学校信息
             exists_planning_school.status= PlanningSchoolStatus.NORMAL.value
         elif status== PlanningSchoolStatus.CLOSED.value and exists_planning_school.status== PlanningSchoolStatus.NORMAL.value:
             # 关闭
@@ -155,6 +157,10 @@ class PlanningSchoolRule(object):
 
         print(exists_planning_school.status,2222222)
         planning_school_db = await self.planning_school_dao.update_planning_school_byargs(exists_planning_school,*need_update_list)
+        if action=='open':
+            school_rule = get_injector(SchoolRule)
+
+            await school_rule.add_school_from_planning_school(exists_planning_school)
         # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
         return planning_school_db
 

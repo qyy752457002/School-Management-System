@@ -103,11 +103,14 @@ class SchoolDAO(DAOBase):
     async def query_school_with_page(self, page_request: PageRequest, school_name,school_no,school_code,
                                               block,school_level,borough,status,founder_type,
                                               founder_type_lv2,
-                                              founder_type_lv3 ) -> Paging:
+                                              founder_type_lv3 ,planning_school_id) -> Paging:
         query = select(School)
 
         if school_name:
             query = query.where(School.school_name == school_name)
+        if planning_school_id:
+            query = query.where(School.planning_school_id == planning_school_id)
+
         if school_no:
             query = query.where(School.school_no == school_no)
         if school_code:

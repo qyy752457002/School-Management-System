@@ -154,7 +154,7 @@ class PlanningSchoolView(BaseView):
                                                                min_length=1, max_length=20, example='SC2032633')):
         # print(planning_school)
         res = await self.planning_school_rule.update_planning_school_status(planning_school_id,
-                                                                            PlanningSchoolStatus.NORMAL.value)
+                                                                            PlanningSchoolStatus.NORMAL.value,'open')
 
         return res
 

@@ -9,6 +9,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 
 from daos.school_dao import SchoolDAO
+from models.planning_school import PlanningSchool
 from models.school import School
 from rules.enum_value_rule import EnumValueRule
 from views.models.planning_school import PlanningSchoolStatus
@@ -34,6 +35,25 @@ class SchoolRule(object):
         return school
 
     async def add_school(self, school: SchoolModel):
+        exists_school = await self.school_dao.get_school_by_school_name(
+            school.school_name)
+        if exists_school:
+            raise Exception(f"学校{school.school_name}已存在")
+        #  other_mapper={"password": "hash_password"},
+        #                                              exclude=["first_name", "last_name"]
+        school_db = view_model_to_orm_model(school, School,    exclude=["id"])
+
+        school_db.status =  PlanningSchoolStatus.DRAFT.value
+        school_db.created_uid = 0
+        school_db.updated_uid = 0
+
+        school_db = await self.school_dao.add_school(school_db)
+        school = orm_model_to_view_model(school_db, SchoolKeyAddInfo, exclude=["created_at",'updated_at'])
+        return school
+
+
+    async def add_school_from_planning_school(self, school: PlanningSchool):
+        school = orm_model_to_view_model(school, SchoolModel, exclude=["id"])
         exists_school = await self.school_dao.get_school_by_school_name(
             school.school_name)
         if exists_school:
@@ -139,7 +159,7 @@ class SchoolRule(object):
     async def query_school_with_page(self, page_request: PageRequest,   school_name,school_no,school_code,
                                      block,school_level,borough,status,founder_type,
                                      founder_type_lv2,
-                                     founder_type_lv3 ):
+                                     founder_type_lv3,planning_school_id ):
         #  根据举办者类型  1及 -3级  处理为条件   1  2ji全部转换为 3级  最后in 3级查询
         enum_value_rule = get_injector(EnumValueRule)
         if founder_type:
@@ -159,14 +179,14 @@ class SchoolRule(object):
         paging = await self.school_dao.query_school_with_page(page_request,  school_name,school_no,school_code,
                                                                 block,school_level,borough,status,founder_type,
                                                                 founder_type_lv2,
-                                                                founder_type_lv3,
+                                                                founder_type_lv3,planning_school_id
                                                                                 )
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, SchoolModel)
         return paging_result
 
 
-    async def update_school_status(self, school_id, status):
+    async def update_school_status(self, school_id, status,action=None):
         exists_school = await self.school_dao.get_school_by_id(school_id)
         if not exists_school:
             raise Exception(f"学校{school_id}不存在")
@@ -186,6 +206,7 @@ class SchoolRule(object):
 
         # print(exists_school.status,2222222)
         school_db = await self.school_dao.update_school_byargs(exists_school,*need_update_list)
+
 
         # school_db = await self.school_dao.update_school_status(exists_school,status)
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""],)
