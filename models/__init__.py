@@ -21,5 +21,6 @@ from . import classes
 from . import enum_value
 from . import major
 
+from . import course
 
 metadata = BaseDBModel.metadata
