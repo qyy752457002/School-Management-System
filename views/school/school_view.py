@@ -156,29 +156,6 @@ class SchoolView(BaseView):
     # async def get_extinfo(self):
     #     #
     #     return [ ]
-    # 新增 通信信息
-    async def post_comminfo(self,
-                            school: SchoolCommunications,
-
-                            ):
-
-        res = await self.school_communication_rule.add_school_communication(school)
-
-        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-
-        return res
-
-    # 新增 教学信息
-    async def post_eduinfo(self,
-                           school: SchoolEduInfo,
-
-                           ):
-
-        res = await self.school_eduinfo_rule.add_school_eduinfo(school)
-
-        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-
-        return res
 
     # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性
     async def put(self,

@@ -95,10 +95,18 @@ class SchoolRule(object):
         exists_school = await self.school_dao.get_school_by_id(school.id)
         if not exists_school:
             raise Exception(f"学校{school.id}不存在")
+        if exists_school.status== PlanningSchoolStatus.DRAFT.value:
+            exists_school.status= PlanningSchoolStatus.OPENING.value
+            school.status= PlanningSchoolStatus.OPENING.value
+        else:
+            pass
+
         need_update_list = []
         for key, value in school.dict().items():
             if value:
                 need_update_list.append(key)
+
+
 
         school_db = await self.school_dao.update_school_byargs(school, *need_update_list)
 
@@ -162,7 +170,24 @@ class SchoolRule(object):
         exists_school = await self.school_dao.get_school_by_id(school_id)
         if not exists_school:
             raise Exception(f"学校{school_id}不存在")
-        school_db = await self.school_dao.update_school_status(exists_school,status)
+        # 判断运来的状态 进行后续的更新
+        if status== PlanningSchoolStatus.NORMAL.value and exists_school.status== PlanningSchoolStatus.OPENING.value:
+            # 开办
+            exists_school.status= PlanningSchoolStatus.NORMAL.value
+        elif status== PlanningSchoolStatus.CLOSED.value and exists_school.status== PlanningSchoolStatus.NORMAL.value:
+            # 关闭
+            exists_school.status= PlanningSchoolStatus.CLOSED.value
+        else:
+            # exists_school.status= PlanningSchoolStatus.OPENING.value
+            raise Exception(f"学校当前状态不支持您的操作")
+
+        need_update_list = []
+        need_update_list.append('status')
+
+        # print(exists_school.status,2222222)
+        school_db = await self.school_dao.update_school_byargs(exists_school,*need_update_list)
+
+        # school_db = await self.school_dao.update_school_status(exists_school,status)
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""],)
         return school_db
 
