@@ -47,11 +47,29 @@ class EnumValueDAO(DAOBase):
         result = await session.execute(select(func.count()).select_from(EnumValue))
         return result.scalar()
 
-    async def query_enum_value_with_page(self, enum_value_name,id, page_request: PageRequest) -> Paging:
+    async def query_enum_value_with_page(self,  page_request: PageRequest,enum_value_name,parent_code) -> Paging:
         query = select(EnumValue)
         if enum_value_name:
             query = query.where(EnumValue.enum_name == enum_value_name)
-        if id:
-            query = query.where(EnumValue.id == id)
+        if enum_value_name=='province':
+            query = query.where(EnumValue.parent_id == '')
+        else:
+            query = query.where(EnumValue.parent_id != '')
+        if parent_code:
+            query = query.where(EnumValue.parent_id == parent_code)
         paging = await self.query_page(query, page_request)
         return paging
+
+
+
+    async def get_enum_value_all(self,filterdict):
+        session = await self.slave_db()
+        temodel=select(EnumValue)
+        if filterdict:
+            for key, value in filterdict.items():
+                temodel=temodel.where(getattr(EnumValue, key) == value)
+            # result = await session.execute(select(EnumValue).where(getattr(EnumValue, key) == value))
+            # return result.scalars().all()
+        result = await session.execute(temodel)
+        return result.scalars().all()
+
