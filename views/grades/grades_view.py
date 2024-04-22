@@ -37,9 +37,10 @@ class GradesView(BaseView):
     async def page(self,
                    page_request= Depends(PageRequest),
                    school_id: int = Query(None, title="学校ID", description="学校ID"  ),
+                   grade_name: str = Query(None, description="年级名称", min_length=1, max_length=20)
                    ):
         print(page_request)
-        paging_result = await self.grade_rule.query_grade_with_page( page_request,None,school_id)
+        paging_result = await self.grade_rule.query_grade_with_page( page_request,grade_name,school_id)
 
 
         items=[]
