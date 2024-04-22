@@ -1,8 +1,22 @@
+from enum import Enum
+
 from fastapi import Query
 from pydantic import BaseModel, Field
 from datetime import date
 
 
+
+class StudentStatus(str, Enum):
+    """
+    学生装态
+    """
+    NEW = "new"
+    CURRENT = "current"
+    GRADUATE = "graduate"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.NEW, cls.CURRENT, cls.GRADUATE]
 
 class NewStudents(BaseModel):
     """
