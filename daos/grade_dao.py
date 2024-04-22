@@ -50,7 +50,7 @@ class GradeDAO(DAOBase):
     async def query_grade_with_page(self, grade_name,school_id, page_request: PageRequest) -> Paging:
         query = select(Grade)
         if grade_name:
-            query = query.where(Grade.grade_name == grade_name)
+            query = query.where(Grade.grade_name.like(f'%{grade_name}%') )
         if school_id:
             query = query.where(Grade.school_id == school_id)
         paging = await self.query_page(query, page_request)

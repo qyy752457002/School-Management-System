@@ -59,11 +59,25 @@ class LeaderInfoRule(object):
     async def get_leader_info_count(self):
         return await self.leader_info_dao.get_leader_info_count()
 
-    async def query_leader_info_with_page(self, page_request: PageRequest, leader_info_name=None,
-                                              leader_info_id=None,leader_info_no=None ):
-        paging = await self.leader_info_dao.query_leader_info_with_page(
-                                                                                page_request)
+    async def query_leader_info_with_page(self, page_request: PageRequest,  planning_school_id,school_id,institution_id ):
+        kdict = {
+            "planning_school_id": planning_school_id,
+            "school_id": school_id,
+            "institution_id": institution_id,
+
+            "is_deleted":False
+        }
+        if not kdict["planning_school_id"]:
+            del kdict["planning_school_id"]
+        if not kdict["school_id"]:
+            del kdict["school_id"]
+        if not kdict["institution_id"]:
+            del kdict["institution_id"]
+
+
+        paging = await self.leader_info_dao.query_leader_info_with_page(    page_request ,**kdict)
         # 字段映射的示例写法   , {"hash_password": "password"}
+
         paging_result = PaginatedResponse.from_paging(paging, LeaderInfoModel)
         return paging_result
 
