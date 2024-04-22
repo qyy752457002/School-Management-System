@@ -95,6 +95,9 @@ class PlanningSchoolBaseInfo(BaseModel):
     planning_school_code: str = Field(..., title="", description=" 园所标识码",examples=['SC562369322SG'])
     create_planning_school_date: str = Field(..., title="", description="建校年月",examples=['2021-10-10 00:00:00'])
     founder_type: str = Field(..., title="", description="举办者类型",examples=['地方'])
+    founder_type_lv2: str = Field(..., title="", description="举办者类型二级",examples=['教育部门'])
+
+    founder_type_lv3: str = Field(..., title="", description="举办者类型三级",examples=['县级教育部门'])
     founder_name: str = Field(..., title="", description="举办者名称",examples=['上海教育局'])
     urban_rural_nature: str = Field(..., title="", description="城乡性质",examples=['城镇'])
     planning_school_operation_type: str = Field(..., title="", description="办学类型/学校性质",examples=['学前教育'])
