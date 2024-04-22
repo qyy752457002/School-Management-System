@@ -78,3 +78,23 @@ class CourseRule(object):
         return await self.course_dao.get_all_course(filterdict)
 
 
+    async def add_course_school(self,school_id,course_list):
+        exists_course = await self.course_dao.get_course_by_school_id(      school_id)
+        if exists_course:
+            raise CourseAlreadyExistError()
+        # course_db =  Course(school_id=school_id,course_list=course_list)
+        for course in course_list:
+            course_db= view_model_to_orm_model(course, Course, exclude=["id"])
+            res = await self.course_dao.add_course(course_db)
+
+            # print(course_db.course_list)
+
+
+
+
+
+        # course_db = await self.course_dao.add_course(course_db)
+        course = orm_model_to_view_model(res, CourseModel, exclude=["created_at",'updated_at'])
+        return course
+
+

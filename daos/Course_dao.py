@@ -30,6 +30,12 @@ class CourseDAO(DAOBase):
 		result = await session.execute(select(Course).where(Course.id == id))
 		return result.scalar_one_or_none()
 
+
+	async def get_course_by_school_id(self, id):
+		session = await self.slave_db()
+		result = await session.execute(select(Course).where(Course.school_id == id))
+		return result.scalar_one_or_none()
+
 	async def query_course_with_page(self,  page_request: PageRequest,**kwargs):
 		query = select(Course).where(Course.is_deleted == False)
 		for key, value in kwargs.items():

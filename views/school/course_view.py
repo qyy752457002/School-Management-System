@@ -1,3 +1,5 @@
+from typing import List
+
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
@@ -6,7 +8,7 @@ from rules.course_rule import CourseRule
 # from views.models.courses import Courses
 from views.models.course import Course
 
-from fastapi import Query, Depends
+from fastapi import Query, Depends, Body
 
 
 class CourseView(BaseView):
@@ -14,11 +16,16 @@ class CourseView(BaseView):
         super().__init__()
         self.course_rule = get_injector( CourseRule)
 
-    async def post(self, course: Course):
-        print(course)
-        res =await self.course_rule.add_course(course)
+    async def post(self,
+                   school_id:int= Query(...,   description="学校ID", example='1'),
+                   course_list:List[Course]= Body([], description="选择的课程" , example= [{"course_id":1,"course_name":"语文","course_no":"19","school_id":1,} ]),
+
+                   ):
+        # print(course)
+        res =await self.course_rule.add_course_school(school_id,course_list )
 
         return res
+
 
 
 
@@ -68,4 +75,12 @@ class CourseView(BaseView):
 
 
         res = await self.course_rule.get_course_all( {'school_id':0} )
+        return res
+
+
+
+    async def post_add_init_course(self, course: Course):
+        print(course)
+        res =await self.course_rule.add_course(course)
+
         return res
