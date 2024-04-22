@@ -117,7 +117,7 @@ class StudentsBaseInfo(BaseModel):
     常住地址：permanent_address
     备注：remark
     """
-    student_id: str = Field(None, title="学生id", description="学生id")
+    student_id: int = Field(0, title="学生id", description="学生id")
     name_pinyin: str = Field(..., title="姓名拼音", description="姓名拼音")
     session: str = Field(..., title="届别", description="届别")
     grade: str = Field(..., title="年级", description="年级")
@@ -139,12 +139,12 @@ class StudentsBaseInfo(BaseModel):
     blood_type: str = Field(None, title="血型", description="血型")
     home_phone_number: str = Field(..., title="家庭电话", description="家庭电话")
     email_or_other_contact: str = Field(..., title="电子信箱/其他联系方式", description="电子信箱/其他联系方式")
-    migrant_children: bool = Field(..., title="是否随迁子女", description="是否随迁子女")
-    disabled_person: bool = Field(None, title="是否残疾人", description="是否残疾人")
-    only_child: bool = Field(..., title="是否独生子女", description="是否独生子女")
-    left_behind_children: bool = Field(..., title="是否留守儿童", description="是否留守儿童")
-    floating_population: bool = Field(..., title="是否流动人口", description="是否流动人口")
-    overseas_chinese: bool = Field(..., title="是否港澳台侨胞", description="是否港澳台侨胞")
+    migrant_children: str = Field(..., title="是否随迁子女", description="是否随迁子女")
+    disabled_person: str = Field(None, title="是否残疾人", description="是否残疾人")
+    only_child: str = Field(..., title="是否独生子女", description="是否独生子女")
+    left_behind_children: str = Field(..., title="是否留守儿童", description="是否留守儿童")
+    floating_population: str = Field(..., title="是否流动人口", description="是否流动人口")
+    overseas_chinese: str = Field(..., title="是否港澳台侨胞", description="是否港澳台侨胞")
     residence_address_detail: str = Field(None, title="户口所在地（详细）", description="户口所在地（详细）")
     communication_district: str = Field(..., title="通信地址行政区", description="通信地址行政区")
     postal_code: str = Field(None, title="邮政编码", description="邮政编码")
