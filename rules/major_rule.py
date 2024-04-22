@@ -56,8 +56,7 @@ class MajorRule(object):
         exists_major = await self.major_dao.get_major_by_id(major_id)
         if not exists_major:
             raise Exception(f"专业信息{major_id}不存在")
-        major_db = await self.major_dao.delete_major(exists_major)
-        # major = orm_model_to_view_model(major_db, MajorModel, exclude=[""],)
+        major_db = await self.major_dao.softdelete_major(exists_major)
         return major_db
 
 

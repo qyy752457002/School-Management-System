@@ -24,6 +24,13 @@ class NewTeachersView(BaseView):
         res = await self.teacher_rule.add_teachers(teachers)
         return res
 
+    async def delete_newteacher(self, teacher_id: int = Query(..., title="教师编号", description="教师编号")):
+        """
+        删除教师信息
+        """
+        await self.teacher_rule.delete_teachers(teacher_id)
+        return str(teacher_id)
+
     # 查询单个教职工登记信息
     async def get_newteacher(self, teacher_id:int = Query(..., title="教师编号", description="教师编号")):
         res = await self.teacher_rule.get_teachers_by_id(teacher_id)
@@ -41,6 +48,7 @@ class NewTeachersView(BaseView):
         """
         分页查询
         """
+        print (condition)
         paging_result = await self.teacher_info_rule.query_teacher_with_page(page_request, condition)
         return paging_result
 
@@ -52,21 +60,19 @@ class NewTeachersView(BaseView):
         return res
 
     # 获取教职工基本信息
-    async def get_newteacherinfo(self, teacher_id: int = Query(..., title="教师名称", description="教师名称", min_length=1,
-                                                       max_length=20,
+    async def get_newteacherinfo(self, teacher_id: int = Query(..., title="教师名称", description="教师名称",
                                                        example=123)):
         res = await self.teacher_info_rule.get_teachers_info_by_id(teacher_id)
         return res
 
     # 编辑教职工基本信息
-    async def put_newteacherinfo(self, teacher_info: TeacherInfo):
+    async def put_newteacherinfo(self, teacher_info: TeacherInfoCreateModel):
         res = await self.teacher_info_rule.update_teachers_info(teacher_info)
         return res
 
     # 删除教职工基本信息
-    async def delete_newteacherinfo(self,
-                                    teacher_id: int = Query(..., title="教师编号", description="教师编号", min_length=1,
-                                                    max_length=20, example=123)):
-        res = await self.teacher_info_rule.delete_teachers_info(teacher_id)
-        return res
+    # async def delete_newteacherinfo(self,
+    #                                 teacher_id: int = Query(..., title="教师编号", description="教师编号",example=123)):
+    #     res = await self.teacher_info_rule.delete_teachers_info(teacher_id)
+    #     return res
 

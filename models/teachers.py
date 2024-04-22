@@ -11,6 +11,8 @@ class Teacher(BaseDBModel):
     """
     教师表
     教师ID：teacher_id
+    用户名：username
+    密码：hash_password
     姓名：teacher_name
     性别：teacher_gender
     证件类型：teacher_id_type
@@ -19,6 +21,7 @@ class Teacher(BaseDBModel):
     任职单位：teacher_employer
     头像：teacher_avatar
     审批状态：teacher_approval_status
+
     """
 
     __tablename__ = 'lfun_teachers'
@@ -33,7 +36,9 @@ class Teacher(BaseDBModel):
     teacher_employer: Mapped[str] = mapped_column(String(64), nullable=False, comment="任职单位")
     teacher_avatar: Mapped[str] = mapped_column(String(64), nullable=True, comment="头像") #图像处理再定
     teacher_approval_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="审批状态",default="通过")#审批状态待定
-    deleted: Mapped[int] = mapped_column(nullable=True, comment="删除态", default=0)
+    is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
+    # username: Mapped[str] = mapped_column(String(64), nullable=False, comment="用户名")
+    # hash_password: Mapped[str] = mapped_column(String(128), nullable=False, comment="密码")
 
 
 

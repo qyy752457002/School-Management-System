@@ -25,6 +25,17 @@ class MajorDAO(DAOBase):
 		await session.delete(major)
 		await session.commit()
 
+
+	async def softdelete_major(self, major):
+		session = await self.master_db()
+		deleted_status= True
+		update_stmt = update(Major).where(Major.id == major.id).values(
+			is_deleted= deleted_status,
+		)
+		await session.execute(update_stmt)
+		await session.commit()
+		return major
+
 	async def get_major_by_id(self, id):
 		session = await self.slave_db()
 		result = await session.execute(select(Major).where(Major.id == id))

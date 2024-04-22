@@ -162,7 +162,7 @@ class StudentsFamilyInfo(BaseModel):
     工作单位：workplace
     家庭成员职业：family_member_occupation
     """
-    student_id: str = Field(None, title="学生id", description="学生id")
+    student_id: int = Field(..., title="学生id", description="学生id")
     name: str = Field(..., title="姓名", description="姓名")
     gender: str = Field(..., title="性别", description="性别")
     relationship: str = Field(..., title="关系", description="关系")
@@ -178,6 +178,43 @@ class StudentsFamilyInfo(BaseModel):
     contact_address: str = Field(..., title="联系地址", description="联系地址")
     workplace: str = Field(..., title="工作单位", description="工作单位")
     family_member_occupation: str = Field(..., title="家庭成员职业", description="家庭成员职业")
+
+class StudentsUpdateFamilyInfo(BaseModel):
+    """
+    姓名：name
+    性别：gender
+    关系：relationship
+    是否监护人：is_guardian
+    证件类型：identification_type
+    证件号码：identification_number
+    出生日期：birthday
+    手机号码：phone_number
+    民族：ethnicity
+    健康状态：health_status
+    国籍：nationality
+    政治面貌：political_status
+    联系地址：contact_address
+    工作单位：workplace
+    家庭成员职业：family_member_occupation
+    """
+    name: str = Field(..., title="姓名", description="姓名")
+    gender: str = Field(..., title="性别", description="性别")
+    relationship: str = Field(..., title="关系", description="关系")
+    is_guardian: bool = Field(..., title="是否监护人", description="是否监护人")
+    identification_type: str = Field(..., title="证件类型", description="证件类型")
+    identification_number: str = Field(..., title="证件号码", description="证件号码")
+    birthday: str = Field(..., title="出生日期", description="出生日期")
+    phone_number: str = Field(..., title="手机号码", description="手机号码")
+    ethnicity: str = Field(..., title="民族", description="民族")
+    health_status: str = Field(..., title="健康状态", description="健康状态")
+    nationality: str = Field(..., title="国籍", description="国籍")
+    political_status: str = Field(..., title="政治面貌", description="政治面貌")
+    contact_address: str = Field(..., title="联系地址", description="联系地址")
+    workplace: str = Field(..., title="工作单位", description="工作单位")
+    family_member_occupation: str = Field(..., title="家庭成员职业", description="家庭成员职业")
+
+
+
 
 class StudentEduInfo(BaseModel):
     student_id: str = Query(...,   description="学生id",min_length=1,max_length=20,examples=["1234567890"]),
@@ -203,7 +240,9 @@ class StudentEduInfo(BaseModel):
 
 
 class GraduationStudents(BaseModel):
-    student_id: str = Field(..., title="学生id", description="学生id")
+    id:int= Query(None, title="", description="id", example='1'),
+
+    student_id: str = Field('', title="学生id", description="学生id",examples=['0'])
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
     gender: str = Field(..., title="性别", description="性别")
     school: str = Field(..., title="学校", description="学校")
