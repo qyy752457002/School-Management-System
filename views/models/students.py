@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from datetime import date
 
 
+
 class NewStudents(BaseModel):
     """
     学生姓名：student_name
@@ -54,11 +55,11 @@ class StudentsKeyinfo(BaseModel):
     证件号码：id_number
     照片：photo
     """
-    student_id: str = Field(..., title="学生id", description="学生id")
+    student_id: int = Field(None, title="学生id", description="学生id")
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
     enrollment_number: str = Field(..., title="报名号", description="报名号")
     birthday: str = Field(..., title="生日", description="生日")
-    gender: str = Field(..., title="性别", description="性别")
+    student_gender: str = Field(..., title="性别", description="性别")
     id_type: str = Field(..., title="证件类别", description="证件类别")
     id_number: str = Field(..., title="证件号码", description="证件号码")
     photo: str = Field(..., title="照片", description="照片")
