@@ -30,6 +30,12 @@ class CourseDAO(DAOBase):
 		result = await session.execute(select(Course).where(Course.id == id))
 		return result.scalar_one_or_none()
 
+
+	async def get_course_by_school_id(self, id):
+		session = await self.slave_db()
+		result = await session.execute(select(Course).where(Course.school_id == id,Course.is_deleted == False))
+		return result.scalar_one_or_none()
+
 	async def query_course_with_page(self,  page_request: PageRequest,**kwargs):
 		query = select(Course).where(Course.is_deleted == False)
 		for key, value in kwargs.items():
@@ -52,7 +58,30 @@ class CourseDAO(DAOBase):
 		await session.execute(update_stmt)
 		await session.commit()
 		return course
+
+	async def softdelete_course_by_school_id(self, school_id):
+		session = await self.master_db()
+		deleted_status= True
+		update_stmt = update(Course).where(Course.school_id == school_id).values(
+			is_deleted= deleted_status,
+		)
+		await session.execute(update_stmt)
+		await session.commit()
+		return school_id
 	async def get_course_by_name(self, name):
 		session = await self.slave_db()
 		result = await session.execute(select(Course).where(Course.course_name == name))
 		return result.scalar_one_or_none()
+
+
+
+	async def get_all_course(self,filterdict):
+		session = await self.slave_db()
+		temodel=select(Course)
+		if filterdict:
+			for key, value in filterdict.items():
+				temodel=temodel.where(getattr(Course, key) == value)
+				# result = await session.execute(select(Course).where(getattr(Course, key) == value))
+				# return result.scalars().all()
+		result = await session.execute(temodel)
+		return result.scalars().all()
