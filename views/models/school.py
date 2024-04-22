@@ -12,7 +12,9 @@ class School(BaseModel):
     block: str = Field(..., title=" Author", description="地域管辖区",examples=['铁西区'])
     borough: str = Field(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
     school_type: str = Field(..., title="", description=" 学校类型",examples=['中小学'])
-    school_operation_type: str = Field(..., title="", description="办学类型/学校性质",examples=['学前教育'])
+    school_operation_type: str = Field(..., title="", description="办学类型",examples=['学前教育'])
+    school_nature: str = Field('', title="", description="学校性质",examples=['学前'])
+
     school_operation_type_lv2: str = Field(..., title="", description=" 办学类型二级",examples=['小学'])
     school_operation_type_lv3: str = Field(..., title="", description=" 办学类型三级",examples=['附设小学班'])
     school_org_type: str = Field(..., title="", description=" 学校办别",examples=['民办'])

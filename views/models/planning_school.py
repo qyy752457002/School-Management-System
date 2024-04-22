@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 class PlanningSchoolFounderType(str, Enum):
     """
     举办者类型 一级
+    学校性质
     """
     LOCAL = "local"
     CENTRAL = "central"
@@ -47,7 +48,9 @@ class PlanningSchool(BaseModel):
     borough: str = Field(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
     planning_school_type: str = Field(..., title="", description=" 学校类型",examples=['中小学'])
 
-    planning_school_operation_type: str = Field(..., title="", description="办学类型/学校性质",examples=['学前教育'])
+    planning_school_operation_type: str = Field(..., title="", description="办学类型",examples=['学前教育'])
+    planning_school_nature: str = Field('', title="", description="学校性质",examples=['学前'])
+
     planning_school_operation_type_lv2: str = Field(..., title="", description=" 办学类型二级",examples=['小学'])
     planning_school_operation_type_lv3: str = Field(..., title="", description=" 办学类型三级",examples=['附设小学班'])
     planning_school_org_type: str = Field(..., title="", description=" 学校办别",examples=['民办'])
