@@ -99,7 +99,7 @@ class PlanningSchoolView(BaseView):
                           ):
         # print(planning_school)
 
-        res = await self.planning_school_rule.update_planning_school(planning_school)
+        res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
 
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
 
@@ -116,7 +116,7 @@ class PlanningSchoolView(BaseView):
     # 修改 变更 基本信息
     async def patch_baseinfo(self, planning_school_baseinfo: PlanningSchoolBaseInfo, ):
         # print(planning_school_baseinfo,type( planning_school_baseinfo))
-        res = await self.planning_school_rule.update_planning_school(planning_school_baseinfo, 2)
+        res = await self.planning_school_rule.update_planning_school_byargs(planning_school_baseinfo, 2)
 
         return res
 
