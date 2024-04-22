@@ -223,6 +223,11 @@ class PlanningSchoolView(BaseView):
         planning_school.id = planning_school_id
         planning_school_communication.planning_school_id = planning_school_id
         planning_school_eduinfo.planning_school_id = planning_school_id
+        planning_school_communication.id = None
+        planning_school_eduinfo.id = None
+
+
+
 
         res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
         res_com = await self.planning_school_communication_rule.update_planning_school_communication_byargs(
