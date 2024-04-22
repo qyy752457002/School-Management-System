@@ -4,28 +4,30 @@ from pydantic import BaseModel, Field
 class LeaderInfo(BaseModel):
     """
      领导
+     planning_school_id: Mapped[int] = mapped_column(  nullable=True , comment="规划ID",default=0)
+    leader_name: Mapped[str] = mapped_column(String(255),  nullable=True, comment="领导姓名",default='')
+    position: Mapped[str] = mapped_column(String(255),  nullable=True, comment="职务",default='')
+    status: Mapped[str] = mapped_column(String(255),  nullable=True, comment="状态",default='')
+    start_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, nullable=False, comment="任职开始时间")
+    end_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, nullable=False, comment="任职结束时间")
+    job_content: Mapped[str] = mapped_column(String(255),  nullable=True, comment="工作内容",default='')
+    job_responsibility: Mapped[str] = mapped_column(String(255),  nullable=True, comment="分管工作",default='')
+    school_id: Mapped[int] = mapped_column(  nullable=True , comment="学校ID",default=0)
+    institution_id: Mapped[int] = mapped_column(  nullable=True , comment="事业单位ID",default=0)
     """
     id:int= Query(None, title="", description="id", example='1'),
 
     school_id: int = Field(None, title="学校ID", description="学校ID",examples=['1'])
-    grade_no: str = Field(..., title="年级编号", description="年级编号",examples=['一年级'])
-    grade_id: int = Field(..., title="年级ID", description="年级ID",examples=['2'])
+    institution_id: int = Field(None, title="", description="事业单位ID",examples=['1'])
+    planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
+    leader_name: str = Field(..., title="", description="领导姓名",examples=['xxxx'])
+    position: str = Field(..., title="", description="职务",examples=['xxxx'])
+    status: str = Field(None, title="", description="状态",examples=['正常'])
+    start_date: str = Field(..., title="", description="任职开始时间",examples=['2021-10-10 00:00:00'])
+    end_date: str = Field(..., title="", description="任职结束时间",examples=['2021-10-10 00:00:00'])
+    job_content: str = Field(..., title="", description="工作内容",examples=['xxxx'])
+    job_responsibility: str = Field(..., title="", description="分管工作",examples=['xxxx'])
 
-    class_name: str = Field(..., title="Grade_name",description="班级名称",examples=['一年级'])
-    class_number: str = Field(...,  description="班号",examples=['一年级'])
-    year_established: str = Field(None,  description="建班年份",examples=['fsdfdsfsdxxx'])
-    teacher_id_card: str = Field(None,  description="班主任身份证",examples=['fsdfdsfsdxxx'])
-    teacher_name: str = Field(None,  description="班主任姓名",examples=['fsdfdsfsdxxx'])
-    education_stage: str = Field(None,  description="教育阶段",examples=['中职'])
-    school_system: str = Field(None,  description="学制",examples=['fsdfdsfsdxxx'])
-    monitor: str = Field(None,  description="班长",examples=['fsdfdsfsdxxx'])
-    class_type: str = Field(None,  description="中小学班级类型",examples=['小学教学点班'])
-    is_bilingual_class: str = Field(None,  description="是否少数民族双语教学班",examples=['fsdfdsfsdxxx'])
-    major_for_vocational: str = Field(None,  description="中职班级专业",examples=['fsdfdsfsdxxx'])
-    bilingual_teaching_mode: str = Field(None,  description="双语教学模式",examples=['fsdfdsfsdxxx'])
-    ethnic_language: str = Field(None,  description="少数民族语言",examples=['fsdfdsfsdxxx'])
-    is_att_class: str = Field(None,  description="是否附设班",examples=['是否附设班'])
-    att_class_type: str = Field(None,  description="附设班类型",examples=['附设班类型'])
 
 
 

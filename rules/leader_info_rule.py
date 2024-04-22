@@ -23,17 +23,17 @@ class LeaderInfoRule(object):
         exists_classes = await self.leader_info_dao.get_leader_info_by_leader_info_name(
             classes.class_name)
         if exists_classes:
-            raise Exception(f"班级信息{classes.class_name}已存在")
+            raise Exception(f"领导信息{classes.class_name}已存在")
         leader_info_db = view_model_to_orm_model(classes, LeaderInfo,    exclude=["id"])
 
-        leader_info_db = await self.leader_info_dao.add_classes(leader_info_db)
+        leader_info_db = await self.leader_info_dao.add_leader_info(leader_info_db)
         classes = orm_model_to_view_model(leader_info_db, LeaderInfoModel, exclude=["created_at",'updated_at'])
         return classes
 
     async def update_classes(self, classes,ctype=1):
         exists_classes = await self.leader_info_dao.get_leader_info_by_id(classes.id)
         if not exists_classes:
-            raise Exception(f"班级信息{classes.id}不存在")
+            raise Exception(f"领导信息{classes.id}不存在")
         need_update_list = []
         for key, value in classes.dict().items():
             if value:
@@ -50,8 +50,8 @@ class LeaderInfoRule(object):
     async def softdelete_classes(self, leader_info_id):
         exists_classes = await self.leader_info_dao.get_leader_info_by_id(leader_info_id)
         if not exists_classes:
-            raise Exception(f"班级信息{leader_info_id}不存在")
-        leader_info_db = await self.leader_info_dao.softdelete_classes(exists_classes)
+            raise Exception(f"领导信息{leader_info_id}不存在")
+        leader_info_db = await self.leader_info_dao.softdelete_leader_info(exists_classes)
         # classes = orm_model_to_view_model(leader_info_db, LeaderInfoModel, exclude=[""],)
         return leader_info_db
 
@@ -61,7 +61,7 @@ class LeaderInfoRule(object):
 
     async def query_leader_info_with_page(self, page_request: PageRequest, leader_info_name=None,
                                               leader_info_id=None,leader_info_no=None ):
-        paging = await self.leader_info_dao.query_leader_info_with_page(leader_info_name, leader_info_id,leader_info_no,
+        paging = await self.leader_info_dao.query_leader_info_with_page(
                                                                                 page_request)
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, LeaderInfoModel)
