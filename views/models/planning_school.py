@@ -11,7 +11,7 @@ class PlanningSchoolFounderType(str, Enum):
     举办者类型 一级
     学校性质
     """
-    LOCAL = "local"
+    LOCAL = "regional"
     CENTRAL = "central"
 
     @classmethod
