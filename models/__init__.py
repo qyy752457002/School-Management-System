@@ -17,4 +17,13 @@ from . import campus
 from . import campus_communication
 from . import campus_eduinfo
 from . import teacher_learn_experience
+from . import teacher_work_experience
+from . import teacher_qualifications
+from . import teacher_job_appointments
+from . import teacher_professional_titles
+from . import teacher_skill_certificates
+from . import teacher_ethic_records
+from . import educational_teaching
+
+
 metadata = BaseDBModel.metadata

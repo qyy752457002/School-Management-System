@@ -44,12 +44,11 @@ class NewTeachersView(BaseView):
 
     # 分页查询
 
-    async def page(self, condition: NewTeacher = Depends(NewTeacher), page_request=Depends(PageRequest)):
+    async def page(self, new_teacher = Depends(NewTeacher), page_request=Depends(PageRequest)):
         """
         分页查询
         """
-        print (condition)
-        paging_result = await self.teacher_info_rule.query_teacher_with_page(page_request, condition)
+        paging_result = await self.teacher_info_rule.query_teacher_with_page(new_teacher,page_request)
         return paging_result
 
     # 新教职工基本信息的功能

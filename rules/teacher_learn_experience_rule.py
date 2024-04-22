@@ -26,6 +26,7 @@ class TeacherLearnExperienceRule(object):
     async def delete_teacher_learn_experience(self, teacher_learn_experience_id):
         exists_teacher_learn_experience = await self.teacher_learn_experience_dao.get_teacher_learn_experience_by_teacher_learn_experience_id(
             teacher_learn_experience_id)
+        print(exists_teacher_learn_experience.is_deleted)
         if not exists_teacher_learn_experience:
             raise Exception(f"编号为的{teacher_learn_experience_id}teacher_learn_experience不存在")
         teacher_learn_experience_db = await self.teacher_learn_experience_dao.delete_teacher_learn_experience(
