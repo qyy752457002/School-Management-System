@@ -60,14 +60,35 @@ class CourseRule(object):
             raise Exception(f"课程信息{course_id}不存在")
         course_db = await self.course_dao.softdelete_course(exists_course)
         return course_db
+    async def softdelete_course_by_school_id(self, course_id):
+        exists_course = await self.course_dao.get_course_by_school_id(course_id)
+        if not exists_course:
+            raise Exception(f"课程信息{course_id}不存在")
+        course_db = await self.course_dao.softdelete_course_by_school_id(course_id)
+        return course_db
 
 
     async def get_course_count(self):
         return await self.course_dao.get_course_count()
 
-    async def query_course_with_page(self, page_request: PageRequest, course_name=None,
+    async def query_course_with_page(self, page_request: PageRequest,school_id=None, course_name=None,
                                               course_id=None,course_no=None ):
-        paging = await self.course_dao.query_course_with_page(page_request,
+        kdict = {
+            "course_name": course_name,
+            "school_id": school_id,
+            "course_id": course_id,
+            "course_no": course_no,
+        }
+        if not kdict["course_name"]:
+            del kdict["course_name"]
+        if not kdict["school_id"]:
+            del kdict["school_id"]
+        if not kdict["course_id"]:
+            del kdict["course_id"]
+        if not kdict["course_no"]:
+            del kdict["course_no"]
+
+        paging = await self.course_dao.query_course_with_page(page_request,**kdict
                                                                                 )
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, CourseModel)
