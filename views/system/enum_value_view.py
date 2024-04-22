@@ -1,3 +1,5 @@
+from typing import List
+
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 

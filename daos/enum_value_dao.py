@@ -56,7 +56,18 @@ class EnumValueDAO(DAOBase):
         else:
             query = query.where(EnumValue.parent_id != '')
         if parent_code:
-            query = query.where(EnumValue.parent_id == parent_code)
+            if ',' in parent_code:
+                parent_code = parent_code.split(',')
+
+            if isinstance(parent_code, list):
+                # print(f"{var} 是一个列表")
+                query = query.where(EnumValue.parent_id.in_(parent_code) )
+            # query = query.where(PlanningSchool.founder_type_lv3.in_(founder_type_lv3))
+
+
+            else:
+                # print(f"{var} 不是一个列表")
+                query = query.where(EnumValue.parent_id == parent_code)
         paging = await self.query_page(query, page_request)
         return paging
 
