@@ -234,7 +234,7 @@ class SchoolRule(object):
     async def query_schools(self,planning_school_name):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(School).where(School.school_name.like(f'{planning_school_name}%') ))
+        result = await session.execute(select(School).where(School.school_name.like(f'%{planning_school_name}%') ))
         res= result.scalars().all()
 
         lst = []

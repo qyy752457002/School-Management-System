@@ -197,7 +197,7 @@ class CampusRule(object):
     async def query_campus(self,planning_campus_name):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(Campus).where(Campus.campus_name.like(f'{planning_campus_name}%') ))
+        result = await session.execute(select(Campus).where(Campus.campus_name.like(f'%{planning_campus_name}%') ))
         res= result.scalars().all()
 
         lst = []
