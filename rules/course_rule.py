@@ -61,9 +61,9 @@ class CourseRule(object):
         course_db = await self.course_dao.softdelete_course(exists_course)
         return course_db
     async def softdelete_course_by_school_id(self, course_id):
-        exists_course = await self.course_dao.get_course_by_school_id(course_id)
-        if not exists_course:
-            raise Exception(f"课程信息{course_id}不存在")
+        # exists_course = await self.course_dao.get_course_by_school_id(course_id)
+        # if not exists_course:
+        #     raise Exception(f"课程信息{course_id}不存在")
         course_db = await self.course_dao.softdelete_course_by_school_id(course_id)
         return course_db
 
@@ -78,6 +78,7 @@ class CourseRule(object):
             "school_id": school_id,
             "course_id": course_id,
             "course_no": course_no,
+            "is_deleted":False
         }
         if not kdict["course_name"]:
             del kdict["course_name"]
