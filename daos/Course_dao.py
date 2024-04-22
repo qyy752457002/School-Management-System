@@ -56,3 +56,16 @@ class CourseDAO(DAOBase):
 		session = await self.slave_db()
 		result = await session.execute(select(Course).where(Course.course_name == name))
 		return result.scalar_one_or_none()
+
+
+
+	async def get_all_course(self,filterdict):
+		session = await self.slave_db()
+		temodel=select(Course)
+		if filterdict:
+			for key, value in filterdict.items():
+				temodel=temodel.where(getattr(Course, key) == value)
+				# result = await session.execute(select(Course).where(getattr(Course, key) == value))
+				# return result.scalars().all()
+		result = await session.execute(temodel)
+		return result.scalars().all()

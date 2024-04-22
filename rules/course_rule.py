@@ -73,3 +73,8 @@ class CourseRule(object):
         paging_result = PaginatedResponse.from_paging(paging, CourseModel)
         return paging_result
 
+
+    async def get_course_all(self, filterdict):
+        return await self.course_dao.get_all_course(filterdict)
+
+

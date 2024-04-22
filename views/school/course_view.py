@@ -59,3 +59,13 @@ class CourseView(BaseView):
 
 
         return  res
+
+
+    # 获取所有的课程列表 给下拉
+    async def get_all(self ):
+        # print(page_request)
+        items=[]
+
+
+        res = await self.course_rule.get_course_all( {'school_id':0} )
+        return res
