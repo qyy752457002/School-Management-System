@@ -60,6 +60,7 @@ class CampusBaseInfo(BaseModel):
     urban_rural_nature: str = Field(..., title="", description="城乡性质",examples=['城镇'])
     campus_operation_type: str = Field(..., title="", description="办学类型/校区性质",examples=['学前教育'])
     campus_org_form: str = Field(..., title="", description="办学组织形式",examples=['教学点'])
+    campus_nature: str = Field('', title="", description="学校性质",examples=['学前'])
 
     campus_operation_type_lv2: str = Field(..., title="", description=" 办学类型二级",examples=['小学'])
     campus_operation_type_lv3: str = Field(..., title="", description=" 办学类型三级",examples=['附设小学班'])

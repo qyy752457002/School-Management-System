@@ -14,6 +14,7 @@ class Campus(BaseDBModel):
 campus_leader_name
 校区负责人职位
 campus_leader_position
+ campus_nature: str = Field('', title="", description="学校性质",examples=['学前'])
     """
     __tablename__ = 'lfun_campus'
     __table_args__ = {'comment': '校区'}
@@ -29,6 +30,8 @@ campus_leader_position
     borough: Mapped[str] = mapped_column(String(20), nullable=True,default='', comment="行政管辖区")
     campus_type: Mapped[str] = mapped_column(String(20), nullable=True,default='', comment="校区类型")
     campus_operation_type: Mapped[str] = mapped_column(String(20), nullable=True,default='', comment="办学类型/校区性质")
+    campus_nature: Mapped[str] = mapped_column(String(20), nullable=True,default='', comment="学校性质")
+
     campus_operation_type_lv2: Mapped[str] = mapped_column(String(20), nullable=True,default='', comment="办学类型二级")
     campus_operation_type_lv3: Mapped[str] = mapped_column(String(20), nullable=True,default='', comment="办学类型三级")
     campus_org_type: Mapped[str] = mapped_column(String(20), nullable=True,default='', comment="校区办别")
