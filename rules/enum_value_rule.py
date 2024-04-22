@@ -152,7 +152,7 @@ class EnumValueRule(object):
     async def query_enum_values(self,enum_value_name):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(EnumValue).where(EnumValue.enum_value_name.like(f'{enum_value_name}%') ))
+        result = await session.execute(select(EnumValue).where(EnumValue.enum_value_name.like(f'%{enum_value_name}%') ))
         res= result.scalars().all()
         lst = []
         for row in res:

@@ -74,7 +74,7 @@ class GradeRule(object):
     async def query_grade(self,grade_name):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(Grade).where(Grade.grade_name.like(f'{grade_name}%') ))
+        result = await session.execute(select(Grade).where(Grade.grade_name.like(f'%{grade_name}%') ))
         res= result.scalars().all()
 
         lst = []
