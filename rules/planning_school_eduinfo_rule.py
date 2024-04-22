@@ -25,7 +25,14 @@ class PlanningSchoolEduinfoRule(object):
     async def get_planning_school_eduinfo_by_planning_school_id(self, planning_school_eduinfo_id):
         planning_school_eduinfo_db = await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_planning_school_id(planning_school_eduinfo_id)
         # 可选 , exclude=[""]
-        planning_school = orm_model_to_view_model(planning_school_eduinfo_db, PlanningSchoolEduinfoModel)
+        if   planning_school_eduinfo_db is None:
+            planning_school = PlanningSchoolEduinfoModel()
+            planning_school = dict()
+            
+        else:
+            planning_school = orm_model_to_view_model(planning_school_eduinfo_db, PlanningSchoolEduinfoModel)
+
+
         return planning_school
 
 

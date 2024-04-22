@@ -25,8 +25,10 @@ class PlanningSchoolCommunicationRule(object):
     async def get_planning_school_communication_by_planning_shcool_id(self, planning_school_communication_id):
         planning_school_communication_db = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(planning_school_communication_id)
         # 可选 , exclude=[""]
-        if not planning_school_communication_db or not planning_school_communication_db.id:
+        if   planning_school_communication_db is None:
             planning_school = PlanningSchoolCommunicationModel()
+            planning_school = dict()
+
         else:
             planning_school = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel)
 
