@@ -266,7 +266,7 @@ class GraduationStudents(BaseModel):
     class_id: str = Field(..., title="", description="班级")
 
 class NewStudentsFlowOut(BaseModel):
-    student_id: str = Query(...,   description="学生id",min_length=1,max_length=20,examples=["1234567890"]),
+    student_id: int = Query(...,   description="学生id", examples=["1"]),
     flow_out_time: str = Query(...,   description="流出时间",min_length=1,max_length=20,examples=["2020-10-10"]),
     flow_out_reason: str = Query(None,   description="流出原因",min_length=1,max_length=20,examples=["家庭搬迁"]),
 
