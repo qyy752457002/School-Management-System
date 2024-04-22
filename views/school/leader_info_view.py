@@ -41,13 +41,13 @@ class LeaderInfoView(BaseView):
         # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
 
     # 删除
-    async def delete(self, leader_info_id:int= Query(..., title="", description="专业id", )):
+    async def delete(self, leader_info_id:int= Query(..., title="", description="id", )):
         print(leader_info_id)
         res = await self.leader_info_rule.softdelete_leader_info(leader_info_id)
 
         return  res
 
-    # 修改 关键信息
+    # 修改
     async def put(self,leader_info:LeaderInfo
                   ):
         # print(planning_school)
