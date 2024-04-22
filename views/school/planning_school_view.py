@@ -5,6 +5,7 @@ from typing import List
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
+from business_exceptions.planning_school import PlanningSchoolValidateError, PlanningSchoolBaseInfoValidateError
 from rules.operation_record import OperationRecordRule
 from views.models.operation_record import OperationRecord
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
@@ -28,6 +29,10 @@ from rules.planning_school_eduinfo_rule import PlanningSchoolEduinfoRule
 
 
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
+class CustomValidationError:
+    pass
+
+
 class PlanningSchoolView(BaseView):
     def __init__(self):
         super().__init__()
@@ -174,6 +179,25 @@ class PlanningSchoolView(BaseView):
     async def patch_open(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
                                                                min_length=1, max_length=20, example='SC2032633')):
         # print(planning_school)
+        planning_school , extra_model= await self.planning_school_rule.get_planning_school_by_id(planning_school_id,PlanningSchoolBaseInfo)
+        # planning_school_communication = await self.planning_school_communication_rule.get_planning_school_communication_by_planning_shcool_id(
+        #     planning_school_id)
+        # planning_school_eduinfo = await self.planning_school_eduinfo_rule.get_planning_school_eduinfo_by_planning_school_id(
+        #     planning_school_id)
+        print(extra_model)
+        print(44444)
+        try:
+            validated_data = PlanningSchoolBaseInfo.validate(extra_model.dict())
+        except Exception as e:
+            # 处理验证错误，例如返回错误信息或抛出自定义异常
+            # error_messages = ", ".join([f"{k}: {v}" for k, v in e.errors()])
+            print(e)
+            raise PlanningSchoolValidateError()
+        else:
+            pass
+            # return validated_data
+
+
         res = await self.planning_school_rule.update_planning_school_status(planning_school_id,
                                                                             PlanningSchoolStatus.NORMAL.value,'open')
 
