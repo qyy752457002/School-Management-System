@@ -51,6 +51,8 @@ class TeacherJobAppointmentsRule(object):
     async def get_all_teacher_job_appointments(self, teacher_id):
         teacher_job_appointments_db = await self.teacher_job_appointments_dao.get_all_teacher_job_appointments(
             teacher_id)
-        teacher_job_appointments = orm_model_to_view_model(teacher_job_appointments_db, TeacherJobAppointmentsModel,
-                                                           exclude=[""])
+        teacher_job_appointments = []
+        for teacher_job_appointment in teacher_job_appointments_db:
+            teacher_job_appointments.append(
+                orm_model_to_view_model(teacher_job_appointment, TeacherJobAppointmentsModel))
         return teacher_job_appointments

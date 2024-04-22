@@ -49,6 +49,8 @@ class TeacherEthicRecordsRule(object):
 
     async def get_all_teacher_ethic_records(self, teacher_id):
         teacher_ethic_records_db = await self.teacher_ethic_records_dao.get_all_teacher_ethic_records(teacher_id)
-        teacher_ethic_records = orm_model_to_view_model(teacher_ethic_records_db, TeacherEthicRecordsModel,
-                                                        exclude=[""])
+        teacher_ethic_records = []
+        for teacher_ethic_record in teacher_ethic_records_db:
+            teacher_ethic_records.append(orm_model_to_view_model(teacher_ethic_record, TeacherEthicRecordsModel,
+                                                                 exclude=[""]))
         return teacher_ethic_records

@@ -49,7 +49,11 @@ class TeacherWorkExperienceRule(object):
         return teacher_work_experience
 
     async def get_all_teacher_work_experience(self, teacher_id):
+        # teacher_work_experience_db = await self.teacher_work_experience_dao.get_all_teacher_work_experience(teacher_id)
+        # teacher_work_experience = orm_model_to_view_model(teacher_work_experience_db, TeacherWorkExperienceModel,
+        #                                                   exclude=[""])
+        # return teacher_work_experience
+
         teacher_work_experience_db = await self.teacher_work_experience_dao.get_all_teacher_work_experience(teacher_id)
-        teacher_work_experience = orm_model_to_view_model(teacher_work_experience_db, TeacherWorkExperienceModel,
-                                                          exclude=[""])
-        return teacher_work_experience
+
+        return teacher_work_experience_db

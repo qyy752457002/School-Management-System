@@ -49,6 +49,6 @@ class TeacherQualificationsRule(object):
 
     async def get_all_teacher_qualifications(self, teacher_id):
         teacher_qualifications_db = await self.teacher_qualifications_dao.get_all_teacher_qualifications(teacher_id)
-        teacher_qualifications = orm_model_to_view_model(teacher_qualifications_db, TeacherQualificationsModel,
-                                                         exclude=[""])
-        return teacher_qualifications
+        # teacher_qualifications = orm_model_to_view_model(teacher_qualifications_db, TeacherQualificationsModel,
+        #                                                  exclude=[""])
+        return teacher_qualifications_db

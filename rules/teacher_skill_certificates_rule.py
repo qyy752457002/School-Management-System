@@ -53,6 +53,6 @@ class TeacherSkillCertificatesRule(object):
     async def get_all_teacher_skill_certificates(self, teacher_id):
         teacher_skill_certificates_db = await self.teacher_skill_certificates_dao.get_all_teacher_skill_certificates(
             teacher_id)
-        teacher_skill_certificates = orm_model_to_view_model(teacher_skill_certificates_db,
-                                                             TeacherSkillCertificatesModel, exclude=[""])
-        return teacher_skill_certificates
+        # teacher_skill_certificates = orm_model_to_view_model(teacher_skill_certificates_db,
+        #                                                      TeacherSkillCertificatesModel, exclude=[""])
+        return teacher_skill_certificates_db

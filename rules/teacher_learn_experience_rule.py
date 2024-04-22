@@ -55,6 +55,4 @@ class TeacherLearnExperienceRule(object):
         teacher_learn_experience=[]
         for teacher_learn_experience_db in teacher_learn_experience_db:
             teacher_learn_experience.append(orm_model_to_view_model(teacher_learn_experience_db, TeacherLearnExperienceModel, exclude=[""]))
-
-
         return teacher_learn_experience

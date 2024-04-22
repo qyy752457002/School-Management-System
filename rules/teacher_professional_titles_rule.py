@@ -54,6 +54,6 @@ class TeacherProfessionalTitlesRule(object):
     async def get_all_teacher_professional_titles(self, teacher_id):
         teacher_professional_titles_db = await self.teacher_professional_titles_dao.get_all_teacher_professional_titles(
             teacher_id)
-        teacher_professional_titles = orm_model_to_view_model(teacher_professional_titles_db,
-                                                              TeacherProfessionalTitlesModel, exclude=[""])
-        return teacher_professional_titles
+        # teacher_professional_titles = orm_model_to_view_model(teacher_professional_titles_db,
+        #                                                       TeacherProfessionalTitlesModel, exclude=[""])
+        return teacher_professional_titles_db

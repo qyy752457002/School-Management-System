@@ -122,7 +122,7 @@ class TeacherJobAppointmentsModel(BaseModel):
     position_category: str = Field(..., title="岗位类别", description="岗位类别")
     position_level: str = Field(..., title="岗位等级", description="岗位等级")
     school_level_position: str = Field(..., title="校级职务", description="校级职务")
-    is_concurrent_other_positions: str = Field(..., title="是否兼任其他岗位", description="是否兼任其他岗位")
+    is_concurrent_other_positions: bool = Field(False, title="是否兼任其他岗位", description="是否兼任其他岗位")
     concurrent_position_category: str = Field(..., title="兼任岗位类别", description="兼任岗位类别")
     concurrent_position_level: str = Field(..., title="兼任岗位登记", description="兼任岗位登记")
     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
@@ -150,7 +150,7 @@ class TeacherJobAppointmentsUpdateModel(BaseModel):
     position_category: str = Field(..., title="岗位类别", description="岗位类别")
     position_level: str = Field(..., title="岗位等级", description="岗位等级")
     school_level_position: str = Field(..., title="校级职务", description="校级职务")
-    is_concurrent_other_positions: bool = Field(..., title="是否兼任其他岗位", description="是否兼任其他岗位")
+    is_concurrent_other_positions: bool = Field(False, title="是否兼任其他岗位", description="是否兼任其他岗位")
     concurrent_position_category: str = Field(..., title="兼任岗位类别", description="兼任岗位类别")
     concurrent_position_level: str = Field(..., title="兼任岗位登记", description="兼任岗位登记")
     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
@@ -170,7 +170,7 @@ class TeacherProfessionalTitlesModel(BaseModel):
     current_professional_title: str = Field(..., title="现专业技术职务", description="现专业技术职务")
     employing_institution_name: str = Field("", title="聘任单位名称", description="聘任单位名称")
     employment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
-    employment_end_date: date = Field("", title="聘任结束时间", description="聘任结束时间")
+    employment_end_date: date = Field(None, title="聘任结束时间", description="聘任结束时间")
 
 
 class TeacherProfessionalTitlesUpdateModel(BaseModel):
@@ -188,7 +188,7 @@ class TeacherProfessionalTitlesUpdateModel(BaseModel):
     current_professional_title: str = Field(..., title="现专业技术职务", description="现专业技术职务")
     employing_institution_name: str = Field("", title="聘任单位名称", description="聘任单位名称")
     employment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
-    employment_end_date: date = Field("", title="聘任结束时间", description="聘任结束时间")
+    employment_end_date: date = Field(None, title="聘任结束时间", description="聘任结束时间")
 
 
 class TeacherQualificationsModel(BaseModel):
@@ -260,7 +260,7 @@ class TeacherSkillCertificatesModel(BaseModel):
     other_skill_level: str = Field("", title="其他技能程度", description="其他技能程度")
     certificate_type: str = Field("", title="证书类型", description="证书类型")
     language_certificate_name: str = Field("", title="语言证书名称", description="语言证书名称")
-    issue_year_month: date = Field("", title="发证年月", description="发证年月")
+    issue_year_month: date = Field(None, title="发证年月", description="发证年月")
     issuing_authority: str = Field("", title="发证单位", description="发证单位")
     certificate_number: str = Field("", title="证书编号", description="证书编号")
 
@@ -288,7 +288,7 @@ class TeacherSkillCertificatesUpdateModel(BaseModel):
     other_skill_level: str = Field("", title="其他技能程度", description="其他技能程度")
     certificate_type: str = Field("", title="证书类型", description="证书类型")
     language_certificate_name: str = Field("", title="语言证书名称", description="语言证书名称")
-    issue_year_month: date = Field("", title="发证年月", description="发证年月")
+    issue_year_month: date = Field(None, title="发证年月", description="发证年月")
     issuing_authority: str = Field("", title="发证单位", description="发证单位")
     certificate_number: str = Field("", title="证书编号", description="证书编号")
 

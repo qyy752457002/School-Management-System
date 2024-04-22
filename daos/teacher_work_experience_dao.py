@@ -49,7 +49,7 @@ class TeacherWorkExperienceDAO(DAOBase):
     async def get_all_teacher_work_experience(self, teacher_id):
         session = await self.slave_db()
         query = select(TeacherWorkExperience).join(Teacher,
-                                                    TeacherWorkExperience.teacher_id == Teacher.teacher_id).where(
+                                                   TeacherWorkExperience.teacher_id == Teacher.teacher_id).where(
             TeacherWorkExperience.teacher_id == teacher_id)
         result = await session.execute(query)
         return result.scalars().all()
