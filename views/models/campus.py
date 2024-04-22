@@ -13,6 +13,8 @@ class Campus(BaseModel):
     borough: str = Field(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
     campus_type: str = Field(..., title="", description=" 校区类型",examples=['中小学'])
     campus_operation_type: str = Field(..., title="", description="办学类型/校区性质",examples=['学前教育'])
+    campus_nature: str = Field('', title="", description="学校性质",examples=['学前'])
+
     campus_operation_type_lv2: str = Field(..., title="", description=" 办学类型二级",examples=['小学'])
     campus_operation_type_lv3: str = Field(..., title="", description=" 办学类型三级",examples=['附设小学班'])
     campus_org_type: str = Field(..., title="", description=" 校区办别",examples=['民办'])
