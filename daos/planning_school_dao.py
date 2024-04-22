@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, update
+from sqlalchemy import select, func, update, desc
 
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
@@ -77,7 +77,7 @@ class PlanningSchoolDAO(DAOBase):
         session = await self.master_db()
         deleted_status= 1
         update_stmt = update(PlanningSchool).where(PlanningSchool.id == planning_school.id).values(
-            deleted= deleted_status,
+            is_deleted= deleted_status,
         )
         await session.execute(update_stmt)
         # await session.delete(planning_school)
@@ -94,15 +94,32 @@ class PlanningSchoolDAO(DAOBase):
         result = await session.execute(select(func.count()).select_from(PlanningSchool))
         return result.scalar()
 
-    async def query_planning_school_with_page(self, planning_school_name, planning_school_id, planning_school_no,
-                                              page_request: PageRequest) -> Paging:
-        query = select(PlanningSchool)
+    async def query_planning_school_with_page(self, page_request: PageRequest, planning_school_name,planning_school_no,planning_school_code,
+                                              block,planning_school_level,borough,status,founder_type,
+                                              founder_type_lv2,
+                                              founder_type_lv3 ) -> Paging:
+        query = select(PlanningSchool).where(PlanningSchool.is_deleted == False).order_by(desc(PlanningSchool.id))
+
         if planning_school_name:
             query = query.where(PlanningSchool.planning_school_name == planning_school_name)
-        if planning_school_id:
-            query = query.where(PlanningSchool.id == planning_school_id)
         if planning_school_no:
             query = query.where(PlanningSchool.planning_school_no == planning_school_no)
+        if planning_school_code:
+            query = query.where(PlanningSchool.planning_school_code == planning_school_code)
+        if block:
+            query = query.where(PlanningSchool.block == block)
+        if planning_school_level:
+            query = query.where(PlanningSchool.planning_school_level == planning_school_level)
+        if borough:
+            query = query.where(PlanningSchool.borough == borough)
+
+        if status:
+            query = query.where(PlanningSchool.status == status)
+
+        if len(founder_type_lv3)>0:
+            query = query.where(PlanningSchool.founder_type_lv3.in_(founder_type_lv3))
+
+
         paging = await self.query_page(query, page_request)
         return paging
 
@@ -121,3 +138,10 @@ class PlanningSchoolDAO(DAOBase):
         # await session.delete(planning_school)
         await session.commit()
         return planning_school
+
+
+    async def update_planning_school_byargs(self, planning_school: PlanningSchool, *args, is_commit: bool = True):
+        session =await self.master_db()
+        update_contents = get_update_contents(planning_school, *args)
+        query = update(PlanningSchool).where(PlanningSchool.id == planning_school.id).values(**update_contents)
+        return await self.update(session, query, planning_school, update_contents, is_commit=is_commit)

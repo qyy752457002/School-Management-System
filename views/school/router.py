@@ -4,6 +4,7 @@ from views.models.school import School
 from views.models.test import ApplicationInfo
 from views.school.classes_view import ClassesView
 from views.school.course_view import CourseView
+from views.school.leader_info_view import LeaderInfoView
 from views.school.major_view import MajorView
 from views.school.school_view import SchoolView
 from views.tests.test_view import TestView
@@ -17,6 +18,8 @@ from views.school.campus_view import CampusView
 def routers():
     router = Router()
     router.include_api_view_class(SchoolView, "/v1/school",   description="学校管理")
+    router.include_api_view_class(LeaderInfoView, "/v1/leaderinfo",   description="领导管理")
+
 
     router.include_api_view_class(PlanningSchoolView, "/v1/planningschool",   description="规划校管理")
 

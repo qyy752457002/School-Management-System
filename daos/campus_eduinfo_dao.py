@@ -1,6 +1,6 @@
 from sqlalchemy import select, func, update
 
-from mini_framework.databases.entities.dao_base import DAOBase
+from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
@@ -12,6 +12,11 @@ class CampusEduinfoDAO(DAOBase):
     async def get_campus_eduinfo_by_id(self, campus_eduinfo_id):
         session = await self.slave_db()
         result = await session.execute(select(CampusEduinfo).where(CampusEduinfo.id == campus_eduinfo_id))
+        return result.scalar_one_or_none()
+
+    async def get_campus_eduinfo_by_campus_id(self, campus_eduinfo_id):
+        session = await self.slave_db()
+        result = await session.execute(select(CampusEduinfo).where(CampusEduinfo.campus_id == campus_eduinfo_id))
         return result.scalar_one_or_none()
 
     async def add_campus_eduinfo(self, campus_eduinfo):
@@ -92,4 +97,16 @@ class CampusEduinfoDAO(DAOBase):
             pass
         paging = await self.query_page(query, page_request)
         return paging
+
+    async def update_campus_eduinfo_byargs(self, campus_eduinfo: CampusEduinfo, *args, is_commit: bool = True):
+        session =await self.master_db()
+        update_contents = get_update_contents(campus_eduinfo, *args)
+        if campus_eduinfo.campus_id>0:
+            # update_contents['planning_campus_id'] = planning_campus_eduinfo.planning_campus_id
+            query = update(CampusEduinfo).where(CampusEduinfo.campus_id == campus_eduinfo.campus_id).values(**update_contents)
+
+        else:
+
+            query = update(CampusEduinfo).where(CampusEduinfo.id == campus_eduinfo.id).values(**update_contents)
+        return await self.update(session, query, campus_eduinfo, update_contents, is_commit=is_commit)
 

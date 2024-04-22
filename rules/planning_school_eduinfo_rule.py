@@ -3,6 +3,9 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+
+from business_exceptions.planning_school import PlanningSchoolNotFoundError
+from business_exceptions.planning_school_eduinfo import PlanningSchoolEduinfoNotFoundError
 from daos.planning_school_eduinfo_dao import PlanningSchoolEduinfoDAO
 from models.planning_school_eduinfo import PlanningSchoolEduinfo
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo  as PlanningSchoolEduinfoModel
@@ -19,39 +22,40 @@ class PlanningSchoolEduinfoRule(object):
         planning_school = orm_model_to_view_model(planning_school_eduinfo_db, PlanningSchoolEduinfoModel)
         return planning_school
 
-    async def add_planning_school_eduinfo(self, planning_school: PlanningSchoolEduinfoModel):
+    async def get_planning_school_eduinfo_by_planning_school_id(self, planning_school_eduinfo_id):
+        planning_school_eduinfo_db = await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_planning_school_id(planning_school_eduinfo_id)
+        # 可选 , exclude=[""]
+        if   planning_school_eduinfo_db is None:
+            planning_school = PlanningSchoolEduinfoModel()
+            planning_school = dict()
+
+        else:
+            planning_school = orm_model_to_view_model(planning_school_eduinfo_db, PlanningSchoolEduinfoModel)
+
+
+        return planning_school
+
+
+    async def add_planning_school_eduinfo(self, planning_school: PlanningSchoolEduinfoModel,convertmodel=True):
         exists_planning_school = await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_id(
             planning_school.planning_school_id)
         if exists_planning_school:
-            raise Exception(f"规划校教育信息{planning_school.planning_school_eduinfo_name}已存在")
-        planning_school_eduinfo_db = PlanningSchoolEduinfo()
-        planning_school_eduinfo_db.is_ethnic_school = planning_school.is_ethnic_school
-        planning_school_eduinfo_db.is_att_class = planning_school.is_att_class
-        planning_school_eduinfo_db.att_class_type = planning_school.att_class_type
-        planning_school_eduinfo_db.is_province_feat = planning_school.is_province_feat
-        planning_school_eduinfo_db.is_bilingual_clas = planning_school.is_bilingual_clas
-        planning_school_eduinfo_db.minority_lang_code = planning_school.minority_lang_code
-        planning_school_eduinfo_db.is_profitable = planning_school.is_profitable
-        planning_school_eduinfo_db.prof_org_name = planning_school.prof_org_name
-        planning_school_eduinfo_db.is_prov_demo = planning_school.is_prov_demo
-        planning_school_eduinfo_db.is_latest_year = planning_school.is_latest_year
-        planning_school_eduinfo_db.is_town_kinderg = planning_school.is_town_kinderg
-        planning_school_eduinfo_db.is_incl_kinderg = planning_school.is_incl_kinderg
-        planning_school_eduinfo_db.is_affil_school = planning_school.is_affil_school
-        planning_school_eduinfo_db.affil_univ_code = planning_school.affil_univ_code
-        planning_school_eduinfo_db.affil_univ_name = planning_school.affil_univ_name
-        planning_school_eduinfo_db.is_last_yr_revok = planning_school.is_last_yr_revok
-        planning_school_eduinfo_db.is_school_counted = planning_school.is_school_counted
+            raise Exception(f"规划校教育信息{planning_school.planning_school_id}已存在")
+        if convertmodel:
+            planning_school_eduinfo_db = view_model_to_orm_model(planning_school, PlanningSchoolEduinfo,    exclude=["id"])
 
-        planning_school_eduinfo_db.planning_school_id = planning_school.planning_school_id
+        else:
+            planning_school_eduinfo_db = PlanningSchoolEduinfo(**planning_school.__dict__)
+            planning_school_eduinfo_db.id = None
+            planning_school_eduinfo_db.planning_school_id= planning_school.planning_school_id
+
 
         planning_school_eduinfo_db.deleted = 0
         planning_school_eduinfo_db.created_uid = 0
         planning_school_eduinfo_db.updated_uid = 0
 
-
         planning_school_eduinfo_db = await self.planning_school_eduinfo_dao.add_planning_school_eduinfo(planning_school_eduinfo_db)
-        planning_school = orm_model_to_view_model(planning_school_eduinfo_db, PlanningSchoolEduinfoModel, exclude=[""])
+        planning_school = orm_model_to_view_model(planning_school_eduinfo_db, PlanningSchoolEduinfoModel, exclude=["created_at",'updated_at'])
         return planning_school
 
     async def update_planning_school_eduinfo(self, planning_school,ctype=1):
@@ -115,3 +119,24 @@ class PlanningSchoolEduinfoRule(object):
         paging_result = PaginatedResponse.from_paging(paging, PlanningSchoolEduinfoModel)
         return paging_result
 
+
+
+    async def update_planning_school_eduinfo_byargs(self, planning_school_eduinfo,ctype=1):
+        if planning_school_eduinfo.planning_school_id >0:
+            # exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school_eduinfo.planning_school_id)
+            exists_planning_school_eduinfo = await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_planning_school_id(planning_school_eduinfo.planning_school_id)
+
+        else:
+            exists_planning_school_eduinfo = await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_id(planning_school_eduinfo.id)
+        if not exists_planning_school_eduinfo:
+            raise PlanningSchoolEduinfoNotFoundError()
+        need_update_list = []
+        for key, value in planning_school_eduinfo.dict().items():
+            if value:
+                need_update_list.append(key)
+
+        planning_school_eduinfo_db = await self.planning_school_eduinfo_dao.update_planning_school_eduinfo_byargs(planning_school_eduinfo, *need_update_list)
+
+        # 更新不用转换   因为得到的对象不熟全属性
+        # planning_school = orm_model_to_view_model(planning_school_db, SchoolModel, exclude=[""])
+        return planning_school_eduinfo_db

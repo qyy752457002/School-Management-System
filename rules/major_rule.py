@@ -1,0 +1,73 @@
+# from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
+
+from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from daos.Major_dao import MajorDAO
+from models.major import Major
+from views.models.majors import Majors  as MajorModel
+
+
+
+@dataclass_inject
+class MajorRule(object):
+    major_dao: MajorDAO
+
+    async def get_major_by_id(self, major_id):
+        major_db = await self.major_dao.get_major_by_id(major_id)
+        # 可选 , exclude=[""]
+        major = orm_model_to_view_model(major_db, MajorModel)
+        return major
+    async def get_major_by_name(self, major_name):
+        major_db = await self.major_dao.get_major_by_name(major_name)
+        # 可选 , exclude=[""]
+        major = orm_model_to_view_model(major_db, MajorModel)
+        return major
+
+    async def add_major(self, major: MajorModel):
+        exists_major = await self.major_dao.get_major_by_name(
+            major.major_name)
+        if exists_major:
+            raise Exception(f"专业信息{major.major_name}已存在")
+        major_db = view_model_to_orm_model(major, Major,    exclude=["id"])
+
+        major_db = await self.major_dao.add_major(major_db)
+        major = orm_model_to_view_model(major_db, MajorModel, exclude=["created_at",'updated_at'])
+        return major
+
+    async def update_major(self, major,ctype=1):
+        exists_major = await self.major_dao.get_major_by_id(major.id)
+        if not exists_major:
+            raise Exception(f"专业信息{major.id}不存在")
+        need_update_list = []
+        for key, value in major.dict().items():
+            if value:
+                need_update_list.append(key)
+
+        major_db = await self.major_dao.update_major(major, *need_update_list)
+
+
+        # major_db = await self.major_dao.update_major(major_db,ctype)
+        # 更新不用转换   因为得到的对象不熟全属性
+        # major = orm_model_to_view_model(major_db, MajorModel, exclude=[""])
+        return major_db
+
+    async def softdelete_major(self, major_id):
+        exists_major = await self.major_dao.get_major_by_id(major_id)
+        if not exists_major:
+            raise Exception(f"专业信息{major_id}不存在")
+        major_db = await self.major_dao.softdelete_major(exists_major)
+        return major_db
+
+
+    async def get_major_count(self):
+        return await self.major_dao.get_major_count()
+
+    async def query_major_with_page(self, page_request: PageRequest, major_name=None,
+                                              major_id=None,major_no=None ):
+        paging = await self.major_dao.query_major_with_page(page_request,
+                                                                                )
+        # 字段映射的示例写法   , {"hash_password": "password"}
+        paging_result = PaginatedResponse.from_paging(paging, MajorModel)
+        return paging_result
+

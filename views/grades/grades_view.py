@@ -18,8 +18,8 @@ class GradesView(BaseView):
         self.grade_rule = get_injector(GradeRule)
 
     async def get(self,
-                  school_id: int = Query(None, title="学校ID", description="学校ID"  ),
-                  grade_no: str = Query(None, description="年级编号", min_length=1, max_length=20, example=''),
+                  # school_id: int = Query(None, title="学校ID", description="学校ID"  ),
+                  # grade_no: str = Query(None, description="年级编号", min_length=1, max_length=20, example=''),
                   grade_id: int = Query(None, title="", description="年级ID"),
                   ):
         account = await self.grade_rule.get_grade_by_id(grade_id)
@@ -55,19 +55,10 @@ class GradesView(BaseView):
         return paging_result
 
 
-    # todo 搜索的 待处理  
+    #   搜索的 待处理
     async def query(self, grade_name: str = Query(..., description="年级名称", min_length=1, max_length=20)):
-        from mini_framework.databases.conn_managers.db_manager import db_connection_manager
-        session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(Grade).where(Grade.grade_name == grade_name))
-        res= result.scalars().all()
 
-        lst = []
-        for row in res:
-            account = Grades(school_id=row.school_id,
-                             grade_no=row.grade_no,
-                             grade_name=row.grade_name,
-                             grade_alias=row.grade_alias,
-                             description=row.description)
-            lst.append(account)
+
+        lst =           await self.grade_rule.query_grade(grade_name)
+
         return lst

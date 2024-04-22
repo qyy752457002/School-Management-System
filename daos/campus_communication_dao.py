@@ -1,6 +1,6 @@
 from sqlalchemy import select, func, update
 
-from mini_framework.databases.entities.dao_base import DAOBase
+from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
@@ -12,6 +12,12 @@ class CampusCommunicationDAO(DAOBase):
     async def get_campus_communication_by_id(self, campus_communication_id):
         session = await self.slave_db()
         result = await session.execute(select(CampusCommunication).where(CampusCommunication.id == campus_communication_id))
+        return result.scalar_one_or_none()
+
+
+    async def get_campus_communication_by_campus_id(self, campus_communication_id):
+        session = await self.slave_db()
+        result = await session.execute(select(CampusCommunication).where(CampusCommunication.campus_id == campus_communication_id))
         return result.scalar_one_or_none()
 
     async def add_campus_communication(self, campus_communication):
@@ -93,4 +99,16 @@ class CampusCommunicationDAO(DAOBase):
             # query = query.where(CampusCommunication.campus_communication_no == campus_communication_no)
         paging = await self.query_page(query, page_request)
         return paging
+
+    async def update_campus_communication_byargs(self, campus_communication: CampusCommunication, *args, is_commit: bool = True):
+        session =await self.master_db()
+        update_contents = get_update_contents(campus_communication, *args)
+        if campus_communication.campus_id>0:
+            # update_contents['planning_campus_id'] = planning_campus_communication.planning_campus_id
+            query = update(CampusCommunication).where(CampusCommunication.campus_id == campus_communication.campus_id).values(**update_contents)
+
+        else:
+
+            query = update(CampusCommunication).where(CampusCommunication.id == campus_communication.id).values(**update_contents)
+        return await self.update(session, query, campus_communication, update_contents, is_commit=is_commit)
 

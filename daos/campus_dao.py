@@ -28,7 +28,7 @@ class CampusDAO(DAOBase):
         return campus
 
     async def update_campus_byargs(self, campus: Campus, *args, is_commit: bool = True):
-        session = self.master_db()
+        session = await self.master_db()
         update_contents = get_update_contents(campus, *args)
         query = update(Campus).where(Campus.id == campus.id).values(**update_contents)
         return await self.update(session, query, campus, update_contents, is_commit=is_commit)
@@ -98,15 +98,35 @@ class CampusDAO(DAOBase):
         result = await session.execute(select(func.count()).select_from(Campus))
         return result.scalar()
 
-    async def query_campus_with_page(self, campus_name, campus_id, campus_no,
-                                              page_request: PageRequest) -> Paging:
+    async def query_campus_with_page(self, page_request: PageRequest, campus_name,campus_no,campus_code,
+                                     block,campus_level,borough,status,founder_type,
+                                     founder_type_lv2,
+                                     founder_type_lv3 ,school_id) -> Paging:
         query = select(Campus)
+
         if campus_name:
             query = query.where(Campus.campus_name == campus_name)
-        if campus_id:
-            query = query.where(Campus.id == campus_id)
+        if school_id:
+            query = query.where(Campus.school_id == school_id)
+
         if campus_no:
             query = query.where(Campus.campus_no == campus_no)
+        if campus_code:
+            query = query.where(Campus.campus_code == campus_code)
+        if block:
+            query = query.where(Campus.block == block)
+        if campus_level:
+            query = query.where(Campus.campus_level == campus_level)
+        if borough:
+            query = query.where(Campus.borough == borough)
+
+        if status:
+            query = query.where(Campus.status == status)
+
+        if len(founder_type_lv3)>0:
+            query = query.where(Campus.founder_type_lv3.in_(founder_type_lv3))
+
+
         paging = await self.query_page(query, page_request)
         return paging
 

@@ -1,6 +1,6 @@
 from sqlalchemy import select, func, update
 
-from mini_framework.databases.entities.dao_base import DAOBase
+from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
@@ -14,6 +14,13 @@ class ClassesDAO(DAOBase):
         result = await session.execute(select(Classes).where(Classes.id == classes_id))
         return result.scalar_one_or_none()
 
+
+    async def get_classes_by_classes_name(self, classes_name):
+        session = await self.slave_db()
+        result = await session.execute(
+            select(Classes).where(Classes.class_name == classes_name))
+        return result.first()
+
     async def add_classes(self, classes):
         session = await self.master_db()
         session.add(classes)
@@ -26,7 +33,7 @@ class ClassesDAO(DAOBase):
         # session.add(classes)
         if ctype == 1:
             update_stmt = update(Classes).where(Classes.id == classes.id).values(
-                school_id= classes.school_id,
+                classes_id= classes.classes_id,
                 grade_id= classes.grade_id,
                 grade_no= classes.grade_no,
                 is_att_class= classes.is_att_class,
@@ -37,7 +44,7 @@ class ClassesDAO(DAOBase):
                 teacher_id_card= classes.teacher_id_card,
                 teacher_name= classes.teacher_name,
                 education_stage= classes.education_stage,
-                school_system= classes.school_system,
+                classes_system= classes.classes_system,
                 monitor= classes.monitor,
                 class_type= classes.class_type,
                 is_bilingual_class= classes.is_bilingual_class,
@@ -87,4 +94,12 @@ class ClassesDAO(DAOBase):
             pass
         paging = await self.query_page(query, page_request)
         return paging
+
+
+
+    async def update_classes_byargs(self, classes: Classes, *args, is_commit: bool = True):
+        session =await self.master_db()
+        update_contents = get_update_contents(classes, *args)
+        query = update(Classes).where(Classes.id == classes.id).values(**update_contents)
+        return await self.update(session, query, classes, update_contents, is_commit=is_commit)
 

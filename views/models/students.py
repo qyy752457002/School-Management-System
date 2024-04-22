@@ -240,7 +240,9 @@ class StudentEduInfo(BaseModel):
 
 
 class GraduationStudents(BaseModel):
-    student_id: str = Field(..., title="学生id", description="学生id")
+    id:int= Query(None, title="", description="id", example='1'),
+
+    student_id: str = Field('', title="学生id", description="学生id",examples=['0'])
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
     gender: str = Field(..., title="性别", description="性别")
     school: str = Field(..., title="学校", description="学校")

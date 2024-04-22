@@ -1,13 +1,19 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 import hashlib
 
 import shortuuid
-from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from sqlalchemy import select
+
 from daos.school_dao import SchoolDAO
+from models.planning_school import PlanningSchool
 from models.school import School
-from views.models.school import School as SchoolModel
+from rules.enum_value_rule import EnumValueRule
+from views.models.planning_school import PlanningSchoolStatus
+from views.models.school import School as SchoolModel, SchoolKeyAddInfo
 
 from views.models.school import SchoolBaseInfo
 
@@ -37,12 +43,48 @@ class SchoolRule(object):
         #                                              exclude=["first_name", "last_name"]
         school_db = view_model_to_orm_model(school, School,    exclude=["id"])
 
-        school_db.status = '正常'
+        school_db.status =  PlanningSchoolStatus.DRAFT.value
         school_db.created_uid = 0
         school_db.updated_uid = 0
 
         school_db = await self.school_dao.add_school(school_db)
-        school = orm_model_to_view_model(school_db, SchoolModel, exclude=["created_at",'updated_at'])
+        school = orm_model_to_view_model(school_db, SchoolKeyAddInfo, exclude=["created_at",'updated_at'])
+        return school
+
+
+    async def add_school_from_planning_school(self, planning_school: PlanningSchool):
+        # todo 这里的值转换 用 数据库db类型直接赋值  模型转容易报错   另 其他2个表的写入
+        return None
+        school = orm_model_to_view_model(planning_school, SchoolKeyAddInfo, exclude=["id"])
+        school.school_name = planning_school.planning_school_name
+        school.planning_school_id = planning_school.id
+
+        school.school_no = planning_school.planning_school_no
+        school.borough = planning_school.borough
+        school.block = planning_school.block
+        school.school_type = planning_school.planning_school_type
+        school.school_operation_type = planning_school.planning_school_operation_type
+        school.school_operation_type_lv2 = planning_school.planning_school_operation_type_lv2
+        school.school_operation_type_lv3 = planning_school.planning_school_operation_type_lv3
+        school.school_org_type = planning_school.planning_school_org_type
+        school.school_level = planning_school.planning_school_level
+        school.school_code = planning_school.planning_school_code
+
+        exists_school = await self.school_dao.get_school_by_school_name(
+            school.school_name)
+        if exists_school:
+            raise Exception(f"学校{school.school_name}已存在")
+        #  other_mapper={"password": "hash_password"},
+        #                                              exclude=["first_name", "last_name"]
+        school_db = view_model_to_orm_model(school, School,    exclude=["id"])
+
+        school_db.status =  PlanningSchoolStatus.DRAFT.value
+        school_db.created_uid = 0
+        school_db.updated_uid = 0
+        print(school_db)
+
+        school_db = await self.school_dao.add_school(school_db)
+        school = orm_model_to_view_model(school_db, SchoolKeyAddInfo, exclude=["created_at",'updated_at'])
         return school
 
     async def update_school(self, school,ctype=1):
@@ -90,10 +132,18 @@ class SchoolRule(object):
         exists_school = await self.school_dao.get_school_by_id(school.id)
         if not exists_school:
             raise Exception(f"学校{school.id}不存在")
+        if exists_school.status== PlanningSchoolStatus.DRAFT.value:
+            exists_school.status= PlanningSchoolStatus.OPENING.value
+            school.status= PlanningSchoolStatus.OPENING.value
+        else:
+            pass
+
         need_update_list = []
         for key, value in school.dict().items():
             if value:
                 need_update_list.append(key)
+
+
 
         school_db = await self.school_dao.update_school_byargs(school, *need_update_list)
 
@@ -123,20 +173,78 @@ class SchoolRule(object):
     async def get_school_count(self):
         return await self.school_dao.get_school_count()
 
-    async def query_school_with_page(self, page_request: PageRequest, school_name=None,
-                                              school_id=None,school_no=None ):
-        paging = await self.school_dao.query_school_with_page(school_name, school_id,school_no,
-                                                                                page_request)
+    async def query_school_with_page(self, page_request: PageRequest,   school_name,school_no,school_code,
+                                     block,school_level,borough,status,founder_type,
+                                     founder_type_lv2,
+                                     founder_type_lv3,planning_school_id ):
+        #  根据举办者类型  1及 -3级  处理为条件   1  2ji全部转换为 3级  最后in 3级查询
+        enum_value_rule = get_injector(EnumValueRule)
+        if founder_type:
+            if len(founder_type) > 0:
+
+                founder_type_lv2_res= await enum_value_rule.get_next_level_enum_values('founder_type'  ,founder_type)
+                for item in founder_type_lv2_res:
+                    founder_type_lv2.append(item.enum_value)
+
+
+            # query = query.where(PlanningSchool.founder_type_lv2 == founder_type_lv2)
+        if len(founder_type_lv2)>0:
+            founder_type_lv3_res= await enum_value_rule.get_next_level_enum_values('founder_type_lv2'  ,founder_type_lv2)
+            for item in founder_type_lv3_res:
+                founder_type_lv3.append(item.enum_value)
+
+        paging = await self.school_dao.query_school_with_page(page_request,  school_name,school_no,school_code,
+                                                                block,school_level,borough,status,founder_type,
+                                                                founder_type_lv2,
+                                                                founder_type_lv3,planning_school_id
+                                                                                )
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, SchoolModel)
         return paging_result
 
 
-    async def update_school_status(self, school_id, status):
+    async def update_school_status(self, school_id, status,action=None):
         exists_school = await self.school_dao.get_school_by_id(school_id)
         if not exists_school:
             raise Exception(f"学校{school_id}不存在")
-        school_db = await self.school_dao.update_school_status(exists_school,status)
+        # 判断运来的状态 进行后续的更新
+        if status== PlanningSchoolStatus.NORMAL.value and exists_school.status== PlanningSchoolStatus.OPENING.value:
+            # 开办
+            exists_school.status= PlanningSchoolStatus.NORMAL.value
+        elif status== PlanningSchoolStatus.CLOSED.value and exists_school.status== PlanningSchoolStatus.NORMAL.value:
+            # 关闭
+            exists_school.status= PlanningSchoolStatus.CLOSED.value
+        else:
+            # exists_school.status= PlanningSchoolStatus.OPENING.value
+            raise Exception(f"学校当前状态不支持您的操作")
+
+        need_update_list = []
+        need_update_list.append('status')
+
+        # print(exists_school.status,2222222)
+        school_db = await self.school_dao.update_school_byargs(exists_school,*need_update_list)
+
+
+        # school_db = await self.school_dao.update_school_status(exists_school,status)
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""],)
         return school_db
 
+
+
+    async def query_schools(self,planning_school_name):
+
+        session = await db_connection_manager.get_async_session("default", True)
+        result = await session.execute(select(School).where(School.school_name.like(f'%{planning_school_name}%') ))
+        res= result.scalars().all()
+
+        lst = []
+        for row in res:
+            planning_school = orm_model_to_view_model(row, SchoolModel)
+
+            # account = PlanningSchool(school_id=row.school_id,
+            #                  grade_no=row.grade_no,
+            #                  grade_name=row.grade_name,
+            #                  grade_alias=row.grade_alias,
+            #                  description=row.description)
+            lst.append(planning_school)
+        return lst

@@ -3,6 +3,8 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+
+from business_exceptions.school_communication import SchoolCommunicationNotFoundError
 from daos.school_communication_dao import SchoolCommunicationDAO
 from models.school_communication import SchoolCommunication
 from views.models.school_communications import SchoolCommunications  as SchoolCommunicationModel
@@ -18,13 +20,31 @@ class SchoolCommunicationRule(object):
         # 可选 , exclude=[""]
         school = orm_model_to_view_model(school_communication_db, SchoolCommunicationModel)
         return school
+    async def get_school_communication_by_school_id(self, school_communication_id):
+        school_communication_db = await self.school_communication_dao.get_school_communication_by_school_id(school_communication_id)
+        # 可选 , exclude=[""]
+        school = orm_model_to_view_model(school_communication_db, SchoolCommunicationModel)
+        return school
 
-    async def add_school_communication(self, school: SchoolCommunicationModel):
+    async def add_school_communication(self, school: SchoolCommunicationModel,convertmodel=True):
         exists_school = await self.school_communication_dao.get_school_communication_by_id(
             school.school_id)
         if exists_school:
-            raise Exception(f"学校通信信息{school.school_communication_name}已存在")
-        school_communication_db = view_model_to_orm_model(school, SchoolCommunication,    exclude=["id"])
+            raise Exception(f"学校通信信息{school.school_id}已存在")
+
+
+        if convertmodel:
+            school_communication_db = view_model_to_orm_model(school, SchoolCommunication,    exclude=["id"])
+
+        else:
+            school_communication_db = SchoolCommunication()
+            school_communication_db.id = None
+            school_communication_db.school_id= school.school_id
+
+        school_communication_db.deleted = 0
+        school_communication_db.status = '正常'
+        school_communication_db.created_uid = 0
+        school_communication_db.updated_uid = 0
 
 
         school_communication_db = await self.school_communication_dao.add_school_communication(school_communication_db)
@@ -91,4 +111,29 @@ class SchoolCommunicationRule(object):
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, SchoolCommunicationModel)
         return paging_result
+
+
+
+
+    async def update_school_communication_byargs(self, school_communication,ctype=1):
+        if school_communication.school_id>0:
+            # planning_school = await self.planning_school_rule.get_planning_school_by_id(planning_school_communication.planning_school_id)
+            exists_school_communication = await self.school_communication_dao.get_school_communication_by_school_id(school_communication.school_id)
+
+
+        else:
+
+            exists_school_communication = await self.school_communication_dao.get_school_communication_by_id(school_communication.id)
+        if not exists_school_communication:
+            raise SchoolCommunicationNotFoundError()
+        need_update_list = []
+        for key, value in school_communication.dict().items():
+            if value:
+                need_update_list.append(key)
+
+        school_communication_db = await self.school_communication_dao.update_school_communication_byargs(school_communication, *need_update_list)
+
+        # 更新不用转换   因为得到的对象不熟全属性
+        # planning_school = orm_model_to_view_model(planning_school_db, SchoolModel, exclude=[""])
+        return school_communication_db
 
