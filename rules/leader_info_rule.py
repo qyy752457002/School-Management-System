@@ -16,43 +16,43 @@ class LeaderInfoRule(object):
     async def get_leader_info_by_id(self, leader_info_id):
         leader_info_db = await self.leader_info_dao.get_leader_info_by_id(leader_info_id)
         # 可选 , exclude=[""]
-        classes = orm_model_to_view_model(leader_info_db, LeaderInfoModel)
-        return classes
+        leader_info = orm_model_to_view_model(leader_info_db, LeaderInfoModel)
+        return leader_info
 
-    async def add_classes(self, classes: LeaderInfoModel):
-        exists_classes = await self.leader_info_dao.get_leader_info_by_leader_info_name(
-            classes.class_name)
-        if exists_classes:
-            raise Exception(f"领导信息{classes.class_name}已存在")
-        leader_info_db = view_model_to_orm_model(classes, LeaderInfo,    exclude=["id"])
+    async def add_leader_info(self, leader_info: LeaderInfoModel):
+        exists_leader_info = await self.leader_info_dao.get_leader_info_by_leader_info_name(
+            leader_info.leader_name)
+        if exists_leader_info:
+            raise Exception(f"领导信息{leader_info.leader_name}已存在")
+        leader_info_db = view_model_to_orm_model(leader_info, LeaderInfo,    exclude=["id"])
 
         leader_info_db = await self.leader_info_dao.add_leader_info(leader_info_db)
-        classes = orm_model_to_view_model(leader_info_db, LeaderInfoModel, exclude=["created_at",'updated_at'])
-        return classes
+        leader_info = orm_model_to_view_model(leader_info_db, LeaderInfoModel, exclude=["created_at",'updated_at'])
+        return leader_info
 
-    async def update_classes(self, classes,ctype=1):
-        exists_classes = await self.leader_info_dao.get_leader_info_by_id(classes.id)
-        if not exists_classes:
-            raise Exception(f"领导信息{classes.id}不存在")
+    async def update_leader_info(self, leader_info,ctype=1):
+        exists_leader_info = await self.leader_info_dao.get_leader_info_by_id(leader_info.id)
+        if not exists_leader_info:
+            raise Exception(f"领导信息{leader_info.id}不存在")
         need_update_list = []
-        for key, value in classes.dict().items():
+        for key, value in leader_info.dict().items():
             if value:
                 need_update_list.append(key)
 
-        leader_info_db = await self.leader_info_dao.update_leader_info_byargs(classes, *need_update_list)
+        leader_info_db = await self.leader_info_dao.update_leader_info_byargs(leader_info, *need_update_list)
 
 
-        # leader_info_db = await self.leader_info_dao.update_classes(leader_info_db,ctype)
+        # leader_info_db = await self.leader_info_dao.update_leader_info(leader_info_db,ctype)
         # 更新不用转换   因为得到的对象不熟全属性
-        # classes = orm_model_to_view_model(leader_info_db, LeaderInfoModel, exclude=[""])
+        # leader_info = orm_model_to_view_model(leader_info_db, LeaderInfoModel, exclude=[""])
         return leader_info_db
 
-    async def softdelete_classes(self, leader_info_id):
-        exists_classes = await self.leader_info_dao.get_leader_info_by_id(leader_info_id)
-        if not exists_classes:
+    async def softdelete_leader_info(self, leader_info_id):
+        exists_leader_info = await self.leader_info_dao.get_leader_info_by_id(leader_info_id)
+        if not exists_leader_info:
             raise Exception(f"领导信息{leader_info_id}不存在")
-        leader_info_db = await self.leader_info_dao.softdelete_leader_info(exists_classes)
-        # classes = orm_model_to_view_model(leader_info_db, LeaderInfoModel, exclude=[""],)
+        leader_info_db = await self.leader_info_dao.softdelete_leader_info(exists_leader_info)
+        # leader_info = orm_model_to_view_model(leader_info_db, LeaderInfoModel, exclude=[""],)
         return leader_info_db
 
 

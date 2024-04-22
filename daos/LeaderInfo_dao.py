@@ -55,13 +55,13 @@ class LeaderInfoDAO(DAOBase):
 		query = update(LeaderInfo).where(LeaderInfo.id == leader_info.id).values(**update_contents)
 		return await self.update(session, query, leader_info, update_contents, is_commit=is_commit)
 
-	async def softdelete_leader_info(self, leader_info):
+	async def softdelete_leader_info(self, leader_info_id):
 		session = await self.master_db()
 		deleted_status= 1
-		update_stmt = update(LeaderInfo).where(LeaderInfo.id == leader_info.id).values(
+		update_stmt = update(LeaderInfo).where(LeaderInfo.id == leader_info_id).values(
 			is_deleted= deleted_status,
 		)
 		await session.execute(update_stmt)
 		# await session.delete(leader_info)
 		await session.commit()
-		return leader_info
+		return leader_info_id
