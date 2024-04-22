@@ -27,6 +27,21 @@ from rules.teacher_ethic_records_rule import TeacherEthicRecordsRule
 from views.models.teacher_extend import EducationalTeachingModel, EducationalTeachingUpdateModel
 from rules.educational_teaching_rule import EducationalTeachingRule
 
+from views.models.teacher_extend import DomesticTrainingModel, DomesticTrainingUpdateModel
+from rules.domestic_training_rule import DomesticTrainingRule
+
+from views.models.teacher_extend import OverseasStudyModel, OverseasStudyUpdateModel
+from rules.overseas_study_rule import OverseasStudyRule
+
+from views.models.teacher_extend import TalentProgramModel, TalentProgramUpdateModel
+from rules.talent_program_rule import TalentProgramRule
+
+from views.models.teacher_extend import AnnualReviewModel, AnnualReviewUpdateModel
+from rules.annual_review_rule import AnnualReviewRule
+
+from views.models.teacher_extend import ResearchAchievementsModel, ResearchAchievementsUpdateModel
+from rules.research_achievements_rule import ResearchAchievementsRule
+
 
 class TeacherLearnExperienceView(BaseView):
     def __init__(self):
@@ -328,3 +343,168 @@ class EducationalTeachingView(BaseView):
                                                                          description="educational_teachingID",
                                                                          example=1234)):
         return await self.educational_teaching_rule.get_all_educational_teaching(teacher_id)
+
+
+class DomesticTrainingView(BaseView):
+    def __init__(self):
+        super().__init__()
+
+        self.domestic_training_rule = get_injector(DomesticTrainingRule)
+
+    async def get_domestic_training(self,
+                                    domestic_training_id: int = Query(None, title="domestic_trainingID",
+                                                                      description="domestic_trainingID", example=1234)
+                                    ):
+        res = await self.domestic_training_rule.get_domestic_training_by_domestic_training_id(domestic_training_id)
+        return res
+
+    async def post_domestic_training(self, domestic_training: DomesticTrainingModel):
+        res = await self.domestic_training_rule.add_domestic_training(domestic_training)
+        return res
+
+    async def delete_domestic_training(self,
+                                       domestic_training_id: int = Query(None, title="domestic_trainingID",
+                                                                         description="domestic_trainingID",
+                                                                         example=1234)
+                                       ):
+        await self.domestic_training_rule.delete_domestic_training(domestic_training_id)
+
+    async def put_domestic_training(self, domestic_training: DomesticTrainingUpdateModel):
+        res = await self.domestic_training_rule.update_domestic_training(domestic_training)
+        return res
+
+    async def get_domestic_training_all(self, teacher_id: int = Query(None, title="domestic_trainingID",
+                                                                      description="domestic_trainingID", example=1234)):
+        return await self.domestic_training_rule.get_all_domestic_training(teacher_id)
+
+
+class OverseasStudyView(BaseView):
+    def __init__(self):
+        super().__init__()
+
+        self.overseas_study_rule = get_injector(OverseasStudyRule)
+
+    async def get_overseas_study(self,
+                                 overseas_study_id: int = Query(None, title="overseas_studyID",
+                                                                description="overseas_studyID", example=1234)
+                                 ):
+        res = await self.overseas_study_rule.get_overseas_study_by_overseas_study_id(overseas_study_id)
+        return res
+
+    async def post_overseas_study(self, overseas_study: OverseasStudyModel):
+        res = await self.overseas_study_rule.add_overseas_study(overseas_study)
+        return res
+
+    async def delete_overseas_study(self,
+                                    overseas_study_id: int = Query(None, title="overseas_studyID",
+                                                                   description="overseas_studyID", example=1234)
+                                    ):
+        await self.overseas_study_rule.delete_overseas_study(overseas_study_id)
+
+    async def put_overseas_study(self, overseas_study: OverseasStudyUpdateModel):
+        res = await self.overseas_study_rule.update_overseas_study(overseas_study)
+        return res
+
+    async def get_overseas_study_all(self, teacher_id: int = Query(None, title="overseas_studyID",
+                                                                   description="overseas_studyID", example=1234)):
+        return await self.overseas_study_rule.get_all_overseas_study(teacher_id)
+
+
+class TalentProgramView(BaseView):
+    def __init__(self):
+        super().__init__()
+
+        self.talent_program_rule = get_injector(TalentProgramRule)
+
+    async def get_talent_program(self,
+                                 talent_program_id: int = Query(None, title="talent_programID",
+                                                                description="talent_programID", example=1234)
+                                 ):
+        res = await self.talent_program_rule.get_talent_program_by_talent_program_id(talent_program_id)
+        return res
+
+    async def post_talent_program(self, talent_program: TalentProgramModel):
+        res = await self.talent_program_rule.add_talent_program(talent_program)
+        return res
+
+    async def delete_talent_program(self,
+                                    talent_program_id: int = Query(None, title="talent_programID",
+                                                                   description="talent_programID", example=1234)
+                                    ):
+        await self.talent_program_rule.delete_talent_program(talent_program_id)
+
+    async def put_talent_program(self, talent_program: TalentProgramUpdateModel):
+        res = await self.talent_program_rule.update_talent_program(talent_program)
+        return res
+
+    async def get_talent_program_all(self, teacher_id: int = Query(None, title="talent_programID",
+                                                                   description="talent_programID", example=1234)):
+        return await self.talent_program_rule.get_all_talent_program(teacher_id)
+
+
+class AnnualReviewView(BaseView):
+    def __init__(self):
+        super().__init__()
+
+        self.annual_review_rule = get_injector(AnnualReviewRule)
+
+    async def get_annual_review(self,
+                                annual_review_id: int = Query(None, title="annual_reviewID",
+                                                              description="annual_reviewID", example=1234)
+                                ):
+        res = await self.annual_review_rule.get_annual_review_by_annual_review_id(annual_review_id)
+        return res
+
+    async def post_annual_review(self, annual_review: AnnualReviewModel):
+        res = await self.annual_review_rule.add_annual_review(annual_review)
+        return res
+
+    async def delete_annual_review(self,
+                                   annual_review_id: int = Query(None, title="annual_reviewID",
+                                                                 description="annual_reviewID", example=1234)
+                                   ):
+        await self.annual_review_rule.delete_annual_review(annual_review_id)
+
+    async def put_annual_review(self, annual_review: AnnualReviewUpdateModel):
+        res = await self.annual_review_rule.update_annual_review(annual_review)
+        return res
+
+    async def get_annual_review_all(self, teacher_id: int = Query(None, title="annual_reviewID",
+                                                                  description="annual_reviewID", example=1234)):
+        return await self.annual_review_rule.get_all_annual_review(teacher_id)
+
+
+class ResearchAchievementsView(BaseView):
+    def __init__(self):
+        super().__init__()
+
+        self.research_achievements_rule = get_injector(ResearchAchievementsRule)
+
+    async def get_research_achievements(self,
+                                        research_achievements_id: int = Query(None, title="research_achievementsID",
+                                                                              description="research_achievementsID",
+                                                                              example=1234)
+                                        ):
+        res = await self.research_achievements_rule.get_research_achievements_by_research_achievements_id(
+            research_achievements_id)
+        return res
+
+    async def post_research_achievements(self, research_achievements: ResearchAchievementsModel):
+        res = await self.research_achievements_rule.add_research_achievements(research_achievements)
+        return res
+
+    async def delete_research_achievements(self,
+                                           research_achievements_id: int = Query(None, title="research_achievementsID",
+                                                                                 description="research_achievementsID",
+                                                                                 example=1234)
+                                           ):
+        await self.research_achievements_rule.delete_research_achievements(research_achievements_id)
+
+    async def put_research_achievements(self, research_achievements: ResearchAchievementsUpdateModel):
+        res = await self.research_achievements_rule.update_research_achievements(research_achievements)
+        return res
+
+    async def get_research_achievements_all(self, teacher_id: int = Query(None, title="research_achievementsID",
+                                                                          description="research_achievementsID",
+                                                                          example=1234)):
+        return await self.research_achievements_rule.get_all_research_achievements(teacher_id)

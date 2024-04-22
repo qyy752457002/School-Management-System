@@ -18,11 +18,11 @@ class Teachers(BaseModel):
     teacher_id: int = Field(None, title="教师ID", description="教师ID")
     teacher_name: str = Field(..., title="教师名称", description="教师名称")
     teacher_gender: str = Field(..., title="教师性别", description="教师性别")
-    teacher_id_type: str = Field(None, title="证件类型", description="证件类型")
-    teacher_id_number: str = Field(None, title="证件号", description="证件号")
+    teacher_id_type: str = Field("", title="证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: str = Field(..., title="任职单位", description="任职单位")
-    teacher_avatar: str = Field(None, title="头像", description="头像")
+    teacher_employer: int = Field(0, title="任职单位", description="任职单位")
+    teacher_avatar: str = Field("", title="头像", description="头像")
 
 class TeachersCreatModel(BaseModel):
     """
@@ -36,11 +36,11 @@ class TeachersCreatModel(BaseModel):
     """
     teacher_name: str = Field(..., title="教师名称", description="教师名称")
     teacher_gender: str = Field(..., title="教师性别", description="教师性别")
-    teacher_id_type: str = Field(None, title="证件类型", description="证件类型")
-    teacher_id_number: str = Field(None, title="证件号", description="证件号")
+    teacher_id_type: str = Field("", title="证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: str = Field(..., title="任职单位", description="任职单位")
-    teacher_avatar: str = Field(None, title="头像", description="头像")
+    teacher_employer: int = Field(0, title="任职单位", description="任职单位")
+    teacher_avatar: str = Field("", title="头像", description="头像")
 
 
 class TeacherInfoCreateModel(BaseModel):  # 基本信息

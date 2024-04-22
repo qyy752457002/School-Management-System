@@ -3,14 +3,14 @@ from mini_framework.web.views import BaseView
 from views.models.teachers import NewTeacher, TeacherInfo
 from fastapi import Query, Depends
 
-
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 from models.teachers import Teacher
 from rules.teachers_rule import TeachersRule
-from views.models.teachers import Teachers, TeacherInfo,TeachersCreatModel,TeacherInfoCreateModel
+from views.models.teachers import Teachers, TeacherInfo, TeachersCreatModel, TeacherInfoCreateModel
 from rules.teachers_info_rule import TeachersInfoRule
+
 
 class NewTeachersView(BaseView):
     def __init__(self):
@@ -32,7 +32,7 @@ class NewTeachersView(BaseView):
         return str(teacher_id)
 
     # 查询单个教职工登记信息
-    async def get_newteacher(self, teacher_id:int = Query(..., title="教师编号", description="教师编号")):
+    async def get_newteacher(self, teacher_id: int = Query(..., title="教师编号", description="教师编号")):
         res = await self.teacher_rule.get_teachers_by_id(teacher_id)
         return res
 
@@ -44,11 +44,11 @@ class NewTeachersView(BaseView):
 
     # 分页查询
 
-    async def page(self, new_teacher = Depends(NewTeacher), page_request=Depends(PageRequest)):
+    async def page(self, new_teacher=Depends(NewTeacher), page_request=Depends(PageRequest)):
         """
         分页查询
         """
-        paging_result = await self.teacher_info_rule.query_teacher_with_page(new_teacher,page_request)
+        paging_result = await self.teacher_info_rule.query_teacher_with_page(new_teacher, page_request)
         return paging_result
 
     # 新教职工基本信息的功能
@@ -60,7 +60,7 @@ class NewTeachersView(BaseView):
 
     # 获取教职工基本信息
     async def get_newteacherinfo(self, teacher_id: int = Query(..., title="教师名称", description="教师名称",
-                                                       example=123)):
+                                                               example=123)):
         res = await self.teacher_info_rule.get_teachers_info_by_id(teacher_id)
         return res
 
@@ -74,4 +74,3 @@ class NewTeachersView(BaseView):
     #                                 teacher_id: int = Query(..., title="教师编号", description="教师编号",example=123)):
     #     res = await self.teacher_info_rule.delete_teachers_info(teacher_id)
     #     return res
-

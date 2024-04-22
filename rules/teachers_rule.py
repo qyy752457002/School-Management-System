@@ -5,6 +5,7 @@ from daos.teachers_dao import TeachersDao
 from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers import Teacher
 from views.models.teachers import Teachers as TeachersModel
+from views.models.teachers import TeachersCreatModel
 
 import hashlib
 
@@ -36,7 +37,7 @@ class TeachersRule(object):
     #     return teachers
 
 
-    async def add_teachers(self, teachers: TeachersModel):
+    async def add_teachers(self, teachers: TeachersCreatModel):
         teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])

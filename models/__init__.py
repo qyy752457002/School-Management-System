@@ -16,6 +16,7 @@ from . import school_communication
 from . import campus
 from . import campus_communication
 from . import campus_eduinfo
+
 from . import teacher_learn_experience
 from . import teacher_work_experience
 from . import teacher_qualifications
@@ -25,7 +26,11 @@ from . import teacher_skill_certificates
 from . import teacher_ethic_records
 from . import educational_teaching
 
-
+from . import annual_review
+from . import domestic_training
+from . import overseas_study
+from . import talent_program
+from . import research_achievements
 
 from . import classes
 from . import enum_value

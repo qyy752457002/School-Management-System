@@ -1,4 +1,4 @@
 -i https://mirror.f123.pub/repository/pypi/simple
 
-lfun-mini-framework==0.0.20
+lfun-mini-framework==0.0.25
 

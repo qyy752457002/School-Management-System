@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import date
+from fastapi import Query
+
 
 class TeacherLearnExperienceModel(BaseModel):
     """
@@ -29,7 +31,7 @@ class TeacherLearnExperienceModel(BaseModel):
     degree_level: str = Field(..., title="学位层次", description="学位层次")
     country_or_region_of_degree_obtained: str = Field(..., title="获取学位过家地区", description="获取学位过家地区")
     institution_of_degree_obtained: str = Field(..., title="获得学位院校机构", description="获得学位院校机构")
-    degree_award_date: str = Field(..., title="学位授予时间", description="学位授予时间")
+    degree_award_date: date = Field(None, title="学位授予时间", description="学位授予时间")
     study_mode: str = Field(..., title="学习方式", description="学习方式")
     type_of_institution: str = Field("", title="在学单位类别", description="在学单位类别")
 
@@ -63,7 +65,7 @@ class TeacherLearnExperienceUpdateModel(BaseModel):
     degree_level: str = Field(..., title="学位层次", description="学位层次")
     country_or_region_of_degree_obtained: str = Field(..., title="获取学位过家地区", description="获取学位过家地区")
     institution_of_degree_obtained: str = Field(..., title="获得学位院校机构", description="获得学位院校机构")
-    degree_award_date: str = Field(..., title="学位授予时间", description="学位授予时间")
+    degree_award_date: date = Field(None, title="学位授予时间", description="学位授予时间")
     study_mode: str = Field(..., title="学习方式", description="学习方式")
     type_of_institution: str = Field("", title="在学单位类别", description="在学单位类别")
 
@@ -433,3 +435,325 @@ class EducationalTeachingUpdateModel(BaseModel):
                                                    description="平均每周其他工作折合课时")
     concurrent_job: str = Field(..., title="兼任工作", description="兼任工作")
     concurrent_job_name: str = Field("", title="兼任工作名称", description="兼任工作名称")
+
+
+class DomesticTrainingModel(BaseModel):
+    """
+    教师ID：teacher_id
+    培训年度：training_year
+    培训类型：training_type
+    培训项目：training_project
+    培训机构：training_institution
+    培训方式：training_mode
+    培训学时：training_hours
+    培训学分：training_credits
+    """
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    training_year: str = Field(..., title="培训年度", description="培训年度")
+    training_type: str = Field(..., title="培训类型", description="培训类型")
+    training_project: str = Field(..., title="培训项目", description="培训项目")
+    training_institution: str = Field("", title="培训机构", description="培训机构")
+    training_mode: str = Field(..., title="培训方式", description="培训方式")
+    training_hours: str = Field(..., title="培训学时", description="培训学时")
+    training_credits: str = Field("", title="培训学分", description="培训学分")
+
+
+class DomesticTrainingUpdateModel(BaseModel):
+    """
+    domestic_training：domestic_training_id
+    教师ID：teacher_id
+    培训年度：training_year
+    培训类型：training_type
+    培训项目：training_project
+    培训机构：training_institution
+    培训方式：training_mode
+    培训学时：training_hours
+    培训学分：training_credits
+    """
+    domestic_training_id: int = Field(..., title="domestic_training_id", description="domestic_training_id")
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    training_year: str = Field(..., title="培训年度", description="培训年度")
+    training_type: str = Field(..., title="培训类型", description="培训类型")
+    training_project: str = Field(..., title="培训项目", description="培训项目")
+    training_institution: str = Field("", title="培训机构", description="培训机构")
+    training_mode: str = Field(..., title="培训方式", description="培训方式")
+    training_hours: str = Field(..., title="培训学时", description="培训学时")
+    training_credits: str = Field("", title="培训学分", description="培训学分")
+
+
+class OverseasStudyModel(BaseModel):
+    """
+    教师ID：teacher_id
+    开始日期：start_date
+    结束日期：end_date
+    国家地区：country_region
+    研修机构名称：training_institution_name
+    项目名称：project_name
+    项目组织单位名称：organizing_institution_name
+    """
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    start_date: date = Field(..., title="开始日期", description="开始日期")
+    end_date: date = Field(..., title="结束日期", description="结束日期")
+    country_region: str = Field(..., title="国家地区", description="国家地区")
+    training_institution_name: str = Field("", title="研修机构名称", description="研修机构名称")
+    project_name: str = Field(..., title="项目名称", description="项目名称")
+    organizing_institution_name: str = Field("", title="项目组织单位名称", description="项目组织单位名称")
+
+
+class OverseasStudyUpdateModel(BaseModel):
+    """
+    overseas_study：overseas_study_id
+    教师ID：teacher_id
+    开始日期：start_date
+    结束日期：end_date
+    国家地区：country_region
+    研修机构名称：training_institution_name
+    项目名称：project_name
+    项目组织单位名称：organizing_institution_name
+    """
+    overseas_study_id: int = Field(..., title="overseas_study_id", description="overseas_study_id")
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    start_date: date = Field(..., title="开始日期", description="开始日期")
+    end_date: date = Field(..., title="结束日期", description="结束日期")
+    country_region: str = Field(..., title="国家地区", description="国家地区")
+    training_institution_name: str = Field("", title="研修机构名称", description="研修机构名称")
+    project_name: str = Field(..., title="项目名称", description="项目名称")
+    organizing_institution_name: str = Field("", title="项目组织单位名称", description="项目组织单位名称")
+
+
+class TalentProgramModel(BaseModel):
+    """
+    教师ID：teacher_id
+    人才项目名称：talent_project_name
+    入选年份：selected_year
+    """
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    talent_project_name: str = Field("", title="人才项目名称", description="人才项目名称")
+    selected_year: str = Field("", title="入选年份", description="入选年份")
+
+
+class TalentProgramUpdateModel(BaseModel):
+    """
+    talent_program：talent_program_id
+    教师ID：teacher_id
+    人才项目名称：talent_project_name
+    入选年份：selected_year
+    """
+    talent_program_id: int = Field(..., title="talent_program_id", description="talent_program_id")
+    teacher_id: int = Field(None, title="教师ID", description="教师ID")
+    talent_project_name: str = Field("", title="人才项目名称", description="人才项目名称")
+    selected_year: str = Field("", title="入选年份", description="入选年份")
+
+
+class AnnualReviewModel(BaseModel):
+    """
+    教师ID：teacher_id
+    考核年度：assessment_year
+    考核结果：assessment_result
+    考核单位名称：assessment_institution_name
+    """
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    assessment_year: str = Field(..., title="考核年度", description="考核年度")
+    assessment_result: str = Field(..., title="考核结果", description="考核结果")
+    assessment_institution_name: str = Field("", title="考核单位名称", description="考核单位名称")
+
+
+class AnnualReviewUpdateModel(BaseModel):
+    """
+    annual_review：annual_review_id
+    教师ID：teacher_id
+    考核年度：assessment_year
+    考核结果：assessment_result
+    考核单位名称：assessment_institution_name
+    """
+    annual_review_id: int = Field(..., title="annual_review_id", description="annual_review_id")
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    assessment_year: str = Field(..., title="考核年度", description="考核年度")
+    assessment_result: str = Field(..., title="考核结果", description="考核结果")
+    assessment_institution_name: str = Field("", title="考核单位名称", description="考核单位名称")
+
+
+class ResearchAchievementsModel(BaseModel):
+    """
+    教师ID：teacher_id
+    科研成果种类：research_achievement_type
+    类型：type
+    是否代表性成果或项目：representative_or_project
+    名称：name
+    学科领域：disciplinary_field
+    本人角色：role
+    日期：date
+    批准号：approval_number
+    经费额度：funding_amount
+    开始年月：start_year_month
+    结束日期：end_date
+    本人排名：ranking
+    委托单位：entrusting_unit
+    来源：source
+    出版社名称：publisher_name
+    出版号：publication_number
+    总字数：total_words
+    本人撰写字数：self_written_words
+    发表刊物名称：journal_name
+    卷号：volume_number
+    期号：issue_number
+    论文收录情况：indexing_status
+    起始页码：start_page
+    结束页码：end_page
+    本人排名：personal_rank
+    等级：research_level
+    其他等级：other_level
+    授权国家：authorized_country
+    授权单位：authorized_organization
+    完成地点：completion_location
+    本人工作描述：work_description
+    专利号：patent_number
+    委托方：entrusting_party
+    证书号：certificate_number
+    有效期：validity_period
+    标准号：standard_number
+    发布单位：publishing_organization
+    """
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    research_achievement_type: str = Field(..., title="科研成果种类", description="科研成果种类")
+    type: str = Field("", title="类型", description="类型")
+    representative_or_project: bool = Field(False, title="是否代表性成果或项目", description="是否代表性成果或项目")
+    name: str = Field("", title="名称", description="名称")
+    disciplinary_field: str = Field("", title="学科领域", description="学科领域")
+    role: str = Field("", title="本人角色", description="本人角色")
+    research_date: date = Field(None, title="日期", description="日期")
+    approval_number: str = Field("", title="批准号", description="批准号")
+    funding_amount: str = Field("", title="经费额度", description="经费额度")
+    start_year_month: date = Field(None, title="开始年月", description="开始年月")
+    end_date: date = Field(None, title="结束日期", description="结束日期")
+    ranking: str = Field("", title="本人排名", description="本人排名")
+    entrusting_unit: str = Field("", title="委托单位", description="委托单位")
+    source: str = Field("", title="来源", description="来源")
+    publisher_name: str = Field("", title="出版社名称", description="出版社名称")
+    publication_number: str = Field("", title="出版号", description="出版号")
+    total_words: int = Field(0, title="总字数", description="总字数")
+    self_written_words: int = Field(0, title="本人撰写字数", description="本人撰写字数")
+    journal_name: str = Field("", title="发表刊物名称", description="发表刊物名称")
+    volume_number: int = Field(0, title="卷号", description="卷号")
+    issue_number: int = Field(0, title="期号", description="期号")
+    indexing_status: str = Field("", title="论文收录情况", description="论文收录情况")
+    start_page: int = Field(0, title="起始页码", description="起始页码")
+    end_page: int = Field(0, title="结束页码", description="结束页码")
+    personal_rank: str = Field("", title="本人排名", description="本人排名")
+    research_level: str = Field("", title="等级", description="等级")
+    other_level: str = Field("", title="其他等级", description="其他等级")
+    authorized_country: str = Field("", title="授权国家", description="授权国家")
+    authorized_organization: str = Field("", title="授权单位", description="授权单位")
+    completion_location: str = Field("", title="完成地点", description="完成地点")
+    work_description: str = Field("", title="本人工作描述", description="本人工作描述")
+    patent_number: str = Field("", title="专利号", description="专利号")
+    entrusting_party: str = Field("", title="委托方", description="委托方")
+    certificate_number: str = Field("", title="证书号", description="证书号")
+    validity_period: date = Field(None, title="有效期", description="有效期")
+    standard_number: str = Field("", title="标准号", description="标准号")
+    publishing_organization: str = Field("", title="发布单位", description="发布单位")
+
+
+class ResearchAchievementsUpdateModel(BaseModel):
+    """
+    research_achievements：research_achievements_id
+    教师ID：teacher_id
+    科研成果种类：research_achievement_type
+    类型：type
+    是否代表性成果或项目：representative_or_project
+    名称：name
+    学科领域：disciplinary_field
+    本人角色：role
+    日期：date
+    批准号：approval_number
+    经费额度：funding_amount
+    开始年月：start_year_month
+    结束日期：end_date
+    本人排名：ranking
+    委托单位：entrusting_unit
+    来源：source
+    出版社名称：publisher_name
+    出版号：publication_number
+    总字数：total_words
+    本人撰写字数：self_written_words
+    发表刊物名称：journal_name
+    卷号：volume_number
+    期号：issue_number
+    论文收录情况：indexing_status
+    起始页码：start_page
+    结束页码：end_page
+    本人排名：personal_rank
+    等级：research_level
+    其他等级：other_level
+    授权国家：authorized_country
+    授权单位：authorized_organization
+    完成地点：completion_location
+    本人工作描述：work_description
+    专利号：patent_number
+    委托方：entrusting_party
+    证书号：certificate_number
+    有效期：validity_period
+    标准号：standard_number
+    发布单位：publishing_organization
+    """
+    research_achievements_id: int = Field(..., title="research_achievements_id", description="research_achievements_id")
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    research_achievement_type: str = Field(..., title="科研成果种类", description="科研成果种类")
+    type: str = Field("", title="类型", description="类型")
+    representative_or_project: bool = Field(False, title="是否代表性成果或项目", description="是否代表性成果或项目")
+    name: str = Field("", title="名称", description="名称")
+    disciplinary_field: str = Field("", title="学科领域", description="学科领域")
+    role: str = Field("", title="本人角色", description="本人角色")
+    research_date: date = Field(None, title="日期", description="日期")
+    approval_number: str = Field("", title="批准号", description="批准号")
+    funding_amount: str = Field("", title="经费额度", description="经费额度")
+    start_year_month: date = Field(None, title="开始年月", description="开始年月")
+    end_date: date = Field(None, title="结束日期", description="结束日期")
+    ranking: str = Field("", title="本人排名", description="本人排名")
+    entrusting_unit: str = Field("", title="委托单位", description="委托单位")
+    source: str = Field("", title="来源", description="来源")
+    publisher_name: str = Field("", title="出版社名称", description="出版社名称")
+    publication_number: str = Field("", title="出版号", description="出版号")
+    total_words: int = Field(0, title="总字数", description="总字数")
+    self_written_words: int = Field(0, title="本人撰写字数", description="本人撰写字数")
+    journal_name: str = Field("", title="发表刊物名称", description="发表刊物名称")
+    volume_number: int = Field(0, title="卷号", description="卷号")
+    issue_number: int = Field(0, title="期号", description="期号")
+    indexing_status: str = Field("", title="论文收录情况", description="论文收录情况")
+    start_page: int = Field(0, title="起始页码", description="起始页码")
+    end_page: int = Field(0, title="结束页码", description="结束页码")
+    personal_rank: str = Field("", title="本人排名", description="本人排名")
+    research_level: str = Field("", title="等级", description="等级")
+    other_level: str = Field("", title="其他等级", description="其他等级")
+    authorized_country: str = Field("", title="授权国家", description="授权国家")
+    authorized_organization: str = Field("", title="授权单位", description="授权单位")
+    completion_location: str = Field("", title="完成地点", description="完成地点")
+    work_description: str = Field("", title="本人工作描述", description="本人工作描述")
+    patent_number: str = Field("", title="专利号", description="专利号")
+    entrusting_party: str = Field("", title="委托方", description="委托方")
+    certificate_number: str = Field("", title="证书号", description="证书号")
+    validity_period: date = Field(None, title="有效期", description="有效期")
+    standard_number: str = Field("", title="标准号", description="标准号")
+    publishing_organization: str = Field("", title="发布单位", description="发布单位")
+
+
+class ResearchAchievementsQueryModel(BaseModel):
+    """
+    教师ID：teacher_id
+    科研项目联合查询模型
+    科研成果种类：research_achievement_type
+    类型：type
+    是否代表性成果或项目：representative_or_project
+    名称：name
+    学科领域：disciplinary_field
+    本人角色：role
+    """
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    research_achievement_type: str = Query("", title="姓名", description="姓名", example="张三")
+    type: str = Query("", title="类型", description="类型", example="类型")
+    representative_or_project: bool = Query(False, title="是否代表性成果或项目", description="是否代表性成果或项目")
+    name: str = Query("", title="名称", description="名称", example="名称")
+    disciplinary_field: str = Query("", title="学科领域", description="学科领域", example="学科领域")
+    role: str = Query("", title="本人角色", description="本人角色", example="本人角色")
+
+
