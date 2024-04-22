@@ -106,6 +106,7 @@ class SchoolBaseInfo(BaseModel):
     urban_rural_nature: str = Field(..., title="", description="城乡性质",examples=['城镇'])
     school_operation_type: str = Field(..., title="", description="办学类型/学校性质",examples=['学前教育'])
     school_org_form: str = Field(..., title="", description="办学组织形式",examples=['教学点'])
+    school_nature: str = Field('', title="", description="学校性质",examples=['学前'])
 
     school_operation_type_lv2: str = Field(..., title="", description=" 办学类型二级",examples=['小学'])
     school_operation_type_lv3: str = Field(..., title="", description=" 办学类型三级",examples=['附设小学班'])

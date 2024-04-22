@@ -9,6 +9,7 @@ from mini_framework.databases.entities import BaseDBModel
 class PlanningSchool(BaseDBModel):
     """
     规划校
+    planning_school_nature: str = Field('', title="", description="学校性质",examples=['学前'])
     """
     __tablename__ = 'lfun_planning_school'
     __table_args__ = {'comment': '规划校'}
@@ -23,6 +24,8 @@ class PlanningSchool(BaseDBModel):
     borough: Mapped[str] = mapped_column(String(64), nullable=False, comment="行政管辖区")
     planning_school_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="学校类型")
     planning_school_operation_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="办学类型/学校性质")
+    planning_school_nature: Mapped[str] = mapped_column(String(64), nullable=True, comment="学校性质",default='')
+
     planning_school_operation_type_lv2: Mapped[str] = mapped_column(String(64), nullable=False, comment="办学类型二级")
     planning_school_operation_type_lv3: Mapped[str] = mapped_column(String(64), nullable=False, comment="办学类型三级")
     planning_school_org_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="学校办别")

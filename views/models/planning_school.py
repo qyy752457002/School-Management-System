@@ -98,6 +98,8 @@ class PlanningSchoolBaseInfo(BaseModel):
     founder_name: str = Field(..., title="", description="举办者名称",examples=['上海教育局'])
     urban_rural_nature: str = Field(..., title="", description="城乡性质",examples=['城镇'])
     planning_school_operation_type: str = Field(..., title="", description="办学类型/学校性质",examples=['学前教育'])
+    planning_school_nature: str = Field('', title="", description="学校性质",examples=['学前'])
+
     planning_school_org_form: str = Field(..., title="", description="办学组织形式",examples=['教学点'])
 
     planning_school_operation_type_lv2: str = Field(..., title="", description=" 办学类型二级",examples=['小学'])
@@ -154,13 +156,3 @@ class PlanningSchoolPageSearch(BaseModel):
     # founder_type: List[ PlanningSchoolFounderType]  = Query("", title="", description="举办者类型",examples=['地方'])
     # founder_type_lv2:  List[ PlanningSchoolFounderType] = Query("", title="", description="举办者类型二级",examples=['教育部门'])
     # founder_type_lv3:  List[ PlanningSchoolFounderType] = Query("", title="", description="举办者类型三级",examples=['县级教育部门'])
-
-
-
-
-
-
-
-
-
-
