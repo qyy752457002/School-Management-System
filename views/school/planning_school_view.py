@@ -8,7 +8,8 @@ from mini_framework.web.views import BaseView
 from rules.operation_record import OperationRecordRule
 from views.models.operation_record import OperationRecord
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
-    PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo
+    PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
+    PlanningSchoolBaseInfoOptional
 from views.models.planning_school_communications import PlanningSchoolCommunications
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
 from views.models.school import School
@@ -169,7 +170,7 @@ class PlanningSchoolView(BaseView):
 
         # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
 
-    # 开办 todo 校验合法性等  业务逻辑
+    # 开办 todo 校验合法性等  业务逻辑   开班式 校验所有的数据是否 都填写了
     async def patch_open(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
                                                                min_length=1, max_length=20, example='SC2032633')):
         # print(planning_school)
@@ -230,10 +231,10 @@ class PlanningSchoolView(BaseView):
     #
     #     return res
 
-    # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性
+    # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性  todo  允许 部分 不填  现保存
     async def put(self,
 
-                  planning_school: PlanningSchoolBaseInfo,
+                  planning_school: PlanningSchoolBaseInfoOptional,
                   planning_school_communication: PlanningSchoolCommunications,
                   planning_school_eduinfo: PlanningSchoolEduInfo,
                   planning_school_id: int = Query(..., title="", description="学校id/园所id", example='38'),
@@ -245,9 +246,6 @@ class PlanningSchoolView(BaseView):
         planning_school_eduinfo.planning_school_id = planning_school_id
         planning_school_communication.id = None
         planning_school_eduinfo.id = None
-
-
-
 
         res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
         res_com = await self.planning_school_communication_rule.update_planning_school_communication_byargs(
