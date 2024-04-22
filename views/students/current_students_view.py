@@ -2,6 +2,7 @@ from typing import List
 
 from mini_framework.web.views import BaseView
 
+from rules.student_transaction import StudentTransactionRule
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, StudentEduInfo
 # from fastapi import Field
 from fastapi import Query, Depends
@@ -24,6 +25,8 @@ class CurrentStudentsView(BaseView):
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
         self.students_rule = get_injector(StudentsRule)
         self.student_session_rule = get_injector(StudentSessionRule)
+        self.student_transaction_rule = get_injector(StudentTransactionRule)
+
 
     async def get_student_session(self,sessions_id: str = Query(None, title="届别编号", description="届别编号",
                                                                    example="2023届")):
@@ -50,7 +53,10 @@ class CurrentStudentsView(BaseView):
     # 在校生转入  todo 届别 班级
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
         # print(new_students_key_info)
-        return student_edu_info
+        res = await self.student_transaction_rule.add_student_transaction(student_edu_info)
+
+
+        return res
 
     # 在校生转入   审批
     async def patch_transferin_audit(self, transferin_audit_id: str = Query(..., description="转入申请id", min_length=1,
