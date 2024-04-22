@@ -16,4 +16,5 @@ from . import school_communication
 from . import campus
 from . import campus_communication
 from . import campus_eduinfo
+from . import teacher_learn_experience
 metadata = BaseDBModel.metadata
