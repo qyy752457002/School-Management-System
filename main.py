@@ -7,9 +7,7 @@ from mini_framework.context import env
 def generate_dao():
     env.sync_type = "sync"
     env.app_root = os.path.dirname(os.path.abspath(__file__))
-    model_list = [
-
-    ]
+    model_list = [('models.teacher_work_experience', 'TeacherWorkExperience'), ('models.teacher_job_appointments', 'TeacherJobAppointments'), ('models.teacher_professional_titles', 'TeacherProfessionalTitles'), ('models.teacher_qualifications', 'TeacherQualifications'), ('models.teacher_skill_certificates', 'TeacherSkillCertificates'), ('models.teacher_ethic_records', 'TeacherEthicRecords'), ('models.educational_teaching', 'EducationalTeaching')]
     dao_files_path = os.path.join(env.app_root, "daos_test")
     # 增加当前目录到sys.path
     from mini_framework.databases.toolkit.dao_generator import generate_dao_files
