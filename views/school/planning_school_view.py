@@ -1,9 +1,12 @@
 import logging
+from datetime import datetime
 from typing import List
 
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
+from rules.operation_record import OperationRecordRule
+from views.models.operation_record import OperationRecord
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo
 from views.models.planning_school_communications import PlanningSchoolCommunications
@@ -30,6 +33,7 @@ class PlanningSchoolView(BaseView):
         self.planning_school_rule = get_injector(PlanningSchoolRule)
         self.planning_school_communication_rule = get_injector(PlanningSchoolCommunicationRule)
         self.planning_school_eduinfo_rule = get_injector(PlanningSchoolEduinfoRule)
+        self.operation_record_rule =   get_injector(OperationRecordRule)
 
     # todo  包含3部分信息 1.基本信息 2.通讯信息 3.教育信息
     async def get(self, planning_school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1,
@@ -102,6 +106,22 @@ class PlanningSchoolView(BaseView):
         res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
 
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(planning_school.id),
+            operator='admin',
+            module='学校',
+            target='学校',
+
+            action_type='修改',
+            ip='127.0.0.1',
+            change_data= str(planning_school)[ 0:250 ],
+            change_field='关键信息',
+            change_item='关键信息',
+            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason='修改基本信息',
+            doc_upload='',
+            status='1',
+           account='',))
 
         return res
 
