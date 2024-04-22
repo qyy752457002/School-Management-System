@@ -28,7 +28,7 @@ class PlanningSchoolEduinfoRule(object):
         if   planning_school_eduinfo_db is None:
             planning_school = PlanningSchoolEduinfoModel()
             planning_school = dict()
-            
+
         else:
             planning_school = orm_model_to_view_model(planning_school_eduinfo_db, PlanningSchoolEduinfoModel)
 

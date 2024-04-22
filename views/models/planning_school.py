@@ -111,8 +111,8 @@ class PlanningSchoolKeyAddInfo(BaseModel):
     id:int= Query(None, title="", description="规划校id", example='1'),
 
     planning_school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
-    # planning_school_short_name: str = Field(..., title="", description="园所简称",examples=['MXXX'])
     planning_school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633'),
+    planning_school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
     borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区']),
     block: str = Query(..., title=" Author", description="地域管辖区",examples=['铁西区']),
     planning_school_type: str = Query(..., title="", description=" 学校类型",examples=['中小学']),
@@ -121,7 +121,6 @@ class PlanningSchoolKeyAddInfo(BaseModel):
     planning_school_operation_type_lv3: str = Query(..., title="", description=" 办学类型三级",examples=['附设小学班']),
     planning_school_org_type: str = Query(..., title="", description=" 学校办别",examples=['民办']),
     planning_school_level: str = Query(..., title="", description=" 学校星级",examples=['5'])
-    planning_school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
 
 
 
@@ -129,7 +128,6 @@ class PlanningSchoolKeyInfo(BaseModel):
     id:int= Query(None, title="", description="规划校id", example='1'),
 
     planning_school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
-    # planning_school_short_name: str = Field(..., title="", description="园所简称",examples=['MXXX'])
     planning_school_code: str = Field(..., title="", description=" 园所标识码",examples=['SC562369322SG'])
     planning_school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633'),
     borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区']),

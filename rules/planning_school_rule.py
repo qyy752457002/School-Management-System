@@ -17,13 +17,20 @@ from mini_framework.databases.conn_managers.db_manager import db_connection_mana
 class PlanningSchoolRule(object):
     planning_school_dao: PlanningSchoolDAO
 
-    async def get_planning_school_by_id(self, planning_school_id):
+    async def get_planning_school_by_id(self, planning_school_id,extra_model=None):
         planning_school_db = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
         if not planning_school_db:
             raise PlanningSchoolNotFoundError()
         # 可选 , exclude=[""]
         planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel)
-        return planning_school
+        if extra_model:
+            planning_school_extra = orm_model_to_view_model(planning_school_db, extra_model,
+                                                       exclude=[""])
+            return planning_school,planning_school_extra
+
+        else:
+
+            return planning_school
 
     async def get_planning_school_by_planning_school_name(self, planning_school_name):
         planning_school_db = await self.planning_school_dao.get_planning_school_by_planning_school_name(
