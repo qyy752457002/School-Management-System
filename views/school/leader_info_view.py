@@ -25,7 +25,10 @@ class LeaderInfoView(BaseView):
 
     async def page(self,
                    page_request= Depends(PageRequest),
-                   # campus_no:str= Query(None, title="校区编号", description="校区编号",min_length=1,max_length=20,example='SC2032633'),
+                   planning_school_id:int = Query(None, title="", description="规划校ID", example='1'),
+                   school_id:int = Query(None, title="", description="学校ID", example='1'),
+                   institution_id:int = Query(None, title="", description="事业行政单位ID", example='1'),
+
                    # campus_name:str= Query(None, description="校区名称" ,min_length=1,max_length=20,example='XX小学'),
 
 
@@ -34,7 +37,7 @@ class LeaderInfoView(BaseView):
                    ):
         print(page_request)
         items=[]
-        res = await self.leader_info_rule.query_leader_info_with_page(page_request , )
+        res = await self.leader_info_rule.query_leader_info_with_page(page_request ,planning_school_id,school_id,institution_id )
         return res
 
 
