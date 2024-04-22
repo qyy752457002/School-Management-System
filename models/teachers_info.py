@@ -1,4 +1,4 @@
-from sqlalchemy import String, Date
+from sqlalchemy import String, Date,INT
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -104,6 +104,6 @@ class TeacherInfo(BaseDBModel):
                                                                         comment="是否心理健康教育教师")
     recruitment_method: Mapped[str] = mapped_column(String(64), nullable=False, comment="招聘方式")
     teacher_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="教职工号")
-    deleted: Mapped[int] = mapped_column(nullable=True, comment="删除态", default=0)
+    is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
     # username: Mapped[str] = mapped_column(String(64), nullable=False, comment="用户名")
     # hash_password: Mapped[str] = mapped_column(String(128), nullable=False, comment="密码")

@@ -18,7 +18,7 @@ class TeachersView(BaseView):
         self.teacher_rule = get_injector(TeachersRule)
         self.teacher_info_rule = get_injector(TeachersInfoRule)
 
-    async def get_teacher(self, teacher_id: int = Query(..., title="教师编号", description="教师编号", min_length=1)):
+    async def get_teacher(self, teacher_id: int = Query(..., title="教师编号", description="教师编号")):
         """
         获取单个教职工信息
         """
@@ -52,8 +52,7 @@ class TeachersView(BaseView):
 
     # 删除教职工基本信息
     async def delete_teacherinfo(self,
-                                 teacher_id: int = Query(..., title="教师名称", description="教师名称", min_length=1,
-                                                         max_length=20,
+                                 teacher_id: int = Query(..., title="教师名称", description="教师名称",
                                                          example=123)):
         await self.teacher_info_rule.delete_teachers_info(teacher_id)
         return str(teacher_id)

@@ -2,8 +2,10 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teachers_dao import TeachersDao
+from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers import Teacher
 from views.models.teachers import Teachers as TeachersModel
+
 import hashlib
 
 import shortuuid
@@ -18,6 +20,7 @@ def hash_password(password):
 @dataclass_inject
 class TeachersRule(object):
     teachers_dao: TeachersDao
+    teachers_info_dao: TeachersInfoDao
 
     async def get_teachers_by_id(self, teachers_id):
         teacher_db= await self.teachers_dao.get_teachers_by_id(teachers_id)

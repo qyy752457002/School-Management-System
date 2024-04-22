@@ -4,6 +4,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers_info import TeacherInfo
 from views.models.teachers import TeacherInfo as TeachersInfoModel
+from views.models.teachers import NewTeacher
 from sqlalchemy import select, func, update
 
 
@@ -45,10 +46,15 @@ class TeachersInfoRule(object):
         return teachers_info
 
     # 分页查询
-    async def query_teacher_with_page(self, page_request: PageRequest, condition):
-        """
-        分页查询
-        """
-        paging = await self.teachers_info_dao.query_teacher_with_page(page_request, condition)
-        paging_result = PaginatedResponse.from_paging(paging, TeachersInfoModel)
+    # async def query_teacher_with_page(self, page_request: PageRequest, condition):
+    #     """
+    #     分页查询
+    #     """
+    #     paging = await self.teachers_info_dao.query_teacher_with_page(page_request, condition)
+    #     paging_result = PaginatedResponse.from_paging(paging, TeachersInfoModel)
+    #     return paging_result
+
+    async def query_account_with_page(self, query_model: NewTeacher, page_request: PageRequest):
+        paging = await self.teachers_info_dao.query_teacher_with_page(query_model, page_request)
+        paging_result = PaginatedResponse.from_paging(paging, TeachersInfoModel, {"hash_password": "password"})
         return paging_result

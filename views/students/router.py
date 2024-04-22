@@ -10,9 +10,9 @@ from views.students.newstudents_view import  NewsStudentsView
 
 def routers():
     router = Router()
-    router.include_api_view_class(NewsStudentsView, "/v1/NewsStudentsView",  description="新生入学管理")
-    router.include_api_view_class(CurrentStudentsView, "/v1/currentstudent",  description="在校生管理")
-    router.include_api_view_class(GraduationStudentsView, "/v1/graduationstudent",  description="毕业生管理")
+    router.include_api_view_class(NewsStudentsView, "/v1/news-students-view",  description="新生入学管理")
+    router.include_api_view_class(CurrentStudentsView, "/v1/current-student",  description="在校生管理")
+    router.include_api_view_class(GraduationStudentsView, "/v1/graduation-student",  description="毕业生管理")
 
 
     return router

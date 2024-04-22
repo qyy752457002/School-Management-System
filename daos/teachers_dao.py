@@ -37,6 +37,7 @@ class TeachersDao(DAOBase):
     #删除单个教师信息
     async def delete_teachers(self, teachers: Teacher):
         session = await self.master_db()
+        print(teachers.teacher_id,teachers.is_deleted)
         return await self.delete(session, teachers)
 
     #获取所有教师信息
