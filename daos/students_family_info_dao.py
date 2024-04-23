@@ -5,6 +5,8 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 from models.students import Student
 from models.students_family_info import StudentFamilyInfo
+
+
 class StudentsFamilyInfoDao(DAOBase):
     async def add_students_family_info(self, students_family_info):
         """
@@ -22,15 +24,17 @@ class StudentsFamilyInfoDao(DAOBase):
         """
         session = await self.master_db()
         update_contents = get_update_contents(students_family_info, *args)
-        query = update(StudentFamilyInfo).where(StudentFamilyInfo.student_id == students_family_info.student_id).values(**update_contents)
+        query = update(StudentFamilyInfo).where(StudentFamilyInfo.student_id == students_family_info.student_id).values(
+            **update_contents)
         return await self.update(session, query, students_family_info, update_contents, is_commit=is_commit)
 
-    async def get_students_family_info_by_id(self, students_id):
+    async def get_students_family_info_by_id(self, students_family_info_id):
         """
-        获取单个学生家庭信息
+        获取单个学生单条家庭信息
         """
         session = await self.slave_db()
-        result = await session.execute(select(StudentFamilyInfo).where(StudentFamilyInfo.student_id == students_id))
+        result = await session.execute(
+            select(StudentFamilyInfo).where(StudentFamilyInfo.student_family_info_id == students_family_info_id))
         return result.scalar_one_or_none()
 
     async def delete_students_family_info(self, students: StudentFamilyInfo):
@@ -40,13 +44,14 @@ class StudentsFamilyInfoDao(DAOBase):
         session = self.master_db()
         return await self.delete(session, students)
 
-    async def get_all_students_family_info(self):
+    async def get_all_students_family_info(self, student_id):
         session = await self.slave_db()
-        result = await session.execute(select(StudentFamilyInfo))
+        query = select(StudentFamilyInfo).join(Student, StudentFamilyInfo.student_id == Student.student_id).where(
+            StudentFamilyInfo.student_id == student_id)
+        result = await session.execute(query)
         return result.scalars().all()
 
     async def get_student_family_info_count(self):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(StudentFamilyInfo))
         return result.scalar()
-

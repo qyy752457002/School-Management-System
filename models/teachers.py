@@ -23,6 +23,9 @@ class TeacherApprovalAtatus(str, Enum):
     def to_list(cls):
         return [cls.SUBMITTING, cls.SUBMITTED, cls.APPROVED, cls.REJECTED]
 
+# class Gender(str, Enum):
+
+
 
 class Teacher(BaseDBModel):
     """

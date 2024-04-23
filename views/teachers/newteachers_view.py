@@ -21,7 +21,7 @@ class NewTeachersView(BaseView):
     # 新增教职工登记信息
     async def post_newteacher(self, teachers: TeachersCreatModel):
         print(teachers)
-        res = await self.teacher_rule.add_teachers(teachers)
+        res = await self.teacher_rule.add_te.achers(teachers)
         return res
 
     async def delete_newteacher(self, teacher_id: int = Query(..., title="教师编号", description="教师编号")):

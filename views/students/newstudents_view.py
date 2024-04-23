@@ -16,6 +16,7 @@ from models.students import Student
 from rules.students_rule import StudentsRule
 from rules.students_base_info_rule import StudentsBaseInfoRule
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
+from views.models.students import NewStudents
 from views.models.students import NewStudentsFlowOut
 from datetime import date
 from rules.students_base_info_rule import StudentsBaseInfoRule
@@ -26,13 +27,11 @@ class NewsStudentsView(BaseView):
         super().__init__()
         self.students_rule = get_injector(StudentsRule)
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
-        self.students_rule = get_injector(StudentsRule)
 
-    async def post_newstudent(self, students: StudentsKeyinfoModel):
+    async def post_newstudent(self, students: NewStudents):
         """
         新增新生信息
         """
-        print(students)
         res = await self.students_rule.add_students(students)
         return res
 
@@ -52,12 +51,12 @@ class NewsStudentsView(BaseView):
         res = await self.students_rule.get_students_by_id(student_id)
         return res
 
-    async def patch_newstudentkeyinfo(self, new_students_key_info: StudentsKeyinfo):
+    async def put_newstudentkeyinfo(self, new_students_key_info: StudentsKeyinfo):
         """"
         新生编辑关键信息
         """
         print(new_students_key_info)
-        res = await self.students_rule.add_students(new_students_key_info)
+        res = await self.students_rule.update_students(new_students_key_info)
         return res
 
     async def delete_newstudentkeyinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号", )):
@@ -73,7 +72,23 @@ class NewsStudentsView(BaseView):
         """
         res_base_info = await self.students_base_info_rule.update_students_base_info(
             new_students_flow_out)  # 修改基本信息中的流出时间等
-        return  res_base_info
+        return res_base_info
+
+
+
+    # todo 仅仅修改一个状态就行
+
+    async def patch_formaladmission(self, student_id: List[str] = Query(..., description="学生id", min_length=1,
+                                                                        max_length=20, example=["SC2032633"]),
+                                    ):
+        print(student_id)
+        return student_id
+
+class NewsStudentsInfoView(BaseView):
+    def __init__(self):
+        super().__init__()
+        self.students_rule = get_injector(StudentsRule)
+        self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
 
     async def get_newstudentbaseinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号",
                                                                    example="SC2032633")):
@@ -90,11 +105,11 @@ class NewsStudentsView(BaseView):
         res = await self.students_base_info_rule.add_students_base_info(new_students_base_info)
         return res
 
-    async def patch_newstudentbaseinfo(self, new_students_base_info: StudentsBaseInfo):
+    async def put_newstudentbaseinfo(self, new_students_base_info: StudentsBaseInfo):
         """
         新生编辑基本信息
         """
-        res = await self.students_base_info_rule.add_students_base_info(new_students_base_info)
+        res = await self.students_base_info_rule.update_students_base_info(new_students_base_info)
         return res
 
     async def delete_newstudentbaseinfo(self,
@@ -105,6 +120,12 @@ class NewsStudentsView(BaseView):
         res = await self.students_base_info_rule.delete_students_base_info(student_id)
         return res
 
+class NewsStudentsFamilyInfoView(BaseView):
+    def __init__(self):
+        super().__init__()
+        self.students_rule = get_injector(StudentsRule)
+        self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
+
     async def post_newstudentfamilyinfo(self, new_students_family_info: StudentsFamilyInfo):
         """
         新生增加家庭信息
@@ -113,32 +134,26 @@ class NewsStudentsView(BaseView):
 
         return res
 
-    async def patch_newstudentfamilyinfo(self, new_students_family_info: StudentsFamilyInfo):
+    async def put_newstudentfamilyinfo(self, new_students_family_info: StudentsFamilyInfo):
         """
         新生编辑家庭信息
         """
-        res = await self.students_base_info_rule.add_students_family_info(new_students_family_info)
+        res = await self.students_base_info_rule.update_students_family_info(new_students_family_info)
         return res
 
     async def delete_newstudentfamilyinfo(self,
-                                          student_id: str = Query(None, title="学生编号", description="学生编号", )):
+                                          student_id: str = Query(None, title="学生编号",
+                                                                  description="学生编号", )):
         """
         新生删除家庭信息
         """
         res = await self.students_base_info_rule.delete_students_family_info(student_id)
         return res
 
-    async def get_newstudentfamilyinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号", )):
+    async def get_newstudentfamilyinfo(self,
+                                       student_id: str = Query(None, title="学生编号", description="学生编号", )):
         """
         新生查询家庭信息
         """
         res = await self.students_base_info_rule.get_students_family_info_by_id(student_id)
         return res
-
-    # todo 仅仅修改一个状态就行
-
-    async def patch_formaladmission(self, student_id: List[str] = Query(..., description="学生id", min_length=1,
-                                                                        max_length=20, example=["SC2032633"]),
-    ):
-        print(student_id)
-        return student_id

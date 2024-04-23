@@ -8,12 +8,10 @@ from models.teacher_work_experience import TeacherWorkExperience
 from views.models.teacher_extend import TeacherWorkExperienceModel, TeacherWorkExperienceUpdateModel
 
 
-
 @dataclass_inject
 class TeacherWorkExperienceRule(object):
     teacher_work_experience_dao: TeacherWorkExperienceDAO
     teachers_dao: TeachersDao
-
 
     async def get_teacher_work_experience_by_teacher_work_experience_id(self, teacher_work_experience_id):
         teacher_work_experience_db = await self.teacher_work_experience_dao.get_teacher_work_experience_by_teacher_work_experience_id(
@@ -52,9 +50,20 @@ class TeacherWorkExperienceRule(object):
             teacher_work_experience, *need_update_list)
         return teacher_work_experience
 
+    async def get_all_teacher_learn_experience(self, teacher_id):
+        teacher_learn_experience_db = await self.teacher_learn_experience_dao.get_all_teacher_learn_experience(
+            teacher_id)
+        teacher_learn_experience = []
+        for item in teacher_learn_experience_db:
+            teacher_learn_experience.append(
+                orm_model_to_view_model(teacher_learn_experience_db, TeacherLearnExperienceModel, exclude=[""]))
+        return teacher_learn_experience
+
     async def get_all_teacher_work_experience(self, teacher_id):
-        exists_teachers = await self.teachers_dao.get_teachers_by_id(teacher_id)
-        if not exists_teachers:
+        teacher_work_experience_db = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        if not teacher_work_experience_db:
             raise TeacherNotFoundError()
-        teacher_work_experience_db = await self.teacher_work_experience_dao.get_all_teacher_work_experience(teacher_id)
-        return teacher_work_experience_db
+        teacher_work_experience = []
+        for item in teacher_work_experience_db:
+            teacher_work_experience.append(orm_model_to_view_model(item, TeacherWorkExperienceModel))
+        return teacher_work_experience
