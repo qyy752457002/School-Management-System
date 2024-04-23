@@ -1,46 +1,45 @@
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.storage.manager import storage_manager
-
-from views.models.storage import StorageModel
+from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
+from mini_framework.storage.view_model import FileStorageResponseModel, FileStorageModel
 
 
 @dataclass_inject
 class StorageRule(object):
-    def __init__(self):
-        self.storage = storage_manager
+    storage_dao: FileStorageDAO
 
-    def get_upload_school_info_token_uri(self, filename: str) -> StorageModel:
+    async def get_upload_school_info_token_uri(self, filename: str, file_size: int) -> FileStorageResponseModel:
         """
         查询文件上传路径（带 token）
-        :param bucket_key: 桶名称
         :param filename: 文件名
-        :param path: 文件路径（不含文件名）,默认根目录
+        :param file_size: 文件大小
         :return: 文件上传路径
         """
         filename = filename.split("/")[-1]
-        uri = self.storage.query_put_object_url_with_token("school", filename)
-        return StorageModel(upload_uri=uri)
+        storage_info = FileStorageModel(file_name=filename, bucket_name="school", file_size=file_size)
+        resp = await storage_manager.add_file(self.storage_dao, storage_info)
+        return resp
 
-    def get_upload_student_info_token_uri(self, filename: str) -> StorageModel:
+    async def get_upload_student_info_token_uri(self, filename: str, file_size: int) -> FileStorageResponseModel:
         """
         查询文件上传路径（带 token）
-        :param bucket_key: 桶名称
         :param filename: 文件名
-        :param path: 文件路径（不含文件名）,默认根目录
+        :param file_size: 文件大小
         :return: 文件上传路径
         """
         filename = filename.split("/")[-1]
-        uri = self.storage.query_put_object_url_with_token("student", filename)
-        return StorageModel(upload_uri=uri)
+        storage_info = FileStorageModel(file_name=filename, bucket_name="student", file_size=file_size)
+        resp = await storage_manager.add_file(self.storage_dao, storage_info)
+        return resp
 
-    def get_upload_teacher_info_token_uri(self, filename: str) -> StorageModel:
+    async def get_upload_teacher_info_token_uri(self, filename: str, file_size: int) -> FileStorageResponseModel:
         """
         查询文件上传路径（带 token）
-        :param bucket_key: 桶名称
         :param filename: 文件名
-        :param path: 文件路径（不含文件名）,默认根目录
+        :param file_size: 文件大小
         :return: 文件上传路径
         """
         filename = filename.split("/")[-1]
-        uri = self.storage.query_put_object_url_with_token("teacher", filename)
-        return StorageModel(upload_uri=uri)
+        storage_info = FileStorageModel(file_name=filename, bucket_name="teacher", file_size=file_size)
+        resp = await storage_manager.add_file(self.storage_dao, storage_info)
+        return resp

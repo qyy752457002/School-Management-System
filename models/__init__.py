@@ -40,6 +40,7 @@ from . import graduation_student
 from . import course
 from . import operation_record
 from . import sub_system
+from mini_framework.storage.persistent.models import FileStorage
 
 from . import attachments
 from . import data_sync_records
