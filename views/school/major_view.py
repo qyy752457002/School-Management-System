@@ -37,7 +37,7 @@ class MajorView(BaseView):
                    ):
         print(page_request)
         items = []
-        res = await self.major_rule.query_major_with_page(page_request, school_id)
+        res = await self.major_rule.query_major_with_page_param(page_request, school_id)
         return res
 
         # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)

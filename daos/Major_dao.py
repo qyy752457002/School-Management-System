@@ -57,6 +57,11 @@ class MajorDAO(DAOBase):
 		paging = await self.query_page(query, page_request)
 		return paging
 
+	async def query_major_with_page_param(self,page_request: PageRequest, school_id ):
+		query = select(Major).where(Major.school_id == school_id)
+		paging = await self.query_page(query, page_request)
+		return paging
+
 	async def update_major(self, major, *args, is_commit=True):
 		session = await self.master_db()
 		update_contents = get_update_contents(major, *args)
