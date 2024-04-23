@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, update
+from sqlalchemy import select, func, update, desc
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
@@ -36,7 +36,7 @@ class LeaderInfoDAO(DAOBase):
 		return result.scalar_one_or_none()
 
 	async def query_leader_info_with_page(self,  page_request: PageRequest,**kwargs):
-		query = select(LeaderInfo)
+		query = select(LeaderInfo).order_by(desc( LeaderInfo.id ))
 		for key, value in kwargs.items():
 		   query = query.where(getattr(LeaderInfo, key) == value)
 		paging = await self.query_page(query, page_request)
