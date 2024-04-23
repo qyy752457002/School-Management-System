@@ -80,14 +80,19 @@ class CurrentStudentsView(BaseView):
         # print(new_students_key_info)
         return res
 
-    # 在校生转入   系统外转入
-    async def patch_transferin_fromoutside(self, StudentEduInfo: StudentEduInfo,
-                                           NewStudents: NewStudents,
-                                           StudentoutEduInfo: StudentEduInfo,
+    # 在校生转入   系统外转入 todo  单独模型 
+    async def patch_transferin_fromoutside(self,
+                                           student_baseinfo: NewStudents,
+                                           student_edu_info_in: StudentEduInfo,
+                                           student_edu_info_out: StudentEduInfo,
 
                                            ):
         # print(new_students_key_info)
-        return StudentEduInfo
+        #  新增学生   同时写入 转出和转入 流程
+        res = await self.students_rule.add_students(StudentEduInfo)
+
+
+        return res
 
     # 在校生 系统外转出
     async def patch_transferout_tooutside(self, StudentEduInfo: StudentEduInfo,
