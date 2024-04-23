@@ -9,19 +9,8 @@ from mini_framework.databases.entities import BaseDBModel
 class StudentTransaction(BaseDBModel):
     """
     转学休学入学毕业申请表
-    province_id: str = Query(...,   description="省份",min_length=1,max_length=20,examples=["1"]),
-    city_id: str = Query(...,   description="市",min_length=1,max_length=20,examples=["1"]),
-    area_id: str = Query(...,   description="区",min_length=1,max_length=20,examples=["1"]),
-    district_id: str = Query(...,   description="区县",min_length=1,max_length=20,examples=["1"]),
-    transfer_in_type: str = Query(...,   description="转入类型",min_length=1,max_length=20,examples=["指定日期转入"]),
-    school_name: str = Query(..., title="", description="学校名称",examples=["XXxiaoxue"])
-    出入方向
-    session: str = Query(..., title="", description="届别",examples=["2003"])
-    attached_class: str = Query(..., title="", description="附设班",examples=["3班"])
-    grade_id: str = Query(..., title="", description="年级ID",examples=["1"])
-    class_id: str = Query(..., title="", description="班级id",examples=["125"])
-    major_id: str = Query(..., title="", description="专业",examples=["农业"])
-    专业
+
+
     """
     __tablename__ = 'lfun_student_transaction'
     __table_args__ = {'comment': '转学休学入学毕业申请表'}
@@ -30,6 +19,7 @@ class StudentTransaction(BaseDBModel):
     student_id: Mapped[int] = mapped_column(nullable=True, comment="学生ID", default=0)
     student_no: Mapped[str] = mapped_column(String(255), nullable=True, comment="学籍号", default='')
     student_name: Mapped[str] = mapped_column(String(255), nullable=True, comment="学生姓名", default='')
+
     current_org: Mapped[str] = mapped_column(String(255), nullable=True, comment="当前机构", default='')
     apply_user: Mapped[str] = mapped_column(String(255), nullable=True, comment="申请人", default='')
     apply_time: Mapped[str] = mapped_column(String(255), nullable=True, comment="申请时间", default='')
@@ -44,6 +34,21 @@ class StudentTransaction(BaseDBModel):
     country_no: Mapped[str] = mapped_column(String(255), nullable=True, comment="国家学籍号码", default='')
     out_date: Mapped[str] = mapped_column(String(255), nullable=True, comment="转出日期", default='')
     reason: Mapped[str] = mapped_column(String(255), nullable=True, comment="转学原因", default='')
+
+    province_id: Mapped[str] = mapped_column(String(30), nullable=True, comment="省份", default='')
+    city_id: Mapped[str] = mapped_column(String(30), nullable=True, comment="市", default='')
+    district_id: Mapped[str] = mapped_column(String(30), nullable=True, comment="区县", default='')
+    area_id: Mapped[str] = mapped_column(String(30), nullable=True, comment="区", default='')
+    direction: Mapped[str] = mapped_column(String(30), nullable=True, comment="出入方向", default='')
+    transfer_in_type: Mapped[str] = mapped_column(String(30), nullable=True, comment="转入类型", default='')
+    school_name: Mapped[str] = mapped_column(String(30), nullable=True, comment="学校名称", default='')
+    session: Mapped[str] = mapped_column(String(30), nullable=True, comment="届别", default='')
+    attached_class: Mapped[str] = mapped_column(String(30), nullable=True, comment="附设班", default='')
+    grade_id: Mapped[str] = mapped_column(String(30), nullable=True, comment="年级ID", default='')
+    class_id: Mapped[str] = mapped_column(String(30), nullable=True, comment="班级id", default='')
+    major_id: Mapped[str] = mapped_column(String(30), nullable=True, comment="专业id", default='')
+    major_name: Mapped[str] = mapped_column(String(30), nullable=True, comment="专业", default='')
+
     is_valid: Mapped[bool] = mapped_column(nullable=False, comment="是否有效", default=True)
 
     created_uid: Mapped[int] = mapped_column(nullable=True, comment="创建人", default=0)
