@@ -1,4 +1,6 @@
-from sqlalchemy import String
+from datetime import datetime
+
+from sqlalchemy import String, DateTime
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -18,3 +20,4 @@ class Grade(BaseDBModel):
     grade_alias: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级别名")
     description: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="简介")
     is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)
+    created_at = mapped_column(DateTime, default=datetime.now, nullable=True, comment="创建时间")
