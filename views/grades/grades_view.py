@@ -53,7 +53,7 @@ class GradesView(BaseView):
         return paging_result
 
     #   搜索的 待处理
-    async def query(self, grade_name: str = Query(..., description="年级名称", min_length=1, max_length=20)):
+    async def query(self, grade_name: str = Query('', description="年级名称", min_length=1, max_length=20)):
         lst = await self.grade_rule.query_grade(grade_name)
 
         return lst
@@ -75,6 +75,7 @@ class GradesView(BaseView):
         # print(planning_school)
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         grades.id = grade_id
+        grades.created_at = None
         res = await self.grade_rule.update_grade(grades)
 
         return res
