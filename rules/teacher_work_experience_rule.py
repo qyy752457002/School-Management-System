@@ -2,13 +2,18 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teacher_work_experience_dao import TeacherWorkExperienceDAO
+from daos.teachers_dao import TeachersDao
+from business_exceptions.teacher import TeacherNotFoundError, TeacherWorkExperienceNotFoundError
 from models.teacher_work_experience import TeacherWorkExperience
 from views.models.teacher_extend import TeacherWorkExperienceModel, TeacherWorkExperienceUpdateModel
+
 
 
 @dataclass_inject
 class TeacherWorkExperienceRule(object):
     teacher_work_experience_dao: TeacherWorkExperienceDAO
+    teachers_dao: TeachersDao
+
 
     async def get_teacher_work_experience_by_teacher_work_experience_id(self, teacher_work_experience_id):
         teacher_work_experience_db = await self.teacher_work_experience_dao.get_teacher_work_experience_by_teacher_work_experience_id(
@@ -27,7 +32,7 @@ class TeacherWorkExperienceRule(object):
         exists_teacher_work_experience = await self.teacher_work_experience_dao.get_teacher_work_experience_by_teacher_work_experience_id(
             teacher_work_experience_id)
         if not exists_teacher_work_experience:
-            raise Exception(f"编号为的{teacher_work_experience_id}teacher_work_experience不存在")
+            raise TeacherWorkExperienceNotFoundError()
         teacher_work_experience_db = await self.teacher_work_experience_dao.delete_teacher_work_experience(
             exists_teacher_work_experience)
         teacher_work_experience = orm_model_to_view_model(teacher_work_experience_db, TeacherWorkExperienceModel,
@@ -38,8 +43,7 @@ class TeacherWorkExperienceRule(object):
         exists_teacher_work_experience_info = await self.teacher_work_experience_dao.get_teacher_work_experience_by_teacher_work_experience_id(
             teacher_work_experience.teacher_work_experience_id)
         if not exists_teacher_work_experience_info:
-            raise Exception(
-                f"编号为{teacher_work_experience.teacher_work_experience_id}的teacher_work_experience不存在")
+            raise TeacherWorkExperienceNotFoundError()
         need_update_list = []
         for key, value in teacher_work_experience.dict().items():
             if value:
@@ -49,11 +53,8 @@ class TeacherWorkExperienceRule(object):
         return teacher_work_experience
 
     async def get_all_teacher_work_experience(self, teacher_id):
-        # teacher_work_experience_db = await self.teacher_work_experience_dao.get_all_teacher_work_experience(teacher_id)
-        # teacher_work_experience = orm_model_to_view_model(teacher_work_experience_db, TeacherWorkExperienceModel,
-        #                                                   exclude=[""])
-        # return teacher_work_experience
-
+        exists_teachers = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        if not exists_teachers:
+            raise TeacherNotFoundError()
         teacher_work_experience_db = await self.teacher_work_experience_dao.get_all_teacher_work_experience(teacher_id)
-
         return teacher_work_experience_db

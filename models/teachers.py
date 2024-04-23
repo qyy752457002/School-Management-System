@@ -1,10 +1,27 @@
-from sqlalchemy import String,Date
+from sqlalchemy import String, Date
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
 
 from datetime import date
+from enum import Enum
 
+
+class TeacherApprovalAtatus(str, Enum):
+    """
+    待提交
+    待审核
+    已通过
+    已拒绝
+    """
+    SUBMITTING = "submitting"
+    SUBMITTED = "submitted"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.SUBMITTING, cls.SUBMITTED, cls.APPROVED, cls.REJECTED]
 
 
 class Teacher(BaseDBModel):
@@ -27,18 +44,16 @@ class Teacher(BaseDBModel):
     __tablename__ = 'lfun_teachers'
     __table_args__ = {'comment': '教师表模型'}
 
-    teacher_id: Mapped[int] = mapped_column(primary_key=True, comment="教师ID",autoincrement=True)
+    teacher_id: Mapped[int] = mapped_column(primary_key=True, comment="教师ID", autoincrement=True)
     teacher_gender: Mapped[str] = mapped_column(String(64), nullable=False, comment="教师性别")
     teacher_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="教师名称")
     teacher_id_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="证件类型")
     teacher_id_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="证件号")
     teacher_date_of_birth: Mapped[date] = mapped_column(Date, nullable=False, comment="出生日期")
-    teacher_employer: Mapped[int] = mapped_column(default=0,nullable=False, comment="任职单位")
-    teacher_avatar: Mapped[str] = mapped_column(String(64), nullable=True, comment="头像") #图像处理再定
-    teacher_approval_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="审批状态",default="通过")#审批状态待定
+    teacher_employer: Mapped[int] = mapped_column(default=0, nullable=False, comment="任职单位")
+    teacher_avatar: Mapped[str] = mapped_column(String(64), nullable=True, comment="头像")  # 图像处理再定
+    teacher_approval_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="审批状态",
+                                                         default="通过")  # 审批状态待定
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
     # username: Mapped[str] = mapped_column(String(64), nullable=False, comment="用户名")
     # hash_password: Mapped[str] = mapped_column(String(128), nullable=False, comment="密码")
-
-
-

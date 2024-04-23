@@ -6,6 +6,8 @@ from mini_framework.databases.entities import BaseDBModel
 from datetime import date
 
 
+
+
 class TeacherInfo(BaseDBModel):
     """
         教师ID：teacher_id
@@ -88,7 +90,6 @@ class TeacherInfo(BaseDBModel):
     has_special_education_certificate: Mapped[str] = mapped_column(String(64), nullable=False, comment="是否有特教证书")
     information_technology_application_ability: Mapped[str] = mapped_column(String(64), nullable=False,
                                                                             comment="信息技术应用能力")
-
     free_normal_college_student: Mapped[str] = mapped_column(String(64), nullable=False, comment="是否免费师范生")
     participated_in_basic_service_project: Mapped[str] = mapped_column(String(64), nullable=False,
                                                                        comment="是否参加基层服务项目")

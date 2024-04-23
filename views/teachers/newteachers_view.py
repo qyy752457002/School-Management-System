@@ -74,3 +74,23 @@ class NewTeachersView(BaseView):
     #                                 teacher_id: int = Query(..., title="教师编号", description="教师编号",example=123)):
     #     res = await self.teacher_info_rule.delete_teachers_info(teacher_id)
     #     return res
+
+    async def patch_submitting(self,
+                               teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
+        await self.teacher_rule.submitting(teacher_id)
+        return teacher_id
+
+    async def patch_submitted(self,
+                              teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
+        await self.teacher_rule.submitted(teacher_id)
+        return teacher_id
+
+    async def patch_approved(self,
+                             teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
+        await self.teacher_rule.approved(teacher_id)
+        return teacher_id
+
+    async def patch_rejected(self,
+                             teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
+        await self.teacher_rule.rejected(teacher_id)
+        return teacher_id

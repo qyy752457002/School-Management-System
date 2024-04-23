@@ -6,6 +6,7 @@ from models.teachers_info import TeacherInfo
 from views.models.teachers import TeacherInfo as TeachersInfoModel
 from views.models.teachers import NewTeacher
 from sqlalchemy import select, func, update
+from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError
 
 
 @dataclass_inject
@@ -15,7 +16,8 @@ class TeachersInfoRule(object):
     # 查询单个教职工基本信息
     async def get_teachers_info_by_id(self, teachers_info_id):
         teachers_info_db = await self.teachers_info_dao.get_teachers_info_by_id(teachers_info_id)
-        # 可选 ,
+        if not teachers_info_db:
+            raise TeacherInfoNotFoundError()
         teachers_info = orm_model_to_view_model(teachers_info_db, TeachersInfoModel, exclude=[""])
         return teachers_info
 
@@ -28,7 +30,7 @@ class TeachersInfoRule(object):
     async def update_teachers_info(self, teachers_info):
         exists_teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_info.teacher_id)
         if not exists_teachers_info:
-            raise Exception(f"编号为{teachers_info.teacher_id}教师不存在")
+            raise TeacherInfoNotFoundError()
         need_update_list = []
         for key, value in teachers_info.dict().items():
             if value:
@@ -40,19 +42,10 @@ class TeachersInfoRule(object):
     async def delete_teachers_info(self, teachers_info_id):
         exists_teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_info_id)
         if not exists_teachers_info:
-            raise Exception(f"编号为{teachers_info_id}教师不存在")
+            raise TeacherInfoNotFoundError()
         teachers_info_db = await self.teachers_info_dao.delete_teachers_info(exists_teachers_info)
         teachers_info = orm_model_to_view_model(teachers_info_db, TeachersInfoModel, exclude=[""])
         return teachers_info
-
-    # 分页查询
-    # async def query_teacher_with_page(self, page_request: PageRequest, condition):
-    #     """
-    #     分页查询
-    #     """
-    #     paging = await self.teachers_info_dao.query_teacher_with_page(page_request, condition)
-    #     paging_result = PaginatedResponse.from_paging(paging, TeachersInfoModel)
-    #     return paging_result
 
     async def query_teacher_with_page(self, query_model: NewTeacher, page_request: PageRequest):
         print(query_model)
