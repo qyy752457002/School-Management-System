@@ -1,9 +1,22 @@
 from datetime import datetime
+from enum import Enum
 
 from sqlalchemy import String, DateTime
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
+
+
+
+class TransactionDirection(str, Enum):
+    """
+    转学方向
+    """
+    OUT = "out"
+    IN = "in"
+    @classmethod
+    def to_list(cls):
+        return [cls.OUT, cls.IN]
 
 
 class StudentTransaction(BaseDBModel):
