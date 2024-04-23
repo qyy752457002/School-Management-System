@@ -7,16 +7,28 @@ from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
 
 
-
 class TransactionDirection(str, Enum):
     """
     转学方向
     """
     OUT = "out"
     IN = "in"
+
     @classmethod
     def to_list(cls):
         return [cls.OUT, cls.IN]
+
+
+class AuditAction(str, Enum):
+    """
+    审核操作
+    """
+    PASS = "pass"
+    REFUSE = "refuse"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.PASS, cls.REFUSE]
 
 
 class StudentTransaction(BaseDBModel):
@@ -61,6 +73,7 @@ class StudentTransaction(BaseDBModel):
     class_id: Mapped[str] = mapped_column(String(30), nullable=True, comment="班级id", default='')
     major_id: Mapped[str] = mapped_column(String(30), nullable=True, comment="专业id", default='')
     major_name: Mapped[str] = mapped_column(String(30), nullable=True, comment="专业", default='')
+    status: Mapped[str] = mapped_column(String(64), nullable=True, comment="状态", default='')
 
     is_valid: Mapped[bool] = mapped_column(nullable=False, comment="是否有效", default=True)
 

@@ -2,7 +2,9 @@ from typing import List
 
 from mini_framework.web.views import BaseView
 
+from models.student_transaction import AuditAction
 from rules.student_transaction import StudentTransactionRule
+from views.models.student_transaction import StudentTransaction
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, StudentEduInfo
 # from fastapi import Field
 from fastapi import Query, Depends
@@ -50,7 +52,7 @@ class CurrentStudentsView(BaseView):
         res = await self.student_session_rule.add_student_session(student_session)
         return res
 
-    # 在校生转入  todo 届别 班级
+    # 在校生转入    届别 班级
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
         # print(new_students_key_info)
         res = await self.student_transaction_rule.add_student_transaction(student_edu_info)
@@ -59,12 +61,20 @@ class CurrentStudentsView(BaseView):
         return res
 
     # 在校生转入   审批
-    async def patch_transferin_audit(self, transferin_audit_id: str = Query(..., description="转入申请id", min_length=1,
-                                                                            max_length=20, example='SC2032633'),
+    async def patch_transferin_audit(self, transferin_audit_id: int = Query(..., description="转入申请id",   example='2'),
+                                     transferin_audit_action: AuditAction  = Query(..., description="审批的操作",   example='pass'),
+                                     remark: str = Query("", description="审批的备注", min_length=0, max_length=200,   example='同意 无误'),
 
                                      ):
+        # 审批通过 操作 或者拒绝
+        student_edu_info =  StudentTransaction(id=transferin_audit_id,status=transferin_audit_action.value, )
+        res = await self.student_transaction_rule.update_student_transaction(student_edu_info)
+        # 流乘记录
+        # res = await self.student_transaction_rule.add_student_transaction(student_edu_info)
+
+
         # print(new_students_key_info)
-        return transferin_audit_id
+        return res
 
     # 在校生转入   系统外转入
     async def patch_transferin_fromoutside(self, StudentEduInfo: StudentEduInfo,
