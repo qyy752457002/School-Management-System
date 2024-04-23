@@ -52,23 +52,23 @@ class MajorView(BaseView):
     # 修改 关键信息
     async def put(self,
                   school_id: int = Query(..., description="学校ID", example='1'),
-                  major_list: List[Majors] = Body([], description="选择的课程", example=[
-                      {"major_id": 1, "major_name": "语文", "major_no": "19", "school_id": 1, }]),
+                  major_list: List[Majors] = Body([], description="选择的专业", example=[
+                      {  "major_name": "语文", "major_no": "19",  }]),
 
                   ):
         # print(planning_school)
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res = await self.major_rule.update_major(major_list)
         res = await self.major_rule.softdelete_major_by_school_id(school_id)
 
-        res = await self.major_rule.add_major_school(school_id, major_list)
+        res = await self.major_rule.add_major_multi(school_id,major_list)
+
 
         return res
-
-    # 获取所有的课程列表 给下拉
-    async def get_all(self):
-        # print(page_request)
-        items = []
-
-        res = await self.major_rule.get_major_all({'school_id': 0})
-        return res
+    #
+    # # 获取所有的课程列表 给下拉
+    # async def get_all(self):
+    #     # print(page_request)
+    #     items = []
+    #
+    #     res = await self.major_rule.get_major_all({'school_id': 0})
+    #     return res

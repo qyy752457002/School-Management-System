@@ -80,6 +80,10 @@ class MajorRule(object):
         major_db = await self.major_dao.softdelete_major(exists_major)
         return major_db
 
+    async def softdelete_major_by_school_id(self, major_id):
+        major_db = await self.major_dao.softdelete_major_by_school_id(major_id)
+        return major_db
+
 
     async def get_major_count(self):
         return await self.major_dao.get_major_count()
