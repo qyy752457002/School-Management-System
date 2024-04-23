@@ -53,7 +53,7 @@ class MajorDAO(DAOBase):
 
 	async def get_major_by_school_id(self, id):
 		session = await self.slave_db()
-		result = await session.execute(select(Major).where(Major.school_id == id))
+		result = await session.execute(select(Major).where(Major.school_id == id).where(Major.is_deleted == False))
 		return result.scalar_one_or_none()
 	async def get_major_by_name(self, name):
 		session = await self.slave_db()
