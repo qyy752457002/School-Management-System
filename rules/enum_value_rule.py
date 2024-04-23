@@ -105,14 +105,8 @@ class EnumValueRule(object):
     async def get_enum_value_count(self):
         return await self.enum_value_dao.get_enum_value_count()
 
-    async def query_enum_value_with_page(self, page_request: PageRequest,  enum_value_name,enum_value_no,enum_value_code,
-                                              block,enum_value_level,borough,status ,founder_type,
-                                              founder_type_lv2,
-                                              founder_type_lv3 ):
-        paging = await self.enum_value_dao.query_enum_value_with_page(  page_request, enum_value_name,enum_value_no,enum_value_code,
-                                                                                  block,enum_value_level,borough,status,founder_type,
-                                                                                  founder_type_lv2,
-                                                                                  founder_type_lv3 )
+    async def query_enum_value_with_page(self, page_request: PageRequest,  enum_value_name, parent_code ):
+        paging = await self.enum_value_dao.query_enum_value_with_page(  page_request, enum_value_name,parent_code  )
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, EnumValueModel)
         return paging_result
@@ -184,3 +178,8 @@ class EnumValueRule(object):
             lst.append(row)
 
         return lst
+
+
+
+    async def get_enum_value_all(self, filterdict):
+        return await self.enum_value_dao.get_enum_value_all(filterdict)

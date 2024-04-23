@@ -4,8 +4,10 @@ from views.school.router import routers as schoolrouters
 from views.grades.router import routers as grades_router
 from views.teachers.router import routers as teachers_router
 from views.system.router import routers as systemrouters
+from views.common.router import routers as common_routers
 
 from views.students.router import routers as studentrouters
+
 
 def init_router():
     from mini_framework.web.mini_app import app_config
@@ -16,4 +18,4 @@ def init_router():
     root_router.include_router(teachers_router())
     root_router.include_router(systemrouters())
     root_router.include_router(studentrouters())
-
+    root_router.include_router(common_routers())
