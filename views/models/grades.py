@@ -10,16 +10,6 @@ class Grades(BaseModel):
     grade_no: str = Field("", title="年级编号", description="年级编号",examples=['一年级'])
 
     description: str = Field(None,  description="简介",examples=['fsdfdsfsdxxx'])
-    created_at: datetime = Field('',  description="简介",examples=['fsdfdsfsdxxx'])
+    created_at: datetime = Field('',  description="简介",examples=['2020-01-01'])
     id:int= Query(0, title="", description="id", example='1'),
 
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "school_id": "SC2032633",
-                "grade_no": "EDU202403256",
-                "grade_name": "A school management system",
-                "grade_alias": "Lfun technical",
-            }
-        }
