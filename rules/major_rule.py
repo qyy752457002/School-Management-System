@@ -71,3 +71,7 @@ class MajorRule(object):
         paging_result = PaginatedResponse.from_paging(paging, MajorModel)
         return paging_result
 
+
+    async def get_major_all(self, filterdict):
+        return await self.major_dao.get_all_major(filterdict)
+
