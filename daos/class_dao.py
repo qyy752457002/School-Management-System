@@ -96,7 +96,12 @@ class ClassesDAO(DAOBase):
             cond2 = School.block == block
             mcond = or_(cond1, cond2)
 
-            query = query.filter(mcond)
+            query = query.filter( and_(
+                Classes.is_deleted == False,  # a=1
+                or_(
+                    mcond
+                )
+            ))
         elif borough or block:
             if block:
                 query = query.where(School.block == block)
