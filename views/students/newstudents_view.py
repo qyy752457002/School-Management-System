@@ -2,7 +2,8 @@ from typing import List
 
 from mini_framework.web.views import BaseView
 
-from views.models.students import NewStudents, NewStudentsQuery, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo
+from views.models.students import NewStudents, NewStudentsQuery, NewStudentsQueryRe, StudentsKeyinfo, StudentsBaseInfo, \
+    StudentsFamilyInfo
 # from fastapi import Field
 from mini_framework.web.views import BaseView
 
@@ -37,12 +38,13 @@ class NewsStudentsView(BaseView):
 
     # 分页查询
     #
-    async def page_newstudent(self, condition: NewStudentsQuery = Depends(NewStudentsQuery),
+    async def page_newstudent(self, new_students_query=Depends(NewStudentsQuery),
                               page_request=Depends(PageRequest)):
         """
         分页查询
         """
-        paging_result = await self.students_base_info_rule.query_students_base_info_with_page(page_request, condition)
+        paging_result = await self.students_base_info_rule.query_students_base_info_with_page(new_students_query,
+                                                                                              page_request)
         return paging_result
 
     async def get_newstudentkeyinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号",
@@ -74,8 +76,6 @@ class NewsStudentsView(BaseView):
             new_students_flow_out)  # 修改基本信息中的流出时间等
         return res_base_info
 
-
-
     # todo 仅仅修改一个状态就行
 
     async def patch_formaladmission(self, student_id: List[str] = Query(..., description="学生id", min_length=1,
@@ -84,7 +84,12 @@ class NewsStudentsView(BaseView):
         print(student_id)
         return student_id
 
+
 class NewsStudentsInfoView(BaseView):
+    """
+    新生基本信息
+    """
+
     def __init__(self):
         super().__init__()
         self.students_rule = get_injector(StudentsRule)
@@ -119,6 +124,7 @@ class NewsStudentsInfoView(BaseView):
         """
         res = await self.students_base_info_rule.delete_students_base_info(student_id)
         return res
+
 
 class NewsStudentsFamilyInfoView(BaseView):
     def __init__(self):

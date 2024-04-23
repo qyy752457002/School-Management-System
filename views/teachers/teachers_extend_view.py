@@ -1,7 +1,8 @@
 from mini_framework.web.views import BaseView
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
-from fastapi import Query
+from fastapi import Query, Depends
+from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 
 from views.models.teacher_extend import TeacherLearnExperienceModel, TeacherLearnExperienceUpdateModel
 from rules.teacher_learn_experience_rule import TeacherLearnExperienceRule
@@ -39,7 +40,8 @@ from rules.talent_program_rule import TalentProgramRule
 from views.models.teacher_extend import AnnualReviewModel, AnnualReviewUpdateModel
 from rules.annual_review_rule import AnnualReviewRule
 
-from views.models.teacher_extend import ResearchAchievementsModel, ResearchAchievementsUpdateModel
+from views.models.teacher_extend import ResearchAchievementsModel, ResearchAchievementsUpdateModel, \
+    ResearchAchievementsQueryModel, ResearchAchievementsQueryReModel
 from rules.research_achievements_rule import ResearchAchievementsRule
 
 
@@ -508,3 +510,9 @@ class ResearchAchievementsView(BaseView):
                                                                           description="research_achievementsID",
                                                                           example=1234)):
         return await self.research_achievements_rule.get_all_research_achievements(teacher_id)
+
+    async def page(self, research_achievements=Depends(ResearchAchievementsQueryModel),
+                   page_request=Depends(PageRequest)):
+        paging_result = await self.research_achievements_rule.query_research_achievements_with_page(
+            research_achievements, page_request)
+        return paging_result

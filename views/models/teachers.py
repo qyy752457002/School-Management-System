@@ -260,4 +260,31 @@ class NewTeacher(BaseModel):
     in_post: str = Query("", title="是否在编", description="是否在编", example="是")
     employment_form: str = Query("", title="用人形式", description="用人形式", example="合同")
     enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
-    approval_status: TeacherApprovalAtatus = Query("", title="审核状态", description="审核状态", example="待审核")
+    approval_status: str = Query("", title="审核状态", description="审核状态", example="待审核")
+
+
+class NewTeacherRe(BaseModel):
+    """
+    教师姓名：teacher_name
+    # 教师ID：teacher_id
+    身份证号：id_number
+    性别：gender
+    任职单位：employer
+    # 最高学历：highest_education
+    政治面貌：political_status
+    是否在编：in_post
+    用人形式：employment_form
+    进本校时间：enter_school_time
+    审核状态：approval_status
+    """
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_name: str = Query("", title="姓名", description="姓名", example="张三")
+    id_number: str = Query("", title="身份证号", description="身份证号", example="123456789012345678")
+    gender: str = Query("", title="性别", description="性别", example="男")
+    employer: str = Query("", title="任职单位", description="任职单位", example="xx学校")
+    highest_education: str = Query("", title="最高学历", description="最高学历", example="本科")
+    political_status: str = Query("", title="政治面貌", description="政治面貌", example="群众")
+    in_post: str = Query("", title="是否在编", description="是否在编", example="是")
+    employment_form: str = Query("", title="用人形式", description="用人形式", example="合同")
+    enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
+    approval_status: str = Query("", title="审核状态", description="审核状态", example="待审核")

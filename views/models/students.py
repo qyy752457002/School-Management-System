@@ -4,13 +4,6 @@ from fastapi import Query
 from pydantic import BaseModel, Field
 from datetime import date
 
-
-
-
-
-
-
-
 class StudentStatus(str, Enum):
     """
     学生状态
@@ -56,6 +49,29 @@ class NewStudentsQuery(BaseModel):
     区县：county
     状态：status
     """
+    student_name: str = Field(..., title="学生姓名", description="学生姓名")
+    enrollment_number: str = Field(..., title="报名号", description="报名号")
+    student_gender: str = Field(..., title="性别", description="性别")
+    id_type: str = Field(..., title="证件类别", description="证件类别")
+    id_number: str = Field(..., title="证件号码", description="证件号码")
+    school: str = Field(..., title="学校", description="学校")
+    enrollment_date: date = Field(..., title="登记时间", description="登记时间")
+    county: str = Field(..., title="区县", description="区县")
+    status: str = Field(..., title="状态", description="状态")
+
+class NewStudentsQueryRe(BaseModel):
+    """
+    学生姓名：student_name
+    报名号：enrollment_number
+    性别：student_gender
+    证件类别：id_type
+    证件号码：id_number
+    学校：school
+    登记时间：enrollment_date
+    区县：county
+    状态：status
+    """
+    student_id: int = Field(..., title="学生id", description="学生id")
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
     enrollment_number: str = Field(..., title="报名号", description="报名号")
     student_gender: str = Field(..., title="性别", description="性别")
@@ -166,43 +182,6 @@ class StudentsBaseInfo(BaseModel):
 
 
 class NewBaseInfoCreate(BaseModel):
-    """
-    学生id：student_id
-    姓名拼音：name_pinyin
-    届别：session
-    年级：grade
-    班级：classroom
-    班号：class_number
-    学校：school
-    登记日期：registration_date
-    户籍地址：residence_address
-    户口所在行政区：residence_district
-    出生地行政区：birthplace_district
-    籍贯行政区：native_place_district
-    宗教信仰：religious_belief
-    户口性质：residence_nature
-    入学日期：enrollment_date
-    联系电话：contact_number
-    健康状况：health_condition
-    政治面貌：political_status
-    民族：ethnicity
-    血型：blood_type
-    家庭电话：home_phone_number
-    电子信箱/其他联系方式：email_or_other_contact
-    是否随迁子女：migrant_children
-    是否残疾人：disabled_person
-    是否独生子女：only_child
-    是否留守儿童：left_behind_children
-    是否流动人口：floating_population
-    户口所在地（详细）：residence_address_detail
-    通信地址行政区：communication_district
-    邮政编码：postal_code
-    通信地址：communication_address
-    照片上传时间：photo_upload_time
-    身份证件有效期：identity_card_validity_period
-    常住地址：permanent_address
-    备注：remark
-    """
     student_id: int = Field(..., title="学生id", description="学生id")
     birthplace_district: str = Field(..., title="出生地", description="出生地")
     native_place_district: str = Field(..., title="籍贯", description="籍贯")

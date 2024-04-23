@@ -31,11 +31,11 @@ class TeachersView(BaseView):
         res = await self.teacher_rule.update_teachers(teachers)
         return res
 
-    async def page(self, condition: NewTeacher = Depends(NewTeacher), page_request=Depends(PageRequest)):
+    async def page(self, new_teacher = Depends(NewTeacher), page_request=Depends(PageRequest)):
         """
         老师分页查询
         """
-        paging_result = await self.teacher_info_rule.query_teacher_with_page(page_request, condition)
+        paging_result = await self.teacher_info_rule.query_teacher_with_page(new_teacher,page_request)
         return paging_result
 
 

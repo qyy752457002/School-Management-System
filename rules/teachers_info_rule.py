@@ -4,7 +4,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers_info import TeacherInfo
 from views.models.teachers import TeacherInfo as TeachersInfoModel
-from views.models.teachers import NewTeacher
+from views.models.teachers import NewTeacher, NewTeacherRe
 from sqlalchemy import select, func, update
 from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError
 
@@ -50,5 +50,5 @@ class TeachersInfoRule(object):
     async def query_teacher_with_page(self, query_model: NewTeacher, page_request: PageRequest):
         print(query_model)
         paging = await self.teachers_info_dao.query_teacher_with_page(query_model, page_request)
-        paging_result = PaginatedResponse.from_paging(paging, NewTeacher)
+        paging_result = PaginatedResponse.from_paging(paging, NewTeacherRe)
         return paging_result

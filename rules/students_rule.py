@@ -6,6 +6,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.students_dao import StudentsDao
 from models.students import Student
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
+from views.models.students import NewStudents
 
 
 @dataclass_inject
@@ -20,7 +21,7 @@ class StudentsRule(object):
         students = orm_model_to_view_model(students_db, StudentsKeyinfoModel, exclude=[""])
         return students
 
-    async def add_students(self, students: StudentsKeyinfoModel):
+    async def add_students(self, students: NewStudents):
         """
         新增学生关键信息
         """
