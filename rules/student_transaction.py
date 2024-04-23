@@ -22,7 +22,8 @@ class StudentTransactionRule(object):
         return student_transaction
 
     async def get_student_transaction_by_student_transaction_name(self, student_transaction_name):
-        student_transaction_db = await self.student_transaction_dao.get_studenttransaction_by_studenttransaction_name(student_transaction_name)
+        student_transaction_db = await self.student_transaction_dao.get_studenttransaction_by_studenttransaction_name(
+            student_transaction_name)
         student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
         return student_transaction
 
@@ -30,7 +31,18 @@ class StudentTransactionRule(object):
         # exists_student_transaction = await self.student_transaction_dao.get_studenttransaction_by_studenttransaction_name(student_transaction.student_transaction_name)
         # if exists_student_transaction:
         #     raise Exception(f"年级{student_transaction.student_transaction_name}已存在")
-        student_transaction_db= view_model_to_orm_model(student_transaction, StudentTransaction)
+
+        # 定义 视图和model的映射关系
+        original_dict_map_view_orm ={"transfer_in_type": "out_type",
+                                     "natural_edu_no": "country_no",
+                                     "grade_name": "in_grade",
+                                     "classes": "in_class",
+                                     "transferin_time": "in_date",
+                                     "transferin_reason": "reason",
+
+                                     }
+
+        student_transaction_db = view_model_to_orm_model(student_transaction, StudentTransaction,original_dict_map_view_orm  )
         # student_transaction_db = StudentTransaction()
         # student_transaction_db.student_transaction_name = student_transaction.student_transaction_name
         # student_transaction_db.school_id = student_transaction.school_id
@@ -39,11 +51,15 @@ class StudentTransactionRule(object):
         # student_transaction_db.description = student_transaction.description
 
         student_transaction_db = await self.student_transaction_dao.add_studenttransaction(student_transaction_db)
-        student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
+
+        flipped_dict = {v: k for k, v in original_dict_map_view_orm.items()}
+
+        student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""],other_mapper= flipped_dict)
         return student_transaction
 
     async def update_student_transaction(self, student_transaction):
-        exists_student_transaction = await self.student_transaction_dao.get_studenttransaction_by_id(student_transaction.id)
+        exists_student_transaction = await self.student_transaction_dao.get_studenttransaction_by_id(
+            student_transaction.id)
         if not exists_student_transaction:
             raise Exception(f"年级{student_transaction.id}不存在")
         student_transaction_db = await self.student_transaction_dao.update_student_transaction(student_transaction)
@@ -51,10 +67,12 @@ class StudentTransactionRule(object):
         return student_transaction
 
     async def delete_student_transaction(self, student_transaction_id):
-        exists_student_transaction = await self.student_transaction_dao.get_studenttransaction_by_id(student_transaction_id)
+        exists_student_transaction = await self.student_transaction_dao.get_studenttransaction_by_id(
+            student_transaction_id)
         if not exists_student_transaction:
             raise Exception(f"年级{student_transaction_id}不存在")
-        student_transaction_db = await self.student_transaction_dao.delete_student_transaction(exists_student_transaction)
+        student_transaction_db = await self.student_transaction_dao.delete_student_transaction(
+            exists_student_transaction)
         student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
         return student_transaction
 
@@ -64,19 +82,20 @@ class StudentTransactionRule(object):
     async def get_student_transaction_count(self):
         return await self.student_transaction_dao.get_studenttransaction_count()
 
-    async def query_student_transaction_with_page(self,  page_request: PageRequest,student_transaction_name=None,school_id=None,):
-        paging = await self.student_transaction_dao.query_studenttransaction_with_page(student_transaction_name,school_id, page_request)
+    async def query_student_transaction_with_page(self, page_request: PageRequest, student_transaction_name=None,
+                                                  school_id=None, ):
+        paging = await self.student_transaction_dao.query_studenttransaction_with_page(student_transaction_name,
+                                                                                       school_id, page_request)
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, StudentTransactionModel)
         return paging_result
 
-
-
-    async def query_student_transaction(self,student_transaction_name):
+    async def query_student_transaction(self, student_transaction_name):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(StudentTransaction).where(StudentTransaction.student_transaction_name.like(f'%{student_transaction_name}%') ))
-        res= result.scalars().all()
+        result = await session.execute(select(StudentTransaction).where(
+            StudentTransaction.student_transaction_name.like(f'%{student_transaction_name}%')))
+        res = result.scalars().all()
 
         lst = []
         for row in res:
@@ -84,4 +103,3 @@ class StudentTransactionRule(object):
 
             lst.append(planning_school)
         return lst
-
