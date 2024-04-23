@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 class Grades(BaseModel):
@@ -6,6 +8,7 @@ class Grades(BaseModel):
     grade_name: str = Field(..., title="",description="年级名称",examples=['一年级'])
     grade_alias: str = Field(...,  description="年级别名",examples=['一年级'])
     description: str = Field(None,  description="简介",examples=['fsdfdsfsdxxx'])
+    created_at: datetime = Field(None,  description="简介",examples=['fsdfdsfsdxxx'])
 
 
     class Config:
