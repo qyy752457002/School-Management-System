@@ -5,7 +5,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.students_dao import StudentsDao
 from models.students import Student
-from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
+from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel, NewStudentTransferIn
 
 
 @dataclass_inject
@@ -40,7 +40,6 @@ class StudentsRule(object):
 
     async def add_student_new_student_transferin(self, students):
         """
-        新增学生关键信息
         """
         # if isinstance(students.birthday,str):
         #
@@ -50,10 +49,12 @@ class StudentsRule(object):
         #     # 从 datetime 对象中提取 date 部分
         #     date_obj = dt_obj.date()
         #     students.birthday =date_obj
+        print(students)
 
         students_db = view_model_to_orm_model(students, Student, exclude=["student_id"])
+        print(students_db)
         students_db = await self.students_dao.add_students(students_db)
-        students = orm_model_to_view_model(students_db, StudentsKeyinfoModel, exclude=[""])
+        students = orm_model_to_view_model(students_db, NewStudentTransferIn, exclude=[""])
         return students
 
     async def update_students(self, students):
