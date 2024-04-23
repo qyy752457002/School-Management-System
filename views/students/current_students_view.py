@@ -2,7 +2,10 @@ from typing import List
 
 from mini_framework.web.views import BaseView
 
+from models.student_transaction import AuditAction
 from rules.student_transaction import StudentTransactionRule
+from rules.student_transaction_flow import StudentTransactionFlowRule
+from views.models.student_transaction import StudentTransaction, StudentTransactionFlow
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, StudentEduInfo
 # from fastapi import Field
 from fastapi import Query, Depends
@@ -26,6 +29,7 @@ class CurrentStudentsView(BaseView):
         self.students_rule = get_injector(StudentsRule)
         self.student_session_rule = get_injector(StudentSessionRule)
         self.student_transaction_rule = get_injector(StudentTransactionRule)
+        self.student_transaction_flow_rule = get_injector(StudentTransactionFlowRule)
 
 
     async def get_student_session(self,sessions_id: str = Query(None, title="届别编号", description="届别编号",
@@ -50,30 +54,45 @@ class CurrentStudentsView(BaseView):
         res = await self.student_session_rule.add_student_session(student_session)
         return res
 
-    # 在校生转入  todo 届别 班级
+    # 在校生转入    届别 班级
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
         # print(new_students_key_info)
+        student_edu_info.status=AuditAction.NEEDAUDIT.value
         res = await self.student_transaction_rule.add_student_transaction(student_edu_info)
-
 
         return res
 
     # 在校生转入   审批
-    async def patch_transferin_audit(self, transferin_audit_id: str = Query(..., description="转入申请id", min_length=1,
-                                                                            max_length=20, example='SC2032633'),
+    async def patch_transferin_audit(self, transferin_audit_id: int = Query(..., description="转入申请id",   example='2'),
+                                     transferin_audit_action: AuditAction  = Query(..., description="审批的操作",   example='pass'),
+                                     remark: str = Query("", description="审批的备注", min_length=0, max_length=200,   example='同意 无误'),
 
                                      ):
-        # print(new_students_key_info)
-        return transferin_audit_id
+        # 审批通过 操作 或者拒绝
+        student_edu_info =  StudentTransaction(id=transferin_audit_id,status=transferin_audit_action.value, )
+        res = await self.student_transaction_rule.update_student_transaction(student_edu_info)
+        # 流乘记录
+        student_trans_flow =  StudentTransactionFlow( apply_id=transferin_audit_id,status=transferin_audit_action.value,remark=remark)
 
-    # 在校生转入   系统外转入
-    async def patch_transferin_fromoutside(self, StudentEduInfo: StudentEduInfo,
-                                           NewStudents: NewStudents,
-                                           StudentoutEduInfo: StudentEduInfo,
+        res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+
+
+        # print(new_students_key_info)
+        return res
+
+    # 在校生转入   系统外转入 todo  单独模型 
+    async def patch_transferin_fromoutside(self,
+                                           student_baseinfo: NewStudents,
+                                           student_edu_info_in: StudentEduInfo,
+                                           student_edu_info_out: StudentEduInfo,
 
                                            ):
         # print(new_students_key_info)
-        return StudentEduInfo
+        #  新增学生   同时写入 转出和转入 流程
+        res = await self.students_rule.add_students(StudentEduInfo)
+
+
+        return res
 
     # 在校生 系统外转出
     async def patch_transferout_tooutside(self, StudentEduInfo: StudentEduInfo,
@@ -83,25 +102,25 @@ class CurrentStudentsView(BaseView):
         # print(new_students_key_info)
         return StudentEduInfo
 
-    # 在校生转入   审批同意
-    async def patch_transferin_auditpass(self,
-                                         transferin_audit_id: str = Query(..., description="转入申请id", min_length=1,
-                                                                          max_length=20, example='SC2032633'),
-                                         remark: str = Query(..., description="备注", min_length=1, max_length=20,
-                                                             example='SC2032633'),
-                                         ):
-        # print(new_students_key_info)
-        return transferin_audit_id
-
-    # 在校生转入   审批拒绝
-    async def patch_transferin_auditrefuse(self,
-                                           transferin_audit_id: str = Query(..., description="转入申请id", min_length=1,
-                                                                            max_length=20, example='SC2032633'),
-                                           remark: str = Query(..., description="备注", min_length=1, max_length=20,
-                                                               example='SC2032633'),
-                                           ):
-        # print(new_students_key_info)
-        return transferin_audit_id
+    # # 在校生转入   审批同意
+    # async def patch_transferin_auditpass(self,
+    #                                      transferin_audit_id: str = Query(..., description="转入申请id", min_length=1,
+    #                                                                       max_length=20, example='SC2032633'),
+    #                                      remark: str = Query(..., description="备注", min_length=1, max_length=20,
+    #                                                          example='SC2032633'),
+    #                                      ):
+    #     # print(new_students_key_info)
+    #     return transferin_audit_id
+    #
+    # # 在校生转入   审批拒绝
+    # async def patch_transferin_auditrefuse(self,
+    #                                        transferin_audit_id: str = Query(..., description="转入申请id", min_length=1,
+    #                                                                         max_length=20, example='SC2032633'),
+    #                                        remark: str = Query(..., description="备注", min_length=1, max_length=20,
+    #                                                            example='SC2032633'),
+    #                                        ):
+    #     # print(new_students_key_info)
+    #     return transferin_audit_id
 
     # 在校生 发起毕业 todo  支持传入部门学生ID或者  / all年级毕业
     async def patch_graduate(self,

@@ -54,7 +54,8 @@ class EnumValueDAO(DAOBase):
         if enum_value_name=='province':
             query = query.where(EnumValue.parent_id == '')
         else:
-            query = query.where(EnumValue.parent_id != '')
+            # query = query.where(EnumValue.parent_id != '')
+            pass
         if parent_code:
             if ',' in parent_code:
                 parent_code = parent_code.split(',')
@@ -68,6 +69,8 @@ class EnumValueDAO(DAOBase):
             else:
                 # print(f"{var} 不是一个列表")
                 query = query.where(EnumValue.parent_id == parent_code)
+        if not len(parent_code)>0:
+            query = query.where(EnumValue.parent_id == '')
         paging = await self.query_page(query, page_request)
         return paging
 
