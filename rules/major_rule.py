@@ -3,6 +3,8 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+
+from business_exceptions.major import MajorAlreadyExistError
 from daos.Major_dao import MajorDAO
 from models.major import Major
 from views.models.majors import Majors  as MajorModel
@@ -33,6 +35,25 @@ class MajorRule(object):
 
         major_db = await self.major_dao.add_major(major_db)
         major = orm_model_to_view_model(major_db, MajorModel, exclude=["created_at",'updated_at'])
+        return major
+
+    async def add_major_multi(self,school_id,major_list):
+        exists_major = await self.major_dao.get_major_by_school_id(      school_id)
+        if exists_major:
+            raise MajorAlreadyExistError()
+        # major_db =  Course(school_id=school_id,major_list=major_list)
+        # 定义 视图和model的映射关系
+        original_dict_map_view_orm ={"major_no":"major_id"}
+        flipped_dict = {v: k for k, v in original_dict_map_view_orm.items()}
+        for major in major_list:
+            major_db= view_model_to_orm_model(major, Major, exclude=["id"],other_mapper=original_dict_map_view_orm)
+            major_db.school_id=school_id
+            res = await self.major_dao.add_major(major_db)
+
+            # print(major_db.major_list)
+
+        # major_db = await self.major_dao.add_major(major_db)
+        major = orm_model_to_view_model(res, MajorModel, exclude=["created_at",'updated_at'],other_mapper=flipped_dict)
         return major
 
     async def update_major(self, major,ctype=1):

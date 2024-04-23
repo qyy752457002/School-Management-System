@@ -19,12 +19,12 @@ class MajorView(BaseView):
     async def post(self,
                    school_id: int = Query(..., description="学校ID", example='1'),
                    major_list: List[Majors] = Body([], description="选择的专业", example=[
-                       {"major_id": 1, "major_name": "语文", "major_no": "19", "school_id": 1, }]),
+                       {  "major_name": "语文", "major_no": "19",  }]),
 
                    # major: Majors
                    ):
         # print(major)
-        res = await self.major_rule.add_major(major_list)
+        res = await self.major_rule.add_major_multi(school_id,major_list)
 
         return res
 
