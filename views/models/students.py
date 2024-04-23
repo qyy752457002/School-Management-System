@@ -294,6 +294,7 @@ class NewStudentTransferIn(BaseModel):
     # deleted: Mapped[int] = mapped_column(nullable=True, comment="删除态", default=0)
     approval_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="状态",default="分班")
     """
+
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
     enrollment_number: str = Field('', title="报名号", description="报名号")
     birthday: str = Field(..., title="生日", description="生日")
@@ -305,6 +306,8 @@ class NewStudentTransferIn(BaseModel):
     edu_number: str = Field(..., title="", description="学籍号码",examples=["DF23321312"])
     residence_address_detail: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
     residence_district: str = Field(..., title="户口所在行政区", description="户口所在行政区")
+    student_id:int= Query(0, title="", description="id", example='1'),
+
 
 
 

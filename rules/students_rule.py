@@ -49,10 +49,10 @@ class StudentsRule(object):
         #     # 从 datetime 对象中提取 date 部分
         #     date_obj = dt_obj.date()
         #     students.birthday =date_obj
-        print(students)
+        # print(students)
 
         students_db = view_model_to_orm_model(students, Student, exclude=["student_id"])
-        print(students_db)
+        # print(students_db)
         students_db = await self.students_dao.add_students(students_db)
         students = orm_model_to_view_model(students_db, NewStudentTransferIn, exclude=[""])
         return students

@@ -2,7 +2,7 @@ from typing import List
 
 from mini_framework.web.views import BaseView
 
-from models.student_transaction import AuditAction
+from models.student_transaction import AuditAction, TransactionDirection
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow
@@ -32,23 +32,22 @@ class CurrentStudentsView(BaseView):
         self.student_transaction_rule = get_injector(StudentTransactionRule)
         self.student_transaction_flow_rule = get_injector(StudentTransactionFlowRule)
 
-
-    async def get_student_session(self,sessions_id: str = Query(None, title="届别编号", description="届别编号",
-                                                                   example="2023届")):
+    async def get_student_session(self, sessions_id: str = Query(None, title="届别编号", description="届别编号",
+                                                                 example="2023届")):
         """
         在校生 查询届别信息
         """
         res = await self.student_session_rule.get_student_session_by_id(sessions_id)
         return res
 
-    async def post_student_session(self,student_session: StudentSession):
+    async def post_student_session(self, student_session: StudentSession):
         """
         在校生 新增届别信息
         """
         res = await self.student_session_rule.add_student_session(student_session)
         return res
 
-    async def patch_student_session(self,student_session: StudentSession):
+    async def patch_student_session(self, student_session: StudentSession):
         """
         在校生 编辑届别信息
         """
@@ -58,30 +57,32 @@ class CurrentStudentsView(BaseView):
     # 在校生转入    届别 班级
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
         # print(new_students_key_info)
-        student_edu_info.status=AuditAction.NEEDAUDIT.value
+        student_edu_info.status = AuditAction.NEEDAUDIT.value
         res = await self.student_transaction_rule.add_student_transaction(student_edu_info)
 
         return res
 
     # 在校生转入   审批
-    async def patch_transferin_audit(self, transferin_audit_id: int = Query(..., description="转入申请id",   example='2'),
-                                     transferin_audit_action: AuditAction  = Query(..., description="审批的操作",   example='pass'),
-                                     remark: str = Query("", description="审批的备注", min_length=0, max_length=200,   example='同意 无误'),
+    async def patch_transferin_audit(self, transferin_audit_id: int = Query(..., description="转入申请id", example='2'),
+                                     transferin_audit_action: AuditAction = Query(..., description="审批的操作",
+                                                                                  example='pass'),
+                                     remark: str = Query("", description="审批的备注", min_length=0, max_length=200,
+                                                         example='同意 无误'),
 
                                      ):
         # 审批通过 操作 或者拒绝
-        student_edu_info =  StudentTransaction(id=transferin_audit_id,status=transferin_audit_action.value, )
+        student_edu_info = StudentTransaction(id=transferin_audit_id, status=transferin_audit_action.value, )
         res = await self.student_transaction_rule.update_student_transaction(student_edu_info)
         # 流乘记录
-        student_trans_flow =  StudentTransactionFlow( apply_id=transferin_audit_id,status=transferin_audit_action.value,remark=remark)
+        student_trans_flow = StudentTransactionFlow(apply_id=transferin_audit_id, status=transferin_audit_action.value,
+                                                    remark=remark)
 
         res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
-
 
         # print(new_students_key_info)
         return res
 
-    # 在校生转入   系统外转入 todo  单独模型 
+    # 在校生转入   系统外转入    单独模型
     async def patch_transferin_fromoutside(self,
                                            student_baseinfo: NewStudentTransferIn,
                                            student_edu_info_in: StudentEduInfo,
@@ -90,8 +91,21 @@ class CurrentStudentsView(BaseView):
                                            ):
         # print(new_students_key_info)
         #  新增学生   同时写入 转出和转入 流程
-        res = await self.students_rule.add_student_new_student_transferin(student_baseinfo)
+        res_student = await self.students_rule.add_student_new_student_transferin(student_baseinfo)
+        print(res_student)
+        # 转出
 
+        student_edu_info_out.status = AuditAction.NEEDAUDIT.value
+        student_edu_info_out.student_id = res_student.student_id
+
+        res = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
+                                                                          TransactionDirection.OUT.value)
+
+        # 转入
+
+        student_edu_info_in.status = AuditAction.NEEDAUDIT.value
+        student_edu_info_in.student_id = res_student.student_id
+        res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in)
 
         return res
 
