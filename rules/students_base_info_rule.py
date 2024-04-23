@@ -3,7 +3,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from models.students_base_info import StudentBaseInfo
-from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
+from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel, StudentsBaseInfo
 
 
 @dataclass_inject
@@ -24,7 +24,7 @@ class StudentsBaseInfoRule(object):
         """
         students_base_info_db = view_model_to_orm_model(students_base_info, StudentBaseInfo, exclude=[""])
         students_base_info_db = await self.students_base_info_dao.add_students_base_info(students_base_info_db)
-        students_base_info = orm_model_to_view_model(students_base_info_db, StudentsKeyinfoModel, exclude=[""])
+        students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfo, exclude=[""])
         return students_base_info
 
     async def update_students_base_info(self, students_base_info):

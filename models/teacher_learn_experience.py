@@ -37,7 +37,7 @@ class TeacherLearnExperience(BaseDBModel):
     degree_level: Mapped[str] = mapped_column(String(64), nullable=False, comment="学位层次")
     country_or_region_of_degree_obtained: Mapped[str] = mapped_column(String(64), nullable=False, comment="获取学位过家地区")
     institution_of_degree_obtained: Mapped[str] = mapped_column(String(64), nullable=False, comment="获得学位院校机构")
-    degree_award_date: Mapped[str] = mapped_column(String(64), nullable=False, comment="学位授予时间")
+    degree_award_date: Mapped[date] = mapped_column(Date, nullable=False, comment="学位授予时间")
     study_mode: Mapped[str] = mapped_column(String(64), nullable=False, comment="学习方式")
     type_of_institution: Mapped[str] = mapped_column(String(64), nullable=True, comment="在学单位类别")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")

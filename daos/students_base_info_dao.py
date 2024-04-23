@@ -24,7 +24,7 @@ class StudentsBaseInfoDao(DAOBase):
         """
         session = await self.master_db()
         update_contents = get_update_contents(students_base_info, *args)
-        query = update(Student).where(Student.student_id == students_base_info.student_id).values(**update_contents)
+        query = update(StudentBaseInfo).where(StudentBaseInfo.student_id == students_base_info.student_id).values(**update_contents)
         return await self.update(session, query, students_base_info, update_contents, is_commit=is_commit)
 
     async def get_students_base_info_by_id(self, students_id):
