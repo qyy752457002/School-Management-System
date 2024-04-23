@@ -60,6 +60,13 @@ class GradeRule(object):
         grade = orm_model_to_view_model(grade_db, GradeModel, exclude=[""])
         return grade
 
+    async def softdelete_grade(self, grade_id):
+        exists_grade = await self.grade_dao.get_grade_by_id(grade_id)
+        if not exists_grade:
+            raise Exception(f"年级信息{grade_id}不存在")
+        grade_db = await self.grade_dao.softdelete_grade(exists_grade)
+        return grade_db
+
     async def get_all_grades(self):
         return await self.grade_dao.get_all_grades()
 
