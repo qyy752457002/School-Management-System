@@ -4,7 +4,8 @@ from mini_framework.web.views import BaseView
 
 from models.student_transaction import AuditAction
 from rules.student_transaction import StudentTransactionRule
-from views.models.student_transaction import StudentTransaction
+from rules.student_transaction_flow import StudentTransactionFlowRule
+from views.models.student_transaction import StudentTransaction, StudentTransactionFlow
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, StudentEduInfo
 # from fastapi import Field
 from fastapi import Query, Depends
@@ -28,6 +29,7 @@ class CurrentStudentsView(BaseView):
         self.students_rule = get_injector(StudentsRule)
         self.student_session_rule = get_injector(StudentSessionRule)
         self.student_transaction_rule = get_injector(StudentTransactionRule)
+        self.student_transaction_flow_rule = get_injector(StudentTransactionFlowRule)
 
 
     async def get_student_session(self,sessions_id: str = Query(None, title="届别编号", description="届别编号",
@@ -70,7 +72,9 @@ class CurrentStudentsView(BaseView):
         student_edu_info =  StudentTransaction(id=transferin_audit_id,status=transferin_audit_action.value, )
         res = await self.student_transaction_rule.update_student_transaction(student_edu_info)
         # 流乘记录
-        # res = await self.student_transaction_rule.add_student_transaction(student_edu_info)
+        student_trans_flow =  StudentTransactionFlow( apply_id=transferin_audit_id,status=transferin_audit_action.value,remark=remark)
+
+        res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
 
 
         # print(new_students_key_info)
