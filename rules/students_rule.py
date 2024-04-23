@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
@@ -22,7 +24,16 @@ class StudentsRule(object):
         """
         新增学生关键信息
         """
-        students_db = view_model_to_orm_model(students, Student, exclude=[""])
+        # if isinstance(students.birthday,str):
+        #
+        #     # 使用 strptime 函数将字符串转换为 datetime 对象
+        #     dt_obj = datetime.strptime( students.birthday, '%Y-%m-%d')
+        #
+        #     # 从 datetime 对象中提取 date 部分
+        #     date_obj = dt_obj.date()
+        #     students.birthday =date_obj
+
+        students_db = view_model_to_orm_model(students, Student, exclude=["student_id"])
         students_db = await self.students_dao.add_students(students_db)
         students = orm_model_to_view_model(students_db, StudentsKeyinfoModel, exclude=[""])
         return students
