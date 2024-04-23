@@ -1,10 +1,11 @@
-from sqlalchemy import select, func, update
+from sqlalchemy import select, func, update, and_, or_
 
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.classes import Classes
+from models.school import School
 
 
 class ClassesDAO(DAOBase):
@@ -77,7 +78,9 @@ class ClassesDAO(DAOBase):
 
     async def query_classes_with_page(self, borough, block, school_id, grade_id, class_name,
                                       page_request: PageRequest) -> Paging:
-        query = select(Classes)
+        query = select(Classes).select_from(Classes).join(School, School.id == Classes.school_id)
+
+
         if school_id:
             query = query.where(Classes.school_id == school_id)
             pass
@@ -88,6 +91,18 @@ class ClassesDAO(DAOBase):
             query = query.where(Classes.class_name.like(f'%{class_name}%'))
 
             # pass
+        if borough and block:
+            cond1 = School.borough == borough
+            cond2 = School.block == block
+            mcond = or_(cond1, cond2)
+
+            query = query.filter(mcond)
+        elif borough or block:
+            if block:
+                query = query.where(School.block == block)
+            if borough:
+                query = query.where(School.borough == borough)
+
         paging = await self.query_page(query, page_request)
         return paging
 
