@@ -237,20 +237,21 @@ class StudentEduInfo(BaseModel):
     city_id: str = Query(...,   description="市",min_length=1,max_length=20,examples=["142323"]),
     area_id: str = Query(...,   description="区",min_length=1,max_length=20,examples=["1522000"]),
     district_id: str = Query(...,   description="区县",min_length=1,max_length=20,examples=["1622222"]),
-    transfer_in_type: str = Query(...,   description="转入类型",min_length=1,max_length=20,examples=["指定日期转入"]),
-    natural_edu_no: str = Query(...,   description="国家学籍号码",min_length=1,max_length=20,examples=["DF23321312"]),
+    transfer_in_type: str = Query("",   description="转入类型",min_length=1,max_length=20,examples=["指定日期转入"]),
+    natural_edu_no: str = Query("",   description="国家学籍号码",min_length=1,max_length=20,examples=["DF23321312"]),
     school_id: int  = Query(..., title="", description="学校ID",examples=["102"])
     school_name: str = Query(..., title="", description="学校名称",examples=["XXxiaoxue"])
     session: str = Query(..., title="", description="届别",examples=["2003"])
-    attached_class: str = Query(..., title="", description="附设班",examples=["3班"])
+    attached_class: str = Query("", title="", description="附设班",examples=["3班"])
     grade_id: str = Query(..., title="", description="年级ID",examples=["102"])
     grade_name: str = Query(..., title="", description="年级",examples=["2年级"])
     class_id: str = Query(..., title="", description="班级id",examples=["125"])
     classes: str = Query(..., title="", description="班级",examples=["二2班"])
     major_id: str = Query(..., title="", description="专业",examples=["农业"])
-    transferin_time:str= Query(..., description="转入时间" ,min_length=1,max_length=20,examples=["2020-10-10"]),
-    transferin_reason:str= Query(..., description="转入原因" ,min_length=1,max_length=20,examples=["家庭搬迁..."]),
+    transferin_time:str= Query("", description="转入时间" ,min_length=1,max_length=20,examples=["2020-10-10"]),
+    transferin_reason:str= Query("", description="转入原因" ,min_length=1,max_length=20,examples=["家庭搬迁..."]),
     status:str= Query('', description="" ,min_length=1,max_length=20,examples=["..."]),
+    doc_upload: str = Field('',   description=" 附件",examples=[''])
 
 
 
@@ -277,3 +278,29 @@ class StudentSession(BaseModel):
     session_name: str = Query(...,   description="届别名称",min_length=1,max_length=20,examples=["2020级"]),
     session_alias: str = Query(...,   description="届别别名",min_length=1,max_length=20,examples=["2020届别"]),
     session_status: str = Query(...,   description="届别状态",min_length=1,max_length=20,examples=["开"])
+
+
+
+class NewStudentTransferIn(BaseModel):
+    """
+    学生姓名：student_name
+    报名号：enrollment_number
+    生日：birthday
+    性别：gender
+    证件类别：id_type
+    证件号码：id_number
+    """
+    student_name: str = Field(..., title="学生姓名", description="学生姓名")
+    enrollment_number: str = Field(None, title="报名号", description="报名号")
+    birthday: str = Field(..., title="生日", description="生日")
+    gender: str = Field(..., title="性别", description="性别")
+    id_type: str = Field(None, title="证件类别", description="证件类别")
+    id_number: str = Field(None, title="证件号码", description="证件号码")
+    ethnicity: str = Field(None, title="民族", description="民族")
+    # natural_edu_no: str = Query(...,   description="国家学籍号码",min_length=1,max_length=20,examples=["DF23321312"]),
+    edu_number: str = Field(..., title="", description="学籍号码",examples=["DF23321312"])
+    residence_address_detail: str = Field(None, title="户口所在地（详细）", description="户口所在地（详细）")
+    residence_district: str = Field(..., title="户口所在行政区", description="户口所在行政区")
+
+
+

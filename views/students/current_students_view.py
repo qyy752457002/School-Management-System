@@ -6,7 +6,8 @@ from models.student_transaction import AuditAction
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow
-from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, StudentEduInfo
+from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, StudentEduInfo, \
+    NewStudentTransferIn
 # from fastapi import Field
 from fastapi import Query, Depends
 from pydantic import BaseModel, Field
@@ -82,14 +83,14 @@ class CurrentStudentsView(BaseView):
 
     # 在校生转入   系统外转入 todo  单独模型 
     async def patch_transferin_fromoutside(self,
-                                           student_baseinfo: NewStudents,
+                                           student_baseinfo: NewStudentTransferIn,
                                            student_edu_info_in: StudentEduInfo,
                                            student_edu_info_out: StudentEduInfo,
 
                                            ):
         # print(new_students_key_info)
         #  新增学生   同时写入 转出和转入 流程
-        res = await self.students_rule.add_students(StudentEduInfo)
+        res = await self.students_rule.add_student_new_student_transferin(student_baseinfo)
 
 
         return res
