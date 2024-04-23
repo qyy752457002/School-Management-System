@@ -54,7 +54,8 @@ class TeachersInfoRule(object):
     #     paging_result = PaginatedResponse.from_paging(paging, TeachersInfoModel)
     #     return paging_result
 
-    async def query_account_with_page(self, query_model: NewTeacher, page_request: PageRequest):
+    async def query_teacher_with_page(self, query_model: NewTeacher, page_request: PageRequest):
+        print(query_model)
         paging = await self.teachers_info_dao.query_teacher_with_page(query_model, page_request)
-        paging_result = PaginatedResponse.from_paging(paging, TeachersInfoModel, {"hash_password": "password"})
+        paging_result = PaginatedResponse.from_paging(paging, NewTeacher)
         return paging_result
