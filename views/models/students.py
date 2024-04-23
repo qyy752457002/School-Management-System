@@ -250,6 +250,8 @@ class StudentEduInfo(BaseModel):
     major_id: str = Query(..., title="", description="专业",examples=["农业"])
     transferin_time:str= Query(..., description="转入时间" ,min_length=1,max_length=20,examples=["2020-10-10"]),
     transferin_reason:str= Query(..., description="转入原因" ,min_length=1,max_length=20,examples=["家庭搬迁..."]),
+    status:str= Query('', description="" ,min_length=1,max_length=20,examples=["..."]),
+
 
 
 

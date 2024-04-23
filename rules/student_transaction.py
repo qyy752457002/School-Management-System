@@ -64,9 +64,15 @@ class StudentTransactionRule(object):
             student_transaction.id)
         if not exists_student_transaction:
             raise Exception(f"转学申请{student_transaction.id}不存在")
-        student_transaction_db = await self.student_transaction_dao.update_studenttransaction(student_transaction)
-        student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
-        return student_transaction
+
+        need_update_list = []
+        for key, value in student_transaction.dict().items():
+            if value:
+                need_update_list.append(key)
+
+        student_transaction_db = await self.student_transaction_dao.update_studenttransaction(student_transaction,*need_update_list)
+        # student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
+        return student_transaction_db
 
     async def delete_student_transaction(self, student_transaction_id):
         exists_student_transaction = await self.student_transaction_dao.get_studenttransaction_by_id(

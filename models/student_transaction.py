@@ -23,12 +23,14 @@ class AuditAction(str, Enum):
     """
     审核操作
     """
+    NEEDAUDIT = "needaudit"
+
     PASS = "pass"
     REFUSE = "refuse"
 
     @classmethod
     def to_list(cls):
-        return [cls.PASS, cls.REFUSE]
+        return [cls.NEEDAUDIT,cls.PASS, cls.REFUSE]
 
 
 class StudentTransaction(BaseDBModel):
