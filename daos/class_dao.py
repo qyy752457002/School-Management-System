@@ -78,7 +78,7 @@ class ClassesDAO(DAOBase):
 
     async def query_classes_with_page(self, borough, block, school_id, grade_id, class_name,
                                       page_request: PageRequest) -> Paging:
-        query = select(Classes).select_from(Classes).join(School, School.id == Classes.school_id)
+        query = select(Classes, School.block, School.borough,School.school_name).select_from(Classes).join(School, School.id == Classes.school_id)
 
 
         if school_id:

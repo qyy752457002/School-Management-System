@@ -5,7 +5,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.class_dao import ClassesDAO
 from models.classes import Classes
-from views.models.classes import Classes as ClassesModel
+from views.models.classes import Classes as ClassesModel, ClassesSearchRes
 
 
 @dataclass_inject
@@ -60,5 +60,5 @@ class ClassesRule(object):
         paging = await self.classes_dao.query_classes_with_page(borough, block, school_id, grade_id, class_name,
                                                                 page_request)
         # 字段映射的示例写法   , {"hash_password": "password"}
-        paging_result = PaginatedResponse.from_paging(paging, ClassesModel)
+        paging_result = PaginatedResponse.from_paging(paging, ClassesSearchRes)
         return paging_result
