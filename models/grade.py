@@ -16,5 +16,5 @@ class Grade(BaseDBModel):
     grade_no: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级编号")
     grade_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级名称")
     grade_alias: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级别名")
-    description: Mapped[str] = mapped_column(String(64), nullable=False, comment="简介")
+    description: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="简介")
     is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)

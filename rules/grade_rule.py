@@ -6,6 +6,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 
+from business_exceptions.grade import GradeAlreadyExistError
 from daos.grade_dao import GradeDAO
 from models.grade import Grade
 from views.models.grades import Grades as GradeModel
@@ -29,7 +30,7 @@ class GradeRule(object):
     async def add_grade(self, grade: GradeModel):
         exists_grade = await self.grade_dao.get_grade_by_grade_name(grade.grade_name)
         if exists_grade:
-            raise Exception(f"年级{grade.grade_name}已存在")
+            raise GradeAlreadyExistError()
         grade_db = Grade()
         grade_db.grade_name = grade.grade_name
         grade_db.school_id = grade.school_id
