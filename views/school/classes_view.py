@@ -12,48 +12,45 @@ from rules.classes_rule import ClassesRule
 class ClassesView(BaseView):
     def __init__(self):
         super().__init__()
-        self.classes_rule = get_injector( ClassesRule)
+        self.classes_rule = get_injector(ClassesRule)
 
     async def post(self, classes: Classes):
         print(classes)
-        res =await  self.classes_rule.add_classes(classes)
+        res = await  self.classes_rule.add_classes(classes)
 
         return res
 
-
-
-
     async def page(self,
-                   page_request= Depends(PageRequest),
-                   # campus_no:str= Query(None, title="校区编号", description="校区编号",min_length=1,max_length=20,example='SC2032633'),
-                   # campus_name:str= Query(None, description="校区名称" ,min_length=1,max_length=20,example='XX小学'),
+                   page_request=Depends(PageRequest),
 
+                   borough: str = Query('', title=" ", description=" 行政管辖区", examples=['铁西区']),
+                   block: str = Query('', title=" ", description="地域管辖区", examples=['铁西区']),
 
+                   school_id: int = Query(0, title="学校ID", description="学校ID", examples=[1]),
 
+                   grade_id: int = Query('', title="年级ID", description="年级ID", examples=[2]),
+                   class_name: str = Query('', title="Grade_name", description="班级名称", examples=['一年级'])
 
                    ):
         print(page_request)
-        items=[]
-        res = await self.classes_rule.query_classes_with_page(page_request , )
+        items = []
+        res = await self.classes_rule.query_classes_with_page(page_request, borough, block, school_id, grade_id,
+                                                              class_name)
         return res
 
-
-
-
-
-
     # 删除
-    async def delete(self, class_id:str= Query(..., title="", description="班级id",min_length=1,max_length=20,example='SC2032633'),):
+    async def delete(self, class_id: str = Query(..., title="", description="班级id", min_length=1, max_length=20,
+                                                 example='SC2032633'), ):
         print(class_id)
         res = await self.classes_rule.softdelete_classes(class_id)
 
-        return  res
+        return res
 
     # 修改 关键信息
-    async def put(self,classes:Classes
+    async def put(self, classes: Classes
                   ):
         # print(planning_school)
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res = await self.classes_rule.update_classes(classes)
 
-        return  res
+        return res
