@@ -48,7 +48,7 @@ class GradeRule(object):
         exists_grade = await self.grade_dao.get_grade_by_id(grade.id)
         if not exists_grade:
             raise Exception(f"年级{grade.id}不存在")
-        grade_db = await self.grade_dao.update_grade(grade)
+        grade_db = await self.grade_dao.update_grade(exists_grade)
         grade = orm_model_to_view_model(grade_db, GradeModel, exclude=[""])
         return grade
 
