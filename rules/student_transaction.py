@@ -120,7 +120,7 @@ class StudentTransactionRule(object):
         # 获取分页数据
         kdict = dict()
         if audit_status:
-            kdict["status"] = audit_status
+            kdict["status"] = audit_status.value
         if student_name:
             kdict["student_name"] = student_name
         if student_gender:

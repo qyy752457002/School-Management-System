@@ -73,7 +73,7 @@ class CurrentStudentsView(BaseView):
                                                            max_length=20),
 
                                        page_request=Depends(PageRequest)):
-        print(page_request, )
+        print(audit_status, )
         items = []
         # exit(1)
         # return page_search

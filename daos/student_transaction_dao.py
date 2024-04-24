@@ -38,17 +38,17 @@ class StudentTransactionDAO(DAOBase):
 		for key, value in kwargs.items():
 			if key == 'student_gender':
 				query = query.where(getattr(Student, key) == value)
-			elif key == 'school_id':
-				cond1 = StudentTransaction.in_school_id == value
-				cond2 = StudentTransaction.out_school_id == value
-				mcond = or_(cond1, cond2)
-
-				query = query.filter( and_(
-					StudentTransaction.is_deleted == False,  # a=1
-					or_(
-						mcond
-					)
-				))
+			# elif key == 'school_id':
+			# 	cond1 = StudentTransaction.in_school_id == value
+			# 	cond2 = StudentTransaction.out_school_id == value
+			# 	mcond = or_(cond1, cond2)
+			#
+			# 	query = query.filter( and_(
+			# 		StudentTransaction.is_deleted == False,  # a=1
+			# 		or_(
+			# 			mcond
+			# 		)
+			# 	))
 				# query = query.where(getattr(Student, key).like(f'%{value}%'))
 			else:
 				query = query.where(getattr(StudentTransaction, key) == value)
