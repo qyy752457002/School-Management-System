@@ -5,7 +5,7 @@ from daos.teachers_dao import TeachersDao
 from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers import Teacher
 from views.models.teachers import Teachers as TeachersModel
-from views.models.teachers import TeachersCreatModel
+from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel
 from business_exceptions.teacher import TeacherNotFoundError
 
 import hashlib

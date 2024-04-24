@@ -52,7 +52,7 @@ class TeacherLearnExperienceView(BaseView):
         self.teacher_learn_experience_rule = get_injector(TeacherLearnExperienceRule)
 
     async def get_teacher_learn_experience(self,
-                                           teacher_learn_experience_id: int = Query(None,
+                                           teacher_learn_experience_id: int = Query(...,
                                                                                     title="teacher_learn_experienceID",
                                                                                     description="teacher_learn_experienceID",
                                                                                     example=1234)
@@ -66,7 +66,7 @@ class TeacherLearnExperienceView(BaseView):
         return res
 
     async def delete_teacher_learn_experience(self,
-                                              teacher_learn_experience_id: int = Query(None,
+                                              teacher_learn_experience_id: int = Query(...,
                                                                                        title="teacher_learn_experienceID",
                                                                                        description="teacher_learn_experienceID",
                                                                                        example=1234)
@@ -77,7 +77,7 @@ class TeacherLearnExperienceView(BaseView):
         res = await self.teacher_learn_experience_rule.update_teacher_learn_experience(teacher_learn_experience)
         return res
 
-    async def get_teacher_learn_experience_all(self, teacher_id: int = Query(None, title="teacher_learn_experienceID",
+    async def get_teacher_learn_experience_all(self, teacher_id: int = Query(..., title="teacher_learn_experienceID",
                                                                              description="teacher_learn_experienceID",
                                                                              example=1234)):
         return await self.teacher_learn_experience_rule.get_all_teacher_learn_experience(teacher_id)
@@ -90,7 +90,7 @@ class TeacherWorkExperienceView(BaseView):
         self.teacher_work_experience_rule = get_injector(TeacherWorkExperienceRule)
 
     async def get_teacher_work_experience(self,
-                                          teacher_work_experience_id: int = Query(None,
+                                          teacher_work_experience_id: int = Query(...,
                                                                                   title="teacher_work_experienceID",
                                                                                   description="teacher_work_experienceID",
                                                                                   example=1234)
@@ -104,7 +104,7 @@ class TeacherWorkExperienceView(BaseView):
         return res
 
     async def delete_teacher_work_experience(self,
-                                             teacher_work_experience_id: int = Query(None,
+                                             teacher_work_experience_id: int = Query(...,
                                                                                      title="teacher_work_experienceID",
                                                                                      description="teacher_work_experienceID",
                                                                                      example=1234)
@@ -115,7 +115,7 @@ class TeacherWorkExperienceView(BaseView):
         res = await self.teacher_work_experience_rule.update_teacher_work_experience(teacher_work_experience)
         return res
 
-    async def get_teacher_work_experience_all(self, teacher_id: int = Query(None, title="teacher_work_experienceID",
+    async def get_teacher_work_experience_all(self, teacher_id: int = Query(..., title="teacher_work_experienceID",
                                                                             description="teacher_work_experienceID",
                                                                             example=1234)):
         return await self.teacher_work_experience_rule.get_all_teacher_work_experience(teacher_id)
@@ -128,7 +128,7 @@ class TeacherJobAppointmentsView(BaseView):
         self.teacher_job_appointments_rule = get_injector(TeacherJobAppointmentsRule)
 
     async def get_teacher_job_appointments(self,
-                                           teacher_job_appointments_id: int = Query(None,
+                                           teacher_job_appointments_id: int = Query(...,
                                                                                     title="teacher_job_appointmentsID",
                                                                                     description="teacher_job_appointmentsID",
                                                                                     example=1234)
@@ -142,7 +142,7 @@ class TeacherJobAppointmentsView(BaseView):
         return res
 
     async def delete_teacher_job_appointments(self,
-                                              teacher_job_appointments_id: int = Query(None,
+                                              teacher_job_appointments_id: int = Query(...,
                                                                                        title="teacher_job_appointmentsID",
                                                                                        description="teacher_job_appointmentsID",
                                                                                        example=1234)
@@ -153,7 +153,7 @@ class TeacherJobAppointmentsView(BaseView):
         res = await self.teacher_job_appointments_rule.update_teacher_job_appointments(teacher_job_appointments)
         return res
 
-    async def get_teacher_job_appointments_all(self, teacher_id: int = Query(None, title="teacher_job_appointmentsID",
+    async def get_teacher_job_appointments_all(self, teacher_id: int = Query(..., title="teacher_job_appointmentsID",
                                                                              description="teacher_job_appointmentsID",
                                                                              example=1234)):
         return await self.teacher_job_appointments_rule.get_all_teacher_job_appointments(teacher_id)
@@ -166,7 +166,7 @@ class TeacherProfessionalTitlesView(BaseView):
         self.teacher_professional_titles_rule = get_injector(TeacherProfessionalTitlesRule)
 
     async def get_teacher_professional_titles(self,
-                                              teacher_professional_titles_id: int = Query(None,
+                                              teacher_professional_titles_id: int = Query(...,
                                                                                           title="teacher_professional_titlesID",
                                                                                           description="teacher_professional_titlesID",
                                                                                           example=1234)
@@ -180,7 +180,7 @@ class TeacherProfessionalTitlesView(BaseView):
         return res
 
     async def delete_teacher_professional_titles(self,
-                                                 teacher_professional_titles_id: int = Query(None,
+                                                 teacher_professional_titles_id: int = Query(...,
                                                                                              title="teacher_professional_titlesID",
                                                                                              description="teacher_professional_titlesID",
                                                                                              example=1234)
@@ -193,7 +193,7 @@ class TeacherProfessionalTitlesView(BaseView):
         return res
 
     async def get_teacher_professional_titles_all(self,
-                                                  teacher_id: int = Query(None, title="teacher_professional_titlesID",
+                                                  teacher_id: int = Query(..., title="teacher_professional_titlesID",
                                                                           description="teacher_professional_titlesID",
                                                                           example=1234)):
         return await self.teacher_professional_titles_rule.get_all_teacher_professional_titles(teacher_id)
@@ -206,7 +206,7 @@ class TeacherQualificationsView(BaseView):
         self.teacher_qualifications_rule = get_injector(TeacherQualificationsRule)
 
     async def get_teacher_qualifications(self,
-                                         teacher_qualifications_id: int = Query(None, title="teacher_qualificationsID",
+                                         teacher_qualifications_id: int = Query(..., title="teacher_qualificationsID",
                                                                                 description="teacher_qualificationsID",
                                                                                 example=1234)
                                          ):
@@ -219,7 +219,7 @@ class TeacherQualificationsView(BaseView):
         return res
 
     async def delete_teacher_qualifications(self,
-                                            teacher_qualifications_id: int = Query(None,
+                                            teacher_qualifications_id: int = Query(...,
                                                                                    title="teacher_qualificationsID",
                                                                                    description="teacher_qualificationsID",
                                                                                    example=1234)
@@ -230,7 +230,7 @@ class TeacherQualificationsView(BaseView):
         res = await self.teacher_qualifications_rule.update_teacher_qualifications(teacher_qualifications)
         return res
 
-    async def get_teacher_qualifications_all(self, teacher_id: int = Query(None, title="teacher_qualificationsID",
+    async def get_teacher_qualifications_all(self, teacher_id: int = Query(..., title="teacher_qualificationsID",
                                                                            description="teacher_qualificationsID",
                                                                            example=1234)):
         return await self.teacher_qualifications_rule.get_all_teacher_qualifications(teacher_id)
@@ -243,7 +243,7 @@ class TeacherSkillCertificatesView(BaseView):
         self.teacher_skill_certificates_rule = get_injector(TeacherSkillCertificatesRule)
 
     async def get_teacher_skill_certificates(self,
-                                             teacher_skill_certificates_id: int = Query(None,
+                                             teacher_skill_certificates_id: int = Query(...,
                                                                                         title="teacher_skill_certificatesID",
                                                                                         description="teacher_skill_certificatesID",
                                                                                         example=1234)
@@ -257,7 +257,7 @@ class TeacherSkillCertificatesView(BaseView):
         return res
 
     async def delete_teacher_skill_certificates(self,
-                                                teacher_skill_certificates_id: int = Query(None,
+                                                teacher_skill_certificates_id: int = Query(...,
                                                                                            title="teacher_skill_certificatesID",
                                                                                            description="teacher_skill_certificatesID",
                                                                                            example=1234)
@@ -269,7 +269,7 @@ class TeacherSkillCertificatesView(BaseView):
         return res
 
     async def get_teacher_skill_certificates_all(self,
-                                                 teacher_id: int = Query(None, title="teacher_skill_certificatesID",
+                                                 teacher_id: int = Query(..., title="teacher_skill_certificatesID",
                                                                          description="teacher_skill_certificatesID",
                                                                          example=1234)):
         return await self.teacher_skill_certificates_rule.get_all_teacher_skill_certificates(teacher_id)
@@ -282,7 +282,7 @@ class TeacherEthicRecordsView(BaseView):
         self.teacher_ethic_records_rule = get_injector(TeacherEthicRecordsRule)
 
     async def get_teacher_ethic_records(self,
-                                        teacher_ethic_records_id: int = Query(None, title="teacher_ethic_recordsID",
+                                        teacher_ethic_records_id: int = Query(..., title="teacher_ethic_recordsID",
                                                                               description="teacher_ethic_recordsID",
                                                                               example=1234)
                                         ):
@@ -295,7 +295,7 @@ class TeacherEthicRecordsView(BaseView):
         return res
 
     async def delete_teacher_ethic_records(self,
-                                           teacher_ethic_records_id: int = Query(None, title="teacher_ethic_recordsID",
+                                           teacher_ethic_records_id: int = Query(..., title="teacher_ethic_recordsID",
                                                                                  description="teacher_ethic_recordsID",
                                                                                  example=1234)
                                            ):
@@ -305,7 +305,7 @@ class TeacherEthicRecordsView(BaseView):
         res = await self.teacher_ethic_records_rule.update_teacher_ethic_records(teacher_ethic_records)
         return res
 
-    async def get_teacher_ethic_records_all(self, teacher_id: int = Query(None, title="teacher_ethic_recordsID",
+    async def get_teacher_ethic_records_all(self, teacher_id: int = Query(..., title="teacher_ethic_recordsID",
                                                                           description="teacher_ethic_recordsID",
                                                                           example=1234)):
         return await self.teacher_ethic_records_rule.get_all_teacher_ethic_records(teacher_id)
@@ -318,7 +318,7 @@ class EducationalTeachingView(BaseView):
         self.educational_teaching_rule = get_injector(EducationalTeachingRule)
 
     async def get_educational_teaching(self,
-                                       educational_teaching_id: int = Query(None, title="educational_teachingID",
+                                       educational_teaching_id: int = Query(..., title="educational_teachingID",
                                                                             description="educational_teachingID",
                                                                             example=1234)
                                        ):
@@ -331,7 +331,7 @@ class EducationalTeachingView(BaseView):
         return res
 
     async def delete_educational_teaching(self,
-                                          educational_teaching_id: int = Query(None, title="educational_teachingID",
+                                          educational_teaching_id: int = Query(..., title="educational_teachingID",
                                                                                description="educational_teachingID",
                                                                                example=1234)
                                           ):
@@ -341,7 +341,7 @@ class EducationalTeachingView(BaseView):
         res = await self.educational_teaching_rule.update_educational_teaching(educational_teaching)
         return res
 
-    async def get_educational_teaching_all(self, teacher_id: int = Query(None, title="educational_teachingID",
+    async def get_educational_teaching_all(self, teacher_id: int = Query(..., title="educational_teachingID",
                                                                          description="educational_teachingID",
                                                                          example=1234)):
         return await self.educational_teaching_rule.get_all_educational_teaching(teacher_id)
@@ -354,7 +354,7 @@ class DomesticTrainingView(BaseView):
         self.domestic_training_rule = get_injector(DomesticTrainingRule)
 
     async def get_domestic_training(self,
-                                    domestic_training_id: int = Query(None, title="domestic_trainingID",
+                                    domestic_training_id: int = Query(..., title="domestic_trainingID",
                                                                       description="domestic_trainingID", example=1234)
                                     ):
         res = await self.domestic_training_rule.get_domestic_training_by_domestic_training_id(domestic_training_id)
@@ -365,7 +365,7 @@ class DomesticTrainingView(BaseView):
         return res
 
     async def delete_domestic_training(self,
-                                       domestic_training_id: int = Query(None, title="domestic_trainingID",
+                                       domestic_training_id: int = Query(..., title="domestic_trainingID",
                                                                          description="domestic_trainingID",
                                                                          example=1234)
                                        ):
@@ -375,7 +375,7 @@ class DomesticTrainingView(BaseView):
         res = await self.domestic_training_rule.update_domestic_training(domestic_training)
         return res
 
-    async def get_domestic_training_all(self, teacher_id: int = Query(None, title="domestic_trainingID",
+    async def get_domestic_training_all(self, teacher_id: int = Query(..., title="domestic_trainingID",
                                                                       description="domestic_trainingID", example=1234)):
         return await self.domestic_training_rule.get_all_domestic_training(teacher_id)
 
@@ -387,7 +387,7 @@ class OverseasStudyView(BaseView):
         self.overseas_study_rule = get_injector(OverseasStudyRule)
 
     async def get_overseas_study(self,
-                                 overseas_study_id: int = Query(None, title="overseas_studyID",
+                                 overseas_study_id: int = Query(..., title="overseas_studyID",
                                                                 description="overseas_studyID", example=1234)
                                  ):
         res = await self.overseas_study_rule.get_overseas_study_by_overseas_study_id(overseas_study_id)
@@ -398,7 +398,7 @@ class OverseasStudyView(BaseView):
         return res
 
     async def delete_overseas_study(self,
-                                    overseas_study_id: int = Query(None, title="overseas_studyID",
+                                    overseas_study_id: int = Query(..., title="overseas_studyID",
                                                                    description="overseas_studyID", example=1234)
                                     ):
         await self.overseas_study_rule.delete_overseas_study(overseas_study_id)
@@ -407,7 +407,7 @@ class OverseasStudyView(BaseView):
         res = await self.overseas_study_rule.update_overseas_study(overseas_study)
         return res
 
-    async def get_overseas_study_all(self, teacher_id: int = Query(None, title="overseas_studyID",
+    async def get_overseas_study_all(self, teacher_id: int = Query(..., title="overseas_studyID",
                                                                    description="overseas_studyID", example=1234)):
         return await self.overseas_study_rule.get_all_overseas_study(teacher_id)
 
@@ -419,7 +419,7 @@ class TalentProgramView(BaseView):
         self.talent_program_rule = get_injector(TalentProgramRule)
 
     async def get_talent_program(self,
-                                 talent_program_id: int = Query(None, title="talent_programID",
+                                 talent_program_id: int = Query(..., title="talent_programID",
                                                                 description="talent_programID", example=1234)
                                  ):
         res = await self.talent_program_rule.get_talent_program_by_talent_program_id(talent_program_id)
@@ -430,7 +430,7 @@ class TalentProgramView(BaseView):
         return res
 
     async def delete_talent_program(self,
-                                    talent_program_id: int = Query(None, title="talent_programID",
+                                    talent_program_id: int = Query(..., title="talent_programID",
                                                                    description="talent_programID", example=1234)
                                     ):
         await self.talent_program_rule.delete_talent_program(talent_program_id)
@@ -439,7 +439,7 @@ class TalentProgramView(BaseView):
         res = await self.talent_program_rule.update_talent_program(talent_program)
         return res
 
-    async def get_talent_program_all(self, teacher_id: int = Query(None, title="talent_programID",
+    async def get_talent_program_all(self, teacher_id: int = Query(..., title="talent_programID",
                                                                    description="talent_programID", example=1234)):
         return await self.talent_program_rule.get_all_talent_program(teacher_id)
 
@@ -451,7 +451,7 @@ class AnnualReviewView(BaseView):
         self.annual_review_rule = get_injector(AnnualReviewRule)
 
     async def get_annual_review(self,
-                                annual_review_id: int = Query(None, title="annual_reviewID",
+                                annual_review_id: int = Query(..., title="annual_reviewID",
                                                               description="annual_reviewID", example=1234)
                                 ):
         res = await self.annual_review_rule.get_annual_review_by_annual_review_id(annual_review_id)
@@ -462,7 +462,7 @@ class AnnualReviewView(BaseView):
         return res
 
     async def delete_annual_review(self,
-                                   annual_review_id: int = Query(None, title="annual_reviewID",
+                                   annual_review_id: int = Query(..., title="annual_reviewID",
                                                                  description="annual_reviewID", example=1234)
                                    ):
         await self.annual_review_rule.delete_annual_review(annual_review_id)
@@ -471,7 +471,7 @@ class AnnualReviewView(BaseView):
         res = await self.annual_review_rule.update_annual_review(annual_review)
         return res
 
-    async def get_annual_review_all(self, teacher_id: int = Query(None, title="annual_reviewID",
+    async def get_annual_review_all(self, teacher_id: int = Query(..., title="annual_reviewID",
                                                                   description="annual_reviewID", example=1234)):
         return await self.annual_review_rule.get_all_annual_review(teacher_id)
 
@@ -483,7 +483,7 @@ class ResearchAchievementsView(BaseView):
         self.research_achievements_rule = get_injector(ResearchAchievementsRule)
 
     async def get_research_achievements(self,
-                                        research_achievements_id: int = Query(None, title="research_achievementsID",
+                                        research_achievements_id: int = Query(..., title="research_achievementsID",
                                                                               description="research_achievementsID",
                                                                               example=1234)
                                         ):
@@ -496,7 +496,7 @@ class ResearchAchievementsView(BaseView):
         return res
 
     async def delete_research_achievements(self,
-                                           research_achievements_id: int = Query(None, title="research_achievementsID",
+                                           research_achievements_id: int = Query(..., title="research_achievementsID",
                                                                                  description="research_achievementsID",
                                                                                  example=1234)
                                            ):
@@ -506,7 +506,7 @@ class ResearchAchievementsView(BaseView):
         res = await self.research_achievements_rule.update_research_achievements(research_achievements)
         return res
 
-    async def get_research_achievements_all(self, teacher_id: int = Query(None, title="research_achievementsID",
+    async def get_research_achievements_all(self, teacher_id: int = Query(..., title="research_achievementsID",
                                                                           description="research_achievementsID",
                                                                           example=1234)):
         return await self.research_achievements_rule.get_all_research_achievements(teacher_id)

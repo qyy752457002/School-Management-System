@@ -19,3 +19,7 @@ class TeacherLearnExperienceNotFoundError(MiniHTTPException):
 class TeacherSkillNotFoundError(MiniHTTPException):
     def __init__(self):
         super().__init__(404, "TEACHER_SKILL_NOT_FOUND", "TeacherSkill not found.", "教师技能不存在")
+
+class TeacherInfoExitError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "TEACHER_INFO_EXIT_ERROR", "TeacherInfo exit error.", "教师基本信息已存在")

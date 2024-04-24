@@ -16,6 +16,8 @@ class TeacherWorkExperienceRule(object):
     async def get_teacher_work_experience_by_teacher_work_experience_id(self, teacher_work_experience_id):
         teacher_work_experience_db = await self.teacher_work_experience_dao.get_teacher_work_experience_by_teacher_work_experience_id(
             teacher_work_experience_id)
+        if not teacher_work_experience_db:
+            raise TeacherWorkExperienceNotFoundError()
         teacher_work_experience = orm_model_to_view_model(teacher_work_experience_db, TeacherWorkExperienceModel)
         return teacher_work_experience
 
@@ -49,15 +51,6 @@ class TeacherWorkExperienceRule(object):
         teacher_work_experience = await self.teacher_work_experience_dao.update_teacher_work_experience(
             teacher_work_experience, *need_update_list)
         return teacher_work_experience
-
-    async def get_all_teacher_learn_experience(self, teacher_id):
-        teacher_learn_experience_db = await self.teacher_learn_experience_dao.get_all_teacher_learn_experience(
-            teacher_id)
-        teacher_learn_experience = []
-        for item in teacher_learn_experience_db:
-            teacher_learn_experience.append(
-                orm_model_to_view_model(teacher_learn_experience_db, TeacherLearnExperienceModel, exclude=[""]))
-        return teacher_learn_experience
 
     async def get_all_teacher_work_experience(self, teacher_id):
         teacher_work_experience_db = await self.teachers_dao.get_teachers_by_id(teacher_id)

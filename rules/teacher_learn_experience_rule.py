@@ -2,6 +2,7 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teacher_learn_experience_dao import TeacherLearnExperienceDAO
+from daos.teachers_dao import TeachersDao
 from models.teacher_learn_experience import TeacherLearnExperience
 from views.models.teacher_extend import TeacherLearnExperienceModel
 
@@ -9,6 +10,7 @@ from views.models.teacher_extend import TeacherLearnExperienceModel
 @dataclass_inject
 class TeacherLearnExperienceRule(object):
     teacher_learn_experience_dao: TeacherLearnExperienceDAO
+    teachers_dao: TeachersDao
 
     async def get_teacher_learn_experience_by_teacher_learn_experience_id(self, teacher_learn_experience_id):
         teacher_learn_experience_db = await self.teacher_learn_experience_dao.get_teacher_learn_experience_by_teacher_learn_experience_id(
@@ -52,7 +54,8 @@ class TeacherLearnExperienceRule(object):
     async def get_all_teacher_learn_experience(self, teacher_id):
         teacher_learn_experience_db = await self.teacher_learn_experience_dao.get_all_teacher_learn_experience(
             teacher_id)
-        teacher_learn_experience=[]
+        teacher_learn_experience = []
         for teacher_learn_experience_db in teacher_learn_experience_db:
-            teacher_learn_experience.append(orm_model_to_view_model(teacher_learn_experience_db, TeacherLearnExperienceModel, exclude=[""]))
+            teacher_learn_experience.append(
+                orm_model_to_view_model(teacher_learn_experience_db, TeacherLearnExperienceModel, exclude=[""]))
         return teacher_learn_experience

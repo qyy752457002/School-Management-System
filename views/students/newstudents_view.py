@@ -17,7 +17,7 @@ from models.students import Student
 from rules.students_rule import StudentsRule
 from rules.students_base_info_rule import StudentsBaseInfoRule
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
-from views.models.students import NewStudents
+from views.models.students import NewStudents, NewBaseInfoCreate
 from views.models.students import NewStudentsFlowOut
 from datetime import date
 from rules.students_base_info_rule import StudentsBaseInfoRule
@@ -103,7 +103,7 @@ class NewsStudentsInfoView(BaseView):
         res = await self.students_base_info_rule.get_students_base_info_by_id(student_id)
         return res
 
-    async def post_newstudentbaseinfo(self, new_students_base_info: StudentsBaseInfo):
+    async def post_newstudentbaseinfo(self, new_students_base_info: NewBaseInfoCreate):
         """
         新生新增基本信息
         """

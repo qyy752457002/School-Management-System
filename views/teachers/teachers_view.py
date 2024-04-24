@@ -9,7 +9,7 @@ from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 from rules.teachers_rule import TeachersRule
 from rules.teachers_info_rule import TeachersInfoRule
-from views.models.teachers import Teachers, TeacherInfo,TeachersCreatModel,TeacherInfoCreateModel
+from views.models.teachers import Teachers, TeacherInfo, CurrentTeacherQueryRe,CurrentTeacherQuery,CurrentTeacherInfoSaveModel
 
 
 class TeachersView(BaseView):
@@ -31,22 +31,31 @@ class TeachersView(BaseView):
         res = await self.teacher_rule.update_teachers(teachers)
         return res
 
-    async def page(self, new_teacher = Depends(NewTeacher), page_request=Depends(PageRequest)):
+    async def page(self, current_teacher=Depends(CurrentTeacherQuery), page_request=Depends(PageRequest)):
         """
         老师分页查询
         """
-        paging_result = await self.teacher_info_rule.query_teacher_with_page(new_teacher,page_request)
+        paging_result = await self.teacher_info_rule.query_current_teacher_with_page(current_teacher, page_request)
         return paging_result
 
-
     # 获取教职工基本信息
-    async def get_newteacherinfo(self, teacher_id: int = Query(..., title="教师名称", description="教师名称",
-                                                       example=123)):
-        res = await self.teacher_info_rule.get_teachers_info_by_id(teacher_id)
+    async def get_teacherinfo(self, teacher_id: int = Query(..., title="教师名称", description="教师名称",
+                                                               example=123)):
+        res = await self.teacher_info_rule.get_teachers_info_by_teacher_id(teacher_id)
         return res
 
     # 编辑教职工基本信息
-    async def put_newteacherinfo(self, teacher_info: TeacherInfoCreateModel):
+    async def put_teacherinfosave(self, teacher_info: CurrentTeacherInfoSaveModel):
+        """
+        保存不经过验证
+        """
+        res = await self.teacher_info_rule.update_teachers_info(teacher_info)
+        return res
+
+    async def put_teacherinfo(self, teacher_info: TeacherInfo):
+        """
+        提交教职工基本信息
+        """
         res = await self.teacher_info_rule.update_teachers_info(teacher_info)
         return res
 
@@ -56,7 +65,6 @@ class TeachersView(BaseView):
                                                          example=123)):
         await self.teacher_info_rule.delete_teachers_info(teacher_id)
         return str(teacher_id)
-
 
     async def patch_submitting(self,
                                teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
@@ -77,4 +85,3 @@ class TeachersView(BaseView):
                              teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
         await self.teacher_rule.rejected(teacher_id)
         return teacher_id
-
