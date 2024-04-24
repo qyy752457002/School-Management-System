@@ -33,10 +33,12 @@ class SchoolView(BaseView):
                   ):
 
         school = await self.school_rule.get_school_by_id(school_id)
+        school_keyinfo = await self.school_rule.get_school_by_id(school_id,extra_model=SchoolKeyInfo)
+
         school_communication = await self.school_communication_rule.get_school_communication_by_school_id(school_id)
         school_eduinfo = await self.school_eduinfo_rule.get_school_eduinfo_by_school_id(school_id)
 
-        return {'school':school,'school_communication':school_communication ,'school_eduinfo':school_eduinfo }
+        return {'school':school,'school_communication':school_communication ,'school_eduinfo':school_eduinfo,'school_keyinfo':school_keyinfo }
 
 
     async def post(self,school:SchoolKeyAddInfo):
