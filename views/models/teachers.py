@@ -96,13 +96,13 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
     ethnicity: str = Field(..., title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家地区", description="国家地区", example="中国")
     political_status: str = Field(..., title="政治面貌", description="政治面貌", example="党员")
-    native_place: str = Field(None, title="籍贯", description="籍贯", example="沈阳")
-    birth_place: str = Field(None, title="出生地", description="出生地", example="沈阳")
-    former_name: str = Field(None, title="曾用名", description="曾用名", example="张三")
-    marital_status: str = Field(None, title="婚姻状况", description="婚姻状况", example="已婚")
-    health_condition: str = Field(None, title="健康状况", description="健康状况", example="良好")
-    highest_education: str = Field(None, title="最高学历", description="最高学历", example="本科")
-    institution_of_highest_education: str = Field(None, title="获得最高学历的院校或者机构",
+    native_place: str = Field("", title="籍贯", description="籍贯", example="沈阳")
+    birth_place: str = Field("", title="出生地", description="出生地", example="沈阳")
+    former_name: str = Field("", title="曾用名", description="曾用名", example="张三")
+    marital_status: str = Field("", title="婚姻状况", description="婚姻状况", example="已婚")
+    health_condition: str = Field("", title="健康状况", description="健康状况", example="良好")
+    highest_education: str = Field("", title="最高学历", description="最高学历", example="本科")
+    institution_of_highest_education: str = Field("", title="获得最高学历的院校或者机构",
                                                   description="获得最高学历的院校或者机构", example="沈阳师范大学")
     special_education_start_time: date = Field(..., title="特教开始时间", description="特教开始时间",
                                                example="2021-10-10")
@@ -110,16 +110,16 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
     enter_school_time: date = Field(..., title="进本校时间", description="进本校时间", example="2010-01-01")
     source_of_staff: str = Field(..., title="教职工来源", description="教职工来源", example="招聘")
     staff_category: str = Field(..., title="教职工类别", description="教职工类别", example="教师")
-    in_post: YesOrNo = Field(..., title="是否在编", description="是否在编", example="yes")
+    in_post: YesOrNo = Field(..., title="是否在编", description="是否在编")
     employment_form: str = Field(..., title="用人形式", description="用人形式", example="合同")
     contract_signing_status: str = Field(..., title="合同签订情况", description="合同签订情况", example="已签")
-    current_post_type: str = Field(None, title="现在岗位类型", description="现在岗位类型", example="教师")
-    current_post_level: str = Field(None, title="现岗位等级", description="现岗位等级", example="一级")
-    current_technical_position: str = Field(None, title="现妆业技术职务", description="现妆业技术职务", example="教师")
+    current_post_type: str = Field("", title="现在岗位类型", description="现在岗位类型", example="教师")
+    current_post_level: str = Field("", title="现岗位等级", description="现岗位等级", example="一级")
+    current_technical_position: str = Field("", title="现妆业技术职务", description="现妆业技术职务", example="教师")
     full_time_special_education_major_graduate: YesOrNo = Field(..., title="是否全日制特殊教育专业毕业",
-                                                            description="是否全日制特殊教育专业毕业", example="yes")
+                                                            description="是否全日制特殊教育专业毕业")
     received_preschool_education_training: YesOrNo = Field(..., title="是否受过学前教育培训",
-                                                       description="是否受过学前教育培训", example="yes")
+                                                       description="是否受过学前教育培训")
     full_time_normal_major_graduate: YesOrNo = Field(..., title="是否全日制师范类专业毕业",
                                                  description="是否全日制师范类专业毕业")
     received_special_education_training: YesOrNo = Field(..., title="是否受过特教专业培训",
@@ -129,23 +129,23 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
     information_technology_application_ability: str = Field(..., title="信息技术应用能力",
                                                             description="信息技术应用能力", example="优秀")
 
-    free_normal_college_student: YesOrNo = Field(..., title="是否免费师范生", description="是否免费师范生", example="yes")
+    free_normal_college_student: YesOrNo = Field(..., title="是否免费师范生", description="是否免费师范生")
     participated_in_basic_service_project: YesOrNo= Field(..., title="是否参加基层服务项目",
-                                                       description="是否参加基层服务项目", example="yes")
+                                                       description="是否参加基层服务项目")
     basic_service_start_date: date = Field(None, title="基层服务起始日期", description="基层服务起始日期",
                                            example="2010-01-01")
     basic_service_end_date: date = Field(None, title="基层服务结束日期", description="基层服务结束日期",
                                          example="2010-01-01")
-    special_education_teacher: YesOrNo = Field(..., title="是否特教", description="是否特教", example="yes")
-    dual_teacher: YesOrNo = Field(..., title="是否双师型", description="是否双师型", example="yes")
+    special_education_teacher: YesOrNo = Field(..., title="是否特教", description="是否特教")
+    dual_teacher: YesOrNo = Field(..., title="是否双师型", description="是否双师型")
     has_occupational_skill_level_certificate: YesOrNo = Field(..., title="是否具备职业技能等级证书",
-                                                          description="是否具备职业技能等级证书", example="yes")
+                                                          description="是否具备职业技能等级证书")
     enterprise_work_experience: str = Field(..., title="企业工作时长", description="企业工作时长", example="3年")
-    county_level_backbone: YesOrNo = Field(..., title="是否县级以上骨干", description="是否县级以上骨干", example="yes")
+    county_level_backbone: YesOrNo = Field(..., title="是否县级以上骨干", description="是否县级以上骨干")
     psychological_health_education_teacher: YesOrNo = Field(..., title="是否心理健康教育教师",
-                                                        description="是否心理健康教育教师", example="yes")
+                                                        description="是否心理健康教育教师")
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
-    teacher_number: str = Field(None, title="教职工号", description="教职工号", example="123456789012345678")
+    teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
 
 class TeacherInfo(BaseModel):  # 基本信息
     """
@@ -195,13 +195,13 @@ class TeacherInfo(BaseModel):  # 基本信息
     ethnicity: str = Field(..., title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家地区", description="国家地区", example="中国")
     political_status: str = Field(..., title="政治面貌", description="政治面貌", example="党员")
-    native_place: str = Field(None, title="籍贯", description="籍贯", example="沈阳")
-    birth_place: str = Field(None, title="出生地", description="出生地", example="沈阳")
-    former_name: str = Field(None, title="曾用名", description="曾用名", example="张三")
-    marital_status: str = Field(None, title="婚姻状况", description="婚姻状况", example="已婚")
-    health_condition: str = Field(None, title="健康状况", description="健康状况", example="良好")
-    highest_education: str = Field(None, title="最高学历", description="最高学历", example="本科")
-    institution_of_highest_education: str = Field(None, title="获得最高学历的院校或者机构",
+    native_place: str = Field("", title="籍贯", description="籍贯", example="沈阳")
+    birth_place: str = Field("", title="出生地", description="出生地", example="沈阳")
+    former_name: str = Field("", title="曾用名", description="曾用名", example="张三")
+    marital_status: str = Field("", title="婚姻状况", description="婚姻状况", example="已婚")
+    health_condition: str = Field("", title="健康状况", description="健康状况", example="良好")
+    highest_education: str = Field("", title="最高学历", description="最高学历", example="本科")
+    institution_of_highest_education: str = Field("", title="获得最高学历的院校或者机构",
                                                   description="获得最高学历的院校或者机构", example="沈阳师范大学")
     special_education_start_time: date = Field(..., title="特教开始时间", description="特教开始时间",
                                                example="2021-10-10")
@@ -209,42 +209,42 @@ class TeacherInfo(BaseModel):  # 基本信息
     enter_school_time: date = Field(..., title="进本校时间", description="进本校时间", example="2010-01-01")
     source_of_staff: str = Field(..., title="教职工来源", description="教职工来源", example="招聘")
     staff_category: str = Field(..., title="教职工类别", description="教职工类别", example="教师")
-    in_post: YesOrNo = Field(..., title="是否在编", description="是否在编", example="yes")
+    in_post: YesOrNo = Field(..., title="是否在编", description="是否在编")
     employment_form: str = Field(..., title="用人形式", description="用人形式", example="合同")
     contract_signing_status: str = Field(..., title="合同签订情况", description="合同签订情况", example="已签")
-    current_post_type: str = Field(None, title="现在岗位类型", description="现在岗位类型", example="教师")
-    current_post_level: str = Field(None, title="现岗位等级", description="现岗位等级", example="一级")
-    current_technical_position: str = Field(None, title="现妆业技术职务", description="现妆业技术职务", example="教师")
+    current_post_type: str = Field("", title="现在岗位类型", description="现在岗位类型", example="教师")
+    current_post_level: str = Field("", title="现岗位等级", description="现岗位等级", example="一级")
+    current_technical_position: str = Field("", title="现妆业技术职务", description="现妆业技术职务", example="教师")
     full_time_special_education_major_graduate: YesOrNo = Field(..., title="是否全日制特殊教育专业毕业",
-                                                            description="是否全日制特殊教育专业毕业", example="yes")
+                                                            description="是否全日制特殊教育专业毕业")
     received_preschool_education_training: YesOrNo = Field(..., title="是否受过学前教育培训",
-                                                       description="是否受过学前教育培训", example="yes")
+                                                       description="是否受过学前教育培训")
     full_time_normal_major_graduate: YesOrNo = Field(..., title="是否全日制师范类专业毕业",
                                                  description="是否全日制师范类专业毕业")
     received_special_education_training: YesOrNo = Field(..., title="是否受过特教专业培训",
                                                      description="是否受过特教专业培训")
-    has_special_education_certificate: YesOrNo = Field(..., title="是否有特教证书", description="是否有特教证书",
-                                                   example="yes")
+    has_special_education_certificate: YesOrNo = Field(..., title="是否有特教证书", description="是否有特教证书"
+                                                   )
     information_technology_application_ability: str = Field(..., title="信息技术应用能力",
                                                             description="信息技术应用能力", example="优秀")
 
-    free_normal_college_student: YesOrNo = Field(..., title="是否免费师范生", description="是否免费师范生", example="yes")
+    free_normal_college_student: YesOrNo = Field(..., title="是否免费师范生", description="是否免费师范生")
     participated_in_basic_service_project: YesOrNo = Field(..., title="是否参加基层服务项目",
-                                                       description="是否参加基层服务项目", example="yes")
+                                                       description="是否参加基层服务项目")
     basic_service_start_date: date = Field(None, title="基层服务起始日期", description="基层服务起始日期",
                                            example="2010-01-01")
     basic_service_end_date: date = Field(None, title="基层服务结束日期", description="基层服务结束日期",
                                          example="2010-01-01")
-    special_education_teacher: YesOrNo = Field(..., title="是否特教", description="是否特教", example="yes")
-    dual_teacher: YesOrNo = Field(..., title="是否双师型", description="是否双师型", example="yes")
+    special_education_teacher: YesOrNo = Field(..., title="是否特教", description="是否特教")
+    dual_teacher: YesOrNo = Field(..., title="是否双师型", description="是否双师型")
     has_occupational_skill_level_certificate: YesOrNo = Field(..., title="是否具备职业技能等级证书",
-                                                          description="是否具备职业技能等级证书", example="yes")
+                                                          description="是否具备职业技能等级证书")
     enterprise_work_experience: str = Field(..., title="企业工作时长", description="企业工作时长", example="3年")
-    county_level_backbone: YesOrNo = Field(..., title="是否县级以上骨干", description="是否县级以上骨干", example="yes")
+    county_level_backbone: YesOrNo = Field(..., title="是否县级以上骨干", description="是否县级以上骨干")
     psychological_health_education_teacher: YesOrNo = Field(..., title="是否心理健康教育教师",
-                                                        description="是否心理健康教育教师", example="yes")
+                                                        description="是否心理健康教育教师")
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
-    teacher_number: str = Field(None, title="教职工号", description="教职工号", example="123456789012345678")
+    teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
 
 
 class TeacherInfoSaveModel(BaseModel):  # 基本信息
@@ -292,59 +292,59 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
     教职工号：teacher_number
     """
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    ethnicity: str = Field(None, title="民族", description="民族", example="汉族")
-    nationality: str = Field(None, title="国家地区", description="国家地区", example="中国")
-    political_status: str = Field(..., title="政治面貌", description="政治面貌", example="党员")
-    native_place: str = Field(None, title="籍贯", description="籍贯", example="沈阳")
-    birth_place: str = Field(None, title="出生地", description="出生地", example="沈阳")
-    former_name: str = Field(None, title="曾用名", description="曾用名", example="张三")
-    marital_status: str = Field(None, title="婚姻状况", description="婚姻状况", example="已婚")
-    health_condition: str = Field(None, title="健康状况", description="健康状况", example="良好")
-    highest_education: str = Field(None, title="最高学历", description="最高学历", example="本科")
-    institution_of_highest_education: str = Field(None, title="获得最高学历的院校或者机构",
+    ethnicity: str = Field("", title="民族", description="民族", example="汉族")
+    nationality: str = Field("", title="国家地区", description="国家地区", example="中国")
+    political_status: str = Field("", title="政治面貌", description="政治面貌", example="党员")
+    native_place: str = Field("", title="籍贯", description="籍贯", example="沈阳")
+    birth_place: str = Field("", title="出生地", description="出生地", example="沈阳")
+    former_name: str = Field("", title="曾用名", description="曾用名", example="张三")
+    marital_status: str = Field("", title="婚姻状况", description="婚姻状况", example="已婚")
+    health_condition: str = Field("", title="健康状况", description="健康状况", example="良好")
+    highest_education: str = Field("", title="最高学历", description="最高学历", example="本科")
+    institution_of_highest_education: str = Field("", title="获得最高学历的院校或者机构",
                                                   description="获得最高学历的院校或者机构", example="沈阳师范大学")
     special_education_start_time: date = Field(None, title="特教开始时间", description="特教开始时间",
                                                example="2021-10-10")
     start_working_date: date = Field(None, title="参加工作年月", description="参加工作年月", example="2010-01-01")
     enter_school_time: date = Field(None, title="进本校时间", description="进本校时间", example="2010-01-01")
-    source_of_staff: str = Field(None, title="教职工来源", description="教职工来源", example="招聘")
-    staff_category: str = Field(None, title="教职工类别", description="教职工类别", example="教师")
-    in_post: YesOrNo = Field(None, title="是否在编", description="是否在编", example="yes")
-    employment_form: str = Field(None, title="用人形式", description="用人形式", example="合同")
-    contract_signing_status: str = Field(None, title="合同签订情况", description="合同签订情况", example="已签")
-    current_post_type: str = Field(None, title="现在岗位类型", description="现在岗位类型", example="教师")
-    current_post_level: str = Field(None, title="现岗位等级", description="现岗位等级", example="一级")
-    current_technical_position: str = Field(None, title="现妆业技术职务", description="现妆业技术职务", example="教师")
-    full_time_special_education_major_graduate: YesOrNo = Field(None, title="是否全日制特殊教育专业毕业",
-                                                            description="是否全日制特殊教育专业毕业", example="yes")
-    received_preschool_education_training: YesOrNo = Field(None, title="是否受过学前教育培训",
-                                                       description="是否受过学前教育培训", example="yes")
-    full_time_normal_major_graduate: YesOrNo = Field(None, title="是否全日制师范类专业毕业",
+    source_of_staff: str = Field("", title="教职工来源", description="教职工来源", example="招聘")
+    staff_category: str = Field("", title="教职工类别", description="教职工类别", example="教师")
+    in_post: YesOrNo = Field("Y", title="是否在编", description="是否在编")
+    employment_form: str = Field("", title="用人形式", description="用人形式", example="合同")
+    contract_signing_status: str = Field("", title="合同签订情况", description="合同签订情况", example="已签")
+    current_post_type: str = Field("", title="现在岗位类型", description="现在岗位类型", example="教师")
+    current_post_level: str = Field("", title="现岗位等级", description="现岗位等级", example="一级")
+    current_technical_position: str = Field("", title="现妆业技术职务", description="现妆业技术职务", example="教师")
+    full_time_special_education_major_graduate: YesOrNo = Field("Y", title="是否全日制特殊教育专业毕业",
+                                                            description="是否全日制特殊教育专业毕业")
+    received_preschool_education_training: YesOrNo = Field("Y", title="是否受过学前教育培训",
+                                                       description="是否受过学前教育培训")
+    full_time_normal_major_graduate: YesOrNo = Field("Y", title="是否全日制师范类专业毕业",
                                                  description="是否全日制师范类专业毕业")
-    received_special_education_training: YesOrNo = Field(None, title="是否受过特教专业培训",
+    received_special_education_training: YesOrNo = Field("Y", title="是否受过特教专业培训",
                                                      description="是否受过特教专业培训")
-    has_special_education_certificate: YesOrNo = Field(None, title="是否有特教证书", description="是否有特教证书",
+    has_special_education_certificate: YesOrNo = Field("Y", title="是否有特教证书", description="是否有特教证书",
                                                    example="yes")
-    information_technology_application_ability: str = Field(None, title="信息技术应用能力",
+    information_technology_application_ability: str = Field("", title="信息技术应用能力",
                                                             description="信息技术应用能力", example="优秀")
 
-    free_normal_college_student: YesOrNo = Field(None, title="是否免费师范生", description="是否免费师范生", example="yes")
-    participated_in_basic_service_project: YesOrNo= Field(None, title="是否参加基层服务项目",
-                                                       description="是否参加基层服务项目", example="yes")
+    free_normal_college_student: YesOrNo = Field("Y", title="是否免费师范生", description="是否免费师范生")
+    participated_in_basic_service_project: YesOrNo= Field("Y", title="是否参加基层服务项目",
+                                                       description="是否参加基层服务项目")
     basic_service_start_date: date = Field(None, title="基层服务起始日期", description="基层服务起始日期",
                                            example="2010-01-01")
     basic_service_end_date: date = Field(None, title="基层服务结束日期", description="基层服务结束日期",
                                          example="2010-01-01")
-    special_education_teacher: YesOrNo = Field(None, title="是否特教", description="是否特教", example="yes")
-    dual_teacher: YesOrNo = Field(None, title="是否双师型", description="是否双师型", example="yes")
-    has_occupational_skill_level_certificate: YesOrNo = Field(None, title="是否具备职业技能等级证书",
-                                                          description="是否具备职业技能等级证书", example="yes")
-    enterprise_work_experience: str = Field(None, title="企业工作时长", description="企业工作时长", example="3年")
-    county_level_backbone: YesOrNo = Field(None, title="是否县级以上骨干", description="是否县级以上骨干", example="yes")
-    psychological_health_education_teacher: YesOrNo = Field(None, title="是否心理健康教育教师",
-                                                        description="是否心理健康教育教师", example="yes")
-    recruitment_method: str = Field(None, title="招聘方式", description="招聘方式", example="招聘")
-    teacher_number: str = Field(None, title="教职工号", description="教职工号", example="123456789012345678")
+    special_education_teacher: YesOrNo = Field("Y", title="是否特教", description="是否特教")
+    dual_teacher: YesOrNo = Field("Y", title="是否双师型", description="是否双师型")
+    has_occupational_skill_level_certificate: YesOrNo = Field("Y", title="是否具备职业技能等级证书",
+                                                          description="是否具备职业技能等级证书")
+    enterprise_work_experience: str = Field("", title="企业工作时长", description="企业工作时长", example="3年")
+    county_level_backbone: YesOrNo = Field("Y", title="是否县级以上骨干", description="是否县级以上骨干")
+    psychological_health_education_teacher: YesOrNo = Field("Y", title="是否心理健康教育教师",
+                                                        description="是否心理健康教育教师")
+    recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
+    teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
 
 class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
     """
@@ -392,59 +392,58 @@ class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
     """
     teacher_base_id: int = Field(..., title="教师ID", description="教师ID")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    ethnicity: str = Field(None, title="民族", description="民族", example="汉族")
-    nationality: str = Field(None, title="国家地区", description="国家地区", example="中国")
+    ethnicity: str = Field("", title="民族", description="民族", example="汉族")
+    nationality: str = Field("", title="国家地区", description="国家地区", example="中国")
     political_status: str = Field(..., title="政治面貌", description="政治面貌", example="党员")
-    native_place: str = Field(None, title="籍贯", description="籍贯", example="沈阳")
-    birth_place: str = Field(None, title="出生地", description="出生地", example="沈阳")
-    former_name: str = Field(None, title="曾用名", description="曾用名", example="张三")
-    marital_status: str = Field(None, title="婚姻状况", description="婚姻状况", example="已婚")
-    health_condition: str = Field(None, title="健康状况", description="健康状况", example="良好")
-    highest_education: str = Field(None, title="最高学历", description="最高学历", example="本科")
-    institution_of_highest_education: str = Field(None, title="获得最高学历的院校或者机构",
+    native_place: str = Field("", title="籍贯", description="籍贯", example="沈阳")
+    birth_place: str = Field("", title="出生地", description="出生地", example="沈阳")
+    former_name: str = Field("", title="曾用名", description="曾用名", example="张三")
+    marital_status: str = Field("", title="婚姻状况", description="婚姻状况", example="已婚")
+    health_condition: str = Field("", title="健康状况", description="健康状况", example="良好")
+    highest_education: str = Field("", title="最高学历", description="最高学历", example="本科")
+    institution_of_highest_education: str = Field("", title="获得最高学历的院校或者机构",
                                                   description="获得最高学历的院校或者机构", example="沈阳师范大学")
     special_education_start_time: date = Field(None, title="特教开始时间", description="特教开始时间",
                                                example="2021-10-10")
     start_working_date: date = Field(None, title="参加工作年月", description="参加工作年月", example="2010-01-01")
     enter_school_time: date = Field(None, title="进本校时间", description="进本校时间", example="2010-01-01")
-    source_of_staff: str = Field(None, title="教职工来源", description="教职工来源", example="招聘")
-    staff_category: str = Field(None, title="教职工类别", description="教职工类别", example="教师")
-    in_post: YesOrNo = Field(None, title="是否在编", description="是否在编", example="yes")
-    employment_form: str = Field(None, title="用人形式", description="用人形式", example="合同")
-    contract_signing_status: str = Field(None, title="合同签订情况", description="合同签订情况", example="已签")
-    current_post_type: str = Field(None, title="现在岗位类型", description="现在岗位类型", example="教师")
-    current_post_level: str = Field(None, title="现岗位等级", description="现岗位等级", example="一级")
-    current_technical_position: str = Field(None, title="现妆业技术职务", description="现妆业技术职务", example="教师")
-    full_time_special_education_major_graduate: YesOrNo = Field(None, title="是否全日制特殊教育专业毕业",
-                                                            description="是否全日制特殊教育专业毕业", example="yes")
-    received_preschool_education_training: YesOrNo = Field(None, title="是否受过学前教育培训",
-                                                       description="是否受过学前教育培训", example="yes")
-    full_time_normal_major_graduate: YesOrNo = Field(None, title="是否全日制师范类专业毕业",
+    source_of_staff: str = Field("", title="教职工来源", description="教职工来源", example="招聘")
+    staff_category: str = Field("", title="教职工类别", description="教职工类别", example="教师")
+    in_post: YesOrNo = Field("Y", title="是否在编", description="是否在编")
+    employment_form: str = Field("", title="用人形式", description="用人形式", example="合同")
+    contract_signing_status: str = Field("", title="合同签订情况", description="合同签订情况", example="已签")
+    current_post_type: str = Field("", title="现在岗位类型", description="现在岗位类型", example="教师")
+    current_post_level: str = Field("", title="现岗位等级", description="现岗位等级", example="一级")
+    current_technical_position: str = Field("", title="现妆业技术职务", description="现妆业技术职务", example="教师")
+    full_time_special_education_major_graduate: YesOrNo = Field("Y", title="是否全日制特殊教育专业毕业",
+                                                            description="是否全日制特殊教育专业毕业")
+    received_preschool_education_training: YesOrNo = Field("Y", title="是否受过学前教育培训",
+                                                       description="是否受过学前教育培训")
+    full_time_normal_major_graduate: YesOrNo = Field("Y", title="是否全日制师范类专业毕业",
                                                  description="是否全日制师范类专业毕业")
-    received_special_education_training: YesOrNo = Field(None, title="是否受过特教专业培训",
+    received_special_education_training: YesOrNo = Field("Y", title="是否受过特教专业培训",
                                                      description="是否受过特教专业培训")
-    has_special_education_certificate: YesOrNo = Field(None, title="是否有特教证书", description="是否有特教证书",
-                                                   example="yes")
-    information_technology_application_ability: str = Field(None, title="信息技术应用能力",
+    has_special_education_certificate: YesOrNo = Field("Y", title="是否有特教证书", description="是否有特教证书")
+    information_technology_application_ability: str = Field("", title="信息技术应用能力",
                                                             description="信息技术应用能力", example="优秀")
 
-    free_normal_college_student: YesOrNo = Field(None, title="是否免费师范生", description="是否免费师范生", example="yes")
-    participated_in_basic_service_project: YesOrNo= Field(None, title="是否参加基层服务项目",
-                                                       description="是否参加基层服务项目", example="yes")
+    free_normal_college_student: YesOrNo = Field("Y", title="是否免费师范生", description="是否免费师范生")
+    participated_in_basic_service_project: YesOrNo= Field("Y", title="是否参加基层服务项目",
+                                                       description="是否参加基层服务项目")
     basic_service_start_date: date = Field(None, title="基层服务起始日期", description="基层服务起始日期",
                                            example="2010-01-01")
     basic_service_end_date: date = Field(None, title="基层服务结束日期", description="基层服务结束日期",
                                          example="2010-01-01")
-    special_education_teacher: YesOrNo = Field(None, title="是否特教", description="是否特教", example="yes")
-    dual_teacher: YesOrNo = Field(None, title="是否双师型", description="是否双师型", example="yes")
-    has_occupational_skill_level_certificate: YesOrNo = Field(None, title="是否具备职业技能等级证书",
-                                                          description="是否具备职业技能等级证书", example="yes")
-    enterprise_work_experience: str = Field(None, title="企业工作时长", description="企业工作时长", example="3年")
-    county_level_backbone: YesOrNo = Field(None, title="是否县级以上骨干", description="是否县级以上骨干", example="yes")
-    psychological_health_education_teacher: YesOrNo = Field(None, title="是否心理健康教育教师",
-                                                        description="是否心理健康教育教师", example="yes")
-    recruitment_method: str = Field(None, title="招聘方式", description="招聘方式", example="招聘")
-    teacher_number: str = Field(None, title="教职工号", description="教职工号", example="123456789012345678")
+    special_education_teacher: YesOrNo = Field("Y", title="是否特教", description="是否特教")
+    dual_teacher: YesOrNo = Field("Y", title="是否双师型", description="是否双师型")
+    has_occupational_skill_level_certificate: YesOrNo = Field("Y", title="是否具备职业技能等级证书",
+                                                          description="是否具备职业技能等级证书")
+    enterprise_work_experience: str = Field("", title="企业工作时长", description="企业工作时长", example="3年")
+    county_level_backbone: YesOrNo = Field("Y", title="是否县级以上骨干", description="是否县级以上骨干")
+    psychological_health_education_teacher: YesOrNo = Field("Y", title="是否心理健康教育教师",
+                                                        description="是否心理健康教育教师")
+    recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
+    teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
 
 
 
@@ -492,18 +491,18 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
     招聘方式：recruitment_method
     教职工号：teacher_number
     """
-    teacher_base_id: int = Field(None, title="教师ID", description="教师ID")
+    teacher_base_id: int = Field(0, title="教师ID", description="教师ID")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     ethnicity: str = Field(..., title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家地区", description="国家地区", example="中国")
     political_status: str = Field(..., title="政治面貌", description="政治面貌", example="党员")
-    native_place: str = Field(None, title="籍贯", description="籍贯", example="沈阳")
-    birth_place: str = Field(None, title="出生地", description="出生地", example="沈阳")
-    former_name: str = Field(None, title="曾用名", description="曾用名", example="张三")
-    marital_status: str = Field(None, title="婚姻状况", description="婚姻状况", example="已婚")
-    health_condition: str = Field(None, title="健康状况", description="健康状况", example="良好")
-    highest_education: str = Field(None, title="最高学历", description="最高学历", example="本科")
-    institution_of_highest_education: str = Field(None, title="获得最高学历的院校或者机构",
+    native_place: str = Field("", title="籍贯", description="籍贯", example="沈阳")
+    birth_place: str = Field("", title="出生地", description="出生地", example="沈阳")
+    former_name: str = Field("", title="曾用名", description="曾用名", example="张三")
+    marital_status: str = Field("", title="婚姻状况", description="婚姻状况", example="已婚")
+    health_condition: str = Field("", title="健康状况", description="健康状况", example="良好")
+    highest_education: str = Field("", title="最高学历", description="最高学历", example="本科")
+    institution_of_highest_education: str = Field("", title="获得最高学历的院校或者机构",
                                                   description="获得最高学历的院校或者机构", example="沈阳师范大学")
     special_education_start_time: date = Field(..., title="特教开始时间", description="特教开始时间",
                                                example="2021-10-10")
@@ -511,42 +510,42 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
     enter_school_time: date = Field(..., title="进本校时间", description="进本校时间", example="2010-01-01")
     source_of_staff: str = Field(..., title="教职工来源", description="教职工来源", example="招聘")
     staff_category: str = Field(..., title="教职工类别", description="教职工类别", example="教师")
-    in_post: YesOrNo = Field(..., title="是否在编", description="是否在编", example="yes")
+    in_post: YesOrNo = Field(..., title="是否在编", description="是否在编")
     employment_form: str = Field(..., title="用人形式", description="用人形式", example="合同")
     contract_signing_status: str = Field(..., title="合同签订情况", description="合同签订情况", example="已签")
-    current_post_type: str = Field(None, title="现在岗位类型", description="现在岗位类型", example="教师")
-    current_post_level: str = Field(None, title="现岗位等级", description="现岗位等级", example="一级")
-    current_technical_position: str = Field(None, title="现妆业技术职务", description="现妆业技术职务", example="教师")
+    current_post_type: str = Field("", title="现在岗位类型", description="现在岗位类型", example="教师")
+    current_post_level: str = Field("", title="现岗位等级", description="现岗位等级", example="一级")
+    current_technical_position: str = Field("", title="现妆业技术职务", description="现妆业技术职务", example="教师")
     full_time_special_education_major_graduate: YesOrNo = Field(..., title="是否全日制特殊教育专业毕业",
-                                                            description="是否全日制特殊教育专业毕业", example="yes")
+                                                            description="是否全日制特殊教育专业毕业",)
     received_preschool_education_training: YesOrNo = Field(..., title="是否受过学前教育培训",
-                                                       description="是否受过学前教育培训", example="yes")
+                                                       description="是否受过学前教育培训")
     full_time_normal_major_graduate: YesOrNo = Field(..., title="是否全日制师范类专业毕业",
                                                  description="是否全日制师范类专业毕业")
     received_special_education_training: YesOrNo = Field(..., title="是否受过特教专业培训",
                                                      description="是否受过特教专业培训")
-    has_special_education_certificate: YesOrNo = Field(..., title="是否有特教证书", description="是否有特教证书",
-                                                   example="yes")
+    has_special_education_certificate: YesOrNo = Field(..., title="是否有特教证书", description="是否有特教证书")
+
     information_technology_application_ability: str = Field(..., title="信息技术应用能力",
                                                             description="信息技术应用能力", example="优秀")
 
-    free_normal_college_student: YesOrNo = Field(..., title="是否免费师范生", description="是否免费师范生", example="yes")
+    free_normal_college_student: YesOrNo = Field(..., title="是否免费师范生", description="是否免费师范生")
     participated_in_basic_service_project: YesOrNo = Field(..., title="是否参加基层服务项目",
-                                                       description="是否参加基层服务项目", example="yes")
+                                                       description="是否参加基层服务项目")
     basic_service_start_date: date = Field(None, title="基层服务起始日期", description="基层服务起始日期",
                                            example="2010-01-01")
     basic_service_end_date: date = Field(None, title="基层服务结束日期", description="基层服务结束日期",
                                          example="2010-01-01")
-    special_education_teacher: YesOrNo = Field(..., title="是否特教", description="是否特教", example="yes")
-    dual_teacher: YesOrNo = Field(..., title="是否双师型", description="是否双师型", example="yes")
+    special_education_teacher: YesOrNo = Field(..., title="是否特教", description="是否特教")
+    dual_teacher: YesOrNo = Field(..., title="是否双师型", description="是否双师型")
     has_occupational_skill_level_certificate: YesOrNo = Field(..., title="是否具备职业技能等级证书",
-                                                          description="是否具备职业技能等级证书", example="yes")
+                                                          description="是否具备职业技能等级证书",)
     enterprise_work_experience: str = Field(..., title="企业工作时长", description="企业工作时长", example="3年")
-    county_level_backbone: YesOrNo = Field(..., title="是否县级以上骨干", description="是否县级以上骨干", example="yes")
+    county_level_backbone: YesOrNo = Field(..., title="是否县级以上骨干", description="是否县级以上骨干")
     psychological_health_education_teacher: YesOrNo = Field(..., title="是否心理健康教育教师",
-                                                        description="是否心理健康教育教师", example="yes")
+                                                        description="是否心理健康教育教师")
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
-    teacher_number: str = Field(None, title="教职工号", description="教职工号", example="123456789012345678")
+    teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
 
 
 # 查询新入职员工模型3.1

@@ -73,7 +73,7 @@ class StudentBaseInfo(BaseDBModel):
     political_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="政治面貌")
     ethnicity: Mapped[str] = mapped_column(String(64), nullable=True, comment="民族")
     blood_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="血型")
-    home_phone_number: Mapped[str] = mapped_column(String(64), nullable=False, comment="家庭电话")
+    home_phone_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="家庭电话")
     email_or_other_contact: Mapped[str] = mapped_column(String(64), nullable=True, comment="电子信箱/其他联系方式")
     migrant_children: Mapped[str] = mapped_column(String(64), nullable=True, comment="是否随迁子女")
     disabled_person: Mapped[str] = mapped_column(String(64), nullable=True, comment="是否残疾人")
