@@ -36,25 +36,25 @@ class StudentTransactionRule(object):
         # 定义 视图和model的映射关系
 
         original_dict_map_view_orm = {
-            "natural_edu_no": "country_no",
+            # "natural_edu_no": "country_no",
             # "grade_name": "in_grade",
             # "classes": "in_class",
-            "transferin_time": "transfer_time",
-            "transferin_reason": "transfer_reason",
+            # "transferin_time": "transfer_time",
+            # "transferin_reason": "transfer_reason",
             # "school_id": "in_school_id",
         }
         if direction == TransactionDirection.OUT.value:
             original_dict_map_view_orm = {
-                "natural_edu_no": "country_no",
+                # "natural_edu_no": "country_no",
                 # "grade_name": "out_grade",
                 # "classes": "out_class",
-                "transferin_time": "transfer_time",
-                "transferin_reason": "transfer_reason",
+                # "transferin_time": "transfer_time",
+                # "transferin_reason": "transfer_reason",
                 # "school_id": "out_school_id",
             }
 
         student_transaction_db = view_model_to_orm_model(student_transaction, StudentTransaction,
-                                                         original_dict_map_view_orm)
+                                                         original_dict_map_view_orm,exclude=["id"])
         # student_transaction_db = StudentTransaction()
         student_transaction_db.direction = direction
         # student_transaction_db.school_id = student_transaction.school_id
@@ -124,10 +124,13 @@ class StudentTransactionRule(object):
             kdict["country_no"] = edu_no
 
         paging = await self.student_transaction_dao.query_studenttransaction_with_page(  page_request,**kdict)
-        # 字段映射的示例写法   , {"hash_password": "password"}
-        paging_result = PaginatedResponse.from_paging(paging, StudentTransactionModel,other_mapper={"in_school_id": "school_id","in_grade": "grade_name",
-                                                                                                    "in_class": "classes",
-                                                                                                    })
+        # print(2222222222222,paging)
+
+        # 字段映射的示例写法   , {"hash_password": "password"} other_mapper={"in_school_id": "school_id","in_grade": "grade_name",
+        #                                                                                                     "in_class": "classes",
+        #                                                                                                     }
+        paging_result = PaginatedResponse.from_paging(paging, StudentTransactionModel)
+        # print(3333333333333333,paging_result)
         return paging_result
 
     async def query_student_transaction(self, student_transaction_name):
