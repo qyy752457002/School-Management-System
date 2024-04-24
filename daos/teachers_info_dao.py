@@ -58,7 +58,7 @@ class TeachersInfoDao(DAOBase):
         进本校时间：enter_school_time
         审核状态：approval_status
         """
-        query = select(Teacher.teacher_id, Teacher.teacher_name, Teacher.teacher_id_number, Teacher.teacher_gender,
+        query = select(Teacher.teacher_id,TeacherInfo.teacher_base_id, Teacher.teacher_name, Teacher.teacher_id_number, Teacher.teacher_gender,
                        Teacher.teacher_employer, Teacher.teacher_approval_status, TeacherInfo.highest_education,
                        TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
                        TeacherInfo.enter_school_time).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id)

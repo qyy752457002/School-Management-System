@@ -38,7 +38,7 @@ class StudentsBaseInfoRule(object):
 
 
 
-    async def add_students_base_info(self, students_base_info: StudentsKeyinfoModel):
+    async def add_students_base_info(self, students_base_info: NewBaseInfoCreate):
         """
         新增学生基本信息
         """
