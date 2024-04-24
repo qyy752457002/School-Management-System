@@ -140,8 +140,9 @@ class CurrentStudentsView(BaseView):
         student_edu_info_in.status = AuditAction.NEEDAUDIT.value
         student_edu_info_in.student_id = res_student.student_id
         student_edu_info_in.relation_id = res_out.id
+        print(  res_out.id,000000)
 
-        res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in,relation_id=res_out.id)
+        res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in, TransactionDirection.IN.value,res_out.id)
 
         return res
 
