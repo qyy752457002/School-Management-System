@@ -5,7 +5,7 @@ from mini_framework.web.views import BaseView
 from models.student_transaction import AuditAction, TransactionDirection
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
-from views.models.student_transaction import StudentTransaction, StudentTransactionFlow
+from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, StudentEduInfo, \
     NewStudentTransferIn
 # from fastapi import Field
@@ -54,6 +54,39 @@ class CurrentStudentsView(BaseView):
         """
         res = await self.student_session_rule.add_student_session(student_session)
         return res
+
+    # 转学申请的 列表
+    async def page_student_transaction(self,
+                                       audit_status: StudentTransactionStatus = Query("", title="", description="状态",
+                                                                                      examples=['needaudit']),
+                                       student_name: str = Query("", title="",
+                                                                 description="学生姓名", min_length=1, max_length=20),
+
+                                       school_id: int = Query(0, title="", description="学校ID", ),
+                                       student_gender: str = Query("", title="", description=" 学生性别", min_length=1,
+                                                                   max_length=20),
+
+                                       apply_user: str = Query("", title="",
+                                                               description="申请人", min_length=1,
+                                                               max_length=20, ),
+                                       edu_no: str = Query("", title="  ", description=" 学籍号码", min_length=1,
+                                                           max_length=20),
+
+                                       page_request=Depends(PageRequest)):
+        print(page_request, )
+        items = []
+        # exit(1)
+        # return page_search
+        paging_result = await self.student_transaction_rule.query_student_transaction_with_page(page_request,
+                                                                                                audit_status,
+                                                                                                student_name,
+                                                                                                student_gender,
+                                                                                                school_id,
+                                                                                                apply_user,
+                                                                                                edu_no
+
+                                                                                                )
+        return paging_result
 
     # 在校生转入    届别 班级
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
