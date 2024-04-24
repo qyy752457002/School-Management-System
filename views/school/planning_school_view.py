@@ -280,6 +280,32 @@ class PlanningSchoolView(BaseView):
 
         return res
 
+    # 正式开办  传全部  插入或者更新  todo
+    async def put_open(self,
+
+                  planning_school: PlanningSchoolBaseInfo,
+                  planning_school_communication: PlanningSchoolCommunications,
+                  planning_school_eduinfo: PlanningSchoolEduInfo,
+                  planning_school_id: int = Query(..., title="", description="学校id/园所id", example='38'),
+
+                  ):
+        # print(planning_school)
+        planning_school.id = planning_school_id
+        planning_school_communication.planning_school_id = planning_school_id
+        planning_school_eduinfo.planning_school_id = planning_school_id
+        planning_school_communication.id = None
+        planning_school_eduinfo.id = None
+
+        res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
+        res_com = await self.planning_school_communication_rule.update_planning_school_communication_byargs(
+            planning_school_communication)
+        res_edu = await self.planning_school_eduinfo_rule.update_planning_school_eduinfo_byargs(planning_school_eduinfo)
+
+        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res2= await self.patch_open(str(planning_school_id))
+
+        return res2
+
     async def get_search(self,
                      planning_school_name: str = Query("", title="学校名称", description="1-20字符",),
 
