@@ -13,7 +13,8 @@
                     "port": 54321,
                     "user": "schooloms",
                     "password": "J16s10Wp08yfEskmVAJH",
-                    "database": "schooloms"
+                    "database": "schooloms",
+                    "pool_size": 50
                 },
                 "slaves": [
                     {
@@ -21,14 +22,16 @@
                         "port": 54321,
                         "user": "schooloms",
                         "password": "J16s10Wp08yfEskmVAJH",
-                        "database": "schooloms"
+                        "database": "schooloms",
+                        "pool_size": 50
                     },
                     {
                         "host": "10.0.0.42",
                         "port": 54321,
                         "user": "schooloms",
                         "password": "J16s10Wp08yfEskmVAJH",
-                        "database": "schooloms"
+                        "database": "schooloms",
+                        "pool_size": 50
                     }
                 ]
             }
