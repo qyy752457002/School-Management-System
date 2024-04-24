@@ -302,8 +302,9 @@ class PlanningSchoolView(BaseView):
         res_edu = await self.planning_school_eduinfo_rule.update_planning_school_eduinfo_byargs(planning_school_eduinfo)
 
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res2= await self.patch_open(str(planning_school_id))
 
-        return res
+        return res2
 
     async def get_search(self,
                      planning_school_name: str = Query("", title="学校名称", description="1-20字符",),
