@@ -8,7 +8,7 @@ from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 from models.teachers import Teacher
 from rules.teachers_rule import TeachersRule
-from views.models.teachers import Teachers, TeacherInfo, TeachersCreatModel, TeacherInfoCreateModel, \
+from views.models.teachers import Teachers, TeacherInfo, TeachersCreatModel, CurrentTeacherInfoSaveModel, \
     TeacherInfoSaveModel, TeacherInfoSubmit,CurrentTeacherQuery
 from rules.teachers_info_rule import TeachersInfoRule
 
@@ -75,8 +75,8 @@ class NewTeachersView(BaseView):
         return res
 
 
-    async def put_newteacherinforesave(self, teacher_info: CurrentTeacherQuery):
-        res = await self.teacher_info_rule.add_teachers_info_valid(teacher_info)
+    async def put_newteacherinforesave(self, teacher_info: CurrentTeacherInfoSaveModel):
+        res = await self.teacher_info_rule.update_teachers_info(teacher_info)
         return res
 
     # 编辑教职工基本信息

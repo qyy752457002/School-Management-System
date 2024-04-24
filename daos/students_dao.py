@@ -37,7 +37,7 @@ class StudentsDao(DAOBase):
         """
         删除单个学生信息
         """
-        session = self.master_db()
+        session = await self.master_db()
         return await self.delete(session, students)
 
     async def get_all_students(self):
