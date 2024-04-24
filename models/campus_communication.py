@@ -27,6 +27,7 @@ class CampusCommunication(BaseDBModel):
     contact_number: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="联系电话")
     area_code: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="电话区号")
     long: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="所在经度")
+    #
     lat: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="所在纬度")
     leg_repr_name: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="法定代表人姓名")
 

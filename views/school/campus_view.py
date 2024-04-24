@@ -45,25 +45,26 @@ class CampusView(BaseView):
         print(campus)
         res =await  self.campus_rule.add_campus(campus)
 
-        resc = CampusCommunications(id=0)
-        # logging.debug(resc,'模型2', res.id, type( res.id ))
-        newid = str(res.id)
-        print(resc, '模型23', res.id, type(res.id))
-        # str( res.id).copy()
-
-        resc.campus_id = int(newid)
-        print(resc, newid, '||||||||')
-
-        # 保存通信信息
-        res_comm = await self.campus_communication_rule.add_campus_communication(resc,
-                                                                                 convertmodel=False)
-        print(res_comm, '模型2 res')
         #
-        resedu = CampusEduInfo(id=0)
-        resedu.campus_id = res.id
-        # 保存教育信息
-        res_edu = await self.campus_eduinfo_rule.add_campus_eduinfo(resedu, convertmodel=False)
-        print(res_edu)
+        # resc = CampusCommunications(id=0)
+        # # logging.debug(resc,'模型2', res.id, type( res.id ))
+        # newid = str(res.id)
+        # print(resc, '模型23', res.id, type(res.id))
+        # # str( res.id).copy()
+        #
+        # resc.campus_id = int(newid)
+        # print(resc, newid, '||||||||')
+        #
+        # # 保存通信信息
+        # res_comm = await self.campus_communication_rule.add_campus_communication(resc,
+        #                                                                          convertmodel=False)
+        # print(res_comm, '模型2 res')
+        # #
+        # resedu = CampusEduInfo(id=0)
+        # resedu.campus_id = res.id
+        # # 保存教育信息
+        # res_edu = await self.campus_eduinfo_rule.add_campus_eduinfo(resedu, convertmodel=False)
+        # print(res_edu)
 
         return  res
 

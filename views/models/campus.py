@@ -85,7 +85,38 @@ class CampusKeyInfo(BaseModel):
     campus_org_type: str = Query('', title="", description=" 校区办别",examples=['民办'])
     campus_level: str = Query('', title="", description=" 校区星级",examples=['5'])
 class CampusKeyAddInfo(BaseModel):
+    """
+    location_city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="校区所在地(省市)")
+    location_district: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="校区所在地(区县)")
+
+    contact_number: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="联系电话")
+    long: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="所在经度")
+    lat: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="所在纬度")
+    create_campus_date: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="成立日期")
+
+    postal_code: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="邮政编码")
+    fax_number: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="传真电话")
+    email: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="单位电子信箱")
+    detailed_address: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="园所详细地址")
+    related_license_upload: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="相关证照上传")
+    """
     id:int= Query(None, title="", description="学校id", example='1')
+    location_city: str = Query('', title="", description="校区所在地(省市)",examples=['3'])
+    location_district: str = Query('', title="", description="校区所在地(区县)",examples=['3'])
+    contact_number: str = Query('', title="联系电话", description="联系电话",examples=['3'])
+    long: str = Query('', title="", description="所在经度",examples=['3'])
+    lat: str = Query('', title="", description="所在纬度",examples=['3'])
+    create_campus_date: str = Query('', title="", description="成立日期",examples=['3'])
+    postal_code: str = Query('', title="邮政编码", description="邮政编码",examples=['3'])
+    fax_number: str = Query('', title="", description="传真电话",examples=['3'])
+    email: str = Query('', title="单位电子信箱", description="单位电子信箱",examples=['3'])
+    detailed_address: str = Query('', title="", description="园所详细地址",examples=['3'])
+    related_license_upload: str = Query('', title="相关证照上传", description="相关证照上传",examples=['3'])
+
+
+
+
+
     campus_name: str = Query(..., title="校区名称", description="园所名称",examples=['XX小学'])
     campus_no:str= Query(None, title="校区编号", description="校区编号/园所代码",min_length=1,max_length=20,example='SC2032633')
     school_id: int = Field(None, title="", description="规划校id",examples=['1'])
@@ -98,6 +129,8 @@ class CampusKeyAddInfo(BaseModel):
     campus_org_type: str = Query('', title="", description=" 校区办别",examples=['民办'])
     campus_level: str = Query('', title="", description=" 校区星级",examples=['5'])
     campus_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
+    campus_leader_name: str = Field('', title="", description="校区负责人姓名",examples=['3'])
 
+    campus_leader_position: str = Field('', title="", description="校区负责人职位",examples=['3'])
 
 
