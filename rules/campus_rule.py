@@ -8,23 +8,32 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject, get_i
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 
+from business_exceptions.school import SchoolNotFoundError
 from daos.campus_dao import CampusDAO
+from daos.school_dao import SchoolDAO
 from models.campus import Campus
 from rules.enum_value_rule import EnumValueRule
 from views.models.campus import Campus as CampusModel
 
 from views.models.campus import CampusBaseInfo
 from views.models.planning_school import PlanningSchoolStatus
-
-
+from business_exceptions.planning_school import PlanningSchoolNotFoundError
+from daos.planning_school_dao import PlanningSchoolDAO
+from views.models.school import School as SchoolModel
 @dataclass_inject
 class CampusRule(object):
     campus_dao: CampusDAO
+    p_school_dao: SchoolDAO
 
-    async def get_campus_by_id(self, campus_id):
+    async def get_campus_by_id(self, campus_id,extra_model=None):
         campus_db = await self.campus_dao.get_campus_by_id(campus_id)
         # 可选 , exclude=[""]
-        campus = orm_model_to_view_model(campus_db, CampusModel)
+        if extra_model:
+            # school = orm_model_to_view_model(school_db, extra_model)
+            campus = orm_model_to_view_model(campus_db, extra_model)
+
+        else:
+            campus = orm_model_to_view_model(campus_db, CampusModel)
         return campus
 
     async def get_campus_by_campus_name(self, campus_name):
@@ -45,6 +54,34 @@ class CampusRule(object):
         campus_db.status =PlanningSchoolStatus.DRAFT.value
         campus_db.created_uid = 0
         campus_db.updated_uid = 0
+
+
+        if campus.school_id>0 :
+            # rule互相应用有问题  用dao
+            p_exists_school_model = await self.p_school_dao.get_school_by_id(  campus.school_id)
+            if not p_exists_school_model:
+                raise SchoolNotFoundError()
+            # print(p_exists_school_model,999)
+
+            p_exists_school = orm_model_to_view_model(p_exists_school_model, SchoolModel)
+            # print(p_exists_school)
+
+            if p_exists_school:
+
+                # 办学者
+                campus_db.campus_type = p_exists_school.school_type
+                campus_db.campus_operation_type = p_exists_school.school_operation_type
+                campus_db.campus_operation_type_lv2 = p_exists_school.school_operation_type_lv2
+                campus_db.campus_operation_type_lv3 = p_exists_school.school_operation_type_lv3
+
+                campus_db.campus_nature = p_exists_school.school_nature
+                campus_db.campus_org_type = p_exists_school.school_org_type
+                campus_db.campus_org_form = p_exists_school.school_org_form
+                campus_db.founder_type = p_exists_school.founder_type
+                campus_db.founder_type_lv2 = p_exists_school.founder_type_lv2
+                campus_db.founder_type_lv3 = p_exists_school.founder_type_lv3
+                campus_db.founder_name = p_exists_school.founder_name
+                campus_db.founder_code = p_exists_school.founder_code
 
         campus_db = await self.campus_dao.add_campus(campus_db)
         campus = orm_model_to_view_model(campus_db, CampusModel, exclude=["created_at",'updated_at'])

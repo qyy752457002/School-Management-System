@@ -1,0 +1,18 @@
+
+    INSERT INTO lfun_enum_value (   enum_name   , enum_value, description ,parent_id,is_enabled , created_at,updated_at , is_deleted 
+    ) VALUES (  'major',  '1', '农林牧渔大类','0', True ,'2020-10-01 00:00:00','2020-10-01 00:00:00', False  );
+
+        INSERT INTO lfun_enum_value (   enum_name   , enum_value, description ,parent_id,is_enabled , created_at,updated_at , is_deleted
+        ) VALUES (  'major',  '2', '交通运输大类','0', True ,'2020-10-01 00:00:00','2020-10-01 00:00:00', False  );
+
+
+    INSERT INTO lfun_enum_value (   enum_name   , enum_value, description ,parent_id,is_enabled , created_at,updated_at , is_deleted
+    ) VALUES (  'major',  '11', '农业技术类','1', True ,'2020-10-01 00:00:00','2020-10-01 00:00:00', False  );
+    INSERT INTO lfun_enum_value (   enum_name   , enum_value, description ,parent_id,is_enabled , created_at,updated_at , is_deleted
+    ) VALUES (  'major',  '12', '林业技术类','1', True ,'2020-10-01 00:00:00','2020-10-01 00:00:00', False  );
+    INSERT INTO lfun_enum_value (   enum_name   , enum_value, description ,parent_id,is_enabled , created_at,updated_at , is_deleted
+    ) VALUES (  'major',  '13', '畜牧兽医类','1', True ,'2020-10-01 00:00:00','2020-10-01 00:00:00', False  );
+    INSERT INTO lfun_enum_value (   enum_name   , enum_value, description ,parent_id,is_enabled , created_at,updated_at , is_deleted
+    ) VALUES (  'major',  '14', '水产养殖类','1', True ,'2020-10-01 00:00:00','2020-10-01 00:00:00', False  );
+    INSERT INTO lfun_enum_value (   enum_name   , enum_value, description ,parent_id,is_enabled , created_at,updated_at , is_deleted
+    ) VALUES (  'major',  '15', '农林管理类','1', True ,'2020-10-01 00:00:00','2020-10-01 00:00:00', False  );

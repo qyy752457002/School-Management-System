@@ -27,10 +27,10 @@ class CampusCommunicationRule(object):
         return campus
 
     async def add_campus_communication(self, campus: CampusCommunicationModel,convertmodel=True):
-        exists_campus = await self.campus_communication_dao.get_campus_communication_by_id(
+        exists_campus = await self.campus_communication_dao.get_campus_communication_by_campus_id(
             campus.campus_id)
         if exists_campus:
-            raise Exception(f"校区通信信息{campus.campus_communication_name}已存在")
+            raise Exception(f"校区通信信息{campus.campus_id}已存在")
 
         if convertmodel:
             campus_communication_db = view_model_to_orm_model(campus, CampusCommunication,    exclude=["id"])

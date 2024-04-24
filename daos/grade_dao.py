@@ -1,6 +1,6 @@
-from sqlalchemy import select, func
+from sqlalchemy import select, func, update, delete
 
-from mini_framework.databases.entities.dao_base import DAOBase
+from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 from models.grade import Grade
@@ -27,13 +27,29 @@ class GradeDAO(DAOBase):
 
     async def update_grade(self, grade):
         session = await self.master_db()
-        session.add(grade)
+        session.execute( update(Grade).where(Grade.id== grade.id).values())
+        await session.commit()
+        return grade
+
+    async def update_grade_byargs(self, grade: Grade, *args, is_commit: bool = True):
+        session =await self.master_db()
+        update_contents = get_update_contents(grade, *args)
+        query = update(Grade).where(Grade.id == grade.id).values(**update_contents)
+        return await self.update(session, query, grade, update_contents, is_commit=is_commit)
+
+    async def softdelete_grade(self, grade):
+        session = await self.master_db()
+        deleted_status= True
+        update_stmt = update(Grade).where(Grade.id == grade.id).values(
+            is_deleted= deleted_status,
+        )
+        await session.execute(update_stmt)
         await session.commit()
         return grade
 
     async def delete_grade(self, grade):
         session = await self.master_db()
-        await session.delete(grade)
+        await session.execute(  delete(Grade).where(Grade.id == grade.id) )
         await session.commit()
         return grade
 

@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, update
+from sqlalchemy import select, func, update, desc
 
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
@@ -102,7 +102,7 @@ class CampusDAO(DAOBase):
                                      block,campus_level,borough,status,founder_type,
                                      founder_type_lv2,
                                      founder_type_lv3 ,school_id) -> Paging:
-        query = select(Campus)
+        query = select(Campus).order_by(desc(Campus.id))
 
         if campus_name:
             query = query.where(Campus.campus_name == campus_name)

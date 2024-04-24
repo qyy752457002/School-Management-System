@@ -30,6 +30,25 @@ class StudentsRule(object):
         students = orm_model_to_view_model(students_db, StudentsKeyinfoModel, exclude=[""])
         return students
 
+    async def add_student_new_student_transferin(self, students):
+        """
+        """
+        # if isinstance(students.birthday,str):
+        #
+        #     # 使用 strptime 函数将字符串转换为 datetime 对象
+        #     dt_obj = datetime.strptime( students.birthday, '%Y-%m-%d')
+        #
+        #     # 从 datetime 对象中提取 date 部分
+        #     date_obj = dt_obj.date()
+        #     students.birthday =date_obj
+        # print(students)
+
+        students_db = view_model_to_orm_model(students, Student, exclude=["student_id"])
+        # print(students_db)
+        students_db = await self.students_dao.add_students(students_db)
+        students = orm_model_to_view_model(students_db, NewStudentTransferIn, exclude=[""])
+        return students
+
     async def update_students(self, students):
         """
         编辑学生关键信息

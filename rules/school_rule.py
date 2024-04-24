@@ -8,24 +8,39 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject, get_i
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 
+from business_exceptions.planning_school import PlanningSchoolNotFoundError
+from daos.planning_school_dao import PlanningSchoolDAO
 from daos.school_dao import SchoolDAO
 from models.planning_school import PlanningSchool
 from models.school import School
 from rules.enum_value_rule import EnumValueRule
+# from rules.planning_school_rule import PlanningSchoolRule
 from views.models.planning_school import PlanningSchoolStatus
 from views.models.school import School as SchoolModel, SchoolKeyAddInfo
 
 from views.models.school import SchoolBaseInfo
+from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus
 
 
 @dataclass_inject
 class SchoolRule(object):
     school_dao: SchoolDAO
+    p_school_dao: PlanningSchoolDAO
 
-    async def get_school_by_id(self, school_id):
+    async def get_school_by_id(self, school_id,extra_model=None):
         school_db = await self.school_dao.get_school_by_id(school_id)
         # 可选 , exclude=[""]
-        school = orm_model_to_view_model(school_db, SchoolModel)
+        if extra_model:
+            school = orm_model_to_view_model(school_db, extra_model)
+
+            # planning_school_extra = orm_model_to_view_model(planning_school_db, extra_model,
+            #                                                 exclude=[""])
+            # return planning_school,planning_school_extra
+
+        else:
+
+            # return planning_school
+            school = orm_model_to_view_model(school_db, SchoolModel)
         return school
 
     async def get_school_by_school_name(self, school_name):
@@ -46,6 +61,37 @@ class SchoolRule(object):
         school_db.status =  PlanningSchoolStatus.DRAFT.value
         school_db.created_uid = 0
         school_db.updated_uid = 0
+        if school.planning_school_id>0 :
+            # rule互相应用有问题  用dao
+            p_exists_school_model = await self.p_school_dao.get_planning_school_by_id(  school.planning_school_id)
+            if not p_exists_school_model:
+                raise PlanningSchoolNotFoundError()
+            print(p_exists_school_model,999)
+
+            p_exists_school = orm_model_to_view_model(p_exists_school_model, PlanningSchoolModel)
+            print(p_exists_school)
+
+
+        # await school_rule.add_school_from_planning_school(exists_planning_school)
+        #     p_exists_school = await p_school_rule.get_planning_school_by_id(
+        #         school.planning_school_id)
+            if p_exists_school:
+
+                # 办学者
+                school_db.school_type = p_exists_school.planning_school_type
+                school_db.school_operation_type = p_exists_school.planning_school_operation_type
+                school_db.school_operation_type_lv2 = p_exists_school.planning_school_operation_type_lv2
+                school_db.school_operation_type_lv3 = p_exists_school.planning_school_operation_type_lv3
+
+                school_db.school_nature = p_exists_school.planning_school_nature
+                school_db.school_org_type = p_exists_school.planning_school_org_type
+                school_db.school_org_form = p_exists_school.planning_school_org_form
+                school_db.founder_type = p_exists_school.founder_type
+                school_db.founder_type_lv2 = p_exists_school.founder_type_lv2
+                school_db.founder_type_lv3 = p_exists_school.founder_type_lv3
+                school_db.founder_name = p_exists_school.founder_name
+                school_db.founder_code = p_exists_school.founder_code
+                # school_db.urban_rural_nature = p_exists_school.planning_school_urban_rural_nature
 
         school_db = await self.school_dao.add_school(school_db)
         school = orm_model_to_view_model(school_db, SchoolKeyAddInfo, exclude=["created_at",'updated_at'])
