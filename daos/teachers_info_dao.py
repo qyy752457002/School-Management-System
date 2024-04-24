@@ -42,7 +42,6 @@ class TeachersInfoDao(DAOBase):
         result = await session.execute(select(TeacherInfo).where(TeacherInfo.teacher_id == teacher_id))
         return result.scalar_one_or_none()
 
-
     async def query_teacher_with_page(self, query_model: NewTeacher, page_request: PageRequest) -> Paging:
         """
         新增教职工分页查询
@@ -58,7 +57,8 @@ class TeachersInfoDao(DAOBase):
         进本校时间：enter_school_time
         审核状态：approval_status
         """
-        query = select(Teacher.teacher_id,TeacherInfo.teacher_base_id, Teacher.teacher_name, Teacher.teacher_id_number, Teacher.teacher_gender,
+        query = select(Teacher.teacher_id, TeacherInfo.teacher_base_id, Teacher.teacher_name, Teacher.teacher_id_number,
+                       Teacher.teacher_gender,
                        Teacher.teacher_employer, Teacher.teacher_approval_status, TeacherInfo.highest_education,
                        TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
                        TeacherInfo.enter_school_time).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id)
@@ -88,8 +88,8 @@ class TeachersInfoDao(DAOBase):
         paging = await self.query_page(query, page_request)
         return paging
 
-
-    async def query_current_teacher_with_page(self, query_model: CurrentTeacherQuery, page_request: PageRequest) -> Paging:
+    async def query_current_teacher_with_page(self, query_model: CurrentTeacherQuery,
+                                              page_request: PageRequest) -> Paging:
         """
         新增教职工分页查询
         教师姓名：teacher_name
@@ -104,8 +104,9 @@ class TeachersInfoDao(DAOBase):
         进本校时间：enter_school_time
         """
         # todo 这个地方还应该加上审核状态通过的条件
-        query = select(Teacher.teacher_id, Teacher.teacher_name, Teacher.teacher_id_number, Teacher.teacher_gender,
-                       Teacher.teacher_employer,TeacherInfo.highest_education,
+        query = select(Teacher.teacher_id, TeacherInfo.teacher_base_id, Teacher.teacher_name, Teacher.teacher_id_number,
+                       Teacher.teacher_gender,
+                       Teacher.teacher_employer, TeacherInfo.highest_education,
                        TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
                        TeacherInfo.enter_school_time).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id)
         if query_model.teacher_name:
@@ -131,8 +132,6 @@ class TeachersInfoDao(DAOBase):
             query = query.where(TeacherInfo.enter_school_time == query_model.enter_school_time)
         paging = await self.query_page(query, page_request)
         return paging
-
-
 
     # 获取所有教师基本信息
     async def get_all_teachers_info(self):

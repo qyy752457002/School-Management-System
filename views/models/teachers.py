@@ -645,6 +645,7 @@ class CurrentTeacherQueryRe(BaseModel):
     进本校时间：enter_school_time
     审核状态：approval_status
     """
+    teacher_base_id: int = Field(..., title="教师ID", description="教师ID")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     teacher_name: str = Query("", title="姓名", description="姓名", example="张三")
     teacher_id_number: str = Query("", title="身份证号", description="身份证号", example="123456789012345678")
