@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 
 class School(BaseModel):
-    id:int= Query(None, title="", description="学校id", example='1'),
+    id:int= Query(None, title="", description="学校id", example='1')
     planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
 
     school_name: str = Field(..., title="学校名称", description="学校名称",examples=['XX小学'])
@@ -96,7 +96,7 @@ class School(BaseModel):
 
 # 学校的 基本信息模型   视图的额模型是按需提供的
 class SchoolBaseInfo(BaseModel):
-    id:int= Query(..., title="", description="学校id", example='1'),
+    id:int= Query(..., title="", description="学校id", example='1')
     school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
     school_short_name: str = Field(..., title="", description="园所简称",examples=['MXXX'])
     school_code: str = Field(..., title="", description=" 园所标识码",examples=['SC562369322SG'])
@@ -117,18 +117,18 @@ class SchoolBaseInfo(BaseModel):
 
 
 class SchoolKeyInfo(BaseModel):
-    id:int= Query(None, title="", description="学校id", example='1'),
+    id:int= Query(None, title="", description="学校id", example='1')
 
-    school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633'),
+    school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633')
     planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
-    borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区']),
-    block: str = Query(..., title=" Author", description="地域管辖区",examples=['铁西区']),
-    school_name: str = Query(..., title="学校名称", description="园所名称",examples=['XX小学']),
-    school_type: str = Query(..., title="", description=" 学校类型",examples=['中小学']),
-    school_operation_type: str = Query(..., title="", description="办学类型/学校性质",examples=['学前教育']),
-    school_operation_type_lv2: str = Query(..., title="", description=" 办学类型二级",examples=['小学']),
-    school_operation_type_lv3: str = Query(..., title="", description=" 办学类型三级",examples=['附设小学班']),
-    school_org_type: str = Query(..., title="", description=" 学校办别",examples=['民办']),
+    borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
+    block: str = Query(..., title=" Author", description="地域管辖区",examples=['铁西区'])
+    school_name: str = Query(..., title="学校名称", description="园所名称",examples=['XX小学'])
+    school_type: str = Query(..., title="", description=" 学校类型",examples=['中小学'])
+    school_operation_type: str = Query(..., title="", description="办学类型/学校性质",examples=['学前教育'])
+    school_operation_type_lv2: str = Query(..., title="", description=" 办学类型二级",examples=['小学'])
+    school_operation_type_lv3: str = Query(..., title="", description=" 办学类型三级",examples=['附设小学班'])
+    school_org_type: str = Query(..., title="", description=" 学校办别",examples=['民办'])
     school_level: str = Query(..., title="", description=" 学校星级",examples=['5'])
 
 class SchoolKeyAddInfo(BaseModel):
