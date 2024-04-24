@@ -27,34 +27,36 @@ class StudentTransactionRule(object):
         student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
         return student_transaction
 
-    async def add_student_transaction(self, student_transaction: StudentTransactionModel,direction=TransactionDirection.IN.value):
+    async def add_student_transaction(self, student_transaction: StudentTransactionModel,
+                                      direction=TransactionDirection.IN.value):
         # exists_student_transaction = await self.student_transaction_dao.get_studenttransaction_by_studenttransaction_name(student_transaction.student_transaction_name)
         # if exists_student_transaction:
         #     raise Exception(f"转学申请{student_transaction.student_transaction_name}已存在")
 
         # 定义 视图和model的映射关系
 
-        original_dict_map_view_orm ={
-                                     "natural_edu_no": "country_no",
-                                     "grade_name": "in_grade",
-                                     "classes": "in_class",
-                                     "transferin_time": "in_date",
-                                     "transferin_reason": "reason",
-                                     "school_id": "in_school_id",
-                                     }
+        original_dict_map_view_orm = {
+            "natural_edu_no": "country_no",
+            "grade_name": "in_grade",
+            "classes": "in_class",
+            "transferin_time": "in_date",
+            "transferin_reason": "reason",
+            "school_id": "in_school_id",
+        }
         if direction == TransactionDirection.OUT.value:
-            original_dict_map_view_orm ={
-                                     "natural_edu_no": "country_no",
-                                     "grade_name": "out_grade",
-                                     "classes": "out_class",
-                                     "transferin_time": "out_date",
-                                     "transferin_reason": "reason",
-                                     "school_id": "out_school_id",
-                                     }
+            original_dict_map_view_orm = {
+                "natural_edu_no": "country_no",
+                "grade_name": "out_grade",
+                "classes": "out_class",
+                "transferin_time": "out_date",
+                "transferin_reason": "reason",
+                "school_id": "out_school_id",
+            }
 
-        student_transaction_db = view_model_to_orm_model(student_transaction, StudentTransaction,original_dict_map_view_orm  )
+        student_transaction_db = view_model_to_orm_model(student_transaction, StudentTransaction,
+                                                         original_dict_map_view_orm)
         # student_transaction_db = StudentTransaction()
-        student_transaction_db.direction =direction
+        student_transaction_db.direction = direction
         # student_transaction_db.school_id = student_transaction.school_id
         # student_transaction_db.student_transaction_no = student_transaction.student_transaction_no
         # student_transaction_db.student_transaction_alias = student_transaction.student_transaction_alias
@@ -64,7 +66,8 @@ class StudentTransactionRule(object):
 
         flipped_dict = {v: k for k, v in original_dict_map_view_orm.items()}
 
-        student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""],other_mapper= flipped_dict)
+        student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""],
+                                                      other_mapper=flipped_dict)
         return student_transaction
 
     async def update_student_transaction(self, student_transaction):
@@ -78,7 +81,8 @@ class StudentTransactionRule(object):
             if value:
                 need_update_list.append(key)
 
-        student_transaction_db = await self.student_transaction_dao.update_studenttransaction(student_transaction,*need_update_list)
+        student_transaction_db = await self.student_transaction_dao.update_studenttransaction(student_transaction,
+                                                                                              *need_update_list)
         # student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
         return student_transaction_db
 
@@ -98,10 +102,21 @@ class StudentTransactionRule(object):
     async def get_student_transaction_count(self):
         return await self.student_transaction_dao.get_studenttransaction_count()
 
-    async def query_student_transaction_with_page(self, page_request: PageRequest, student_transaction_name=None,
-                                                  school_id=None, ):
-        paging = await self.student_transaction_dao.query_studenttransaction_with_page(student_transaction_name,
-                                                                                       school_id, page_request)
+    async def query_student_transaction_with_page(self, page_request: PageRequest, audit_status,
+                                                  student_name,
+                                                  student_gender,
+                                                  school_id,
+                                                  apply_user,
+                                                  edu_no):
+        # 获取分页数据
+
+
+        paging = await self.student_transaction_dao.query_studenttransaction_with_page(  page_request,audit_status,
+                                                                                         student_name,
+                                                                                         student_gender,
+                                                                                         school_id,
+                                                                                         apply_user,
+                                                                                         edu_no)
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, StudentTransactionModel)
         return paging_result
