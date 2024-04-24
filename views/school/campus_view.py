@@ -171,22 +171,23 @@ class CampusView(BaseView):
 
     # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性
     async def put(self,
+                  campus:CampusKeyAddInfo,
 
-                  campus: CampusBaseInfo,
-                  campus_communication: CampusCommunications,
-                  campus_eduinfo: CampusEduInfo,
+                  # campus: CampusBaseInfo,
+                  # campus_communication: CampusCommunications,
+                  # campus_eduinfo: CampusEduInfo,
                   campus_id: int = Query(..., title="", description="校区id", example='38'),
 
                   ):
         # print(planning_campus)
         campus.id = campus_id
-        campus_communication.campus_id = campus_id
-        campus_eduinfo.campus_id = campus_id
+        # campus_communication.campus_id = campus_id
+        # campus_eduinfo.campus_id = campus_id
 
         res = await self.campus_rule.update_campus_byargs(campus)
-        res_com = await self.campus_communication_rule.update_campus_communication_byargs(
-            campus_communication)
-        res_edu = await self.campus_eduinfo_rule.update_campus_eduinfo_byargs(campus_eduinfo)
+        # res_com = await self.campus_communication_rule.update_campus_communication_byargs(
+        #     campus_communication)
+        # res_edu = await self.campus_eduinfo_rule.update_campus_eduinfo_byargs(campus_eduinfo)
 
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
 

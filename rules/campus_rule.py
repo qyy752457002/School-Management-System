@@ -133,11 +133,11 @@ class CampusRule(object):
         exists_campus = await self.campus_dao.get_campus_by_id(campus.id)
         if not exists_campus:
             raise Exception(f"校区{campus.id}不存在")
-        if exists_campus.status== PlanningSchoolStatus.DRAFT.value:
-            exists_campus.status= PlanningSchoolStatus.OPENING.value
-            campus.status= PlanningSchoolStatus.OPENING.value
-        else:
-            pass
+        # if exists_campus.status== PlanningSchoolStatus.DRAFT.value:
+        #     exists_campus.status= PlanningSchoolStatus.OPENING.value
+        #     campus.status= PlanningSchoolStatus.OPENING.value
+        # else:
+        #     pass
         need_update_list = []
 
         for key, value in campus.dict().items():
