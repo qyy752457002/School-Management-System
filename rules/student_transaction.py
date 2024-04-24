@@ -37,20 +37,20 @@ class StudentTransactionRule(object):
 
         original_dict_map_view_orm = {
             "natural_edu_no": "country_no",
-            "grade_name": "in_grade",
-            "classes": "in_class",
-            "transferin_time": "in_date",
-            "transferin_reason": "reason",
-            "school_id": "in_school_id",
+            # "grade_name": "in_grade",
+            # "classes": "in_class",
+            "transferin_time": "transfer_time",
+            "transferin_reason": "transfer_reason",
+            # "school_id": "in_school_id",
         }
         if direction == TransactionDirection.OUT.value:
             original_dict_map_view_orm = {
                 "natural_edu_no": "country_no",
-                "grade_name": "out_grade",
-                "classes": "out_class",
-                "transferin_time": "out_date",
-                "transferin_reason": "reason",
-                "school_id": "out_school_id",
+                # "grade_name": "out_grade",
+                # "classes": "out_class",
+                "transferin_time": "transfer_time",
+                "transferin_reason": "transfer_reason",
+                # "school_id": "out_school_id",
             }
 
         student_transaction_db = view_model_to_orm_model(student_transaction, StudentTransaction,
