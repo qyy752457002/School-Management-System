@@ -22,12 +22,18 @@ class School(BaseModel):
     status: str = Field(..., title="", description=" 状态",examples=['正常'])
     school_code: str = Field(..., title="", description=" 园所标识码",examples=['SC562369322SG'])
     kg_level: str = Field(..., title="", description="星级",examples=['5'])
+    created_uid: int  = Field(..., title="", description="创建人",examples=['1'])
 
     school_short_name: str = Field(..., title="", description="园所简称",examples=['MXXX'])
     school_en_name: str = Field(..., title="", description="园所英文名称",examples=['MinxingPrimarySCHOOL'])
     create_school_date: str = Field(..., title="", description="建校年月",examples=['2021-10-10 00:00:00'])
     social_credit_code: str = Field(None, title="", description="统一社会信用代码",examples=['XH423423876867'])
     founder_type: str = Field(..., title="", description="举办者类型",examples=['地方'])
+    founder_type_lv2: str = Field(..., title="", description="举办者类型二级",examples=['教育部门'])
+
+    founder_type_lv3: str = Field(..., title="", description="举办者类型三级",examples=['县级教育部门'])
+
+
     founder_name: str = Field(..., title="", description="举办者名称",examples=['上海教育局'])
     founder_code: str = Field(..., title="", description="举办者识别码",examples=['SC562369322SG'])
     urban_rural_nature: str = Field(..., title="", description="城乡性质",examples=['城镇'])

@@ -28,10 +28,10 @@ class CampusEduinfoRule(object):
         return campus
 
     async def add_campus_eduinfo(self, campus: CampusEduinfoModel,convertmodel=True):
-        exists_campus = await self.campus_eduinfo_dao.get_campus_eduinfo_by_id(
+        exists_campus = await self.campus_eduinfo_dao.get_campus_eduinfo_by_campus_id(
             campus.campus_id)
         if exists_campus:
-            raise Exception(f"校区教育信息{campus.campus_eduinfo_name}已存在")
+            raise Exception(f"校区教育信息{campus.campus_id}已存在")
 
         if convertmodel:
             campus_eduinfo_db = view_model_to_orm_model(campus, CampusEduinfo,    exclude=["id"])

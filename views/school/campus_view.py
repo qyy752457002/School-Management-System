@@ -35,8 +35,9 @@ class CampusView(BaseView):
         campus =await self.campus_rule.get_campus_by_id(campus_id)
         campus_communication = await self.campus_communication_rule.get_campus_communication_by_campus_id(campus_id)
         campus_eduinfo = await self.campus_eduinfo_rule.get_campus_eduinfo_by_campus_id(campus_id)
+        campus_keyinfo = await self.campus_rule.get_campus_by_id(campus_id,extra_model=CampusKeyInfo)
 
-        return {'campus':campus,'campus_communication':campus_communication ,'campus_eduinfo':campus_eduinfo }
+        return {'campus':campus,'campus_communication':campus_communication ,'campus_eduinfo':campus_eduinfo,'campus_keyinfo':campus_keyinfo }
 
         # return  res
 
