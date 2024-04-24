@@ -9,7 +9,7 @@ class Grades(BaseModel):
     school_id: int = Field(0, title="学校ID", description="学校ID",examples=[0])
     grade_no: str = Field("", title="年级编号", description="年级编号",examples=['一年级'])
 
-    description: str = Field(None,  description="简介",examples=['fsdfdsfsdxxx'])
+    description: str = Field('',  description="简介",examples=['fsdfdsfsdxxx'])
     created_at: datetime = Field('',  description="简介",examples=['2020-01-01'])
     id:int= Query(0, title="", description="id", example='1'),
 

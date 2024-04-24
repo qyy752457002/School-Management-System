@@ -1,4 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from datetime import datetime
+
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
@@ -38,6 +40,9 @@ class GradeRule(object):
         # grade_db.grade_alias = grade.grade_alias
         # grade_db.description = grade.description
         grade_db = view_model_to_orm_model(grade, Grade,    exclude=["id"])
+        grade_db.created_at =   datetime.now()
+                                 # .strftime("%Y-%m-%d %H:%M:%S"))
+
 
 
         grade_db = await self.grade_dao.add_grade(grade_db)
