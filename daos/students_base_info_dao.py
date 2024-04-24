@@ -29,12 +29,21 @@ class StudentsBaseInfoDao(DAOBase):
             **update_contents)
         return await self.update(session, query, students_base_info, update_contents, is_commit=is_commit)
 
-    async def get_students_base_info_by_id(self, students_id):
+    async def get_students_base_info_by_student_id(self, students_id):
         """
-        获取单个学生基本信息
+        通过学生id获取单个学生基本信息
         """
         session = await self.slave_db()
-        result = await session.execute(select(Student).where(Student.student_id == students_id))
+        result = await session.execute(select(StudentBaseInfo).where(StudentBaseInfo.student_id == students_id))
+        return result.scalar_one_or_none()
+
+    async def get_students_base_info_by_id(self, student_base_id):
+        """
+        通过主键获取单个学生基本信息
+        """
+        session = await self.slave_db()
+        result = await session.execute(
+            select(StudentBaseInfo).where(StudentBaseInfo.student_base_id == student_base_id))
         return result.scalar_one_or_none()
 
     async def delete_students_base_info(self, students: Student):

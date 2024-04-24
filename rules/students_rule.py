@@ -7,6 +7,7 @@ from daos.students_dao import StudentsDao
 from models.students import Student
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
 from views.models.students import NewStudents
+from business_exceptions.student import StudentNotFoundError
 
 
 @dataclass_inject
@@ -55,7 +56,7 @@ class StudentsRule(object):
         """
         exists_students = await self.students_dao.get_students_by_id(students.student_id)
         if not exists_students:
-            raise Exception(f"编号为{students.student_id}学生不存在")
+             raise StudentNotFoundError()
         need_update_list = []
         for key, value in students.dict().items():
             if value:
@@ -69,9 +70,10 @@ class StudentsRule(object):
         """
         exists_students = await self.students_dao.get_students_by_id(students_id)
         if not exists_students:
-            raise Exception(f"编号为{students_id}学生不存在")
+            raise StudentNotFoundError()
         students_db = await self.students_dao.delete_students(exists_students)
-        return students_db
+        students = orm_model_to_view_model(students_db, StudentsKeyinfoModel, exclude=[""])
+        return students
 
     async def get_all_students(self):
         """

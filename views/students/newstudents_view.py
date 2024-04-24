@@ -47,7 +47,7 @@ class NewsStudentsView(BaseView):
                                                                                               page_request)
         return paging_result
 
-    async def get_newstudentkeyinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号",
+    async def get_newstudentkeyinfo(self, student_id: str = Query(..., title="学生编号", description="学生编号",
                                                                   example="SC2032633")):
         """新生查询关键信息"""
         res = await self.students_rule.get_students_by_id(student_id)
@@ -61,12 +61,12 @@ class NewsStudentsView(BaseView):
         res = await self.students_rule.update_students(new_students_key_info)
         return res
 
-    async def delete_newstudentkeyinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号", )):
+    async def delete_newstudentkeyinfo(self, student_id: str = Query(..., title="学生编号", description="学生编号", )):
         """
         删除新生关键信息
         """
-        res = await self.students_rule.delete_students(student_id)
-        return res
+        await self.students_rule.delete_students(student_id)
+        return str(student_id)
 
     async def patch_newstudent_flowout(self, new_students_flow_out: NewStudentsFlowOut):
         """
@@ -95,7 +95,7 @@ class NewsStudentsInfoView(BaseView):
         self.students_rule = get_injector(StudentsRule)
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
 
-    async def get_newstudentbaseinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号",
+    async def get_newstudentbaseinfo(self, student_id: str = Query(..., title="学生编号", description="学生编号",
                                                                    example="SC2032633")):
         """
         查询新生基本信息
@@ -118,7 +118,7 @@ class NewsStudentsInfoView(BaseView):
         return res
 
     async def delete_newstudentbaseinfo(self,
-                                        student_id: str = Query(None, title="学生编号", description="学生编号", )):
+                                        student_id: str = Query(..., title="学生编号", description="学生编号", )):
         """
         新生删除基本信息
         """
@@ -148,7 +148,7 @@ class NewsStudentsFamilyInfoView(BaseView):
         return res
 
     async def delete_newstudentfamilyinfo(self,
-                                          student_id: str = Query(None, title="学生编号",
+                                          student_id: str = Query(..., title="学生编号",
                                                                   description="学生编号", )):
         """
         新生删除家庭信息
@@ -157,7 +157,7 @@ class NewsStudentsFamilyInfoView(BaseView):
         return res
 
     async def get_newstudentfamilyinfo(self,
-                                       student_id: str = Query(None, title="学生编号", description="学生编号", )):
+                                       student_id: str = Query(..., title="学生编号", description="学生编号", )):
         """
         新生查询家庭信息
         """

@@ -2,29 +2,49 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.students_base_info_dao import StudentsBaseInfoDao
+from daos.students_dao import StudentsDao
 from models.students_base_info import StudentBaseInfo
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
 from views.models.students import NewBaseInfoCreate
 from views.models.students import StudentsBaseInfo as StudentsBaseInfoModel
 from views.models.students import NewStudentsQuery, NewStudentsQueryRe
+from business_exceptions.student import StudentNotFoundError
 
 
 @dataclass_inject
 class StudentsBaseInfoRule(object):
     students_base_info_dao: StudentsBaseInfoDao
+    students_dao: StudentsDao
 
-    async def get_students_base_info_by_id(self, students_id):
+    async def get_students_base_info_by_student_id(self, student_id):
         """
         获取单个学生信息
         """
-        students_base_info_db = await self.students_base_info_dao.get_students_base_info_by_id(students_id)
+        students_base_info_db = await self.students_base_info_dao.get_students_base_info_by_student_id(student_id)
+        if not students_base_info_db:
+            raise StudentNotFoundError()
         students_base_info = orm_model_to_view_model(students_base_info_db, StudentsKeyinfoModel, exclude=[""])
         return students_base_info
+
+    async def get_students_base_info_by_id(self, students_base_id):
+        """
+        获取单个学生信息
+        """
+        students_base_info_db = await self.students_base_info_dao.get_students_base_info_by_id(students_base_id)
+        if not students_base_info_db:
+            raise StudentNotFoundError()
+        students_base_info = orm_model_to_view_model(students_base_info_db, StudentsKeyinfoModel, exclude=[""])
+        return students_base_info
+
+
 
     async def add_students_base_info(self, students_base_info: StudentsKeyinfoModel):
         """
         新增学生基本信息
         """
+        exits_student = await self.students_dao.get_students_by_id(students_base_info.student_id)
+        if not exits_student:
+            raise StudentNotFoundError()
         students_base_info_db = view_model_to_orm_model(students_base_info, StudentBaseInfo, exclude=[""])
         students_base_info_db = await self.students_base_info_dao.add_students_base_info(students_base_info_db)
         students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfoModel, exclude=[""])
