@@ -146,13 +146,34 @@ class CurrentStudentsView(BaseView):
 
         return res
 
-    # 在校生 系统外转出
-    async def patch_transferout_tooutside(self, StudentEduInfo: StudentEduInfo,
-                                          NewStudents: NewStudents,
-                                          StudentoutEduInfo: StudentEduInfo,
+    # 在校生 系统内转出
+    async def patch_transferout_tooutside(self,
+                                          student_edu_info_in: StudentEduInfo,
+                                          student_edu_info_out: StudentEduInfo,
+                                          student_id: int  = Query(..., description="学生id",   example='1'),
+
                                           ):
         # print(new_students_key_info)
-        return StudentEduInfo
+        #      同时写入 转出和转入 流程
+        res_student = await self.students_rule.get_students_by_id(student_id)
+        print(res_student)
+        # 转出
+
+        student_edu_info_out.status = AuditAction.NEEDAUDIT.value
+        student_edu_info_out.student_id = res_student.student_id
+
+        res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
+                                                                              TransactionDirection.OUT.value)
+
+        # 转入
+
+        student_edu_info_in.status = AuditAction.NEEDAUDIT.value
+        student_edu_info_in.student_id = res_student.student_id
+        student_edu_info_in.relation_id = res_out.id
+        # print(  res_out.id,000000)
+
+        res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in, TransactionDirection.IN.value,res_out.id)
+        return res
 
     # # 在校生转入   审批同意
     # async def patch_transferin_auditpass(self,
