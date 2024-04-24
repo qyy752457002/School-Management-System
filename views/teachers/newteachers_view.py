@@ -9,7 +9,7 @@ from mini_framework.web.views import BaseView
 from models.teachers import Teacher
 from rules.teachers_rule import TeachersRule
 from views.models.teachers import Teachers, TeacherInfo, TeachersCreatModel, TeacherInfoCreateModel, \
-    TeacherInfoSaveModel, TeacherInfoSubmit
+    TeacherInfoSaveModel, TeacherInfoSubmit,CurrentTeacherQuery
 from rules.teachers_info_rule import TeachersInfoRule
 
 
@@ -72,6 +72,11 @@ class NewTeachersView(BaseView):
             res = await self.teacher_info_rule.update_teachers_info(teacher_info)
         else:
             res = await self.teacher_info_rule.add_teachers_info_valid(teacher_info)
+        return res
+
+
+    async def put_newteacherinforesave(self, teacher_info: CurrentTeacherQuery):
+        res = await self.teacher_info_rule.add_teachers_info_valid(teacher_info)
         return res
 
     # 编辑教职工基本信息

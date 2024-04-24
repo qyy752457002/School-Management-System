@@ -17,8 +17,8 @@ class YesOrNo(str, Enum):
     """
     是否
     """
-    YES = "yes"
-    NO = "no"
+    YES = "Y"
+    NO = "N"
 
     @classmethod
     def to_list(cls):

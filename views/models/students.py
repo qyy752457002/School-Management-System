@@ -3,6 +3,7 @@ from enum import Enum
 from fastapi import Query
 from pydantic import BaseModel, Field
 from datetime import date
+from models.public_enum import YesOrNo,Gender
 
 class StudentStatus(str, Enum):
     """
@@ -31,7 +32,7 @@ class NewStudents(BaseModel):
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
     enrollment_number: str = Field(None, title="报名号", description="报名号")
     birthday: date = Field(..., title="生日", description="生日")
-    student_gender: str = Field(..., title="性别", description="性别")
+    student_gender: Gender = Field(..., title="性别", description="性别")
     id_type: str = Field(None, title="证件类别", description="证件类别")
     id_number: str = Field(None, title="证件号码", description="证件号码")
     photo: str = Field(None, title="照片", description="照片")
@@ -51,7 +52,7 @@ class NewStudentsQuery(BaseModel):
     """
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
     enrollment_number: str = Field(..., title="报名号", description="报名号")
-    student_gender: str = Field(..., title="性别", description="性别")
+    student_gender: Gender = Field(..., title="性别", description="性别")
     id_type: str = Field(..., title="证件类别", description="证件类别")
     id_number: str = Field(..., title="证件号码", description="证件号码")
     school: str = Field(..., title="学校", description="学校")
@@ -74,7 +75,7 @@ class NewStudentsQueryRe(BaseModel):
     student_id: int = Field(..., title="学生id", description="学生id")
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
     enrollment_number: str = Field(..., title="报名号", description="报名号")
-    student_gender: str = Field(..., title="性别", description="性别")
+    student_gender: Gender = Field(..., title="性别", description="性别")
     id_type: str = Field(..., title="证件类别", description="证件类别")
     id_number: str = Field(..., title="证件号码", description="证件号码")
     school: str = Field(..., title="学校", description="学校")
@@ -98,7 +99,7 @@ class StudentsKeyinfo(BaseModel):
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
     enrollment_number: str = Field(..., title="报名号", description="报名号")
     birthday: date = Field(..., title="生日", description="生日")
-    student_gender: str = Field(..., title="性别", description="性别")
+    student_gender: Gender = Field(..., title="性别", description="性别")
     id_type: str = Field(..., title="证件类别", description="证件类别")
     id_number: str = Field(..., title="证件号码", description="证件号码")
     photo: str = Field(..., title="照片", description="照片")
@@ -164,12 +165,12 @@ class StudentsBaseInfo(BaseModel):
     blood_type: str = Field(None, title="血型", description="血型")
     home_phone_number: str = Field(..., title="家庭电话", description="家庭电话")
     email_or_other_contact: str = Field(..., title="电子信箱/其他联系方式", description="电子信箱/其他联系方式")
-    migrant_children: str = Field(..., title="是否随迁子女", description="是否随迁子女")
-    disabled_person: str = Field(None, title="是否残疾人", description="是否残疾人")
+    migrant_children: YesOrNo = Field(..., title="是否随迁子女", description="是否随迁子女")
+    disabled_person: YesOrNo = Field(None, title="是否残疾人", description="是否残疾人")
     only_child: str = Field(..., title="是否独生子女", description="是否独生子女")
-    left_behind_children: str = Field(..., title="是否留守儿童", description="是否留守儿童")
-    floating_population: str = Field(..., title="是否流动人口", description="是否流动人口")
-    overseas_chinese: str = Field(..., title="是否港澳台侨胞", description="是否港澳台侨胞")
+    left_behind_children: YesOrNo = Field(..., title="是否留守儿童", description="是否留守儿童")
+    floating_population: YesOrNo = Field(..., title="是否流动人口", description="是否流动人口")
+    overseas_chinese: YesOrNo = Field(..., title="是否港澳台侨胞", description="是否港澳台侨胞")
     residence_address_detail: str = Field(None, title="户口所在地（详细）", description="户口所在地（详细）")
     communication_district: str = Field(None, title="通信地址行政区", description="通信地址行政区")
     postal_code: str = Field(None, title="邮政编码", description="邮政编码")
@@ -188,7 +189,7 @@ class NewBaseInfoCreate(BaseModel):
     ethnicity: str = Field(None, title="民族", description="民族")
     blood_type: str = Field(None, title="血型", description="血型")
     health_condition: str = Field(..., title="健康状况", description="健康状况")
-    disabled_person: str = Field(None, title="是否残疾人", description="是否残疾人")
+    disabled_person: YesOrNo = Field(None, title="是否残疾人", description="是否残疾人")
     religious_belief: str = Field(None, title="宗教信仰", description="宗教信仰")
     political_status: str = Field(None, title="政治面貌", description="政治面貌")
     residence_address: str = Field(..., title="户籍地址", description="户籍地址")

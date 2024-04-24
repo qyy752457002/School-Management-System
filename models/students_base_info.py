@@ -51,7 +51,9 @@ class StudentBaseInfo(BaseDBModel):
     """
     __tablename__ = 'lfun_students_base_info'
     __table_args__ = {'comment': '学生表基本信息模型'}
-    student_id: Mapped[int] = mapped_column(primary_key=True, comment="ID", autoincrement=True)  # 与学生表关联，关系为一对一，主键
+
+    student_base_id: Mapped[int] = mapped_column(primary_key=True, comment="主键", autoincrement=True)  # 与学生表关联，关系为一对一，主键
+    student_id: Mapped[int] = mapped_column(nullable=False,comment="学生ID", autoincrement=True)  # 与学生表关联，关系为一对一，主键
     name_pinyin: Mapped[str] = mapped_column(String(64), nullable=True, comment="姓名拼音")
     session: Mapped[str] = mapped_column(String(64), nullable=True, comment="届别")
     grade: Mapped[str] = mapped_column(String(64), nullable=True, comment="年级")
