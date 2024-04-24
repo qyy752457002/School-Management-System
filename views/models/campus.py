@@ -85,6 +85,21 @@ class CampusKeyInfo(BaseModel):
     campus_org_type: str = Query('', title="", description=" 校区办别",examples=['民办'])
     campus_level: str = Query('', title="", description=" 校区星级",examples=['5'])
 class CampusKeyAddInfo(BaseModel):
+    """
+    联系电话
+    传真
+经度
+纬度
+成立日期
+email
+所在省市
+区县
+邮编
+详细地址
+证件照
+
+
+    """
     id:int= Query(None, title="", description="学校id", example='1')
     campus_name: str = Query(..., title="校区名称", description="园所名称",examples=['XX小学'])
     campus_no:str= Query(None, title="校区编号", description="校区编号/园所代码",min_length=1,max_length=20,example='SC2032633')
@@ -98,6 +113,8 @@ class CampusKeyAddInfo(BaseModel):
     campus_org_type: str = Query('', title="", description=" 校区办别",examples=['民办'])
     campus_level: str = Query('', title="", description=" 校区星级",examples=['5'])
     campus_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
+    campus_leader_name: str = Field('', title="", description="校区负责人姓名",examples=['3'])
 
+    campus_leader_position: str = Field('', title="", description="校区负责人职位",examples=['3'])
 
 
