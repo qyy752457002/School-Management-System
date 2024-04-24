@@ -1,9 +1,10 @@
-from sqlalchemy import select, func, update
+from sqlalchemy import select, func, update, or_, and_
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.student_transaction import StudentTransaction
+from models.students import Student
 
 
 class StudentTransactionDAO(DAOBase):
@@ -31,9 +32,27 @@ class StudentTransactionDAO(DAOBase):
 		return result.scalar_one_or_none()
 
 	async def query_studenttransaction_with_page(self, page_request: PageRequest, **kwargs,):
-		query = select(StudentTransaction)
+		query = select(StudentTransaction).select_from(  StudentTransaction).join(Student, StudentTransaction.student_id == Student.student_id )
+		query = query.order_by(StudentTransaction.id.desc())
+
 		for key, value in kwargs.items():
-		   query = query.where(getattr(StudentTransaction, key) == value)
+			if key == 'student_gender':
+				query = query.where(getattr(Student, key) == value)
+			elif key == 'school_id':
+				cond1 = StudentTransaction.in_school_id == value
+				cond2 = StudentTransaction.out_school_id == value
+				mcond = or_(cond1, cond2)
+
+				query = query.filter( and_(
+					StudentTransaction.is_deleted == False,  # a=1
+					or_(
+						mcond
+					)
+				))
+				# query = query.where(getattr(Student, key).like(f'%{value}%'))
+			else:
+				query = query.where(getattr(StudentTransaction, key) == value)
+
 		paging = await self.query_page(query, page_request)
 		return paging
 

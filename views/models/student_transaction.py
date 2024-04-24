@@ -1,5 +1,23 @@
+from enum import Enum
+
 from fastapi import Query
 from pydantic import BaseModel, Field
+
+
+class StudentTransactionStatus(str, Enum):
+    """
+    状态   待审批  已通过 已拒绝
+    """
+    # ALL = "All"
+
+    NEEDAUDIT = "needaudit"
+
+    PASS = "pass"
+    REFUSE = "refuse"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.NEEDAUDIT, cls.PASS, cls.REFUSE]
 
 class StudentTransaction(BaseModel):
     id:int= Query(None, title="", description="id", example='1'),
