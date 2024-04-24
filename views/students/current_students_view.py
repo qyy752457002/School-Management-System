@@ -5,8 +5,9 @@ from mini_framework.web.views import BaseView
 from models.student_transaction import AuditAction, TransactionDirection
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
-from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus
-from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, StudentEduInfo, \
+from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
+    StudentEduInfo
+from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo,  \
     NewStudentTransferIn
 # from fastapi import Field
 from fastapi import Query, Depends

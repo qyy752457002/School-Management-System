@@ -8,7 +8,7 @@ from sqlalchemy import select
 
 from daos.student_transaction_dao import StudentTransactionDAO
 from models.student_transaction import StudentTransaction, TransactionDirection
-from views.models.students import StudentEduInfo as StudentTransactionModel
+from views.models.student_transaction import StudentEduInfo as StudentTransactionModel
 
 
 @dataclass_inject
