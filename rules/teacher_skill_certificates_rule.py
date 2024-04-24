@@ -4,11 +4,15 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teacher_skill_certificates_dao import TeacherSkillCertificatesDAO
 from models.teacher_skill_certificates import TeacherSkillCertificates
 from views.models.teacher_extend import TeacherSkillCertificatesModel, TeacherSkillCertificatesUpdateModel
+from daos.teacher_work_experience_dao import TeacherWorkExperienceDAO
+from daos.teachers_dao import TeachersDao
+from business_exceptions.teacher import TeacherNotFoundError, TeacherSkillNotFoundError
 
 
 @dataclass_inject
 class TeacherSkillCertificatesRule(object):
     teacher_skill_certificates_dao: TeacherSkillCertificatesDAO
+    teachers_dao: TeachersDao
 
     async def get_teacher_skill_certificates_by_teacher_skill_certificates_id(self, teacher_skill_certificates_id):
         teacher_skill_certificates_db = await self.teacher_skill_certificates_dao.get_teacher_skill_certificates_by_teacher_skill_certificates_id(
@@ -29,7 +33,7 @@ class TeacherSkillCertificatesRule(object):
         exists_teacher_skill_certificates = await self.teacher_skill_certificates_dao.get_teacher_skill_certificates_by_teacher_skill_certificates_id(
             teacher_skill_certificates_id)
         if not exists_teacher_skill_certificates:
-            raise Exception(f"编号为的{teacher_skill_certificates_id}teacher_skill_certificates不存在")
+            raise TeacherSkillNotFoundError()
         teacher_skill_certificates_db = await self.teacher_skill_certificates_dao.delete_teacher_skill_certificates(
             exists_teacher_skill_certificates)
         teacher_skill_certificates = orm_model_to_view_model(teacher_skill_certificates_db,
@@ -40,8 +44,7 @@ class TeacherSkillCertificatesRule(object):
         exists_teacher_skill_certificates_info = await self.teacher_skill_certificates_dao.get_teacher_skill_certificates_by_teacher_skill_certificates_id(
             teacher_skill_certificates.teacher_skill_certificates_id)
         if not exists_teacher_skill_certificates_info:
-            raise Exception(
-                f"编号为{teacher_skill_certificates.teacher_skill_certificates_id}的teacher_skill_certificates不存在")
+            raise TeacherSkillNotFoundError()
         need_update_list = []
         for key, value in teacher_skill_certificates.dict().items():
             if value:
@@ -51,8 +54,9 @@ class TeacherSkillCertificatesRule(object):
         return teacher_skill_certificates
 
     async def get_all_teacher_skill_certificates(self, teacher_id):
+        exists_teachers = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        if not exists_teachers:
+            raise TeacherNotFoundError()
         teacher_skill_certificates_db = await self.teacher_skill_certificates_dao.get_all_teacher_skill_certificates(
             teacher_id)
-        # teacher_skill_certificates = orm_model_to_view_model(teacher_skill_certificates_db,
-        #                                                      TeacherSkillCertificatesModel, exclude=[""])
         return teacher_skill_certificates_db

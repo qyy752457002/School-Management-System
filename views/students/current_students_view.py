@@ -20,6 +20,7 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from rules.students_base_info_rule import StudentsBaseInfoRule
 from rules.students_rule import StudentsRule
 from rules.student_session_rule import StudentSessionRule
+from rules.students_family_info_rule import StudentsFamilyInfoRule
 from views.models.students import StudentSession
 
 
@@ -28,12 +29,12 @@ class CurrentStudentsView(BaseView):
         super().__init__()
         self.students_rule = get_injector(StudentsRule)
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
-        self.students_rule = get_injector(StudentsRule)
         self.student_session_rule = get_injector(StudentSessionRule)
         self.student_transaction_rule = get_injector(StudentTransactionRule)
         self.student_transaction_flow_rule = get_injector(StudentTransactionFlowRule)
+        self.students_family_info_rule = get_injector(StudentsFamilyInfoRule)
 
-    async def get_student_session(self, sessions_id: str = Query(None, title="届别编号", description="届别编号",
+    async def get_student_session(self, sessions_id: str = Query(..., title="届别编号", description="届别编号",
                                                                  example="2023届")):
         """
         在校生 查询届别信息
@@ -209,7 +210,7 @@ class CurrentStudentsView(BaseView):
 
     # 在校生 查看关键信息
 
-    async def get_studentkeyinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号",
+    async def get_studentkeyinfo(self, student_id: str = Query(..., title="学生编号", description="学生编号",
                                                                example="SC2032633")):
         """
         在校生 查看关键信息
@@ -217,21 +218,27 @@ class CurrentStudentsView(BaseView):
         res = await self.students_rule.get_students_by_id(student_id)
         return res
 
-    async def patch_studentkeyinfo(self, new_students_key_info: StudentsKeyinfo):
+    async def put_studentkeyinfo(self, new_students_key_info: StudentsKeyinfo):
         """
         在校生 编辑关键信息
         """
-        res = await self.students_rule.add_students(new_students_key_info)
+        res = await self.students_rule.update_students(new_students_key_info)
         return res
 
-    async def delete_studentkeyinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号", )):
+    async def delete_studentkeyinfo(self, student_id: str = Query(..., title="学生编号", description="学生编号", )):
         """
         在校生 删除关键信息
         """
-        res = await self.students_rule.delete_students(student_id)
-        return res
+        await self.students_rule.delete_students(student_id)
+        return str(student_id)
 
-    async def get_studentbaseinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号",
+class CurrentStudentsBaseInfoView(BaseView):
+    def __init__(self):
+        super().__init__()
+        self.students_rule = get_injector(StudentsRule)
+        self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
+        self.student_session_rule = get_injector(StudentSessionRule)
+    async def get_studentbaseinfo(self, student_id: str = Query(..., title="学生编号", description="学生编号",
                                                                 example="SC2032633")):
         """
         在校生 查询基本信息
@@ -239,32 +246,39 @@ class CurrentStudentsView(BaseView):
         res = await self.students_base_info_rule.get_students_base_info_by_id(student_id)
         return res
 
-    async def patch_studentbaseinfo(self, new_students_base_info: StudentsBaseInfo):
+    async def put_studentbaseinfo(self, new_students_base_info: StudentsBaseInfo):
         """
         在校生 编辑基本信息
         """
-        res = await self.students_base_info_rule.add_students_base_info(new_students_base_info)
+        res = await self.students_base_info_rule.update_students_base_info(new_students_base_info)
         return res
 
-    async def delete_studentbaseinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号", )):
+    async def delete_studentbaseinfo(self, student_id: str = Query(..., title="学生编号", description="学生编号", )):
         """
         在校生 删除基本信息
         """
         res = await self.students_base_info_rule.delete_students_base_info(student_id)
         return res
 
-    async def get_studentfamilyinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号", )):
+class CurrentStudentsFamilyView(BaseView):
+    def __init__(self):
+        super().__init__()
+        self.students_rule = get_injector(StudentsRule)
+        self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
+        self.students_family_info_rule = get_injector(StudentsFamilyInfoRule)
+
+    async def get_studentfamilyinfo(self, student_family_info_id: str = Query(..., title="学生编号", description="学生编号", )):
         """
         在校生 查询家庭信息
         """
-        res = await self.students_base_info_rule.get_students_family_info_by_id(student_id)
+        res = await self.students_base_info_rule.get_students_family_info_by_id(student_family_info_id)
         return res
 
-    async def patch_studentfamilyinfo(self, new_students_family_info: StudentsFamilyInfo):
+    async def put_studentfamilyinfo(self, new_students_family_info: StudentsFamilyInfo):
         """
         在校生 编辑家庭信息
         """
-        res = await self.students_base_info_rule.add_students_family_info(new_students_family_info)
+        res = await self.students_base_info_rule.put_students_family_info(new_students_family_info)
         return res
 
     async def delete_studentfamilyinfo(self, student_id: str = Query(None, title="学生编号", description="学生编号", )):
@@ -272,4 +286,12 @@ class CurrentStudentsView(BaseView):
         在校生 删除家庭信息
         """
         res = await self.students_base_info_rule.delete_students_family_info(student_id)
+        return
+
+    async def get_all_students_family_info(self,student_id: str = Query(None, title="学生编号", description="学生编号",  ) ):
+
+        """
+        在校生 查询所有学生信息
+        """
+        res = await self.students_family_info_rule.get_all_students_family_info(student_id)
         return res

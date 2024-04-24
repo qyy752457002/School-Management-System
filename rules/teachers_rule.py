@@ -5,11 +5,14 @@ from daos.teachers_dao import TeachersDao
 from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers import Teacher
 from views.models.teachers import Teachers as TeachersModel
-from views.models.teachers import TeachersCreatModel
+from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel
+from business_exceptions.teacher import TeacherNotFoundError
 
 import hashlib
 
 import shortuuid
+
+
 def hash_password(password):
     salt = shortuuid.uuid()
     password = password + "mini_framework" + "web_test" + "123456"
@@ -18,15 +21,16 @@ def hash_password(password):
     sha256.update(password.encode("utf-8"))
     return salt + "|" + sha256.hexdigest()
 
+
 @dataclass_inject
 class TeachersRule(object):
     teachers_dao: TeachersDao
     teachers_info_dao: TeachersInfoDao
 
     async def get_teachers_by_id(self, teachers_id):
-        teacher_db= await self.teachers_dao.get_teachers_by_id(teachers_id)
+        teacher_db = await self.teachers_dao.get_teachers_by_id(teachers_id)
         if not teacher_db:
-            raise Exception(f"编号为{teachers_id}教师不存在")
+            raise TeacherNotFoundError()
         # 可选 ,
         teachers = orm_model_to_view_model(teacher_db, TeachersModel, exclude=["hash_password"])
         return teachers
@@ -35,7 +39,6 @@ class TeachersRule(object):
     #     teacher_db = await self.teachers_dao.get_teachers_by_username(username)
     #     teachers = orm_model_to_view_model(teacher_db, TeachersModel, exclude=["hash_password"])
     #     return teachers
-
 
     async def add_teachers(self, teachers: TeachersCreatModel):
         teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
@@ -46,7 +49,7 @@ class TeachersRule(object):
     async def update_teachers(self, teachers):
         exists_teachers = await self.teachers_dao.get_teachers_by_id(teachers.teacher_id)
         if not exists_teachers:
-            raise Exception(f"编号为{teachers.teacher_id}教师不存在")
+            raise TeacherNotFoundError()
         need_update_list = []
         for key, value in teachers.dict().items():
             if value:
@@ -56,9 +59,8 @@ class TeachersRule(object):
 
     async def delete_teachers(self, teachers_id):
         exists_teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
-        print(exists_teachers.is_deleted)
         if not exists_teachers:
-            raise Exception(f"编号为{teachers_id}教师不存在")
+            raise TeacherNotFoundError()
         teachers_db = await self.teachers_dao.delete_teachers(exists_teachers)
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
         return teachers
@@ -77,4 +79,30 @@ class TeachersRule(object):
     #     teachers = orm_model_to_view_model(paging.items, TeachersModel, exclude=["hash_password"])
     #     return PaginatedResponse(items=teachers, total=paging.total, page=page_request.page, page_size=page_request.page_size)
 
+    async def submitting(self, teachers_id):
+        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
+        if not teachers:
+            raise TeacherNotFoundError()
+        teachers.teacher_approval_status = "submitting"
+        return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
 
+    async def submitted(self, teachers_id):
+        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
+        if not teachers:
+            raise TeacherNotFoundError()
+        teachers.teacher_approval_status = "submitted"
+        return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
+
+    async def approved(self, teachers_id):
+        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
+        if not teachers:
+            raise TeacherNotFoundError()
+        teachers.teacher_approval_status = "approved"
+        return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
+
+    async def rejected(self, teachers_id):
+        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
+        if not teachers:
+            raise TeacherNotFoundError()
+        teachers.teacher_approval_status = "rejected"
+        return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
