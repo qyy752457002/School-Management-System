@@ -109,16 +109,25 @@ class StudentTransactionRule(object):
                                                   apply_user,
                                                   edu_no):
         # 获取分页数据
+        kdict = dict()
+        if audit_status:
+            kdict["status"] = audit_status
+        if student_name:
+            kdict["student_name"] = student_name
+        if student_gender:
+            kdict["student_gender"] = student_gender
+        if school_id:
+            kdict["school_id"] = school_id
+        if apply_user:
+            kdict["apply_user"] = apply_user
+        if edu_no:
+            kdict["country_no"] = edu_no
 
-
-        paging = await self.student_transaction_dao.query_studenttransaction_with_page(  page_request,audit_status,
-                                                                                         student_name,
-                                                                                         student_gender,
-                                                                                         school_id,
-                                                                                         apply_user,
-                                                                                         edu_no)
+        paging = await self.student_transaction_dao.query_studenttransaction_with_page(  page_request,**kdict)
         # 字段映射的示例写法   , {"hash_password": "password"}
-        paging_result = PaginatedResponse.from_paging(paging, StudentTransactionModel)
+        paging_result = PaginatedResponse.from_paging(paging, StudentTransactionModel,other_mapper={"in_school_id": "school_id","in_grade": "grade_name",
+                                                                                                    "in_class": "classes",
+                                                                                                    })
         return paging_result
 
     async def query_student_transaction(self, student_transaction_name):

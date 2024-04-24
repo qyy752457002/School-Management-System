@@ -61,7 +61,7 @@ class CurrentStudentsView(BaseView):
                                        student_name: str = Query("", title="",
                                                                  description="学生姓名", min_length=1, max_length=20),
 
-                                       school_id: int = Query("", title="", description="学校ID", ),
+                                       school_id: int = Query(0, title="", description="学校ID", ),
                                        student_gender: str = Query("", title="", description=" 学生性别", min_length=1,
                                                                    max_length=20),
 
