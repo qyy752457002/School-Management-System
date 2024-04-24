@@ -126,7 +126,7 @@ class SchoolEduinfoRule(object):
             raise SchoolEduinfoNotFoundError()
         need_update_list = []
         for key, value in school_eduinfo.dict().items():
-            if value:
+            if value and key!='id':
                 need_update_list.append(key)
 
         school_eduinfo_db = await self.school_eduinfo_dao.update_school_eduinfo_byargs(school_eduinfo, *need_update_list)

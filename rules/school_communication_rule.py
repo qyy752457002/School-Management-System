@@ -128,7 +128,7 @@ class SchoolCommunicationRule(object):
             raise SchoolCommunicationNotFoundError()
         need_update_list = []
         for key, value in school_communication.dict().items():
-            if value:
+            if value and key!='id':
                 need_update_list.append(key)
 
         school_communication_db = await self.school_communication_dao.update_school_communication_byargs(school_communication, *need_update_list)
