@@ -69,14 +69,14 @@ class CampusRule(object):
             if p_exists_school:
 
                 # 办学者
-                campus_db.school_type = p_exists_school.school_idschool_type
-                campus_db.school_operation_type = p_exists_school.school_idschool_operation_type
-                campus_db.school_operation_type_lv2 = p_exists_school.school_idschool_operation_type_lv2
-                campus_db.school_operation_type_lv3 = p_exists_school.school_idschool_operation_type_lv3
+                campus_db.campus_type = p_exists_school.school_type
+                campus_db.campus_operation_type = p_exists_school.school_operation_type
+                campus_db.campus_operation_type_lv2 = p_exists_school.school_operation_type_lv2
+                campus_db.campus_operation_type_lv3 = p_exists_school.school_operation_type_lv3
 
-                campus_db.school_nature = p_exists_school.school_idschool_nature
-                campus_db.school_org_type = p_exists_school.school_idschool_org_type
-                campus_db.school_org_form = p_exists_school.school_idschool_org_form
+                campus_db.campus_nature = p_exists_school.school_nature
+                campus_db.campus_org_type = p_exists_school.school_org_type
+                campus_db.campus_org_form = p_exists_school.school_org_form
                 campus_db.founder_type = p_exists_school.founder_type
                 campus_db.founder_type_lv2 = p_exists_school.founder_type_lv2
                 campus_db.founder_type_lv3 = p_exists_school.founder_type_lv3
