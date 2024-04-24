@@ -17,7 +17,7 @@ class ResearchAchievementsDAO(DAOBase):
         await session.refresh(research_achievements)
         return research_achievements
 
-    async def get_research_achievements_count(self, ):
+    async def get_research_achievements_count(self):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(ResearchAchievements))
         return result.scalar()
@@ -62,7 +62,7 @@ class ResearchAchievementsDAO(DAOBase):
 
     async def get_all_research_achievements(self, teacher_id):
         session = await self.slave_db()
-        query = select(ResearchAchievements.research_achievement_type, ResearchAchievements.type,
+        query = select(ResearchAchievements.research_achievements_id,ResearchAchievements.research_achievement_type, ResearchAchievements.type,
                        ResearchAchievements.representative_or_project, ResearchAchievements.name,
                        ResearchAchievements.disciplinary_field, ResearchAchievements.name).join(Teacher,
                                                                                                 Teacher.teacher_id == ResearchAchievements.teacher_id).where(

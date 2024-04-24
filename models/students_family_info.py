@@ -28,7 +28,7 @@ class StudentFamilyInfo(BaseDBModel):
     __tablename__ = 'lfun_student_family_info'
     __table_args__ = {'comment': '学生家庭信息模型'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="ID", autoincrement=True)  # 主键
+    student_family_info_id: Mapped[int] = mapped_column(primary_key=True, comment="ID", autoincrement=True)  # 主键
     student_id: Mapped[int] = mapped_column(nullable=False, comment="学生ID")  # 外键，与学生表关联，关系为一对多
     name: Mapped[str] = mapped_column(String(64), nullable=False, comment="姓名")
     gender: Mapped[str] = mapped_column(String(64), nullable=False, comment="性别")

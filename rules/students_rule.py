@@ -5,7 +5,8 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.students_dao import StudentsDao
 from models.students import Student
-from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel, NewStudentTransferIn
+from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
+from views.models.students import NewStudents
 
 
 @dataclass_inject
@@ -20,19 +21,10 @@ class StudentsRule(object):
         students = orm_model_to_view_model(students_db, StudentsKeyinfoModel, exclude=[""])
         return students
 
-    async def add_students(self, students: StudentsKeyinfoModel):
+    async def add_students(self, students: NewStudents):
         """
         新增学生关键信息
         """
-        # if isinstance(students.birthday,str):
-        #
-        #     # 使用 strptime 函数将字符串转换为 datetime 对象
-        #     dt_obj = datetime.strptime( students.birthday, '%Y-%m-%d')
-        #
-        #     # 从 datetime 对象中提取 date 部分
-        #     date_obj = dt_obj.date()
-        #     students.birthday =date_obj
-
         students_db = view_model_to_orm_model(students, Student, exclude=["student_id"])
         students_db = await self.students_dao.add_students(students_db)
         students = orm_model_to_view_model(students_db, StudentsKeyinfoModel, exclude=[""])

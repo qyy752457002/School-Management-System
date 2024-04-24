@@ -1,9 +1,11 @@
-from sqlalchemy import String,Date
+from sqlalchemy import String, Date
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
 
 from datetime import date
+
+
 class StudentBaseInfo(BaseDBModel):
     """
     学生id：student_id
@@ -49,21 +51,21 @@ class StudentBaseInfo(BaseDBModel):
     """
     __tablename__ = 'lfun_students_base_info'
     __table_args__ = {'comment': '学生表基本信息模型'}
-    student_id: Mapped[int] = mapped_column(primary_key=True, comment="ID", autoincrement=True)#与学生表关联，关系为一对一，主键
+    student_id: Mapped[int] = mapped_column(primary_key=True, comment="ID", autoincrement=True)  # 与学生表关联，关系为一对一，主键
     name_pinyin: Mapped[str] = mapped_column(String(64), nullable=True, comment="姓名拼音")
     session: Mapped[str] = mapped_column(String(64), nullable=True, comment="届别")
     grade: Mapped[str] = mapped_column(String(64), nullable=True, comment="年级")
     classroom: Mapped[str] = mapped_column(String(64), nullable=True, comment="班级")
     class_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="班号")
     school: Mapped[str] = mapped_column(String(64), nullable=True, comment="学校")
-    registration_date: Mapped[str] = mapped_column(String(64),default='', nullable=False, comment="登记日期")
+    registration_date: Mapped[date] = mapped_column(Date, default=None, nullable=True, comment="登记日期")
     residence_address: Mapped[str] = mapped_column(String(64), nullable=False, comment="户籍地址")
     residence_district: Mapped[str] = mapped_column(String(64), nullable=False, comment="户口所在行政区")
     birthplace_district: Mapped[str] = mapped_column(String(64), nullable=False, comment="出生地行政区")
     native_place_district: Mapped[str] = mapped_column(String(64), nullable=False, comment="籍贯行政区")
     religious_belief: Mapped[str] = mapped_column(String(64), nullable=True, comment="宗教信仰")
     residence_nature: Mapped[str] = mapped_column(String(64), nullable=False, comment="户口性质")
-    enrollment_date: Mapped[str] = mapped_column(String(64), default='', nullable=False, comment="入学日期")
+    enrollment_date: Mapped[date] = mapped_column(Date, default=None, nullable=True, comment="入学日期")
     contact_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="联系电话")
     health_condition: Mapped[str] = mapped_column(String(64), nullable=False, comment="健康状况")
     political_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="政治面貌")
@@ -85,13 +87,10 @@ class StudentBaseInfo(BaseDBModel):
     identity_card_validity_period: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份证件有效期")
     specialty: Mapped[str] = mapped_column(String(64), nullable=True, comment="特长")
     permanent_address: Mapped[str] = mapped_column(String(64), nullable=False, comment="常住地址")
-    remark: Mapped[str] = mapped_column(String(64), nullable=False, comment="备注",)
-    emporary_borrowing_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="临时借读状态",default="否")
+    remark: Mapped[str] = mapped_column(String(64), nullable=False, comment="备注", )
+    emporary_borrowing_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="临时借读状态",
+                                                           default="否")
     deleted: Mapped[int] = mapped_column(nullable=True, comment="删除态", default=0)
-    flow_out_time: Mapped[str] = mapped_column(String(64),default='', nullable=True, comment="流出时间")
+    flow_out_time: Mapped[str] = mapped_column(String(64), default='', nullable=True, comment="流出时间")
     flow_out_reason: Mapped[str] = mapped_column(String(64), nullable=True, comment="流出原因")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
-
-
-
-

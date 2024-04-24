@@ -48,3 +48,5 @@ class TalentProgramRule(object):
         for item in talent_program_db:
             talent_program.append(orm_model_to_view_model(item, TalentProgramModel))
         return talent_program_db
+
+

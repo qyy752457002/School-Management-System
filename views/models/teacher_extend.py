@@ -756,4 +756,23 @@ class ResearchAchievementsQueryModel(BaseModel):
     disciplinary_field: str = Query("", title="学科领域", description="学科领域", example="学科领域")
     role: str = Query("", title="本人角色", description="本人角色", example="本人角色")
 
+class ResearchAchievementsQueryReModel(BaseModel):
+    """
+    教师ID：teacher_id
+    科研项目联合查询模型
+    科研成果种类：research_achievement_type
+    类型：type
+    是否代表性成果或项目：representative_or_project
+    名称：name
+    学科领域：disciplinary_field
+    本人角色：role
+    """
+    research_achievements_id: int = Field(..., title="research_achievements_id", description="research_achievements_id")
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    research_achievement_type: str = Query("", title="姓名", description="姓名", example="张三")
+    type: str = Query("", title="类型", description="类型", example="类型")
+    representative_or_project: bool = Query(False, title="是否代表性成果或项目", description="是否代表性成果或项目")
+    name: str = Query("", title="名称", description="名称", example="名称")
+    disciplinary_field: str = Query("", title="学科领域", description="学科领域", example="学科领域")
+    role: str = Query("", title="本人角色", description="本人角色", example="本人角色")
 

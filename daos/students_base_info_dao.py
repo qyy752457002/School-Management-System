@@ -5,6 +5,7 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 from models.students import Student
 from models.students_base_info import StudentBaseInfo
+from views.models.students import NewStudentsQuery
 
 
 class StudentsBaseInfoDao(DAOBase):
@@ -24,7 +25,8 @@ class StudentsBaseInfoDao(DAOBase):
         """
         session = await self.master_db()
         update_contents = get_update_contents(students_base_info, *args)
-        query = update(StudentBaseInfo).where(StudentBaseInfo.student_id == students_base_info.student_id).values(**update_contents)
+        query = update(StudentBaseInfo).where(StudentBaseInfo.student_id == students_base_info.student_id).values(
+            **update_contents)
         return await self.update(session, query, students_base_info, update_contents, is_commit=is_commit)
 
     async def get_students_base_info_by_id(self, students_id):
@@ -42,20 +44,41 @@ class StudentsBaseInfoDao(DAOBase):
         session = self.master_db()
         return await self.delete(session, students)
 
-    async def query_students_with_page(self, page_request: PageRequest, condition) -> Paging:
-        query = select(Student.student_name, Student.id_type, Student.id_number, Student.enrollment_number,
+    async def query_students_with_page(self, query_model: NewStudentsQuery, page_request: PageRequest) -> Paging:
+        """
+        学生姓名：student_name
+        报名号：enrollment_number
+        性别：student_gender
+        证件类别：id_type
+        证件号码：id_number
+        学校：school
+        登记时间：enrollment_date
+        区县：county
+        状态：status
+        """
+        query = select(Student.student_id, Student.student_name, Student.id_type, Student.id_number,
+                       Student.enrollment_number,
                        Student.gender, Student.approval_status, StudentBaseInfo.residence_district,
                        StudentBaseInfo.school).select_from(Student).join(StudentBaseInfo,
                                                                          Student.student_id == StudentBaseInfo.student_id)
-        properties = vars(condition)
-        conditions = []
-        for key, value in properties.items():
-            if hasattr(Student, key):
-                conditions.append(getattr(Student, key) == value)
-            if hasattr(StudentBaseInfo, key):
-                conditions.append(getattr(StudentBaseInfo, key) == value)
-        if conditions:
-            query = query.where(*conditions)
+        if query_model.student_name:
+            query = query.where(Student.student_name == query_model.student_name)
+        if query_model.enrollment_number:
+            query = query.where(Student.enrollment_number == query_model.enrollment_number)
+        if query_model.id_number:
+            query = query.where(Student.id_number == query_model.id_number)
+        if query_model.student_gender:
+            query = query.where(Student.student_gender == query_model.student_gender)
+        if query_model.id_number:
+            query = query.where(Student.id_number == query_model.id_number)
+        if query_model.school:
+            query = query.where(StudentBaseInfo.school == query_model.school)
+        if query_model.enrollment_date:
+            query = query.where(StudentBaseInfo.enrollment_date == query_model.enrollment_date)
+        # if query_model.county:
+        #     query = query.where(StudentBaseInfo.county == query_model.county)
+        if query_model.status:
+            query = query.where(Student.approval_status == query_model.status)
         paging = await self.query_page(query, page_request)
         return paging
 
