@@ -7,6 +7,23 @@ class Campus(BaseModel):
     school_id: int = Field(None, title="", description="学校id",examples=['1'])
 
     campus_name: str = Field('', title="", description="校区名称",examples=['XX小学xx校区'])
+    location_city: str = Query('', title="", description="校区所在地(省市)",examples=['3'])
+    location_district: str = Query('', title="", description="校区所在地(区县)",examples=['3'])
+    contact_number: str = Query('', title="联系电话", description="联系电话",examples=['3'])
+    long: str = Query('', title="", description="所在经度",examples=['3'])
+    lat: str = Query('', title="", description="所在纬度",examples=['3'])
+    create_campus_date: str = Query('', title="", description="成立日期",examples=['3'])
+    postal_code: str = Query('', title="邮政编码", description="邮政编码",examples=['3'])
+    fax_number: str = Query('', title="", description="传真电话",examples=['3'])
+    email: str = Query('', title="单位电子信箱", description="单位电子信箱",examples=['3'])
+    detailed_address: str = Query('', title="", description="园所详细地址",examples=['3'])
+    related_license_upload: str = Query('', title="相关证照上传", description="相关证照上传",examples=['3'])
+
+    campus_leader_name: str = Field('', title="", description="校区负责人姓名",examples=['3'])
+
+    campus_leader_position: str = Field('', title="", description="校区负责人职位",examples=['3'])
+
+
     campus_no: str = Field('', title="校区编号", description="校区编号",examples=['SC2032633'])
     campus_operation_license_number: str = Field('', title=" Description", description="办学许可证号",examples=['EDU2024012569'])
     block: str = Field('', title=" Author", description="地域管辖区",examples=['铁西区'])
@@ -25,7 +42,7 @@ class Campus(BaseModel):
 
     campus_short_name: str = Field('', title="", description="园所简称",examples=['MXXX'])
     campus_en_name: str = Field('', title="", description="园所英文名称",examples=['MinxingPrimarycampus'])
-    create_campus_date: str = Field('', title="", description="建校年月",examples=['2021-10-10 00:00:00'])
+    # create_campus_date: str = Field('', title="", description="建校年月",examples=['2021-10-10 00:00:00'])
     social_credit_code: str = Field(None, title="", description="统一社会信用代码",examples=['XH423423876867'])
     founder_type: str = Field('', title="", description="举办者类型",examples=['地方'])
     founder_name: str = Field('', title="", description="举办者名称",examples=['上海教育局'])
@@ -42,11 +59,11 @@ class Campus(BaseModel):
     junior_middle_campus_system: str = Field('', title="", description="初中学制",examples=['3'])
     junior_middle_campus_entry_age: str = Field('', title="", description="初中入学年龄",examples=['12'])
     senior_middle_campus_system: str = Field('', title="", description="高中学制",examples=['3'])
-    location_city: str = Field('', title="", description="校区所在地(省市)",examples=['3'])
-    location_district: str = Field('', title="", description="校区所在地(区县)",examples=['3'])
-    campus_leader_name: str = Field('', title="", description="校区负责人姓名",examples=['3'])
+    # location_city: str = Field('', title="", description="校区所在地(省市)",examples=['3'])
+    # location_district: str = Field('', title="", description="校区所在地(区县)",examples=['3'])
+    # campus_leader_name: str = Field('', title="", description="校区负责人姓名",examples=['3'])
 
-    campus_leader_position: str = Field('', title="", description="校区负责人职位",examples=['3'])
+    # campus_leader_position: str = Field('', title="", description="校区负责人职位",examples=['3'])
 
 # 规划校的 基本信息模型   视图的额模型是按需提供的
 class CampusBaseInfo(BaseModel):
