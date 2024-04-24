@@ -105,6 +105,8 @@ class SchoolDAO(DAOBase):
                                               founder_type_lv2,
                                               founder_type_lv3 ,planning_school_id) -> Paging:
         query = select(School).order_by(desc(School.id))
+        query = query.where(School.is_deleted == False)
+
 
         if school_name:
             query = query.where(School.school_name == school_name)
