@@ -27,7 +27,7 @@ class StudentTransactionRule(object):
         student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
         return student_transaction
 
-    async def add_student_transaction(self, student_transaction: StudentTransactionModel,
+    async def add_student_transaction(self, student_transaction: StudentTransactionModel,relation_id=0,
                                       direction=TransactionDirection.IN.value):
         # exists_student_transaction = await self.student_transaction_dao.get_studenttransaction_by_studenttransaction_name(student_transaction.student_transaction_name)
         # if exists_student_transaction:
@@ -52,9 +52,15 @@ class StudentTransactionRule(object):
                 # "transferin_reason": "transfer_reason",
                 # "school_id": "out_school_id",
             }
+        if relation_id>0:
+            exclude=[]
+        else:
+            # student_transaction_db = StudentTransaction()
+            exclude=["id"]
+
 
         student_transaction_db = view_model_to_orm_model(student_transaction, StudentTransaction,
-                                                         original_dict_map_view_orm,exclude=["id"])
+                                                         original_dict_map_view_orm,exclude= exclude)
         # student_transaction_db = StudentTransaction()
         student_transaction_db.direction = direction
         # student_transaction_db.school_id = student_transaction.school_id

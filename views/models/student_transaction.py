@@ -43,6 +43,7 @@ class StudentEduInfo(BaseModel):
     status:str= Query('', description="" ,min_length=1,max_length=20,examples=["..."]),
     doc_upload: str = Field('',   description=" 附件",examples=[''])
     id: int = Query( 0,   description="id", examples=["1"],example="1"),
+    relation_id: int = Query( 0,   description="关联id", examples=["1"],example="1"),
 
 
 

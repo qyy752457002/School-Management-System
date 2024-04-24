@@ -62,6 +62,8 @@ doc_upload: str = Field('',   description=" 附件",examples=[''])
     apply_user: Mapped[str] = mapped_column(String(255), nullable=True, comment="申请人", default='')
     apply_time: Mapped[str] = mapped_column(String(255), nullable=True, comment="申请时间", default='')
     school_id: Mapped[int] = mapped_column(nullable=True, comment="学校ID", default=0)
+    relation_id: Mapped[int] = mapped_column(nullable=True, comment="关联学校ID", default=0)
+
 
     # in_school_id: Mapped[int] = mapped_column(nullable=True, comment="转入学校ID", default=0)
     # in_grade: Mapped[str] = mapped_column(String(255), nullable=True, comment="转入年级", default='')
