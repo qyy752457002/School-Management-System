@@ -27,7 +27,7 @@ class SchoolCommunicationRule(object):
         return school
 
     async def add_school_communication(self, school: SchoolCommunicationModel,convertmodel=True):
-        exists_school = await self.school_communication_dao.get_school_communication_by_id(
+        exists_school = await self.school_communication_dao.get_school_communication_by_school_id(
             school.school_id)
         if exists_school:
             raise Exception(f"学校通信信息{school.school_id}已存在")

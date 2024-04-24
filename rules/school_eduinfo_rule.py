@@ -28,7 +28,7 @@ class SchoolEduinfoRule(object):
         return school
 
     async def add_school_eduinfo(self, school: SchoolEduinfoModel,convertmodel=True):
-        exists_school = await self.school_eduinfo_dao.get_school_eduinfo_by_id(
+        exists_school = await self.school_eduinfo_dao.get_school_eduinfo_by_school_id(
             school.school_id)
         if exists_school:
             raise Exception(f"学校教育信息{school.school_id}已存在")
