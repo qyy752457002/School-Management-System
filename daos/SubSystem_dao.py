@@ -30,6 +30,11 @@ class SubSystemDAO(DAOBase):
 		result = await session.execute(select(SubSystem).where(SubSystem.id == id))
 		return result.scalar_one_or_none()
 
+	async def get_subsystem_by_name(self, id):
+		session = await self.slave_db()
+		result = await session.execute(select(SubSystem).where(SubSystem.system_name == id))
+		return result.scalar_one_or_none()
+
 	async def query_subsystem_with_page(self, page_request: PageRequest, **kwargs):
 		query = select(SubSystem)
 		for key, value in kwargs.items():
