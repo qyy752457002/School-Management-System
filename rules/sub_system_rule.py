@@ -56,8 +56,8 @@ class SubSystemRule(object):
     async def get_sub_system_count(self):
         return await self.sub_system_dao.get_subsystem_count()
 
-    async def query_sub_system_with_page(self, page_request: PageRequest, borough, block, school_id, grade_id, system_name):
-        paging = await self.sub_system_dao.query_subsystem_with_page(borough,  )
+    async def query_sub_system_with_page(self, page_request: PageRequest,  ):
+        paging = await self.sub_system_dao.query_subsystem_with_page(page_request,  )
         # 字段映射的示例写法   , {"hash_password": "password"} SubSystemSearchRes
         # print(paging)
         paging_result = PaginatedResponse.from_paging(paging, SubSystemModel)
