@@ -71,6 +71,7 @@ class TeacherLearnExperienceView(BaseView):
                                                                                        example=1234)
                                               ):
         await self.teacher_learn_experience_rule.delete_teacher_learn_experience(teacher_learn_experience_id)
+        return str(teacher_learn_experience_id)
 
     async def put_teacher_learn_experience(self, teacher_learn_experience: TeacherLearnExperienceUpdateModel):
         res = await self.teacher_learn_experience_rule.update_teacher_learn_experience(teacher_learn_experience)
