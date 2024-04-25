@@ -1,0 +1,15 @@
+INSERT INTO public.lfun_enum_value (enum_name,enum_value,description,sort_number,parent_id,is_enabled,created_uid,updated_uid,created_at,updated_at,is_deleted) VALUES
+	 ('school_nature','100','学前教育',0,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false);
+
+
+INSERT INTO public.lfun_enum_value (enum_name,enum_value,description,sort_number,parent_id,is_enabled,created_uid,updated_uid,created_at,updated_at,is_deleted) VALUES
+	 ('school_nature','101','初等教育',0,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false);
+
+
+INSERT INTO public.lfun_enum_value (enum_name,enum_value,description,sort_number,parent_id,is_enabled,created_uid,updated_uid,created_at,updated_at,is_deleted) VALUES
+	 ('school_nature_lv2','201','幼儿园',0,'100',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false);
+
+
+	 INSERT INTO public.lfun_enum_value (enum_name,enum_value,description,sort_number,parent_id,is_enabled,created_uid,updated_uid,created_at,updated_at,is_deleted) VALUES
+     	 ('school_nature_lv3','301','幼儿园',0,'201',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('school_nature_lv3','302','附设幼儿班',0,'201',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false);
