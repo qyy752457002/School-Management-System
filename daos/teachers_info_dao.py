@@ -61,7 +61,7 @@ class TeachersInfoDao(DAOBase):
                        Teacher.teacher_gender,
                        Teacher.teacher_employer, Teacher.teacher_approval_status, TeacherInfo.highest_education,
                        TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
-                       TeacherInfo.enter_school_time).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id)
+                       TeacherInfo.enter_school_time).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,isouter=True)
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name == query_model.teacher_name)
         if query_model.teacher_id_number:
@@ -108,7 +108,8 @@ class TeachersInfoDao(DAOBase):
                        Teacher.teacher_gender,
                        Teacher.teacher_employer, TeacherInfo.highest_education,
                        TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
-                       TeacherInfo.enter_school_time).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id)
+                       TeacherInfo.enter_school_time).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
+                                                           isouter=True)
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name == query_model.teacher_name)
         if query_model.teacher_id_number:

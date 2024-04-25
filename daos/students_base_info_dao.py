@@ -69,7 +69,7 @@ class StudentsBaseInfoDao(DAOBase):
                        Student.enrollment_number,
                        Student.student_gender, Student.approval_status, StudentBaseInfo.residence_district,
                        StudentBaseInfo.school).select_from(Student).join(StudentBaseInfo,
-                                                                         Student.student_id == StudentBaseInfo.student_id)
+                                                                         Student.student_id == StudentBaseInfo.student_id,isouter=True)
         if query_model.student_name:
             query = query.where(Student.student_name == query_model.student_name)
         if query_model.enrollment_number:
@@ -100,3 +100,6 @@ class StudentsBaseInfoDao(DAOBase):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(StudentBaseInfo))
         return result.scalar()
+
+
+
