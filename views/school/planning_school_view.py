@@ -7,7 +7,7 @@ from mini_framework.web.views import BaseView
 
 from business_exceptions.planning_school import PlanningSchoolValidateError, PlanningSchoolBaseInfoValidateError
 from rules.operation_record import OperationRecordRule
-from views.models.operation_record import OperationRecord
+from views.models.operation_record import OperationRecord, OperationModule, OperationTargetType, OperationType
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
     PlanningSchoolBaseInfoOptional
@@ -108,19 +108,34 @@ class PlanningSchoolView(BaseView):
 
                           ):
         # print(planning_school)
+        # # 创建类的实例
+        # planning_school_key_info = PlanningSchoolKeyInfo()
+        # print(planning_school_key_info.__fields__)
+        #
+        # # 提取每个属性里 title 后面的值
+        # titles = {attr: planning_school_key_info.__fields__[attr].title for attr in planning_school_key_info.__fields__}
+        #
+        # print(titles)
+
+        origin = await self.planning_school_rule.get_planning_school_by_id(planning_school.id)
+
+        res2 = await self.planning_school_rule.compare_modify_fields(planning_school,origin)
+        # print(  res2)
 
         res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
+
+
 
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(planning_school.id),
             operator='admin',
-            module='学校',
-            target='学校',
+            module=OperationModule.KEYINFO.value,
+            target=OperationTargetType.PLANNING_SCHOOL.value,
 
-            action_type='修改',
+            action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
-            change_data= str(planning_school)[ 0:250 ],
+            change_data= str(res2)[ 0:1000 ],
             change_field='关键信息',
             change_item='关键信息',
             timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
