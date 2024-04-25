@@ -153,6 +153,16 @@ class PlanningSchoolRule(object):
         # planning_school = orm_model_to_view_model(planning_school_db, SchoolModel, exclude=[""])
         return planning_school_db
 
+    async def compare_modify_fields(self, planning_school,orm_model,):
+        """
+        比较两个对象  返回需要更新的字段
+        :param planning_school:
+        :param orm_model:
+        :return:
+        """
+        print(planning_school,orm_model)
+        pass
+
 
     async def query_planning_schools(self,planning_school_name):
 

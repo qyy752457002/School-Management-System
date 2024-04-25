@@ -26,8 +26,8 @@ class OperationType(str, Enum):
 
     """
     CREATE = "创建"
-    MODIFY  = "删除"
-    DELETE  = "修改"
+    MODIFY  = "修改"
+    DELETE  = "删除"
     @classmethod
     def to_list(cls):
         return [cls.CREATE, cls.DELETE, cls.MODIFY,  ]
