@@ -20,7 +20,7 @@ class ClassesRule(object):
 
     async def add_classes(self, classes: ClassesModel):
         exists_classes = await self.classes_dao.get_classes_by_classes_name(
-            classes.class_name)
+            classes.class_name, classes.school_id)
         if exists_classes:
             raise Exception(f"班级信息{classes.class_name}已存在")
         classes_db = view_model_to_orm_model(classes, Classes, exclude=["id"])
@@ -61,5 +61,5 @@ class ClassesRule(object):
                                                                 page_request)
         # 字段映射的示例写法   , {"hash_password": "password"} ClassesSearchRes
         print(paging)
-        paging_result = PaginatedResponse.from_paging(paging, ClassesSearchRes)
+        paging_result = PaginatedResponse.from_paging(paging, ClassesSearchRes,other_mapper={"school_name": "school_name",})
         return paging_result

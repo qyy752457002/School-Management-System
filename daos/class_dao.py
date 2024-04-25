@@ -80,7 +80,18 @@ class ClassesDAO(DAOBase):
 
     async def query_classes_with_page(self, borough, block, school_id, grade_id, class_name,
                                       page_request: PageRequest) -> Paging:
-        query = select(Classes, School.block, School.borough,School.school_name).select_from(Classes).join(School, School.id == Classes.school_id)
+        query = (select( School.block, School.borough,School.school_name,Classes.id, Classes.class_name,
+                        Classes.class_number, Classes.year_established, Classes.teacher_id_card,
+                        Classes.teacher_name, Classes.education_stage, Classes.school_system, Classes.monitor,
+                        Classes.class_type, Classes.is_bilingual_class, Classes.major_for_vocational,
+                        Classes.bilingual_teaching_mode, Classes.ethnic_language, Classes.is_att_class,
+                        Classes.att_class_type, Classes.grade_no, Classes.grade_id, Classes.is_deleted,
+                        Classes.school_id,
+                         Classes.created_at, Classes.updated_at,
+                         Classes.created_uid, Classes.updated_uid,
+                        ).select_from(Classes).join(School, School.id == Classes.school_id)
+                                    .where(Classes.is_deleted == False)
+                 .order_by(Classes.id.desc()))
 
 
         if school_id:
