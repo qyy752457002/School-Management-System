@@ -28,7 +28,9 @@ class StudentsRule(object):
         """
         students_db = view_model_to_orm_model(students, Student, exclude=["student_id"])
         students_db = await self.students_dao.add_students(students_db)
+        print(students_db)
         students = orm_model_to_view_model(students_db, StudentsKeyinfoModel, exclude=[""])
+        print(students)
         return students
 
     async def add_student_new_student_transferin(self, students):

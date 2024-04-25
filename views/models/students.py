@@ -38,6 +38,8 @@ class NewStudents(BaseModel):
     id_type: str = Field("", title="证件类别", description="证件类别")
     id_number: str = Field("", title="证件号码", description="证件号码")
     photo: str = Field("", title="照片", description="照片")
+    student_id: int = Field(0, title="", description="id")
+
 
 
 class NewStudentsQuery(BaseModel):
@@ -105,6 +107,7 @@ class StudentsKeyinfo(BaseModel):
     id_type: str = Field(..., title="证件类别", description="证件类别")
     id_number: str = Field(..., title="证件号码", description="证件号码")
     photo: str = Field(..., title="照片", description="照片")
+
 
 
 class StudentsBaseInfo(BaseModel):
@@ -187,17 +190,17 @@ class StudentsBaseInfo(BaseModel):
 
 class NewBaseInfoCreate(BaseModel):
     student_id: int = Field(..., title="学生id", description="学生id")
-    birthplace_district: str = Field(..., title="出生地", description="出生地")
-    native_place_district: str = Field(..., title="籍贯", description="籍贯")
+    birthplace_district: str = Field('', title="出生地", description="出生地")
+    native_place_district: str = Field('', title="籍贯", description="籍贯")
     ethnicity: str = Field("", title="民族", description="民族")
     blood_type: str = Field("", title="血型", description="血型")
-    health_condition: str = Field(..., title="健康状况", description="健康状况")
+    health_condition: str = Field('', title="健康状况", description="健康状况")
     disabled_person: YesOrNo = Field("Y", title="是否残疾人", description="是否残疾人")
     religious_belief: str = Field("", title="宗教信仰", description="宗教信仰")
     political_status: str = Field("", title="政治面貌", description="政治面貌")
-    residence_address: str = Field(..., title="户籍地址", description="户籍地址")
+    residence_address: str = Field('', title="户籍地址", description="户籍地址")
     residence_district: str = Field("", title="户口所在行政区", description="户口所在行政区")
-    residence_nature: str = Field(..., title="户口性质", description="户口性质")
+    residence_nature: str = Field('', title="户口性质", description="户口性质")
     communication_address: str = Field("", title="通信地址", description="通信地址")
     postal_code: str = Field("", title="邮政编码", description="邮政编码")
     contact_number: str = Field("", title="联系电话", description="联系电话")
