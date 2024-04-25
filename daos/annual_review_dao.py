@@ -23,8 +23,7 @@ class AnnualReviewDAO(DAOBase):
 
 	async def delete_annual_review(self, annual_review: AnnualReview):
 		session = await self.master_db()
-		await session.delete(annual_review)
-		await session.commit()
+		return await self.delete(session, annual_review)
 
 	async def get_annual_review_by_annual_review_id(self, annual_review_id):
 		session = await self.slave_db()

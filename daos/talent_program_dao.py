@@ -22,8 +22,8 @@ class TalentProgramDAO(DAOBase):
 
 	async def delete_talent_program(self, talent_program: TalentProgram):
 		session = await self.master_db()
-		await session.delete(talent_program)
-		await session.commit()
+		return await self.delete(session, talent_program)
+
 
 	async def get_talent_program_by_talent_program_id(self, talent_program_id):
 		session = await self.slave_db()

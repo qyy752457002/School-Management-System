@@ -23,8 +23,7 @@ class TeacherProfessionalTitlesDAO(DAOBase):
 
     async def delete_teacher_professional_titles(self, teacher_professional_titles: TeacherProfessionalTitles):
         session = await self.master_db()
-        await session.delete(teacher_professional_titles)
-        await session.commit()
+        return await self.delete(session, teacher_professional_titles)
 
     async def get_teacher_professional_titles_by_teacher_professional_titles_id(self, teacher_professional_titles_id):
         session = await self.slave_db()

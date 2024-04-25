@@ -23,8 +23,7 @@ class TeacherSkillCertificatesDAO(DAOBase):
 
     async def delete_teacher_skill_certificates(self, teacher_skill_certificates: TeacherSkillCertificates):
         session = await self.master_db()
-        await session.delete(teacher_skill_certificates)
-        await session.commit()
+        return await self.delete(session, teacher_skill_certificates)
 
     async def get_teacher_skill_certificates_by_teacher_skill_certificates_id(self, teacher_skill_certificates_id):
         session = await self.slave_db()

@@ -23,8 +23,8 @@ class DomesticTrainingDAO(DAOBase):
 
     async def delete_domestic_training(self, domestic_training: DomesticTraining):
         session = await self.master_db()
-        await session.delete(domestic_training)
-        await session.commit()
+        return await self.delete(session, domestic_training)
+
 
     async def get_domestic_training_by_domestic_training_id(self, domestic_training_id):
         session = await self.slave_db()

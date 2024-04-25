@@ -4,11 +4,14 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.educational_teaching_dao import EducationalTeachingDAO
 from models.educational_teaching import EducationalTeaching
 from views.models.teacher_extend import EducationalTeachingModel, EducationalTeachingUpdateModel
+from daos.teachers_dao import TeachersDao
+from business_exceptions.teacher import TeacherNotFoundError
 
 
 @dataclass_inject
 class EducationalTeachingRule(object):
     educational_teaching_dao: EducationalTeachingDAO
+    teachers_dao: TeachersDao
 
     async def get_educational_teaching_by_educational_teaching_id(self, educational_teaching_id):
         educational_teaching_db = await self.educational_teaching_dao.get_educational_teaching_by_educational_teaching_id(
@@ -17,6 +20,9 @@ class EducationalTeachingRule(object):
         return educational_teaching
 
     async def add_educational_teaching(self, educational_teaching: EducationalTeachingModel):
+        exits_teacher = await self.teachers_dao.get_teachers_by_id(educational_teaching.teacher_id)
+        if not exits_teacher:
+            raise TeacherNotFoundError()
         educational_teaching_db = view_model_to_orm_model(educational_teaching, EducationalTeaching)
         educational_teaching_db = await self.educational_teaching_dao.add_educational_teaching(educational_teaching_db)
         educational_teaching = orm_model_to_view_model(educational_teaching_db, EducationalTeachingModel)

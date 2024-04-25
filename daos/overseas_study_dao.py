@@ -23,8 +23,8 @@ class OverseasStudyDAO(DAOBase):
 
     async def delete_overseas_study(self, overseas_study: OverseasStudy):
         session = await self.master_db()
-        await session.delete(overseas_study)
-        await session.commit()
+        return await self.delete(session, overseas_study)
+
 
     async def get_overseas_study_by_overseas_study_id(self, overseas_study_id):
         session = await self.slave_db()

@@ -22,6 +22,9 @@ class TeacherWorkExperienceRule(object):
         return teacher_work_experience
 
     async def add_teacher_work_experience(self, teacher_work_experience: TeacherWorkExperienceModel):
+        exits_teacher = await self.teachers_dao.get_teachers_by_id(teacher_work_experience.teacher_id)
+        if not exits_teacher:
+            raise TeacherNotFoundError()
         teacher_work_experience_db = view_model_to_orm_model(teacher_work_experience, TeacherWorkExperience)
         teacher_work_experience_db = await self.teacher_work_experience_dao.add_teacher_work_experience(
             teacher_work_experience_db)

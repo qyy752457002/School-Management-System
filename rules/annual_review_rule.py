@@ -4,17 +4,23 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.annual_review_dao import AnnualReviewDAO
 from models.annual_review import AnnualReview
 from views.models.teacher_extend import AnnualReviewModel,AnnualReviewUpdateModel
+from daos.teachers_dao import TeachersDao
+from business_exceptions.teacher import TeacherNotFoundError
 
 
 @dataclass_inject
 class AnnualReviewRule(object):
     annual_review_dao: AnnualReviewDAO
+    teachers_dao: TeachersDao
 
     async def get_annual_review_by_annual_review_id(self, annual_review_id):
         annual_review_db = await self.annual_review_dao.get_annual_review_by_annual_review_id(annual_review_id)
         annual_review = orm_model_to_view_model(annual_review_db, AnnualReviewModel)
         return annual_review
     async def add_annual_review(self, annual_review:AnnualReviewModel):
+        exits_teacher = await self.teachers_dao.get_teachers_by_id(annual_review.teacher_id)
+        if not exits_teacher:
+            raise TeacherNotFoundError()
         annual_review_db = view_model_to_orm_model(annual_review, AnnualReview)
         annual_review_db = await self.annual_review_dao.add_annual_review(annual_review_db)
         annual_review = orm_model_to_view_model(annual_review_db, AnnualReviewModel)

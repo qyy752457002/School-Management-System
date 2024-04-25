@@ -4,17 +4,24 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.domestic_training_dao import DomesticTrainingDAO
 from models.domestic_training import DomesticTraining
 from views.models.teacher_extend import DomesticTrainingModel,DomesticTrainingUpdateModel
+from daos.teachers_dao import TeachersDao
+from business_exceptions.teacher import TeacherNotFoundError
 
 
 @dataclass_inject
 class DomesticTrainingRule(object):
     domestic_training_dao: DomesticTrainingDAO
+    teachers_dao: TeachersDao
 
     async def get_domestic_training_by_domestic_training_id(self, domestic_training_id):
         domestic_training_db = await self.domestic_training_dao.get_domestic_training_by_domestic_training_id(domestic_training_id)
         domestic_training = orm_model_to_view_model(domestic_training_db, DomesticTrainingModel)
         return domestic_training
+
     async def add_domestic_training(self, domestic_training:DomesticTrainingModel):
+        exits_teacher = await self.teachers_dao.get_teachers_by_id(domestic_training.teacher_id)
+        if not exits_teacher:
+            raise TeacherNotFoundError()
         domestic_training_db = view_model_to_orm_model(domestic_training, DomesticTraining)
         domestic_training_db = await self.domestic_training_dao.add_domestic_training(domestic_training_db)
         domestic_training = orm_model_to_view_model(domestic_training_db, DomesticTrainingModel)

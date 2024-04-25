@@ -4,11 +4,14 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teacher_professional_titles_dao import TeacherProfessionalTitlesDAO
 from models.teacher_professional_titles import TeacherProfessionalTitles
 from views.models.teacher_extend import TeacherProfessionalTitlesModel, TeacherProfessionalTitlesUpdateModel
+from daos.teachers_dao import TeachersDao
+from business_exceptions.teacher import TeacherNotFoundError
 
 
 @dataclass_inject
 class TeacherProfessionalTitlesRule(object):
     teacher_professional_titles_dao: TeacherProfessionalTitlesDAO
+    teachers_dao: TeachersDao
 
     async def get_teacher_professional_titles_by_teacher_professional_titles_id(self, teacher_professional_titles_id):
         teacher_professional_titles_db = await self.teacher_professional_titles_dao.get_teacher_professional_titles_by_teacher_professional_titles_id(
@@ -18,6 +21,9 @@ class TeacherProfessionalTitlesRule(object):
         return teacher_professional_titles
 
     async def add_teacher_professional_titles(self, teacher_professional_titles: TeacherProfessionalTitlesModel):
+        exits_teacher = await self.teachers_dao.get_teachers_by_id(teacher_professional_titles.teacher_id)
+        if not exits_teacher:
+            raise TeacherNotFoundError()
         teacher_professional_titles_db = view_model_to_orm_model(teacher_professional_titles, TeacherProfessionalTitles)
         teacher_professional_titles_db = await self.teacher_professional_titles_dao.add_teacher_professional_titles(
             teacher_professional_titles_db)

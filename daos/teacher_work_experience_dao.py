@@ -24,8 +24,7 @@ class TeacherWorkExperienceDAO(DAOBase):
 
     async def delete_teacher_work_experience(self, teacher_work_experience: TeacherWorkExperience):
         session = await self.master_db()
-        await session.delete(teacher_work_experience)
-        await session.commit()
+        return await self.delete(session, teacher_work_experience)
 
     async def get_teacher_work_experience_by_teacher_work_experience_id(self, teacher_work_experience_id):
         session = await self.slave_db()

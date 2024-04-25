@@ -24,8 +24,7 @@ class ResearchAchievementsDAO(DAOBase):
 
     async def delete_research_achievements(self, research_achievements: ResearchAchievements):
         session = await self.master_db()
-        await session.delete(research_achievements)
-        await session.commit()
+        return await self.delete(session, research_achievements)
 
     async def get_research_achievements_by_research_achievements_id(self, research_achievements_id):
         session = await self.slave_db()

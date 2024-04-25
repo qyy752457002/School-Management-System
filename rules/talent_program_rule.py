@@ -4,11 +4,14 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.talent_program_dao import TalentProgramDAO
 from models.talent_program import TalentProgram
 from views.models.teacher_extend import TalentProgramModel, TalentProgramUpdateModel
+from daos.teachers_dao import TeachersDao
+from business_exceptions.teacher import TeacherNotFoundError
 
 
 @dataclass_inject
 class TalentProgramRule(object):
     talent_program_dao: TalentProgramDAO
+    teachers_dao: TeachersDao
 
     async def get_talent_program_by_talent_program_id(self, talent_program_id):
         talent_program_db = await self.talent_program_dao.get_talent_program_by_talent_program_id(talent_program_id)
@@ -16,6 +19,9 @@ class TalentProgramRule(object):
         return talent_program
 
     async def add_talent_program(self, talent_program: TalentProgramModel):
+        exits_teacher = await self.teachers_dao.get_teachers_by_id(talent_program.teacher_id)
+        if not exits_teacher:
+            raise TeacherNotFoundError()
         talent_program_db = view_model_to_orm_model(talent_program, TalentProgram)
         talent_program_db = await self.talent_program_dao.add_talent_program(talent_program_db)
         talent_program = orm_model_to_view_model(talent_program_db, TalentProgramModel)
