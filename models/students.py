@@ -1,4 +1,4 @@
-from sqlalchemy import String,Date
+from sqlalchemy import String, Date
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -17,9 +17,86 @@ class StudentApprovalAtatus(str, Enum):
     ENROLLMENT = "enrollment"
     ASSIGNMENT = "assignment"
     OUT = "out"
+
     @classmethod
     def to_list(cls):
         return [cls.ENROLLMENT, cls.ASSIGNMENT, cls.OUT]
+
+
+class Relationship(str, Enum):
+    """
+    父亲
+    母亲
+    爷爷
+    奶奶
+    外公
+    外婆
+    其他
+
+    """
+    FATHER = "father"
+    MOTHER = "mother"
+    GRANDFATHER = "grandfather"
+    GRANDMOTHER = "grandmother"
+    PATERNAL_GRANDFATHER = "paternal_grandfather"
+    PATERNAL_GRANDMOTHER = "paternal_grandmother"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.FATHER, cls.MOTHER, cls.GRANDFATHER, cls.GRANDMOTHER, cls.PATERNAL_GRANDFATHER,
+                cls.PATERNAL_GRANDMOTHER]
+
+
+class Registration(str, Enum):
+    """
+    农村
+    县镇
+    城市
+    """
+    RURAL = "rural_area"
+    COUNTY = "county_town"
+    CITY = "city"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.RURAL, cls.COUNTY, cls.CITY]
+
+
+class HealthStatus(str, Enum):
+    """
+    健康
+    一般
+    较差
+    """
+    HEALTHY = "healthy"
+    NORMAL = "normal"
+    POOR = "poor"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.HEALTHY, cls.NORMAL, cls.POOR]
+
+
+class BloodType(str, Enum):
+    """
+    A型
+    B型
+    AB型
+    O型
+    Rh阳性
+    Rh阴性
+    """
+    A = "blood_type_a"
+    B = "blood_type_b"
+    AB = "blood_type_ab"
+    O = "blood_type_o"
+    RH_POSITIVE = "rh_positive"
+    RH_NEGATIVE = "rh_negative"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.A, cls.B, cls.AB, cls.O, cls.RH_POSITIVE, cls.RH_NEGATIVE]
+
 
 class Student(BaseDBModel):
     """
@@ -38,15 +115,13 @@ class Student(BaseDBModel):
     __tablename__ = 'lfun_students'
     __table_args__ = {'comment': '学生表关键信息模型'}
 
-    student_id: Mapped[int] = mapped_column(primary_key=True, comment="学生ID",autoincrement=True)#主键
-    student_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="学生姓名")
-    student_gender: Mapped[str] = mapped_column(String(64), nullable=False, comment="学生性别")
+    student_id: Mapped[int] = mapped_column(primary_key=True, comment="学生ID", autoincrement=True)  # 主键
+    student_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="学生姓名")
+    student_gender: Mapped[str] = mapped_column(String(64), nullable=True, comment="学生性别")
     enrollment_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="报名号")
-    birthday: Mapped[date] = mapped_column(Date, nullable=False, comment="生日",default='')
+    birthday: Mapped[date] = mapped_column(Date, nullable=True, comment="生日", default='')
     id_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="证件类别")
     id_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="证件号码")
-    photo: Mapped[str] = mapped_column(String(64), nullable=True, comment="照片") #图像处理再定
-    approval_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="状态",default="分班")
+    photo: Mapped[str] = mapped_column(String(64), nullable=True, comment="照片")  # 图像处理再定
+    approval_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="状态", default="enrollment")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
-
-

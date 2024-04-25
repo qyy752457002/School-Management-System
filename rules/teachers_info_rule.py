@@ -5,7 +5,7 @@ from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers_info import TeacherInfo
 from views.models.teachers import TeacherInfo as TeachersInfoModel
 from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel, TeacherInfoSubmit, \
-    CurrentTeacherQuery, CurrentTeacherQueryRe
+    CurrentTeacherQuery, CurrentTeacherQueryRe,CurrentTeacherInfoSaveModel
 from sqlalchemy import select, func, update
 from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError
 from daos.teachers_dao import TeachersDao
@@ -34,7 +34,7 @@ class TeachersInfoRule(object):
     async def add_teachers_info(self, teachers_info: TeacherInfoSaveModel):
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=[" "])
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
-        teachers_info = orm_model_to_view_model(teachers_inf_db, TeachersInfoModel, exclude=[""])
+        teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
         return teachers_info
 
     async def add_teachers_info_valid(self, teachers_info: TeacherInfoSubmit):

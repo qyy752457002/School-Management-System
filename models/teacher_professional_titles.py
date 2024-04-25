@@ -23,4 +23,6 @@ class TeacherProfessionalTitles(BaseDBModel):
     employment_start_date: Mapped[date] = mapped_column(Date, nullable=False, comment="聘任开始时间")
     employment_end_date: Mapped[date] = mapped_column(Date, nullable=True, comment="聘任结束时间")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
+    approval_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="审批状态",
+                                                 default="submitting")
     

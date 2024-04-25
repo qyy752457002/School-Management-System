@@ -3,7 +3,9 @@ from enum import Enum
 from fastapi import Query
 from pydantic import BaseModel, Field
 from datetime import date
-from models.public_enum import YesOrNo, Gender
+from models.public_enum import YesOrNo, Gender, IDtype
+from models.students import  Relationship, Registration,HealthStatus,StudentApprovalAtatus
+from typing import Optional
 
 
 class StudentStatus(str, Enum):
@@ -30,12 +32,12 @@ class NewStudents(BaseModel):
     照片：photo
     """
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
-    enrollment_number: str = Field(None, title="报名号", description="报名号")
+    enrollment_number: str = Field("", title="报名号", description="报名号")
     birthday: date = Field(..., title="生日", description="生日")
     student_gender: Gender = Field(..., title="性别", description="性别")
-    id_type: str = Field(None, title="证件类别", description="证件类别")
-    id_number: str = Field(None, title="证件号码", description="证件号码")
-    photo: str = Field(None, title="照片", description="照片")
+    id_type: str = Field("", title="证件类别", description="证件类别")
+    id_number: str = Field("", title="证件号码", description="证件号码")
+    photo: str = Field("", title="照片", description="照片")
 
 
 class NewStudentsQuery(BaseModel):
@@ -50,15 +52,15 @@ class NewStudentsQuery(BaseModel):
     区县：county
     状态：status
     """
-    student_name: str = Field(..., title="学生姓名", description="学生姓名")
-    enrollment_number: str = Field(..., title="报名号", description="报名号")
-    student_gender: Gender = Field(..., title="性别", description="性别")
-    id_type: str = Field(..., title="证件类别", description="证件类别")
-    id_number: str = Field(..., title="证件号码", description="证件号码")
-    school: str = Field(..., title="学校", description="学校")
-    enrollment_date: date = Field(..., title="登记时间", description="登记时间")
-    county: str = Field(..., title="区县", description="区县")
-    status: str = Field(..., title="状态", description="状态")
+    student_name: Optional[str] = Query(None, title="学生姓名", description="学生姓名")
+    enrollment_number: Optional[str] = Query(None, title="报名号", description="报名号")
+    student_gender: Optional[Gender] = Query(None, title="性别", description="性别")
+    id_type: Optional[str] = Query(None, title="证件类别", description="证件类别")
+    id_number: Optional[str] = Query(None, title="证件号码", description="证件号码")
+    school: Optional[str] = Query(None, title="学校", description="学校")
+    enrollment_date: Optional[date] = Query(None, title="登记时间", description="登记时间")
+    county: Optional[str] = Query(None, title="区县", description="区县")
+    approval_status: Optional[StudentApprovalAtatus] = Query(None, title="状态", description="状态")
 
 
 class NewStudentsQueryRe(BaseModel):
@@ -74,15 +76,14 @@ class NewStudentsQueryRe(BaseModel):
     状态：status
     """
     student_id: int = Field(..., title="学生id", description="学生id")
-    student_name: str = Field(..., title="学生姓名", description="学生姓名")
-    enrollment_number: str = Field(..., title="报名号", description="报名号")
-    student_gender: Gender = Field(..., title="性别", description="性别")
-    id_type: str = Field(..., title="证件类别", description="证件类别")
-    id_number: str = Field(..., title="证件号码", description="证件号码")
-    school: str = Field(..., title="学校", description="学校")
-    enrollment_date: date = Field(..., title="登记时间", description="登记时间")
-    county: str = Field(..., title="区县", description="区县")
-    status: str = Field(..., title="状态", description="状态")
+    student_name: str = Field(None, title="学生姓名", description="学生姓名")
+    enrollment_number: str = Field(None, title="报名号", description="报名号")
+    student_gender: Gender = Field(None, title="性别", description="性别")
+    id_type: str = Field(None, title="证件类别", description="证件类别")
+    id_number: str = Field(None, title="证件号码", description="证件号码")
+    school: str = Field(None, title="学校", description="学校")
+    county: str = Field(None, title="区县", description="区县")
+    approval_status: StudentApprovalAtatus = Field(None, title="状态", description="状态")
 
 
 class StudentsKeyinfo(BaseModel):
@@ -152,92 +153,93 @@ class StudentsBaseInfo(BaseModel):
     classroom: str = Field("", title="班级", description="班级")
     class_number: str = Field("", title="班号", description="班号")
     school: str = Field("", title="学校", description="学校")
-    registration_date: date = Field(None, title="登记日期", description="登记日期")
-    residence_address: str = Field(..., title="户籍地址", description="户籍地址")
-    residence_district: str = Field(None, title="户口所在行政区", description="户口所在行政区")
-    birthplace_district: str = Field(..., title="出生地行政区", description="出生地行政区")
-    native_place_district: str = Field(..., title="籍贯行政区", description="籍贯行政区")
-    religious_belief: str = Field(None, title="宗教信仰", description="宗教信仰")
-    residence_nature: str = Field(..., title="户口性质", description="户口性质")
-    enrollment_date: date = Field(None, title="入学日期", description="入学日期")
-    contact_number: str = Field(..., title="联系电话", description="联系电话")
-    health_condition: str = Field(..., title="健康状况", description="健康状况")
-    political_status: str = Field(None, title="政治面貌", description="政治面貌")
-    ethnicity: str = Field(None, title="民族", description="民族")
-    blood_type: str = Field(None, title="血型", description="血型")
-    home_phone_number: str = Field(..., title="家庭电话", description="家庭电话")
-    email_or_other_contact: str = Field(..., title="电子信箱/其他联系方式", description="电子信箱/其他联系方式")
-    migrant_children: YesOrNo = Field(..., title="是否随迁子女", description="是否随迁子女")
-    disabled_person: YesOrNo = Field(None, title="是否残疾人", description="是否残疾人")
-    only_child: str = Field(..., title="是否独生子女", description="是否独生子女")
-    left_behind_children: YesOrNo = Field(..., title="是否留守儿童", description="是否留守儿童")
-    floating_population: YesOrNo = Field(..., title="是否流动人口", description="是否流动人口")
-    overseas_chinese: YesOrNo = Field(..., title="是否港澳台侨胞", description="是否港澳台侨胞")
-    residence_address_detail: str = Field(None, title="户口所在地（详细）", description="户口所在地（详细）")
-    communication_district: str = Field(None, title="通信地址行政区", description="通信地址行政区")
-    postal_code: str = Field(None, title="邮政编码", description="邮政编码")
-    communication_address: str = Field(None, title="通信地址", description="通信地址")
-    photo_upload_time: str = Field(..., title="照片上传时间", description="照片上传时间")
-    identity_card_validity_period: str = Field(..., title="身份证件有效期", description="身份证件有效期")
-    specialty: str = Field(None, title="特长", description="特长")
-    permanent_address: str = Field(None, title="常住地址", description="常住地址")
-    remark: str = Field(None, title="备注", description="备注", max_length=50)
+    registration_date: date = Field(date(1970, 1, 1), title="登记日期", description="登记日期")
+    residence_address: str = Field("", title="户籍地址", description="户籍地址")
+    residence_district: str = Field("", title="户口所在行政区", description="户口所在行政区")
+    birthplace_district: str = Field("", title="出生地行政区", description="出生地行政区")
+    native_place_district: str = Field("", title="籍贯行政区", description="籍贯行政区")
+    religious_belief: str = Field("", title="宗教信仰", description="宗教信仰")
+    residence_nature: str = Field("", title="户口性质", description="户口性质")
+    enrollment_date: date = Field(date(1970, 1, 1), title="入学日期", description="入学日期")
+    contact_number: str = Field("", title="联系电话", description="联系电话")
+    health_condition: str = Field("", title="健康状况", description="健康状况")
+    political_status: str = Field("", title="政治面貌", description="政治面貌")
+    ethnicity: str = Field("", title="民族", description="民族")
+    blood_type: str = Field("", title="血型", description="血型")
+    home_phone_number: str = Field("", title="家庭电话", description="家庭电话")
+    email_or_other_contact: str = Field("", title="电子信箱/其他联系方式", description="电子信箱/其他联系方式")
+    migrant_children: YesOrNo = Field("Y", title="是否随迁子女", description="是否随迁子女")
+    disabled_person: YesOrNo = Field("Y", title="是否残疾人", description="是否残疾人")
+    only_child: str = Field("Y", title="是否独生子女", description="是否独生子女")
+    left_behind_children: YesOrNo = Field("Y", title="是否留守儿童", description="是否留守儿童")
+    floating_population: YesOrNo = Field("Y", title="是否流动人口", description="是否流动人口")
+    overseas_chinese: YesOrNo = Field("Y", title="是否港澳台侨胞", description="是否港澳台侨胞")
+    residence_address_detail: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
+    communication_district: str = Field("", title="通信地址行政区", description="通信地址行政区")
+    postal_code: str = Field("", title="邮政编码", description="邮政编码")
+    communication_address: str = Field("", title="通信地址", description="通信地址")
+    photo_upload_time: str = Field("", title="照片上传时间", description="照片上传时间")
+    identity_card_validity_period: str = Field("", title="身份证件有效期", description="身份证件有效期")
+    specialty: str = Field("", title="特长", description="特长")
+    permanent_address: str = Field("", title="常住地址", description="常住地址")
+    remark: str = Field("", title="备注", description="备注", max_length=50)
 
 
 class NewBaseInfoCreate(BaseModel):
     student_id: int = Field(..., title="学生id", description="学生id")
     birthplace_district: str = Field(..., title="出生地", description="出生地")
     native_place_district: str = Field(..., title="籍贯", description="籍贯")
-    ethnicity: str = Field(None, title="民族", description="民族")
-    blood_type: str = Field(None, title="血型", description="血型")
+    ethnicity: str = Field("", title="民族", description="民族")
+    blood_type: str = Field("", title="血型", description="血型")
     health_condition: str = Field(..., title="健康状况", description="健康状况")
-    disabled_person: YesOrNo = Field(None, title="是否残疾人", description="是否残疾人")
-    religious_belief: str = Field(None, title="宗教信仰", description="宗教信仰")
-    political_status: str = Field(None, title="政治面貌", description="政治面貌")
+    disabled_person: YesOrNo = Field("Y", title="是否残疾人", description="是否残疾人")
+    religious_belief: str = Field("", title="宗教信仰", description="宗教信仰")
+    political_status: str = Field("", title="政治面貌", description="政治面貌")
     residence_address: str = Field(..., title="户籍地址", description="户籍地址")
-    residence_district: str = Field(None, title="户口所在行政区", description="户口所在行政区")
+    residence_district: str = Field("", title="户口所在行政区", description="户口所在行政区")
     residence_nature: str = Field(..., title="户口性质", description="户口性质")
-    communication_address: str = Field(None, title="通信地址", description="通信地址")
-    postal_code: str = Field(None, title="邮政编码", description="邮政编码")
-    contact_number: str = Field(None, title="联系电话", description="联系电话")
-    email_or_other_contact: str = Field(None, title="电子信箱/其他联系方式", description="电子信箱/其他联系方式")
-    overseas_chinese: YesOrNo = Field(None, title="是否港澳台侨胞", description="是否港澳台侨胞")
-    left_behind_children: YesOrNo = Field(None, title="是否留守儿童", description="是否留守儿童")
-    migrant_children: YesOrNo = Field(None, title="是否随迁子女", description="是否随迁子女")
-    floating_population: YesOrNo = Field(None, title="是否流动人口", description="是否流动人口")
-    only_child: YesOrNo = Field(None, title="是否独生子女", description="是否独生子女")
-    residence_address_detail: str = Field(None, title="户口所在地（详细）", description="户口所在地（详细）")
-    identity_card_validity_period: str = Field(None, title="身份证件有效期", description="身份证件有效期")
-    specialty: str = Field(None, title="特长", description="特长")
-    permanent_address: str = Field(None, title="常住地址", description="常住地址")
+    communication_address: str = Field("", title="通信地址", description="通信地址")
+    postal_code: str = Field("", title="邮政编码", description="邮政编码")
+    contact_number: str = Field("", title="联系电话", description="联系电话")
+    email_or_other_contact: str = Field("", title="电子信箱/其他联系方式", description="电子信箱/其他联系方式")
+    overseas_chinese: YesOrNo = Field("Y", title="是否港澳台侨胞", description="是否港澳台侨胞")
+    left_behind_children: YesOrNo = Field("Y", title="是否留守儿童", description="是否留守儿童")
+    migrant_children: YesOrNo = Field("Y", title="是否随迁子女", description="是否随迁子女")
+    floating_population: YesOrNo = Field("Y", title="是否流动人口", description="是否流动人口")
+    only_child: YesOrNo = Field("Y", title="是否独生子女", description="是否独生子女")
+    residence_address_detail: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
+    identity_card_validity_period: str = Field("", title="身份证件有效期", description="身份证件有效期")
+    specialty: str = Field("", title="特长", description="特长")
+    permanent_address: str = Field("", title="常住地址", description="常住地址")
 
 
 class NewBaseInfoUpdate(BaseModel):
+    student_base_id: int = Field(..., title="学生信息id", description="学生信息id")
     student_id: int = Field(..., title="学生id", description="学生id")
     birthplace_district: str = Field(..., title="出生地", description="出生地")
     native_place_district: str = Field(..., title="籍贯", description="籍贯")
-    ethnicity: str = Field(None, title="民族", description="民族")
-    blood_type: str = Field(None, title="血型", description="血型")
+    ethnicity: str = Field("", title="民族", description="民族")
+    blood_type: str = Field("", title="血型", description="血型")
     health_condition: str = Field(..., title="健康状况", description="健康状况")
-    disabled_person: YesOrNo = Field(None, title="是否残疾人", description="是否残疾人")
-    religious_belief: str = Field(None, title="宗教信仰", description="宗教信仰")
-    political_status: str = Field(None, title="政治面貌", description="政治面貌")
+    disabled_person: YesOrNo = Field("Y", title="是否残疾人", description="是否残疾人")
+    religious_belief: str = Field("", title="宗教信仰", description="宗教信仰")
+    political_status: str = Field("", title="政治面貌", description="政治面貌")
     residence_address: str = Field(..., title="户籍地址", description="户籍地址")
-    residence_district: str = Field(None, title="户口所在行政区", description="户口所在行政区")
+    residence_district: str = Field("", title="户口所在行政区", description="户口所在行政区")
     residence_nature: str = Field(..., title="户口性质", description="户口性质")
-    communication_address: str = Field(None, title="通信地址", description="通信地址")
-    postal_code: str = Field(None, title="邮政编码", description="邮政编码")
-    contact_number: str = Field(None, title="联系电话", description="联系电话")
-    email_or_other_contact: str = Field(None, title="电子信箱/其他联系方式", description="电子信箱/其他联系方式")
-    overseas_chinese: YesOrNo = Field(None, title="是否港澳台侨胞", description="是否港澳台侨胞")
-    left_behind_children: YesOrNo = Field(None, title="是否留守儿童", description="是否留守儿童")
-    migrant_children: YesOrNo = Field(None, title="是否随迁子女", description="是否随迁子女")
-    floating_population: YesOrNo = Field(None, title="是否流动人口", description="是否流动人口")
-    only_child: YesOrNo = Field(None, title="是否独生子女", description="是否独生子女")
-    residence_address_detail: str = Field(None, title="户口所在地（详细）", description="户口所在地（详细）")
-    identity_card_validity_period: str = Field(None, title="身份证件有效期", description="身份证件有效期")
-    specialty: str = Field(None, title="特长", description="特长")
-    permanent_address: str = Field(None, title="常住地址", description="常住地址")
+    communication_address: str = Field("", title="通信地址", description="通信地址")
+    postal_code: str = Field("", title="邮政编码", description="邮政编码")
+    contact_number: str = Field("", title="联系电话", description="联系电话")
+    email_or_other_contact: str = Field("", title="电子信箱/其他联系方式", description="电子信箱/其他联系方式")
+    overseas_chinese: YesOrNo = Field("Y", title="是否港澳台侨胞", description="是否港澳台侨胞")
+    left_behind_children: YesOrNo = Field("Y", title="是否留守儿童", description="是否留守儿童")
+    migrant_children: YesOrNo = Field("Y", title="是否随迁子女", description="是否随迁子女")
+    floating_population: YesOrNo = Field("Y", title="是否流动人口", description="是否流动人口")
+    only_child: YesOrNo = Field("Y", title="是否独生子女", description="是否独生子女")
+    residence_address_detail: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
+    identity_card_validity_period: str = Field("", title="身份证件有效期", description="身份证件有效期")
+    specialty: str = Field("", title="特长", description="特长")
+    permanent_address: str = Field("", title="常住地址", description="常住地址")
 
 
 # 学生家庭成员信息模型
@@ -261,23 +263,61 @@ class StudentsFamilyInfo(BaseModel):
     工作单位：workplace
     家庭成员职业：family_member_occupation
     """
-    student_family_info_id: int = Field(None, title="家庭成员id", description="家庭成员id")
+    student_family_info_id: int = Field(..., title="家庭成员id", description="家庭成员id")
     student_id: int = Field(..., title="学生id", description="学生id")
     name: str = Field(..., title="姓名", description="姓名")
-    gender: str = Field(..., title="性别", description="性别")
-    relationship: str = Field(..., title="关系", description="关系")
-    is_guardian: bool = Field(..., title="是否监护人", description="是否监护人")
+    gender: Gender = Field(..., title="性别", description="性别")
+    relationship: Relationship = Field(..., title="关系", description="关系")
+    is_guardian: YesOrNo = Field(..., title="是否监护人", description="是否监护人")
     identification_type: str = Field(..., title="证件类型", description="证件类型")
     identification_number: str = Field(..., title="证件号码", description="证件号码")
-    birthday: str = Field(..., title="出生日期", description="出生日期")
+    birthday: date = Field(..., title="出生日期", description="出生日期")
     phone_number: str = Field(..., title="手机号码", description="手机号码")
     ethnicity: str = Field(..., title="民族", description="民族")
-    health_status: str = Field(..., title="健康状态", description="健康状态")
+    health_status: HealthStatus = Field(..., title="健康状态", description="健康状态")
     nationality: str = Field(..., title="国籍", description="国籍")
-    political_status: str = Field(..., title="政治面貌", description="政治面貌")
+    political_status: str = Field("", title="政治面貌", description="政治面貌")
     contact_address: str = Field(..., title="联系地址", description="联系地址")
-    workplace: str = Field(..., title="工作单位", description="工作单位")
-    family_member_occupation: str = Field(..., title="家庭成员职业", description="家庭成员职业")
+    workplace: str = Field("", title="工作单位", description="工作单位")
+    family_member_occupation: str = Field("", title="家庭成员职业", description="家庭成员职业")
+
+
+class StudentsFamilyInfoCreate(BaseModel):
+    """
+    家庭成员id：student_family_info_id
+    学生id：student_id
+    姓名：name
+    性别：gender
+    关系：relationship
+    是否监护人：is_guardian
+    证件类型：identification_type
+    证件号码：identification_number
+    出生日期：birthday
+    手机号码：phone_number
+    民族：ethnicity
+    健康状态：health_status
+    国籍：nationality
+    政治面貌：political_status
+    联系地址：contact_address
+    工作单位：workplace
+    家庭成员职业：family_member_occupation
+    """
+    student_id: int = Field(..., title="学生id", description="学生id")
+    name: str = Field(..., title="姓名", description="姓名")
+    gender: Gender = Field(..., title="性别", description="性别")
+    relationship: Relationship = Field(..., title="关系", description="关系")
+    is_guardian: YesOrNo = Field(..., title="是否监护人", description="是否监护人")
+    identification_type: str = Field(..., title="证件类型", description="证件类型")
+    identification_number: str = Field(..., title="证件号码", description="证件号码")
+    birthday: date = Field(..., title="出生日期", description="出生日期")
+    phone_number: str = Field(..., title="手机号码", description="手机号码")
+    ethnicity: str = Field(..., title="民族", description="民族")
+    health_status: HealthStatus = Field(..., title="健康状态", description="健康状态")
+    nationality: str = Field(..., title="国籍", description="国籍")
+    political_status: str = Field("", title="政治面貌", description="政治面貌")
+    contact_address: str = Field(..., title="联系地址", description="联系地址")
+    workplace: str = Field("", title="工作单位", description="工作单位")
+    family_member_occupation: str = Field("", title="家庭成员职业", description="家庭成员职业")
 
 
 class StudentsUpdateFamilyInfo(BaseModel):
@@ -298,21 +338,23 @@ class StudentsUpdateFamilyInfo(BaseModel):
     工作单位：workplace
     家庭成员职业：family_member_occupation
     """
+    student_family_info_id: int = Field(..., title="家庭成员id", description="家庭成员id")
+    student_id: int = Field(..., title="学生id", description="学生id")
     name: str = Field(..., title="姓名", description="姓名")
-    gender: str = Field(..., title="性别", description="性别")
-    relationship: str = Field(..., title="关系", description="关系")
-    is_guardian: bool = Field(..., title="是否监护人", description="是否监护人")
+    gender: Gender = Field(..., title="性别", description="性别")
+    relationship: Relationship = Field(..., title="关系", description="关系")
+    is_guardian: YesOrNo = Field(..., title="是否监护人", description="是否监护人")
     identification_type: str = Field(..., title="证件类型", description="证件类型")
     identification_number: str = Field(..., title="证件号码", description="证件号码")
-    birthday: str = Field(..., title="出生日期", description="出生日期")
+    birthday: date = Field(..., title="出生日期", description="出生日期")
     phone_number: str = Field(..., title="手机号码", description="手机号码")
     ethnicity: str = Field(..., title="民族", description="民族")
-    health_status: str = Field(..., title="健康状态", description="健康状态")
+    health_status: HealthStatus = Field(..., title="健康状态", description="健康状态")
     nationality: str = Field(..., title="国籍", description="国籍")
-    political_status: str = Field(..., title="政治面貌", description="政治面貌")
+    political_status: str = Field("", title="政治面貌", description="政治面貌")
     contact_address: str = Field(..., title="联系地址", description="联系地址")
-    workplace: str = Field(..., title="工作单位", description="工作单位")
-    family_member_occupation: str = Field(..., title="家庭成员职业", description="家庭成员职业")
+    workplace: str = Field("", title="工作单位", description="工作单位")
+    family_member_occupation: str = Field("", title="家庭成员职业", description="家庭成员职业")
 
 
 

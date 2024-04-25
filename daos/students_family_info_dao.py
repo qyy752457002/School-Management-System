@@ -18,13 +18,13 @@ class StudentsFamilyInfoDao(DAOBase):
         await session.refresh(students_family_info)
         return students_family_info
 
-    async def update_students_family_info(self, students_family_info: StudentFamilyInfo, *args, is_commit: bool = True):
+    async def update_students_family_info(self, students_family_info,*args, is_commit: bool = True):
         """
         编辑学生家庭信息
         """
         session = await self.master_db()
         update_contents = get_update_contents(students_family_info, *args)
-        query = update(StudentFamilyInfo).where(StudentFamilyInfo.student_id == students_family_info.student_id).values(
+        query = update(StudentFamilyInfo).where(StudentFamilyInfo.student_family_info_id == students_family_info.student_family_info_id).values(
             **update_contents)
         return await self.update(session, query, students_family_info, update_contents, is_commit=is_commit)
 
@@ -41,7 +41,7 @@ class StudentsFamilyInfoDao(DAOBase):
         """
         删除单个学生家庭信息
         """
-        session = self.master_db()
+        session = await self.master_db()
         return await self.delete(session, students)
 
     async def get_all_students_family_info(self, student_id):
