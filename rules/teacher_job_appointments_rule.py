@@ -2,13 +2,15 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teacher_job_appointments_dao import TeacherJobAppointmentsDAO
+from daos.teachers_dao import TeachersDao
 from models.teacher_job_appointments import TeacherJobAppointments
 from views.models.teacher_extend import TeacherJobAppointmentsModel, TeacherJobAppointmentsUpdateModel
-
+from business_exceptions.teacher import TeacherNotFoundError
 
 @dataclass_inject
 class TeacherJobAppointmentsRule(object):
     teacher_job_appointments_dao: TeacherJobAppointmentsDAO
+    teachers_dao: TeachersDao
 
     async def get_teacher_job_appointments_by_teacher_job_appointments_id(self, teacher_job_appointments_id):
         teacher_job_appointments_db = await self.teacher_job_appointments_dao.get_teacher_job_appointments_by_teacher_job_appointments_id(
@@ -17,6 +19,9 @@ class TeacherJobAppointmentsRule(object):
         return teacher_job_appointments
 
     async def add_teacher_job_appointments(self, teacher_job_appointments: TeacherJobAppointmentsModel):
+        exits_teacher = await self.teachers_dao.get_teachers_by_id(teacher_job_appointments.teacher_id)
+        if not exits_teacher:
+            raise TeacherNotFoundError()
         teacher_job_appointments_db = view_model_to_orm_model(teacher_job_appointments, TeacherJobAppointments)
         teacher_job_appointments_db = await self.teacher_job_appointments_dao.add_teacher_job_appointments(
             teacher_job_appointments_db)

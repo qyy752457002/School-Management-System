@@ -5,10 +5,10 @@ from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.students_base_info import StudentBaseInfo
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
-from views.models.students import NewBaseInfoCreate
+from views.models.students import NewBaseInfoCreate,NewBaseInfoUpdate,StudentsBaseInfo
 from views.models.students import StudentsBaseInfo as StudentsBaseInfoModel
 from views.models.students import NewStudentsQuery, NewStudentsQueryRe
-from business_exceptions.student import StudentNotFoundError
+from business_exceptions.student import StudentNotFoundError,StudentExistsError
 
 
 @dataclass_inject
@@ -23,7 +23,7 @@ class StudentsBaseInfoRule(object):
         students_base_info_db = await self.students_base_info_dao.get_students_base_info_by_student_id(student_id)
         if not students_base_info_db:
             raise StudentNotFoundError()
-        students_base_info = orm_model_to_view_model(students_base_info_db, StudentsKeyinfoModel, exclude=[""])
+        students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfo, exclude=[""])
         return students_base_info
 
     async def get_students_base_info_by_id(self, students_base_id):
@@ -33,7 +33,7 @@ class StudentsBaseInfoRule(object):
         students_base_info_db = await self.students_base_info_dao.get_students_base_info_by_id(students_base_id)
         if not students_base_info_db:
             raise StudentNotFoundError()
-        students_base_info = orm_model_to_view_model(students_base_info_db, StudentsKeyinfoModel, exclude=[""])
+        students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfo, exclude=[""])
         return students_base_info
 
 
@@ -45,19 +45,23 @@ class StudentsBaseInfoRule(object):
         exits_student = await self.students_dao.get_students_by_id(students_base_info.student_id)
         if not exits_student:
             raise StudentNotFoundError()
+        exits_student_base_info = await self.students_base_info_dao.get_students_base_info_by_student_id(
+            students_base_info.student_id)
+        if exits_student_base_info:
+            raise StudentExistsError()
         students_base_info_db = view_model_to_orm_model(students_base_info, StudentBaseInfo, exclude=[""])
         students_base_info_db = await self.students_base_info_dao.add_students_base_info(students_base_info_db)
-        students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfoModel, exclude=[""])
+        students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfo, exclude=[""])
         return students_base_info
 
     async def update_students_base_info(self, students_base_info):
         """
         编辑学生基本信息
         """
-        exists_students_base_info = await self.students_base_info_dao.get_students_base_info_by_id(
+        exists_students_base_info = await self.students_base_info_dao.get_students_base_info_by_student_id(
             students_base_info.student_id)
         if not exists_students_base_info:
-            raise Exception(f"编号为{students_base_info.student_id}学生不存在")
+            raise StudentNotFoundError()
         need_update_list = []
         for key, value in students_base_info.dict().items():
             if value:
@@ -70,9 +74,9 @@ class StudentsBaseInfoRule(object):
         """
         删除学生基本信息
         """
-        exists_students_base_info = await self.students_base_info_dao.get_students_base_info_by_id(students_id)
+        exists_students_base_info = await self.students_base_info_dao.get_students_base_info_by_student_id(students_id)
         if not exists_students_base_info:
-            raise Exception(f"编号为{students_id}学生不存在")
+            raise StudentNotFoundError()
         students_base_info_db = await self.students_base_info_dao.delete_students_base_info(exists_students_base_info)
         return students_base_info_db
 

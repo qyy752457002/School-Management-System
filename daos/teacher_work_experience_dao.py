@@ -33,6 +33,12 @@ class TeacherWorkExperienceDAO(DAOBase):
             TeacherWorkExperience.teacher_work_experience_id == teacher_work_experience_id))
         return result.scalar_one_or_none()
 
+    async def get_teacher_work_experience_by_teacher_id(self, teacher_id):
+        session = await self.slave_db()
+        result = await session.execute(select(TeacherWorkExperience).where(
+            TeacherWorkExperience.teacher_id == teacher_id))
+        return result.scalar_one_or_none()
+
     async def query_teacher_work_experience_with_page(self, pageQueryModel, page_request: PageRequest):
         query = select(TeacherWorkExperience)
         paging = await self.query_page(query, page_request)

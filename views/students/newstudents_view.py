@@ -17,10 +17,11 @@ from models.students import Student
 from rules.students_rule import StudentsRule
 from rules.students_base_info_rule import StudentsBaseInfoRule
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
-from views.models.students import NewStudents, NewBaseInfoCreate
-from views.models.students import NewStudentsFlowOut
+from views.models.students import NewStudents, NewBaseInfoCreate,NewBaseInfoUpdate,StudentsFamilyInfoCreate
+from views.models.students import NewStudentsFlowOut,StudentsUpdateFamilyInfo
 from datetime import date
 from rules.students_base_info_rule import StudentsBaseInfoRule
+from rules.students_family_info_rule import StudentsFamilyInfoRule
 
 
 class NewsStudentsView(BaseView):
@@ -100,7 +101,7 @@ class NewsStudentsInfoView(BaseView):
         """
         查询新生基本信息
         """
-        res = await self.students_base_info_rule.get_students_base_info_by_id(student_id)
+        res = await self.students_base_info_rule.get_students_base_info_by_student_id(student_id)
         return res
 
     async def post_newstudentbaseinfo(self, new_students_base_info: NewBaseInfoCreate):
@@ -110,7 +111,7 @@ class NewsStudentsInfoView(BaseView):
         res = await self.students_base_info_rule.add_students_base_info(new_students_base_info)
         return res
 
-    async def put_newstudentbaseinfo(self, new_students_base_info: StudentsBaseInfo):
+    async def put_newstudentbaseinfo(self, new_students_base_info: NewBaseInfoUpdate):
         """
         新生编辑基本信息
         """
@@ -122,44 +123,53 @@ class NewsStudentsInfoView(BaseView):
         """
         新生删除基本信息
         """
-        res = await self.students_base_info_rule.delete_students_base_info(student_id)
-        return res
+        await self.students_base_info_rule.delete_students_base_info(student_id)
+        return str(student_id)
 
 
 class NewsStudentsFamilyInfoView(BaseView):
     def __init__(self):
         super().__init__()
         self.students_rule = get_injector(StudentsRule)
-        self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
+        self.students_family_info_rule=get_injector(StudentsFamilyInfoRule)
 
-    async def post_newstudentfamilyinfo(self, new_students_family_info: StudentsFamilyInfo):
+
+    async def post_newstudentfamilyinfo(self, new_students_family_info: StudentsFamilyInfoCreate):
         """
         新生增加家庭信息
         """
-        res = await self.students_base_info_rule.add_students_family_info(new_students_family_info)
+        res = await self.students_family_info_rule.add_students_family_info(new_students_family_info)
 
         return res
 
-    async def put_newstudentfamilyinfo(self, new_students_family_info: StudentsFamilyInfo):
+    async def put_newstudentfamilyinfo(self, new_students_family_info: StudentsUpdateFamilyInfo):
         """
         新生编辑家庭信息
         """
-        res = await self.students_base_info_rule.update_students_family_info(new_students_family_info)
+        res = await self.students_family_info_rule.update_students_family_info(new_students_family_info)
         return res
 
     async def delete_newstudentfamilyinfo(self,
-                                          student_id: str = Query(..., title="学生编号",
+                                          student_family_info_id: str = Query(..., title="学生编号",
                                                                   description="学生编号", )):
         """
         新生删除家庭信息
         """
-        res = await self.students_base_info_rule.delete_students_family_info(student_id)
-        return res
+        await self.students_family_info_rule.delete_students_family_info(student_family_info_id)
+        return str(student_family_info_id)
 
     async def get_newstudentfamilyinfo(self,
-                                       student_id: str = Query(..., title="学生编号", description="学生编号", )):
+                                       student_family_info_id: str = Query(..., title="学生编号", description="学生编号", )):
+        """
+        查询单条家庭信息
+        """
+        res = await self.students_family_info_rule.get_students_family_info_by_id(student_family_info_id)
+        return res
+
+    async def get_newstudentfamilyinfoall(self,
+                                          student_id: str = Query(..., title="学生编号", description="学生编号", )):
         """
         新生查询家庭信息
         """
-        res = await self.students_base_info_rule.get_students_family_info_by_id(student_id)
+        res = await self.students_family_info_rule.get_all_students_family_info(student_id)
         return res

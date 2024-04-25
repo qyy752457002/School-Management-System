@@ -53,7 +53,7 @@ class TeacherWorkExperienceRule(object):
         return teacher_work_experience
 
     async def get_all_teacher_work_experience(self, teacher_id):
-        teacher_work_experience_db = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        teacher_work_experience_db = await self.teacher_work_experience_dao.get_all_teacher_work_experience(teacher_id)
         if not teacher_work_experience_db:
             raise TeacherNotFoundError()
         teacher_work_experience = []
