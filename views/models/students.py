@@ -3,7 +3,8 @@ from enum import Enum
 from fastapi import Query
 from pydantic import BaseModel, Field
 from datetime import date
-from models.public_enum import YesOrNo, Gender
+from models.public_enum import YesOrNo, Gender, IDtype
+from models.students import  Relationship, Registration,HealthStatus,StudentApprovalAtatus
 from typing import Optional
 
 
@@ -59,7 +60,7 @@ class NewStudentsQuery(BaseModel):
     school: Optional[str] = Query(None, title="学校", description="学校")
     enrollment_date: Optional[date] = Query(None, title="登记时间", description="登记时间")
     county: Optional[str] = Query(None, title="区县", description="区县")
-    approval_status: Optional[str] = Query(None, title="状态", description="状态")
+    approval_status: Optional[StudentApprovalAtatus] = Query(None, title="状态", description="状态")
 
 
 class NewStudentsQueryRe(BaseModel):
@@ -82,7 +83,7 @@ class NewStudentsQueryRe(BaseModel):
     id_number: str = Field(None, title="证件号码", description="证件号码")
     school: str = Field(None, title="学校", description="学校")
     county: str = Field(None, title="区县", description="区县")
-    approval_status: str = Field(None, title="状态", description="状态")
+    approval_status: StudentApprovalAtatus = Field(None, title="状态", description="状态")
 
 
 class StudentsKeyinfo(BaseModel):
@@ -266,14 +267,14 @@ class StudentsFamilyInfo(BaseModel):
     student_id: int = Field(..., title="学生id", description="学生id")
     name: str = Field(..., title="姓名", description="姓名")
     gender: Gender = Field(..., title="性别", description="性别")
-    relationship: str = Field(..., title="关系", description="关系")
+    relationship: Relationship = Field(..., title="关系", description="关系")
     is_guardian: YesOrNo = Field(..., title="是否监护人", description="是否监护人")
     identification_type: str = Field(..., title="证件类型", description="证件类型")
     identification_number: str = Field(..., title="证件号码", description="证件号码")
     birthday: date = Field(..., title="出生日期", description="出生日期")
     phone_number: str = Field(..., title="手机号码", description="手机号码")
     ethnicity: str = Field(..., title="民族", description="民族")
-    health_status: str = Field(..., title="健康状态", description="健康状态")
+    health_status: HealthStatus = Field(..., title="健康状态", description="健康状态")
     nationality: str = Field(..., title="国籍", description="国籍")
     political_status: str = Field("", title="政治面貌", description="政治面貌")
     contact_address: str = Field(..., title="联系地址", description="联系地址")
@@ -301,7 +302,22 @@ class StudentsFamilyInfoCreate(BaseModel):
     工作单位：workplace
     家庭成员职业：family_member_occupation
     """
-
+    student_id: int = Field(..., title="学生id", description="学生id")
+    name: str = Field(..., title="姓名", description="姓名")
+    gender: Gender = Field(..., title="性别", description="性别")
+    relationship: Relationship = Field(..., title="关系", description="关系")
+    is_guardian: YesOrNo = Field(..., title="是否监护人", description="是否监护人")
+    identification_type: str = Field(..., title="证件类型", description="证件类型")
+    identification_number: str = Field(..., title="证件号码", description="证件号码")
+    birthday: date = Field(..., title="出生日期", description="出生日期")
+    phone_number: str = Field(..., title="手机号码", description="手机号码")
+    ethnicity: str = Field(..., title="民族", description="民族")
+    health_status: HealthStatus = Field(..., title="健康状态", description="健康状态")
+    nationality: str = Field(..., title="国籍", description="国籍")
+    political_status: str = Field("", title="政治面貌", description="政治面貌")
+    contact_address: str = Field(..., title="联系地址", description="联系地址")
+    workplace: str = Field("", title="工作单位", description="工作单位")
+    family_member_occupation: str = Field("", title="家庭成员职业", description="家庭成员职业")
 
 
 class StudentsUpdateFamilyInfo(BaseModel):
@@ -326,14 +342,14 @@ class StudentsUpdateFamilyInfo(BaseModel):
     student_id: int = Field(..., title="学生id", description="学生id")
     name: str = Field(..., title="姓名", description="姓名")
     gender: Gender = Field(..., title="性别", description="性别")
-    relationship: str = Field(..., title="关系", description="关系")
+    relationship: Relationship = Field(..., title="关系", description="关系")
     is_guardian: YesOrNo = Field(..., title="是否监护人", description="是否监护人")
     identification_type: str = Field(..., title="证件类型", description="证件类型")
     identification_number: str = Field(..., title="证件号码", description="证件号码")
     birthday: date = Field(..., title="出生日期", description="出生日期")
     phone_number: str = Field(..., title="手机号码", description="手机号码")
     ethnicity: str = Field(..., title="民族", description="民族")
-    health_status: str = Field(..., title="健康状态", description="健康状态")
+    health_status: HealthStatus = Field(..., title="健康状态", description="健康状态")
     nationality: str = Field(..., title="国籍", description="国籍")
     political_status: str = Field("", title="政治面貌", description="政治面貌")
     contact_address: str = Field(..., title="联系地址", description="联系地址")

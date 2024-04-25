@@ -5,6 +5,7 @@ from daos.teacher_learn_experience_dao import TeacherLearnExperienceDAO
 from daos.teachers_dao import TeachersDao
 from models.teacher_learn_experience import TeacherLearnExperience
 from views.models.teacher_extend import TeacherLearnExperienceModel,TeacherLearnExperienceUpdateModel
+from business_exceptions.teacher import TeacherLearnExperienceNotFoundError,TeacherNotFoundError
 
 
 @dataclass_inject
@@ -15,14 +16,19 @@ class TeacherLearnExperienceRule(object):
     async def get_teacher_learn_experience_by_teacher_learn_experience_id(self, teacher_learn_experience_id):
         teacher_learn_experience_db = await self.teacher_learn_experience_dao.get_teacher_learn_experience_by_teacher_learn_experience_id(
             teacher_learn_experience_id)
-        teacher_learn_experience = orm_model_to_view_model(teacher_learn_experience_db, TeacherLearnExperienceModel)
+        if not teacher_learn_experience_db:
+            raise TeacherLearnExperienceNotFoundError()
+        teacher_learn_experience = orm_model_to_view_model(teacher_learn_experience_db, TeacherLearnExperienceUpdateModel)
         return teacher_learn_experience
 
     async def add_teacher_learn_experience(self, teacher_learn_experience: TeacherLearnExperienceModel):
+        exits_teacher = await self.teachers_dao.get_teachers_by_id(teacher_learn_experience.teacher_id)
+        if not exits_teacher:
+            raise TeacherNotFoundError()
         teacher_learn_experience_db = view_model_to_orm_model(teacher_learn_experience, TeacherLearnExperience)
         teacher_learn_experience_db = await self.teacher_learn_experience_dao.add_teacher_learn_experience(
             teacher_learn_experience_db)
-        teacher_learn_experience = orm_model_to_view_model(teacher_learn_experience_db, TeacherLearnExperienceModel)
+        teacher_learn_experience = orm_model_to_view_model(teacher_learn_experience_db, TeacherLearnExperienceUpdateModel)
         return teacher_learn_experience
 
     async def delete_teacher_learn_experience(self, teacher_learn_experience_id):
@@ -30,10 +36,10 @@ class TeacherLearnExperienceRule(object):
             teacher_learn_experience_id)
         print(exists_teacher_learn_experience.is_deleted)
         if not exists_teacher_learn_experience:
-            raise Exception(f"编号为的{teacher_learn_experience_id}teacher_learn_experience不存在")
+            raise TeacherLearnExperienceNotFoundError()
         teacher_learn_experience_db = await self.teacher_learn_experience_dao.delete_teacher_learn_experience(
             exists_teacher_learn_experience)
-        teacher_learn_experience = orm_model_to_view_model(teacher_learn_experience_db, TeacherLearnExperienceModel,
+        teacher_learn_experience = orm_model_to_view_model(teacher_learn_experience_db, TeacherLearnExperienceUpdateModel,
                                                            exclude=[""])
         return teacher_learn_experience
 

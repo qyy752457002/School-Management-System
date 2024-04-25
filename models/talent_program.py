@@ -19,4 +19,6 @@ class TalentProgram(BaseDBModel):
     talent_project_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="人才项目名称")
     selected_year: Mapped[str] = mapped_column(String(64), nullable=True, comment="入选年份")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
+    approval_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="审批状态",
+                                                 default="submitting")
     

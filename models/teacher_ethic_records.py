@@ -47,4 +47,6 @@ class TeacherEthicRecords(BaseDBModel):
     disciplinary_revocation_date: Mapped[date] = mapped_column(Date, nullable=False, comment="处分撤销日期")
     disciplinary_revocation_reason: Mapped[str] = mapped_column(String(64), nullable=False, comment="处分撤销原因")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
+    approval_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="审批状态",
+                                                 default="submitting")
     

@@ -39,7 +39,6 @@ class TeacherWorkExperienceDAO(DAOBase):
             TeacherWorkExperience.teacher_id == teacher_id))
         return result.scalar_one_or_none()
 
-
     async def query_teacher_work_experience_with_page(self, pageQueryModel, page_request: PageRequest):
         query = select(TeacherWorkExperience)
         paging = await self.query_page(query, page_request)

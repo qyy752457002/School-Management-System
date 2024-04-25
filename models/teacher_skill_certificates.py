@@ -23,7 +23,7 @@ class TeacherSkillCertificates(BaseDBModel):
 
     teacher_skill_certificates_id: Mapped[int] = mapped_column(primary_key=True, comment="teacher_skill_certificatesID")
     teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")
-    language: Mapped[str] = mapped_column(String(64), nullable=False, comment="语种")
+    language: Mapped[str] = mapped_column(String(64), nullable=True, comment="语种")
     proficiency_level: Mapped[str] = mapped_column(String(64), nullable=True, comment="掌握程度")
     other_skill_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="其他技能名称")
     other_skill_level: Mapped[str] = mapped_column(String(64), nullable=True, comment="其他技能程度")

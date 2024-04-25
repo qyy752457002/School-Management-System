@@ -5,24 +5,26 @@ from daos.students_family_info_dao import StudentsFamilyInfoDao
 from daos.students_dao import StudentsDao
 from models.students_family_info import StudentFamilyInfo
 from views.models.students import StudentsFamilyInfo as StudentsFamilyInfoModel
-from business_exceptions.student import StudentFamilyInfoNotFoundError,StudentNotFoundError
+from business_exceptions.student import StudentFamilyInfoNotFoundError, StudentNotFoundError
+from views.models.students import StudentsFamilyInfoCreate
 
 @dataclass_inject
 class StudentsFamilyInfoRule(object):
     students_family_info_dao: StudentsFamilyInfoDao
     students_dao: StudentsDao
 
-    async def get_students_family_info_by_id(self, students_family_info_id):
+    async def get_students_family_info_by_id(self, student_family_info_id):
         """
         获取单个学生家庭信息
         """
-        students_family_info_db = await self.students_family_info_dao.get_students_family_info_by_id(students_family_info_id)
+        students_family_info_db = await self.students_family_info_dao.get_students_family_info_by_id(
+            student_family_info_id)
         if not students_family_info_db:
             raise StudentFamilyInfoNotFoundError()
         students_family_info = orm_model_to_view_model(students_family_info_db, StudentsFamilyInfoModel, exclude=[""])
         return students_family_info
 
-    async def add_students_family_info(self, students_family_info: StudentsFamilyInfoModel):
+    async def add_students_family_info(self, students_family_info: StudentsFamilyInfoCreate):
         """
         新增学生家庭信息
         """
@@ -38,39 +40,38 @@ class StudentsFamilyInfoRule(object):
         """
         编辑学生家庭信息
         """
-        exists_students_family_info = await self.students_family_info_dao.get_students_family_info_by_id(students_family_info.student_id)
+        exists_students_family_info = await self.students_family_info_dao.get_students_family_info_by_id(
+            students_family_info.student_family_info_id)
         if not exists_students_family_info:
-            raise Exception(f"编号为{students_family_info.student_id}学生不存在")
+            raise StudentFamilyInfoNotFoundError()
         need_update_list = []
         for key, value in students_family_info.dict().items():
             if value:
                 need_update_list.append(key)
-        students_family_info = await self.students_family_info_dao.update_students_family_info(students_family_info, *need_update_list)
+        students_family_info = await self.students_family_info_dao.update_students_family_info(students_family_info,
+                                                                                               *need_update_list)
         return students_family_info
 
     async def delete_students_family_info(self, students_family_info_id):
         """
         删除学生家庭信息
         """
-        exists_students_family_info = await self.students_family_info_dao.get_students_family_info_by_id(students_family_info_id)
+        exists_students_family_info = await self.students_family_info_dao.get_students_family_info_by_id(
+            students_family_info_id)
         if not exists_students_family_info:
-            raise Exception(f"编号为{students_family_info_id}不存在")
-        students_family_info_db = await self.students_family_info_dao.delete_students_family_info(exists_students_family_info)
+            raise StudentFamilyInfoNotFoundError()
+        students_family_info_db = await self.students_family_info_dao.delete_students_family_info(
+            exists_students_family_info)
         students_family_info = orm_model_to_view_model(students_family_info_db, StudentsFamilyInfoModel, exclude=[""])
         return students_family_info
 
+    async def get_all_students_family_info(self, student_id):
 
-
-    async def get_all_students_family_info(self,student_id):
-
-        exits_student= await self.students_dao.get_students_by_id(student_id)
+        exits_student = await self.students_dao.get_students_by_id(student_id)
         if not exits_student:
-            raise Exception(f"编号为{student_id}学生不存在")
-        student_family_info_db=await self.students_family_info_dao.get_all_students_family_info(student_id)
-        student_family_info=[]
+            raise StudentFamilyInfoNotFoundError()
+        student_family_info_db = await self.students_family_info_dao.get_all_students_family_info(student_id)
+        student_family_info = []
         for item in student_family_info_db:
             student_family_info.append(orm_model_to_view_model(item, StudentsFamilyInfoModel))
         return student_family_info
-
-
-

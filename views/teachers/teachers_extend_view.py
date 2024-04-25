@@ -48,7 +48,6 @@ from rules.research_achievements_rule import ResearchAchievementsRule
 class TeacherLearnExperienceView(BaseView):
     def __init__(self):
         super().__init__()
-
         self.teacher_learn_experience_rule = get_injector(TeacherLearnExperienceRule)
 
     async def get_teacher_learn_experience(self,
