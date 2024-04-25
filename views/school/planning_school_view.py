@@ -108,10 +108,19 @@ class PlanningSchoolView(BaseView):
 
                           ):
         # print(planning_school)
+        # # 创建类的实例
+        # planning_school_key_info = PlanningSchoolKeyInfo()
+        # print(planning_school_key_info.__fields__)
+        #
+        # # 提取每个属性里 title 后面的值
+        # titles = {attr: planning_school_key_info.__fields__[attr].title for attr in planning_school_key_info.__fields__}
+        #
+        # print(titles)
+
         origin = await self.planning_school_rule.get_planning_school_by_id(planning_school.id)
 
-        res2 = await self.planning_school_rule.compare_modify_fields(planning_school,origin,PlanningSchoolKeyInfo)
-        print(  res2)
+        res2 = await self.planning_school_rule.compare_modify_fields(planning_school,origin)
+        # print(  res2)
 
         res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
 
