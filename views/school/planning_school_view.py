@@ -108,10 +108,13 @@ class PlanningSchoolView(BaseView):
 
                           ):
         # print(planning_school)
+        origin = await self.planning_school_rule.get_planning_school_by_id(planning_school.id)
+
+        res2 = await self.planning_school_rule.compare_modify_fields(planning_school,origin,PlanningSchoolKeyInfo)
+        print(  res2)
 
         res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
-        res2 = await self.planning_school_rule.compare_modify_fields(planning_school,res)
-        print(  res2)
+
 
 
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
