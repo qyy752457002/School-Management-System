@@ -59,23 +59,7 @@ class PlanningSchoolView(BaseView):
         return {'planning_school': planning_school, 'planning_school_communication': planning_school_communication,
                 'planning_school_eduinfo': planning_school_eduinfo,'planning_school_keyinfo':extra_model }
 
-    # 获取单个详情
-    # async def get_detail(self, planning_school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1,
-    #                                                     max_length=20, example='SC2032633'),
-    #               planning_school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
-    #                                                 example='XX小学'),
-    #               planning_school_id: int = Query(..., description="学校id|根据学校查规划校", example='1'),
-    #
-    #               ):
-    #     planning_school = await self.planning_school_rule.get_planning_school_by_id(planning_school_id)
-    #     return planning_school
 
-    #  新增的实际结果  ID赋值
-    # async def post(self, planning_school: PlanningSchool):
-    #     print(planning_school)
-    #     res = await self.planning_school_rule.add_planning_school(planning_school)
-    #
-    #     return res
     async def post(self, planning_school: PlanningSchoolKeyAddInfo):
         # print(planning_school)
         # 保存 模型

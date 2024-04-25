@@ -16,3 +16,20 @@
     ) VALUES (  'major',  '14', '水产养殖类','1', True ,'2020-10-01 00:00:00','2020-10-01 00:00:00', False  );
     INSERT INTO lfun_enum_value (   enum_name   , enum_value, description ,parent_id,is_enabled , created_at,updated_at , is_deleted
     ) VALUES (  'major',  '15', '农林管理类','1', True ,'2020-10-01 00:00:00','2020-10-01 00:00:00', False  );
+
+
+
+    INSERT INTO "public"."lfun_enum_value"(  "enum_name", "enum_value", "description", "sort_number", "parent_id", "is_enabled", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  'major', '3', '生化与药品大类', 0, '', 't', 0, 0, '2020-10-01 00:00:00', '2020-10-01 00:00:00', 'f');
+
+
+    INSERT INTO "public"."lfun_enum_value"(  "enum_name", "enum_value", "description", "sort_number", "parent_id", "is_enabled", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  'major', '4', '资源开发与测绘大类', 0, '', 't', 0, 0, '2020-10-01 00:00:00', '2020-10-01 00:00:00', 'f');
+
+    INSERT INTO "public"."lfun_enum_value"(  "enum_name", "enum_value", "description", "sort_number", "parent_id", "is_enabled", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  'major', '5', '材料与能源大类', 0, '', 't', 0, 0, '2020-10-01 00:00:00', '2020-10-01 00:00:00', 'f');
+    INSERT INTO "public"."lfun_enum_value"(  "enum_name", "enum_value", "description", "sort_number", "parent_id", "is_enabled", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  'major', '6', '土建大类', 0, '', 't', 0, 0, '2020-10-01 00:00:00', '2020-10-01 00:00:00', 'f');
+    INSERT INTO "public"."lfun_enum_value"(  "enum_name", "enum_value", "description", "sort_number", "parent_id", "is_enabled", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  'major', '7', '水利大类', 0, '', 't', 0, 0, '2020-10-01 00:00:00', '2020-10-01 00:00:00', 'f');
+    INSERT INTO "public"."lfun_enum_value"(  "enum_name", "enum_value", "description", "sort_number", "parent_id", "is_enabled", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  'major', '8', '制造大类', 0, '', 't', 0, 0, '2020-10-01 00:00:00', '2020-10-01 00:00:00', 'f');
+    INSERT INTO "public"."lfun_enum_value"(  "enum_name", "enum_value", "description", "sort_number", "parent_id", "is_enabled", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  'major', '9', '电子信息大类', 0, '', 't', 0, 0, '2020-10-01 00:00:00', '2020-10-01 00:00:00', 'f');
+    INSERT INTO "public"."lfun_enum_value"(  "enum_name", "enum_value", "description", "sort_number", "parent_id", "is_enabled", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  'major', '10', '环保气象与安全大类', 0, '', 't', 0, 0, '2020-10-01 00:00:00', '2020-10-01 00:00:00', 'f');
+    INSERT INTO "public"."lfun_enum_value"(  "enum_name", "enum_value", "description", "sort_number", "parent_id", "is_enabled", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  'major', '11', '轻纺食品大类', 0, '', 't', 0, 0, '2020-10-01 00:00:00', '2020-10-01 00:00:00', 'f');
+
+
