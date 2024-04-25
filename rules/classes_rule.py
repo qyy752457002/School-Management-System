@@ -60,6 +60,6 @@ class ClassesRule(object):
         paging = await self.classes_dao.query_classes_with_page(borough, block, school_id, grade_id, class_name,
                                                                 page_request)
         # 字段映射的示例写法   , {"hash_password": "password"} ClassesSearchRes
-        # print(paging)
+        print(paging)
         paging_result = PaginatedResponse.from_paging(paging, ClassesSearchRes)
         return paging_result

@@ -15,10 +15,12 @@ class ClassesDAO(DAOBase):
         result = await session.execute(select(Classes).where(Classes.id == classes_id))
         return result.scalar_one_or_none()
 
-    async def get_classes_by_classes_name(self, classes_name):
+    async def get_classes_by_classes_name(self, classes_name,school_id=None):
         session = await self.slave_db()
-        result = await session.execute(
-            select(Classes).where(Classes.class_name == classes_name))
+        if school_id:
+            result = await session.execute(select(Classes).where(and_(Classes.class_name == classes_name,Classes.school_id==school_id)))
+        else:
+            result = await session.execute(  select(Classes).where(Classes.class_name == classes_name))
         return result.first()
 
     async def add_classes(self, classes):
@@ -109,6 +111,7 @@ class ClassesDAO(DAOBase):
                 query = query.where(School.borough == borough)
 
         paging = await self.query_page(query, page_request)
+
         return paging
 
     async def update_classes_byargs(self, classes: Classes, *args, is_commit: bool = True):
