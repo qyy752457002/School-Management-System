@@ -1,8 +1,12 @@
+from datetime import datetime
 from typing import List
 
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
+from rules.operation_record import OperationRecordRule
+from views.common.common_view import  compare_modify_fields
+from views.models.operation_record import OperationRecord, OperationModule, OperationTargetType, OperationType
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
 from views.models.school_communications import SchoolCommunications
 from views.models.school_eduinfo import SchoolEduInfo
@@ -27,6 +31,8 @@ class SchoolView(BaseView):
         self.school_rule = get_injector(SchoolRule)
         self.school_eduinfo_rule = get_injector(SchoolEduinfoRule)
         self.school_communication_rule = get_injector(SchoolCommunicationRule)
+        self.operation_record_rule =   get_injector(OperationRecordRule)
+
     async def get(self,school_no:str= Query(None, title="学校编号", description="学校编号",min_length=1,max_length=20,example=''),
                   school_name:str= Query(None, description="学校名称" ,min_length=1,max_length=20,example=''),
                   school_id: int = Query(..., description="学校id|根据学校查规划校", example='1'),
@@ -77,9 +83,31 @@ class SchoolView(BaseView):
                           ):
         # print(planning_school)
 
+        origin = await self.school_rule.get_school_by_id(school.id)
+
+        res2 =  compare_modify_fields(school,origin)
+        # print(  res2)
+
         res = await self.school_rule.update_school(school)
 
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(school.id),
+            operator='admin',
+            module=OperationModule.KEYINFO.value,
+            target=OperationTargetType.SCHOOL.value,
+
+            action_type=OperationType.MODIFY.value,
+            ip='127.0.0.1',
+            change_data= str(res2)[ 0:1000 ],
+            change_field='关键信息',
+            change_item='关键信息',
+            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason='修改基本信息',
+            doc_upload='',
+            status='1',
+            account='',))
 
         return res
         # return  {school_no,borough,block }
@@ -88,12 +116,54 @@ class SchoolView(BaseView):
         print(school_id)
         res = await self.school_rule.softdelete_school(school_id)
 
+
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(school_id),
+            operator='admin',
+            module=OperationModule.KEYINFO.value,
+            target=OperationTargetType.SCHOOL.value,
+
+            action_type=OperationType.DELETE.value,
+            ip='127.0.0.1',
+            change_data= str(res)[ 0:1000 ],
+            change_field='关键信息',
+            change_item='关键信息',
+            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason='修改基本信息',
+            doc_upload='',
+            status='1',
+            account='',))
+
         return res
         # return  school_id
     # 修改 变更 基本信息
     async def patch_baseinfo(self, school_baseinfo:SchoolBaseInfo ):
         # print(school)
+
+        origin = await self.school_rule.get_school_by_id(school_baseinfo.id)
+        log_con =  compare_modify_fields(school_baseinfo,origin)
+        # print(  res2)
+
         res = await self.school_rule.update_school_byargs(school_baseinfo,2)
+
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(school_baseinfo.id),
+            operator='admin',
+            module=OperationModule.BASEINFO.value,
+            target=OperationTargetType.SCHOOL.value,
+
+            action_type=OperationType.MODIFY.value,
+            ip='127.0.0.1',
+            change_data= str(log_con)[ 0:1000 ],
+            change_field='关键信息',
+            change_item='关键信息',
+            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason='修改基本信息',
+            doc_upload='',
+            status='1',
+            account='',))
 
         return res
         # return   school_baseinfo
@@ -134,6 +204,23 @@ class SchoolView(BaseView):
     async def patch_open(self,school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633')):
         # print(school)
         res = await self.school_rule.update_school_status(school_id,PlanningSchoolStatus.NORMAL.value,'open')
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(school_id),
+            operator='admin',
+            module=OperationModule.BASEINFO.value,
+            target=OperationTargetType.SCHOOL.value,
+
+            action_type=OperationType.MODIFY.value,
+            ip='127.0.0.1',
+            change_data= str(school_id)[ 0:1000 ],
+            change_field='关键信息',
+            change_item='关键信息',
+            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason='修改基本信息',
+            doc_upload='',
+            status='1',
+            account='',))
 
         return res
         # return  school_id
@@ -148,6 +235,23 @@ class SchoolView(BaseView):
         # print(school)
 
         res = await self.school_rule.update_school_status(school_id,PlanningSchoolStatus.CLOSED.value)
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(school_id),
+            operator='admin',
+            module=OperationModule.BASEINFO.value,
+            target=OperationTargetType.SCHOOL.value,
+
+            action_type=OperationType.MODIFY.value,
+            ip='127.0.0.1',
+            change_data= str(school_id)[ 0:1000 ],
+            change_field='关键信息',
+            change_item='关键信息',
+            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason='修改基本信息',
+            doc_upload='',
+            status='1',
+            account='',))
 
         return res
         # return  school_id
@@ -175,12 +279,32 @@ class SchoolView(BaseView):
         school_communication.school_id = school_id
         school_eduinfo.school_id = school_id
 
+        origin = await self.school_rule.get_school_by_id(school.id)
+        log_con =  compare_modify_fields(school,origin)
+
         res = await self.school_rule.update_school_byargs(school)
         res_com = await self.school_communication_rule.update_school_communication_byargs(
             school_communication)
         res_edu = await self.school_eduinfo_rule.update_school_eduinfo_byargs(school_eduinfo)
 
-        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(school_id),
+            operator='admin',
+            module=OperationModule.BASEINFO.value,
+            target=OperationTargetType.SCHOOL.value,
+
+            action_type=OperationType.MODIFY.value,
+            ip='127.0.0.1',
+            change_data= str(log_con)[ 0:1000 ],
+            change_field='关键信息',
+            change_item='关键信息',
+            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason='修改基本信息',
+            doc_upload='',
+            status='1',
+            account='',))
 
         return res
 
