@@ -4,7 +4,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teacher_learn_experience_dao import TeacherLearnExperienceDAO
 from daos.teachers_dao import TeachersDao
 from models.teacher_learn_experience import TeacherLearnExperience
-from views.models.teacher_extend import TeacherLearnExperienceModel
+from views.models.teacher_extend import TeacherLearnExperienceModel,TeacherLearnExperienceUpdateModel
 
 
 @dataclass_inject
@@ -57,5 +57,5 @@ class TeacherLearnExperienceRule(object):
         teacher_learn_experience = []
         for teacher_learn_experience_db in teacher_learn_experience_db:
             teacher_learn_experience.append(
-                orm_model_to_view_model(teacher_learn_experience_db, TeacherLearnExperienceModel, exclude=[""]))
+                orm_model_to_view_model(teacher_learn_experience_db, TeacherLearnExperienceUpdateModel, exclude=[""]))
         return teacher_learn_experience

@@ -5,6 +5,7 @@ from daos.students_family_info_dao import StudentsFamilyInfoDao
 from daos.students_dao import StudentsDao
 from models.students_family_info import StudentFamilyInfo
 from views.models.students import StudentsFamilyInfo as StudentsFamilyInfoModel
+from business_exceptions.student import StudentFamilyInfoNotFoundError,StudentNotFoundError
 
 @dataclass_inject
 class StudentsFamilyInfoRule(object):
@@ -16,6 +17,8 @@ class StudentsFamilyInfoRule(object):
         获取单个学生家庭信息
         """
         students_family_info_db = await self.students_family_info_dao.get_students_family_info_by_id(students_family_info_id)
+        if not students_family_info_db:
+            raise StudentFamilyInfoNotFoundError()
         students_family_info = orm_model_to_view_model(students_family_info_db, StudentsFamilyInfoModel, exclude=[""])
         return students_family_info
 
@@ -23,6 +26,9 @@ class StudentsFamilyInfoRule(object):
         """
         新增学生家庭信息
         """
+        exits_student = await self.students_dao.get_students_by_id(students_family_info.student_id)
+        if not exits_student:
+            raise StudentNotFoundError()
         students_family_info_db = view_model_to_orm_model(students_family_info, StudentFamilyInfo, exclude=[""])
         students_family_info_db = await self.students_family_info_dao.add_students_family_info(students_family_info_db)
         students_family_info = orm_model_to_view_model(students_family_info_db, StudentsFamilyInfoModel, exclude=[""])

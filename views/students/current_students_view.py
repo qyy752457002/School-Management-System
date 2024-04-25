@@ -218,7 +218,7 @@ class CurrentStudentsBaseInfoView(BaseView):
         """
         在校生 查询基本信息
         """
-        res = await self.students_base_info_rule.get_students_base_info_by_id(student_id)
+        res = await self.students_base_info_rule.get_students_base_info_by_student_id(student_id)
         return res
 
     async def put_studentbaseinfo(self, new_students_base_info: StudentsBaseInfo):

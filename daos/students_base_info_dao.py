@@ -50,7 +50,7 @@ class StudentsBaseInfoDao(DAOBase):
         """
         删除单个学生基本信息
         """
-        session = self.master_db()
+        session = await self.master_db()
         return await self.delete(session, students)
 
     async def query_students_with_page(self, query_model: NewStudentsQuery, page_request: PageRequest) -> Paging:
@@ -67,7 +67,7 @@ class StudentsBaseInfoDao(DAOBase):
         """
         query = select(Student.student_id, Student.student_name, Student.id_type, Student.id_number,
                        Student.enrollment_number,
-                       Student.gender, Student.approval_status, StudentBaseInfo.residence_district,
+                       Student.student_gender, Student.approval_status, StudentBaseInfo.residence_district,
                        StudentBaseInfo.school).select_from(Student).join(StudentBaseInfo,
                                                                          Student.student_id == StudentBaseInfo.student_id)
         if query_model.student_name:
@@ -86,7 +86,7 @@ class StudentsBaseInfoDao(DAOBase):
             query = query.where(StudentBaseInfo.enrollment_date == query_model.enrollment_date)
         # if query_model.county:
         #     query = query.where(StudentBaseInfo.county == query_model.county)
-        if query_model.status:
+        if query_model.approval_status:
             query = query.where(Student.approval_status == query_model.status)
         paging = await self.query_page(query, page_request)
         return paging

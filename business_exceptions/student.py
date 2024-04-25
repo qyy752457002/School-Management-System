@@ -2,3 +2,11 @@ from mini_framework.web.std_models.errors import MiniHTTPException
 class StudentNotFoundError(MiniHTTPException):
     def __init__(self):
         super().__init__(404, "STUDENT_NOT_FOUND", "Student not found.", "学生不存在")
+
+class StudentExistsError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(400, "STUDENT_EXISTS", "Student already exists.", "学生已存在")
+
+class StudentFamilyInfoNotFoundError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "STUDENT_FAMILY_INFO_NOT_FOUND", "Student family info not found.", "学生家庭信息不存在")

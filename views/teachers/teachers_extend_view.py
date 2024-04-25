@@ -115,8 +115,8 @@ class TeacherWorkExperienceView(BaseView):
         res = await self.teacher_work_experience_rule.update_teacher_work_experience(teacher_work_experience)
         return res
 
-    async def get_teacher_work_experience_all(self, teacher_id: int = Query(..., title="teacher_work_experienceID",
-                                                                            description="teacher_work_experienceID",
+    async def get_teacher_work_experience_all(self, teacher_id: int = Query(..., title="teacher_id",
+                                                                            description="teacher_id",
                                                                             example=1234)):
         return await self.teacher_work_experience_rule.get_all_teacher_work_experience(teacher_id)
 
