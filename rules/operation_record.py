@@ -66,7 +66,8 @@ class OperationRecordRule(object):
     async def get_operation_record_count(self):
         return await self.operation_record_dao.get_operation_record_count()
 
-    async def query_operation_record_with_page(self, page_request: PageRequest,  operation_record_name, parent_code ):
+    async def query_operation_record_with_page(self, page_request: PageRequest,  operation_target_type,action_target_id,operater_account,
+                                               operater_id,operation_module,operation_type ):
         paging = await self.operation_record_dao.query_operation_record_with_page(  page_request, operation_record_name,parent_code  )
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, OperationRecordModel)
