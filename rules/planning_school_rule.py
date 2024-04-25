@@ -171,15 +171,15 @@ class PlanningSchoolRule(object):
                     changeitems[key] = [ orm_model.__dict__[key],value ]
                     # pass
         print(changeitems)
-
-        # 创建类的实例
-        planning_school_key_info = PlanningSchoolKeyInfo()
-        print(planning_school_key_info.__fields__)
-
-        # 提取每个属性里 title 后面的值
-        titles = {attr: planning_school_key_info.__fields__[attr].title for attr in planning_school_key_info.__fields__}
-
-        print(titles)
+        #
+        # # 创建类的实例
+        # planning_school_key_info = PlanningSchoolKeyInfo()
+        # print(planning_school_key_info.__fields__)
+        #
+        # # 提取每个属性里 title 后面的值
+        # titles = {attr: planning_school_key_info.__fields__[attr].title for attr in planning_school_key_info.__fields__}
+        #
+        # print(titles)
 
         return changeitems
 

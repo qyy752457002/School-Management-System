@@ -27,11 +27,11 @@ action_target_id: str = Field(..., title="操作对象ID", description="操作�
     __table_args__ = {'comment': '操作记录表模型'}
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID",autoincrement=True)
-    action_target_id: Mapped[str] = mapped_column(String(255),  nullable=True, comment="操作对象ID",default='')
+    action_target_id: Mapped[str] = mapped_column(String(30),  nullable=True, comment="操作对象ID",default='')
 
-    action_type: Mapped[str] = mapped_column(String(255),  nullable=True, comment="操作类型",default='')
-    ip: Mapped[str] = mapped_column(String(255),  nullable=True, comment=" Description",default='')
-    change_data: Mapped[str] = mapped_column(String(255),  nullable=True, comment=" Author",default='')
+    action_type: Mapped[str] = mapped_column(String(40),  nullable=True, comment="操作类型",default='')
+    ip: Mapped[str] = mapped_column(String(40),  nullable=True, comment=" Description",default='')
+    change_data: Mapped[str] = mapped_column(String(1024),  nullable=True, comment=" Author",default='')
     change_field: Mapped[str] = mapped_column(String(255),  nullable=True, comment="变更字段",default='')
     change_item: Mapped[str] = mapped_column(String(255),  nullable=True, comment="变更项",default='')
     timestamp: Mapped[str] = mapped_column(String(255),  nullable=True, comment="操作时间 ",default='')

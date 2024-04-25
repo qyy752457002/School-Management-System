@@ -135,7 +135,7 @@ class PlanningSchoolView(BaseView):
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
-            change_data= str(planning_school)[ 0:250 ],
+            change_data= str(res2)[ 0:1000 ],
             change_field='关键信息',
             change_item='关键信息',
             timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
