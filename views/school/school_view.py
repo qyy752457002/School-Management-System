@@ -90,7 +90,7 @@ class SchoolView(BaseView):
 
         res = await self.school_rule.update_school(school)
 
-        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(school.id),
