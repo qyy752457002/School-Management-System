@@ -40,7 +40,6 @@ campus_leader_position
     kg_level: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="星级")
     campus_short_name: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="园所简称")
     campus_en_name: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="园所英文名称")
-    create_campus_date: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="建校年月")
     social_credit_code: Mapped[str] = mapped_column(String(64), nullable=True, default='',comment="统一社会信用代码")
     founder_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="举办者类型")
     founder_type_lv2: Mapped[str] = mapped_column(String(64), nullable=True, comment="举办者类型二级",default='')
@@ -54,10 +53,28 @@ campus_leader_position
     department_unit_number: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="属地管理行政部门单位号")
     sy_zones: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="属地管理行政部门所在地地区")
     historical_evolution: Mapped[str] = mapped_column(String(640), nullable=True,default='', comment="历史沿革")
+    area_code: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="电话区号")
+
+
+
     campus_leader_name: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="校区负责人姓名")
     campus_leader_position: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="校区负责人职位")
+
+
     location_city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="校区所在地(省市)")
     location_district: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="校区所在地(区县)")
+
+    contact_number: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="联系电话")
+    long: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="所在经度")
+    lat: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="所在纬度")
+    create_campus_date: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="成立日期")
+
+    postal_code: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="邮政编码")
+    fax_number: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="传真电话")
+    email: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="单位电子信箱")
+    detailed_address: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="园所详细地址")
+    related_license_upload: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="相关证照上传")
+
 
 
     sy_zones_pro: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="属地管理教育行政部门所在地（省级）")

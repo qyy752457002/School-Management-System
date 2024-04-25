@@ -103,6 +103,7 @@ class CampusDAO(DAOBase):
                                      founder_type_lv2,
                                      founder_type_lv3 ,school_id) -> Paging:
         query = select(Campus).order_by(desc(Campus.id))
+        query = query.where(Campus.is_deleted == False)
 
         if campus_name:
             query = query.where(Campus.campus_name == campus_name)

@@ -12,11 +12,11 @@ class Classes(BaseModel):
     id: int = Query(None, title="", description="id", example='1'),
 
     school_id: int = Field(None, title="学校ID", description="学校ID", examples=['1'])
-    grade_no: str = Field(..., title="年级编号", description="年级编号", examples=['一年级'])
-    grade_id: int = Field(..., title="年级ID", description="年级ID", examples=['2'])
+    grade_no: str = Field('', title="年级编号", description="年级编号", examples=['一年级'])
+    grade_id: int = Field(0, title="年级ID", description="年级ID", examples=['2'])
 
-    class_name: str = Field(..., title="Grade_name", description="班级名称", examples=['一年级'])
-    class_number: str = Field(..., description="班号", examples=['一年级'])
+    class_name: str = Field('', title="Grade_name", description="班级名称", examples=['一年级'])
+    class_number: str = Field('', description="班号", examples=['一年级'])
     year_established: str = Field(None, description="建班年份", examples=['fsdfdsfsdxxx'])
     teacher_id_card: str = Field(None, description="班主任身份证", examples=['fsdfdsfsdxxx'])
     teacher_name: str = Field(None, description="班主任姓名", examples=['fsdfdsfsdxxx'])

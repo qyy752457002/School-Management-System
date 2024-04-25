@@ -51,7 +51,8 @@ class CampusRule(object):
         #                                              exclude=["first_name", "last_name"]
         campus_db = view_model_to_orm_model(campus, Campus,    exclude=["id"])
         # school_db.status =  PlanningSchoolStatus.DRAFT.value
-        campus_db.status =PlanningSchoolStatus.DRAFT.value
+        # 校区只有2步  故新增几位开设中 
+        campus_db.status =PlanningSchoolStatus.OPENING.value
         campus_db.created_uid = 0
         campus_db.updated_uid = 0
 
@@ -133,11 +134,11 @@ class CampusRule(object):
         exists_campus = await self.campus_dao.get_campus_by_id(campus.id)
         if not exists_campus:
             raise Exception(f"校区{campus.id}不存在")
-        if exists_campus.status== PlanningSchoolStatus.DRAFT.value:
-            exists_campus.status= PlanningSchoolStatus.OPENING.value
-            campus.status= PlanningSchoolStatus.OPENING.value
-        else:
-            pass
+        # if exists_campus.status== PlanningSchoolStatus.DRAFT.value:
+        #     exists_campus.status= PlanningSchoolStatus.OPENING.value
+        #     campus.status= PlanningSchoolStatus.OPENING.value
+        # else:
+        #     pass
         need_update_list = []
 
         for key, value in campus.dict().items():

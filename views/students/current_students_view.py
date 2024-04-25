@@ -5,8 +5,9 @@ from mini_framework.web.views import BaseView
 from models.student_transaction import AuditAction, TransactionDirection
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
-from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus
-from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, StudentEduInfo, \
+from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
+    StudentEduInfo
+from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo,  \
     NewStudentTransferIn
 # from fastapi import Field
 from fastapi import Query, Depends
@@ -73,7 +74,7 @@ class CurrentStudentsView(BaseView):
                                                            max_length=20),
 
                                        page_request=Depends(PageRequest)):
-        print(page_request, )
+        print(audit_status, )
         items = []
         # exit(1)
         # return page_search
@@ -132,24 +133,48 @@ class CurrentStudentsView(BaseView):
         student_edu_info_out.status = AuditAction.NEEDAUDIT.value
         student_edu_info_out.student_id = res_student.student_id
 
-        res = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
+        res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
                                                                           TransactionDirection.OUT.value)
 
         # 转入
 
         student_edu_info_in.status = AuditAction.NEEDAUDIT.value
         student_edu_info_in.student_id = res_student.student_id
-        res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in)
+        student_edu_info_in.relation_id = res_out.id
+        print(  res_out.id,000000)
+
+        res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in, TransactionDirection.IN.value,res_out.id)
 
         return res
 
-    # 在校生 系统外转出
-    async def patch_transferout_tooutside(self, StudentEduInfo: StudentEduInfo,
-                                          NewStudents: NewStudents,
-                                          StudentoutEduInfo: StudentEduInfo,
+    # 在校生 系统内转出
+    async def patch_transferout_tooutside(self,
+                                          student_edu_info_in: StudentEduInfo,
+                                          student_edu_info_out: StudentEduInfo,
+                                          student_id: int  = Query(..., description="学生id",   example='1'),
+
                                           ):
         # print(new_students_key_info)
-        return StudentEduInfo
+        #      同时写入 转出和转入 流程
+        res_student = await self.students_rule.get_students_by_id(student_id)
+        print(res_student)
+        # 转出
+
+        student_edu_info_out.status = AuditAction.NEEDAUDIT.value
+        student_edu_info_out.student_id = res_student.student_id
+
+        res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
+                                                                              TransactionDirection.OUT.value)
+
+        # 转入
+
+        student_edu_info_in.status = AuditAction.NEEDAUDIT.value
+        student_edu_info_in.student_id = res_student.student_id
+        student_edu_info_in.relation_id = res_out.id
+        # print(  res_out.id,000000)
+
+        res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in, TransactionDirection.IN.value,res_out.id)
+        return res
 
     # # 在校生转入   审批同意
     # async def patch_transferin_auditpass(self,
