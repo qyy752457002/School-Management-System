@@ -22,6 +22,7 @@ class GraduationStudentRule(object):
         # 可选 , exclude=[""]
         graduation_student = orm_model_to_view_model(graduation_student_db, GraduationStudentModel)
         return graduation_student
+
     async def get_graduation_student_by_name(self, student_name):
         graduation_student_db = await self.graduation_student_dao.get_graduationstudent_by_name(student_name)
         # 可选 , exclude=[""]
@@ -33,16 +34,18 @@ class GraduationStudentRule(object):
             graduation_student.student_name)
         if exists_graduation_student:
             raise GraduationStudentAlreadyExistError()
-        graduation_student_db = view_model_to_orm_model(graduation_student, GraduationStudent,    exclude=["id"])
+        graduation_student_db = view_model_to_orm_model(graduation_student, GraduationStudent, exclude=["id"])
 
         graduation_student_db = await self.graduation_student_dao.add_graduationstudent(graduation_student_db)
-        graduation_student = orm_model_to_view_model(graduation_student_db, GraduationStudentModel, exclude=["created_at",'updated_at'])
+        graduation_student = orm_model_to_view_model(graduation_student_db, GraduationStudentModel,
+                                                     exclude=["created_at", 'updated_at'])
         return graduation_student
 
-    async def update_graduation_student(self, student_id,graduate_status,graduate_picture,graduation_photo='',credential_notes=''):
+    async def update_graduation_student(self, student_id, graduate_status, graduate_picture, graduation_photo='',
+                                        credential_notes=''):
 
         need_update_list = []
-        graduation_student= StudentGraduation(student_id=student_id )
+        graduation_student = StudentGraduation(student_id=student_id)
         if graduate_status:
             graduation_student.graduation_type = graduate_status.value
         if graduate_picture:
@@ -56,9 +59,10 @@ class GraduationStudentRule(object):
             if value:
                 need_update_list.append(key)
 
-        graduation_student_db = await self.graduation_student_dao.update_graduationstudent(graduation_student, *need_update_list)
+        graduation_student_db = await self.graduation_student_dao.update_graduationstudent(graduation_student,
+                                                                                           *need_update_list)
         need_update_list2 = ['approval_status']
-        students= Student(student_id=student_id , approval_status=StudentApprovalAtatus.GRADUATED.value  )
+        students = Student(student_id=student_id, approval_status=StudentApprovalAtatus.GRADUATED.value)
 
         graduation_student_db2 = await self.student_dao.update_students(students, *need_update_list2)
 
@@ -71,15 +75,16 @@ class GraduationStudentRule(object):
         exists_graduation_student = await self.graduation_student_dao.get_graduationstudent_by_id(graduation_student_id)
         if not exists_graduation_student:
             raise GraduationStudentNotFoundError()
-        graduation_student_db = await self.graduation_student_dao.softdelete_graduationstudent(exists_graduation_student)
+        graduation_student_db = await self.graduation_student_dao.softdelete_graduationstudent(
+            exists_graduation_student)
         return graduation_student_db
-
 
     async def get_graduation_student_count(self):
         return await self.graduation_student_dao.get_graduationstudent_count()
 
-    async def query_graduation_student_with_page(self, page_request: PageRequest,  student_name,school_id,gender,edu_number,class_id ):
-        # todo  转换条件 为args
+    async def query_graduation_student_with_page(self, page_request: PageRequest, student_name, school_id, gender,
+                                                 edu_number, class_id):
+        #    转换条件 为args
         kdict = {
             "student_name": student_name,
             "school_id": school_id,
@@ -98,8 +103,7 @@ class GraduationStudentRule(object):
         if not kdict["class_id"]:
             del kdict["class_id"]
 
-        paging = await self.graduation_student_dao.query_graduationstudent_with_page(page_request,**kdict     )
+        paging = await self.graduation_student_dao.query_graduationstudent_with_page(page_request, **kdict)
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, GraduationStudentModel)
         return paging_result
-

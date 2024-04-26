@@ -53,7 +53,8 @@ class GraduationStudentDAO(DAOBase):
     async def update_graduationstudent(self, graduationstudent, *args, is_commit=True):
         session = await self.master_db()
         update_contents = get_update_contents(graduationstudent, *args)
-        query = update(StudentBaseInfo).where(StudentBaseInfo.student_id == graduationstudent.student_id).values(**update_contents)
+        query = update(StudentBaseInfo).where(StudentBaseInfo.student_id == graduationstudent.student_id).values(
+            **update_contents)
         return await self.update(session, query, graduationstudent, update_contents, is_commit=is_commit)
 
     async def softdelete_graduationstudent(self, graduationstudent):
