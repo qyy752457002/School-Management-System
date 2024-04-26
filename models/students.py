@@ -12,15 +12,17 @@ class StudentApprovalAtatus(str, Enum):
     入学
     分班
     流出
+    毕业
 
     """
     ENROLLMENT = "enrollment"
     ASSIGNMENT = "assignment"
     OUT = "out"
+    GRADUATED = "graduated"
 
     @classmethod
     def to_list(cls):
-        return [cls.ENROLLMENT, cls.ASSIGNMENT, cls.OUT]
+        return [cls.ENROLLMENT, cls.ASSIGNMENT, cls.OUT, cls.GRADUATED]
 
 
 class Relationship(str, Enum):

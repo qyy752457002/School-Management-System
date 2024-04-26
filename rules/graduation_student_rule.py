@@ -70,7 +70,7 @@ class GraduationStudentRule(object):
         kdict = {
             "student_name": student_name,
             "school_id": school_id,
-            "gender": gender,
+            "student_gender": gender,
             "edu_number": edu_number,
             "class_id": class_id,
         }
@@ -78,8 +78,8 @@ class GraduationStudentRule(object):
             del kdict["student_name"]
         if not kdict["school_id"]:
             del kdict["school_id"]
-        if not kdict["gender"]:
-            del kdict["gender"]
+        if not kdict["student_gender"]:
+            del kdict["student_gender"]
         if not kdict["edu_number"]:
             del kdict["edu_number"]
         if not kdict["class_id"]:

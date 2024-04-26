@@ -28,7 +28,7 @@ class GraduationStudentsView(BaseView):
     # 分页查询
     async def page(self, student_name: str = Query(None, title="学生姓名", description="学生姓名", example=""),
                    school_id: str = Query(None, title="", description="学校", example=""),
-                   gender: str = Query(None, title="性别", description="性别", example="Male"),
+                   student_gender: str = Query(None, title="性别", description="性别", example="Male"),
                    edu_number: str = Query(None, title="", description="学籍号码", example=""),
                    class_id: str = Query(None, title="", description="班级", example=""),
 
@@ -36,7 +36,7 @@ class GraduationStudentsView(BaseView):
         print(page_request)
         items = []
 
-        res = await self.graduation_student_rule.query_graduation_student_with_page(page_request , student_name,school_id,gender,edu_number,class_id)
+        res = await self.graduation_student_rule.query_graduation_student_with_page(page_request , student_name,school_id,student_gender,edu_number,class_id)
         return res
 
 
