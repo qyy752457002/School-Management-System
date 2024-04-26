@@ -67,6 +67,9 @@ class StudentBaseInfo(BaseDBModel):
     session_id: Mapped[int] = mapped_column(nullable=True, comment="届别id", default=0)
     edu_number: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学籍号")
     student_number: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学号")
+    graduation_type: Mapped[str] = mapped_column(String(10), nullable=True, default='', comment="毕业类型")
+    graduation_remarks: Mapped[str] = mapped_column(String(255), nullable=True, default='', comment="毕业备注")
+    credential_notes: Mapped[str] = mapped_column(String(255), nullable=True, default='', comment="制证备注")
 
     grade: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="年级")
     classroom: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="班级")
