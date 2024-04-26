@@ -62,3 +62,39 @@ class TeacherEthicRecordsRule(object):
             teacher_ethic_records.append(orm_model_to_view_model(teacher_ethic_record, TeacherEthicRecordsUpdateModel,
                                                                  exclude=[""]))
         return teacher_ethic_records
+
+    async def submitting(self, teacher_ethic_records_id):
+        teacher_ethic_records = await self.teacher_ethic_records_dao.get_teacher_ethic_records_by_teacher_ethic_records_id(
+            teacher_ethic_records_id)
+        if not teacher_ethic_records:
+            raise TeacherEthicRecordsNotFoundError()
+        teacher_ethic_records.approval_status = "submitting"
+        return await self.teacher_ethic_records_dao.update_teacher_ethic_records(teacher_ethic_records,
+                                                                                 "approval_status")
+
+    async def submitted(self, teacher_ethic_records_id):
+        teacher_ethic_records = await self.teacher_ethic_records_dao.get_teacher_ethic_records_by_teacher_ethic_records_id(
+            teacher_ethic_records_id)
+        if not teacher_ethic_records:
+            raise TeacherEthicRecordsNotFoundError()
+        teacher_ethic_records.approval_status = "submitted"
+        return await self.teacher_ethic_records_dao.update_teacher_ethic_records(teacher_ethic_records,
+                                                                                 "approval_status")
+
+    async def approved(self, teacher_ethic_records_id):
+        teacher_ethic_records = await self.teacher_ethic_records_dao.get_teacher_ethic_records_by_teacher_ethic_records_id(
+            teacher_ethic_records_id)
+        if not teacher_ethic_records:
+            raise TeacherEthicRecordsNotFoundError()
+        teacher_ethic_records.approval_status = "approved"
+        return await self.teacher_ethic_records_dao.update_teacher_ethic_records(teacher_ethic_records,
+                                                                                 "approval_status")
+
+    async def rejected(self, teacher_ethic_records_id):
+        teacher_ethic_records = await self.teacher_ethic_records_dao.get_teacher_ethic_records_by_teacher_ethic_records_id(
+            teacher_ethic_records_id)
+        if not teacher_ethic_records:
+            raise TeacherEthicRecordsNotFoundError()
+        teacher_ethic_records.approval_status = "rejected"
+        return await self.teacher_ethic_records_dao.update_teacher_ethic_records(teacher_ethic_records,
+                                                                                 "approval_status")

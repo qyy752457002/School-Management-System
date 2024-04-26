@@ -66,3 +66,7 @@ class AnnualReviewNotFoundError(MiniHTTPException):
 class ResearchAchievementsNotFoundError(MiniHTTPException):
     def __init__(self):
         super().__init__(404, "RESEARCH_ACHIEVEMENTS_NOT_FOUND", "ResearchAchievements not found.", "科研成果不存在")
+
+class TalentProgramNotFoundError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "TALENT_PROGRAM_NOT_FOUND", "TalentProgram not found.", "人才项目不存在")
