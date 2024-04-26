@@ -7,8 +7,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from business_exceptions.graduation_student import GraduationStudentNotFoundError, GraduationStudentAlreadyExistError
 from daos.GraduationStudent_dao import GraduationStudentDAO
 from models.graduation_student import GraduationStudent
-from views.models.students import GraduationStudents  as GraduationStudentModel
-
+from views.models.students import GraduationStudents as GraduationStudentModel, StudentGraduation
 
 
 @dataclass_inject
@@ -37,11 +36,11 @@ class GraduationStudentRule(object):
         graduation_student = orm_model_to_view_model(graduation_student_db, GraduationStudentModel, exclude=["created_at",'updated_at'])
         return graduation_student
 
-    async def update_graduation_student(self, graduation_student,ctype=1):
-        exists_graduation_student = await self.graduation_student_dao.get_graduationstudent_by_id(graduation_student.id)
-        if not exists_graduation_student:
-            raise GraduationStudentNotFoundError()
+    async def update_graduation_student(self, student_id,graduate_status,graduate_picture):
+
         need_update_list = []
+        graduation_student= StudentGraduation(student_id=student_id,graduate_status=graduate_status,graduation_photo=graduate_picture)
+        #
         for key, value in graduation_student.dict().items():
             if value:
                 need_update_list.append(key)
