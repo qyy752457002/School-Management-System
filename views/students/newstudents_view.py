@@ -124,6 +124,18 @@ class NewsStudentsInfoView(BaseView):
         res = await self.students_base_info_rule.update_students_base_info(new_students_base_info)
         return res
 
+
+    async def patch_newstudent_classdivision(self,
+                                             class_id: int  = Query(..., title="", description="班级ID",),
+                                             student_id: List[int]  = Query(..., title="", description="学生ID",),
+
+                                             ):
+        """
+        分班
+        """
+        res = await self.students_base_info_rule.update_students_class_division(class_id, student_id)
+        return res
+
     async def delete_newstudentbaseinfo(self,
                                         student_id: str = Query(..., title="学生编号", description="学生编号", )):
         """

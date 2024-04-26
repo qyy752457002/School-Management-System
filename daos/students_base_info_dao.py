@@ -32,6 +32,20 @@ class StudentsBaseInfoDao(DAOBase):
             **update_contents)
         return await self.update(session, query, students_base_info, update_contents, is_commit=is_commit)
 
+    async def update_students_class_division(self, class_id, student_ids):
+        """
+        编辑学生基本信息
+        """
+        session = await self.master_db()
+        # update_contents = get_update_contents(students_base_info, *args)
+        query = update(StudentBaseInfo).where(StudentBaseInfo.student_id.in_(student_ids) ).values(
+             class_id=class_id)
+        res= await session.execute(query )
+        res2= await session.commit()
+        return student_ids
+
+
+
     async def get_students_base_info_by_student_id(self, students_id):
         """
         通过学生id获取单个学生基本信息
