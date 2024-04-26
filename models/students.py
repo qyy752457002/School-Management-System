@@ -6,6 +6,18 @@ from mini_framework.databases.entities import BaseDBModel
 from datetime import date
 from enum import Enum
 
+class StudentGraduatedType(str, Enum):
+    """
+    毕业
+    结业
+    肄业
+    """
+    GRADUATION = "graduation"
+    COMPLETION = "completion"
+    WITHDRAWAL = "withdrawal"
+    @classmethod
+    def to_list(cls):
+        return [cls.GRADUATION, cls.COMPLETION, cls.WITHDRAWAL]
 
 class StudentApprovalAtatus(str, Enum):
     """

@@ -6,14 +6,16 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
 from business_exceptions.graduation_student import GraduationStudentNotFoundError, GraduationStudentAlreadyExistError
 from daos.GraduationStudent_dao import GraduationStudentDAO
+from daos.students_dao import StudentsDao
 from models.graduation_student import GraduationStudent
-from views.models.students import GraduationStudents  as GraduationStudentModel
-
+from models.students import Student, StudentApprovalAtatus
+from views.models.students import GraduationStudents as GraduationStudentModel, StudentGraduation
 
 
 @dataclass_inject
 class GraduationStudentRule(object):
     graduation_student_dao: GraduationStudentDAO
+    student_dao: StudentsDao
 
     async def get_graduationstudent_by_id(self, graduation_student_id):
         graduation_student_db = await self.graduation_student_dao.get_graduationstudent_by_id(graduation_student_id)
@@ -37,16 +39,22 @@ class GraduationStudentRule(object):
         graduation_student = orm_model_to_view_model(graduation_student_db, GraduationStudentModel, exclude=["created_at",'updated_at'])
         return graduation_student
 
-    async def update_graduation_student(self, graduation_student,ctype=1):
-        exists_graduation_student = await self.graduation_student_dao.get_graduationstudent_by_id(graduation_student.id)
-        if not exists_graduation_student:
-            raise GraduationStudentNotFoundError()
+    async def update_graduation_student(self, student_id,graduate_status,graduate_picture):
+
         need_update_list = []
+        graduation_student= StudentGraduation(student_id=student_id ,graduation_remarks=graduate_picture)
+        if graduate_status:
+            graduation_student.graduation_type = graduate_status.value
+        #
         for key, value in graduation_student.dict().items():
             if value:
                 need_update_list.append(key)
 
         graduation_student_db = await self.graduation_student_dao.update_graduationstudent(graduation_student, *need_update_list)
+        need_update_list2 = ['approval_status']
+        students= Student(student_id=student_id , approval_status=StudentApprovalAtatus.GRADUATED.value  )
+
+        graduation_student_db2 = await self.student_dao.update_students(students, *need_update_list2)
 
 
         # graduation_student_db = await self.graduation_student_dao.update_graduation_student(graduation_student_db,ctype)

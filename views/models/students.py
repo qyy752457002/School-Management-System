@@ -427,3 +427,10 @@ class NewStudentTransferIn(BaseModel):
     residence_address_detail: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
     residence_district: str = Field(..., title="户口所在行政区", description="户口所在行政区")
     student_id: int = Query(0, title="", description="id", example='1'),
+
+class StudentGraduation(BaseModel):
+    student_id: int = Query(0, title="", description="id", example='1'),
+    graduation_type: str = Query('', description="", min_length=1, max_length=20, examples=[""]),
+    graduation_remarks: str = Query('', description="", min_length=1, max_length=200, examples=[""]),
+    credential_notes: str = Query('', description="届别状态", min_length=1, max_length=20, examples=["开"])
+    graduation_photo: str = Query('', description="届别状态", min_length=1, max_length=20, examples=["开"])
