@@ -164,32 +164,32 @@ class TeacherJobAppointmentsView(BaseView):
     teacher_job_appointments提交、审核、通过、拒绝 
     """
 
-    async def pacth_submitting(self, teacher_job_appointments_id: int = Query(...,
-                                                                              title="teacher_job_appointmentsID",
-                                                                              description="teacher_job_appointmentsID",
-                                                                              example=1234)):
+    async def patch_job_submitting(self, teacher_job_appointments_id: int = Query(...,
+                                                                                  title="teacher_job_appointmentsID",
+                                                                                  description="teacher_job_appointmentsID",
+                                                                                  example=1234)):
         await self.teacher_job_appointments_rule.submitting(teacher_job_appointments_id)
         return teacher_job_appointments_id
 
-    async def pacth_submitted(self, teacher_job_appointments_id: int = Query(...,
-                                                                             title="teacher_job_appointmentsID",
-                                                                             description="teacher_job_appointmentsID",
-                                                                             example=1234)):
+    async def patch_job_submitted(self, teacher_job_appointments_id: int = Query(...,
+                                                                                 title="teacher_job_appointmentsID",
+                                                                                 description="teacher_job_appointmentsID",
+                                                                                 example=1234)):
         await self.teacher_job_appointments_rule.submitted(teacher_job_appointments_id)
         return teacher_job_appointments_id
 
-    async def pacth_approved(self, teacher_job_appointments_id: int = Query(...,
-                                                                            title="teacher_job_appointmentsID",
-                                                                            description="teacher_job_appointmentsID",
-                                                                            example=1234)):
+    async def patch_job_approved(self, teacher_job_appointments_id: int = Query(...,
+                                                                                title="teacher_job_appointmentsID",
+                                                                                description="teacher_job_appointmentsID",
+                                                                                example=1234)):
         await self.teacher_job_appointments_rule.approved(teacher_job_appointments_id)
         return teacher_job_appointments_id
 
-    async def pacth_rejected(self, teacher_job_appointments_id: int = Query(...,
-                                                                            title="teacher_job_appointmentsID",
-                                                                            description="teacher_job_appointmentsID",
+    async def patch_job_rejected(self, teacher_job_appointments_id: int = Query(...,
+                                                                                title="teacher_job_appointmentsID",
+                                                                                description="teacher_job_appointmentsID",
 
-                                                                            example=1234)):
+                                                                                example=1234)):
         await self.teacher_job_appointments_rule.rejected(teacher_job_appointments_id)
         return teacher_job_appointments_id
 
@@ -238,25 +238,34 @@ class TeacherProfessionalTitlesView(BaseView):
     teacher_professional_titles提交、审核、通过、拒绝
     """
 
-    async def pacth_submitting(self, teacher_professional_titles_id: int = Query(...,
-                                                                                 title="teacher_professional_titlesID",
-                                                                                 description="teacher_professional_titlesID",
-                                                                                 example=1234)):
+    async def patch_professional_submitting(self, teacher_professional_titles_id: int = Query(...,
+                                                                                              title="teacher_professional_titlesID",
+                                                                                              description="teacher_professional_titlesID",
+                                                                                              example=1234)):
         await self.teacher_professional_titles_rule.submitting(teacher_professional_titles_id)
         return teacher_professional_titles_id
 
-    async def pacth_submitted(self, teacher_professional_titles_id: int = Query(...,
-                                                                                title="teacher_professional_titlesID",
-                                                                                description="teacher_professional_titlesID",
-                                                                                example=1234)):
+    async def patch_professional_submitted(self, teacher_professional_titles_id: int = Query(...,
+                                                                                             title="teacher_professional_titlesID",
+                                                                                             description="teacher_professional_titlesID",
+                                                                                             example=1234)):
         await self.teacher_professional_titles_rule.submitted(teacher_professional_titles_id)
         return teacher_professional_titles_id
 
-    async def pacth_approved(self,
-                             teacher_professional_titles_id: int = Query(..., title="teacher_professional_titlesID",
-                                                                         description="teacher_professional_titlesID",
-                                                                         example=1234)):
+    async def patch_professional_approved(self,
+                                          teacher_professional_titles_id: int = Query(...,
+                                                                                      title="teacher_professional_titlesID",
+                                                                                      description="teacher_professional_titlesID",
+                                                                                      example=1234)):
         await self.teacher_professional_titles_rule.approved(teacher_professional_titles_id)
+        return teacher_professional_titles_id
+
+    async def patch_professional_rejected(self,
+                                          teacher_professional_titles_id: int = Query(...,
+                                                                                      title="teacher_professional_titlesID",
+                                                                                      description="teacher_professional_titlesID",
+                                                                                      example=1234)):
+        await self.teacher_professional_titles_rule.rejected(teacher_professional_titles_id)
         return teacher_professional_titles_id
 
 
@@ -378,27 +387,27 @@ class TeacherEthicRecordsView(BaseView):
     teacher_ethic_records提交、审核、通过、拒绝
     """
 
-    async def pacth_submitting(self, teacher_ethic_records_id: int = Query(..., title="teacher_ethic_recordsID",
-                                                                           description="teacher_ethic_recordsID",
-                                                                           example=1234)):
+    async def patch_ethic_submitting(self, teacher_ethic_records_id: int = Query(..., title="teacher_ethic_recordsID",
+                                                                                 description="teacher_ethic_recordsID",
+                                                                                 example=1234)):
         await self.teacher_ethic_records_rule.submitting(teacher_ethic_records_id)
         return teacher_ethic_records_id
 
-    async def pacth_submitted(self, teacher_ethic_records_id: int = Query(..., title="teacher_ethic_recordsID",
-                                                                          description="teacher_ethic_recordsID",
-                                                                          example=1234)):
+    async def patch_ethic_submitted(self, teacher_ethic_records_id: int = Query(..., title="teacher_ethic_recordsID",
+                                                                                description="teacher_ethic_recordsID",
+                                                                                example=1234)):
         await self.teacher_ethic_records_rule.submitted(teacher_ethic_records_id)
         return teacher_ethic_records_id
 
-    async def pacth_approved(self, teacher_ethic_records_id: int = Query(..., title="teacher_ethic_recordsID",
-                                                                         description="teacher_ethic_recordsID",
-                                                                         example=1234)):
+    async def patch_ethic_approved(self, teacher_ethic_records_id: int = Query(..., title="teacher_ethic_recordsID",
+                                                                               description="teacher_ethic_recordsID",
+                                                                               example=1234)):
         await self.teacher_ethic_records_rule.approved(teacher_ethic_records_id)
         return teacher_ethic_records_id
 
-    async def pacth_rejected(self, teacher_ethic_records_id: int = Query(..., title="teacher_ethic_recordsID",
-                                                                         description="teacher_ethic_recordsID",
-                                                                         example=1234)):
+    async def patch_ethic_rejected(self, teacher_ethic_records_id: int = Query(..., title="teacher_ethic_recordsID",
+                                                                               description="teacher_ethic_recordsID",
+                                                                               example=1234)):
         await self.teacher_ethic_records_rule.rejected(teacher_ethic_records_id)
         return teacher_ethic_records_id
 
@@ -542,23 +551,25 @@ class TalentProgramView(BaseView):
     """
     talent_program提交、审核、通过、拒绝"""
 
-    async def pacth_submitting(self, talent_program_id: int = Query(..., title="talent_programID",
-                                                                    description="talent_programID", example=1234)):
+    async def patch_talent_submitting(self, talent_program_id: int = Query(..., title="talent_programID",
+                                                                           description="talent_programID",
+                                                                           example=1234)):
         await self.talent_program_rule.submitting(talent_program_id)
         return talent_program_id
 
-    async def pacth_submitted(self, talent_program_id: int = Query(..., title="talent_programID",
-                                                                   description="talent_programID", example=1234)):
+    async def patch_talent_submitted(self, talent_program_id: int = Query(..., title="talent_programID",
+                                                                          description="talent_programID",
+                                                                          example=1234)):
         await self.talent_program_rule.submitted(talent_program_id)
         return talent_program_id
 
-    async def pacth_approved(self, talent_program_id: int = Query(..., title="talent_programID",
-                                                                  description="talent_programID", example=1234)):
+    async def patch_talent_approved(self, talent_program_id: int = Query(..., title="talent_programID",
+                                                                         description="talent_programID", example=1234)):
         await self.talent_program_rule.approved(talent_program_id)
         return talent_program_id
 
-    async def pacth_rejected(self, talent_program_id: int = Query(..., title="talent_programID",
-                                                                  description="talent_programID", example=1234)):
+    async def patch_talent_rejected(self, talent_program_id: int = Query(..., title="talent_programID",
+                                                                         description="talent_programID", example=1234)):
         await self.talent_program_rule.rejected(talent_program_id)
         return talent_program_id
 
@@ -599,23 +610,23 @@ class AnnualReviewView(BaseView):
     annual_review提交、审核、通过、拒绝
     """
 
-    async def pacth_submitting(self, annual_review_id: int = Query(..., title="annual_reviewID",
-                                                                   description="annual_reviewID", example=1234)):
+    async def patch_annual_submitting(self, annual_review_id: int = Query(..., title="annual_reviewID",
+                                                                          description="annual_reviewID", example=1234)):
         await self.annual_review_rule.submitting(annual_review_id)
         return annual_review_id
 
-    async def pacth_submitted(self, annual_review_id: int = Query(..., title="annual_reviewID",
-                                                                  description="annual_reviewID", example=1234)):
+    async def patch_annual_submitted(self, annual_review_id: int = Query(..., title="annual_reviewID",
+                                                                         description="annual_reviewID", example=1234)):
         await self.annual_review_rule.submitted(annual_review_id)
         return annual_review_id
 
-    async def pacth_approved(self, annual_review_id: int = Query(..., title="annual_reviewID",
-                                                                 description="annual_reviewID", example=1234)):
+    async def patch_annual_approved(self, annual_review_id: int = Query(..., title="annual_reviewID",
+                                                                        description="annual_reviewID", example=1234)):
         await self.annual_review_rule.approved(annual_review_id)
         return annual_review_id
 
-    async def pacth_rejected(self, annual_review_id: int = Query(..., title="annual_reviewID",
-                                                                 description="annual_reviewID", example=1234)):
+    async def patch_annual_rejected(self, annual_review_id: int = Query(..., title="annual_reviewID",
+                                                                        description="annual_reviewID", example=1234)):
         await self.annual_review_rule.rejected(annual_review_id)
         return annual_review_id
 

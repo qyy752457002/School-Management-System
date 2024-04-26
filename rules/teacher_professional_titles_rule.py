@@ -57,10 +57,11 @@ class TeacherProfessionalTitlesRule(object):
         return teacher_professional_titles
 
     async def get_all_teacher_professional_titles(self, teacher_id):
+        exit_teacher = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        if not exit_teacher:
+            raise TeacherNotFoundError()
         teacher_professional_titles_db = await self.teacher_professional_titles_dao.get_all_teacher_professional_titles(
             teacher_id)
-        if not teacher_professional_titles_db:
-            raise TeacherNotFoundError()
         teacher_professional_titles = []
         for teacher_professional_title in teacher_professional_titles_db:
             teacher_professional_titles.append(

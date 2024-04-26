@@ -48,9 +48,10 @@ class AnnualReviewRule(object):
         return annual_review
 
     async def get_all_annual_review(self, teacher_id):
+        exit_teacher = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        if not exit_teacher:
+            raise TeacherNotFoundError()
         annual_review_db = await self.annual_review_dao.get_all_annual_review(teacher_id)
-        if not annual_review_db:
-            raise AnnualReviewNotFoundError()
         annual_review = []
         for item in annual_review_db:
             annual_review.append(orm_model_to_view_model(item, AnnualReviewUpdateModel))

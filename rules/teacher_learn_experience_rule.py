@@ -56,6 +56,9 @@ class TeacherLearnExperienceRule(object):
         return teacher_learn_experience
 
     async def get_all_teacher_learn_experience(self, teacher_id):
+        exit_teacher = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        if not exit_teacher:
+            raise TeacherNotFoundError()
         teacher_learn_experience_db = await self.teacher_learn_experience_dao.get_all_teacher_learn_experience(
             teacher_id)
         teacher_learn_experience = []

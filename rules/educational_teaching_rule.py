@@ -52,9 +52,10 @@ class EducationalTeachingRule(object):
         return educational_teaching
 
     async def get_all_educational_teaching(self, teacher_id):
+        exit_teacher = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        if not exit_teacher:
+            raise TeacherNotFoundError()
         educational_teaching_db = await self.educational_teaching_dao.get_all_educational_teaching(teacher_id)
-        if not educational_teaching_db:
-            raise TeacherInfoNotFoundError()
         educational_teaching = []
         for i in educational_teaching_db:
             educational_teaching.append(orm_model_to_view_model(i, EducationalTeachingUpdateModel, exclude=[""]))
