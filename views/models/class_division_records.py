@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import Query
 from pydantic import BaseModel, Field
 
@@ -39,14 +41,29 @@ class ClassDivisionRecordsSearchRes(BaseModel):
                                             status: str = Query( '', title="", description="状态",min_length=1, max_length=30, example=''),
     """
     id:int= Query(0, title="", description="id", example='1'),
-    school_id: int = Field(0, title="学校ID", description="学校ID",examples=['1'])
-    grade_id: int = Field(0, title="年级ID", description="年级ID",examples=['1'])
+    enrollment_number: str = Field('', title="", description="报名号",examples=['1'])
+    id_type: str = Field('', title="", description="身份证件类型",examples=['1'])
+    student_name: str = Field('', title="", description="姓名",examples=['1'])
+    created_at: datetime = Field('', title="", description="分班时间",examples=['1'])
+    student_gender: str = Field('', title="", description="性别",examples=['1'])
+    status: str = Field('', title="", description="状态",examples=['1'])
     class_id: int = Field(0, title="班级ID", description="班级ID",examples=['1'])
     student_id: int = Field(0, title="学生ID", description="学生ID",examples=['1'])
     student_no: str = Field('', title="", description="学生编号",examples=['1'])
-    student_name: str = Field('', title="Grade_name",description="学生姓名",examples=['1'])
-    status: str = Field('', title="", description="状态",examples=['1'])
+    # student_name: str = Field('', title="Grade_name",description="学生姓名",examples=['1'])
     remark: str = Field('', title="", description="备注",examples=['1'])
+    # id:int= Query(0, title="", description="id", example='1'),
+    # student_no: str = Field('', title="", description="学生编号",examples=['1'])
+
+    school_id: int = Field(0, title="学校ID", description="学校ID",examples=['1'])
+    grade_id: int = Field(0, title="年级ID", description="年级ID",examples=['1'])
+    # class_id: int = Field(0, title="班级ID", description="班级ID",examples=['1'])
+    # student_id: int = Field(0, title="学生ID", description="学生ID",examples=['1'])
+    # student_no: str = Field('', title="", description="学生编号",examples=['1'])
+    # student_name: str = Field('', title="Grade_name",description="学生姓名",examples=['1'])
+    # status: str = Field('', title="", description="状态",examples=['1'])
+    # remark: str = Field('', title="", description="备注",examples=['1'])
+
 
 
 
