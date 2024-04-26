@@ -5,7 +5,7 @@ from daos.teacher_professional_titles_dao import TeacherProfessionalTitlesDAO
 from models.teacher_professional_titles import TeacherProfessionalTitles
 from views.models.teacher_extend import TeacherProfessionalTitlesModel, TeacherProfessionalTitlesUpdateModel
 from daos.teachers_dao import TeachersDao
-from business_exceptions.teacher import TeacherNotFoundError,TeacherProfessionalTitleNotFoundError
+from business_exceptions.teacher import TeacherNotFoundError, TeacherProfessionalTitleNotFoundError
 
 
 @dataclass_inject
@@ -67,3 +67,42 @@ class TeacherProfessionalTitlesRule(object):
                 orm_model_to_view_model(teacher_professional_title, TeacherProfessionalTitlesUpdateModel))
         return teacher_professional_titles
 
+    async def submitting(self, teacher_professional_titles_id):
+        teacher_professional_titles = await self.teacher_professional_titles_dao.get_teacher_professional_titles_by_teacher_professional_titles_id(
+            teacher_professional_titles_id)
+        if not teacher_professional_titles:
+            raise TeacherProfessionalTitleNotFoundError()
+        teacher_professional_titles.approval_status = "submitting"
+        return await self.teacher_professional_titles_dao.update_teacher_professional_titles(
+            teacher_professional_titles,
+            "approval_status")
+
+    async def submitted(self, teacher_professional_titles_id):
+        teacher_professional_titles = await self.teacher_professional_titles_dao.get_teacher_professional_titles_by_teacher_professional_titles_id(
+            teacher_professional_titles_id)
+        if not teacher_professional_titles:
+            raise TeacherProfessionalTitleNotFoundError()
+        teacher_professional_titles.approval_status = "submitted"
+        return await self.teacher_professional_titles_dao.update_teacher_professional_titles(
+            teacher_professional_titles,
+            "approval_status")
+
+    async def approved(self, teacher_professional_titles_id):
+        teacher_professional_titles = await self.teacher_professional_titles_dao.get_teacher_professional_titles_by_teacher_professional_titles_id(
+            teacher_professional_titles_id)
+        if not teacher_professional_titles:
+            raise TeacherProfessionalTitleNotFoundError()
+        teacher_professional_titles.approval_status = "approved"
+        return await self.teacher_professional_titles_dao.update_teacher_professional_titles(
+            teacher_professional_titles,
+            "approval_status")
+
+    async def rejected(self, teacher_professional_titles_id):
+        teacher_professional_titles = await self.teacher_professional_titles_dao.get_teacher_professional_titles_by_teacher_professional_titles_id(
+            teacher_professional_titles_id)
+        if not teacher_professional_titles:
+            raise TeacherProfessionalTitleNotFoundError()
+        teacher_professional_titles.approval_status = "rejected"
+        return await self.teacher_professional_titles_dao.update_teacher_professional_titles(
+            teacher_professional_titles,
+            "approval_status")
