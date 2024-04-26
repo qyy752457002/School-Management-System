@@ -201,7 +201,7 @@ class NewBaseInfoCreate(BaseModel):
     native_place_district: str = Field('', title="籍贯", description="籍贯")
     ethnicity: str = Field("", title="民族", description="民族")
     blood_type: str = Field("", title="血型", description="血型")
-    health_condition: str = Field(..., title="健康状况", description="健康状况")
+    health_condition: str = Field('', title="健康状况", description="健康状况")
     disabled_person: YesOrNo = Field("N", title="是否残疾人", description="是否残疾人")
     religious_belief: str = Field("", title="宗教信仰", description="宗教信仰")
     political_status: str = Field("", title="政治面貌", description="政治面貌")
