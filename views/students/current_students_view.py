@@ -32,8 +32,8 @@ class CurrentStudentsView(BaseView):
         self.student_transaction_flow_rule = get_injector(StudentTransactionFlowRule)
         self.students_family_info_rule = get_injector(StudentsFamilyInfoRule)
 
-    async def get_student_session(self, sessions_id: str = Query(..., title="届别编号", description="届别编号",
-                                                                 example="2023届")):
+    async def get_student_session(self, sessions_id: int  = Query(..., title="", description="届别id",
+                                                                 example="1")):
         """
         在校生 查询届别信息
         """
@@ -51,7 +51,7 @@ class CurrentStudentsView(BaseView):
         """
         在校生 编辑届别信息
         """
-        res = await self.student_session_rule.add_student_session(student_session)
+        res = await self.student_session_rule.update_student_session(student_session)
         return res
 
     # 转学申请的 列表

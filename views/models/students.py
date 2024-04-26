@@ -392,7 +392,7 @@ class NewStudentsFlowOut(BaseModel):
 
 
 class StudentSession(BaseModel):
-    session_id: str = Query(..., description="届别id", min_length=1, max_length=20, examples=["1234567890"]),
+    session_id: int = Query(0, description="届别id",   examples=["1234567890"]),
     session_name: str = Query(..., description="届别名称", min_length=1, max_length=20, examples=["2020级"]),
     session_alias: str = Query(..., description="届别别名", min_length=1, max_length=20, examples=["2020届别"]),
     session_status: str = Query(..., description="届别状态", min_length=1, max_length=20, examples=["开"])
