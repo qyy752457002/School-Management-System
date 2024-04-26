@@ -4,6 +4,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.students_base_info import StudentBaseInfo
+from views.common.common_view import page_none_deal
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
 from views.models.students import NewBaseInfoCreate,NewBaseInfoUpdate,StudentsBaseInfo
 from views.models.students import StudentsBaseInfo as StudentsBaseInfoModel
@@ -96,7 +97,8 @@ class StudentsBaseInfoRule(object):
         分页查询
         """
         paging = await self.students_base_info_dao.query_students_with_page(query_model, page_request)
-        paging_result = PaginatedResponse.from_paging(paging, NewStudentsQueryRe)
+
+        paging_result = PaginatedResponse.from_paging(page_none_deal(paging), NewStudentsQueryRe)
         return paging_result
 
     async def get_students_base_info_count(self):
