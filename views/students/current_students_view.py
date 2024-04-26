@@ -54,6 +54,15 @@ class CurrentStudentsView(BaseView):
         res = await self.student_session_rule.update_student_session(student_session)
         return res
 
+
+    async def get_all_session(self,
+                        ):
+        items = []
+        # exit(1)
+        # return page_search
+        paging_result = await self.student_session_rule.get_all_student_sessions( )
+        return paging_result
+
     # 转学申请的 列表
     async def page_student_transaction(self,
                                        audit_status: StudentTransactionStatus = Query("", title="", description="状态",

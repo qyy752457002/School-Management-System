@@ -56,8 +56,8 @@ class StudentSessionRule(object):
         获取所有类别
         """
         session_db = await self.student_session_dao.get_all_student_sessions()
-        session = orm_model_to_view_model(session_db, StudentSessionModel, exclude=[""])
-        return session
+        # session = orm_model_to_view_model(session_db, StudentSessionModel, exclude=[""])
+        return session_db
 
     async def get_student_session_count(self):
         """
