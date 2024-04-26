@@ -87,6 +87,12 @@ class NewStudentsQueryRe(BaseModel):
     school: str = Field(None, title="学校", description="学校")
     county: str = Field(None, title="区县", description="区县")
     approval_status: StudentApprovalAtatus = Field(None, title="状态", description="状态")
+    block: str = Field(None, title="", description="")
+    borough: str = Field(None, title="", description="")
+    loc_area: str = Field(None, title="", description="")
+    loc_area_pro: str = Field(None, title="", description="")
+    school_name: str = Field(None, title="", description="")
+
 
 
 class StudentsKeyinfo(BaseModel):
