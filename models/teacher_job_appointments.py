@@ -29,7 +29,6 @@ class TeacherJobAppointments(BaseDBModel):
     school_level_position: Mapped[str] = mapped_column(String(64), nullable=False, comment="校级职务")
     is_concurrent_other_positions: Mapped[str] = mapped_column(nullable=False, comment="是否兼任其他岗位")
     concurrent_position: Mapped[str] = mapped_column(String(255), nullable=True, comment="兼任岗位类别")
-    employment_institution_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="任职单位名称")
     appointment_start_date: Mapped[date] = mapped_column(Date, nullable=False, comment="聘任开始时间")
     start_date: Mapped[date] = mapped_column(Date, nullable=True, comment="任职开始年月时间")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
