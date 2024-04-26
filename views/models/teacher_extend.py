@@ -154,7 +154,6 @@ class TeacherJobAppointmentsModel(BaseModel):
     school_level_position: str = Field(..., title="校级职务", description="校级职务")
     is_concurrent_other_positions: YesOrNo = Field("N", title="是否兼任其他岗位", description="是否兼任其他岗位")
     concurrent_position: Optional[List[dict]] = Field(default=[{"category": "默认类别", "level": "默认等级"}], title="兼任岗位", description="兼任岗位")
-    employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
     appointment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
     start_date: date = Field(..., title="任职开始年月", description="任职开始年月")
 
@@ -179,7 +178,6 @@ class TeacherJobAppointmentsUpdateModel(BaseModel):
     school_level_position: str = Field(..., title="校级职务", description="校级职务")
     is_concurrent_other_positions: YesOrNo = Field("N", title="是否兼任其他岗位", description="是否兼任其他岗位")
     concurrent_position: Optional[List[dict]] = Field(default=[{"category": "默认类别", "level": "默认等级"}], title="兼任岗位", description="兼任岗位")
-    employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
     appointment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
     start_date: date = Field(..., title="任职开始年月", description="任职开始年月")
 
