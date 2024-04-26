@@ -30,6 +30,7 @@ class NewsStudentsView(BaseView):
         super().__init__()
         self.students_rule = get_injector(StudentsRule)
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
+        self.class_division_records_rule = get_injector(ClassDivisionRecordsRule)
 
     async def post_newstudent(self, students: NewStudents):
         """
@@ -136,9 +137,28 @@ class NewsStudentsInfoView(BaseView):
         分班
         """
         res = await self.students_base_info_rule.update_students_class_division(class_id, student_id)
-        res = await self.class_division_records_rule.update_students_class_division(class_id, student_id)
+        res = await self.class_division_records_rule.add_class_division_records(class_id, student_id)
 
         return res
+
+    # 分页查询
+    #
+    async def page_newstudent_classdivision(self,
+                                            enrollment_number: str = Query( '', title="", description="报名号",min_length=1, max_length=30, example=''),
+                                            school_id: int  = Query( 0, title="", description="学校ID",  example=''),
+                                            id_type: str = Query( '', title="", description="身份证件类型",min_length=1, max_length=30, example=''),
+                                            student_name: str = Query( '', title="", description="姓名",min_length=1, max_length=30, example=''),
+                                            created_at: str = Query( '', title="", description="分班时间",min_length=1, max_length=30, example=''),
+                                            student_gender: str = Query( '', title="", description="性别",min_length=1, max_length=30, example=''),
+                                            class_id: int = Query( 0, title="", description="班级",  example=''),
+                                            status: str = Query( '', title="", description="状态",min_length=1, max_length=30, example=''),
+                              page_request=Depends(PageRequest)):
+        """
+        分页查询
+        """
+        paging_result = await self.class_division_records_rule.query_class_division_records_with_page(
+                                                                                              page_request,school_id,id_type,student_name,created_at,student_gender,class_id,status,enrollment_number,)
+        return paging_result
 
     async def delete_newstudentbaseinfo(self,
                                         student_id: str = Query(..., title="学生编号", description="学生编号", )):
