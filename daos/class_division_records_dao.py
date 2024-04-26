@@ -37,13 +37,13 @@ class ClassDivisionRecordsDAO(DAOBase):
                                                      ):
         query = select(ClassDivisionRecords.class_id, ClassDivisionRecords.student_id,
                        # ClassDivisionRecords.student_name,
-					   ClassDivisionRecords.created_at, ClassDivisionRecords.status,
+					   ClassDivisionRecords.created_at, Student.approval_status,
                         ClassDivisionRecords.school_id, ClassDivisionRecords.id,
                        ClassDivisionRecords.class_id,
                        ClassDivisionRecords.student_id,
 					   ClassDivisionRecords.student_name, ClassDivisionRecords.created_at, ClassDivisionRecords.status,
 					    ClassDivisionRecords.school_id,
-
+                       Student.id_number,
 
 
 					   Student.student_id,
@@ -53,7 +53,7 @@ class ClassDivisionRecordsDAO(DAOBase):
 					   Student.id_type,
 
 
-                       ).select_from(ClassDivisionRecords).join(Student,
+                       ).select_from(Student ).join(ClassDivisionRecords,
                                                                 ClassDivisionRecords.student_id == Student.student_id)
 
         ### 此处填写查询条件
@@ -70,7 +70,7 @@ class ClassDivisionRecordsDAO(DAOBase):
         if class_id:
             query = query.where(ClassDivisionRecords.class_id == class_id)
         if status:
-            query = query.where(ClassDivisionRecords.status == status)
+            query = query.where(Student.approval_status == status)
         if enrollment_number:
             query = query.where(Student.enrollment_number == enrollment_number)
 

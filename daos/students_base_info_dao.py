@@ -6,7 +6,7 @@ from mini_framework.web.std_models.page import PageRequest
 
 from models.school import School
 from models.school_communication import SchoolCommunication
-from models.students import Student
+from models.students import Student, StudentApprovalAtatus
 from models.students_base_info import StudentBaseInfo
 from views.models.students import NewStudentsQuery
 
@@ -45,7 +45,11 @@ class StudentsBaseInfoDao(DAOBase):
 
         query = update(StudentBaseInfo).where(StudentBaseInfo.student_id.in_(student_ids) ).values(
              class_id=class_id)
+        query2 = update(Student).where(Student.student_id.in_(student_ids) ).values(
+            approval_status=StudentApprovalAtatus.ASSIGNMENT.value )
         res= await session.execute(query )
+        res3= await session.execute(query2 )
+
         res2= await session.commit()
         return student_ids
 
