@@ -4,11 +4,14 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.research_achievements_dao import ResearchAchievementsDAO
 from models.research_achievements import ResearchAchievements
 from views.models.teacher_extend import ResearchAchievementsModel, ResearchAchievementsUpdateModel, ResearchAchievementsQueryModel,ResearchAchievementsQueryReModel
+from daos.teachers_dao import TeachersDao
+from business_exceptions.teacher import TeacherNotFoundError
 
 
 @dataclass_inject
 class ResearchAchievementsRule(object):
     research_achievements_dao: ResearchAchievementsDAO
+    teachers_dao: TeachersDao
 
     async def get_research_achievements_by_research_achievements_id(self, research_achievements_id):
         research_achievements_db = await self.research_achievements_dao.get_research_achievements_by_research_achievements_id(
@@ -17,6 +20,9 @@ class ResearchAchievementsRule(object):
         return research_achievements
 
     async def add_research_achievements(self, research_achievements: ResearchAchievementsModel):
+        exits_teacher = await self.teachers_dao.get_teachers_by_id(research_achievements.teacher_id)
+        if not exits_teacher:
+            raise TeacherNotFoundError()
         research_achievements_db = view_model_to_orm_model(research_achievements, ResearchAchievements)
         research_achievements_db = await self.research_achievements_dao.add_research_achievements(
             research_achievements_db)
@@ -48,12 +54,13 @@ class ResearchAchievementsRule(object):
         return research_achievements
 
     async def get_all_research_achievements(self, teacher_id):
+
         research_achievements_db = await self.research_achievements_dao.get_all_research_achievements(teacher_id)
-        #          research_achievements = orm_model_to_view_model(research_achievements_db, ResearchAchievementsModel, exclude=[""])
+        print(research_achievements_db)
         research_achievements = []
         for item in research_achievements_db:
-            research_achievements.append(orm_model_to_view_model(item, ResearchAchievementsModel))
-        return research_achievements_db
+            research_achievements.append(orm_model_to_view_model(item, ResearchAchievementsQueryReModel))
+        return research_achievements
 
     async def query_research_achievements_with_page(self, query_model: ResearchAchievementsQueryModel, page_request: PageRequest):
         paging = await self.research_achievements_dao.query_research_achievements_with_page(query_model, page_request)

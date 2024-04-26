@@ -4,11 +4,14 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teacher_ethic_records_dao import TeacherEthicRecordsDAO
 from models.teacher_ethic_records import TeacherEthicRecords
 from views.models.teacher_extend import TeacherEthicRecordsModel, TeacherEthicRecordsUpdateModel
+from daos.teachers_dao import TeachersDao
+from business_exceptions.teacher import TeacherNotFoundError
 
 
 @dataclass_inject
 class TeacherEthicRecordsRule(object):
     teacher_ethic_records_dao: TeacherEthicRecordsDAO
+    teachers_dao: TeachersDao
 
     async def get_teacher_ethic_records_by_teacher_ethic_records_id(self, teacher_ethic_records_id):
         teacher_ethic_records_db = await self.teacher_ethic_records_dao.get_teacher_ethic_records_by_teacher_ethic_records_id(
@@ -17,6 +20,9 @@ class TeacherEthicRecordsRule(object):
         return teacher_ethic_records
 
     async def add_teacher_ethic_records(self, teacher_ethic_records: TeacherEthicRecordsModel):
+        exits_teacher = await self.teachers_dao.get_teachers_by_id(teacher_ethic_records.teacher_id)
+        if not exits_teacher:
+            raise TeacherNotFoundError()
         teacher_ethic_records_db = view_model_to_orm_model(teacher_ethic_records, TeacherEthicRecords)
         teacher_ethic_records_db = await self.teacher_ethic_records_dao.add_teacher_ethic_records(
             teacher_ethic_records_db)

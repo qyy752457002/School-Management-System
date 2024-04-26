@@ -22,6 +22,9 @@ class TeacherSkillCertificatesRule(object):
         return teacher_skill_certificates
 
     async def add_teacher_skill_certificates(self, teacher_skill_certificates: TeacherSkillCertificatesModel):
+        exits_teacher = await self.teachers_dao.get_teachers_by_id(teacher_skill_certificates.teacher_id)
+        if not exits_teacher:
+            raise TeacherNotFoundError()
         teacher_skill_certificates_db = view_model_to_orm_model(teacher_skill_certificates, TeacherSkillCertificates)
         teacher_skill_certificates_db = await self.teacher_skill_certificates_dao.add_teacher_skill_certificates(
             teacher_skill_certificates_db)

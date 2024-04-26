@@ -4,17 +4,24 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.overseas_study_dao import OverseasStudyDAO
 from models.overseas_study import OverseasStudy
 from views.models.teacher_extend import OverseasStudyModel,OverseasStudyUpdateModel
+from daos.teachers_dao import TeachersDao
+from business_exceptions.teacher import TeacherNotFoundError
+
 
 
 @dataclass_inject
 class OverseasStudyRule(object):
     overseas_study_dao: OverseasStudyDAO
+    teachers_dao: TeachersDao
 
     async def get_overseas_study_by_overseas_study_id(self, overseas_study_id):
         overseas_study_db = await self.overseas_study_dao.get_overseas_study_by_overseas_study_id(overseas_study_id)
         overseas_study = orm_model_to_view_model(overseas_study_db, OverseasStudyModel)
         return overseas_study
     async def add_overseas_study(self, overseas_study:OverseasStudyModel):
+        exits_teacher = await self.teachers_dao.get_teachers_by_id(overseas_study.teacher_id)
+        if not exits_teacher:
+            raise TeacherNotFoundError()
         overseas_study_db = view_model_to_orm_model(overseas_study, OverseasStudy)
         overseas_study_db = await self.overseas_study_dao.add_overseas_study(overseas_study_db)
         overseas_study = orm_model_to_view_model(overseas_study_db, OverseasStudyModel)
