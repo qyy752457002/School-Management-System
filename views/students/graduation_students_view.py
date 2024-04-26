@@ -61,3 +61,15 @@ class GraduationStudentsView(BaseView):
 
 
         return  res
+
+    # 毕业 制证  毕业证url  备注
+    async def patch_graduation_student(self,
+
+                                       graduation_student:GraduationStudents
+                  ):
+        # print(planning_school)
+        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res = await self.graduation_student_rule.update_graduation_student(graduation_student)
+
+
+        return  res

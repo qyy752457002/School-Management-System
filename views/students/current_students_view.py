@@ -3,6 +3,7 @@ from typing import List
 from mini_framework.web.views import BaseView
 
 from models.student_transaction import AuditAction, TransactionDirection
+from rules.graduation_student_rule import GraduationStudentRule
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
@@ -31,6 +32,8 @@ class CurrentStudentsView(BaseView):
         self.student_transaction_rule = get_injector(StudentTransactionRule)
         self.student_transaction_flow_rule = get_injector(StudentTransactionFlowRule)
         self.students_family_info_rule = get_injector(StudentsFamilyInfoRule)
+        self.graduation_student_rule = get_injector( GraduationStudentRule)
+
 
     async def get_student_session(self, sessions_id: int  = Query(..., title="", description="届别id",
                                                                  example="1")):
@@ -215,6 +218,8 @@ class CurrentStudentsView(BaseView):
                                                            example=''),
                              ):
         # print(new_students_key_info)
+        res = await self.graduation_student_rule.update_graduation_student(graduation_student_id)
+
         return student_id
 
     # 在校生 查看关键信息

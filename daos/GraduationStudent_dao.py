@@ -38,16 +38,14 @@ class GraduationStudentDAO(DAOBase):
         return result.scalar_one_or_none()
 
     async def query_graduationstudent_with_page(self, page_request: PageRequest, **kwargs):
-        query = select(Student).select_from(Student).join(StudentBaseInfo, Student.id == StudentBaseInfo.student_id,
+        query = select(Student).select_from(Student).join(StudentBaseInfo,
+                                                          Student.student_id == StudentBaseInfo.student_id,
                                                           isouter=True)
         for key, value in kwargs.items():
-            if  key == 'student_name' or key == 'student_gender' :
+            if key == 'student_name' or key == 'student_gender':
                 query = query.where(getattr(Student, key) == value)
             else:
                 query = query.where(getattr(StudentBaseInfo, key) == value)
-
-
-
 
         paging = await self.query_page(query, page_request)
         return paging
