@@ -5,6 +5,8 @@ from mini_framework.web.std_models.page import PageRequest
 
 from models.class_division_records import ClassDivisionRecords
 
+from models.students import Student
+
 
 class ClassDivisionRecordsDAO(DAOBase):
 
@@ -30,10 +32,29 @@ class ClassDivisionRecordsDAO(DAOBase):
 		result = await session.execute(select(ClassDivisionRecords).where(ClassDivisionRecords.id == id))
 		return result.scalar_one_or_none()
 
-	async def query_class_division_records_with_page(self, pageQueryModel, page_request: PageRequest):
-		query = select(ClassDivisionRecords)
+	async def query_class_division_records_with_page(self, school_id, id_type, student_name, created_at, student_gender, class_id, status, enrollment_number, page_request: PageRequest,
+													 ):
+		query = select(ClassDivisionRecords).select_from(ClassDivisionRecords).join(Student, ClassDivisionRecords.student_id == Student.id)
 		
 		### 此处填写查询条件
+		if school_id:
+			query = query.where(ClassDivisionRecords.school_id == school_id)
+		if id_type:
+			query = query.where(Student.id_type == id_type)
+		if student_name:
+			query = query.where(ClassDivisionRecords.student_name == student_name)
+		if created_at:
+			query = query.where(ClassDivisionRecords.created_at == created_at)
+		if student_gender:
+			query = query.where(Student.student_gender == student_gender)
+		if class_id:
+			query = query.where(ClassDivisionRecords.class_id == class_id)
+		if status:
+			query = query.where(ClassDivisionRecords.status == status)
+		if enrollment_number:
+			query = query.where(Student.enrollment_number == enrollment_number)
+
+
 		
 		paging = await self.query_page(query, page_request)
 		return paging

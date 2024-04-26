@@ -70,8 +70,8 @@ class ClassDivisionRecordsRule(object):
     async def get_class_division_records_count(self):
         return await self.class_division_records_dao.get_class_division_records_count()
 
-    async def query_class_division_records_with_page(self, page_request: PageRequest, borough, block, school_id, grade_id, class_name):
-        paging = await self.class_division_records_dao.query_class_division_records_with_page(borough, block, school_id, grade_id, class_name,
+    async def query_class_division_records_with_page(self, page_request: PageRequest, school_id,id_type,student_name,created_at,student_gender,class_id,status,enrollment_number):
+        paging = await self.class_division_records_dao.query_class_division_records_with_page(school_id,id_type,student_name,created_at,student_gender,class_id,status,enrollment_number,
                                                                 page_request)
         # 字段映射的示例写法   , {"hash_password": "password"} ClassDivisionRecordsSearchRes
         print(paging)
