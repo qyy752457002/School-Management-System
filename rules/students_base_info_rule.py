@@ -70,6 +70,14 @@ class StudentsBaseInfoRule(object):
                                                                                          *need_update_list)
         return students_base_info
 
+    async def update_students_class_division(self, class_id, student_ids):
+        """
+        编辑学生基本信息
+        """
+
+        students_base_info = await self.students_base_info_dao.update_students_class_division(class_id, student_ids)
+        return students_base_info
+
     async def delete_students_base_info(self, students_id):
         """
         删除学生基本信息

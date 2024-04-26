@@ -39,6 +39,7 @@ class NewStudents(BaseModel):
     id_number: str = Field("", title="证件号码", description="证件号码")
     photo: str = Field("", title="照片", description="照片")
     student_id: int = Field(0, title="", description="id")
+    school_id: int = Field(0, title="", description="学校id")
 
 
 
@@ -86,6 +87,12 @@ class NewStudentsQueryRe(BaseModel):
     school: str = Field(None, title="学校", description="学校")
     county: str = Field(None, title="区县", description="区县")
     approval_status: StudentApprovalAtatus = Field(None, title="状态", description="状态")
+    block: str = Field(None, title="", description="")
+    borough: str = Field(None, title="", description="")
+    loc_area: str = Field(None, title="", description="")
+    loc_area_pro: str = Field(None, title="", description="")
+    school_name: str = Field(None, title="", description="")
+
 
 
 class StudentsKeyinfo(BaseModel):
@@ -106,7 +113,7 @@ class StudentsKeyinfo(BaseModel):
     student_gender: Gender = Field(..., title="性别", description="性别")
     id_type: str = Field(..., title="证件类别", description="证件类别")
     id_number: str = Field(..., title="证件号码", description="证件号码")
-    photo: str = Field(..., title="照片", description="照片")
+    photo: str = Field('', title="照片", description="照片")
 
 
 
@@ -214,6 +221,8 @@ class NewBaseInfoCreate(BaseModel):
     identity_card_validity_period: str = Field("", title="身份证件有效期", description="身份证件有效期")
     specialty: str = Field("", title="特长", description="特长")
     permanent_address: str = Field("", title="常住地址", description="常住地址")
+    school_id: int = Field(0, title="学校id", description="学校id")
+
 
 
 class NewBaseInfoUpdate(BaseModel):

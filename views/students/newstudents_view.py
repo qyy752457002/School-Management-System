@@ -36,7 +36,7 @@ class NewsStudentsView(BaseView):
         """
         res = await self.students_rule.add_students(students)
         students.student_id =  res.student_id
-        vm2 = NewBaseInfoCreate(student_id=students.student_id )
+        vm2 = NewBaseInfoCreate(student_id=students.student_id,school_id=students.school_id )
         # vm2.student_id = students.student_id
 
         res2 = await self.students_base_info_rule.add_students_base_info(vm2)
@@ -122,6 +122,18 @@ class NewsStudentsInfoView(BaseView):
         新生编辑基本信息
         """
         res = await self.students_base_info_rule.update_students_base_info(new_students_base_info)
+        return res
+
+
+    async def patch_newstudent_classdivision(self,
+                                             class_id: int  = Query(..., title="", description="班级ID",),
+                                             student_id: List[int]  = Query(..., title="", description="学生ID",),
+
+                                             ):
+        """
+        分班
+        """
+        res = await self.students_base_info_rule.update_students_class_division(class_id, student_id)
         return res
 
     async def delete_newstudentbaseinfo(self,

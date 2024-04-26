@@ -3,6 +3,9 @@ from sqlalchemy import select, func, update
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
+
+from models.school import School
+from models.school_communication import SchoolCommunication
 from models.students import Student
 from models.students_base_info import StudentBaseInfo
 from views.models.students import NewStudentsQuery
@@ -28,6 +31,20 @@ class StudentsBaseInfoDao(DAOBase):
         query = update(StudentBaseInfo).where(StudentBaseInfo.student_id == students_base_info.student_id).values(
             **update_contents)
         return await self.update(session, query, students_base_info, update_contents, is_commit=is_commit)
+
+    async def update_students_class_division(self, class_id, student_ids):
+        """
+        编辑学生基本信息
+        """
+        session = await self.master_db()
+        # update_contents = get_update_contents(students_base_info, *args)
+        query = update(StudentBaseInfo).where(StudentBaseInfo.student_id.in_(student_ids) ).values(
+             class_id=class_id)
+        res= await session.execute(query )
+        res2= await session.commit()
+        return student_ids
+
+
 
     async def get_students_base_info_by_student_id(self, students_id):
         """
@@ -68,8 +85,11 @@ class StudentsBaseInfoDao(DAOBase):
         query = select(Student.student_id, Student.student_name, Student.id_type, Student.id_number,
                        Student.enrollment_number,
                        Student.student_gender, Student.approval_status, StudentBaseInfo.residence_district,
-                       StudentBaseInfo.school).select_from(Student).join(StudentBaseInfo,
-                                                                         Student.student_id == StudentBaseInfo.student_id,isouter=True)
+                       StudentBaseInfo.school, School.block,School.school_name, School.borough,SchoolCommunication.loc_area,SchoolCommunication.loc_area_pro).select_from(Student).join(StudentBaseInfo,
+                                                                         Student.student_id == StudentBaseInfo.student_id,isouter=True).join(School,
+                                                                                                                                             School.id == StudentBaseInfo.school_id,isouter=True).join(SchoolCommunication,
+                                                                                                                                                                                                       School.id == SchoolCommunication.school_id,isouter=True)
+
         if query_model.student_name:
             query = query.where(Student.student_name == query_model.student_name)
         if query_model.enrollment_number:
