@@ -215,11 +215,11 @@ class CurrentStudentsView(BaseView):
                                                            example='1'),
                              graduate_status: StudentGraduatedType = Query(..., description="毕业状态", min_length=1, max_length=20,
                                                           example='completion'),
-                             graduate_picture: str = Query(..., description="毕业照url", min_length=1, max_length=250,
+                             graduate_remark: str = Query( '', description="毕业备注", min_length=1, max_length=250,
                                                            example=''),
                              ):
         # print(new_students_key_info)
-        res = await self.graduation_student_rule.update_graduation_student(student_id,graduate_status,graduate_picture)
+        res = await self.graduation_student_rule.update_graduation_student(student_id,graduate_status,graduate_remark)
 
         return res
 
