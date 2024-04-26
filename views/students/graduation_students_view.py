@@ -65,7 +65,7 @@ class GraduationStudentsView(BaseView):
     #     return  res
 
     # 毕业 制证  毕业证url  备注
-    async def patch_graduation_student(self,
+    async def patch_graduation_credential(self,
                                        student_id: int = Query(..., description="学生ID",
                                                                example='1'),
                                        graduation_photo: str = Query(..., description="毕业照", min_length=1,
