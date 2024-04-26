@@ -45,22 +45,17 @@ class ResearchAchievementsDAO(DAOBase):
             **update_contents)
         return await self.update(session, query, research_achievements, update_contents, is_commit=is_commit)
 
-
-
     async def get_all_research_achievements(self, teacher_id):
         session = await self.slave_db()
-        query = select(ResearchAchievements.research_achievements_id, ResearchAchievements.teacher_id,ResearchAchievements.research_achievement_type,
+        query = select(ResearchAchievements.research_achievements_id, ResearchAchievements.teacher_id,
+                       ResearchAchievements.research_achievement_type,
                        ResearchAchievements.type,
                        ResearchAchievements.representative_or_project, ResearchAchievements.name,
                        ResearchAchievements.disciplinary_field, ResearchAchievements.role).join(Teacher,
                                                                                                 ResearchAchievements.teacher_id == Teacher.teacher_id).where(
             ResearchAchievements.teacher_id == teacher_id)
         result = await session.execute(query)
-        count=result.scalars()
+        count = result.scalars()
         print(count)
-        print("123456",result.scalars().all())
-        return result.scalars().all()
-
-
-
-
+        print("123456", result.fetchall())
+        return result.fetchall()
