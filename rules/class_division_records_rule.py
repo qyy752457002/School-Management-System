@@ -113,5 +113,5 @@ class ClassDivisionRecordsRule(object):
         print(paging)
         paging=page_none_deal(paging)
         # paging_result = PaginatedResponse.from_paging(, NewStudentsQueryRe)
-        paging_result = PaginatedResponse.from_paging(paging, ClassDivisionRecordsSearchRes,other_mapper={"school_name": "school_name",})
+        paging_result = PaginatedResponse.from_paging(paging, ClassDivisionRecordsSearchRes,other_mapper={"approval_status": "status",})
         return paging_result

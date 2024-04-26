@@ -52,6 +52,8 @@ class ClassDivisionRecordsSearchRes(BaseModel):
     student_no: str = Field('', title="", description="学生编号",examples=['1'])
     # student_name: str = Field('', title="Grade_name",description="学生姓名",examples=['1'])
     remark: str = Field('', title="", description="备注",examples=['1'])
+    id_number: str = Field('', title="", description="",examples=['1'])
+
     # id:int= Query(0, title="", description="id", example='1'),
     # student_no: str = Field('', title="", description="学生编号",examples=['1'])
 
