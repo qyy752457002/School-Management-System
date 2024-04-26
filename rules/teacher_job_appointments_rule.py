@@ -66,10 +66,11 @@ class TeacherJobAppointmentsRule(object):
         return teacher_job_appointments
 
     async def get_all_teacher_job_appointments(self, teacher_id):
+        exits_teacher = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        if not exits_teacher:
+            raise TeacherNotFoundError()
         teacher_job_appointments_db = await self.teacher_job_appointments_dao.get_all_teacher_job_appointments(
             teacher_id)
-        if not teacher_job_appointments_db:
-            raise TeacherNotFoundError()
         teacher_job_appointments = []
         for teacher_job_appointment in teacher_job_appointments_db:
             item = orm_model_to_view_model(teacher_job_appointment, TeacherJobAppointmentsUpdateModel,
