@@ -145,12 +145,12 @@ class NewsStudentsInfoView(BaseView):
     #
     async def page_newstudent_classdivision(self,
                                             enrollment_number: str = Query( '', title="", description="报名号",min_length=1, max_length=30, example=''),
-                                            school_id: str = Query( 0, title="", description="学校ID",min_length=1, max_length=30, example=''),
+                                            school_id: int  = Query( 0, title="", description="学校ID",  example=''),
                                             id_type: str = Query( '', title="", description="身份证件类型",min_length=1, max_length=30, example=''),
                                             student_name: str = Query( '', title="", description="姓名",min_length=1, max_length=30, example=''),
                                             created_at: str = Query( '', title="", description="分班时间",min_length=1, max_length=30, example=''),
                                             student_gender: str = Query( '', title="", description="性别",min_length=1, max_length=30, example=''),
-                                            class_id: int = Query( 0, title="", description="班级",min_length=1, max_length=30, example=''),
+                                            class_id: int = Query( 0, title="", description="班级",  example=''),
                                             status: str = Query( '', title="", description="状态",min_length=1, max_length=30, example=''),
                               page_request=Depends(PageRequest)):
         """

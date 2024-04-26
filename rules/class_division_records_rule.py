@@ -5,6 +5,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.class_division_records_dao import ClassDivisionRecordsDAO
 from models.class_division_records import ClassDivisionRecords
+from views.common.common_view import page_none_deal
 from views.models.class_division_records import ClassDivisionRecords as ClassDivisionRecordsModel
 from views.models.class_division_records import ClassDivisionRecordsSearchRes
 
@@ -75,5 +76,7 @@ class ClassDivisionRecordsRule(object):
                                                                 page_request)
         # 字段映射的示例写法   , {"hash_password": "password"} ClassDivisionRecordsSearchRes
         print(paging)
+        paging=page_none_deal(paging)
+        # paging_result = PaginatedResponse.from_paging(, NewStudentsQueryRe)
         paging_result = PaginatedResponse.from_paging(paging, ClassDivisionRecordsSearchRes,other_mapper={"school_name": "school_name",})
         return paging_result
