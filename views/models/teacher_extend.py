@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from datetime import date
 from fastapi import Query
 from models.public_enum import YesOrNo
-from typing import Optional
+from typing import Optional,List
 
 
 class TeacherLearnExperienceModel(BaseModel):
@@ -112,6 +112,30 @@ class TeacherWorkExperienceUpdateModel(BaseModel):
     institution_nature_category: str = Field("", title="单位性质类别", description="单位性质类别")
 
 
+# class TeacherJobAppointmentsModel(BaseModel):
+#     """
+#     教师ID：teacher_id
+#     岗位类别：position_category
+#     岗位等级：position_level
+#     校级职务：school_level_position
+#     是否兼任其他岗位：is_concurrent_other_positions
+#     兼任岗位类别：concurrent_position_category
+#     兼任岗位登记：concurrent_position_registration
+#     任职单位名称：employment_institution_name
+#     聘任开始时间：appointment_start_date
+#     结束时间：end_date
+#     """
+#     teacher_id: int = Field(..., title="教师ID", description="教师ID")
+#     position_category: str = Field(..., title="岗位类别", description="岗位类别")
+#     position_level: str = Field(..., title="岗位等级", description="岗位等级")
+#     school_level_position: str = Field(..., title="校级职务", description="校级职务")
+#     is_concurrent_other_positions: YesOrNo = Field("N", title="是否兼任其他岗位", description="是否兼任其他岗位")
+#     concurrent_position_category: Optional[str] = Field(..., title="兼任岗位类别", description="兼任岗位类别")
+#     concurrent_position_level: Optional[str] = Field(..., title="兼任岗位登记", description="兼任岗位登记")
+#     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
+#     appointment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
+#     start_date: date = Field(..., title="任职开始年月", description="任职开始年月")
+
 class TeacherJobAppointmentsModel(BaseModel):
     """
     教师ID：teacher_id
@@ -119,8 +143,7 @@ class TeacherJobAppointmentsModel(BaseModel):
     岗位等级：position_level
     校级职务：school_level_position
     是否兼任其他岗位：is_concurrent_other_positions
-    兼任岗位类别：concurrent_position_category
-    兼任岗位登记：concurrent_position_registration
+    兼任岗位类别：concurrent_position
     任职单位名称：employment_institution_name
     聘任开始时间：appointment_start_date
     结束时间：end_date
@@ -129,17 +152,14 @@ class TeacherJobAppointmentsModel(BaseModel):
     position_category: str = Field(..., title="岗位类别", description="岗位类别")
     position_level: str = Field(..., title="岗位等级", description="岗位等级")
     school_level_position: str = Field(..., title="校级职务", description="校级职务")
-    is_concurrent_other_positions: bool = Field(False, title="是否兼任其他岗位", description="是否兼任其他岗位")
-    concurrent_position_category: str = Field(..., title="兼任岗位类别", description="兼任岗位类别")
-    concurrent_position_level: str = Field(..., title="兼任岗位登记", description="兼任岗位登记")
+    is_concurrent_other_positions: YesOrNo = Field("N", title="是否兼任其他岗位", description="是否兼任其他岗位")
+    concurrent_position: Optional[List[dict]] = Field(default=[{"category": "默认类别", "level": "默认等级"}], title="兼任岗位", description="兼任岗位")
     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
     appointment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
     start_date: date = Field(..., title="任职开始年月", description="任职开始年月")
 
-
 class TeacherJobAppointmentsUpdateModel(BaseModel):
     """
-    teacher_job_appointments：teacher_job_appointments_id
     教师ID：teacher_id
     岗位类别：position_category
     岗位等级：position_level
@@ -157,12 +177,41 @@ class TeacherJobAppointmentsUpdateModel(BaseModel):
     position_category: str = Field(..., title="岗位类别", description="岗位类别")
     position_level: str = Field(..., title="岗位等级", description="岗位等级")
     school_level_position: str = Field(..., title="校级职务", description="校级职务")
-    is_concurrent_other_positions: bool = Field(False, title="是否兼任其他岗位", description="是否兼任其他岗位")
-    concurrent_position_category: str = Field(..., title="兼任岗位类别", description="兼任岗位类别")
-    concurrent_position_level: str = Field(..., title="兼任岗位登记", description="兼任岗位登记")
+    is_concurrent_other_positions: YesOrNo = Field("N", title="是否兼任其他岗位", description="是否兼任其他岗位")
+    concurrent_position: Optional[List[dict]] = Field(default=[{"category": "默认类别", "level": "默认等级"}], title="兼任岗位", description="兼任岗位")
     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
     appointment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
     start_date: date = Field(..., title="任职开始年月", description="任职开始年月")
+
+
+
+
+# class TeacherJobAppointmentsUpdateModel(BaseModel):
+#     """
+#     teacher_job_appointments：teacher_job_appointments_id
+#     教师ID：teacher_id
+#     岗位类别：position_category
+#     岗位等级：position_level
+#     校级职务：school_level_position
+#     是否兼任其他岗位：is_concurrent_other_positions
+#     兼任岗位类别：concurrent_position_category
+#     兼任岗位登记：concurrent_position_registration
+#     任职单位名称：employment_institution_name
+#     聘任开始时间：appointment_start_date
+#     结束时间：end_date
+#     """
+#     teacher_job_appointments_id: int = Field(..., title="teacher_job_appointments_id",
+#                                              description="teacher_job_appointments_id")
+#     teacher_id: int = Field(..., title="教师ID", description="教师ID")
+#     position_category: str = Field(..., title="岗位类别", description="岗位类别")
+#     position_level: str = Field(..., title="岗位等级", description="岗位等级")
+#     school_level_position: str = Field(..., title="校级职务", description="校级职务")
+#     is_concurrent_other_positions: YesOrNo = Field("N", title="是否兼任其他岗位", description="是否兼任其他岗位")
+#     concurrent_position_category: Optional[str] = Field(..., title="兼任岗位类别", description="兼任岗位类别")
+#     concurrent_position_level: Optional[str] = Field(..., title="兼任岗位登记", description="兼任岗位登记")
+#     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
+#     appointment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
+#     start_date: date = Field(..., title="任职开始年月", description="任职开始年月")
 
 
 class TeacherProfessionalTitlesModel(BaseModel):
