@@ -18,7 +18,7 @@ class TeacherSkillCertificatesRule(object):
         teacher_skill_certificates_db = await self.teacher_skill_certificates_dao.get_teacher_skill_certificates_by_teacher_skill_certificates_id(
             teacher_skill_certificates_id)
         teacher_skill_certificates = orm_model_to_view_model(teacher_skill_certificates_db,
-                                                             TeacherSkillCertificatesModel)
+                                                             TeacherSkillCertificatesUpdateModel)
         return teacher_skill_certificates
 
     async def add_teacher_skill_certificates(self, teacher_skill_certificates: TeacherSkillCertificatesModel):
@@ -29,7 +29,7 @@ class TeacherSkillCertificatesRule(object):
         teacher_skill_certificates_db = await self.teacher_skill_certificates_dao.add_teacher_skill_certificates(
             teacher_skill_certificates_db)
         teacher_skill_certificates = orm_model_to_view_model(teacher_skill_certificates_db,
-                                                             TeacherSkillCertificatesModel)
+                                                             TeacherSkillCertificatesUpdateModel)
         return teacher_skill_certificates
 
     async def delete_teacher_skill_certificates(self, teacher_skill_certificates_id):
@@ -62,4 +62,8 @@ class TeacherSkillCertificatesRule(object):
             raise TeacherNotFoundError()
         teacher_skill_certificates_db = await self.teacher_skill_certificates_dao.get_all_teacher_skill_certificates(
             teacher_id)
+        teacher_skill_certificates = []
+        for teacher_skill_certificate in teacher_skill_certificates_db:
+            teacher_skill_certificates.append(
+                orm_model_to_view_model(teacher_skill_certificate, TeacherSkillCertificatesUpdateModel))
         return teacher_skill_certificates_db

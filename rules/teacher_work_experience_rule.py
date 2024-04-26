@@ -18,7 +18,7 @@ class TeacherWorkExperienceRule(object):
             teacher_work_experience_id)
         if not teacher_work_experience_db:
             raise TeacherWorkExperienceNotFoundError()
-        teacher_work_experience = orm_model_to_view_model(teacher_work_experience_db, TeacherWorkExperienceModel)
+        teacher_work_experience = orm_model_to_view_model(teacher_work_experience_db, TeacherWorkExperienceUpdateModel)
         return teacher_work_experience
 
     async def add_teacher_work_experience(self, teacher_work_experience: TeacherWorkExperienceModel):
@@ -61,5 +61,5 @@ class TeacherWorkExperienceRule(object):
             raise TeacherNotFoundError()
         teacher_work_experience = []
         for item in teacher_work_experience_db:
-            teacher_work_experience.append(orm_model_to_view_model(item, TeacherWorkExperienceModel))
+            teacher_work_experience.append(orm_model_to_view_model(item, TeacherWorkExperienceUpdateModel))
         return teacher_work_experience

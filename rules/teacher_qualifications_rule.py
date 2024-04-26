@@ -16,7 +16,7 @@ class TeacherQualificationsRule(object):
     async def get_teacher_qualifications_by_teacher_qualifications_id(self, teacher_qualifications_id):
         teacher_qualifications_db = await self.teacher_qualifications_dao.get_teacher_qualifications_by_teacher_qualifications_id(
             teacher_qualifications_id)
-        teacher_qualifications = orm_model_to_view_model(teacher_qualifications_db, TeacherQualificationsModel)
+        teacher_qualifications = orm_model_to_view_model(teacher_qualifications_db, TeacherQualificationsUpdateModel)
         return teacher_qualifications
 
     async def add_teacher_qualifications(self, teacher_qualifications: TeacherQualificationsModel):
@@ -26,7 +26,7 @@ class TeacherQualificationsRule(object):
         teacher_qualifications_db = view_model_to_orm_model(teacher_qualifications, TeacherQualifications)
         teacher_qualifications_db = await self.teacher_qualifications_dao.add_teacher_qualifications(
             teacher_qualifications_db)
-        teacher_qualifications = orm_model_to_view_model(teacher_qualifications_db, TeacherQualificationsModel)
+        teacher_qualifications = orm_model_to_view_model(teacher_qualifications_db, TeacherQualificationsUpdateModel)
         return teacher_qualifications
 
     async def delete_teacher_qualifications(self, teacher_qualifications_id):
@@ -36,7 +36,7 @@ class TeacherQualificationsRule(object):
             raise TeacherQualificationsNotFoundError()
         teacher_qualifications_db = await self.teacher_qualifications_dao.delete_teacher_qualifications(
             exists_teacher_qualifications)
-        teacher_qualifications = orm_model_to_view_model(teacher_qualifications_db, TeacherQualificationsModel,
+        teacher_qualifications = orm_model_to_view_model(teacher_qualifications_db, TeacherQualificationsUpdateModel,
                                                          exclude=[""])
         return teacher_qualifications
 
@@ -54,5 +54,12 @@ class TeacherQualificationsRule(object):
         return teacher_qualifications
 
     async def get_all_teacher_qualifications(self, teacher_id):
-        teacher_qualifications_db = await self.teacher_qualifications_dao.get_all_teacher_qualifications(teacher_id)
-        return teacher_qualifications_db
+        teacher_qualifications_db = await self.teacher_qualifications_dao.get_all_teacher_qualifications(
+            teacher_id)
+        if not teacher_qualifications_db:
+            raise TeacherQualificationsNotFoundError()
+        teacher_qualifications = []
+        for teacher_qualification in teacher_qualifications_db:
+            teacher_qualifications.append(orm_model_to_view_model(teacher_qualification, TeacherQualificationsUpdateModel))
+        return teacher_qualifications
+

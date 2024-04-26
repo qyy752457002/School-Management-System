@@ -46,8 +46,7 @@ class TeacherLearnExperienceRule(object):
         exists_teacher_learn_experience_info = await self.teacher_learn_experience_dao.get_teacher_learn_experience_by_teacher_learn_experience_id(
             teacher_learn_experience.teacher_learn_experience_id)
         if not exists_teacher_learn_experience_info:
-            raise Exception(
-                f"编号为{teacher_learn_experience.teacher_learn_experience_id}的teacher_learn_experience不存在")
+            raise TeacherLearnExperienceNotFoundError()
         need_update_list = []
         for key, value in teacher_learn_experience.dict().items():
             if value:

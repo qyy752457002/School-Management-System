@@ -5,7 +5,7 @@ from daos.research_achievements_dao import ResearchAchievementsDAO
 from models.research_achievements import ResearchAchievements
 from views.models.teacher_extend import ResearchAchievementsModel, ResearchAchievementsUpdateModel, ResearchAchievementsQueryModel,ResearchAchievementsQueryReModel
 from daos.teachers_dao import TeachersDao
-from business_exceptions.teacher import TeacherNotFoundError
+from business_exceptions.teacher import TeacherNotFoundError,ResearchAchievementsNotFoundError
 
 
 @dataclass_inject
@@ -33,7 +33,7 @@ class ResearchAchievementsRule(object):
         exists_research_achievements = await self.research_achievements_dao.get_research_achievements_by_research_achievements_id(
             research_achievements_id)
         if not exists_research_achievements:
-            raise Exception(f"编号为的{research_achievements_id}research_achievements不存在")
+            raise ResearchAchievementsNotFoundError()
         research_achievements_db = await self.research_achievements_dao.delete_research_achievements(
             exists_research_achievements)
         research_achievements = orm_model_to_view_model(research_achievements_db, ResearchAchievementsModel,
@@ -44,7 +44,7 @@ class ResearchAchievementsRule(object):
         exists_research_achievements_info = await self.research_achievements_dao.get_research_achievements_by_research_achievements_id(
             research_achievements.research_achievements_id)
         if not exists_research_achievements_info:
-            raise Exception(f"编号为{research_achievements.research_achievements_id}的research_achievements不存在")
+            raise ResearchAchievementsNotFoundError()
         need_update_list = []
         for key, value in research_achievements.dict().items():
             if value:
@@ -56,6 +56,8 @@ class ResearchAchievementsRule(object):
     async def get_all_research_achievements(self, teacher_id):
 
         research_achievements_db = await self.research_achievements_dao.get_all_research_achievements(teacher_id)
+        if not research_achievements_db:
+            raise ResearchAchievementsNotFoundError()
         research_achievements = []
         for item in research_achievements_db:
             research_achievements.append(orm_model_to_view_model(item, ResearchAchievementsQueryReModel))

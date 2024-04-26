@@ -5,7 +5,7 @@ from daos.talent_program_dao import TalentProgramDAO
 from models.talent_program import TalentProgram
 from views.models.teacher_extend import TalentProgramModel, TalentProgramUpdateModel
 from daos.teachers_dao import TeachersDao
-from business_exceptions.teacher import TeacherNotFoundError
+from business_exceptions.teacher import TeacherNotFoundError,TalentProgramNotFoundError
 
 
 @dataclass_inject
@@ -15,7 +15,7 @@ class TalentProgramRule(object):
 
     async def get_talent_program_by_talent_program_id(self, talent_program_id):
         talent_program_db = await self.talent_program_dao.get_talent_program_by_talent_program_id(talent_program_id)
-        talent_program = orm_model_to_view_model(talent_program_db, TalentProgramModel)
+        talent_program = orm_model_to_view_model(talent_program_db, TalentProgramUpdateModel)
         return talent_program
 
     async def add_talent_program(self, talent_program: TalentProgramModel):
@@ -24,13 +24,13 @@ class TalentProgramRule(object):
             raise TeacherNotFoundError()
         talent_program_db = view_model_to_orm_model(talent_program, TalentProgram)
         talent_program_db = await self.talent_program_dao.add_talent_program(talent_program_db)
-        talent_program = orm_model_to_view_model(talent_program_db, TalentProgramModel)
+        talent_program = orm_model_to_view_model(talent_program_db, TalentProgramUpdateModel)
         return talent_program
 
     async def delete_talent_program(self, talent_program_id):
         exists_talent_program = await self.talent_program_dao.get_talent_program_by_talent_program_id(talent_program_id)
         if not exists_talent_program:
-            raise Exception(f"编号为的{talent_program_id}talent_program不存在")
+            raise TalentProgramNotFoundError()
         talent_program_db = await self.talent_program_dao.delete_talent_program(exists_talent_program)
         talent_program = orm_model_to_view_model(talent_program_db, TalentProgramModel, exclude=[""])
         return talent_program
@@ -39,7 +39,7 @@ class TalentProgramRule(object):
         exists_talent_program_info = await self.talent_program_dao.get_talent_program_by_talent_program_id(
             talent_program.talent_program_id)
         if not exists_talent_program_info:
-            raise Exception(f"编号为{talent_program.talent_program_id}的talent_program不存在")
+            raise TalentProgramNotFoundError()
         need_update_list = []
         for key, value in talent_program.dict().items():
             if value:
@@ -49,10 +49,41 @@ class TalentProgramRule(object):
 
     async def get_all_talent_program(self, teacher_id):
         talent_program_db = await self.talent_program_dao.get_all_talent_program(teacher_id)
-        #          talent_program = orm_model_to_view_model(talent_program_db, TalentProgramModel, exclude=[""])
+        if not talent_program_db:
+            raise TalentProgramNotFoundError()
         talent_program = []
         for item in talent_program_db:
-            talent_program.append(orm_model_to_view_model(item, TalentProgramModel))
+            talent_program.append(orm_model_to_view_model(item, TalentProgramUpdateModel))
         return talent_program_db
+
+    async def submitting(self,talent_program_id):
+        talent_program = await self.talent_program_dao.get_talent_program_by_talent_program_id(talent_program_id)
+        if not talent_program:
+            raise TalentProgramNotFoundError()
+        talent_program.approval_status = "submitting"
+        return await self.talent_program_dao.update_talent_program(talent_program, "approval_status")
+
+    async def submitted(self,talent_program_id):
+        talent_program = await self.talent_program_dao.get_talent_program_by_talent_program_id(talent_program_id)
+        if not talent_program:
+            raise TalentProgramNotFoundError()
+        talent_program.approval_status = "submitted"
+        return await self.talent_program_dao.update_talent_program(talent_program, "approval_status")
+
+    async def approved(self,talent_program_id):
+        talent_program = await self.talent_program_dao.get_talent_program_by_talent_program_id(talent_program_id)
+        if not talent_program:
+            raise TalentProgramNotFoundError()
+        talent_program.approval_status = "approved"
+        return await self.talent_program_dao.update_talent_program(talent_program, "approval_status")
+
+    async def rejected(self,talent_program_id):
+        talent_program = await self.talent_program_dao.get_talent_program_by_talent_program_id(talent_program_id)
+        if not talent_program:
+            raise TalentProgramNotFoundError()
+        talent_program.approval_status = "rejected"
+        return await self.talent_program_dao.update_talent_program(talent_program, "approval_status")
+
+
 
 
