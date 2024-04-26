@@ -46,7 +46,7 @@ class TeacherJobAppointmentsRule(object):
         teacher_job_appointments_db = await self.teacher_job_appointments_dao.delete_teacher_job_appointments(
             exists_teacher_job_appointments)
         teacher_job_appointments = orm_model_to_view_model(teacher_job_appointments_db, TeacherJobAppointmentsModel,
-                                                           exclude=["TeacherJobAppointmentsUpdateModel"])
+                                                           exclude=["concurrent_position"])
         teacher_job_appointments.concurrent_position = json.loads(teacher_job_appointments_db.concurrent_position)
         return teacher_job_appointments
 
