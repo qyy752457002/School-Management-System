@@ -5,7 +5,8 @@ from daos.teacher_job_appointments_dao import TeacherJobAppointmentsDAO
 from daos.teachers_dao import TeachersDao
 from models.teacher_job_appointments import TeacherJobAppointments
 from views.models.teacher_extend import TeacherJobAppointmentsModel, TeacherJobAppointmentsUpdateModel
-from business_exceptions.teacher import TeacherNotFoundError
+from business_exceptions.teacher import TeacherNotFoundError, TeacherJobAppointmentsNotFoundError
+
 
 @dataclass_inject
 class TeacherJobAppointmentsRule(object):
@@ -32,7 +33,7 @@ class TeacherJobAppointmentsRule(object):
         exists_teacher_job_appointments = await self.teacher_job_appointments_dao.get_teacher_job_appointments_by_teacher_job_appointments_id(
             teacher_job_appointments_id)
         if not exists_teacher_job_appointments:
-            raise Exception(f"编号为的{teacher_job_appointments_id}teacher_job_appointments不存在")
+            raise TeacherJobAppointmentsNotFoundError()
         teacher_job_appointments_db = await self.teacher_job_appointments_dao.delete_teacher_job_appointments(
             exists_teacher_job_appointments)
         teacher_job_appointments = orm_model_to_view_model(teacher_job_appointments_db, TeacherJobAppointmentsModel,
@@ -43,8 +44,7 @@ class TeacherJobAppointmentsRule(object):
         exists_teacher_job_appointments_info = await self.teacher_job_appointments_dao.get_teacher_job_appointments_by_teacher_job_appointments_id(
             teacher_job_appointments.teacher_job_appointments_id)
         if not exists_teacher_job_appointments_info:
-            raise Exception(
-                f"编号为{teacher_job_appointments.teacher_job_appointments_id}的teacher_job_appointments不存在")
+            raise TeacherJobAppointmentsNotFoundError()
         need_update_list = []
         for key, value in teacher_job_appointments.dict().items():
             if value:
@@ -56,8 +56,46 @@ class TeacherJobAppointmentsRule(object):
     async def get_all_teacher_job_appointments(self, teacher_id):
         teacher_job_appointments_db = await self.teacher_job_appointments_dao.get_all_teacher_job_appointments(
             teacher_id)
+        if not teacher_job_appointments_db:
+            raise TeacherNotFoundError()
         teacher_job_appointments = []
         for teacher_job_appointment in teacher_job_appointments_db:
             teacher_job_appointments.append(
-                orm_model_to_view_model(teacher_job_appointment, TeacherJobAppointmentsModel))
+                orm_model_to_view_model(teacher_job_appointment, TeacherJobAppointmentsUpdateModel))
         return teacher_job_appointments
+
+    async def submitting(self, teacher_job_appointments_id):
+        teacher_job_appointments = await self.teacher_job_appointments_dao.get_teacher_job_appointments_by_teacher_job_appointments_id(
+            teacher_job_appointments_id)
+        if not teacher_job_appointments:
+            raise TeacherJobAppointmentsNotFoundError()
+        teacher_job_appointments.approval_status = "submitting"
+        return await self.teacher_job_appointments_dao.update_teacher_job_appointments(teacher_job_appointments,
+                                                                                       "approval_status")
+
+    async def submitted(self, teacher_job_appointments_id):
+        teacher_job_appointments = await self.teacher_job_appointments_dao.get_teacher_job_appointments_by_teacher_job_appointments_id(
+            teacher_job_appointments_id)
+        if not teacher_job_appointments:
+            raise TeacherJobAppointmentsNotFoundError()
+        teacher_job_appointments.approval_status = "submitted"
+        return await self.teacher_job_appointments_dao.update_teacher_job_appointments(teacher_job_appointments,
+                                                                                       "approval_status")
+
+    async def approved(self, teacher_job_appointments_id):
+        teacher_job_appointments = await self.teacher_job_appointments_dao.get_teacher_job_appointments_by_teacher_job_appointments_id(
+            teacher_job_appointments_id)
+        if not teacher_job_appointments:
+            raise TeacherJobAppointmentsNotFoundError()
+        teacher_job_appointments.approval_status = "approved"
+        return await self.teacher_job_appointments_dao.update_teacher_job_appointments(teacher_job_appointments,
+                                                                                       "approval_status")
+
+    async def rejected(self, teacher_job_appointments_id):
+        teacher_job_appointments = await self.teacher_job_appointments_dao.get_teacher_job_appointments_by_teacher_job_appointments_id(
+            teacher_job_appointments_id)
+        if not teacher_job_appointments:
+            raise TeacherJobAppointmentsNotFoundError()
+        teacher_job_appointments.approval_status = "rejected"
+        return await self.teacher_job_appointments_dao.update_teacher_job_appointments(teacher_job_appointments,
+                                                                                       "approval_status")

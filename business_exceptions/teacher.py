@@ -25,9 +25,44 @@ class TeacherInfoExitError(MiniHTTPException):
         super().__init__(404, "TEACHER_INFO_EXIT_ERROR", "TeacherInfo exit error.", "教师基本信息已存在")
 
 
-"""
-teacher_qualifications_id
-"""
+
 class TeacherQualificationsNotFoundError(MiniHTTPException):
     def __init__(self):
         super().__init__(404, "TEACHER_QUALIFICATIONS_NOT_FOUND", "TeacherQualifications not found.", "教师资格证书不存在")
+
+
+class TeacherJobAppointmentsNotFoundError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "TEACHER_JOB_APPOINTMENTS_NOT_FOUND", "TeacherJobAppointments not found.", "教师职务任职不存在")
+
+
+class TeacherProfessionalTitleNotFoundError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "TEACHER_PROFESSIONAL_TITLE_NOT_FOUND", "TeacherProfessionalTitle not found.", "教师专业技术职位不存在")
+
+class TeacherEthicRecordsNotFoundError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "TEACHER_ETHIC_RECORDS_NOT_FOUND", "TeacherEthnicRecords not found.", "教师师德记录不存在")
+
+class EducationalTeachingNotFoundError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "EDUCATIONAL_TEACHING_NOT_FOUND", "EducationalTeaching not found.", "教育教学工作不存在")
+
+
+class DomesticTrainingNotFoundError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "DOMESTIC_TRAINING_NOT_FOUND", "DomesticTraining not found.", "国内培训不存在")
+
+
+class OverseasStudyNotFoundError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "OVERSEAS_STUDY_NOT_FOUND", "OverseasStudy not found.", "海外学习不存在")
+
+
+class AnnualReviewNotFoundError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "ANNUAL_REVIEW_NOT_FOUND", "AnnualReview not found.", "年度考核不存在")
+
+class ResearchAchievementsNotFoundError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "RESEARCH_ACHIEVEMENTS_NOT_FOUND", "ResearchAchievements not found.", "科研成果不存在")

@@ -109,3 +109,28 @@ class NewTeachersView(BaseView):
                              teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
         await self.teacher_rule.rejected(teacher_id)
         return teacher_id
+
+
+    async def patch_info_submitting(self,
+                                    teacher_base_id: int = Query(..., title="教师基本信息编号", description="教师基本信息编号",
+                                                                 example=123)):
+        await self.teacher_info_rule.submitting(teacher_base_id)
+        return teacher_base_id
+
+    async def patch_info_submitted(self,
+                                   teacher_base_id: int = Query(..., title="教师基本信息编号", description="教师基本信息编号",
+                                                                example=123)):
+        await self.teacher_info_rule.submitted(teacher_base_id)
+        return teacher_base_id
+
+    async def patch_info_approved(self,
+                                  teacher_base_id: int = Query(..., title="教师基本信息编号", description="教师基本信息编号",
+                                                               example=123)):
+        await self.teacher_info_rule.approved(teacher_base_id)
+        return teacher_base_id
+
+    async def patch_info_rejected(self,
+                                  teacher_base_id: int = Query(..., title="教师基本信息编号", description="教师基本信息编号",
+                                                               example=123)):
+        await self.teacher_info_rule.rejected(teacher_base_id)
+        return teacher_base_id
