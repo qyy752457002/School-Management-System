@@ -127,7 +127,7 @@ class NewsStudentsInfoView(BaseView):
 
     async def patch_newstudent_classdivision(self,
                                              class_id: int  = Query(..., title="", description="班级ID",),
-                                             student_id: List[int]  = Query(..., title="", description="学生ID",),
+                                             student_id:  str  = Query(..., title="", description="学生ID/逗号分割",),
 
                                              ):
         """

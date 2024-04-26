@@ -10,23 +10,21 @@ class ClassDivisionRecords(BaseDBModel):
 
     """
     分班表
-    学校id
-    年级id
-    班级id
-    学生id
-
+    状态
 
     """
     __tablename__ = 'lfun_class_division_records'
     __table_args__ = {'comment': '分班表'}
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID",autoincrement=True)
+
     student_id: Mapped[int] = mapped_column(nullable=True , comment="学生ID",default=0)
     school_id: Mapped[int] = mapped_column(nullable=True , comment="学校ID",default=0)
     grade_id: Mapped[int] = mapped_column(nullable=True , comment="年级ID",default=0)
     class_id: Mapped[int] = mapped_column(nullable=True , comment="班级ID",default=0)
     student_no: Mapped[str] = mapped_column(String(255),  nullable=True, comment="学籍号",default='')
     student_name: Mapped[str] = mapped_column(String(255),  nullable=True, comment="学生姓名",default='')
+    status: Mapped[str] = mapped_column(String(255),  nullable=True, comment="状态",default='')
 
     remark: Mapped[str] = mapped_column(String(255),  nullable=True, comment="备注",default='')
 
