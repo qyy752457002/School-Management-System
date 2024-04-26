@@ -16,6 +16,7 @@ class TeacherLearnExperienceModel(BaseModel):
     入学时间：admission_date
     毕业时间：graduation_date
     学位层次：degree_level
+    学位名称：degree_name
     获取学位过家地区：country_or_region_of_degree_obtained
     获得学位院校机构：institution_of_degree_obtained
     学位授予时间：degree_award_date
@@ -31,6 +32,7 @@ class TeacherLearnExperienceModel(BaseModel):
     admission_date: date = Field(date(1970, 1, 1), title="入学时间", description="入学时间")
     graduation_date: date = Field(date(1970, 1, 1), title="毕业时间", description="毕业时间")
     degree_level: str = Field(..., title="学位层次", description="学位层次")
+    degree_name: str = Field(..., title="学位名称", description="学位名称")
     country_or_region_of_degree_obtained: str = Field(..., title="获取学位过家地区", description="获取学位过家地区")
     institution_of_degree_obtained: str = Field(..., title="获得学位院校机构", description="获得学位院校机构")
     degree_award_date: date = Field(date(1970, 1, 1), title="学位授予时间", description="学位授予时间")
@@ -65,6 +67,7 @@ class TeacherLearnExperienceUpdateModel(BaseModel):
     admission_date: date = Field(date(1970, 1, 1), title="入学时间", description="入学时间")
     graduation_date: date = Field(date(1970, 1, 1), title="毕业时间", description="毕业时间")
     degree_level: str = Field(..., title="学位层次", description="学位层次")
+    degree_name: str = Field(..., title="学位名称", description="学位名称")
     country_or_region_of_degree_obtained: str = Field(..., title="获取学位过家地区", description="获取学位过家地区")
     institution_of_degree_obtained: str = Field(..., title="获得学位院校机构", description="获得学位院校机构")
     degree_award_date: date = Field(date(1970, 1, 1), title="学位授予时间", description="学位授予时间")
