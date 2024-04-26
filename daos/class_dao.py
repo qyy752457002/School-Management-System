@@ -15,10 +15,12 @@ class ClassesDAO(DAOBase):
         result = await session.execute(select(Classes).where(Classes.id == classes_id))
         return result.scalar_one_or_none()
 
-    async def get_classes_by_classes_name(self, classes_name):
+    async def get_classes_by_classes_name(self, classes_name,school_id=None):
         session = await self.slave_db()
-        result = await session.execute(
-            select(Classes).where(Classes.class_name == classes_name))
+        if school_id:
+            result = await session.execute(select(Classes).where(and_(Classes.class_name == classes_name,Classes.school_id==school_id)))
+        else:
+            result = await session.execute(  select(Classes).where(Classes.class_name == classes_name))
         return result.first()
 
     async def add_classes(self, classes):
@@ -78,7 +80,18 @@ class ClassesDAO(DAOBase):
 
     async def query_classes_with_page(self, borough, block, school_id, grade_id, class_name,
                                       page_request: PageRequest) -> Paging:
-        query = select(Classes, School.block, School.borough,School.school_name).select_from(Classes).join(School, School.id == Classes.school_id)
+        query = (select( School.block, School.borough,School.school_name,Classes.id, Classes.class_name,
+                        Classes.class_number, Classes.year_established, Classes.teacher_id_card,
+                        Classes.teacher_name, Classes.education_stage, Classes.school_system, Classes.monitor,
+                        Classes.class_type, Classes.is_bilingual_class, Classes.major_for_vocational,
+                        Classes.bilingual_teaching_mode, Classes.ethnic_language, Classes.is_att_class,
+                        Classes.att_class_type, Classes.grade_no, Classes.grade_id, Classes.is_deleted,
+                        Classes.school_id,
+                         Classes.created_at, Classes.updated_at,
+                         Classes.created_uid, Classes.updated_uid,
+                        ).select_from(Classes).join(School, School.id == Classes.school_id)
+                                    .where(Classes.is_deleted == False)
+                 .order_by(Classes.id.desc()))
 
 
         if school_id:
@@ -109,6 +122,7 @@ class ClassesDAO(DAOBase):
                 query = query.where(School.borough == borough)
 
         paging = await self.query_page(query, page_request)
+
         return paging
 
     async def update_classes_byargs(self, classes: Classes, *args, is_commit: bool = True):

@@ -1,0 +1,61 @@
+INSERT INTO public.lfun_enum_value (enum_name,enum_value,description,sort_number,parent_id,is_enabled,created_uid,updated_uid,created_at,updated_at,is_deleted) VALUES
+	 ('school_nature','100','学前教育',0,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false);
+
+
+INSERT INTO public.lfun_enum_value (enum_name,enum_value,description,sort_number,parent_id,is_enabled,created_uid,updated_uid,created_at,updated_at,is_deleted) VALUES
+	 ('school_nature','101','初等教育',0,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false);
+
+
+INSERT INTO public.lfun_enum_value (enum_name,enum_value,description,sort_number,parent_id,is_enabled,created_uid,updated_uid,created_at,updated_at,is_deleted) VALUES
+	 ('school_nature_lv2','201','幼儿园',0,'100',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false);
+
+
+	 INSERT INTO public.lfun_enum_value (enum_name,enum_value,description,sort_number,parent_id,is_enabled,created_uid,updated_uid,created_at,updated_at,is_deleted) VALUES
+     	 ('school_nature_lv3','301','幼儿园',0,'201',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('school_nature_lv3','302','附设幼儿班',0,'201',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false);
+
+
+school_system
+urban_rural_nature
+
+
+
+	 INSERT INTO public.lfun_enum_value (enum_name,enum_value,description,sort_number,parent_id,is_enabled,created_uid,updated_uid,created_at,updated_at,is_deleted) VALUES
+     	 ('school_system','100','普通小学',0,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('school_system','101','普通初中',0,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false);
+
+
+
+	 INSERT INTO public.lfun_enum_value (enum_name,enum_value,description,sort_number,parent_id,is_enabled,created_uid,updated_uid,created_at,updated_at,is_deleted) VALUES
+     	 ('school_system_lv2','200','六学制',0,'100',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('school_system_lv2','201','三学制',0,'101',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false);
+
+
+
+
+	 INSERT INTO public.lfun_enum_value (enum_name,enum_value,description,sort_number,parent_id,is_enabled,created_uid,updated_uid,created_at,updated_at,is_deleted) VALUES
+     	 ('urban_rural_nature','100','城镇',0,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('urban_rural_nature','101','镇区',0,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false);
+
+
+
+	 INSERT INTO public.lfun_enum_value (enum_name,enum_value,description,sort_number,parent_id,is_enabled,created_uid,updated_uid,created_at,updated_at,is_deleted) VALUES
+     	 ('urban_rural_nature_lv2','200','城区',0,'100',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('urban_rural_nature_lv2','201','镇中心区',0,'101',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false);
+
+
+INSERT INTO "public"."lfun_course"( "school_id", "course_no", "grade_id", "course_name", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  0, '15', 0, '科学', 0, 0, '2020-01-01 00:00:00', '2020-01-01 00:00:00', 'f');
+
+INSERT INTO "public"."lfun_course"( "school_id", "course_no", "grade_id", "course_name", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  0, '11', 0, '品德与生活(社会)', 0, 0, '2020-01-01 00:00:00', '2020-01-01 00:00:00', 'f');
+INSERT INTO "public"."lfun_course"( "school_id", "course_no", "grade_id", "course_name", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  0, '12', 0, '思想品德(政治)', 0, 0, '2020-01-01 00:00:00', '2020-01-01 00:00:00', 'f');
+INSERT INTO "public"."lfun_course"( "school_id", "course_no", "grade_id", "course_name", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  0, '16', 0, '物理', 0, 0, '2020-01-01 00:00:00', '2020-01-01 00:00:00', 'f');
+INSERT INTO "public"."lfun_course"( "school_id", "course_no", "grade_id", "course_name", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  0, '17', 0, '化学', 0, 0, '2020-01-01 00:00:00', '2020-01-01 00:00:00', 'f');
+INSERT INTO "public"."lfun_course"( "school_id", "course_no", "grade_id", "course_name", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  0, '18', 0, '生物', 0, 0, '2020-01-01 00:00:00', '2020-01-01 00:00:00', 'f');
+INSERT INTO "public"."lfun_course"( "school_id", "course_no", "grade_id", "course_name", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  0, '19', 0, '历史与社会', 0, 0, '2020-01-01 00:00:00', '2020-01-01 00:00:00', 'f');
+INSERT INTO "public"."lfun_course"( "school_id", "course_no", "grade_id", "course_name", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  0, '20', 0, '地理', 0, 0, '2020-01-01 00:00:00', '2020-01-01 00:00:00', 'f');
+INSERT INTO "public"."lfun_course"( "school_id", "course_no", "grade_id", "course_name", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  0, '21', 0, '历史', 0, 0, '2020-01-01 00:00:00', '2020-01-01 00:00:00', 'f');
+INSERT INTO "public"."lfun_course"( "school_id", "course_no", "grade_id", "course_name", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  0, '23', 0, '艺术', 0, 0, '2020-01-01 00:00:00', '2020-01-01 00:00:00', 'f');
+INSERT INTO "public"."lfun_course"( "school_id", "course_no", "grade_id", "course_name", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted") VALUES (  0, '22', 0, '体育与健康', 0, 0, '2020-01-01 00:00:00', '2020-01-01 00:00:00', 'f');
+
+
+

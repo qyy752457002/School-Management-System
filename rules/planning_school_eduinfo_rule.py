@@ -37,7 +37,7 @@ class PlanningSchoolEduinfoRule(object):
 
 
     async def add_planning_school_eduinfo(self, planning_school: PlanningSchoolEduinfoModel,convertmodel=True):
-        exists_planning_school = await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_id(
+        exists_planning_school = await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_planning_school_id(
             planning_school.planning_school_id)
         if exists_planning_school:
             raise Exception(f"规划校教育信息{planning_school.planning_school_id}已存在")

@@ -44,7 +44,6 @@ class ClassesSearchRes(BaseModel):
     school_id: int = Field(None, title="学校ID", description="学校ID", examples=['1'])
     grade_no: str = Field(None, title="年级编号", description="年级编号", examples=['一年级'])
     grade_id: int = Field(None, title="年级ID", description="年级ID", examples=['2'])
-
     class_name: str = Field(None, title="Grade_name", description="班级名称", examples=['一年级'])
     class_number: str = Field(None, description="班号", examples=['一年级'])
     year_established: str = Field(None, description="建班年份", examples=['fsdfdsfsdxxx'])

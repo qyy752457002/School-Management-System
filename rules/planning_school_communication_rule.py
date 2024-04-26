@@ -40,7 +40,7 @@ class PlanningSchoolCommunicationRule(object):
 
 
     async def add_planning_school_communication(self, planning_school: PlanningSchoolCommunicationModel,convertmodel=True):
-        exists_planning_school = await self.planning_school_communication_dao.get_planning_school_communication_by_id(
+        exists_planning_school = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(
             planning_school.planning_school_id)
         if exists_planning_school:
             raise Exception(f"规划校通信信息{planning_school.planning_school_id}已存在")

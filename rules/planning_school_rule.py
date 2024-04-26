@@ -154,34 +154,6 @@ class PlanningSchoolRule(object):
         # planning_school = orm_model_to_view_model(planning_school_db, SchoolModel, exclude=[""])
         return planning_school_db
 
-    async def compare_modify_fields(self, planning_school,orm_model):
-        """
-        比较两个对象  返回需要更新的字段
-        :param planning_school:
-        :param orm_model:
-        :return:
-        """
-        # print(1111111,planning_school,222222222,orm_model,33333333)
-        changeitems = dict()
-        for key, value in planning_school.__dict__.items():
-            if value:
-                if key in orm_model.__dict__ and orm_model.__dict__[key] != value:
-                    print(key,value,orm_model.__dict__[key])
-                    # changeitems.append(key)
-                    changeitems[key] = [ orm_model.__dict__[key],value ]
-                    # pass
-        print(changeitems)
-        #
-        # # 创建类的实例
-        # planning_school_key_info = PlanningSchoolKeyInfo()
-        # print(planning_school_key_info.__fields__)
-        #
-        # # 提取每个属性里 title 后面的值
-        # titles = {attr: planning_school_key_info.__fields__[attr].title for attr in planning_school_key_info.__fields__}
-        #
-        # print(titles)
-
-        return changeitems
 
     async def query_planning_schools(self,planning_school_name):
 

@@ -76,7 +76,7 @@ class PlanningSchool(BaseModel):
     founder_code: str = Field(..., title="", description="举办者识别码",examples=['SC562369322SG'])
     urban_rural_nature: str = Field(..., title="", description="城乡性质",examples=['城镇'])
     planning_school_org_form: str = Field(..., title="", description="办学组织形式",examples=['教学点'])
-    planning_school_closure_date: str = Field(..., title="", description="学校关闭日期",examples=[''])
+    planning_school_closure_date: str = Field( '', title="", description="学校关闭日期",examples=[''])
     department_unit_number: str = Field(..., title="", description="属地管理行政部门单位号",examples=['SC562369322SG'])
     sy_zones: str = Field(..., title="", description="属地管理行政部门所在地地区",examples=['铁西区'])
     historical_evolution: str = Field(..., title="", description="历史沿革",examples=['xxxxxxxxxxxxxxxxxxxx'])
@@ -107,7 +107,7 @@ class PlanningSchoolBaseInfo(BaseModel):
     social_credit_code: str = Query(..., title="", description="统一社会信用代码",examples=['XH423423876867'])
     planning_school_en_name: str = Query(..., title="", description="园所英文名称",examples=['MinxingPrimarySCHOOL'])
     founder_code: str = Query(..., title="", description="举办者识别码",examples=['SC562369322SG'])
-    planning_school_closure_date: str = Query(..., title="", description="学校关闭日期",examples=[''])
+    planning_school_closure_date: str = Query('', title="", description="学校关闭日期",examples=[''])
     planning_school_org_type: str = Query(..., title="", description=" 学校办别",examples=['民办'])
 
     planning_school_operation_type_lv2: str = Query(..., title="", description=" 办学类型二级",examples=['小学'])
@@ -150,11 +150,11 @@ class PlanningSchoolBaseInfoOptional(BaseModel):
 class PlanningSchoolKeyAddInfo(BaseModel):
     id:int= Query(None, title="", description="规划校id", example='1'),
 
-    planning_school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
+    planning_school_name: str = Field(..., title="学校名称", description="学校名称", min_length=1, max_length=30,examples=['XX小学'])
     planning_school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633'),
-    planning_school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
-    borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区']),
-    block: str = Query(..., title=" Author", description="地域管辖区",examples=['铁西区']),
+    planning_school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'],min_length=1,max_length=30)
+    borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'],min_length=1,max_length=30),
+    block: str = Query(..., title=" Author", description="地域管辖区",examples=['铁西区'],min_length=1,max_length=30),
     planning_school_type: str = Query(..., title="", description=" 学校类型",examples=['中小学']),
     planning_school_operation_type: str = Query(..., title="", description="办学类型/学校性质",examples=['学前教育']),
     planning_school_operation_type_lv2: str = Query(..., title="", description=" 办学类型二级",examples=['小学']),

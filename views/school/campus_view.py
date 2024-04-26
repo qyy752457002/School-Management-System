@@ -1,8 +1,11 @@
+from datetime import datetime
 from typing import List
 
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
+from rules.operation_record import OperationRecordRule
+from views.common.common_view import compare_modify_fields
 from views.models.campus import Campus, CampusBaseInfo, CampusKeyInfo, CampusKeyAddInfo
 # from fastapi import Field
 
@@ -15,6 +18,7 @@ from views.models.campus_communications import CampusCommunications
 from rules.campus_communication_rule import CampusCommunicationRule
 from views.models.campus_eduinfo import CampusEduInfo
 from rules.campus_eduinfo_rule import CampusEduinfoRule
+from views.models.operation_record import OperationRecord, OperationModule, OperationTargetType, OperationType
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
 
 
@@ -24,6 +28,7 @@ class CampusView(BaseView):
         self.campus_rule = get_injector( CampusRule)
         self.campus_communication_rule = get_injector( CampusCommunicationRule)
         self.campus_eduinfo_rule = get_injector( CampusEduinfoRule)
+        self.operation_record_rule =   get_injector(OperationRecordRule)
 
 
 
@@ -73,21 +78,79 @@ class CampusView(BaseView):
                   campus_keyinfo:CampusKeyInfo
                   ):
         # print(campus)
-        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+
+        origin = await self.campus_rule.get_campus_by_id(campus_keyinfo.id)
+
+        res2 =  compare_modify_fields(campus_keyinfo,origin)
+
         res = await self.campus_rule.update_campus(campus_keyinfo)
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(campus_keyinfo.id),
+            operator='admin',
+            module=OperationModule.KEYINFO.value,
+            target=OperationTargetType.CAMPUS.value,
+
+            action_type=OperationType.MODIFY.value,
+            ip='127.0.0.1',
+            change_data= str(res2)[ 0:1000 ],
+            change_field='关键信息',
+            change_item='关键信息',
+            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason='修改基本信息',
+            doc_upload='',
+            status='1',
+            account='',))
 
         return  res
     # 删除
     async def delete(self, campus_id:str= Query(..., title="校区编号", description="校区id/园所id",min_length=1,max_length=20,example='1'),):
         print(campus_id)
         res = await self.campus_rule.softdelete_campus(campus_id)
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(campus_id),
+            operator='admin',
+            module=OperationModule.KEYINFO.value,
+            target=OperationTargetType.CAMPUS.value,
+
+            action_type=OperationType.DELETE.value,
+            ip='127.0.0.1',
+            change_data= str(res)[ 0:1000 ],
+            change_field='关键信息',
+            change_item='关键信息',
+            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason='修改基本信息',
+            doc_upload='',
+            status='1',
+            account='',))
 
         return  res
     # 修改 变更 基本信息
     async def patch_baseinfo(self, campus_baseinfo:CampusBaseInfo
                                ):
         # print(campus)
+
+        origin = await self.campus_rule.get_campus_by_id(campus_baseinfo.id)
+        log_con =  compare_modify_fields(campus_baseinfo,origin)
         res = await self.campus_rule.update_campus(campus_baseinfo,2)
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(campus_baseinfo.id),
+            operator='admin',
+            module=OperationModule.BASEINFO.value,
+            target=OperationTargetType.CAMPUS.value,
+
+            action_type=OperationType.MODIFY.value,
+            ip='127.0.0.1',
+            change_data= str(log_con)[ 0:1000 ],
+            change_field='关键信息',
+            change_item='关键信息',
+            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason='修改基本信息',
+            doc_upload='',
+            status='1',
+            account='',))
         return   res
 
 
@@ -127,6 +190,23 @@ class CampusView(BaseView):
     async def patch_open(self,campus_id:str= Query(..., title="校区编号", description="校区id/园所id",min_length=1,max_length=20,example='1')):
         # print(campus)
         res = await self.campus_rule.update_campus_status(campus_id , PlanningSchoolStatus.NORMAL.value)
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(campus_id),
+            operator='admin',
+            module=OperationModule.BASEINFO.value,
+            target=OperationTargetType.CAMPUS.value,
+
+            action_type=OperationType.MODIFY.value,
+            ip='127.0.0.1',
+            change_data= str(campus_id)[ 0:1000 ],
+            change_field='关键信息',
+            change_item='关键信息',
+            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason='修改基本信息',
+            doc_upload='',
+            status='1',
+            account='',))
 
         return  res
 
@@ -134,6 +214,23 @@ class CampusView(BaseView):
     async def patch_close(self,campus_id:str= Query(..., title="校区编号", description="校区id/园所id",min_length=1,max_length=20,example='1')):
         # print(campus)
         res = await self.campus_rule.update_campus_status(campus_id , PlanningSchoolStatus.CLOSED.value)
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(campus_id),
+            operator='admin',
+            module=OperationModule.BASEINFO.value,
+            target=OperationTargetType.CAMPUS.value,
+
+            action_type=OperationType.MODIFY.value,
+            ip='127.0.0.1',
+            change_data= str(campus_id)[ 0:1000 ],
+            change_field='关键信息',
+            change_item='关键信息',
+            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason='修改基本信息',
+            doc_upload='',
+            status='1',
+            account='',))
 
         return  res
 
@@ -183,13 +280,31 @@ class CampusView(BaseView):
         campus.id = campus_id
         # campus_communication.campus_id = campus_id
         # campus_eduinfo.campus_id = campus_id
+        origin = await self.campus_rule.get_campus_by_id(campus.id)
+        log_con =  compare_modify_fields(campus,origin)
 
         res = await self.campus_rule.update_campus_byargs(campus)
         # res_com = await self.campus_communication_rule.update_campus_communication_byargs(
         #     campus_communication)
         # res_edu = await self.campus_eduinfo_rule.update_campus_eduinfo_byargs(campus_eduinfo)
 
-        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(campus_id),
+            operator='admin',
+            module=OperationModule.BASEINFO.value,
+            target=OperationTargetType.CAMPUS.value,
+
+            action_type=OperationType.MODIFY.value,
+            ip='127.0.0.1',
+            change_data= str(log_con)[ 0:1000 ],
+            change_field='关键信息',
+            change_item='关键信息',
+            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason='修改基本信息',
+            doc_upload='',
+            status='1',
+            account='',))
 
         return res
 
