@@ -136,7 +136,7 @@ class NewsStudentsInfoView(BaseView):
         分班
         """
         res = await self.students_base_info_rule.update_students_class_division(class_id, student_id)
-        res = await self.class_division_records_rule.update_students_class_division(class_id, student_id)
+        res = await self.class_division_records_rule.add_class_division_records(class_id, student_id)
 
         return res
 
