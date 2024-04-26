@@ -30,6 +30,7 @@ class NewStudents(BaseModel):
     证件类别：id_type
     证件号码：id_number
     照片：photo
+    届别：session_id
     """
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
     enrollment_number: str = Field("", title="报名号", description="报名号")
@@ -40,6 +41,7 @@ class NewStudents(BaseModel):
     photo: str = Field("", title="照片", description="照片")
     student_id: int = Field(0, title="", description="id")
     school_id: int = Field(0, title="", description="学校id")
+    session_id: int = Field(0, title="", description="届别id")
 
 
 
@@ -222,6 +224,7 @@ class NewBaseInfoCreate(BaseModel):
     specialty: str = Field("", title="特长", description="特长")
     permanent_address: str = Field("", title="常住地址", description="常住地址")
     school_id: int = Field(0, title="学校id", description="学校id")
+    session_id: int = Field(0, title="", description="届别id")
 
 
 

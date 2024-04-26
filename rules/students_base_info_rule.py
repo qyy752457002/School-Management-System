@@ -1,8 +1,11 @@
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+
+from daos.student_session_dao import StudentSessionDao
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
+from models.student_session import StudentSessionstatus
 from models.students_base_info import StudentBaseInfo
 from views.common.common_view import page_none_deal
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
@@ -16,6 +19,7 @@ from business_exceptions.student import StudentNotFoundError,StudentExistsError
 class StudentsBaseInfoRule(object):
     students_base_info_dao: StudentsBaseInfoDao
     students_dao: StudentsDao
+    student_session_dao: StudentSessionDao
 
     async def get_students_base_info_by_student_id(self, student_id):
         """
@@ -51,6 +55,13 @@ class StudentsBaseInfoRule(object):
         if exits_student_base_info:
             raise StudentExistsError()
         students_base_info_db = view_model_to_orm_model(students_base_info, StudentBaseInfo, exclude=[""])
+        # 读取当前开启的届别  赋值
+        param = {"session_status":  StudentSessionstatus.ENABLE.value}
+        res  = await self.student_session_dao.get_student_session_by_param(**param)
+        # session = orm_model_to_view_model(res, StudentSessionModel, exclude=[""])
+        students_base_info_db.session_id = res.session_id
+
+
         students_base_info_db = await self.students_base_info_dao.add_students_base_info(students_base_info_db)
         students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfo, exclude=[""])
         return students_base_info
