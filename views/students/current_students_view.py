@@ -218,7 +218,7 @@ class CurrentStudentsView(BaseView):
                                                            example=''),
                              ):
         # print(new_students_key_info)
-        res = await self.graduation_student_rule.update_graduation_student(graduation_student_id)
+        res = await self.graduation_student_rule.update_graduation_student(student_id,graduate_status,graduate_picture)
 
         return student_id
 
