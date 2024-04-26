@@ -2,6 +2,7 @@ from typing import List
 
 from mini_framework.web.views import BaseView
 
+from rules.class_division_records_rule import ClassDivisionRecordsRule
 from views.models.students import NewStudents, NewStudentsQuery, NewStudentsQueryRe, StudentsKeyinfo, StudentsBaseInfo, \
     StudentsFamilyInfo
 # from fastapi import Field
@@ -101,6 +102,7 @@ class NewsStudentsInfoView(BaseView):
         super().__init__()
         self.students_rule = get_injector(StudentsRule)
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
+        self.class_division_records_rule = get_injector(ClassDivisionRecordsRule)
 
     async def get_newstudentbaseinfo(self, student_id: str = Query(..., title="学生编号", description="学生编号",
                                                                    example="SC2032633")):
@@ -134,6 +136,8 @@ class NewsStudentsInfoView(BaseView):
         分班
         """
         res = await self.students_base_info_rule.update_students_class_division(class_id, student_id)
+        res = await self.class_division_records_rule.update_students_class_division(class_id, student_id)
+
         return res
 
     async def delete_newstudentbaseinfo(self,

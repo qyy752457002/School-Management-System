@@ -78,7 +78,7 @@ class StudentsBaseInfoRule(object):
 
         students_base_info = await self.students_base_info_dao.update_students_class_division(class_id, student_ids)
         # 写入分班记录表
-        await self.students_dao.add_students_class_division(class_id, student_ids)
+        # await self.students_dao.add_students_class_division(class_id, student_ids)
         return students_base_info
 
     async def delete_students_base_info(self, students_id):
