@@ -32,12 +32,7 @@ class TeacherLearnExperienceDAO(DAOBase):
             TeacherLearnExperience.teacher_learn_experience_id == teacher_learn_experience_id))
         return result.scalar_one_or_none()
 
-    async def query_teacher_learn_experience_with_page(self, page_request: PageRequest, **kwargs):
-        query = select(TeacherLearnExperience)
-        for key, value in kwargs.items():
-            query = query.where(getattr(TeacherLearnExperience, key) == value)
-        paging = await self.query_page(query, page_request)
-        return paging
+
 
     async def update_teacher_learn_experience(self, teacher_learn_experience, *args, is_commit=True):
         session = await self.master_db()

@@ -24,8 +24,7 @@ class ResearchAchievementsDAO(DAOBase):
 
     async def delete_research_achievements(self, research_achievements: ResearchAchievements):
         session = await self.master_db()
-        await session.delete(research_achievements)
-        await session.commit()
+        return await self.delete(session, research_achievements)
 
     async def get_research_achievements_by_research_achievements_id(self, research_achievements_id):
         session = await self.slave_db()
@@ -35,7 +34,6 @@ class ResearchAchievementsDAO(DAOBase):
 
     async def query_research_achievements_with_page(self, pageQueryModel, page_request: PageRequest):
         query = select(ResearchAchievements)
-
         paging = await self.query_page(query, page_request)
         return paging
 
@@ -47,25 +45,22 @@ class ResearchAchievementsDAO(DAOBase):
             **update_contents)
         return await self.update(session, query, research_achievements, update_contents, is_commit=is_commit)
 
-    async def query_research_with_page(self, query_model: ResearchAchievementsQueryModel,
-                                       page_request: PageRequest) -> Paging:
-        """
-        教师ID：teacher_id
-        科研项目联合查询模型
-        科研成果种类：research_achievement_type
-        类型：type
-        是否代表性成果或项目：representative_or_project
-        名称：name
-        学科领域：disciplinary_field
-        本人角色：role
-        """
+
 
     async def get_all_research_achievements(self, teacher_id):
         session = await self.slave_db()
-        query = select(ResearchAchievements.research_achievements_id,ResearchAchievements.research_achievement_type, ResearchAchievements.type,
+        query = select(ResearchAchievements.research_achievements_id, ResearchAchievements.teacher_id,ResearchAchievements.research_achievement_type,
+                       ResearchAchievements.type,
                        ResearchAchievements.representative_or_project, ResearchAchievements.name,
-                       ResearchAchievements.disciplinary_field, ResearchAchievements.name).join(Teacher,
-                                                                                                Teacher.teacher_id == ResearchAchievements.teacher_id).where(
+                       ResearchAchievements.disciplinary_field, ResearchAchievements.role).join(Teacher,
+                                                                                                ResearchAchievements.teacher_id == Teacher.teacher_id).where(
             ResearchAchievements.teacher_id == teacher_id)
         result = await session.execute(query)
+        count=result.scalars()
+        print(count)
+        print("123456",result.scalars().all())
         return result.scalars().all()
+
+
+
+

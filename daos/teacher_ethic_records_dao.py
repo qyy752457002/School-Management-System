@@ -23,8 +23,7 @@ class TeacherEthicRecordsDAO(DAOBase):
 
     async def delete_teacher_ethic_records(self, teacher_ethic_records: TeacherEthicRecords):
         session = await self.master_db()
-        await session.delete(teacher_ethic_records)
-        await session.commit()
+        return await self.delete(session, teacher_ethic_records)
 
     async def get_teacher_ethic_records_by_teacher_ethic_records_id(self, teacher_ethic_records_id):
         session = await self.slave_db()

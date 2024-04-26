@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field
 from datetime import date
 from fastapi import Query
+from models.public_enum import YesOrNo
+from typing import Optional
 
 
 class TeacherLearnExperienceModel(BaseModel):
@@ -26,12 +28,12 @@ class TeacherLearnExperienceModel(BaseModel):
     institution_of_education_obtained: str = Field(..., title="获得学历的院校机构", description="获得学历的院校机构")
     major_learned: str = Field(..., title="所学妆业", description="所学妆业")
     is_major_normal: str = Field(..., title="是否师范类专业", description="是否师范类专业")
-    admission_date: date = Field(date(1970,1,1), title="入学时间", description="入学时间")
-    graduation_date: date = Field(date(1970,1,1), title="毕业时间", description="毕业时间")
+    admission_date: date = Field(date(1970, 1, 1), title="入学时间", description="入学时间")
+    graduation_date: date = Field(date(1970, 1, 1), title="毕业时间", description="毕业时间")
     degree_level: str = Field(..., title="学位层次", description="学位层次")
     country_or_region_of_degree_obtained: str = Field(..., title="获取学位过家地区", description="获取学位过家地区")
     institution_of_degree_obtained: str = Field(..., title="获得学位院校机构", description="获得学位院校机构")
-    degree_award_date: date = Field(date(1970,1,1), title="学位授予时间", description="学位授予时间")
+    degree_award_date: date = Field(date(1970, 1, 1), title="学位授予时间", description="学位授予时间")
     study_mode: str = Field(..., title="学习方式", description="学习方式")
     type_of_institution: str = Field("", title="在学单位类别", description="在学单位类别")
 
@@ -60,12 +62,12 @@ class TeacherLearnExperienceUpdateModel(BaseModel):
     institution_of_education_obtained: str = Field(..., title="获得学历的院校机构", description="获得学历的院校机构")
     major_learned: str = Field(..., title="所学妆业", description="所学妆业")
     is_major_normal: str = Field(..., title="是否师范类专业", description="是否师范类专业")
-    admission_date: date = Field(date(1970,1,1), title="入学时间", description="入学时间")
-    graduation_date: date = Field(date(1970,1,1), title="毕业时间", description="毕业时间")
+    admission_date: date = Field(date(1970, 1, 1), title="入学时间", description="入学时间")
+    graduation_date: date = Field(date(1970, 1, 1), title="毕业时间", description="毕业时间")
     degree_level: str = Field(..., title="学位层次", description="学位层次")
     country_or_region_of_degree_obtained: str = Field(..., title="获取学位过家地区", description="获取学位过家地区")
     institution_of_degree_obtained: str = Field(..., title="获得学位院校机构", description="获得学位院校机构")
-    degree_award_date: date = Field(date(1970,1,1), title="学位授予时间", description="学位授予时间")
+    degree_award_date: date = Field(date(1970, 1, 1), title="学位授予时间", description="学位授予时间")
     study_mode: str = Field(..., title="学习方式", description="学习方式")
     type_of_institution: str = Field("", title="在学单位类别", description="在学单位类别")
 
@@ -81,8 +83,8 @@ class TeacherWorkExperienceModel(BaseModel):
     """
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
-    start_date: date = Field(date(1970,1,1), title="开始时间", description="开始时间")
-    end_date: date = Field(date(1970,1,1), title="结束时间", description="结束时间")
+    start_date: date = Field(date(1970, 1, 1), title="开始时间", description="开始时间")
+    end_date: date = Field(date(1970, 1, 1), title="结束时间", description="结束时间")
     on_duty_position: str = Field("", title="在职岗位", description="在职岗位")
     institution_nature_category: str = Field("", title="单位性质类别", description="单位性质类别")
 
@@ -101,8 +103,8 @@ class TeacherWorkExperienceUpdateModel(BaseModel):
                                             description="teacher_work_experience_id")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
-    start_date: date = Field(date(1970,1,1), title="开始时间", description="开始时间")
-    end_date: date = Field(date(1970,1,1), title="结束时间", description="结束时间")
+    start_date: date = Field(date(1970, 1, 1), title="开始时间", description="开始时间")
+    end_date: date = Field(date(1970, 1, 1), title="结束时间", description="结束时间")
     on_duty_position: str = Field(..., title="在职岗位", description="在职岗位")
     institution_nature_category: str = Field("", title="单位性质类别", description="单位性质类别")
 
@@ -172,7 +174,7 @@ class TeacherProfessionalTitlesModel(BaseModel):
     current_professional_title: str = Field(..., title="现专业技术职务", description="现专业技术职务")
     employing_institution_name: str = Field("", title="聘任单位名称", description="聘任单位名称")
     employment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
-    employment_end_date: date = Field(date(1970,1,1), title="聘任结束时间", description="聘任结束时间")
+    employment_end_date: date = Field(date(1970, 1, 1), title="聘任结束时间", description="聘任结束时间")
 
 
 class TeacherProfessionalTitlesUpdateModel(BaseModel):
@@ -190,7 +192,7 @@ class TeacherProfessionalTitlesUpdateModel(BaseModel):
     current_professional_title: str = Field(..., title="现专业技术职务", description="现专业技术职务")
     employing_institution_name: str = Field("", title="聘任单位名称", description="聘任单位名称")
     employment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
-    employment_end_date: date = Field(date(1970,1,1), title="聘任结束时间", description="聘任结束时间")
+    employment_end_date: date = Field(date(1970, 1, 1), title="聘任结束时间", description="聘任结束时间")
 
 
 class TeacherQualificationsModel(BaseModel):
@@ -211,8 +213,8 @@ class TeacherQualificationsModel(BaseModel):
     teaching_subject: str = Field(..., title="任教学科", description="任教学科")
     certificate_issue_date: date = Field(..., title="证书颁发时间", description="证书颁发时间")
     issuing_authority: str = Field("", title="颁发机构", description="颁发机构")
-    first_registration_date: date = Field(date(1970,1,1), title="首次注册日期", description="首次注册日期")
-    regular_registration_date: date = Field(date(1970,1,1), title="定期注册日期", description="定期注册日期")
+    first_registration_date: date = Field(date(1970, 1, 1), title="首次注册日期", description="首次注册日期")
+    regular_registration_date: date = Field(date(1970, 1, 1), title="定期注册日期", description="定期注册日期")
     regular_registration_conclusion: str = Field("", title="定期注册结论", description="定期注册结论")
 
 
@@ -237,8 +239,8 @@ class TeacherQualificationsUpdateModel(BaseModel):
     teaching_subject: str = Field(..., title="任教学科", description="任教学科")
     certificate_issue_date: date = Field(..., title="证书颁发时间", description="证书颁发时间")
     issuing_authority: str = Field("", title="颁发机构", description="颁发机构")
-    first_registration_date: date = Field(date(1970,1,1), title="首次注册日期", description="首次注册日期")
-    regular_registration_date: date = Field(date(1970,1,1), title="定期注册日期", description="定期注册日期")
+    first_registration_date: date = Field(date(1970, 1, 1), title="首次注册日期", description="首次注册日期")
+    regular_registration_date: date = Field(date(1970, 1, 1), title="定期注册日期", description="定期注册日期")
     regular_registration_conclusion: str = Field("", title="定期注册结论", description="定期注册结论")
 
 
@@ -262,7 +264,7 @@ class TeacherSkillCertificatesModel(BaseModel):
     other_skill_level: str = Field("", title="其他技能程度", description="其他技能程度")
     certificate_type: str = Field("", title="证书类型", description="证书类型")
     language_certificate_name: str = Field("", title="语言证书名称", description="语言证书名称")
-    issue_year_month: date = Field(date(1970,1,1), title="发证年月", description="发证年月")
+    issue_year_month: date = Field(date(1970, 1, 1), title="发证年月", description="发证年月")
     issuing_authority: str = Field("", title="发证单位", description="发证单位")
     certificate_number: str = Field("", title="证书编号", description="证书编号")
 
@@ -290,7 +292,7 @@ class TeacherSkillCertificatesUpdateModel(BaseModel):
     other_skill_level: str = Field("", title="其他技能程度", description="其他技能程度")
     certificate_type: str = Field("", title="证书类型", description="证书类型")
     language_certificate_name: str = Field("", title="语言证书名称", description="语言证书名称")
-    issue_year_month: date = Field(date(1970,1,1), title="发证年月", description="发证年月")
+    issue_year_month: date = Field(date(1970, 1, 1), title="发证年月", description="发证年月")
     issuing_authority: str = Field("", title="发证单位", description="发证单位")
     certificate_number: str = Field("", title="证书编号", description="证书编号")
 
@@ -617,15 +619,15 @@ class ResearchAchievementsModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Field(..., title="科研成果种类", description="科研成果种类")
     type: str = Field("", title="类型", description="类型")
-    representative_or_project: bool = Field(False, title="是否代表性成果或项目", description="是否代表性成果或项目")
+    representative_or_project: Optional[YesOrNo] = Field(None, title="是否代表性成果或项目", description="是否代表性成果或项目")
     name: str = Field("", title="名称", description="名称")
     disciplinary_field: str = Field("", title="学科领域", description="学科领域")
     role: str = Field("", title="本人角色", description="本人角色")
-    research_date: date = Field(date(1970,1,1), title="日期", description="日期")
+    research_date: Optional[date] = Field(None, title="日期", description="日期")
     approval_number: str = Field("", title="批准号", description="批准号")
     funding_amount: str = Field("", title="经费额度", description="经费额度")
-    start_year_month: date = Field(date(1970,1,1), title="开始年月", description="开始年月")
-    end_date: date = Field(date(1970,1,1), title="结束日期", description="结束日期")
+    start_year_month: Optional[date]= Field(None, title="开始年月", description="开始年月")
+    end_date: Optional[date]= Field(None, title="结束日期", description="结束日期")
     ranking: str = Field("", title="本人排名", description="本人排名")
     entrusting_unit: str = Field("", title="委托单位", description="委托单位")
     source: str = Field("", title="来源", description="来源")
@@ -649,7 +651,7 @@ class ResearchAchievementsModel(BaseModel):
     patent_number: str = Field("", title="专利号", description="专利号")
     entrusting_party: str = Field("", title="委托方", description="委托方")
     certificate_number: str = Field("", title="证书号", description="证书号")
-    validity_period: date = Field(date(1970,1,1), title="有效期", description="有效期")
+    validity_period: Optional[date]= Field(None, title="有效期", description="有效期")
     standard_number: str = Field("", title="标准号", description="标准号")
     publishing_organization: str = Field("", title="发布单位", description="发布单位")
 
@@ -700,28 +702,28 @@ class ResearchAchievementsUpdateModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Field(..., title="科研成果种类", description="科研成果种类")
     type: str = Field("", title="类型", description="类型")
-    representative_or_project: bool = Field(False, title="是否代表性成果或项目", description="是否代表性成果或项目")
+    representative_or_project: Optional[YesOrNo] = Field(None, title="是否代表性成果或项目", description="是否代表性成果或项目")
     name: str = Field("", title="名称", description="名称")
     disciplinary_field: str = Field("", title="学科领域", description="学科领域")
     role: str = Field("", title="本人角色", description="本人角色")
-    research_date: date = Field(date(1970,1,1), title="日期", description="日期")
+    research_date: Optional[date]= Field(None, title="日期", description="日期")
     approval_number: str = Field("", title="批准号", description="批准号")
     funding_amount: str = Field("", title="经费额度", description="经费额度")
-    start_year_month: date = Field(date(1970,1,1), title="开始年月", description="开始年月")
-    end_date: date = Field(date(1970,1,1), title="结束日期", description="结束日期")
+    start_year_month: Optional[date]= Field(None, title="开始年月", description="开始年月")
+    end_date: Optional[date]= Field(None, title="结束日期", description="结束日期")
     ranking: str = Field("", title="本人排名", description="本人排名")
     entrusting_unit: str = Field("", title="委托单位", description="委托单位")
     source: str = Field("", title="来源", description="来源")
     publisher_name: str = Field("", title="出版社名称", description="出版社名称")
     publication_number: str = Field("", title="出版号", description="出版号")
-    total_words: int = Field(0, title="总字数", description="总字数")
-    self_written_words: int = Field(0, title="本人撰写字数", description="本人撰写字数")
+    total_words: Optional[int] = Field(None, title="总字数", description="总字数")
+    self_written_words: Optional[int] = Field(None, title="本人撰写字数", description="本人撰写字数")
     journal_name: str = Field("", title="发表刊物名称", description="发表刊物名称")
-    volume_number: int = Field(0, title="卷号", description="卷号")
-    issue_number: int = Field(0, title="期号", description="期号")
+    volume_number: Optional[int] = Field(None, title="卷号", description="卷号")
+    issue_number: Optional[int] = Field(None, title="期号", description="期号")
     indexing_status: str = Field("", title="论文收录情况", description="论文收录情况")
-    start_page: int = Field(0, title="起始页码", description="起始页码")
-    end_page: int = Field(0, title="结束页码", description="结束页码")
+    start_page: Optional[int] = Field(None, title="起始页码", description="起始页码")
+    end_page: Optional[int] = Field(None, title="结束页码", description="结束页码")
     personal_rank: str = Field("", title="本人排名", description="本人排名")
     research_level: str = Field("", title="等级", description="等级")
     other_level: str = Field("", title="其他等级", description="其他等级")
@@ -732,7 +734,7 @@ class ResearchAchievementsUpdateModel(BaseModel):
     patent_number: str = Field("", title="专利号", description="专利号")
     entrusting_party: str = Field("", title="委托方", description="委托方")
     certificate_number: str = Field("", title="证书号", description="证书号")
-    validity_period: date = Field(date(1970,1,1), title="有效期", description="有效期")
+    validity_period: Optional[date]= Field(None, title="有效期", description="有效期")
     standard_number: str = Field("", title="标准号", description="标准号")
     publishing_organization: str = Field("", title="发布单位", description="发布单位")
 
@@ -751,10 +753,12 @@ class ResearchAchievementsQueryModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Query("", title="姓名", description="姓名", example="张三")
     type: str = Query("", title="类型", description="类型", example="类型")
-    representative_or_project: bool = Query(False, title="是否代表性成果或项目", description="是否代表性成果或项目")
+    representative_or_project: Optional[YesOrNo] = Query(False, title="是否代表性成果或项目",
+                                                         description="是否代表性成果或项目")
     name: str = Query("", title="名称", description="名称", example="名称")
     disciplinary_field: str = Query("", title="学科领域", description="学科领域", example="学科领域")
     role: str = Query("", title="本人角色", description="本人角色", example="本人角色")
+
 
 class ResearchAchievementsQueryReModel(BaseModel):
     """
@@ -771,8 +775,7 @@ class ResearchAchievementsQueryReModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Query("", title="姓名", description="姓名", example="张三")
     type: str = Query("", title="类型", description="类型", example="类型")
-    representative_or_project: bool = Query(False, title="是否代表性成果或项目", description="是否代表性成果或项目")
+    representative_or_project: Optional[YesOrNo] = Query(False, title="是否代表性成果或项目", description="是否代表性成果或项目")
     name: str = Query("", title="名称", description="名称", example="名称")
     disciplinary_field: str = Query("", title="学科领域", description="学科领域", example="学科领域")
     role: str = Query("", title="本人角色", description="本人角色", example="本人角色")
-
