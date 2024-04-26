@@ -5,7 +5,7 @@ from daos.teacher_ethic_records_dao import TeacherEthicRecordsDAO
 from models.teacher_ethic_records import TeacherEthicRecords
 from views.models.teacher_extend import TeacherEthicRecordsModel, TeacherEthicRecordsUpdateModel
 from daos.teachers_dao import TeachersDao
-from business_exceptions.teacher import TeacherNotFoundError
+from business_exceptions.teacher import TeacherNotFoundError, TeacherEthicRecordsNotFoundError
 
 
 @dataclass_inject
@@ -26,17 +26,17 @@ class TeacherEthicRecordsRule(object):
         teacher_ethic_records_db = view_model_to_orm_model(teacher_ethic_records, TeacherEthicRecords)
         teacher_ethic_records_db = await self.teacher_ethic_records_dao.add_teacher_ethic_records(
             teacher_ethic_records_db)
-        teacher_ethic_records = orm_model_to_view_model(teacher_ethic_records_db, TeacherEthicRecordsModel)
+        teacher_ethic_records = orm_model_to_view_model(teacher_ethic_records_db, TeacherEthicRecordsUpdateModel)
         return teacher_ethic_records
 
     async def delete_teacher_ethic_records(self, teacher_ethic_records_id):
         exists_teacher_ethic_records = await self.teacher_ethic_records_dao.get_teacher_ethic_records_by_teacher_ethic_records_id(
             teacher_ethic_records_id)
         if not exists_teacher_ethic_records:
-            raise Exception(f"编号为的{teacher_ethic_records_id}teacher_ethic_records不存在")
+            raise TeacherEthicRecordsNotFoundError()
         teacher_ethic_records_db = await self.teacher_ethic_records_dao.delete_teacher_ethic_records(
             exists_teacher_ethic_records)
-        teacher_ethic_records = orm_model_to_view_model(teacher_ethic_records_db, TeacherEthicRecordsModel,
+        teacher_ethic_records = orm_model_to_view_model(teacher_ethic_records_db, TeacherEthicRecordsUpdateModel,
                                                         exclude=[""])
         return teacher_ethic_records
 
@@ -44,7 +44,7 @@ class TeacherEthicRecordsRule(object):
         exists_teacher_ethic_records_info = await self.teacher_ethic_records_dao.get_teacher_ethic_records_by_teacher_ethic_records_id(
             teacher_ethic_records.teacher_ethic_records_id)
         if not exists_teacher_ethic_records_info:
-            raise Exception(f"编号为{teacher_ethic_records.teacher_ethic_records_id}的teacher_ethic_records不存在")
+            raise TeacherEthicRecordsNotFoundError()
         need_update_list = []
         for key, value in teacher_ethic_records.dict().items():
             if value:
@@ -55,8 +55,10 @@ class TeacherEthicRecordsRule(object):
 
     async def get_all_teacher_ethic_records(self, teacher_id):
         teacher_ethic_records_db = await self.teacher_ethic_records_dao.get_all_teacher_ethic_records(teacher_id)
+        if not teacher_ethic_records_db:
+            raise TeacherEthicRecordsNotFoundError()
         teacher_ethic_records = []
         for teacher_ethic_record in teacher_ethic_records_db:
-            teacher_ethic_records.append(orm_model_to_view_model(teacher_ethic_record, TeacherEthicRecordsModel,
+            teacher_ethic_records.append(orm_model_to_view_model(teacher_ethic_record, TeacherEthicRecordsUpdateModel,
                                                                  exclude=[""]))
         return teacher_ethic_records

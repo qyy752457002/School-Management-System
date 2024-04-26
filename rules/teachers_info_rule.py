@@ -83,3 +83,36 @@ class TeachersInfoRule(object):
         paging = await self.teachers_info_dao.query_current_teacher_with_page(query_model, page_request)
         paging_result = PaginatedResponse.from_paging(paging, CurrentTeacherQueryRe)
         return paging_result
+
+
+
+    async def submitting(self, teachers_base_id):
+        teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_base_id)
+        if not teachers_info:
+            raise TeacherInfoNotFoundError()
+        teachers_info.approval_status = "submitting"
+        return await self.teachers_info_dao.update_teachers_info(teachers_info, "approval_status")
+
+    async def submitted(self, teachers_base_id):
+        teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_base_id)
+        if not teachers_info:
+            raise TeacherInfoNotFoundError()
+        teachers_info.approval_status = "submitted"
+        return await self.teachers_info_dao.update_teachers_info(teachers_info, "approval_status")
+
+    async def approved(self, teachers_base_id):
+        teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_base_id)
+        if not teachers_info:
+            raise TeacherInfoNotFoundError()
+        teachers_info.approval_status = "approved"
+        return await self.teachers_info_dao.update_teachers_info(teachers_info, "approval_status")
+
+    async def rejected(self, teachers_base_id):
+        teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_base_id)
+        if not teachers_info:
+            raise TeacherInfoNotFoundError()
+        teachers_info.approval_status = "rejected"
+        return await self.teachers_info_dao.update_teachers_info(teachers_info, "approval_status")
+
+
+
