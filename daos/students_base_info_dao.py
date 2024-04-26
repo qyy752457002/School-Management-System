@@ -87,7 +87,7 @@ class StudentsBaseInfoDao(DAOBase):
         # if query_model.county:
         #     query = query.where(StudentBaseInfo.county == query_model.county)
         if query_model.approval_status:
-            query = query.where(Student.approval_status == query_model.status)
+            query = query.where(Student.approval_status == query_model.approval_status)
         paging = await self.query_page(query, page_request)
         return paging
 
