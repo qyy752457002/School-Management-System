@@ -36,7 +36,7 @@ class NewsStudentsView(BaseView):
         """
         res = await self.students_rule.add_students(students)
         students.student_id =  res.student_id
-        vm2 = NewBaseInfoCreate(student_id=students.student_id )
+        vm2 = NewBaseInfoCreate(student_id=students.student_id,school_id=students.school_id )
         # vm2.student_id = students.student_id
 
         res2 = await self.students_base_info_rule.add_students_base_info(vm2)

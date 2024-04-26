@@ -39,6 +39,7 @@ class NewStudents(BaseModel):
     id_number: str = Field("", title="证件号码", description="证件号码")
     photo: str = Field("", title="照片", description="照片")
     student_id: int = Field(0, title="", description="id")
+    school_id: int = Field(0, title="", description="学校id")
 
 
 
@@ -106,7 +107,7 @@ class StudentsKeyinfo(BaseModel):
     student_gender: Gender = Field(..., title="性别", description="性别")
     id_type: str = Field(..., title="证件类别", description="证件类别")
     id_number: str = Field(..., title="证件号码", description="证件号码")
-    photo: str = Field(..., title="照片", description="照片")
+    photo: str = Field('', title="照片", description="照片")
 
 
 
@@ -214,6 +215,8 @@ class NewBaseInfoCreate(BaseModel):
     identity_card_validity_period: str = Field("", title="身份证件有效期", description="身份证件有效期")
     specialty: str = Field("", title="特长", description="特长")
     permanent_address: str = Field("", title="常住地址", description="常住地址")
+    school_id: int = Field(0, title="学校id", description="学校id")
+
 
 
 class NewBaseInfoUpdate(BaseModel):
