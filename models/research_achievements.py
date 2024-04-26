@@ -53,7 +53,7 @@ class ResearchAchievements(BaseDBModel):
     teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")
     research_achievement_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="科研成果种类")
     type: Mapped[str] = mapped_column(String(64), nullable=True, comment="类型")
-    representative_or_project: Mapped[bool] = mapped_column(default=False, comment="是否代表性成果或项目")
+    representative_or_project: Mapped[str] = mapped_column(nullable=True, comment="是否代表性成果或项目")
     name: Mapped[str] = mapped_column(String(64), nullable=True, comment="名称")
     disciplinary_field: Mapped[str] = mapped_column(String(64), nullable=True, comment="学科领域")
     role: Mapped[str] = mapped_column(String(64), nullable=True, comment="本人角色")

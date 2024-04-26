@@ -42,6 +42,8 @@ class AnnualReviewRule(object):
                 need_update_list.append(key)
         annual_review = await self.annual_review_dao.update_annual_review(annual_review, *need_update_list)
         return annual_review
+
+
     async def get_all_annual_review(self, teacher_id):
           annual_review_db = await self.annual_review_dao.get_all_annual_review(teacher_id)
 #          annual_review = orm_model_to_view_model(annual_review_db, AnnualReviewModel, exclude=[""])

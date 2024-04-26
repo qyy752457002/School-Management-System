@@ -54,12 +54,13 @@ class ResearchAchievementsRule(object):
         return research_achievements
 
     async def get_all_research_achievements(self, teacher_id):
+
         research_achievements_db = await self.research_achievements_dao.get_all_research_achievements(teacher_id)
-        #          research_achievements = orm_model_to_view_model(research_achievements_db, ResearchAchievementsModel, exclude=[""])
+        print(research_achievements_db)
         research_achievements = []
         for item in research_achievements_db:
-            research_achievements.append(orm_model_to_view_model(item, ResearchAchievementsModel))
-        return research_achievements_db
+            research_achievements.append(orm_model_to_view_model(item, ResearchAchievementsQueryReModel))
+        return research_achievements
 
     async def query_research_achievements_with_page(self, query_model: ResearchAchievementsQueryModel, page_request: PageRequest):
         paging = await self.research_achievements_dao.query_research_achievements_with_page(query_model, page_request)
