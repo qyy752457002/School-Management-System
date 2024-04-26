@@ -160,6 +160,7 @@ class PlanningSchoolRule(object):
         session = await db_connection_manager.get_async_session("default", True)
         result = await session.execute(select(PlanningSchool).where(PlanningSchool.planning_school_name.like(f'%{planning_school_name}%') ))
         res= result.scalars().all()
+        print(res)
         lst = []
         for row in res:
             planning_school = orm_model_to_view_model(row, PlanningSchoolModel)

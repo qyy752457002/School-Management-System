@@ -59,6 +59,11 @@ class StudentBaseInfo(BaseDBModel):
     grade: Mapped[str] = mapped_column(String(64), nullable=True, default='',comment="年级")
     classroom: Mapped[str] = mapped_column(String(64), nullable=True, default='',comment="班级")
     class_number: Mapped[str] = mapped_column(String(64), nullable=True, default='',comment="班号")
+    class_id: Mapped[int] = mapped_column( nullable=True  , comment="班级id",default=0)
+    grade_id: Mapped[int] = mapped_column( nullable=True  , comment="年级id",default=0)
+
+    school_id: Mapped[int] = mapped_column( nullable=True  , comment="学校id",default=0)
+
     school: Mapped[str] = mapped_column(String(64), nullable=True, default='',comment="学校")
     registration_date: Mapped[date] = mapped_column(Date, nullable=True,default=date(1970,1,1),comment="登记日期")
     residence_address: Mapped[str] = mapped_column(String(64), nullable=False, default='',comment="户籍地址")

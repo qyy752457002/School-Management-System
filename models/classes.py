@@ -32,7 +32,7 @@ class Classes(BaseDBModel):
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID",autoincrement=True)
     school_id: Mapped[int] = mapped_column( comment="学校ID")
-    grade_id: Mapped[int] = mapped_column( comment="年级ID")
+    grade_id: Mapped[int] = mapped_column( comment="年级ID",default=0,nullable=True)
     grade_no: Mapped[str] = mapped_column(String(20), nullable=True,default='', comment="年级编号")
 
     is_att_class: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="是否附设班")
