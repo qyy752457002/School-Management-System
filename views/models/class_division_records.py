@@ -29,9 +29,16 @@ class ClassDivisionRecords(BaseModel):
 class ClassDivisionRecordsSearchRes(BaseModel):
     """
     报名号
-
+   enrollment_number: str = Query( '', title="", description="报名号",min_length=1, max_length=30, example=''),
+                                            school_id: str = Query( 0, title="", description="学校ID",min_length=1, max_length=30, example=''),
+                                            id_type: str = Query( '', title="", description="身份证件类型",min_length=1, max_length=30, example=''),
+                                            student_name: str = Query( '', title="", description="姓名",min_length=1, max_length=30, example=''),
+                                            created_at: str = Query( '', title="", description="分班时间",min_length=1, max_length=30, example=''),
+                                            student_gender: str = Query( '', title="", description="性别",min_length=1, max_length=30, example=''),
+                                            class_id: int = Query( 0, title="", description="班级",min_length=1, max_length=30, example=''),
+                                            status: str = Query( '', title="", description="状态",min_length=1, max_length=30, example=''),
     """
-    id:int= Query(None, title="", description="id", example='1'),
+    id:int= Query(0, title="", description="id", example='1'),
     school_id: int = Field(0, title="学校ID", description="学校ID",examples=['1'])
     grade_id: int = Field(0, title="年级ID", description="年级ID",examples=['1'])
     class_id: int = Field(0, title="班级ID", description="班级ID",examples=['1'])
@@ -40,6 +47,8 @@ class ClassDivisionRecordsSearchRes(BaseModel):
     student_name: str = Field('', title="Grade_name",description="学生姓名",examples=['1'])
     status: str = Field('', title="", description="状态",examples=['1'])
     remark: str = Field('', title="", description="备注",examples=['1'])
+
+
 
 
 

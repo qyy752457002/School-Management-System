@@ -34,7 +34,7 @@ class ClassDivisionRecordsDAO(DAOBase):
 
 	async def query_class_division_records_with_page(self, school_id, id_type, student_name, created_at, student_gender, class_id, status, enrollment_number, page_request: PageRequest,
 													 ):
-		query = select(ClassDivisionRecords).select_from(ClassDivisionRecords).join(Student, ClassDivisionRecords.student_id == Student.id)
+		query = select(ClassDivisionRecords).select_from(ClassDivisionRecords).join(Student, ClassDivisionRecords.student_id == Student.student_id)
 		
 		### 此处填写查询条件
 		if school_id:
