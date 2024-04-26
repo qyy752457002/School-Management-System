@@ -60,6 +60,8 @@ class StudentsBaseInfoRule(object):
         res  = await self.student_session_dao.get_student_session_by_param(**param)
         # session = orm_model_to_view_model(res, StudentSessionModel, exclude=[""])
         students_base_info_db.session_id = res.session_id
+        students_base_info_db.session= res.session_name
+
 
 
         students_base_info_db = await self.students_base_info_dao.add_students_base_info(students_base_info_db)
