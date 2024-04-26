@@ -56,6 +56,8 @@ class StudentBaseInfo(BaseDBModel):
     student_id: Mapped[int] = mapped_column(nullable=False,comment="学生ID", autoincrement=True)  # 与学生表关联，关系为一对一，主键
     name_pinyin: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="姓名拼音")
     session: Mapped[str] = mapped_column(String(64), nullable=True, default='',comment="届别")
+    session_id: Mapped[int] = mapped_column( nullable=True  , comment="届别id",default=0)
+
     grade: Mapped[str] = mapped_column(String(64), nullable=True, default='',comment="年级")
     classroom: Mapped[str] = mapped_column(String(64), nullable=True, default='',comment="班级")
     class_number: Mapped[str] = mapped_column(String(64), nullable=True, default='',comment="班号")
