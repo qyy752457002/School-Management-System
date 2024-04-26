@@ -201,7 +201,7 @@ class NewBaseInfoCreate(BaseModel):
     native_place_district: str = Field('', title="籍贯", description="籍贯")
     ethnicity: str = Field("", title="民族", description="民族")
     blood_type: str = Field("", title="血型", description="血型")
-    health_condition: str = Field(..., title="健康状况", description="健康状况")
+    health_condition: str = Field('', title="健康状况", description="健康状况")
     disabled_person: YesOrNo = Field("N", title="是否残疾人", description="是否残疾人")
     religious_belief: str = Field("", title="宗教信仰", description="宗教信仰")
     political_status: str = Field("", title="政治面貌", description="政治面貌")
@@ -392,7 +392,7 @@ class NewStudentsFlowOut(BaseModel):
 
 
 class StudentSession(BaseModel):
-    session_id: str = Query(..., description="届别id", min_length=1, max_length=20, examples=["1234567890"]),
+    session_id: int = Query(0, description="届别id",   examples=["1234567890"]),
     session_name: str = Query(..., description="届别名称", min_length=1, max_length=20, examples=["2020级"]),
     session_alias: str = Query(..., description="届别别名", min_length=1, max_length=20, examples=["2020届别"]),
     session_status: str = Query(..., description="届别状态", min_length=1, max_length=20, examples=["开"])

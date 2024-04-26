@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, update
+from sqlalchemy import select, func, update, desc
 
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
@@ -23,7 +23,7 @@ class StudentSessionDao(DAOBase):
         """
         session = await self.master_db()
         update_contents = get_update_contents(student_session, *args)
-        query = update(StudentSession).where(StudentSession.session_id == student_session.id).values(**update_contents)
+        query = update(StudentSession).where(StudentSession.session_id == student_session.session_id).values(**update_contents)
         return await self.update(session, query, student_session, update_contents, is_commit=is_commit)
 
     async def get_student_session_by_id(self, session_id):
@@ -52,3 +52,12 @@ class StudentSessionDao(DAOBase):
         return result.scalar()
 
 
+    async def query_session_with_page(self, page_request: PageRequest, status ) -> Paging:
+        query = select(StudentSession). order_by(desc(StudentSession.session_id))
+
+        if status:
+            query = query.where(StudentSession.session_status == status)
+
+
+        paging = await self.query_page(query, page_request)
+        return paging

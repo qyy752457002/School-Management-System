@@ -48,3 +48,23 @@ def compare_modify_fields( planning_school,orm_model):
 
 
 
+def page_none_deal( paging):
+    """
+    比较两个对象  返回需要更新的字段
+    :param planning_school:
+    :param orm_model:
+    :return:
+    """
+    for item in paging.items:
+
+        for key, value in item.items():
+            if value is None:
+                item[key] = ''
+
+    # print(paging.items)
+
+
+    return paging
+
+
+
