@@ -5,7 +5,7 @@ from mini_framework.web.std_models.page import PageRequest
 
 from models.class_division_records import ClassDivisionRecords
 
-from models.students import Student
+from models.students import Student, StudentApprovalAtatus
 
 
 class ClassDivisionRecordsDAO(DAOBase):
@@ -57,6 +57,8 @@ class ClassDivisionRecordsDAO(DAOBase):
                                                                 ClassDivisionRecords.student_id == Student.student_id)
 
         ### 此处填写查询条件
+        query = query.where(Student.approval_status != StudentApprovalAtatus.OUT.value)
+
         if school_id:
             query = query.where(ClassDivisionRecords.school_id == school_id)
         if id_type:
