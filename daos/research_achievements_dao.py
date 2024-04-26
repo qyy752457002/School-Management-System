@@ -1,3 +1,4 @@
+from mini_framework.databases.entities import BaseDBModel
 from sqlalchemy import select, func, update
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
@@ -54,8 +55,17 @@ class ResearchAchievementsDAO(DAOBase):
                        ResearchAchievements.disciplinary_field, ResearchAchievements.role).join(Teacher,
                                                                                                 ResearchAchievements.teacher_id == Teacher.teacher_id).where(
             ResearchAchievements.teacher_id == teacher_id)
+
         result = await session.execute(query)
-        count = result.scalars()
-        print(count)
-        print("123456", result.fetchall())
-        return result.fetchall()
+        column_names = query.columns.keys()
+
+        result = result.fetchall()
+        items = []
+        for item in result:
+            if issubclass(item[0].__class__, BaseDBModel):
+                items.append(item[0])
+            else:
+                item_dict = dict(zip(column_names, item))
+                items.append(item_dict)
+        return items
+

@@ -524,8 +524,8 @@ class ResearchAchievementsView(BaseView):
                                                                           example=1234)):
         return await self.research_achievements_rule.get_all_research_achievements(teacher_id)
 
-    async def page(self, research_achievements=Depends(ResearchAchievementsQueryModel),
-                   page_request=Depends(PageRequest)):
-        paging_result = await self.research_achievements_rule.query_research_achievements_with_page(
-            research_achievements, page_request)
-        return paging_result
+    # async def page(self, research_achievements=Depends(ResearchAchievementsQueryModel),
+    #                page_request=Depends(PageRequest)):
+    #     paging_result = await self.research_achievements_rule.query_research_achievements_with_page(
+    #         research_achievements, page_request)
+    #     return paging_result
