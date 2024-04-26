@@ -39,12 +39,18 @@ class GraduationStudentRule(object):
         graduation_student = orm_model_to_view_model(graduation_student_db, GraduationStudentModel, exclude=["created_at",'updated_at'])
         return graduation_student
 
-    async def update_graduation_student(self, student_id,graduate_status,graduate_picture):
+    async def update_graduation_student(self, student_id,graduate_status,graduate_picture,graduation_photo='',credential_notes=''):
 
         need_update_list = []
-        graduation_student= StudentGraduation(student_id=student_id ,graduation_remarks=graduate_picture)
+        graduation_student= StudentGraduation(student_id=student_id )
         if graduate_status:
             graduation_student.graduation_type = graduate_status.value
+        if graduate_picture:
+            graduation_student.graduation_remarks = graduate_picture
+        if graduation_photo:
+            graduation_student.graduation_photo = graduation_photo
+        if credential_notes:
+            graduation_student.credential_notes = credential_notes
         #
         for key, value in graduation_student.dict().items():
             if value:
@@ -55,7 +61,6 @@ class GraduationStudentRule(object):
         students= Student(student_id=student_id , approval_status=StudentApprovalAtatus.GRADUATED.value  )
 
         graduation_student_db2 = await self.student_dao.update_students(students, *need_update_list2)
-
 
         # graduation_student_db = await self.graduation_student_dao.update_graduation_student(graduation_student_db,ctype)
         # 更新不用转换   因为得到的对象不熟全属性

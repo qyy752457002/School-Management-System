@@ -64,12 +64,17 @@ class GraduationStudentsView(BaseView):
 
     # 毕业 制证  毕业证url  备注
     async def patch_graduation_student(self,
-
-                                       graduation_student:GraduationStudents
+                                       student_id:  int  = Query(..., description="学生ID",
+                                                                 example='1'),
+                                       graduation_photo: str = Query(..., description="毕业照", min_length=1, max_length=200,
+                                                                                     example=''),
+                                       credential_notes: str = Query( '', description="备注", min_length=1, max_length=250,
+                                                                     example=''),
                   ):
         # print(planning_school)
-        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res = await self.graduation_student_rule.update_graduation_student(graduation_student)
+        res = await self.graduation_student_rule.update_graduation_student(student_id,None,None,graduation_photo,credential_notes)
+
+        # res = await self.graduation_student_rule.update_graduation_student(graduation_student)
 
 
         return  res
