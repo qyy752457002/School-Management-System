@@ -70,7 +70,7 @@ class ClassDivisionRecordsDAO(DAOBase):
         if class_id:
             query = query.where(ClassDivisionRecords.class_id == class_id)
         if status:
-            query = query.where(ClassDivisionRecords.status == status)
+            query = query.where(Student.approval_status == status)
         if enrollment_number:
             query = query.where(Student.enrollment_number == enrollment_number)
 
