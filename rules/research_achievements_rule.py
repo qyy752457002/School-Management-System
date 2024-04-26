@@ -56,7 +56,6 @@ class ResearchAchievementsRule(object):
     async def get_all_research_achievements(self, teacher_id):
 
         research_achievements_db = await self.research_achievements_dao.get_all_research_achievements(teacher_id)
-        print(research_achievements_db)
         research_achievements = []
         for item in research_achievements_db:
             research_achievements.append(orm_model_to_view_model(item, ResearchAchievementsQueryReModel))

@@ -15,6 +15,7 @@ class TeacherLearnExperience(BaseDBModel):
     入学时间：admission_date
     毕业时间：graduation_date
     学位层次：degree_level
+    学位名称：degree_name
     获取学位过家地区：country_or_region_of_degree_obtained
     获得学位院校机构：institution_of_degree_obtained
     学位授予时间：degree_award_date
@@ -35,6 +36,7 @@ class TeacherLearnExperience(BaseDBModel):
     admission_date: Mapped[date] = mapped_column(Date, nullable=True, comment="入学时间")
     graduation_date: Mapped[date] = mapped_column(Date, nullable=True, comment="毕业时间")
     degree_level: Mapped[str] = mapped_column(String(64), nullable=False, comment="学位层次")
+    degree_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="学位名称")
     country_or_region_of_degree_obtained: Mapped[str] = mapped_column(String(64), nullable=True, comment="获取学位过家地区")
     institution_of_degree_obtained: Mapped[str] = mapped_column(String(64), nullable=True, comment="获得学位院校机构")
     degree_award_date: Mapped[date] = mapped_column(Date, nullable=True, comment="学位授予时间")
