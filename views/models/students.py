@@ -377,15 +377,17 @@ class StudentsUpdateFamilyInfo(BaseModel):
 
 
 class GraduationStudents(BaseModel):
-    id: int = Query(None, title="", description="id", example='1'),
+    id: int = Query(0, title="", description="id", example='1'),
 
-    student_id: str = Field('', title="学生id", description="学生id", examples=['0'])
-    student_name: str = Field(..., title="学生姓名", description="学生姓名")
-    gender: str = Field(..., title="性别", description="性别")
-    school: str = Field(..., title="学校", description="学校")
-    county: str = Field(..., title="", description="行政属地")
-    edu_number: str = Field(..., title="", description="学籍号码")
-    class_id: str = Field(..., title="", description="班级")
+    student_id: int = Field(0, title="学生id", description="学生id", examples=['0'])
+    student_name: str = Field('', title="学生姓名", description="学生姓名")
+    student_gender: str = Field('', title="性别", description="性别")
+    school_name: str = Field('', title="学校", description="学校")
+    borough: str = Field('', title="", description="行政属地")
+    edu_number: str = Field('', title="", description="学籍号码")
+    class_id: int = Field(0, title="", description="班级")
+    class_name: str = Field('', title="", description="")
+
 
 
 class NewStudentsFlowOut(BaseModel):

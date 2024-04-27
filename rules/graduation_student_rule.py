@@ -10,6 +10,7 @@ from daos.GraduationStudent_dao import GraduationStudentDAO
 from daos.students_dao import StudentsDao
 from models.graduation_student import GraduationStudent
 from models.students import Student, StudentApprovalAtatus
+from views.common.common_view import page_none_deal
 from views.models.students import GraduationStudents as GraduationStudentModel, StudentGraduation
 
 
@@ -47,7 +48,7 @@ class GraduationStudentRule(object):
 
         need_update_list = []
         graduation_student = StudentGraduation(student_id=student_id)
-        print( type( graduation_student.graduation_type))
+        print(type(graduation_student.graduation_type))
         if graduate_status and graduate_status is not None:
             graduation_student.graduation_type = graduate_status.value
         if graduate_picture and graduate_picture is not None:
@@ -58,12 +59,15 @@ class GraduationStudentRule(object):
             graduation_student.credential_notes = credential_notes
         #
         # if isinstance(graduation_student.graduation_type, tuple):
+        if isinstance(graduation_student.graduation_type, tuple):
+            del graduation_student.graduation_type
+        if isinstance(graduation_student.graduation_remarks, tuple):
+            del graduation_student.graduation_remarks
 
         for key, value in graduation_student.dict().items():
             if value and value is not Query and not isinstance(value, tuple):
                 need_update_list.append(key)
-            if  isinstance(value, tuple):
-                del  graduation_student.key
+
         print(graduation_student, need_update_list)
         print(vars(graduation_student))
 
@@ -113,5 +117,7 @@ class GraduationStudentRule(object):
 
         paging = await self.graduation_student_dao.query_graduationstudent_with_page(page_request, **kdict)
         # 字段映射的示例写法   , {"hash_password": "password"}
-        paging_result = PaginatedResponse.from_paging(paging, GraduationStudentModel)
+        # paging_result = PaginatedResponse.from_paging(page_none_deal(paging), NewStudentsQueryRe)
+
+        paging_result = PaginatedResponse.from_paging(page_none_deal(paging), GraduationStudentModel,other_mapper={"student_id":"id" })
         return paging_result
