@@ -54,7 +54,7 @@ class ClassDivisionRecordsDAO(DAOBase):
 
 
                        ).select_from(Student ).join(ClassDivisionRecords,
-                                                                ClassDivisionRecords.student_id == Student.student_id,isouter=True)
+                                                                ClassDivisionRecords.student_id == Student.student_id,)
 
         ### 此处填写查询条件
 
