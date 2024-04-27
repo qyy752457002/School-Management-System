@@ -43,17 +43,15 @@ class StudentsBaseInfoDao(DAOBase):
         else:
             student_ids = [student_ids]
 
-        query = update(StudentBaseInfo).where(StudentBaseInfo.student_id.in_(student_ids) ).values(
-             class_id=class_id)
-        query2 = update(Student).where(Student.student_id.in_(student_ids) ).values(
-            approval_status=StudentApprovalAtatus.ASSIGNMENT.value )
-        res= await session.execute(query )
-        res3= await session.execute(query2 )
+        query = update(StudentBaseInfo).where(StudentBaseInfo.student_id.in_(student_ids)).values(
+            class_id=class_id)
+        query2 = update(Student).where(Student.student_id.in_(student_ids)).values(
+            approval_status=StudentApprovalAtatus.ASSIGNMENT.value)
+        res = await session.execute(query)
+        res3 = await session.execute(query2)
 
-        res2= await session.commit()
+        res2 = await session.commit()
         return student_ids
-
-
 
     async def get_students_base_info_by_student_id(self, students_id):
         """
@@ -94,10 +92,14 @@ class StudentsBaseInfoDao(DAOBase):
         query = select(Student.student_id, Student.student_name, Student.id_type, Student.id_number,
                        Student.enrollment_number,
                        Student.student_gender, Student.approval_status, StudentBaseInfo.residence_district,
-                       StudentBaseInfo.school, School.block,School.school_name, School.borough,SchoolCommunication.loc_area,SchoolCommunication.loc_area_pro).select_from(Student).join(StudentBaseInfo,
-                                                                         Student.student_id == StudentBaseInfo.student_id,isouter=True).join(School,
-                                                                                                                                             School.id == StudentBaseInfo.school_id,isouter=True).join(SchoolCommunication,
-                                                                                                                                                                                                       School.id == SchoolCommunication.school_id,isouter=True)
+                       StudentBaseInfo.school, School.block, School.school_name, School.borough,
+                       SchoolCommunication.loc_area, SchoolCommunication.loc_area_pro).select_from(Student).join(
+            StudentBaseInfo,
+            Student.student_id == StudentBaseInfo.student_id, isouter=True).join(School,
+                                                                                 School.id == StudentBaseInfo.school_id,
+                                                                                 isouter=True).join(SchoolCommunication,
+                                                                                                    School.id == SchoolCommunication.school_id,
+                                                                                                    isouter=True)
 
         if query_model.student_name:
             query = query.where(Student.student_name == query_model.student_name)
@@ -106,17 +108,22 @@ class StudentsBaseInfoDao(DAOBase):
         if query_model.id_number:
             query = query.where(Student.id_number == query_model.id_number)
         if query_model.student_gender:
-            query = query.where(Student.student_gender == query_model.student_gender)
-        if query_model.id_number:
-            query = query.where(Student.id_number == query_model.id_number)
+            query = query.where(Student.student_gender == query_model.student_gender.value)
         if query_model.school:
             query = query.where(StudentBaseInfo.school == query_model.school)
+        if query_model.school_id:
+            query = query.where(StudentBaseInfo.school_id == query_model.school_id)
         if query_model.enrollment_date:
             query = query.where(StudentBaseInfo.enrollment_date == query_model.enrollment_date)
-        # if query_model.county:
-        #     query = query.where(StudentBaseInfo.county == query_model.county)
+        if query_model.county:
+            query = query.where(StudentBaseInfo.county == query_model.county)
         if query_model.approval_status:
-            query = query.where(Student.approval_status == query_model.approval_status)
+            # 多选的处理
+            if ',' in query_model.approval_status:
+                approval_status = query_model.approval_status.split(',')
+                query = query.where(Student.approval_status.in_(approval_status))
+            else:
+                query = query.where(Student.approval_status == query_model.approval_status)
         paging = await self.query_page(query, page_request)
         return paging
 
@@ -129,6 +136,3 @@ class StudentsBaseInfoDao(DAOBase):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(StudentBaseInfo))
         return result.scalar()
-
-
-
