@@ -155,6 +155,9 @@ class PlanningSchoolKeyAddInfo(BaseModel):
     planning_school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'],min_length=1,max_length=30)
     borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'],min_length=1,max_length=30),
     block: str = Query(..., title=" Author", description="地域管辖区",examples=['铁西区'],min_length=1,max_length=30),
+    province: str = Query('', title=" ", description="",examples=[''],min_length=1,max_length=30),
+    city: str = Query('', title=" ", description="",examples=[''],min_length=1,max_length=30),
+
     planning_school_type: str = Query(..., title="", description=" 学校类型",examples=['中小学']),
     planning_school_operation_type: str = Query(..., title="", description="办学类型/学校性质",examples=['学前教育']),
     planning_school_operation_type_lv2: str = Query(..., title="", description=" 办学类型二级",examples=['小学']),
