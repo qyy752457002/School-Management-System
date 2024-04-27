@@ -90,7 +90,7 @@ class StudentsBaseInfoDao(DAOBase):
         状态：status
         """
         query = select(Student.student_id, Student.student_name, Student.id_type, Student.id_number,
-                       Student.enrollment_number,
+                       Student.enrollment_number,  Student.photo,  Student.birthday,
                        Student.student_gender, Student.approval_status, StudentBaseInfo.residence_district,
                        StudentBaseInfo.school, School.block, School.school_name, School.borough,
                        SchoolCommunication.loc_area, SchoolCommunication.loc_area_pro).select_from(Student).join(

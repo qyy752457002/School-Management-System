@@ -96,6 +96,8 @@ class NewStudentsQueryRe(BaseModel):
     loc_area: str = Field(None, title="", description="")
     loc_area_pro: str = Field(None, title="", description="")
     school_name: str = Field(None, title="", description="")
+    birthday: date = Field( '', title="生日", description="生日")
+    photo: str = Field('', title="照片", description="照片")
 
 
 
