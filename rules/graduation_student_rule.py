@@ -47,7 +47,7 @@ class GraduationStudentRule(object):
 
         need_update_list = []
         graduation_student = StudentGraduation(student_id=student_id)
-        print( type( graduation_student.graduation_type))
+        print(type(graduation_student.graduation_type))
         if graduate_status and graduate_status is not None:
             graduation_student.graduation_type = graduate_status.value
         if graduate_picture and graduate_picture is not None:
@@ -58,12 +58,15 @@ class GraduationStudentRule(object):
             graduation_student.credential_notes = credential_notes
         #
         # if isinstance(graduation_student.graduation_type, tuple):
+        if isinstance(graduation_student.graduation_type, tuple):
+            del graduation_student.graduation_type
+        if isinstance(graduation_student.graduation_remarks, tuple):
+            del graduation_student.graduation_remarks
 
         for key, value in graduation_student.dict().items():
             if value and value is not Query and not isinstance(value, tuple):
                 need_update_list.append(key)
-            if  isinstance(value, tuple):
-                del  graduation_student.key
+
         print(graduation_student, need_update_list)
         print(vars(graduation_student))
 
