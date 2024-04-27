@@ -67,7 +67,7 @@ class NewStudentsQuery(BaseModel):
 
     enrollment_date: Optional[date] = Query(None, title="登记时间", description="登记时间")
     county: Optional[str] = Query(None, title="区县", description="区县")
-    approval_status: Optional[StudentApprovalAtatus] = Query(None, title="状态", description="状态")
+    approval_status: Optional[str] = Query(None, title="状态", description="状态")
 
 
 class NewStudentsQueryRe(BaseModel):

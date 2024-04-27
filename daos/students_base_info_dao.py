@@ -118,7 +118,12 @@ class StudentsBaseInfoDao(DAOBase):
         if query_model.county:
             query = query.where(StudentBaseInfo.county == query_model.county)
         if query_model.approval_status:
-            query = query.where(Student.approval_status == query_model.approval_status.value)
+            # 多选的处理
+            if ',' in query_model.approval_status:
+                approval_status = query_model.approval_status.split(',')
+                query = query.where(Student.approval_status.in_(approval_status))
+            else:
+                query = query.where(Student.approval_status == query_model.approval_status)
         paging = await self.query_page(query, page_request)
         return paging
 
