@@ -3,6 +3,8 @@ from sqlalchemy import select, func, update
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
+
+from models.school import School
 from models.teachers_info import TeacherInfo
 from models.teachers import Teacher
 from views.models.teachers import CurrentTeacherQuery, NewTeacher
@@ -60,9 +62,11 @@ class TeachersInfoDao(DAOBase):
         query = select(Teacher.teacher_id, TeacherInfo.teacher_base_id, Teacher.teacher_name, Teacher.teacher_id_number,
                        Teacher.teacher_gender,
                        Teacher.teacher_employer, Teacher.teacher_approval_status, TeacherInfo.highest_education,
-                       TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
+                       TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,School.school_name,
+
                        TeacherInfo.enter_school_time).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
-                                                           )
+                                                           ).join(School, Teacher.teacher_employer == School.id,
+                                                                  )
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name == query_model.teacher_name)
         if query_model.teacher_id_number:
