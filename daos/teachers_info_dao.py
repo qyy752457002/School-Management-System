@@ -59,7 +59,16 @@ class TeachersInfoDao(DAOBase):
         进本校时间：enter_school_time
         审核状态：approval_status
         """
-        query = select(Teacher.teacher_id, TeacherInfo.teacher_base_id, Teacher.teacher_name, Teacher.teacher_id_number,
+        query = select(Teacher.teacher_id,
+                       func.coalesce(TeacherInfo.teacher_base_id, 0),
+                       # func.coalesce(TeacherInfo.highest_education, 0),
+                       # func.coalesce(TeacherInfo.political_status, 0),
+                       # func.coalesce(TeacherInfo.in_post, 0),
+                       # func.coalesce(TeacherInfo.employment_form, 0),
+                       # func.coalesce(TeacherInfo.teacher_base_id, 0),
+
+                       # TeacherInfo.teacher_base_id,
+                       Teacher.teacher_name, Teacher.teacher_id_number,
                        Teacher.teacher_gender,
                        Teacher.teacher_employer, Teacher.teacher_approval_status, TeacherInfo.highest_education,
                        TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,School.school_name,
@@ -113,9 +122,11 @@ class TeachersInfoDao(DAOBase):
         query = select(Teacher.teacher_id, TeacherInfo.teacher_base_id, Teacher.teacher_name, Teacher.teacher_id_number,
                        Teacher.teacher_gender,
                        Teacher.teacher_employer, TeacherInfo.highest_education,
-                       TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
+                       TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,School.school_name,
                        TeacherInfo.enter_school_time).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
-                                                           )
+                                                           ).join(School, Teacher.teacher_employer == School.id,
+                                                                  )
+
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name == query_model.teacher_name)
         if query_model.teacher_id_number:
