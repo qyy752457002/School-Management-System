@@ -4,6 +4,9 @@ from mini_framework.databases.entities.dao_base import DAOBase, get_update_conte
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
+from models.classes import Classes
+from models.grade import Grade
+from models.planning_school import PlanningSchool
 from models.school import School
 from models.school_communication import SchoolCommunication
 from models.students import Student, StudentApprovalAtatus
@@ -59,6 +62,14 @@ class StudentsBaseInfoDao(DAOBase):
         """
         session = await self.slave_db()
         result = await session.execute(select(StudentBaseInfo).where(StudentBaseInfo.student_id == students_id))
+        return result.scalar_one_or_none()
+
+    async def get_students_base_info_ext_by_student_id(self, students_id):
+        """
+        通过学生id获取单个学生基本信息 todo 专业
+        """
+        session = await self.slave_db()
+        result = await session.execute(select(Classes.class_name,Grade.grade_name,School.school_name,PlanningSchool.province,PlanningSchool.city,StudentBaseInfo.session,).join(Classes, Classes.id == StudentBaseInfo.class_id).join(Grade, Grade.id == StudentBaseInfo.grade_id).join(School, School.id == StudentBaseInfo.school_id).join(PlanningSchool, PlanningSchool.id == School.planning_school_id).where(StudentBaseInfo.student_id == students_id))
         return result.scalar_one_or_none()
 
     async def get_students_base_info_by_id(self, student_base_id):

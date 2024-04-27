@@ -3,9 +3,11 @@ from datetime import datetime
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+
+from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.students import Student
-from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
+from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel, StudentsKeyinfoDetail
 from views.models.students import NewStudents
 from business_exceptions.student import StudentNotFoundError
 
@@ -13,13 +15,23 @@ from business_exceptions.student import StudentNotFoundError
 @dataclass_inject
 class StudentsRule(object):
     students_dao: StudentsDao
+    students_baseinfo_dao: StudentsBaseInfoDao
 
     async def get_students_by_id(self, students_id):
         """
         获取单个学生信息
         """
         students_db = await self.students_dao.get_students_by_id(students_id)
-        students = orm_model_to_view_model(students_db, StudentsKeyinfoModel, exclude=[""])
+        students = orm_model_to_view_model(students_db, StudentsKeyinfoDetail, exclude=[""])
+        # 查其他的信息
+        baseinfo = await self.students_baseinfo_dao.get_students_base_info_ext_by_student_id(students_id)
+        students.province=baseinfo.province
+        students.city=baseinfo.city
+        students.school_name=baseinfo.school_name
+        students.session=baseinfo.session
+        students.grade_name=baseinfo.grade_name
+        students.class_name=baseinfo.class_name
+
         return students
 
     async def add_students(self, students: NewStudents):
