@@ -4,6 +4,7 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.graduation_student import GraduationStudent
+from models.school import School
 from models.students import Student, StudentApprovalAtatus
 from models.students_base_info import StudentBaseInfo
 
@@ -38,9 +39,20 @@ class GraduationStudentDAO(DAOBase):
         return result.scalar_one_or_none()
 
     async def query_graduationstudent_with_page(self, page_request: PageRequest, **kwargs):
-        query = select(Student).select_from(Student).join(StudentBaseInfo,
+        query = select(Student.student_id, Student.student_name, Student.student_gender, Student.enrollment_number,
+                       Student.id_number, Student.approval_status,
+
+                       StudentBaseInfo.edu_number, StudentBaseInfo.class_id,
+                       StudentBaseInfo.school_id,
+                       School.school_name,  School.block,  School.borough,
+
+
+                       ).select_from(Student).join(StudentBaseInfo,
                                                           Student.student_id == StudentBaseInfo.student_id,
-                                                          isouter=True)
+                                                          isouter=True).join(School,
+                                                                             School.id == StudentBaseInfo.school_id,
+                                                                             isouter=True)
+
         query = query.where(Student.approval_status  == StudentApprovalAtatus.GRADUATED.value)
         for key, value in kwargs.items():
             if key == 'student_name' or key == 'student_gender':

@@ -10,6 +10,7 @@ from daos.GraduationStudent_dao import GraduationStudentDAO
 from daos.students_dao import StudentsDao
 from models.graduation_student import GraduationStudent
 from models.students import Student, StudentApprovalAtatus
+from views.common.common_view import page_none_deal
 from views.models.students import GraduationStudents as GraduationStudentModel, StudentGraduation
 
 
@@ -116,5 +117,7 @@ class GraduationStudentRule(object):
 
         paging = await self.graduation_student_dao.query_graduationstudent_with_page(page_request, **kdict)
         # 字段映射的示例写法   , {"hash_password": "password"}
-        paging_result = PaginatedResponse.from_paging(paging, GraduationStudentModel)
+        # paging_result = PaginatedResponse.from_paging(page_none_deal(paging), NewStudentsQueryRe)
+
+        paging_result = PaginatedResponse.from_paging(page_none_deal(paging), GraduationStudentModel,other_mapper={ })
         return paging_result
