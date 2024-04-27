@@ -2,6 +2,8 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
+from daos.school_communication_dao import SchoolCommunicationDAO
+from daos.school_dao import SchoolDAO
 from daos.student_session_dao import StudentSessionDao
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
@@ -20,6 +22,8 @@ class StudentsBaseInfoRule(object):
     students_base_info_dao: StudentsBaseInfoDao
     students_dao: StudentsDao
     student_session_dao: StudentSessionDao
+    school_dao: SchoolDAO
+    school_commu_dao: SchoolCommunicationDAO
 
     async def get_students_base_info_by_student_id(self, student_id):
         """
@@ -29,6 +33,13 @@ class StudentsBaseInfoRule(object):
         if not students_base_info_db:
             raise StudentNotFoundError()
         students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfo, exclude=[""])
+        schoolinfo = await self.school_dao.get_school_by_id(students_base_info_db.school_id)
+        students_base_info.block = schoolinfo.block
+        students_base_info.borough = schoolinfo.borough
+        schoolcominfo = await self.school_commu_dao.get_school_communication_by_school_id(students_base_info_db.school_id)
+        students_base_info.loc_area = schoolcominfo.loc_area
+        students_base_info.loc_area_pro = schoolcominfo.loc_area_pro
+
         return students_base_info
 
     async def get_students_base_info_by_id(self, students_base_id):

@@ -22,6 +22,9 @@ class PlanningSchool(BaseDBModel):
     planning_school_operation_license_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="办学许可证号",default='')
     block: Mapped[str] = mapped_column(String(64), nullable=False, comment="地域管辖区")
     borough: Mapped[str] = mapped_column(String(64), nullable=False, comment="行政管辖区")
+    province: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="省份")
+    city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城市")
+
     planning_school_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="学校类型")
     planning_school_operation_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="办学类型/学校性质")
     planning_school_nature: Mapped[str] = mapped_column(String(64), nullable=True, comment="学校性质",default='')

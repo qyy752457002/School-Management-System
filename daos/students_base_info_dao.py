@@ -1,9 +1,14 @@
+from mini_framework.databases.entities import BaseDBModel
 from sqlalchemy import select, func, update
 
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
+from models.classes import Classes
+from models.grade import Grade
+from models.major import Major
+from models.planning_school import PlanningSchool
 from models.school import School
 from models.school_communication import SchoolCommunication
 from models.students import Student, StudentApprovalAtatus
@@ -60,6 +65,32 @@ class StudentsBaseInfoDao(DAOBase):
         session = await self.slave_db()
         result = await session.execute(select(StudentBaseInfo).where(StudentBaseInfo.student_id == students_id))
         return result.scalar_one_or_none()
+
+    async def get_students_base_info_ext_by_student_id(self, students_id):
+        """
+        通过学生id获取单个学生基本信息   专业
+        """
+        session = await self.slave_db()
+        query = select(Classes.class_name,Major.major_name,School.school_name,
+                       func.coalesce(PlanningSchool.province,'').label('province'),
+                       func.coalesce(PlanningSchool.city,'').label('city'),
+                       func.coalesce(Grade.grade_name ,'').label('grade_name'),
+                       # PlanningSchool.province,
+                       # PlanningSchool.city,
+                       StudentBaseInfo.session,).join(Classes, Classes.id == StudentBaseInfo.class_id,isouter=True).join(Grade, Grade.id == StudentBaseInfo.grade_id,isouter=True).join(School, School.id == StudentBaseInfo.school_id,isouter=True).join(PlanningSchool, PlanningSchool.id == School.planning_school_id,isouter=True).join(Major, Major.id == Classes.major_for_vocational,isouter=True).where(StudentBaseInfo.student_id == students_id)
+        result_list = await session.execute(query)
+        column_names = query.columns.keys()
+        # ret = result.scalar_one_or_none()
+
+        result_items = list(result_list.fetchall())
+        items = []
+        for item in result_items:
+            if issubclass(item[0].__class__, BaseDBModel):
+                items.append(item[0])
+            else:
+                item_dict = dict(zip(column_names, item))
+                items.append(item_dict)
+        return items
 
     async def get_students_base_info_by_id(self, student_base_id):
         """
