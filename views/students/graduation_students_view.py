@@ -75,7 +75,7 @@ class GraduationStudentsView(BaseView):
                                                                      max_length=250,
                                                                      example=''),
                                        ):
-        # print(planning_school)
+        print(graduation_photo, credential_notes)
         res = await self.graduation_student_rule.update_graduation_student(student_id, None, None, graduation_photo,
                                                                            credential_notes)
 

@@ -1,4 +1,5 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from fastapi import Query
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -46,18 +47,25 @@ class GraduationStudentRule(object):
 
         need_update_list = []
         graduation_student = StudentGraduation(student_id=student_id)
-        if graduate_status:
+        print( type( graduation_student.graduation_type))
+        if graduate_status and graduate_status is not None:
             graduation_student.graduation_type = graduate_status.value
-        if graduate_picture:
+        if graduate_picture and graduate_picture is not None:
             graduation_student.graduation_remarks = graduate_picture
         if graduation_photo:
             graduation_student.graduation_photo = graduation_photo
         if credential_notes:
             graduation_student.credential_notes = credential_notes
         #
+        # if isinstance(graduation_student.graduation_type, tuple):
+
         for key, value in graduation_student.dict().items():
-            if value:
+            if value and value is not Query and not isinstance(value, tuple):
                 need_update_list.append(key)
+            if  isinstance(value, tuple):
+                del  graduation_student.key
+        print(graduation_student, need_update_list)
+        print(vars(graduation_student))
 
         graduation_student_db = await self.graduation_student_dao.update_graduationstudent(graduation_student,
                                                                                            *need_update_list)

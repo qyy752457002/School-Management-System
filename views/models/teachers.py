@@ -602,6 +602,7 @@ class NewTeacherRe(BaseModel):
     employment_form: Optional[str] = Field("", title="用人形式", description="用人形式", example="合同")
     enter_school_time: Optional[date] = Field(None, title="进本校时间", description="进本校时间", example="2010-01-01")
     teacher_approval_status: str = Field("", title="审核状态", description="审核状态", example="待审核")
+    in_post: str = Field("", title="", description="是否在编", example="")
 
 
 class CurrentTeacherQuery(BaseModel):
