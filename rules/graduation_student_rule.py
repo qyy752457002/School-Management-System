@@ -119,5 +119,5 @@ class GraduationStudentRule(object):
         # 字段映射的示例写法   , {"hash_password": "password"}
         # paging_result = PaginatedResponse.from_paging(page_none_deal(paging), NewStudentsQueryRe)
 
-        paging_result = PaginatedResponse.from_paging(page_none_deal(paging), GraduationStudentModel,other_mapper={ })
+        paging_result = PaginatedResponse.from_paging(page_none_deal(paging), GraduationStudentModel,other_mapper={"student_id":"id" })
         return paging_result

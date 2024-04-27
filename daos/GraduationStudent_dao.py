@@ -3,6 +3,7 @@ from mini_framework.databases.entities.dao_base import DAOBase, get_update_conte
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
+from models.classes import Classes
 from models.graduation_student import GraduationStudent
 from models.school import School
 from models.students import Student, StudentApprovalAtatus
@@ -44,14 +45,15 @@ class GraduationStudentDAO(DAOBase):
 
                        StudentBaseInfo.edu_number, StudentBaseInfo.class_id,
                        StudentBaseInfo.school_id,
-                       School.school_name,  School.block,  School.borough,
-
+                       School.school_name,  School.block,  School.borough,  Classes.class_name,
 
                        ).select_from(Student).join(StudentBaseInfo,
                                                           Student.student_id == StudentBaseInfo.student_id,
                                                           isouter=True).join(School,
                                                                              School.id == StudentBaseInfo.school_id,
-                                                                             isouter=True)
+                                                                             isouter=True).join(Classes,
+                                                                                                Classes.id == StudentBaseInfo.class_id,
+                                                                                                isouter=True)
 
         query = query.where(Student.approval_status  == StudentApprovalAtatus.GRADUATED.value)
         for key, value in kwargs.items():
