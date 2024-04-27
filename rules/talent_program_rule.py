@@ -48,9 +48,10 @@ class TalentProgramRule(object):
         return talent_program
 
     async def get_all_talent_program(self, teacher_id):
+        exit_teacher = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        if not exit_teacher:
+            raise TeacherNotFoundError()
         talent_program_db = await self.talent_program_dao.get_all_talent_program(teacher_id)
-        if not talent_program_db:
-            raise TalentProgramNotFoundError()
         talent_program = []
         for item in talent_program_db:
             talent_program.append(orm_model_to_view_model(item, TalentProgramUpdateModel))

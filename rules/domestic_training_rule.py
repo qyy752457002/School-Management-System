@@ -51,9 +51,10 @@ class DomesticTrainingRule(object):
         return domestic_training
 
     async def get_all_domestic_training(self, teacher_id):
+        exit_teacher = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        if not exit_teacher:
+            raise TeacherNotFoundError()
         domestic_training_db = await self.domestic_training_dao.get_all_domestic_training(teacher_id)
-        if not domestic_training_db:
-            raise DomesticTrainingNotFoundError()
         domestic_training = []
         for item in domestic_training_db:
             domestic_training.append(orm_model_to_view_model(item, DomesticTrainingUpdateModel))

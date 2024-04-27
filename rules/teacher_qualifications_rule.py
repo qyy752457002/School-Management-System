@@ -54,10 +54,11 @@ class TeacherQualificationsRule(object):
         return teacher_qualifications
 
     async def get_all_teacher_qualifications(self, teacher_id):
+        exit_teacher = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        if not exit_teacher:
+            raise TeacherNotFoundError()
         teacher_qualifications_db = await self.teacher_qualifications_dao.get_all_teacher_qualifications(
             teacher_id)
-        if not teacher_qualifications_db:
-            raise TeacherQualificationsNotFoundError()
         teacher_qualifications = []
         for teacher_qualification in teacher_qualifications_db:
             teacher_qualifications.append(orm_model_to_view_model(teacher_qualification, TeacherQualificationsUpdateModel))

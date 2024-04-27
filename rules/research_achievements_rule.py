@@ -3,9 +3,10 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.research_achievements_dao import ResearchAchievementsDAO
 from models.research_achievements import ResearchAchievements
-from views.models.teacher_extend import ResearchAchievementsModel, ResearchAchievementsUpdateModel, ResearchAchievementsQueryModel,ResearchAchievementsQueryReModel
+from views.models.teacher_extend import ResearchAchievementsModel, ResearchAchievementsUpdateModel, \
+    ResearchAchievementsQueryModel, ResearchAchievementsQueryReModel
 from daos.teachers_dao import TeachersDao
-from business_exceptions.teacher import TeacherNotFoundError,ResearchAchievementsNotFoundError
+from business_exceptions.teacher import TeacherNotFoundError, ResearchAchievementsNotFoundError
 
 
 @dataclass_inject
@@ -54,16 +55,17 @@ class ResearchAchievementsRule(object):
         return research_achievements
 
     async def get_all_research_achievements(self, teacher_id):
-
+        exit_teacher = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        if not exit_teacher:
+            raise TeacherNotFoundError()
         research_achievements_db = await self.research_achievements_dao.get_all_research_achievements(teacher_id)
-        if not research_achievements_db:
-            raise ResearchAchievementsNotFoundError()
         research_achievements = []
         for item in research_achievements_db:
             research_achievements.append(orm_model_to_view_model(item, ResearchAchievementsQueryReModel))
         return research_achievements
 
-    async def query_research_achievements_with_page(self, query_model: ResearchAchievementsQueryModel, page_request: PageRequest):
+    async def query_research_achievements_with_page(self, query_model: ResearchAchievementsQueryModel,
+                                                    page_request: PageRequest):
         paging = await self.research_achievements_dao.query_research_achievements_with_page(query_model, page_request)
         paging_result = PaginatedResponse.from_paging(paging, ResearchAchievementsQueryReModel)
         return paging_result

@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from datetime import date
 from fastapi import Query
 from models.public_enum import YesOrNo
-from typing import Optional
+from typing import Optional, List
 
 
 class TeacherLearnExperienceModel(BaseModel):
@@ -112,6 +112,30 @@ class TeacherWorkExperienceUpdateModel(BaseModel):
     institution_nature_category: str = Field("", title="单位性质类别", description="单位性质类别")
 
 
+# class TeacherJobAppointmentsModel(BaseModel):
+#     """
+#     教师ID：teacher_id
+#     岗位类别：position_category
+#     岗位等级：position_level
+#     校级职务：school_level_position
+#     是否兼任其他岗位：is_concurrent_other_positions
+#     兼任岗位类别：concurrent_position_category
+#     兼任岗位登记：concurrent_position_registration
+#     任职单位名称：employment_institution_name
+#     聘任开始时间：appointment_start_date
+#     结束时间：end_date
+#     """
+#     teacher_id: int = Field(..., title="教师ID", description="教师ID")
+#     position_category: str = Field(..., title="岗位类别", description="岗位类别")
+#     position_level: str = Field(..., title="岗位等级", description="岗位等级")
+#     school_level_position: str = Field(..., title="校级职务", description="校级职务")
+#     is_concurrent_other_positions: YesOrNo = Field("N", title="是否兼任其他岗位", description="是否兼任其他岗位")
+#     concurrent_position_category: Optional[str] = Field(..., title="兼任岗位类别", description="兼任岗位类别")
+#     concurrent_position_level: Optional[str] = Field(..., title="兼任岗位登记", description="兼任岗位登记")
+#     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
+#     appointment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
+#     start_date: date = Field(..., title="任职开始年月", description="任职开始年月")
+
 class TeacherJobAppointmentsModel(BaseModel):
     """
     教师ID：teacher_id
@@ -119,8 +143,7 @@ class TeacherJobAppointmentsModel(BaseModel):
     岗位等级：position_level
     校级职务：school_level_position
     是否兼任其他岗位：is_concurrent_other_positions
-    兼任岗位类别：concurrent_position_category
-    兼任岗位登记：concurrent_position_registration
+    兼任岗位类别：concurrent_position
     任职单位名称：employment_institution_name
     聘任开始时间：appointment_start_date
     结束时间：end_date
@@ -129,17 +152,15 @@ class TeacherJobAppointmentsModel(BaseModel):
     position_category: str = Field(..., title="岗位类别", description="岗位类别")
     position_level: str = Field(..., title="岗位等级", description="岗位等级")
     school_level_position: str = Field(..., title="校级职务", description="校级职务")
-    is_concurrent_other_positions: bool = Field(False, title="是否兼任其他岗位", description="是否兼任其他岗位")
-    concurrent_position_category: str = Field(..., title="兼任岗位类别", description="兼任岗位类别")
-    concurrent_position_level: str = Field(..., title="兼任岗位登记", description="兼任岗位登记")
-    employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
+    is_concurrent_other_positions: YesOrNo = Field("N", title="是否兼任其他岗位", description="是否兼任其他岗位")
+    concurrent_position: Optional[List[dict]] = Field(default=[{"category": "默认类别", "level": "默认等级"}],
+                                                      title="兼任岗位", description="兼任岗位")
     appointment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
     start_date: date = Field(..., title="任职开始年月", description="任职开始年月")
 
 
 class TeacherJobAppointmentsUpdateModel(BaseModel):
     """
-    teacher_job_appointments：teacher_job_appointments_id
     教师ID：teacher_id
     岗位类别：position_category
     岗位等级：position_level
@@ -157,12 +178,39 @@ class TeacherJobAppointmentsUpdateModel(BaseModel):
     position_category: str = Field(..., title="岗位类别", description="岗位类别")
     position_level: str = Field(..., title="岗位等级", description="岗位等级")
     school_level_position: str = Field(..., title="校级职务", description="校级职务")
-    is_concurrent_other_positions: bool = Field(False, title="是否兼任其他岗位", description="是否兼任其他岗位")
-    concurrent_position_category: str = Field(..., title="兼任岗位类别", description="兼任岗位类别")
-    concurrent_position_level: str = Field(..., title="兼任岗位登记", description="兼任岗位登记")
-    employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
+    is_concurrent_other_positions: YesOrNo = Field("N", title="是否兼任其他岗位", description="是否兼任其他岗位")
+    concurrent_position: Optional[List[dict]] = Field(default=[{"category": "默认类别", "level": "默认等级"}],
+                                                      title="兼任岗位", description="兼任岗位")
     appointment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
     start_date: date = Field(..., title="任职开始年月", description="任职开始年月")
+
+
+# class TeacherJobAppointmentsUpdateModel(BaseModel):
+#     """
+#     teacher_job_appointments：teacher_job_appointments_id
+#     教师ID：teacher_id
+#     岗位类别：position_category
+#     岗位等级：position_level
+#     校级职务：school_level_position
+#     是否兼任其他岗位：is_concurrent_other_positions
+#     兼任岗位类别：concurrent_position_category
+#     兼任岗位登记：concurrent_position_registration
+#     任职单位名称：employment_institution_name
+#     聘任开始时间：appointment_start_date
+#     结束时间：end_date
+#     """
+#     teacher_job_appointments_id: int = Field(..., title="teacher_job_appointments_id",
+#                                              description="teacher_job_appointments_id")
+#     teacher_id: int = Field(..., title="教师ID", description="教师ID")
+#     position_category: str = Field(..., title="岗位类别", description="岗位类别")
+#     position_level: str = Field(..., title="岗位等级", description="岗位等级")
+#     school_level_position: str = Field(..., title="校级职务", description="校级职务")
+#     is_concurrent_other_positions: YesOrNo = Field("N", title="是否兼任其他岗位", description="是否兼任其他岗位")
+#     concurrent_position_category: Optional[str] = Field(..., title="兼任岗位类别", description="兼任岗位类别")
+#     concurrent_position_level: Optional[str] = Field(..., title="兼任岗位登记", description="兼任岗位登记")
+#     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
+#     appointment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
+#     start_date: date = Field(..., title="任职开始年月", description="任职开始年月")
 
 
 class TeacherProfessionalTitlesModel(BaseModel):
@@ -622,15 +670,16 @@ class ResearchAchievementsModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Field(..., title="科研成果种类", description="科研成果种类")
     type: str = Field("", title="类型", description="类型")
-    representative_or_project: Optional[YesOrNo] = Field(None, title="是否代表性成果或项目", description="是否代表性成果或项目")
+    representative_or_project: Optional[YesOrNo] = Field(None, title="是否代表性成果或项目",
+                                                         description="是否代表性成果或项目")
     name: str = Field("", title="名称", description="名称")
     disciplinary_field: str = Field("", title="学科领域", description="学科领域")
     role: str = Field("", title="本人角色", description="本人角色")
     research_date: Optional[date] = Field(None, title="日期", description="日期")
     approval_number: str = Field("", title="批准号", description="批准号")
     funding_amount: str = Field("", title="经费额度", description="经费额度")
-    start_year_month: Optional[date]= Field(None, title="开始年月", description="开始年月")
-    end_date: Optional[date]= Field(None, title="结束日期", description="结束日期")
+    start_year_month: Optional[date] = Field(None, title="开始年月", description="开始年月")
+    end_date: Optional[date] = Field(None, title="结束日期", description="结束日期")
     ranking: str = Field("", title="本人排名", description="本人排名")
     entrusting_unit: str = Field("", title="委托单位", description="委托单位")
     source: str = Field("", title="来源", description="来源")
@@ -654,7 +703,7 @@ class ResearchAchievementsModel(BaseModel):
     patent_number: str = Field("", title="专利号", description="专利号")
     entrusting_party: str = Field("", title="委托方", description="委托方")
     certificate_number: str = Field("", title="证书号", description="证书号")
-    validity_period: Optional[date]= Field(None, title="有效期", description="有效期")
+    validity_period: Optional[date] = Field(None, title="有效期", description="有效期")
     standard_number: str = Field("", title="标准号", description="标准号")
     publishing_organization: str = Field("", title="发布单位", description="发布单位")
 
@@ -705,15 +754,16 @@ class ResearchAchievementsUpdateModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Field(..., title="科研成果种类", description="科研成果种类")
     type: str = Field("", title="类型", description="类型")
-    representative_or_project: Optional[YesOrNo] = Field(None, title="是否代表性成果或项目", description="是否代表性成果或项目")
+    representative_or_project: Optional[YesOrNo] = Field(None, title="是否代表性成果或项目",
+                                                         description="是否代表性成果或项目")
     name: str = Field("", title="名称", description="名称")
     disciplinary_field: str = Field("", title="学科领域", description="学科领域")
     role: str = Field("", title="本人角色", description="本人角色")
-    research_date: Optional[date]= Field(None, title="日期", description="日期")
+    research_date: Optional[date] = Field(None, title="日期", description="日期")
     approval_number: str = Field("", title="批准号", description="批准号")
     funding_amount: str = Field("", title="经费额度", description="经费额度")
-    start_year_month: Optional[date]= Field(None, title="开始年月", description="开始年月")
-    end_date: Optional[date]= Field(None, title="结束日期", description="结束日期")
+    start_year_month: Optional[date] = Field(None, title="开始年月", description="开始年月")
+    end_date: Optional[date] = Field(None, title="结束日期", description="结束日期")
     ranking: str = Field("", title="本人排名", description="本人排名")
     entrusting_unit: str = Field("", title="委托单位", description="委托单位")
     source: str = Field("", title="来源", description="来源")
@@ -737,7 +787,7 @@ class ResearchAchievementsUpdateModel(BaseModel):
     patent_number: str = Field("", title="专利号", description="专利号")
     entrusting_party: str = Field("", title="委托方", description="委托方")
     certificate_number: str = Field("", title="证书号", description="证书号")
-    validity_period: Optional[date]= Field(None, title="有效期", description="有效期")
+    validity_period: Optional[date] = Field(None, title="有效期", description="有效期")
     standard_number: str = Field("", title="标准号", description="标准号")
     publishing_organization: str = Field("", title="发布单位", description="发布单位")
 
@@ -778,7 +828,8 @@ class ResearchAchievementsQueryReModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Query("", title="姓名", description="姓名", example="张三")
     type: str = Query("", title="类型", description="类型", example="类型")
-    representative_or_project: Optional[YesOrNo] = Query(False, title="是否代表性成果或项目", description="是否代表性成果或项目")
+    representative_or_project: Optional[YesOrNo] = Query(False, title="是否代表性成果或项目",
+                                                         description="是否代表性成果或项目")
     name: str = Query("", title="名称", description="名称", example="名称")
     disciplinary_field: str = Query("", title="学科领域", description="学科领域", example="学科领域")
     role: str = Query("", title="本人角色", description="本人角色", example="本人角色")

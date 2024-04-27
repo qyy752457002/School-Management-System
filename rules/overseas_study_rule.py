@@ -48,9 +48,10 @@ class OverseasStudyRule(object):
         return overseas_study
 
     async def get_all_overseas_study(self, teacher_id):
+        exit_teacher = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        if not exit_teacher:
+            raise TeacherNotFoundError()
         overseas_study_db = await self.overseas_study_dao.get_all_overseas_study(teacher_id)
-        if not overseas_study_db:
-            raise OverseasStudyNotFoundError()
         overseas_study = []
         for item in overseas_study_db:
             overseas_study.append(orm_model_to_view_model(item, OverseasStudyUpdateModel))
