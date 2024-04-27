@@ -78,20 +78,19 @@ class StudentsBaseInfoDao(DAOBase):
                        # PlanningSchool.province,
                        # PlanningSchool.city,
                        StudentBaseInfo.session,).join(Classes, Classes.id == StudentBaseInfo.class_id,isouter=True).join(Grade, Grade.id == StudentBaseInfo.grade_id,isouter=True).join(School, School.id == StudentBaseInfo.school_id,isouter=True).join(PlanningSchool, PlanningSchool.id == School.planning_school_id,isouter=True).join(Major, Major.id == Classes.major_for_vocational,isouter=True).where(StudentBaseInfo.student_id == students_id)
-        result = await session.execute(query)
+        result_list = await session.execute(query)
         column_names = query.columns.keys()
-        ret = result.scalar_one_or_none()
-        print(ret)
-        if ret is None:
-            return {}
+        # ret = result.scalar_one_or_none()
 
-        if issubclass(ret.__class__, BaseDBModel):
-            return   ret[0]
-        else:
-            item_dict = dict(zip(column_names, ret))
-            return item_dict
-
-
+        result_items = list(result_list.fetchall())
+        items = []
+        for item in result_items:
+            if issubclass(item[0].__class__, BaseDBModel):
+                items.append(item[0])
+            else:
+                item_dict = dict(zip(column_names, item))
+                items.append(item_dict)
+        return items
 
     async def get_students_base_info_by_id(self, student_base_id):
         """

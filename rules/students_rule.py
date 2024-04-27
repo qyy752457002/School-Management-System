@@ -25,19 +25,25 @@ class StudentsRule(object):
         students = orm_model_to_view_model(students_db, StudentsKeyinfoDetail, exclude=[""])
         # 查其他的信息
         baseinfo2 = await self.students_baseinfo_dao.get_students_base_info_ext_by_student_id(students_id)
-        baseinfo = orm_model_to_view_model(baseinfo2, StudentsKeyinfoDetail, exclude=[""],other_mapper={"major_name": "major_name",})
+        # print(baseinfo2)
+        # baseinfo= baseinfo2[0]
+        graduation_student = baseinfo2[0]
+        for key, value in graduation_student.items():
+            if value is None:
+                baseinfo2[0][key]=''
+            # delattr(graduation_student, key)
 
+        baseinfo = orm_model_to_view_model(baseinfo2[0], StudentsKeyinfoDetail, exclude=[""],
+                                           other_mapper={"major_name": "major_name", })
 
-        print(baseinfo)
         if baseinfo:
-            students.province=baseinfo.province
-            students.city=baseinfo.city
-            students.school_name=baseinfo.school_name
-            students.session=baseinfo.session
-            students.grade_name=baseinfo.grade_name
-            students.class_name=baseinfo.class_name
-            students.major_name=baseinfo.major_name
-        print(students)
+            students.province = baseinfo.province
+            students.city = baseinfo.city
+            students.school_name = baseinfo.school_name
+            students.session = baseinfo.session
+            students.grade_name = baseinfo.grade_name
+            students.class_name = baseinfo.class_name
+            students.major_name = baseinfo.major_name
 
         return students
 
@@ -77,7 +83,7 @@ class StudentsRule(object):
         """
         exists_students = await self.students_dao.get_students_by_id(students.student_id)
         if not exists_students:
-             raise StudentNotFoundError()
+            raise StudentNotFoundError()
         need_update_list = []
         for key, value in students.dict().items():
             if value:
@@ -109,4 +115,3 @@ class StudentsRule(object):
         获取学生总数
         """
         return await self.students_dao.get_student_count()
-
