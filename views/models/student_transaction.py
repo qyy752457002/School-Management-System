@@ -2,7 +2,16 @@ from enum import Enum
 
 from fastapi import Query
 from pydantic import BaseModel, Field
+class StudentTransactionType(str, Enum):
+    """
+    异动 类型  休学  转学  死亡  其他   用枚举 级联下拉
+    """
+    # ALL = "All"
 
+
+    @classmethod
+    def to_list(cls):
+        return [ ]
 
 class StudentTransactionStatus(str, Enum):
     """
