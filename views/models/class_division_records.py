@@ -40,7 +40,7 @@ class ClassDivisionRecordsSearchRes(BaseModel):
                                             class_id: int = Query( 0, title="", description="班级",min_length=1, max_length=30, example=''),
                                             status: str = Query( '', title="", description="状态",min_length=1, max_length=30, example=''),
     """
-    id:int= Query(0, title="", description="id", example='1'),
+    id:int= Field(0, title="", description="id", example='1')
     enrollment_number: str = Field('', title="", description="报名号",examples=['1'])
     id_type: str = Field('', title="", description="身份证件类型",examples=['1'])
     student_name: str = Field('', title="", description="姓名",examples=['1'])
