@@ -43,7 +43,7 @@ class TeachersCreatModel(BaseModel):
     teacher_id_type: str = Field("", title="证件类型", description="证件类型")
     teacher_id_number: str = Field("", title="证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: int = Field(0, title="任职单位", description="任职单位")
+    teacher_employer: int = Field(0, title="任职单位", description="任职单位",gt=0)
     teacher_avatar: str = Field("", title="头像", description="头像")
 
 
