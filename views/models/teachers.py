@@ -578,8 +578,7 @@ class NewTeacher(BaseModel):
 
 
 class NewTeacherRe(BaseModel):
-
-    teacher_base_id: Optional[int] = Field(..., title="教师ID", description="教师ID")
+    teacher_base_id: Optional[int] = Field(0, title="教师ID", description="教师ID")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     teacher_name: str = Field("", title="姓名", description="姓名", example="张三")
     teacher_id_number: str = Field("", title="身份证号", description="身份证号", example="123456789012345678")
