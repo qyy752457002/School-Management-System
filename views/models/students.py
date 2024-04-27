@@ -199,6 +199,11 @@ class StudentsBaseInfo(BaseModel):
     specialty: str = Field("", title="特长", description="特长")
     permanent_address: str = Field("", title="常住地址", description="常住地址")
     remark: str = Field("", title="备注", description="备注", max_length=50)
+    block: str = Field("", title="", description="", max_length=50)
+    borough: str = Field("", title="", description="", max_length=50)
+    loc_area: str = Field("", title="", description="", max_length=50)
+    loc_area_pro: str = Field("", title="", description="", max_length=50)
+
 
 
 class NewBaseInfoCreate(BaseModel):
