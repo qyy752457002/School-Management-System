@@ -3,6 +3,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers_info import TeacherInfo
+from views.common.common_view import page_none_deal
 from views.models.teachers import TeacherInfo as TeachersInfoModel
 from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel, TeacherInfoSubmit, \
     CurrentTeacherQuery, CurrentTeacherQueryRe,CurrentTeacherInfoSaveModel

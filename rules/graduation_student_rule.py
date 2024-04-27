@@ -59,17 +59,19 @@ class GraduationStudentRule(object):
             graduation_student.credential_notes = credential_notes
         #
         # if isinstance(graduation_student.graduation_type, tuple):
-        if isinstance(graduation_student.graduation_type, tuple):
-            del graduation_student.graduation_type
-        if isinstance(graduation_student.graduation_remarks, tuple):
-            del graduation_student.graduation_remarks
+
+        # if isinstance(graduation_student.graduation_remarks, tuple):
+        #     del graduation_student.graduation_remarks
 
         for key, value in graduation_student.dict().items():
             if value and value is not Query and not isinstance(value, tuple):
                 need_update_list.append(key)
+            if isinstance(value, tuple):
+                delattr(graduation_student, key)
 
         print(graduation_student, need_update_list)
         print(vars(graduation_student))
+
 
         graduation_student_db = await self.graduation_student_dao.update_graduationstudent(graduation_student,
                                                                                            *need_update_list)

@@ -64,8 +64,8 @@ class TeachersInfoDao(DAOBase):
                        Teacher.teacher_employer, Teacher.teacher_approval_status, TeacherInfo.highest_education,
                        TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,School.school_name,
 
-                       TeacherInfo.enter_school_time).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
-                                                           ).join(School, Teacher.teacher_employer == School.id,
+                       TeacherInfo.enter_school_time).outerjoin(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
+                                                           ).outerjoin(School, Teacher.teacher_employer == School.id,
                                                                   )
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name == query_model.teacher_name)
