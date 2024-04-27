@@ -1,6 +1,6 @@
 from mini_framework.web.views import BaseView
 
-from views.models.teachers import NewTeacher, TeacherInfo
+from views.models.teachers import NewTeacher, TeacherInfo, TeacherInfoCreateModel
 from fastapi import Query, Depends
 
 from mini_framework.design_patterns.depend_inject import get_injector
@@ -23,6 +23,8 @@ class NewTeachersView(BaseView):
     async def post_newteacher(self, teachers: TeachersCreatModel):
         print(teachers)
         res = await self.teacher_rule.add_teachers(teachers)
+        res2 = await self.teacher_info_rule.add_teachers_info(TeacherInfoCreateModel(teacher_id=res.id))
+
         return res
 
     async def delete_newteacher(self, teacher_id: int = Query(..., title="教师编号", description="教师编号")):
