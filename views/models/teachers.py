@@ -578,19 +578,7 @@ class NewTeacher(BaseModel):
 
 
 class NewTeacherRe(BaseModel):
-    """
-    教师姓名：teacher_name
-    # 教师ID：teacher_id
-    身份证号：id_number
-    性别：gender
-    任职单位：employer
-    # 最高学历：highest_education
-    政治面貌：political_status
-    是否在编：in_post
-    用人形式：employment_form
-    进本校时间：enter_school_time
-    审核状态：approval_status
-    """
+
     teacher_base_id: Optional[int] = Field(..., title="教师ID", description="教师ID")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     teacher_name: str = Field("", title="姓名", description="姓名", example="张三")
