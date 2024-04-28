@@ -12,7 +12,7 @@ from mini_framework.web.views import BaseView
 from models.teachers import Teacher
 from rules.teachers_rule import TeachersRule
 from views.models.teachers import Teachers, TeacherInfo, TeachersCreatModel, CurrentTeacherInfoSaveModel, \
-    TeacherInfoSaveModel, TeacherInfoSubmit,CurrentTeacherQuery
+    TeacherInfoSaveModel, TeacherInfoSubmit, CurrentTeacherQuery
 from rules.teachers_info_rule import TeachersInfoRule
 
 
@@ -92,7 +92,7 @@ class NewTeachersView(BaseView):
         return res
 
     async def get_newteacherinfo(self, teacher_id: int = Query(..., title="教师名称", description="教师名称",
-                                                                example=123)):
+                                                               example=123)):
         res = await self.teacher_info_rule.get_teachers_info_by_teacher_id(teacher_id)
         return res
 
@@ -102,7 +102,6 @@ class NewTeachersView(BaseView):
         else:
             res = await self.teacher_info_rule.add_teachers_info_valid(teacher_info)
         return res
-
 
     async def put_newteacherinforesave(self, teacher_info: CurrentTeacherInfoSaveModel):
         res = await self.teacher_info_rule.update_teachers_info(teacher_info)
@@ -139,27 +138,30 @@ class NewTeachersView(BaseView):
         await self.teacher_rule.rejected(teacher_id)
         return teacher_id
 
-
     async def patch_info_submitting(self,
-                                    teacher_base_id: int = Query(..., title="教师基本信息编号", description="教师基本信息编号",
+                                    teacher_base_id: int = Query(..., title="教师基本信息编号",
+                                                                 description="教师基本信息编号",
                                                                  example=123)):
         await self.teacher_info_rule.submitting(teacher_base_id)
         return teacher_base_id
 
     async def patch_info_submitted(self,
-                                   teacher_base_id: int = Query(..., title="教师基本信息编号", description="教师基本信息编号",
+                                   teacher_base_id: int = Query(..., title="教师基本信息编号",
+                                                                description="教师基本信息编号",
                                                                 example=123)):
         await self.teacher_info_rule.submitted(teacher_base_id)
         return teacher_base_id
 
     async def patch_info_approved(self,
-                                  teacher_base_id: int = Query(..., title="教师基本信息编号", description="教师基本信息编号",
+                                  teacher_base_id: int = Query(..., title="教师基本信息编号",
+                                                               description="教师基本信息编号",
                                                                example=123)):
         await self.teacher_info_rule.approved(teacher_base_id)
         return teacher_base_id
 
     async def patch_info_rejected(self,
-                                  teacher_base_id: int = Query(..., title="教师基本信息编号", description="教师基本信息编号",
+                                  teacher_base_id: int = Query(..., title="教师基本信息编号",
+                                                               description="教师基本信息编号",
                                                                example=123)):
         await self.teacher_info_rule.rejected(teacher_base_id)
         return teacher_base_id

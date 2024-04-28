@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from datetime import date
+from datetime import date, datetime
 
 
 class TeacherTransactionModel(BaseModel):
@@ -13,10 +13,10 @@ class TeacherTransactionModel(BaseModel):
     """
     transfer_type: str = Field(..., title="异动类型", description="异动类型")
     transfer_reason: str = Field(..., title="异动原因", description="异动原因")
-    remark: str = Field(..., title="备注", description="备注")
+    remark: str = Field("", title="备注", description="备注")
     operator: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    operation_time: date = Field(..., title="操作时间", description="操作时间")
+    operation_time: datetime = Field(..., title="操作时间", description="操作时间")
 
 
 class TeacherTransactionUpdateModel(BaseModel):
@@ -32,7 +32,7 @@ class TeacherTransactionUpdateModel(BaseModel):
     teacher_transaction_id: int = Field(..., title="teacher_transaction_id", description="teacher_transaction_id")
     transfer_type: str = Field(..., title="异动类型", description="异动类型")
     transfer_reason: str = Field(..., title="异动原因", description="异动原因")
-    remark: str = Field(..., title="备注", description="备注")
+    remark: str = Field("", title="备注", description="备注")
     operator: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     operation_time: date = Field(..., title="操作时间", description="操作时间")
@@ -83,7 +83,7 @@ class TransferDetailsUpdateModel(BaseModel):
     remark: str = Field(..., title="备注", description="备注")
     operator: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    operation_time: date = Field(..., title="操作时间", description="操作时间")
+    operation_time: datetime = Field(..., title="操作时间", description="操作时间")
 
 
 
