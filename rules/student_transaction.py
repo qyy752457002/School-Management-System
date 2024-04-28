@@ -28,7 +28,7 @@ class StudentTransactionRule(object):
         student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
         return student_transaction
 
-    async def add_student_transaction(self, student_transaction: StudentTransactionModel,
+    async def add_student_transaction(self, student_transaction,
                                       direction=TransactionDirection.IN.value, relation_id=0):
         relation_id = int(relation_id)
         # exists_student_transaction = await self.student_transaction_dao.get_studenttransaction_by_studenttransaction_name(student_transaction.student_transaction_name)
@@ -54,6 +54,8 @@ class StudentTransactionRule(object):
                 # "transferin_reason": "transfer_reason",
                 # "school_id": "out_school_id",
             }
+        exclude = []
+
         if int(relation_id) > 0:
             # exclude=[]
             exclude = ["id"]
@@ -62,7 +64,6 @@ class StudentTransactionRule(object):
             # student_transaction_db = StudentTransaction()
             exclude = ["id"]
 
-        exclude = []
         for key, value in student_transaction.__dict__.items():
             if isinstance(value, tuple):
                 exclude.append(key)

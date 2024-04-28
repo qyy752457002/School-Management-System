@@ -8,7 +8,7 @@ from rules.graduation_student_rule import GraduationStudentRule
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
-    StudentEduInfo, StudentTransactionAudit
+    StudentEduInfo, StudentTransactionAudit, StudentEduInfoOut
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, \
     NewStudentTransferIn, StudentGraduation
 # from fastapi import Field
@@ -131,7 +131,7 @@ class CurrentStudentsView(BaseView):
     async def patch_transferin_fromoutside(self,
                                            student_baseinfo: NewStudentTransferIn,
                                            student_edu_info_in: StudentEduInfo,
-                                           student_edu_info_out: StudentEduInfo,
+                                           student_edu_info_out: StudentEduInfoOut,
 
                                            ):
         # print(new_students_key_info)
