@@ -50,7 +50,14 @@ class EnumValueDAO(DAOBase):
     async def query_enum_value_with_page(self, page_request: PageRequest, enum_value_name, parent_code) -> Paging:
         query = select(EnumValue)
         if enum_value_name:
-            query = query.where(EnumValue.enum_name == enum_value_name)
+            if ',' in enum_value_name:
+                enum_value_name = enum_value_name.split(',')
+                if isinstance(enum_value_name, list):
+                    # print(f"{var} 是一个列表")
+                    query = query.where(EnumValue.enum_name.in_(enum_value_name))
+                # query = query.where(PlanningSchool.founder_type_lv3.in_(founder_type_lv3))
+            else:
+                query = query.where(EnumValue.enum_name == enum_value_name)
         # if enum_value_name == 'province':
         #     # query = query.where(EnumValue.parent_id == '')
         #
