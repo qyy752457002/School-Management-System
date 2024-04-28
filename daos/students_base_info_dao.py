@@ -81,7 +81,7 @@ class StudentsBaseInfoDao(DAOBase):
                        func.coalesce(SchoolCommunication.loc_area_pro,'').label('loc_area_pro'),
                        # PlanningSchool.province,
                        # PlanningSchool.city,
-                       StudentBaseInfo.session,).join(Classes, Classes.id == StudentBaseInfo.class_id,isouter=True).join(Grade, Grade.id == StudentBaseInfo.grade_id,isouter=True).join(School, School.id == StudentBaseInfo.school_id,isouter=True).join(SchoolCommunication, SchoolCommunication.id == SchoolCommunication.school_id,isouter=True).join(PlanningSchool, PlanningSchool.id == School.planning_school_id,isouter=True).join(Major, Major.id == Classes.major_for_vocational,isouter=True).where(StudentBaseInfo.student_id == students_id)
+                       StudentBaseInfo.session,).join(Classes, Classes.id == StudentBaseInfo.class_id,isouter=True).join(Grade, Grade.id == StudentBaseInfo.grade_id,isouter=True).join(School, School.id == StudentBaseInfo.school_id,isouter=True).join(SchoolCommunication, SchoolCommunication.school_id == School.id,isouter=True).join(PlanningSchool, PlanningSchool.id == School.planning_school_id,isouter=True).join(Major, Major.id == Classes.major_for_vocational,isouter=True).where(StudentBaseInfo.student_id == students_id)
         result_list = await session.execute(query)
         column_names = query.columns.keys()
         # ret = result.scalar_one_or_none()
