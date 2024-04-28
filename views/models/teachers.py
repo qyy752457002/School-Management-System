@@ -132,10 +132,10 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
     free_normal_college_student: YesOrNo = Field('', title="是否免费师范生", description="是否免费师范生")
     participated_in_basic_service_project: YesOrNo = Field('', title="是否参加基层服务项目",
                                                            description="是否参加基层服务项目")
-    basic_service_start_date: date = Field(default=date(1970, 1, 1), title="基层服务起始日期",
+    basic_service_start_date: Optional[date] = Field(None,  title="基层服务起始日期",
                                            description="基层服务起始日期",
                                            example="2010-01-01")
-    basic_service_end_date: date = Field(default=date(1970, 1, 1), title="基层服务结束日期",
+    basic_service_end_date: Optional[date] = Field(None,  title="基层服务结束日期",
                                          description="基层服务结束日期",
                                          example="2010-01-01")
     special_education_teacher: YesOrNo = Field('', title="是否特教", description="是否特教")
@@ -234,10 +234,10 @@ class TeacherInfo(BaseModel):  # 基本信息
     free_normal_college_student: YesOrNo = Field(..., title="是否免费师范生", description="是否免费师范生")
     participated_in_basic_service_project: YesOrNo = Field(..., title="是否参加基层服务项目",
                                                            description="是否参加基层服务项目")
-    basic_service_start_date: date = Field(default=date(1970, 1, 1), title="基层服务起始日期",
+    basic_service_start_date: Optional[date] = Field(None,  title="基层服务起始日期",
                                            description="基层服务起始日期",
                                            example="2010-01-01")
-    basic_service_end_date: date = Field(default=date(1970, 1, 1), title="基层服务结束日期",
+    basic_service_end_date: Optional[date] = Field(None,  title="基层服务结束日期",
                                          description="基层服务结束日期",
                                          example="2010-01-01")
     special_education_teacher: YesOrNo = Field(..., title="是否特教", description="是否特教")
@@ -339,10 +339,10 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
     free_normal_college_student: YesOrNo = Field("Y", title="是否免费师范生", description="是否免费师范生")
     participated_in_basic_service_project: YesOrNo = Field("Y", title="是否参加基层服务项目",
                                                            description="是否参加基层服务项目")
-    basic_service_start_date: date = Field(default=date(1970, 1, 1), title="基层服务起始日期",
+    basic_service_start_date: Optional[date] = Field(None,  title="基层服务起始日期",
                                            description="基层服务起始日期",
                                            example="2010-01-01")
-    basic_service_end_date: date = Field(default=date(1970, 1, 1), title="基层服务结束日期",
+    basic_service_end_date: Optional[date] = Field(None,  title="基层服务结束日期",
                                          description="基层服务结束日期",
                                          example="2010-01-01")
     special_education_teacher: YesOrNo = Field("Y", title="是否特教", description="是否特教")
@@ -545,10 +545,10 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
     free_normal_college_student: YesOrNo = Field(..., title="是否免费师范生", description="是否免费师范生")
     participated_in_basic_service_project: YesOrNo = Field(..., title="是否参加基层服务项目",
                                                            description="是否参加基层服务项目")
-    basic_service_start_date: date = Field(default=date(1970, 1, 1), title="基层服务起始日期",
+    basic_service_start_date: Optional[date] = Field(None,  title="基层服务起始日期",
                                            description="基层服务起始日期",
                                            example="2010-01-01")
-    basic_service_end_date: date = Field(default=date(1970, 1, 1), title="基层服务结束日期",
+    basic_service_end_date: Optional[date] = Field(None,  title="基层服务结束日期",
                                          description="基层服务结束日期",
                                          example="2010-01-01")
     special_education_teacher: YesOrNo = Field(..., title="是否特教", description="是否特教")
