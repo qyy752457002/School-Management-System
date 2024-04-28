@@ -5,6 +5,7 @@ from mini_framework.web.std_models.page import PageRequest
 
 from models.classes import Classes
 from models.graduation_student import GraduationStudent
+from models.planning_school import PlanningSchool
 from models.school import School
 from models.students import Student, StudentApprovalAtatus
 from models.students_base_info import StudentBaseInfo
@@ -51,7 +52,9 @@ class GraduationStudentDAO(DAOBase):
                                                           Student.student_id == StudentBaseInfo.student_id,
                                                           isouter=True).join(School,
                                                                              School.id == StudentBaseInfo.school_id,
-                                                                             isouter=True).join(Classes,
+                                                                             isouter=True).join(PlanningSchool,
+                                                                                                School.planning_school_id == PlanningSchool.id,
+                                                                                                isouter=True).join(Classes,
                                                                                                 Classes.id == StudentBaseInfo.class_id,
                                                                                                 isouter=True)
 
@@ -59,6 +62,8 @@ class GraduationStudentDAO(DAOBase):
         for key, value in kwargs.items():
             if key == 'student_name' or key == 'student_gender':
                 query = query.where(getattr(Student, key) == value)
+            elif key == 'borough':
+                query = query.where(getattr(PlanningSchool, key) == value)
             else:
                 query = query.where(getattr(StudentBaseInfo, key) == value)
 
