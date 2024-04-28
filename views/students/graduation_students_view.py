@@ -4,7 +4,7 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
 from rules.graduation_student_rule import GraduationStudentRule
-from views.models.students import NewStudents, NewStudentsQuery, StudentsKeyinfo, StudentsBaseInfo
+from views.models.students import NewStudents, NewStudentsQuery, StudentsKeyinfo, StudentsBaseInfo, StudentGraduation
 # from fastapi import Field
 from fastapi import Query, Depends
 from pydantic import BaseModel, Field
@@ -32,14 +32,14 @@ class GraduationStudentsView(BaseView):
                    student_gender: str = Query(None, title="性别", description="性别", example="Male"),
                    edu_number: str = Query(None, title="", description="学籍号码", example=""),
                    class_id: str = Query(None, title="", description="班级", example=""),
-
+                   borough: str = Query('', title="", description="行政属地", example=""),
                    page_request=Depends(PageRequest)):
         print(page_request)
         items = []
 
         res = await self.graduation_student_rule.query_graduation_student_with_page(page_request, student_name,
                                                                                     school_id, student_gender,
-                                                                                    edu_number, class_id)
+                                                                                    edu_number, class_id,borough)
         return res
 
         # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10,
@@ -66,18 +66,19 @@ class GraduationStudentsView(BaseView):
 
     # 毕业 制证  毕业证url  备注
     async def patch_graduation_credential(self,
-                                       student_id: int = Query(..., description="学生ID",
-                                                               example='1'),
-                                       graduation_photo: str = Query(..., description="毕业照", min_length=1,
-                                                                     max_length=200,
-                                                                     example=''),
-                                       credential_notes: str = Query('', description="备注", min_length=1,
-                                                                     max_length=250,
-                                                                     example=''),
+                                          student: StudentGraduation,
+                                       # student_id: int = Query(..., description="学生ID",
+                                       #                         example='1'),
+                                       # graduation_photo: str = Query(..., description="毕业照", min_length=1,
+                                       #                               max_length=200,
+                                       #                               example=''),
+                                       # credential_notes: str = Query('', description="备注", min_length=1,
+                                       #                               max_length=250,
+                                       #                               example=''),
                                        ):
-        print(graduation_photo, credential_notes)
-        res = await self.graduation_student_rule.update_graduation_student(student_id, None, None, graduation_photo,
-                                                                           credential_notes)
+        # print(graduation_photo, credential_notes)
+        res = await self.graduation_student_rule.update_graduation_student(student.student_id, None, None, student.graduation_photo,
+                                                                           student.credential_notes)
 
         # res = await self.graduation_student_rule.update_graduation_student(graduation_student)
 

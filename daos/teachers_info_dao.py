@@ -78,7 +78,9 @@ class TeachersInfoDao(DAOBase):
                        # TeacherInfo.political_status,
                        # TeacherInfo.in_post,
                        # TeacherInfo.employment_form,
-                       School.school_name,
+
+                       func.coalesce(   School.school_name, '').label('school_name'),
+
 
                        # TeacherInfo.enter_school_time
                        ).outerjoin(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,

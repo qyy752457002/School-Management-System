@@ -50,7 +50,7 @@ class GraduationStudentRule(object):
         graduation_student = StudentGraduation(student_id=student_id)
         print(type(graduation_student.graduation_type))
         if graduate_status and graduate_status is not None:
-            graduation_student.graduation_type = graduate_status.value
+            graduation_student.graduation_type = graduate_status
         if graduate_picture and graduate_picture is not None:
             graduation_student.graduation_remarks = graduate_picture
         if graduation_photo:
@@ -59,7 +59,6 @@ class GraduationStudentRule(object):
             graduation_student.credential_notes = credential_notes
         #
         # if isinstance(graduation_student.graduation_type, tuple):
-
         # if isinstance(graduation_student.graduation_remarks, tuple):
         #     del graduation_student.graduation_remarks
 
@@ -69,9 +68,8 @@ class GraduationStudentRule(object):
             if isinstance(value, tuple):
                 delattr(graduation_student, key)
 
-        print(graduation_student, need_update_list)
-        print(vars(graduation_student))
-
+        # print(graduation_student, need_update_list)
+        # print(vars(graduation_student))
 
         graduation_student_db = await self.graduation_student_dao.update_graduationstudent(graduation_student,
                                                                                            *need_update_list)
@@ -97,7 +95,7 @@ class GraduationStudentRule(object):
         return await self.graduation_student_dao.get_graduationstudent_count()
 
     async def query_graduation_student_with_page(self, page_request: PageRequest, student_name, school_id, gender,
-                                                 edu_number, class_id):
+                                                 edu_number, class_id,borough):
         #    转换条件 为args
         kdict = {
             "student_name": student_name,
@@ -105,6 +103,7 @@ class GraduationStudentRule(object):
             "student_gender": gender,
             "edu_number": edu_number,
             "class_id": class_id,
+            "borough":borough
         }
         if not kdict["student_name"]:
             del kdict["student_name"]
@@ -116,6 +115,8 @@ class GraduationStudentRule(object):
             del kdict["edu_number"]
         if not kdict["class_id"]:
             del kdict["class_id"]
+        if not kdict["borough"]:
+            del kdict["borough"]
 
         paging = await self.graduation_student_dao.query_graduationstudent_with_page(page_request, **kdict)
         # 字段映射的示例写法   , {"hash_password": "password"}

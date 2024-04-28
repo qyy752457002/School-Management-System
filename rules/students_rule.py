@@ -7,7 +7,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.students import Student
-from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel, StudentsKeyinfoDetail
+from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel, StudentsKeyinfoDetail, StudentsKeyinfo
 from views.models.students import NewStudents
 from business_exceptions.student import StudentNotFoundError
 
@@ -44,6 +44,10 @@ class StudentsRule(object):
             students.grade_name = baseinfo.grade_name
             students.class_name = baseinfo.class_name
             students.major_name = baseinfo.major_name
+            students.block = baseinfo.block
+            students.borough = baseinfo.borough
+            students.loc_area_pro = baseinfo.loc_area_pro
+            students.loc_area = baseinfo.loc_area
 
         return students
 

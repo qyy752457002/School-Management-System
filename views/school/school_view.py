@@ -186,6 +186,9 @@ class SchoolView(BaseView):
                    school_no:str= Query(None, title="学校编号", description="学校编号",min_length=1,max_length=20,example='SC2032633'),
                    school_name:str= Query(None, description="学校名称" ,min_length=1,max_length=20,example='XX小学'),
                    planning_school_id:int= Query(None, description="规划校ID" , example='1'),
+                   province: str = Query("", title="", description="省份代码", ),
+                   city: str = Query("", title="", description="城市", ),
+
 
                    ):
         print(page_request)
@@ -195,7 +198,7 @@ class SchoolView(BaseView):
                                                                       school_name,school_no,school_code,
                                                                       block,school_level,borough,status,founder_type,
                                                                       founder_type_lv2,
-                                                                      founder_type_lv3,planning_school_id )
+                                                                      founder_type_lv3,planning_school_id ,province,city)
         return paging_result
 
 
