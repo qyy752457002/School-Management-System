@@ -28,7 +28,7 @@ class StudentTransactionRule(object):
         student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
         return student_transaction
 
-    async def add_student_transaction(self, student_transaction: StudentTransactionModel,
+    async def add_student_transaction(self, student_transaction,
                                       direction=TransactionDirection.IN.value, relation_id=0):
         relation_id = int(relation_id)
         # exists_student_transaction = await self.student_transaction_dao.get_studenttransaction_by_studenttransaction_name(student_transaction.student_transaction_name)
