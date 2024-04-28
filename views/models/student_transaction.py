@@ -2,6 +2,10 @@ from enum import Enum
 
 from fastapi import Query
 from pydantic import BaseModel, Field
+
+from models.student_transaction import AuditAction
+
+
 class StudentTransactionType(str, Enum):
     """
     异动 类型  休学  转学  死亡  其他   用枚举 级联下拉
@@ -83,6 +87,18 @@ class StudentTransactionFlow(BaseModel):
     description: str = Field('', title="",description="描述",examples=[''])
     remark: str = Field('', title="",description="备注",examples=[''])
     student_id: int = Field(0, title="", description="学生ID",examples=['1'])
+
+
+class StudentTransactionAudit(BaseModel):
+    # id:int= Query(None, title="", description="id", example='1'),
+    # in_school_id: int = Field(0, title="学校ID", description="学校ID",examples=['1'])
+    # grade_id: int = Field(0, title="年级ID", description="年级ID",examples=['1'])
+    # status: str = Field('', title="",description="状态",examples=[''])
+    transferin_audit_id: int = Query(..., description="转入申请id", example='2')
+    transferin_audit_action: AuditAction = Query(..., description="审批的操作",
+                                                 example='pass')
+    remark: str = Query("", description="审批的备注", min_length=0, max_length=200,
+                        example='同意 无误')
 
 
 
