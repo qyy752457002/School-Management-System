@@ -132,6 +132,7 @@ class StudentsKeyinfoDetail(BaseModel):
     证件类别：id_type
     证件号码：id_number
     照片：photo
+
     """
     student_id: int = Field(None, title="学生id", description="学生id")
     student_name: str = Field('', title="学生姓名", description="学生姓名")
@@ -148,6 +149,10 @@ class StudentsKeyinfoDetail(BaseModel):
     grade_name: str = Field('', title="",description="年级名称",examples=['一年级'])
     class_name: str = Field('', title="Grade_name", description="班级名称", examples=['一年级'])
     major_name: str = Field('', title="Grade_name",description="专业名称",examples=['农林牧鱼 '])
+    block: str = Field("", title="", description="", max_length=50)
+    borough: str = Field("", title="", description="", max_length=50)
+    loc_area: str = Field("", title="", description="", max_length=50)
+    loc_area_pro: str = Field("", title="", description="", max_length=50)
 
 
 
