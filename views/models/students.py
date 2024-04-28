@@ -141,14 +141,13 @@ class StudentsKeyinfoDetail(BaseModel):
     id_type: str = Field('', title="证件类别", description="证件类别")
     id_number: str = Field('', title="证件号码", description="证件号码")
     photo: str = Field('', title="照片", description="照片")
-    province: str = Query('', title=" ", description="",examples=[''],min_length=1,max_length=30)
-    city: str = Query('', title=" ", description="",examples=[''],min_length=1,max_length=30)
+    province: str = Field('', title=" ", description="",examples=[''],min_length=0,max_length=30)
+    city: str = Field('', title=" ", description="",examples=[''],min_length=0,max_length=30)
     school_name: str = Field('', title="学校名称", description="学校名称",examples=['XX小学'])
     session: str = Field("", title="届别", description="届别")
     grade_name: str = Field('', title="",description="年级名称",examples=['一年级'])
     class_name: str = Field('', title="Grade_name", description="班级名称", examples=['一年级'])
     major_name: str = Field('', title="Grade_name",description="专业名称",examples=['农林牧鱼 '])
-
 
 
 

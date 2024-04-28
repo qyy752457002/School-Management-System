@@ -7,7 +7,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.students import Student
-from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel, StudentsKeyinfoDetail
+from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel, StudentsKeyinfoDetail, StudentsKeyinfo
 from views.models.students import NewStudents
 from business_exceptions.student import StudentNotFoundError
 
