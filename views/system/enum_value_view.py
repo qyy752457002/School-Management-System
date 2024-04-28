@@ -22,11 +22,11 @@ class EnumValueView(BaseView):
 
     async def page(self,
                    page_request=Depends(PageRequest),
-                   enum_name:str= Query(..., title="", description="枚举类型的名称",min_length=1,max_length=20,example='province'),
+                   enum_name:str= Query(..., title="", description="枚举类型的名称 多个逗号隔开",min_length=1,max_length=100,example='province'),
                    parent_code:str= Query('', title="", description="父级的code",min_length=1,max_length=20,example='130000'),
 
                    ):
-        print(page_request)
+        # print(page_request)
         items = []
 
         res = await self.enum_value_rule.query_enum_value_with_page(page_request ,enum_name,parent_code )

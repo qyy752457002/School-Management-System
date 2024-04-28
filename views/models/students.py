@@ -415,16 +415,27 @@ class StudentsUpdateFamilyInfo(BaseModel):
 
 
 class GraduationStudents(BaseModel):
+    """
+    状态 毕业      行政属地
+    graduation_type: Mapped[str] = mapped_column(String(10), nullable=True, default='', comment="毕业类型")
+    borough: Mapped[str] = mapped_column(String(64), nullable=False, comment="行政管辖区")
+
+
+    """
     id: int = Query(0, title="", description="id", example='1'),
 
     student_id: int = Field(0, title="学生id", description="学生id", examples=['0'])
+    graduation_type: str = Field('', title="状态", description="状态")
     student_name: str = Field('', title="学生姓名", description="学生姓名")
     student_gender: str = Field('', title="性别", description="性别")
     school_name: str = Field('', title="学校", description="学校")
     borough: str = Field('', title="", description="行政属地")
     edu_number: str = Field('', title="", description="学籍号码")
     class_id: int = Field(0, title="", description="班级")
-    class_name: str = Field('', title="", description="")
+    class_name: str = Field('', title="", description="班级名称")
+
+
+#
 
 
 
