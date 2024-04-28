@@ -225,7 +225,7 @@ class TeacherProfessionalTitlesModel(BaseModel):
     current_professional_title: str = Field(..., title="现专业技术职务", description="现专业技术职务")
     employing_institution_name: str = Field("", title="聘任单位名称", description="聘任单位名称")
     employment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
-    employment_end_date: date = Field(date(1970, 1, 1), title="聘任结束时间", description="聘任结束时间")
+    employment_end_date: Optional[date] = Field(None, title="聘任结束时间", description="聘任结束时间")
 
 
 class TeacherProfessionalTitlesUpdateModel(BaseModel):
@@ -243,7 +243,7 @@ class TeacherProfessionalTitlesUpdateModel(BaseModel):
     current_professional_title: str = Field(..., title="现专业技术职务", description="现专业技术职务")
     employing_institution_name: str = Field("", title="聘任单位名称", description="聘任单位名称")
     employment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
-    employment_end_date: date = Field(date(1970, 1, 1), title="聘任结束时间", description="聘任结束时间")
+    employment_end_date: Optional[date] = Field(None, title="聘任结束时间", description="聘任结束时间")
 
 
 class TeacherQualificationsModel(BaseModel):
@@ -264,8 +264,8 @@ class TeacherQualificationsModel(BaseModel):
     teaching_subject: str = Field(..., title="任教学科", description="任教学科")
     certificate_issue_date: date = Field(..., title="证书颁发时间", description="证书颁发时间")
     issuing_authority: str = Field("", title="颁发机构", description="颁发机构")
-    first_registration_date: date = Field(date(1970, 1, 1), title="首次注册日期", description="首次注册日期")
-    regular_registration_date: date = Field(date(1970, 1, 1), title="定期注册日期", description="定期注册日期")
+    first_registration_date: Optional[date] = Field(None, title="首次注册日期", description="首次注册日期")
+    regular_registration_date: Optional[date] = Field(None, title="定期注册日期", description="定期注册日期")
     regular_registration_conclusion: str = Field("", title="定期注册结论", description="定期注册结论")
 
 
@@ -290,8 +290,8 @@ class TeacherQualificationsUpdateModel(BaseModel):
     teaching_subject: str = Field(..., title="任教学科", description="任教学科")
     certificate_issue_date: date = Field(..., title="证书颁发时间", description="证书颁发时间")
     issuing_authority: str = Field("", title="颁发机构", description="颁发机构")
-    first_registration_date: date = Field(date(1970, 1, 1), title="首次注册日期", description="首次注册日期")
-    regular_registration_date: date = Field(date(1970, 1, 1), title="定期注册日期", description="定期注册日期")
+    first_registration_date: Optional[date] = Field(None, title="首次注册日期", description="首次注册日期")
+    regular_registration_date: Optional[date] = Field(None, title="定期注册日期", description="定期注册日期")
     regular_registration_conclusion: str = Field("", title="定期注册结论", description="定期注册结论")
 
 
@@ -315,7 +315,7 @@ class TeacherSkillCertificatesModel(BaseModel):
     other_skill_level: str = Field("", title="其他技能程度", description="其他技能程度")
     certificate_type: str = Field("", title="证书类型", description="证书类型")
     language_certificate_name: str = Field("", title="语言证书名称", description="语言证书名称")
-    issue_year_month: date = Field(date(1970, 1, 1), title="发证年月", description="发证年月")
+    issue_year_month: Optional[date] = Field(None,title="发证年月", description="发证年月")
     issuing_authority: str = Field("", title="发证单位", description="发证单位")
     certificate_number: str = Field("", title="证书编号", description="证书编号")
 
@@ -343,7 +343,7 @@ class TeacherSkillCertificatesUpdateModel(BaseModel):
     other_skill_level: str = Field("", title="其他技能程度", description="其他技能程度")
     certificate_type: str = Field("", title="证书类型", description="证书类型")
     language_certificate_name: str = Field("", title="语言证书名称", description="语言证书名称")
-    issue_year_month: date = Field(date(1970, 1, 1), title="发证年月", description="发证年月")
+    issue_year_month: Optional[date] = Field(None,title="发证年月", description="发证年月")
     issuing_authority: str = Field("", title="发证单位", description="发证单位")
     certificate_number: str = Field("", title="证书编号", description="证书编号")
 
@@ -372,9 +372,9 @@ class TeacherEthicRecordsModel(BaseModel):
     ethics_assessment_date: date = Field(..., title="师德考核时间", description="师德考核时间")
     ethics_assessment_conclusion: str = Field(..., title="师德考核结论", description="师德考核结论")
     assessment_institution_name: str = Field("", title="考核单位名称", description="考核单位名称")
-    honor_level: str = Field(..., title="荣誉级别", description="荣誉级别")
+    honor_level: str = Field("", title="荣誉级别", description="荣誉级别")
     honor_title: str = Field("", title="荣誉称号", description="荣誉称号")
-    honor_date: date = Field(..., title="荣誉日期", description="荣誉日期")
+    honor_date: Optional[date] = Field(None, title="荣誉日期", description="荣誉日期")
     awarding_institution_name: str = Field("", title="荣誉授予单位名称", description="荣誉授予单位名称")
     honor_record_description: str = Field("", title="荣誉记录描述", description="荣誉记录描述")
     disciplinary_category: str = Field(..., title="处分类别", description="处分类别")
@@ -413,9 +413,9 @@ class TeacherEthicRecordsUpdateModel(BaseModel):
     ethics_assessment_date: date = Field(..., title="师德考核时间", description="师德考核时间")
     ethics_assessment_conclusion: str = Field(..., title="师德考核结论", description="师德考核结论")
     assessment_institution_name: str = Field("", title="考核单位名称", description="考核单位名称")
-    honor_level: str = Field(..., title="荣誉级别", description="荣誉级别")
+    honor_level: str = Field("", title="荣誉级别", description="荣誉级别")
     honor_title: str = Field("", title="荣誉称号", description="荣誉称号")
-    honor_date: date = Field(..., title="荣誉日期", description="荣誉日期")
+    honor_date: Optional[date] = Field(None,title="荣誉日期", description="荣誉日期")
     awarding_institution_name: str = Field("", title="荣誉授予单位名称", description="荣誉授予单位名称")
     honor_record_description: str = Field("", title="荣誉记录描述", description="荣誉记录描述")
     disciplinary_category: str = Field(..., title="处分类别", description="处分类别")
