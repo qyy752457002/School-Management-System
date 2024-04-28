@@ -471,17 +471,17 @@ class NewStudentTransferIn(BaseModel):
     approval_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="状态",default="分班")
     """
 
-    student_name: str = Field(..., title="学生姓名", description="学生姓名")
+    student_name: str = Field('', title="学生姓名", description="学生姓名")
     enrollment_number: str = Field('', title="报名号", description="报名号")
-    birthday: str = Field(..., title="生日", description="生日")
-    student_gender: str = Field(..., title="性别", description="性别")
+    birthday: str = Field('', title="生日", description="生日")
+    student_gender: str = Field('', title="性别", description="性别")
     id_type: str = Field('', title="证件类别", description="证件类别")
     id_number: str = Field("", title="证件号码", description="证件号码")
     ethnicity: str = Field("", title="民族", description="民族")
-    # natural_edu_no: str = Query(...,   description="国家学籍号码",min_length=1,max_length=20,examples=["DF23321312"]),
-    edu_number: str = Field(..., title="", description="学籍号码", examples=["DF23321312"])
+    # natural_edu_no: str = Query('',   description="国家学籍号码",min_length=1,max_length=20,examples=["DF23321312"]),
+    edu_number: str = Field('', title="", description="学籍号码", examples=["DF23321312"])
     residence_address_detail: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
-    residence_district: str = Field(..., title="户口所在行政区", description="户口所在行政区")
+    residence_district: str = Field('', title="户口所在行政区", description="户口所在行政区")
     student_id: int = Query(0, title="", description="id", example='1'),
 
 class StudentGraduation(BaseModel):

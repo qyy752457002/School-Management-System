@@ -116,7 +116,6 @@ class CurrentStudentsView(BaseView):
                                                                                   example='pass'),
                                      remark: str = Query("", description="审批的备注", min_length=0, max_length=200,
                                                          example='同意 无误'),
-
                                      ):
         # 审批通过 操作 或者拒绝
         student_edu_info = StudentTransaction(id=transferin_audit_id, status=transferin_audit_action.value, )
