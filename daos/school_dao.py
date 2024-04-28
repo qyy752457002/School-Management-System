@@ -4,6 +4,7 @@ from mini_framework.databases.entities.dao_base import DAOBase, get_update_conte
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
+from models.planning_school import PlanningSchool
 from models.school import School
 
 
@@ -103,8 +104,8 @@ class SchoolDAO(DAOBase):
     async def query_school_with_page(self, page_request: PageRequest, school_name,school_no,school_code,
                                               block,school_level,borough,status,founder_type,
                                               founder_type_lv2,
-                                              founder_type_lv3 ,planning_school_id) -> Paging:
-        query = select(School).order_by(desc(School.id))
+                                              founder_type_lv3 ,planning_school_id,province,city) -> Paging:
+        query = select(School).join(PlanningSchool, PlanningSchool.id == School.planning_school_id, isouter=True).order_by(desc(School.id))
         query = query.where(School.is_deleted == False)
 
 
@@ -126,6 +127,10 @@ class SchoolDAO(DAOBase):
 
         if status:
             query = query.where(School.status == status)
+        if province:
+            query = query.where(PlanningSchool.province == province)
+        if city:
+            query = query.where(PlanningSchool.city == city)
 
         if len(founder_type_lv3)>0:
             query = query.where(School.founder_type_lv3.in_(founder_type_lv3))

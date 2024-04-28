@@ -222,7 +222,7 @@ class SchoolRule(object):
     async def query_school_with_page(self, page_request: PageRequest,   school_name,school_no,school_code,
                                      block,school_level,borough,status,founder_type,
                                      founder_type_lv2,
-                                     founder_type_lv3,planning_school_id ):
+                                     founder_type_lv3,planning_school_id,province,city ):
         #  根据举办者类型  1及 -3级  处理为条件   1  2ji全部转换为 3级  最后in 3级查询
         enum_value_rule = get_injector(EnumValueRule)
         if founder_type:
@@ -242,7 +242,7 @@ class SchoolRule(object):
         paging = await self.school_dao.query_school_with_page(page_request,  school_name,school_no,school_code,
                                                                 block,school_level,borough,status,founder_type,
                                                                 founder_type_lv2,
-                                                                founder_type_lv3,planning_school_id
+                                                                founder_type_lv3,planning_school_id,province,city
                                                                                 )
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, SchoolModel)
