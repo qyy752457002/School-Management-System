@@ -39,11 +39,12 @@ class ClassDivisionRecordsDAO(DAOBase):
                                                      ):
         specific_date = date(1970, 1, 1)
         query = select(
-            func.coalesce(ClassDivisionRecords.class_id, 0) ,
-            func.coalesce(ClassDivisionRecords.student_id, 0),
-            func.coalesce(ClassDivisionRecords.school_id, 0),
-            func.coalesce(ClassDivisionRecords.id, 0),
-            func.coalesce(ClassDivisionRecords.created_at, specific_date),
+            func.coalesce(Student.student_name, '').label('student_name') ,
+            func.coalesce(ClassDivisionRecords.class_id, 0).label('class_id') ,
+            func.coalesce(ClassDivisionRecords.student_id, 0).label('student_id'),
+            func.coalesce(ClassDivisionRecords.school_id, 0).label('school_id'),
+            func.coalesce(ClassDivisionRecords.id, 0).label('id'),
+            func.coalesce(ClassDivisionRecords.created_at, specific_date).label('created_at'),
             # func.coalesce(ClassDivisionRecords.class_id, 0),
             # ClassDivisionRecords.student_id,
             # ClassDivisionRecords.student_name,
@@ -52,7 +53,7 @@ class ClassDivisionRecordsDAO(DAOBase):
             # ClassDivisionRecords.school_id, ClassDivisionRecords.id,
             # ClassDivisionRecords.class_id,
             # ClassDivisionRecords.student_id,
-            ClassDivisionRecords.student_name,
+            # ClassDivisionRecords.student_name,
             # ClassDivisionRecords.created_at,
             ClassDivisionRecords.status,
             # ClassDivisionRecords.school_id,
