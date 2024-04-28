@@ -29,13 +29,13 @@ class TeacherLearnExperienceModel(BaseModel):
     institution_of_education_obtained: str = Field(..., title="获得学历的院校机构", description="获得学历的院校机构")
     major_learned: str = Field(..., title="所学妆业", description="所学妆业")
     is_major_normal: str = Field(..., title="是否师范类专业", description="是否师范类专业")
-    admission_date: date = Field(date(1970, 1, 1), title="入学时间", description="入学时间")
-    graduation_date: date = Field(date(1970, 1, 1), title="毕业时间", description="毕业时间")
+    admission_date: Optional[date] = Field(None, title="入学时间", description="入学时间")
+    graduation_date: Optional[date] = Field(None,  title="毕业时间", description="毕业时间")
     degree_level: str = Field(..., title="学位层次", description="学位层次")
     degree_name: str = Field(..., title="学位名称", description="学位名称")
     country_or_region_of_degree_obtained: str = Field(..., title="获取学位过家地区", description="获取学位过家地区")
     institution_of_degree_obtained: str = Field(..., title="获得学位院校机构", description="获得学位院校机构")
-    degree_award_date: date = Field(date(1970, 1, 1), title="学位授予时间", description="学位授予时间")
+    degree_award_date: date = Field(..., title="学位授予时间", description="学位授予时间")
     study_mode: str = Field(..., title="学习方式", description="学习方式")
     type_of_institution: str = Field("", title="在学单位类别", description="在学单位类别")
 
@@ -64,13 +64,13 @@ class TeacherLearnExperienceUpdateModel(BaseModel):
     institution_of_education_obtained: str = Field(..., title="获得学历的院校机构", description="获得学历的院校机构")
     major_learned: str = Field(..., title="所学妆业", description="所学妆业")
     is_major_normal: str = Field(..., title="是否师范类专业", description="是否师范类专业")
-    admission_date: date = Field(date(1970, 1, 1), title="入学时间", description="入学时间")
-    graduation_date: date = Field(date(1970, 1, 1), title="毕业时间", description="毕业时间")
+    admission_date: Optional[date] = Field(None,  title="入学时间", description="入学时间")
+    graduation_date: Optional[date] = Field(None, title="毕业时间", description="毕业时间")
     degree_level: str = Field(..., title="学位层次", description="学位层次")
     degree_name: str = Field(..., title="学位名称", description="学位名称")
     country_or_region_of_degree_obtained: str = Field(..., title="获取学位过家地区", description="获取学位过家地区")
     institution_of_degree_obtained: str = Field(..., title="获得学位院校机构", description="获得学位院校机构")
-    degree_award_date: date = Field(date(1970, 1, 1), title="学位授予时间", description="学位授予时间")
+    degree_award_date: date = Field(..., title="学位授予时间", description="学位授予时间")
     study_mode: str = Field(..., title="学习方式", description="学习方式")
     type_of_institution: str = Field("", title="在学单位类别", description="在学单位类别")
 
@@ -86,8 +86,8 @@ class TeacherWorkExperienceModel(BaseModel):
     """
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
-    start_date: date = Field(date(1970, 1, 1), title="开始时间", description="开始时间")
-    end_date: date = Field(date(1970, 1, 1), title="结束时间", description="结束时间")
+    start_date: date = Field(..., title="开始时间", description="开始时间")
+    end_date: date = Field(..., title="结束时间", description="结束时间")
     on_duty_position: str = Field("", title="在职岗位", description="在职岗位")
     institution_nature_category: str = Field("", title="单位性质类别", description="单位性质类别")
 
@@ -106,8 +106,8 @@ class TeacherWorkExperienceUpdateModel(BaseModel):
                                             description="teacher_work_experience_id")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
-    start_date: date = Field(date(1970, 1, 1), title="开始时间", description="开始时间")
-    end_date: date = Field(date(1970, 1, 1), title="结束时间", description="结束时间")
+    start_date: date = Field(..., title="开始时间", description="开始时间")
+    end_date: date = Field(..., title="结束时间", description="结束时间")
     on_duty_position: str = Field(..., title="在职岗位", description="在职岗位")
     institution_nature_category: str = Field("", title="单位性质类别", description="单位性质类别")
 
@@ -156,7 +156,7 @@ class TeacherJobAppointmentsModel(BaseModel):
     concurrent_position: Optional[List[dict]] = Field(default=[{"category": "默认类别", "level": "默认等级"}],
                                                       title="兼任岗位", description="兼任岗位")
     appointment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
-    start_date: date = Field(..., title="任职开始年月", description="任职开始年月")
+    start_date: Optional[date] = Field(None,  title="任职开始年月", description="任职开始年月")
 
 
 class TeacherJobAppointmentsUpdateModel(BaseModel):
@@ -182,7 +182,7 @@ class TeacherJobAppointmentsUpdateModel(BaseModel):
     concurrent_position: Optional[List[dict]] = Field(default=[{"category": "默认类别", "level": "默认等级"}],
                                                       title="兼任岗位", description="兼任岗位")
     appointment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
-    start_date: date = Field(..., title="任职开始年月", description="任职开始年月")
+    start_date: Optional[date] = Field(None,  description="任职开始年月")
 
 
 # class TeacherJobAppointmentsUpdateModel(BaseModel):
