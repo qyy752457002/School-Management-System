@@ -65,13 +65,9 @@ doc_upload: str = Field('',   description=" 附件",examples=[''])
     relation_id: Mapped[int] = mapped_column(nullable=True, comment="关联学校ID", default=0)
 
 
-    # in_school_id: Mapped[int] = mapped_column(nullable=True, comment="转入学校ID", default=0)
-    # in_grade: Mapped[str] = mapped_column(String(255), nullable=True, comment="转入年级", default='')
-    # in_class: Mapped[str] = mapped_column(String(255), nullable=True, comment="装入班级", default='')
-    # in_date: Mapped[str] = mapped_column(String(255), nullable=True, comment="装入日期", default='')
-    # out_type: Mapped[str] = mapped_column(String(255), nullable=True, comment="转出类型", default='')
-    # out_grade: Mapped[str] = mapped_column(String(255), nullable=True, comment="转出年级", default='')
-    # out_class: Mapped[str] = mapped_column(String(255), nullable=True, comment="装出班级", default='')
+    transaction_type: Mapped[str] = mapped_column(String(30), nullable=True, comment="异动类型", default='')
+    transaction_type_lv2: Mapped[str] = mapped_column(String(30), nullable=True, comment="异动类型2级", default='')
+
     country_no: Mapped[str] = mapped_column(String(255), nullable=True, comment="国家学籍号码", default='')
     # out_date: Mapped[str] = mapped_column(String(255), nullable=True, comment="转出日期", default='')
     reason: Mapped[str] = mapped_column(String(255), nullable=True, comment="转学原因", default='')

@@ -34,6 +34,18 @@ class StudentSessionDao(DAOBase):
         result = await session.execute(select(StudentSession).where(StudentSession.session_id == session_id))
         return result.scalar_one_or_none()
 
+    async def get_student_session_by_param(self, **kwargs):
+        """
+        获取类别
+        """
+        session = await self.slave_db()
+        query= select(StudentSession)
+        for key, value in kwargs.items():
+            query = query.where(getattr(StudentSession, key) == value)
+
+        result = await session.execute(query)
+        return result.scalar_one_or_none()
+
     async def delete_student_session(self, student_session: StudentSession):
         """
         删除单个类别

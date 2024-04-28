@@ -3,6 +3,8 @@ from typing import List
 from mini_framework.web.views import BaseView
 
 from models.student_transaction import AuditAction, TransactionDirection
+from models.students import StudentGraduatedType
+from rules.graduation_student_rule import GraduationStudentRule
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
@@ -31,6 +33,8 @@ class CurrentStudentsView(BaseView):
         self.student_transaction_rule = get_injector(StudentTransactionRule)
         self.student_transaction_flow_rule = get_injector(StudentTransactionFlowRule)
         self.students_family_info_rule = get_injector(StudentsFamilyInfoRule)
+        self.graduation_student_rule = get_injector( GraduationStudentRule)
+
 
     async def get_student_session(self, sessions_id: int  = Query(..., title="", description="届别id",
                                                                  example="1")):
@@ -205,17 +209,19 @@ class CurrentStudentsView(BaseView):
     #     # print(new_students_key_info)
     #     return transferin_audit_id
 
-    # 在校生 发起毕业 todo  支持传入部门学生ID或者  / all年级毕业
+    # 在校生 发起毕业    todo  支持传入部门学生ID或者  / all年级毕业  批量另起
     async def patch_graduate(self,
-                             student_id: List[str] = Query(..., description="学生ID", min_length=1, max_length=20,
-                                                           example='SC2032633'),
-                             graduate_status: str = Query(..., description="毕业状态", min_length=1, max_length=20,
-                                                          example='结业'),
-                             graduate_picture: str = Query(..., description="毕业照url", min_length=1, max_length=20,
+                             student_id:  int  = Query(..., description="学生ID",
+                                                           example='1'),
+                             graduate_status: StudentGraduatedType = Query(..., description="毕业状态", min_length=1, max_length=20,
+                                                          example='completion'),
+                             graduate_remark: str = Query( '', description="毕业备注", min_length=1, max_length=250,
                                                            example=''),
                              ):
         # print(new_students_key_info)
-        return student_id
+        res = await self.graduation_student_rule.update_graduation_student(student_id,graduate_status,graduate_remark)
+
+        return res
 
     # 在校生 查看关键信息
 

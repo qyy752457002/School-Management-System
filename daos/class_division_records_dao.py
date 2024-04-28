@@ -1,3 +1,5 @@
+from datetime import date
+
 from sqlalchemy import select, func, update
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
@@ -5,7 +7,7 @@ from mini_framework.web.std_models.page import PageRequest
 
 from models.class_division_records import ClassDivisionRecords
 
-from models.students import Student
+from models.students import Student, StudentApprovalAtatus
 
 
 class ClassDivisionRecordsDAO(DAOBase):
@@ -35,28 +37,37 @@ class ClassDivisionRecordsDAO(DAOBase):
     async def query_class_division_records_with_page(self, school_id, id_type, student_name, created_at, student_gender,
                                                      class_id, status, enrollment_number, page_request: PageRequest,
                                                      ):
-        query = select(ClassDivisionRecords.class_id, ClassDivisionRecords.student_id,
-                       # ClassDivisionRecords.student_name,
-					   ClassDivisionRecords.created_at, ClassDivisionRecords.status,
-                        ClassDivisionRecords.school_id, ClassDivisionRecords.id,
-                       ClassDivisionRecords.class_id,
-                       ClassDivisionRecords.student_id,
-					   ClassDivisionRecords.student_name, ClassDivisionRecords.created_at, ClassDivisionRecords.status,
-					    ClassDivisionRecords.school_id,
+        specific_date = date(1970, 1, 1)
+        query = select(
+            func.coalesce(ClassDivisionRecords.class_id, 0) ,
+            func.coalesce(ClassDivisionRecords.student_id, 0),
+            func.coalesce(ClassDivisionRecords.school_id, 0),
+            func.coalesce(ClassDivisionRecords.id, 0),
+            func.coalesce(ClassDivisionRecords.created_at, specific_date),
+            # func.coalesce(ClassDivisionRecords.class_id, 0),
+            # ClassDivisionRecords.student_id,
+            # ClassDivisionRecords.student_name,
+            # ClassDivisionRecords.,
+            Student.approval_status,
+            # ClassDivisionRecords.school_id, ClassDivisionRecords.id,
+            # ClassDivisionRecords.class_id,
+            # ClassDivisionRecords.student_id,
+            ClassDivisionRecords.student_name,
+            # ClassDivisionRecords.created_at,
+            ClassDivisionRecords.status,
+            # ClassDivisionRecords.school_id,
+            Student.id_number,
+            Student.student_id,
+            Student.student_name, Student.enrollment_number,
+            Student.student_gender,
 
+            Student.id_type,
 
-
-					   Student.student_id,
-					   Student.student_name,   Student.enrollment_number,
-					    Student.student_gender,
-
-					   Student.id_type,
-
-
-                       ).select_from(ClassDivisionRecords).join(Student,
-                                                                ClassDivisionRecords.student_id == Student.student_id)
+        ).select_from(Student).join(ClassDivisionRecords,
+                                    ClassDivisionRecords.student_id == Student.student_id, isouter=True)
 
         ### 此处填写查询条件
+
         if school_id:
             query = query.where(ClassDivisionRecords.school_id == school_id)
         if id_type:
@@ -70,7 +81,10 @@ class ClassDivisionRecordsDAO(DAOBase):
         if class_id:
             query = query.where(ClassDivisionRecords.class_id == class_id)
         if status:
-            query = query.where(ClassDivisionRecords.status == status)
+            query = query.where(Student.approval_status == status)
+        else:
+            query = query.where(Student.approval_status != StudentApprovalAtatus.OUT.value)
+
         if enrollment_number:
             query = query.where(Student.enrollment_number == enrollment_number)
 

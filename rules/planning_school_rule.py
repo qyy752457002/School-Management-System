@@ -48,6 +48,15 @@ class PlanningSchoolRule(object):
         planning_school_db.status =  PlanningSchoolStatus.DRAFT.value
         planning_school_db.created_uid = 0
         planning_school_db.updated_uid = 0
+        if planning_school.province and len( planning_school.province)>0:
+            pass
+        else:
+            planning_school.province = "210000"
+        if planning_school.city and len( planning_school.city)>0:
+            pass
+        else:
+            planning_school.city = "210100"
+
 
         planning_school_db = await self.planning_school_dao.add_planning_school(planning_school_db)
         planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=["created_at",'updated_at'])

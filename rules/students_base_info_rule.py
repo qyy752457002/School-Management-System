@@ -1,8 +1,13 @@
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+
+from daos.school_communication_dao import SchoolCommunicationDAO
+from daos.school_dao import SchoolDAO
+from daos.student_session_dao import StudentSessionDao
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
+from models.student_session import StudentSessionstatus
 from models.students_base_info import StudentBaseInfo
 from views.common.common_view import page_none_deal
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
@@ -16,6 +21,9 @@ from business_exceptions.student import StudentNotFoundError,StudentExistsError
 class StudentsBaseInfoRule(object):
     students_base_info_dao: StudentsBaseInfoDao
     students_dao: StudentsDao
+    student_session_dao: StudentSessionDao
+    school_dao: SchoolDAO
+    school_commu_dao: SchoolCommunicationDAO
 
     async def get_students_base_info_by_student_id(self, student_id):
         """
@@ -25,6 +33,13 @@ class StudentsBaseInfoRule(object):
         if not students_base_info_db:
             raise StudentNotFoundError()
         students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfo, exclude=[""])
+        schoolinfo = await self.school_dao.get_school_by_id(students_base_info_db.school_id)
+        students_base_info.block = schoolinfo.block
+        students_base_info.borough = schoolinfo.borough
+        schoolcominfo = await self.school_commu_dao.get_school_communication_by_school_id(students_base_info_db.school_id)
+        students_base_info.loc_area = schoolcominfo.loc_area
+        students_base_info.loc_area_pro = schoolcominfo.loc_area_pro
+
         return students_base_info
 
     async def get_students_base_info_by_id(self, students_base_id):
@@ -51,6 +66,15 @@ class StudentsBaseInfoRule(object):
         if exits_student_base_info:
             raise StudentExistsError()
         students_base_info_db = view_model_to_orm_model(students_base_info, StudentBaseInfo, exclude=[""])
+        # 读取当前开启的届别  赋值
+        param = {"session_status":  StudentSessionstatus.ENABLE.value}
+        res  = await self.student_session_dao.get_student_session_by_param(**param)
+        # session = orm_model_to_view_model(res, StudentSessionModel, exclude=[""])
+        students_base_info_db.session_id = res.session_id
+        students_base_info_db.session= res.session_name
+
+
+
         students_base_info_db = await self.students_base_info_dao.add_students_base_info(students_base_info_db)
         students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfo, exclude=[""])
         return students_base_info
