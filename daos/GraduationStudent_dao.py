@@ -44,7 +44,7 @@ class GraduationStudentDAO(DAOBase):
                        Student.id_number, Student.approval_status,
 
                        StudentBaseInfo.edu_number, StudentBaseInfo.class_id,
-                       StudentBaseInfo.school_id,
+                       StudentBaseInfo.school_id, StudentBaseInfo.graduation_type,
                        School.school_name,  School.block,  School.borough,  Classes.class_name,
 
                        ).select_from(Student).join(StudentBaseInfo,
