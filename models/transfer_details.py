@@ -31,4 +31,6 @@ class TransferDetails(BaseDBModel):
     teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")
     operation_time: Mapped[date] = mapped_column(Date, nullable=False, comment="操作时间")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
+    approval_status: Mapped[str] = mapped_column(String(255), nullable=False, comment="审批状态",
+                                                         default="submitting")
     

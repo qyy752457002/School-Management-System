@@ -10,6 +10,7 @@ from models.enum_value import EnumValue
 from views.models.enum_value import EnumValue as EnumValueModel
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 
+
 @dataclass_inject
 class EnumValueRule(object):
     enum_value_dao: EnumValueDAO
@@ -33,20 +34,20 @@ class EnumValueRule(object):
             enum_value.enum_value_name)
         if exists_enum_value:
             raise Exception(f"枚举值{enum_value.enum_value_name}已存在")
-        enum_value_db = view_model_to_orm_model(enum_value, EnumValue,    exclude=["id"])
+        enum_value_db = view_model_to_orm_model(enum_value, EnumValue, exclude=["id"])
         # enum_value_db.status =  EnumValueStatus.DRAFT.value
         enum_value_db.created_uid = 0
         enum_value_db.updated_uid = 0
 
         enum_value_db = await self.enum_value_dao.add_enum_value(enum_value_db)
-        enum_value = orm_model_to_view_model(enum_value_db, EnumValueModel, exclude=["created_at",'updated_at'])
+        enum_value = orm_model_to_view_model(enum_value_db, EnumValueModel, exclude=["created_at", 'updated_at'])
         return enum_value
 
-    async def update_enum_value(self, enum_value,ctype=1):
+    async def update_enum_value(self, enum_value, ctype=1):
         exists_enum_value = await self.enum_value_dao.get_enum_value_by_id(enum_value.id)
         if not exists_enum_value:
             raise EnumValueNotFoundError()
-        if ctype==1:
+        if ctype == 1:
             enum_value_db = EnumValue()
             enum_value_db.id = enum_value.id
             enum_value_db.enum_value_no = enum_value.enum_value_no
@@ -62,21 +63,20 @@ class EnumValueRule(object):
         else:
             enum_value_db = EnumValue()
             enum_value_db.id = enum_value.id
-            enum_value_db.enum_value_name=enum_value.enum_value_name
-            enum_value_db.enum_value_short_name=enum_value.enum_value_short_name
-            enum_value_db.enum_value_code=enum_value.enum_value_code
-            enum_value_db.create_enum_value_date=enum_value.create_enum_value_date
-            enum_value_db.founder_type=enum_value.founder_type
-            enum_value_db.founder_name=enum_value.founder_name
-            enum_value_db.urban_rural_nature=enum_value.urban_rural_nature
-            enum_value_db.enum_value_operation_type=enum_value.enum_value_operation_type
-            enum_value_db.enum_value_org_form=enum_value.enum_value_org_form
-            enum_value_db.enum_value_operation_type_lv2=enum_value.enum_value_operation_type_lv2
-            enum_value_db.enum_value_operation_type_lv3=enum_value.enum_value_operation_type_lv3
-            enum_value_db.department_unit_number=enum_value.department_unit_number
-            enum_value_db.sy_zones=enum_value.sy_zones
-            enum_value_db.historical_evolution=enum_value.historical_evolution
-
+            enum_value_db.enum_value_name = enum_value.enum_value_name
+            enum_value_db.enum_value_short_name = enum_value.enum_value_short_name
+            enum_value_db.enum_value_code = enum_value.enum_value_code
+            enum_value_db.create_enum_value_date = enum_value.create_enum_value_date
+            enum_value_db.founder_type = enum_value.founder_type
+            enum_value_db.founder_name = enum_value.founder_name
+            enum_value_db.urban_rural_nature = enum_value.urban_rural_nature
+            enum_value_db.enum_value_operation_type = enum_value.enum_value_operation_type
+            enum_value_db.enum_value_org_form = enum_value.enum_value_org_form
+            enum_value_db.enum_value_operation_type_lv2 = enum_value.enum_value_operation_type_lv2
+            enum_value_db.enum_value_operation_type_lv3 = enum_value.enum_value_operation_type_lv3
+            enum_value_db.department_unit_number = enum_value.department_unit_number
+            enum_value_db.sy_zones = enum_value.sy_zones
+            enum_value_db.historical_evolution = enum_value.historical_evolution
 
         enum_value_db = await self.enum_value_dao.update_enum_value(enum_value_db)
         # 更新不用转换   因为得到的对象不熟全属性
@@ -88,7 +88,7 @@ class EnumValueRule(object):
         if not exists_enum_value:
             raise EnumValueNotFoundError()
         enum_value_db = await self.enum_value_dao.delete_enum_value(exists_enum_value)
-        enum_value = orm_model_to_view_model(enum_value_db, EnumValueModel, exclude=[""],)
+        enum_value = orm_model_to_view_model(enum_value_db, EnumValueModel, exclude=[""], )
         return enum_value
 
     async def softdelete_enum_value(self, enum_value_id):
@@ -105,28 +105,26 @@ class EnumValueRule(object):
     async def get_enum_value_count(self):
         return await self.enum_value_dao.get_enum_value_count()
 
-    async def query_enum_value_with_page(self, page_request: PageRequest,  enum_value_name, parent_code ):
-        paging = await self.enum_value_dao.query_enum_value_with_page(  page_request, enum_value_name,parent_code  )
+    async def query_enum_value_with_page(self, page_request: PageRequest, enum_value_name, parent_code):
+        paging = await self.enum_value_dao.query_enum_value_with_page(page_request, enum_value_name, parent_code)
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, EnumValueModel)
         return paging_result
-
 
     async def update_enum_value_status(self, enum_value_id, status):
         exists_enum_value = await self.enum_value_dao.get_enum_value_by_id(enum_value_id)
         if not exists_enum_value:
             raise EnumValueNotFoundError()
 
-
         need_update_list = []
         need_update_list.append('status')
 
-        print(exists_enum_value.status,2222222)
-        enum_value_db = await self.enum_value_dao.update_enum_value_byargs(exists_enum_value,*need_update_list)
+        print(exists_enum_value.status, 2222222)
+        enum_value_db = await self.enum_value_dao.update_enum_value_byargs(exists_enum_value, *need_update_list)
         # enum_value = orm_model_to_view_model(enum_value_db, EnumValueModel, exclude=[""],)
         return enum_value_db
 
-    async def update_enum_value_byargs(self, enum_value,ctype=1):
+    async def update_enum_value_byargs(self, enum_value, ctype=1):
         exists_enum_value = await self.enum_value_dao.get_enum_value_by_id(enum_value.id)
         if not exists_enum_value:
             raise EnumValueNotFoundError()
@@ -135,51 +133,47 @@ class EnumValueRule(object):
             if value:
                 need_update_list.append(key)
 
-
         enum_value_db = await self.enum_value_dao.update_enum_value_byargs(enum_value, *need_update_list)
 
         # 更新不用转换   因为得到的对象不熟全属性
         # enum_value = orm_model_to_view_model(enum_value_db, SchoolModel, exclude=[""])
         return enum_value_db
 
-
-    async def query_enum_values(self,enum_value_name):
+    async def query_enum_values(self, enum_value_name):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(EnumValue).where(EnumValue.enum_value_name.like(f'%{enum_value_name}%') ))
-        res= result.scalars().all()
+        result = await session.execute(select(EnumValue).where(EnumValue.enum_value_name.like(f'%{enum_value_name}%')))
+        res = result.scalars().all()
         lst = []
         for row in res:
             enum_value = orm_model_to_view_model(row, EnumValueModel)
             lst.append(enum_value)
         return lst
 
-    async def get_next_level_enum_values(self,enum_value_name,enum_values:List[str]):
+    async def get_next_level_enum_values(self, enum_value_name, enum_values: List[str]):
 
         session = await db_connection_manager.get_async_session("default", True)
         result = await session.execute(
-            select(EnumValue).where(EnumValue.enum_value.in_( enum_values ) ) .where(EnumValue.enum_name== enum_value_name )
+            select(EnumValue).where(EnumValue.enum_value.in_(enum_values)).where(EnumValue.enum_name == enum_value_name)
         )
 
-        res= result.scalars().all()
-        listids=  []
+        res = result.scalars().all()
+        listids = []
         for row in res:
             # enum_value = orm_model_to_view_model(row, EnumValueModel,exclude=["sort_number"])
             # lst.append(enum_value)
             listids.append(row.id)
         result2 = await session.execute(
-            select(EnumValue).where(EnumValue.parent_id.in_( listids ) )
+            select(EnumValue).where(EnumValue.parent_id.in_(listids))
         )
 
-        res2= result2.scalars().all()
-        lst =  []
+        res2 = result2.scalars().all()
+        lst = []
         for row in res2:
             # enum_value = orm_model_to_view_model(row, EnumValueModel,exclude=["sort_number",'description'])
             lst.append(row)
 
         return lst
-
-
 
     async def get_enum_value_all(self, filterdict):
         return await self.enum_value_dao.get_enum_value_all(filterdict)
