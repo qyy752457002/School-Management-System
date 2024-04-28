@@ -1,4 +1,5 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from fastapi import Query
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
@@ -27,9 +28,9 @@ class StudentTransactionRule(object):
         student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
         return student_transaction
 
-    async def add_student_transaction(self, student_transaction: StudentTransactionModel ,
-                                      direction=TransactionDirection.IN.value,relation_id=0):
-        relation_id=int(relation_id)
+    async def add_student_transaction(self, student_transaction: StudentTransactionModel,
+                                      direction=TransactionDirection.IN.value, relation_id=0):
+        relation_id = int(relation_id)
         # exists_student_transaction = await self.student_transaction_dao.get_studenttransaction_by_studenttransaction_name(student_transaction.student_transaction_name)
         # if exists_student_transaction:
         #     raise Exception(f"转学申请{student_transaction.student_transaction_name}已存在")
@@ -53,23 +54,32 @@ class StudentTransactionRule(object):
                 # "transferin_reason": "transfer_reason",
                 # "school_id": "out_school_id",
             }
-        if int(relation_id)>0:
+        if int(relation_id) > 0:
             # exclude=[]
-            exclude=["id"]
+            exclude = ["id"]
 
         else:
             # student_transaction_db = StudentTransaction()
-            exclude=["id"]
+            exclude = ["id"]
 
+        exclude = []
+        for key, value in student_transaction.__dict__.items():
+            if isinstance(value, tuple):
+                exclude.append(key)
+
+        # print(exclude)
+        # print(student_transaction)
 
         student_transaction_db = view_model_to_orm_model(student_transaction, StudentTransaction,
-                                                         original_dict_map_view_orm,exclude= exclude)
+                                                         original_dict_map_view_orm, exclude=exclude)
         # student_transaction_db = StudentTransaction()
         student_transaction_db.direction = direction
         student_transaction_db.relation_id = int(relation_id)
         # student_transaction_db.student_transaction_no = student_transaction.student_transaction_no
         # student_transaction_db.student_transaction_alias = student_transaction.student_transaction_alias
         # student_transaction_db.description = student_transaction.description
+
+        # print(student_transaction_db)
 
         student_transaction_db = await self.student_transaction_dao.add_studenttransaction(student_transaction_db)
 
@@ -132,7 +142,7 @@ class StudentTransactionRule(object):
         if edu_no:
             kdict["country_no"] = edu_no
 
-        paging = await self.student_transaction_dao.query_studenttransaction_with_page(  page_request,**kdict)
+        paging = await self.student_transaction_dao.query_studenttransaction_with_page(page_request, **kdict)
         # print(2222222222222,paging)
 
         # 字段映射的示例写法   , {"hash_password": "password"} other_mapper={"in_school_id": "school_id","in_grade": "grade_name",
