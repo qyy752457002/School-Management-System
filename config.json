@@ -1,57 +1,108 @@
 {
-    "web_server":{
-        "name":"school",
-        "description":"学校综合管理系统",
-        "version":"0.0.1"
-    },
-    "databases": {
-        "default": {
-            "async_driver": "kingbase+asyncpg",
-            "sync_driver":"kingbase",
-            "master": {
-                "host": "10.0.0.42",
-                "port": 54321,
-                "user": "schooloms",
-                "password": "J16s10Wp08yfEskmVAJH",
-                "database": "schooloms"
-            },
-            "slaves": [
-                {
-                    "host": "10.0.0.42",
-                    "port": 54321,
-                    "user": "schooloms",
-                    "password": "J16s10Wp08yfEskmVAJH",
-                    "database": "schooloms"
-                },
-                {
-                    "host": "10.0.0.42",
-                    "port": 54321,
-                    "user": "schooloms",
-                    "password": "J16s10Wp08yfEskmVAJH",
-                    "database": "schooloms"
-                }
-            ]
-
+  "web_server": {
+    "name": "school",
+    "description": "学校综合管理系统",
+    "version": "0.0.1"
+  },
+  "databases": {
+    "default": {
+      "async_driver": "kingbase+asyncpg",
+      "sync_driver": "kingbase",
+      "master": {
+        "host": "10.0.0.42",
+        "port": 54321,
+        "user": "schooloms",
+        "password": "J16s10Wp08yfEskmVAJH",
+        "database": "schooloms"
+      },
+      "slaves": [
+        {
+          "host": "10.0.0.42",
+          "port": 54321,
+          "user": "schooloms",
+          "password": "J16s10Wp08yfEskmVAJH",
+          "database": "schooloms"
+        },
+        {
+          "host": "10.0.0.42",
+          "port": 54321,
+          "user": "schooloms",
+          "password": "J16s10Wp08yfEskmVAJH",
+          "database": "schooloms"
         }
+      ]
+    }
+  },
+  "storage": {
+    "endpoint": "minio.f123.pub",
+    "access_key": "BeZHOqpqs4u5jjuv",
+    "secret_key": "MtuM5ZBlARTQMqRsb6mGIMecPlJhCE2D",
+    "token_exp_sec": 600,
+    "buckets": {
+      "student": {
+        "name": "k8s",
+        "path": "/student"
+      },
+      "school": {
+        "name": "k8s",
+        "path": "/school"
+      },
+      "teacher": {
+        "name": "k8s",
+        "path": "/teacher"
+      }
+    }
+  },
+  "redis": {
+    "servers": {
+      "default": {
+        "host": "10.0.5.25",
+        "port": 6379,
+        "password": ""
+      }
     },
-        "storage":{
-            "endpoint": "minio.f123.pub",
-            "access_key": "BeZHOqpqs4u5jjuv",
-            "secret_key": "MtuM5ZBlARTQMqRsb6mGIMecPlJhCE2D",
-            "token_exp_sec": 600,
-            "buckets":{
-                "student":{
-                    "name":"k8s",
-                    "path":"/student"
-                },
-                "school":{
-                    "name":"k8s",
-                    "path":"/school"
-                },
-                "teacher":{
-                    "name":"k8s",
-                    "path":"/teacher"
-                }
-            }
-        }
+    "dbs": {
+      "session": {
+        "db": 20,
+        "prefix": "",
+        "server_key": "default"
+      },
+      "jwt_blacklist": {
+        "db": 21,
+        "prefix": "",
+        "server_key": "default"
+      },
+      "login_state": {
+        "db": 22,
+        "prefix": "",
+        "server_key": "default"
+      }
+    }
+  },
+  "authentication": {
+    "jwt": {
+      "secret": "secret",
+      "algorithm": "HS256",
+      "expires": 3600,
+      "issuer": "issuer",
+      "audience": "audience",
+      "issue_at": 0
+    },
+    "oauth2": {
+      "client_id": "76889917407ad3916214",
+      "client_secret": "11af0ae636c86d9f0a2d0355da0ed210ffc0c2b1",
+      "authorization_url": "https://org-center.f123.pub/login/oauth/authorize",
+      "token_url": "https://org-center.f123.pub/api/login/oauth/access_token",
+      "user_info_url": "https://org-center.f123.pub/api/userinfo",
+      "redirect_url": "https://localhost:8080/auth/callback",
+      "grant_type": "authorization_code",
+      "scope": "scope",
+      "cert": "cert",
+      "home_url": "https://localhost/api/school/docs",
+      "no_login_urls": [
+        "/api/school/openapi.json",
+        "/api/school/docs"
+      ]
+    }
+  }
 }
