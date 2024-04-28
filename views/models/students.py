@@ -473,7 +473,7 @@ class NewStudentTransferIn(BaseModel):
 
     student_name: str = Field('', title="学生姓名", description="学生姓名")
     enrollment_number: str = Field('', title="报名号", description="报名号")
-    birthday: str = Field('', title="生日", description="生日")
+    birthday: date  = Field('', title="生日", description="生日")
     student_gender: str = Field('', title="性别", description="性别")
     id_type: str = Field('', title="证件类别", description="证件类别")
     id_number: str = Field("", title="证件号码", description="证件号码")

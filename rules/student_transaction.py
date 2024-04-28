@@ -54,6 +54,8 @@ class StudentTransactionRule(object):
                 # "transferin_reason": "transfer_reason",
                 # "school_id": "out_school_id",
             }
+        exclude = []
+
         if int(relation_id) > 0:
             # exclude=[]
             exclude = ["id"]
@@ -62,7 +64,6 @@ class StudentTransactionRule(object):
             # student_transaction_db = StudentTransaction()
             exclude = ["id"]
 
-        exclude = []
         for key, value in student_transaction.__dict__.items():
             if isinstance(value, tuple):
                 exclude.append(key)

@@ -67,7 +67,7 @@ class StudentEduInfoOut(BaseModel):
     district_id: str = Query('',   description="区县",min_length=1,max_length=20,examples=["1622222"]),
     transfer_in_type: str = Query("",   description="转入类型",min_length=1,max_length=20,examples=["指定日期转入"]),
     country_no: str = Query("",   description="国家学籍号码",min_length=1,max_length=20,examples=["DF23321312"]),
-    school_id: int  = Query('', title="", description="学校ID",examples=["102"])
+    school_id: int  = Query(0, title="", description="学校ID",examples=["102"])
     school_name: str = Query(..., title="", description="学校名称",examples=["XXxiaoxue"])
     session: str = Query('', title="", description="届别",examples=["2003"])
     attached_class: str = Query("", title="", description="附设班",examples=["3班"])
