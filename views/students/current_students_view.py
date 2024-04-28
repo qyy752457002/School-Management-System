@@ -9,8 +9,8 @@ from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
     StudentEduInfo
-from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo,  \
-    NewStudentTransferIn
+from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, \
+    NewStudentTransferIn, StudentGraduation
 # from fastapi import Field
 from fastapi import Query, Depends
 from pydantic import BaseModel, Field
@@ -211,15 +211,16 @@ class CurrentStudentsView(BaseView):
 
     # 在校生 发起毕业    todo  支持传入部门学生ID或者  / all年级毕业  批量另起
     async def patch_graduate(self,
-                             student_id:  int  = Query(..., description="学生ID",
-                                                           example='1'),
-                             graduate_status: StudentGraduatedType = Query(..., description="毕业状态", min_length=1, max_length=20,
-                                                          example='completion'),
-                             graduate_remark: str = Query( '', description="毕业备注", min_length=1, max_length=250,
-                                                           example=''),
+                             student: StudentGraduation,
+                             # student_id:  int  = Query(..., description="学生ID",
+                             #                               example='1'),
+                             # graduate_status: StudentGraduatedType = Query(..., description="毕业状态", min_length=1, max_length=20,
+                             #                              example='completion'),
+                             # graduate_remark: str = Query( '', description="毕业备注", min_length=1, max_length=250,
+                             #                               example=''),
                              ):
         # print(new_students_key_info)
-        res = await self.graduation_student_rule.update_graduation_student(student_id,graduate_status,graduate_remark)
+        res = await self.graduation_student_rule.update_graduation_student(student.student_id,student.graduation_type,student.graduation_remarks)
 
         return res
 
