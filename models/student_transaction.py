@@ -32,6 +32,21 @@ class AuditAction(str, Enum):
     def to_list(cls):
         return [cls.NEEDAUDIT,cls.PASS, cls.REFUSE]
 
+class AuditFlowStatus(str, Enum):
+    """
+    流程 的状态定义
+    """
+    FLOWBEGIN = "flow_begin"
+    APPLY_SUBMIT = "apply_submit"
+    PASS = "pass"
+    REFUSE = "refuse"
+    RECEIVECOMPLETED = "refuse"
+    FLOWEND = "flow_begin"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.FLOWBEGIN,cls.APPLY_SUBMIT, cls.PASS, cls.REFUSE, cls.RECEIVECOMPLETED, cls.FLOWEND]
+
 
 class StudentTransaction(BaseDBModel):
     """

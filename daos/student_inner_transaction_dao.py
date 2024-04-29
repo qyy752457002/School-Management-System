@@ -37,7 +37,9 @@ class StudentInnerTransactionDAO(DAOBase):
 
     async def query_student_inner_transaction_with_page(self, student_inner_transaction_search,
                                                         page_request: PageRequest):
-        query = select(StudentInnerTransaction,
+        query = select(
+            # StudentInnerTransaction,
+                       StudentInnerTransaction.id, StudentInnerTransaction.student_id, StudentInnerTransaction.school_id, StudentInnerTransaction.class_id, StudentInnerTransaction.transaction_type, StudentInnerTransaction.transaction_reason, StudentInnerTransaction.transaction_remark, StudentInnerTransaction.transaction_time, StudentInnerTransaction.transaction_user, StudentInnerTransaction.transaction_user_id, StudentInnerTransaction.created_uid, StudentInnerTransaction.updated_uid, StudentInnerTransaction.created_at, StudentInnerTransaction.updated_at, StudentInnerTransaction.approval_status, StudentInnerTransaction.is_deleted,
                        School.school_name,
                        Classes.class_name,
                        PlanningSchool.borough,
