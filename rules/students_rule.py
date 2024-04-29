@@ -90,9 +90,15 @@ class StudentsRule(object):
         if students_db.id_number:
             kdict["id_number"] = students_db.id_number
             kdict["is_deleted"] =  False
-            exist = self.students_dao.get_students_by_param(**kdict)
+            exist = await self.students_dao.get_students_by_param(**kdict)
+            # print(exist)
+
+            # studentsex = orm_model_to_view_model(exist, NewStudents, exclude=[""])
+            # print(studentsex)
+
+
             if exist:
-                print(vars(exist))
+                # print(exist)
                 raise StudentExistsError()
 
         # print(students_db)
