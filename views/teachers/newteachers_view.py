@@ -93,6 +93,7 @@ class NewTeachersView(BaseView):
 
     async def get_newteacherinfo(self, teacher_id: int = Query(..., title="教师名称", description="教师名称",
                                                                example=123)):
+        # todo:重新获取时需要根据状态判断一下返回的应该是需要进行验证的还是不需要验证的。
         res = await self.teacher_info_rule.get_teachers_info_by_teacher_id(teacher_id)
         return res
 
