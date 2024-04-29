@@ -46,11 +46,11 @@ class StudentInnerTransactionDAO(DAOBase):
                        Student.approval_status,
                        StudentBaseInfo.edu_number,
                        ).select_from(StudentInnerTransaction).join(School,
-                                                                   StudentInnerTransaction.school_id == School.id).join(
-            PlanningSchool, School.planning_school_id == PlanningSchool.id).join(Student,
-                                                                                 StudentInnerTransaction.student_id == Student.student_id).join(
-            StudentBaseInfo, StudentBaseInfo.student_id == Student.student_id).join(Classes,
-                                                                                    StudentInnerTransaction.class_id == Classes.id)
+                                                                   StudentInnerTransaction.school_id == School.id,isouter=True).join(
+            PlanningSchool, School.planning_school_id == PlanningSchool.id,isouter=True).join(Student,
+                                                                                 StudentInnerTransaction.student_id == Student.student_id,isouter=True).join(
+            StudentBaseInfo, StudentBaseInfo.student_id == Student.student_id,isouter=True).join(Classes,
+                                                                                    StudentInnerTransaction.class_id == Classes.id,isouter=True)
 
         ### 此处填写查询条件
         if student_inner_transaction_search.student_name:

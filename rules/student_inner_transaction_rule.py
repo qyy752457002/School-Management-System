@@ -47,7 +47,7 @@ class StudentInnerTransactionRule(object):
 
 
         student_inner_transaction_db = await self.student_inner_transaction_dao.add_student_inner_transaction(student_inner_transaction_db)
-        student_inner_transaction = orm_model_to_view_model(student_inner_transaction_db, StudentInnerTransactionModel, exclude=[""])
+        student_inner_transaction = orm_model_to_view_model(student_inner_transaction_db, StudentInnerTransactionModel, exclude=["created_at",'updated_at','transaction_time'])
         return student_inner_transaction
 
     async def update_student_inner_transaction(self, student_inner_transaction):
