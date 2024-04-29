@@ -1,9 +1,7 @@
-from typing import List
 
 from mini_framework.web.views import BaseView
 
 from models.student_transaction import AuditAction, TransactionDirection, AuditFlowStatus
-from models.students import StudentGraduatedType
 from rules.graduation_student_rule import GraduationStudentRule
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
@@ -11,9 +9,7 @@ from views.models.student_transaction import StudentTransaction, StudentTransact
     StudentEduInfo, StudentTransactionAudit, StudentEduInfoOut
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, \
     NewStudentTransferIn, StudentGraduation
-# from fastapi import Field
 from fastapi import Query, Depends
-from pydantic import BaseModel, Field
 from mini_framework.web.std_models.page import PageRequest
 
 from mini_framework.design_patterns.depend_inject import get_injector
@@ -102,41 +98,40 @@ class CurrentStudentsView(BaseView):
 
     async def get_student_transaction_info(self,
 
-                  apply_id: int = Query(..., description=" ", example='1'),
+                                           apply_id: int = Query(..., description=" ", example='1'),
 
-                  ):
+                                           ):
+        relationinfo = tinfo = ''
+        tinfo = await self.student_transaction_rule.get_student_transaction_by_id(apply_id)
 
-        relationinfo=tinfo=''
-        tinfo  = await self.student_transaction_rule.get_student_transaction_by_id(apply_id)
-
-        if isinstance(tinfo,object) and hasattr(tinfo,'relation_id') and  tinfo.relation_id:
-            relationinfo = await self.student_transaction_rule.get_student_transaction_by_id(tinfo.relation_id,)
+        if isinstance(tinfo, object) and hasattr(tinfo, 'relation_id') and tinfo.relation_id:
+            relationinfo = await self.student_transaction_rule.get_student_transaction_by_id(tinfo.relation_id, )
             pass
 
         stubaseinfo = await self.students_rule.get_students_by_id(tinfo.student_id)
         # stubaseinfo=''
 
         return {'student_transaction_in': tinfo, 'student_transaction_out': relationinfo,
-                'student_info': stubaseinfo,  }
+                'student_info': stubaseinfo, }
 
     # 在校生转入    届别 班级
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
         # print(new_students_key_info)
         student_edu_info.status = AuditAction.NEEDAUDIT.value
-        audit_info=res = await self.student_transaction_rule.add_student_transaction(student_edu_info)
+        audit_info = res = await self.student_transaction_rule.add_student_transaction(student_edu_info)
         # 流乘记录
         student_trans_flow = StudentTransactionFlow(apply_id=audit_info.id,
                                                     stage=AuditFlowStatus.FLOWBEGIN.value,
-                                                    remark= '')
+                                                    remark='')
         res2 = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
         student_trans_flow = StudentTransactionFlow(apply_id=audit_info.id,
                                                     stage=AuditFlowStatus.APPLY_SUBMIT.value,
-                                                    remark= '')
+                                                    remark='')
         res2 = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
 
         return res
 
-    # 在校生转入   审批
+    # 在校生转入   发起审批
     async def patch_transferin_audit(self,
                                      audit_info: StudentTransactionAudit
 
@@ -156,11 +151,10 @@ class CurrentStudentsView(BaseView):
 
     # 在校生转入   审批的流程
     async def get_transferin_audit(self,
-                                     apply_id: int = Query(..., description=" ", example='1'),
+                                   apply_id: int = Query(..., description=" ", example='1'),
 
-                                     ):
+                                   ):
         res = await self.student_transaction_flow_rule.query_student_transaction_flow(apply_id)
-
 
         # print(new_students_key_info)
         return res
@@ -229,35 +223,10 @@ class CurrentStudentsView(BaseView):
                                                                           TransactionDirection.IN.value, res_out.id)
         return res
 
-    # # 在校生转入   审批同意
-    # async def patch_transferin_auditpass(self,
-    #                                      transferin_audit_id: str = Query(..., description="转入申请id", min_length=1,
-    #                                                                       max_length=20, example='SC2032633'),
-    #                                      remark: str = Query(..., description="备注", min_length=1, max_length=20,
-    #                                                          example='SC2032633'),
-    #                                      ):
-    #     # print(new_students_key_info)
-    #     return transferin_audit_id
-    #
-    # # 在校生转入   审批拒绝
-    # async def patch_transferin_auditrefuse(self,
-    #                                        transferin_audit_id: str = Query(..., description="转入申请id", min_length=1,
-    #                                                                         max_length=20, example='SC2032633'),
-    #                                        remark: str = Query(..., description="备注", min_length=1, max_length=20,
-    #                                                            example='SC2032633'),
-    #                                        ):
-    #     # print(new_students_key_info)
-    #     return transferin_audit_id
 
     # 在校生 发起毕业    todo  支持传入部门学生ID或者  / all年级毕业  批量另起
     async def patch_graduate(self,
                              student: StudentGraduation,
-                             # student_id:  int  = Query(..., description="学生ID",
-                             #                               example='1'),
-                             # graduate_status: StudentGraduatedType = Query(..., description="毕业状态", min_length=1, max_length=20,
-                             #                              example='completion'),
-                             # graduate_remark: str = Query( '', description="毕业备注", min_length=1, max_length=250,
-                             #                               example=''),
                              ):
         # print(new_students_key_info)
         res = await self.graduation_student_rule.update_graduation_student(student.student_id, student.graduation_type,
