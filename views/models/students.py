@@ -85,7 +85,7 @@ class NewStudentsQueryRe(BaseModel):
     student_id: int = Field(..., title="学生id", description="学生id")
     student_name: str = Field(None, title="学生姓名", description="学生姓名")
     enrollment_number: str = Field(None, title="报名号", description="报名号")
-    student_gender: Gender = Field(None, title="性别", description="性别")
+    student_gender: Gender|str = Field(None, title="性别", description="性别")
     id_type: str = Field(None, title="证件类别", description="证件类别")
     id_number: str = Field(None, title="证件号码", description="证件号码")
     school: str = Field(None, title="学校", description="学校")
@@ -141,14 +141,14 @@ class StudentsKeyinfoDetail(BaseModel):
     student_gender: Gender = Field('', title="性别", description="性别")
     id_type: str = Field('', title="证件类别", description="证件类别")
     id_number: str = Field('', title="证件号码", description="证件号码")
-    photo: str = Field('', title="照片", description="照片")
-    province: str = Field('', title=" ", description="",examples=[''],min_length=0,max_length=30)
-    city: str = Field('', title=" ", description="",examples=[''],min_length=0,max_length=30)
+    photo: str|None = Field('', title="照片", description="照片")
+    province: str|None = Field('', title=" ", description="",examples=[''],min_length=0,max_length=30)
+    city: str|None = Field('', title=" ", description="",examples=[''],min_length=0,max_length=30)
     school_name: str = Field('', title="学校名称", description="学校名称",examples=['XX小学'])
     session: str = Field("", title="届别", description="届别")
     grade_name: str = Field('', title="",description="年级名称",examples=['一年级'])
     class_name: str = Field('', title="Grade_name", description="班级名称", examples=['一年级'])
-    major_name: str = Field('', title="Grade_name",description="专业名称",examples=['农林牧鱼 '])
+    major_name: str|None = Field('', title="Grade_name",description="专业名称",examples=['农林牧鱼 '])
     block: str = Field("", title="", description="", max_length=50)
     borough: str = Field("", title="", description="", max_length=50)
     loc_area: str = Field("", title="", description="", max_length=50)
@@ -236,6 +236,8 @@ class StudentsBaseInfo(BaseModel):
     block: str = Field("", title="", description="", max_length=50)
     borough: str = Field("", title="", description="", max_length=50)
     loc_area: str = Field("", title="", description="", max_length=50)
+    edu_number: str = Field('', title="", description="学籍号码")
+
     loc_area_pro: str = Field("", title="", description="", max_length=50)
 
 
@@ -447,7 +449,7 @@ class GraduationStudents(BaseModel):
 class NewStudentsFlowOut(BaseModel):
     student_id: int = Query(..., description="学生id", examples=["1"]),
     flow_out_time: str = Query(..., description="流出时间", min_length=1, max_length=20, examples=["2020-10-10"]),
-    flow_out_reason: str = Query(None, description="流出原因", min_length=1, max_length=20, examples=["家庭搬迁"]),
+    flow_out_reason: str = Query('', description="流出原因", min_length=1, max_length=20, examples=["家庭搬迁"]),
 
 
 class StudentSession(BaseModel):
@@ -473,7 +475,7 @@ class NewStudentTransferIn(BaseModel):
 
     student_name: str = Field('', title="学生姓名", description="学生姓名")
     enrollment_number: str = Field('', title="报名号", description="报名号")
-    birthday: str = Field('', title="生日", description="生日")
+    birthday: date  = Field('', title="生日", description="生日")
     student_gender: str = Field('', title="性别", description="性别")
     id_type: str = Field('', title="证件类别", description="证件类别")
     id_number: str = Field("", title="证件号码", description="证件号码")

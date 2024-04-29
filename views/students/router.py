@@ -5,7 +5,7 @@ from views.students.current_students_view import CurrentStudentsView, CurrentStu
 from views.students.graduation_students_view import GraduationStudentsView
 
 from views.students.newstudents_view import NewsStudentsView, NewsStudentsInfoView,NewsStudentsFamilyInfoView
-
+from views.students.student_inner_transaction_view import StudentInnerTransactionView
 
 
 def routers():
@@ -16,6 +16,7 @@ def routers():
     router.include_api_view_class(NewsStudentsInfoView, "/v1/news-students-info", description="新生基本信息管理")
     router.include_api_view_class(NewsStudentsFamilyInfoView, "/v1/news-students-family-info", description="新生家庭信息管理")
     router.include_api_view_class(CurrentStudentsBaseInfoView, "/v1/current-students-base-info", description="在校生基本信息管理")
+    router.include_api_view_class(StudentInnerTransactionView, "/v1/current-students-inner-transaction", description="在校生校内异动")
     router.include_api_view_class(CurrentStudentsFamilyView, "/v1/current-students-family-info", description="在校生家庭信息管理")
 
     return router

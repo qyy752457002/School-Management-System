@@ -8,7 +8,7 @@ from rules.graduation_student_rule import GraduationStudentRule
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
-    StudentEduInfo, StudentTransactionAudit
+    StudentEduInfo, StudentTransactionAudit, StudentEduInfoOut
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, \
     NewStudentTransferIn, StudentGraduation
 # from fastapi import Field
@@ -21,7 +21,7 @@ from rules.students_base_info_rule import StudentsBaseInfoRule
 from rules.students_rule import StudentsRule
 from rules.student_session_rule import StudentSessionRule
 from rules.students_family_info_rule import StudentsFamilyInfoRule
-from views.models.students import StudentSession,StudentsUpdateFamilyInfo
+from views.models.students import StudentSession, StudentsUpdateFamilyInfo
 
 
 class CurrentStudentsView(BaseView):
@@ -33,10 +33,9 @@ class CurrentStudentsView(BaseView):
         self.student_transaction_rule = get_injector(StudentTransactionRule)
         self.student_transaction_flow_rule = get_injector(StudentTransactionFlowRule)
         self.students_family_info_rule = get_injector(StudentsFamilyInfoRule)
-        self.graduation_student_rule = get_injector( GraduationStudentRule)
+        self.graduation_student_rule = get_injector(GraduationStudentRule)
 
-
-    async def get_student_session(self, sessions_id: int  = Query(..., title="", description="届别id",
+    async def get_student_session(self, sessions_id: int = Query(..., title="", description="届别id",
                                                                  example="1")):
         """
         在校生 查询届别信息
@@ -58,15 +57,14 @@ class CurrentStudentsView(BaseView):
         res = await self.student_session_rule.update_student_session(student_session)
         return res
 
-
     async def page_session(self,
-                           status: str = Query("", title="", description="状态",),
-                                                                          page_request=Depends(PageRequest)
-                        ):
+                           status: str = Query("", title="", description="状态", ),
+                           page_request=Depends(PageRequest)
+                           ):
         items = []
         # exit(1)
         # return page_search
-        paging_result = await self.student_session_rule.query_session_with_page(page_request ,status)
+        paging_result = await self.student_session_rule.query_session_with_page(page_request, status)
         return paging_result
 
     # 转学申请的 列表
@@ -102,6 +100,25 @@ class CurrentStudentsView(BaseView):
                                                                                                 )
         return paging_result
 
+    async def get_student_transaction_info(self,
+
+                  apply_id: int = Query(..., description=" ", example='1'),
+
+                  ):
+
+        relationinfo=tinfo=''
+        tinfo  = await self.student_transaction_rule.get_student_transaction_by_id(apply_id)
+
+        if isinstance(tinfo,object) and hasattr(tinfo,'relation_id') and  tinfo.relation_id:
+            relationinfo = await self.student_transaction_rule.get_student_transaction_by_id(tinfo.relation_id,)
+            pass
+
+        stubaseinfo = await self.students_rule.get_students_by_id(tinfo.student_id)
+        # stubaseinfo=''
+
+        return {'student_transaction_in': tinfo, 'student_transaction_out': relationinfo,
+                'student_info': stubaseinfo,  }
+
     # 在校生转入    届别 班级
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
         # print(new_students_key_info)
@@ -112,14 +129,16 @@ class CurrentStudentsView(BaseView):
 
     # 在校生转入   审批
     async def patch_transferin_audit(self,
-                                     audit_info:StudentTransactionAudit
+                                     audit_info: StudentTransactionAudit
 
                                      ):
         # 审批通过 操作 或者拒绝
-        student_edu_info = StudentTransaction(id=audit_info.transferin_audit_id, status=audit_info.transferin_audit_action.value, )
+        student_edu_info = StudentTransaction(id=audit_info.transferin_audit_id,
+                                              status=audit_info.transferin_audit_action.value, )
         res = await self.student_transaction_rule.update_student_transaction(student_edu_info)
         # 流乘记录
-        student_trans_flow = StudentTransactionFlow(apply_id=audit_info.transferin_audit_id, status=audit_info.transferin_audit_action.value,
+        student_trans_flow = StudentTransactionFlow(apply_id=audit_info.transferin_audit_id,
+                                                    status=audit_info.transferin_audit_action.value,
                                                     remark=audit_info.remark)
 
         res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
@@ -131,42 +150,12 @@ class CurrentStudentsView(BaseView):
     async def patch_transferin_fromoutside(self,
                                            student_baseinfo: NewStudentTransferIn,
                                            student_edu_info_in: StudentEduInfo,
-                                           student_edu_info_out: StudentEduInfo,
+                                           student_edu_info_out: StudentEduInfoOut,
 
                                            ):
         # print(new_students_key_info)
         #  新增学生   同时写入 转出和转入 流程
         res_student = await self.students_rule.add_student_new_student_transferin(student_baseinfo)
-        print(res_student)
-        # 转出
-
-        student_edu_info_out.status = AuditAction.NEEDAUDIT.value
-        student_edu_info_out.student_id = res_student.student_id
-
-        res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
-                                                                          TransactionDirection.OUT.value)
-
-        # 转入
-
-        student_edu_info_in.status = AuditAction.NEEDAUDIT.value
-        student_edu_info_in.student_id = res_student.student_id
-        student_edu_info_in.relation_id = res_out.id
-        print(  res_out.id,000000)
-
-        res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in, TransactionDirection.IN.value,res_out.id)
-
-        return res
-
-    # 在校生 系统内转出
-    async def patch_transferout_tooutside(self,
-                                          student_edu_info_in: StudentEduInfo,
-                                          student_edu_info_out: StudentEduInfo,
-                                          student_id: int  = Query(..., description="学生id",   example='1'),
-
-                                          ):
-        # print(new_students_key_info)
-        #      同时写入 转出和转入 流程
-        res_student = await self.students_rule.get_students_by_id(student_id)
         print(res_student)
         # 转出
 
@@ -181,9 +170,44 @@ class CurrentStudentsView(BaseView):
         student_edu_info_in.status = AuditAction.NEEDAUDIT.value
         student_edu_info_in.student_id = res_student.student_id
         student_edu_info_in.relation_id = res_out.id
+        print(res_out.id, 000000)
+
+        res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in,
+                                                                          TransactionDirection.IN.value, res_out.id)
+
+        return res
+
+    # 在校生 系统内转出
+    async def patch_transferout_tooutside(self,
+                                          student_edu_info_in: StudentEduInfoOut,
+                                          # student_edu_info_out: StudentEduInfo,
+                                          student_id: int = Query(..., description="学生id", example='1'),
+
+                                          ):
+        # print(new_students_key_info)
+        #      同时写入 转出和转入 流程
+        res_student = await self.students_rule.get_students_by_id(student_id)
+        print(res_student)
+        # 转出 放到 rule里 读取 并插入装出
+        # res = await self.students_rule.get_students_by_id(student_id)
+
+        student_edu_info_out = await self.student_transaction_rule.get_student_edu_info_by_id(student_id, )
+
+        student_edu_info_out.status = AuditAction.NEEDAUDIT.value
+        student_edu_info_out.student_id = res_student.student_id
+
+        res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
+                                                                              TransactionDirection.OUT.value)
+
+        # 转入
+
+        student_edu_info_in.status = AuditAction.NEEDAUDIT.value
+        student_edu_info_in.student_id = res_student.student_id
+        student_edu_info_in.relation_id = res_out.id
         # print(  res_out.id,000000)
 
-        res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in, TransactionDirection.IN.value,res_out.id)
+        res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in,
+                                                                          TransactionDirection.IN.value, res_out.id)
         return res
 
     # # 在校生转入   审批同意
@@ -217,7 +241,8 @@ class CurrentStudentsView(BaseView):
                              #                               example=''),
                              ):
         # print(new_students_key_info)
-        res = await self.graduation_student_rule.update_graduation_student(student.student_id,student.graduation_type,student.graduation_remarks)
+        res = await self.graduation_student_rule.update_graduation_student(student.student_id, student.graduation_type,
+                                                                           student.graduation_remarks)
 
         return res
 
@@ -245,12 +270,14 @@ class CurrentStudentsView(BaseView):
         await self.students_rule.delete_students(student_id)
         return str(student_id)
 
+
 class CurrentStudentsBaseInfoView(BaseView):
     def __init__(self):
         super().__init__()
         self.students_rule = get_injector(StudentsRule)
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
         self.student_session_rule = get_injector(StudentSessionRule)
+
     async def get_studentbaseinfo(self, student_id: str = Query(..., title="学生编号", description="学生编号",
                                                                 example="SC2032633")):
         """
@@ -273,6 +300,7 @@ class CurrentStudentsBaseInfoView(BaseView):
         res = await self.students_base_info_rule.delete_students_base_info(student_id)
         return res
 
+
 class CurrentStudentsFamilyView(BaseView):
     def __init__(self):
         super().__init__()
@@ -288,8 +316,8 @@ class CurrentStudentsFamilyView(BaseView):
         return res
 
     async def delete_studentfamilyinfo(self,
-                                          student_family_info_id: str = Query(..., title="学生编号",
-                                                                  description="学生编号", )):
+                                       student_family_info_id: str = Query(..., title="学生编号",
+                                                                           description="学生编号", )):
         """
         新生删除家庭信息
         """
@@ -297,7 +325,8 @@ class CurrentStudentsFamilyView(BaseView):
         return str(student_family_info_id)
 
     async def get_tudentfamilyinfo(self,
-                                       student_family_info_id: str = Query(..., title="学生编号", description="学生编号", )):
+                                   student_family_info_id: str = Query(..., title="学生编号",
+                                                                       description="学生编号", )):
         """
         查询单条家庭信息
         """
@@ -305,7 +334,7 @@ class CurrentStudentsFamilyView(BaseView):
         return res
 
     async def get_studentfamilyinfoall(self,
-                                          student_id: str = Query(..., title="学生编号", description="学生编号", )):
+                                       student_id: str = Query(..., title="学生编号", description="学生编号", )):
         """
         新生查询家庭信息
         """

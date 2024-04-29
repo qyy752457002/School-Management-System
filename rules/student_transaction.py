@@ -1,4 +1,8 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+import datetime
+from datetime import date
+
+from fastapi import Query
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
@@ -7,19 +11,42 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 
 from daos.student_transaction_dao import StudentTransactionDAO
+from daos.students_base_info_dao import StudentsBaseInfoDao
 from models.student_transaction import StudentTransaction, TransactionDirection
-from views.models.student_transaction import StudentEduInfo as StudentTransactionModel
+from views.models.student_transaction import StudentEduInfo as StudentTransactionModel, StudentEduInfo, \
+    StudentEduInfoOut
 
 
 @dataclass_inject
 class StudentTransactionRule(object):
     student_transaction_dao: StudentTransactionDAO
+    students_baseinfo_dao: StudentsBaseInfoDao
 
     async def get_student_transaction_by_id(self, student_transaction_id):
         student_transaction_db = await self.student_transaction_dao.get_studenttransaction_by_id(student_transaction_id)
         # 可选 , exclude=[""]
-        student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel)
+        print(vars(student_transaction_db))
+        student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel,other_mapper={"student_no": "edu_number",})
+
         return student_transaction
+
+    async def get_student_edu_info_by_id(self, students_id):
+        # students_db = await self.students_dao.get_students_by_id(students_id)
+        # students = orm_model_to_view_model(students_db, StudentsKeyinfoDetail, exclude=[""])
+        # 查其他的信息
+        baseinfo2 = await self.students_baseinfo_dao.get_students_base_info_ext_by_student_id(students_id)
+        # print(baseinfo2)
+        # baseinfo= baseinfo2[0]
+        graduation_student = baseinfo2[0]
+        for key, value in graduation_student.items():
+            if value is None:
+                baseinfo2[0][key] = ''
+            # delattr(graduation_student, key)
+
+        baseinfo = orm_model_to_view_model(baseinfo2[0], StudentEduInfo, exclude=[""],
+                                           other_mapper={"major_name": "major_name", })
+
+        return baseinfo
 
     async def get_student_transaction_by_student_transaction_name(self, student_transaction_name):
         student_transaction_db = await self.student_transaction_dao.get_studenttransaction_by_studenttransaction_name(
@@ -27,9 +54,9 @@ class StudentTransactionRule(object):
         student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
         return student_transaction
 
-    async def add_student_transaction(self, student_transaction: StudentTransactionModel ,
-                                      direction=TransactionDirection.IN.value,relation_id=0):
-        relation_id=int(relation_id)
+    async def add_student_transaction(self, student_transaction,
+                                      direction=TransactionDirection.IN.value, relation_id=0):
+        relation_id = int(relation_id)
         # exists_student_transaction = await self.student_transaction_dao.get_studenttransaction_by_studenttransaction_name(student_transaction.student_transaction_name)
         # if exists_student_transaction:
         #     raise Exception(f"转学申请{student_transaction.student_transaction_name}已存在")
@@ -53,23 +80,41 @@ class StudentTransactionRule(object):
                 # "transferin_reason": "transfer_reason",
                 # "school_id": "out_school_id",
             }
-        if int(relation_id)>0:
+        exclude = []
+
+        if int(relation_id) > 0:
             # exclude=[]
-            exclude=["id"]
+            exclude = ["id"]
 
         else:
             # student_transaction_db = StudentTransaction()
-            exclude=["id"]
+            exclude = ["id"]
 
+        for key, value in student_transaction.__dict__.items():
+            if isinstance(value, tuple):
+                exclude.append(key)
+
+        # print(exclude)
+        # print(student_transaction)
 
         student_transaction_db = view_model_to_orm_model(student_transaction, StudentTransaction,
-                                                         original_dict_map_view_orm,exclude= exclude)
+                                                         original_dict_map_view_orm, exclude=exclude)
         # student_transaction_db = StudentTransaction()
         student_transaction_db.direction = direction
         student_transaction_db.relation_id = int(relation_id)
-        # student_transaction_db.student_transaction_no = student_transaction.student_transaction_no
+        if isinstance(student_transaction.grade_id,int):
+            student_transaction_db.grade_id = str(student_transaction.grade_id)
+        if isinstance(student_transaction.class_id,int):
+            student_transaction_db.class_id = str(student_transaction.class_id)
+        if isinstance(student_transaction.major_id,int):
+            student_transaction_db.major_id = str(student_transaction.major_id)
+        special_date =   datetime.datetime.now()
+
+        student_transaction_db.apply_time = special_date.strftime("%Y-%m-%d %H:%M:%S")
         # student_transaction_db.student_transaction_alias = student_transaction.student_transaction_alias
         # student_transaction_db.description = student_transaction.description
+
+        # print(student_transaction_db)
 
         student_transaction_db = await self.student_transaction_dao.add_studenttransaction(student_transaction_db)
 
@@ -132,14 +177,10 @@ class StudentTransactionRule(object):
         if edu_no:
             kdict["country_no"] = edu_no
 
-        paging = await self.student_transaction_dao.query_studenttransaction_with_page(  page_request,**kdict)
-        # print(2222222222222,paging)
-
-        # 字段映射的示例写法   , {"hash_password": "password"} other_mapper={"in_school_id": "school_id","in_grade": "grade_name",
-        #                                                                                                     "in_class": "classes",
-        #                                                                                                     }
-        paging_result = PaginatedResponse.from_paging(paging, StudentTransactionModel)
-        # print(3333333333333333,paging_result)
+        paging = await self.student_transaction_dao.query_studenttransaction_with_page(page_request, **kdict)
+        print(2222222222222, vars(paging.items[0]))
+        paging_result = PaginatedResponse.from_paging(paging, StudentEduInfoOut)
+        print(3333333333333333,paging_result)
         return paging_result
 
     async def query_student_transaction(self, student_transaction_name):

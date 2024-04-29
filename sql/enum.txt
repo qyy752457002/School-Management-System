@@ -1,3 +1,7 @@
+ALTER TABLE public.lfun_student_transaction ADD remark varchar(255) NULL;
+
+
+
 CREATE INDEX lfun_enum_value_enum_name_idx ON public.lfun_enum_value (enum_name,parent_id);
 
 
