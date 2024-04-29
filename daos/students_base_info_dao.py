@@ -178,6 +178,8 @@ class StudentsBaseInfoDao(DAOBase):
             query = query.where(StudentBaseInfo.county == query_model.county)
         if query_model.emporary_borrowing_status:
             query = query.where(StudentBaseInfo.emporary_borrowing_status == query_model.emporary_borrowing_status)
+        if query_model.edu_number:
+            query = query.where(StudentBaseInfo.edu_number == query_model.edu_number)
         if query_model.approval_status:
             # 多选的处理
             if ',' in query_model.approval_status:

@@ -70,6 +70,7 @@ class NewStudentsQuery(BaseModel):
     county: Optional[str] = Query(None, title="区县", description="区县")
     approval_status: Optional[str] = Query(None, title="状态", description="状态")
     emporary_borrowing_status: Optional[str] = Query(None, title="", description="临时借读")
+    edu_number: Optional[str] = Query(None, title="", description="学籍号")
 
 
 class NewStudentsQueryRe(BaseModel):
