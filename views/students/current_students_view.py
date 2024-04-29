@@ -146,6 +146,25 @@ class CurrentStudentsView(BaseView):
         # print(new_students_key_info)
         return res
 
+    # 在校生转入   审批的流程
+    async def get_transferin_audit(self,
+                                     audit_info: StudentTransactionAudit
+
+                                     ):
+        # 审批通过 操作 或者拒绝
+        student_edu_info = StudentTransaction(id=audit_info.transferin_audit_id,
+                                              status=audit_info.transferin_audit_action.value, )
+        res = await self.student_transaction_rule.update_student_transaction(student_edu_info)
+        # 流乘记录
+        student_trans_flow = StudentTransactionFlow(apply_id=audit_info.transferin_audit_id,
+                                                    status=audit_info.transferin_audit_action.value,
+                                                    remark=audit_info.remark)
+
+        res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+
+        # print(new_students_key_info)
+        return res
+
     # 在校生转入   系统外转入    单独模型
     async def patch_transferin_fromoutside(self,
                                            student_baseinfo: NewStudentTransferIn,

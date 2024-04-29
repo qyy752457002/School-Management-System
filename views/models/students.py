@@ -66,8 +66,10 @@ class NewStudentsQuery(BaseModel):
     school_id: Optional[int ] = Query(0, title="", description="学校id")
 
     enrollment_date: Optional[date] = Query(None, title="登记时间", description="登记时间")
+    enrollment_date_range: Optional[str] = Query(None, title="登记时间", description="登记时间区间 逗号分隔")
     county: Optional[str] = Query(None, title="区县", description="区县")
     approval_status: Optional[str] = Query(None, title="状态", description="状态")
+    emporary_borrowing_status: Optional[str] = Query(None, title="", description="临时借读")
 
 
 class NewStudentsQueryRe(BaseModel):
@@ -98,6 +100,12 @@ class NewStudentsQueryRe(BaseModel):
     school_name: str = Field(None, title="", description="")
     birthday: date = Field( '', title="生日", description="生日")
     photo: str = Field('', title="照片", description="照片")
+    session: str = Field(None, title="", description="")
+    edu_number: str = Field(None, title="", description="")
+    class_name: str = Field(None, title="", description="")
+    enrollment_date: str|date = Field(None, title="", description="")
+    grade_name: str = Field(None, title="", description="")
+
 
 
 
