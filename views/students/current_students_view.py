@@ -160,7 +160,7 @@ class CurrentStudentsView(BaseView):
 
     # 在校生 系统内转出
     async def patch_transferout_tooutside(self,
-                                          student_edu_info_in: StudentEduInfo,
+                                          student_edu_info_in: StudentEduInfoOut,
                                           # student_edu_info_out: StudentEduInfo,
                                           student_id: int = Query(..., description="学生id", example='1'),
 
