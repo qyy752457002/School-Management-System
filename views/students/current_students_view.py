@@ -105,12 +105,16 @@ class CurrentStudentsView(BaseView):
                   apply_id: int = Query(..., description=" ", example='1'),
 
                   ):
-        tinfo  = await self.student_transaction_rule.get_student_transaction_by_id(apply_id,)
-        relationinfo=''
-        if tinfo.relation_id:
-            relationinfo = await self.student_transaction_rule.get_student_transaction_by_id(tinfo.relation_id,)
 
-        stubaseinfo = await self.students_rule.get_students_by_id(tinfo.student_id)
+        relationinfo=tinfo=''
+        tinfo  = await self.student_transaction_rule.get_student_transaction_by_id(apply_id)
+
+        if isinstance(tinfo,object) and hasattr(tinfo,'relation_id') and  tinfo.relation_id:
+            # relationinfo = await self.student_transaction_rule.get_student_transaction_by_id(tinfo.relation_id,)
+            pass
+
+        # stubaseinfo = await self.students_rule.get_students_by_id(tinfo.student_id)
+        stubaseinfo=''
 
         return {'student_transaction_in': tinfo, 'student_transaction_out': relationinfo,
                 'student_info': stubaseinfo,  }
