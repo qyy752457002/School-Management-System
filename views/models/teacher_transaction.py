@@ -37,6 +37,28 @@ class TeacherTransactionUpdateModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     operation_time: date = Field(..., title="操作时间", description="操作时间")
 
+class TeacherTransactionQuery(BaseModel):
+    """
+    姓名：teacher_name
+    证件类型：teacher_id_type
+    证件号码：teacher_id_number
+    """
+    teacher_name: str = Field(..., title="姓名", description="姓名")
+    teacher_id_type: str = Field(..., title="证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="证件号码", description="证件号码")
+
+class TeacherTransactionQueryRe(BaseModel):
+    teacher_name: str = Field(..., title="姓名", description="姓名")
+    teacher_id_type: str = Field(..., title="证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="证件号码", description="证件号码")
+    teacher_gender: str = Field(..., title="性别", description="性别")
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_number: str = Field(..., title="教师编号", description="教师编号")
+    teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
+
+
+
+
 
 class TransferDetailsModel(BaseModel):
     """
@@ -84,6 +106,3 @@ class TransferDetailsUpdateModel(BaseModel):
     operator: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     operation_time: datetime = Field(..., title="操作时间", description="操作时间")
-
-
-

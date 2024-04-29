@@ -77,7 +77,7 @@ class TeachersInfoDao(DAOBase):
                                    ).outerjoin(School, Teacher.teacher_employer == School.id,
                                                )
         if query_model.teacher_name:
-            query = query.where(Teacher.teacher_name == query_model.teacher_name)
+            query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
         if query_model.teacher_id_number:
             query = query.where(Teacher.teacher_id_number == query_model.teacher_id_number)
         if query_model.teacher_gender:
@@ -129,7 +129,7 @@ class TeachersInfoDao(DAOBase):
                                                                   )
 
         if query_model.teacher_name:
-            query = query.where(Teacher.teacher_name == query_model.teacher_name)
+            query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
         if query_model.teacher_id_number:
             query = query.where(Teacher.teacher_id_number == query_model.teacher_id_number)
         if query_model.teacher_gender:

@@ -6,7 +6,7 @@ from fastapi import Query
 from views.models.teacher_transaction import TransferDetailsModel, TransferDetailsUpdateModel
 from rules.transfer_details_rule import TransferDetailsRule
 
-from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel
+from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel,TeacherTransactionQuery
 from rules.teacher_transaction_rule import TeacherTransactionRule
 
 
@@ -55,6 +55,10 @@ class TeacherTransactionView(BaseView):
                                       ):
         res = await self.teacher_transaction_rule.get_teacher_transaction_by_teacher_transaction_id(
             teacher_transaction_id)
+        return res
+
+    async def query_teacher(self, teacher_transaction: TeacherTransactionQuery):
+        res = await self.teacher_transaction_rule.query_teacher(teacher_transaction)
         return res
 
     async def post_teacher_transaction(self, teacher_transaction: TeacherTransactionModel):

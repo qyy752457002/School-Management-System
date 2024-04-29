@@ -58,5 +58,4 @@ class Teacher(BaseDBModel):
     teacher_approval_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="审批状态",
                                                          default="submitting")  # 审批状态待定
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
-    # username: Mapped[str] = mapped_column(String(64), nullable=False, comment="用户名")
-    # hash_password: Mapped[str] = mapped_column(String(128), nullable=False, comment="密码")
+
