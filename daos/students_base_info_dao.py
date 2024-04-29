@@ -163,6 +163,8 @@ class StudentsBaseInfoDao(DAOBase):
             query = query.where(StudentBaseInfo.enrollment_date == query_model.enrollment_date)
         if query_model.county:
             query = query.where(StudentBaseInfo.county == query_model.county)
+        if query_model.emporary_borrowing_status:
+            query = query.where(StudentBaseInfo.emporary_borrowing_status == query_model.emporary_borrowing_status)
         if query_model.approval_status:
             # 多选的处理
             if ',' in query_model.approval_status:
@@ -170,6 +172,30 @@ class StudentsBaseInfoDao(DAOBase):
                 query = query.where(Student.approval_status.in_(approval_status))
             else:
                 query = query.where(Student.approval_status == query_model.approval_status)
+        if query_model.enrollment_date_range:
+            # 多选的处理
+            if ',' in query_model.enrollment_date_range:
+                enrollment_date_range = query_model.enrollment_date_range.split(',')
+                if len(enrollment_date_range) == 2:
+                    if enrollment_date_range[0] != '':
+                        query = query.where(StudentBaseInfo.enrollment_date >= enrollment_date_range[0])
+                    if enrollment_date_range[1] != '':
+                        query = query.where(StudentBaseInfo.enrollment_date <= enrollment_date_range[1])
+                    # query = query.where(StudentBaseInfo.enrollment_date.between(enrollment_date_range[0],
+                    #                                                          enrollment_date_range[1]))
+                elif len(enrollment_date_range) == 1:
+                    if enrollment_date_range[0] != '':
+                        query = query.where(StudentBaseInfo.enrollment_date >= enrollment_date_range[0])
+                    else:
+                        query = query.where(StudentBaseInfo.enrollment_date <= enrollment_date_range[1])
+
+                    # query = query.where(StudentBaseInfo.enrollment_date == enrollment_date_range[0])
+                # query = query.where(Student.enrollment_date_range.in_(approval_status))
+            else:
+                query = query.where(StudentBaseInfo.enrollment_date >=query_model.enrollment_date_range)
+
+
+                # query = query.where(Student.approval_status == query_model.approval_status)
         paging = await self.query_page(query, page_request)
         return paging
 
