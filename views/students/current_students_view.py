@@ -148,19 +148,11 @@ class CurrentStudentsView(BaseView):
 
     # 在校生转入   审批的流程
     async def get_transferin_audit(self,
-                                     audit_info: StudentTransactionAudit
+                                     apply_id: int = Query(..., description=" ", example='1'),
 
                                      ):
-        # 审批通过 操作 或者拒绝
-        student_edu_info = StudentTransaction(id=audit_info.transferin_audit_id,
-                                              status=audit_info.transferin_audit_action.value, )
-        res = await self.student_transaction_rule.update_student_transaction(student_edu_info)
-        # 流乘记录
-        student_trans_flow = StudentTransactionFlow(apply_id=audit_info.transferin_audit_id,
-                                                    status=audit_info.transferin_audit_action.value,
-                                                    remark=audit_info.remark)
+        res = await self.student_transaction_flow_rule.query_student_transaction_flow(apply_id)
 
-        res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
 
         # print(new_students_key_info)
         return res
