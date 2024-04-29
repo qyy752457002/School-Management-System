@@ -85,7 +85,7 @@ class NewStudentsQueryRe(BaseModel):
     student_id: int = Field(..., title="学生id", description="学生id")
     student_name: str = Field(None, title="学生姓名", description="学生姓名")
     enrollment_number: str = Field(None, title="报名号", description="报名号")
-    student_gender: Gender = Field(None, title="性别", description="性别")
+    student_gender: Gender|str = Field(None, title="性别", description="性别")
     id_type: str = Field(None, title="证件类别", description="证件类别")
     id_number: str = Field(None, title="证件号码", description="证件号码")
     school: str = Field(None, title="学校", description="学校")

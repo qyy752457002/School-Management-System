@@ -84,6 +84,7 @@ class StudentsRule(object):
         print(students)
 
         students_db = view_model_to_orm_model(students, Student, exclude=["student_id"])
+        students_db.student_gender = students.student_gender
         kdict = {
 
         }
