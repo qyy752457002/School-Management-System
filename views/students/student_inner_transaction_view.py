@@ -29,7 +29,7 @@ class StudentInnerTransactionView(BaseView):
 
     # 分页查询
     async def page(self,
-                   student_inner_transaction_search:     StudentInnerTransactionSearch,
+                   student_inner_transaction_search= Depends( StudentInnerTransactionSearch)   ,
 
                    page_request=Depends(PageRequest)):
         print(page_request)

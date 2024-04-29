@@ -3,6 +3,7 @@ from mini_framework.databases.entities.dao_base import DAOBase, get_update_conte
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
+from models.classes import Classes
 from models.planning_school import PlanningSchool
 from models.school import School
 from models.student_inner_transaction import StudentInnerTransaction
@@ -12,52 +13,65 @@ from models.students_base_info import StudentBaseInfo
 
 class StudentInnerTransactionDAO(DAOBase):
 
-	async def add_student_inner_transaction(self, student_inner_transaction: StudentInnerTransaction):
-		session = await self.master_db()
-		session.add(student_inner_transaction)
-		await session.commit()
-		await session.refresh(student_inner_transaction)
-		return student_inner_transaction
+    async def add_student_inner_transaction(self, student_inner_transaction: StudentInnerTransaction):
+        session = await self.master_db()
+        session.add(student_inner_transaction)
+        await session.commit()
+        await session.refresh(student_inner_transaction)
+        return student_inner_transaction
 
-	async def get_student_inner_transaction_count(self, ):
-		session = await self.slave_db()
-		result = await session.execute(select(func.count()).select_from(StudentInnerTransaction))
-		return result.scalar()
+    async def get_student_inner_transaction_count(self, ):
+        session = await self.slave_db()
+        result = await session.execute(select(func.count()).select_from(StudentInnerTransaction))
+        return result.scalar()
 
-	async def delete_student_inner_transaction(self, student_inner_transaction: StudentInnerTransaction):
-		session = await self.master_db()
-		await session.delete(student_inner_transaction)
-		await session.commit()
+    async def delete_student_inner_transaction(self, student_inner_transaction: StudentInnerTransaction):
+        session = await self.master_db()
+        await session.delete(student_inner_transaction)
+        await session.commit()
 
-	async def get_student_inner_transaction_by_id(self, id):
-		session = await self.slave_db()
-		result = await session.execute(select(StudentInnerTransaction).where(StudentInnerTransaction.id == id))
-		return result.scalar_one_or_none()
+    async def get_student_inner_transaction_by_id(self, id):
+        session = await self.slave_db()
+        result = await session.execute(select(StudentInnerTransaction).where(StudentInnerTransaction.id == id))
+        return result.scalar_one_or_none()
 
-	async def query_student_inner_transaction_with_page(self, student_inner_transaction_search, page_request: PageRequest):
-		query = select(StudentInnerTransaction).select_from(StudentInnerTransaction).join(School, StudentInnerTransaction.school_id == School.id).join(PlanningSchool, School.planning_school_id == PlanningSchool.id).join(Student, StudentInnerTransaction.student_id == Student.id).join(StudentBaseInfo, StudentBaseInfo.student_id == Student.id)
-		
-		### 此处填写查询条件
-		if student_inner_transaction_search.student_name:
-			query = query.where(Student.name.like(f'%{student_inner_transaction_search.student_name}%'))
-		if student_inner_transaction_search.student_gender:
-			query = query.where(Student.gender == student_inner_transaction_search.student_gender)
-		if student_inner_transaction_search.edu_number:
-			query = query.where(StudentBaseInfo.edu_number == student_inner_transaction_search.edu_number)
-		if student_inner_transaction_search.school_id:
-			query = query.where(StudentInnerTransaction.school_id == student_inner_transaction_search.school_id)
-		if student_inner_transaction_search.borough:
-			query = query.where(PlanningSchool.borough == student_inner_transaction_search.borough)
-		if student_inner_transaction_search.class_id:
-			query = query.where(StudentInnerTransaction.class_id == student_inner_transaction_search.class_id)
+    async def query_student_inner_transaction_with_page(self, student_inner_transaction_search,
+                                                        page_request: PageRequest):
+        query = select(StudentInnerTransaction,
+                       School.school_name,
+                       Classes.class_name,
+                       PlanningSchool.borough,
+                       Student.student_name,
+                       Student.student_gender,
+                       Student.approval_status,
+                       StudentBaseInfo.edu_number,
+                       ).select_from(StudentInnerTransaction).join(School,
+                                                                   StudentInnerTransaction.school_id == School.id).join(
+            PlanningSchool, School.planning_school_id == PlanningSchool.id).join(Student,
+                                                                                 StudentInnerTransaction.student_id == Student.student_id).join(
+            StudentBaseInfo, StudentBaseInfo.student_id == Student.student_id).join(Classes,
+                                                                                    StudentInnerTransaction.class_id == Classes.id)
 
+        ### 此处填写查询条件
+        if student_inner_transaction_search.student_name:
+            query = query.where(Student.name.like(f'%{student_inner_transaction_search.student_name}%'))
+        if student_inner_transaction_search.student_gender:
+            query = query.where(Student.gender == student_inner_transaction_search.student_gender)
+        if student_inner_transaction_search.edu_number:
+            query = query.where(StudentBaseInfo.edu_number == student_inner_transaction_search.edu_number)
+        if student_inner_transaction_search.school_id:
+            query = query.where(StudentInnerTransaction.school_id == student_inner_transaction_search.school_id)
+        if student_inner_transaction_search.borough:
+            query = query.where(PlanningSchool.borough == student_inner_transaction_search.borough)
+        if student_inner_transaction_search.class_id:
+            query = query.where(StudentInnerTransaction.class_id == student_inner_transaction_search.class_id)
 
-		
-		paging = await self.query_page(query, page_request)
-		return paging
+        paging = await self.query_page(query, page_request)
+        return paging
 
-	async def update_student_inner_transaction(self, student_inner_transaction, *args, is_commit=True):
-		session = await self.master_db()
-		update_contents = get_update_contents(student_inner_transaction, *args)
-		query = update(StudentInnerTransaction).where(StudentInnerTransaction.id == student_inner_transaction.id).values(**update_contents)
-		return await self.update(session, query, student_inner_transaction, update_contents, is_commit=is_commit)
+    async def update_student_inner_transaction(self, student_inner_transaction, *args, is_commit=True):
+        session = await self.master_db()
+        update_contents = get_update_contents(student_inner_transaction, *args)
+        query = update(StudentInnerTransaction).where(
+            StudentInnerTransaction.id == student_inner_transaction.id).values(**update_contents)
+        return await self.update(session, query, student_inner_transaction, update_contents, is_commit=is_commit)
