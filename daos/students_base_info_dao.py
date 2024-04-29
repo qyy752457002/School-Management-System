@@ -73,7 +73,7 @@ class StudentsBaseInfoDao(DAOBase):
         session = await self.slave_db()
         query = select(Classes.class_name, Major.major_name, School.school_name, StudentBaseInfo.student_id,
                        func.coalesce(Classes.id, 0).label('class_id'),
-                       func.coalesce(Major.id, 0).label('major_id'),
+                       func.coalesce(School.id, 0).label('school_id'),
                        func.coalesce(Grade.id, 0).label('grade_id'),
                        func.coalesce(Major.id, 0).label('major_id'),
                        func.coalesce(PlanningSchool.province, '').label('province'),
