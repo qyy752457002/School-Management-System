@@ -71,17 +71,28 @@ class StudentsBaseInfoDao(DAOBase):
         通过学生id获取单个学生基本信息   专业
         """
         session = await self.slave_db()
-        query = select(Classes.class_name,Major.major_name,School.school_name,
-                       func.coalesce(PlanningSchool.province,'').label('province'),
-                       func.coalesce(PlanningSchool.city,'').label('city'),
-                       func.coalesce(Grade.grade_name ,'').label('grade_name'),
-                       func.coalesce(PlanningSchool.block,'').label('block'),
-                       func.coalesce(PlanningSchool.borough,'').label('borough'),
-                       func.coalesce(SchoolCommunication.loc_area,'').label('loc_area'),
-                       func.coalesce(SchoolCommunication.loc_area_pro,'').label('loc_area_pro'),
-                       # PlanningSchool.province,
-                       # PlanningSchool.city,
-                       StudentBaseInfo.session,).join(Classes, Classes.id == StudentBaseInfo.class_id,isouter=True).join(Grade, Grade.id == StudentBaseInfo.grade_id,isouter=True).join(School, School.id == StudentBaseInfo.school_id,isouter=True).join(SchoolCommunication, SchoolCommunication.school_id == School.id,isouter=True).join(PlanningSchool, PlanningSchool.id == School.planning_school_id,isouter=True).join(Major, Major.id == Classes.major_for_vocational,isouter=True).where(StudentBaseInfo.student_id == students_id)
+        query = select(Classes.class_name, Major.major_name, School.school_name, StudentBaseInfo.student_id,
+                       func.coalesce(Classes.id, 0).label('class_id'),
+                       func.coalesce(School.id, 0).label('school_id'),
+                       func.coalesce(Grade.id, 0).label('grade_id'),
+                       func.coalesce(Major.id, 0).label('major_id'),
+                       func.coalesce(PlanningSchool.province, '').label('province'),
+                       func.coalesce(PlanningSchool.city, '').label('city'),
+                       func.coalesce(Grade.grade_name, '').label('grade_name'),
+                       func.coalesce(PlanningSchool.block, '').label('block'),
+                       func.coalesce(PlanningSchool.borough, '').label('borough'),
+                       func.coalesce(SchoolCommunication.loc_area, '').label('loc_area'),
+                       func.coalesce(SchoolCommunication.loc_area_pro, '').label('loc_area_pro'),
+                       StudentBaseInfo.session, ).join(Classes, Classes.id == StudentBaseInfo.class_id,
+                                                       isouter=True).join(Grade, Grade.id == StudentBaseInfo.grade_id,
+                                                                          isouter=True).join(School,
+                                                                                             School.id == StudentBaseInfo.school_id,
+                                                                                             isouter=True).join(
+            SchoolCommunication, SchoolCommunication.school_id == School.id, isouter=True).join(PlanningSchool,
+                                                                                                PlanningSchool.id == School.planning_school_id,
+                                                                                                isouter=True).join(
+            Major, Major.id == Classes.major_for_vocational, isouter=True).where(
+            StudentBaseInfo.student_id == students_id)
         result_list = await session.execute(query)
         column_names = query.columns.keys()
         # ret = result.scalar_one_or_none()
@@ -125,7 +136,7 @@ class StudentsBaseInfoDao(DAOBase):
         状态：status
         """
         query = select(Student.student_id, Student.student_name, Student.id_type, Student.id_number,
-                       Student.enrollment_number,  Student.photo,  Student.birthday,
+                       Student.enrollment_number, Student.photo, Student.birthday,
                        Student.student_gender, Student.approval_status, StudentBaseInfo.residence_district,
                        StudentBaseInfo.school, School.block, School.school_name, School.borough,
                        SchoolCommunication.loc_area, SchoolCommunication.loc_area_pro).select_from(Student).join(
