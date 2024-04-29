@@ -137,6 +137,13 @@ class StudentsBaseInfoDao(DAOBase):
         """
         query = select(Student.student_id, Student.student_name, Student.id_type, Student.id_number,
                        Student.enrollment_number, Student.photo, Student.birthday,
+                       StudentBaseInfo.session,
+                       StudentBaseInfo.edu_number,
+                       StudentBaseInfo.enrollment_date,
+                       Classes.class_name,
+                       Grade.grade_name,
+                       PlanningSchool.block,
+                       PlanningSchool.borough,
                        Student.student_gender, Student.approval_status, StudentBaseInfo.residence_district,
                        StudentBaseInfo.school, School.block, School.school_name, School.borough,
                        SchoolCommunication.loc_area, SchoolCommunication.loc_area_pro).select_from(Student).join(
@@ -145,7 +152,13 @@ class StudentsBaseInfoDao(DAOBase):
                                                                                  School.id == StudentBaseInfo.school_id,
                                                                                  isouter=True).join(SchoolCommunication,
                                                                                                     School.id == SchoolCommunication.school_id,
-                                                                                                    isouter=True)
+                                                                                                    isouter=True).join(PlanningSchool,
+                                                                                                                       School.planning_school_id == PlanningSchool.id,
+                                                                                                                       isouter=True).join(Classes,
+                                                                                                                                          Classes.id == StudentBaseInfo.class_id,
+                                                                                                                                          isouter=True).join(Grade,
+                                                                                                                                                             Grade.id == StudentBaseInfo.grade_id,
+                                                                                                                                                             isouter=True)
 
         if query_model.student_name:
             query = query.where(Student.student_name == query_model.student_name)

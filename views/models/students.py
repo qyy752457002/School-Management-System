@@ -100,6 +100,12 @@ class NewStudentsQueryRe(BaseModel):
     school_name: str = Field(None, title="", description="")
     birthday: date = Field( '', title="生日", description="生日")
     photo: str = Field('', title="照片", description="照片")
+    session: str = Field(None, title="", description="")
+    edu_number: str = Field(None, title="", description="")
+    class_name: str = Field(None, title="", description="")
+    enrollment_date: str|date = Field(None, title="", description="")
+    grade_name: str = Field(None, title="", description="")
+
 
 
 
