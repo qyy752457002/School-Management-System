@@ -10,7 +10,7 @@ from models.students import Student
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel, StudentsKeyinfoDetail, StudentsKeyinfo, \
     NewStudentTransferIn
 from views.models.students import NewStudents
-from business_exceptions.student import StudentNotFoundError
+from business_exceptions.student import StudentNotFoundError, StudentExistsError
 
 
 @dataclass_inject
@@ -92,7 +92,8 @@ class StudentsRule(object):
             kdict["is_deleted"] =  False
             exist = self.students_dao.get_students_by_param(**kdict)
             if exist:
-                raise Exception("当前身份证号的学生已经在系统内")
+                print(vars(exist))
+                raise StudentExistsError()
 
         # print(students_db)
         students_db = await self.students_dao.add_students(students_db)
