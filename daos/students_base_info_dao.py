@@ -172,6 +172,8 @@ class StudentsBaseInfoDao(DAOBase):
             query = query.where(StudentBaseInfo.school == query_model.school)
         if query_model.school_id:
             query = query.where(StudentBaseInfo.school_id == query_model.school_id)
+        if query_model.class_id:
+            query = query.where(StudentBaseInfo.class_id == query_model.class_id)
         if query_model.enrollment_date:
             query = query.where(StudentBaseInfo.enrollment_date == query_model.enrollment_date)
         if query_model.county:
