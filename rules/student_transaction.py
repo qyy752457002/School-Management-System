@@ -178,8 +178,8 @@ class StudentTransactionRule(object):
             kdict["country_no"] = edu_no
 
         paging = await self.student_transaction_dao.query_studenttransaction_with_page(page_request, **kdict)
-        print(2222222222222, vars(paging.items[0]))
-        paging_result = PaginatedResponse.from_paging(paging, StudentEduInfoOut)
+        # print(2222222222222, vars(paging.items[0]))
+        paging_result = PaginatedResponse.from_paging(paging, StudentEduInfoOut,other_mapper={"student_name_origin":"student_name"})
         print(3333333333333333,paging_result)
         return paging_result
 
