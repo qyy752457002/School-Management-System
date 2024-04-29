@@ -13,19 +13,16 @@ class StudentInnerTransactionRes(BaseModel):
 
     """
     id: int = Query(None, title="", description="id", example='1'),
-
-    student_name: str = Field('', title="", description="姓名", examples=[''])
+    student_name: str|None = Field('', title="", description="姓名", examples=[''])
     transaction_type: str = Field('', title="", description="异动类别", examples=[''])
     transaction_reason: str = Field('', title="", description="异动原因", examples=[''])
-
-    school_name: str = Query('', title="", description="学校名称", examples=["XXxiaoxue"])
-    classes: str = Query('', title="", description="班级", examples=["二2班"])
-    # status: str = Query('', description="", min_length=1, max_length=20, examples=["''"]),
-    student_gender: str = Query('', title="", description="", examples=[""])
-    edu_number: str = Field('', title="", description="学籍号码")
+    school_name: str|None = Query('', title="", description="学校名称", examples=["XXxiaoxue"])
+    classes: str|None = Query('', title="", description="班级", examples=["二2班"])
+    student_gender: str |None= Query('', title="", description="", examples=[""])
+    edu_number: str |None= Field('', title="", description="学籍号码")
     transaction_time: datetime = Field('', title="", description="提交时间")
-    class_name: str = Field('', title="Grade_name", description="班级名称", examples=['一年级'])
-    borough: str = Field('', title=" Author Email", description=" 行政管辖区", examples=['铁西区'])
+    class_name: str|None = Field('', title="Grade_name", description="班级名称", examples=['一年级'])
+    borough: str |None= Field('', title=" Author Email", description=" 行政管辖区", examples=['铁西区'])
     approval_status: Optional[str] = Query(None, title="", description="学生状态")
 
 
