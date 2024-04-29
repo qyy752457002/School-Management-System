@@ -8,19 +8,39 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 
 from daos.student_transaction_dao import StudentTransactionDAO
+from daos.students_base_info_dao import StudentsBaseInfoDao
 from models.student_transaction import StudentTransaction, TransactionDirection
-from views.models.student_transaction import StudentEduInfo as StudentTransactionModel
+from views.models.student_transaction import StudentEduInfo as StudentTransactionModel, StudentEduInfo
 
 
 @dataclass_inject
 class StudentTransactionRule(object):
     student_transaction_dao: StudentTransactionDAO
+    students_baseinfo_dao: StudentsBaseInfoDao
 
     async def get_student_transaction_by_id(self, student_transaction_id):
         student_transaction_db = await self.student_transaction_dao.get_studenttransaction_by_id(student_transaction_id)
         # 可选 , exclude=[""]
         student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel)
         return student_transaction
+
+    async def get_student_edu_info_by_id(self, students_id):
+        # students_db = await self.students_dao.get_students_by_id(students_id)
+        # students = orm_model_to_view_model(students_db, StudentsKeyinfoDetail, exclude=[""])
+        # 查其他的信息
+        baseinfo2 = await self.students_baseinfo_dao.get_students_base_info_ext_by_student_id(students_id)
+        # print(baseinfo2)
+        # baseinfo= baseinfo2[0]
+        graduation_student = baseinfo2[0]
+        for key, value in graduation_student.items():
+            if value is None:
+                baseinfo2[0][key] = ''
+            # delattr(graduation_student, key)
+
+        baseinfo = orm_model_to_view_model(baseinfo2[0], StudentEduInfo, exclude=[""],
+                                           other_mapper={"major_name": "major_name", })
+
+        return baseinfo
 
     async def get_student_transaction_by_student_transaction_name(self, student_transaction_name):
         student_transaction_db = await self.student_transaction_dao.get_studenttransaction_by_studenttransaction_name(
@@ -76,6 +96,12 @@ class StudentTransactionRule(object):
         # student_transaction_db = StudentTransaction()
         student_transaction_db.direction = direction
         student_transaction_db.relation_id = int(relation_id)
+        if isinstance(student_transaction.grade_id,int):
+            student_transaction_db.grade_id = str(student_transaction.grade_id)
+        if isinstance(student_transaction.class_id,int):
+            student_transaction_db.class_id = str(student_transaction.class_id)
+        if isinstance(student_transaction.major_id,int):
+            student_transaction_db.major_id = str(student_transaction.major_id)
         # student_transaction_db.student_transaction_no = student_transaction.student_transaction_no
         # student_transaction_db.student_transaction_alias = student_transaction.student_transaction_alias
         # student_transaction_db.description = student_transaction.description
