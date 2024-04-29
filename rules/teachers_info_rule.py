@@ -6,7 +6,7 @@ from models.teachers_info import TeacherInfo
 from views.common.common_view import page_none_deal
 from views.models.teachers import TeacherInfo as TeachersInfoModel
 from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel, TeacherInfoSubmit, \
-    CurrentTeacherQuery, CurrentTeacherQueryRe,CurrentTeacherInfoSaveModel
+    CurrentTeacherQuery, CurrentTeacherQueryRe,CurrentTeacherInfoSaveModel,NewTeacherInfoSaveModel
 from sqlalchemy import select, func, update
 from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError
 from daos.teachers_dao import TeachersDao
@@ -22,7 +22,7 @@ class TeachersInfoRule(object):
         teachers_info_db = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teachers_id)
         if not teachers_info_db:
             raise TeacherInfoNotFoundError()
-        teachers_info = orm_model_to_view_model(teachers_info_db, TeachersInfoModel, exclude=[""])
+        teachers_info = orm_model_to_view_model(teachers_info_db, NewTeacherInfoSaveModel, exclude=[""])
         return teachers_info
 
     async def get_teachers_info_by_id(self, teachers_base_id):
