@@ -10,11 +10,8 @@ def main():
     root_path = os.path.dirname(os.path.abspath(__file__))
     cli = CLI(root_path)
     cli.register('db-init', DatabaseInitCommand, metadata_model="models.metadata")
-    cli.register('dao-gen', DAOGenerateCommand, model_list=[('models.domestic_training', 'DomesticTraining'),
-                                                            ('models.overseas_study', 'OverseasStudy'),
-                                                            ('models.talent_program', 'TalentProgram'),
-                                                            ('models.annual_review', 'AnnualReview'),
-                                                            ('models.research_achievements', 'ResearchAchievements')])
+    cli.register('dao-gen', DAOGenerateCommand, model_list=[('models.teacher_transaction', 'TeacherTransaction'),
+                                                            ('models.transfer_details', 'TransferDetails')])
     cli.register('web', WebCommand, router_func_module="views.router.init_router")
     cli.setup()
 
