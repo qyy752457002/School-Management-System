@@ -108,12 +108,11 @@ class StudentInnerTransactionRule(object):
         paging = await self.student_inner_transaction_dao.query_student_inner_transaction_with_page(
             student_inner_transaction_search, page_request)
         # 字段映射的示例写法   , {"hash_password": "password"}
-        paging_result = PaginatedResponse.from_paging(paging, StudentInnerTransactionRes, {"class_name": "classes", "school_name": "school_name"})
+        paging_result = PaginatedResponse.from_paging(paging, StudentInnerTransactionRes,
+                                                      {"class_name": "classes", "school_name": "school_name"})
         return paging_result
 
     async def query_student_inner_transaction(self, student_inner_transaction_name):
-
-    async def query_student_inner_transaction(self,student_inner_transaction_name):
 
         session = await db_connection_manager.get_async_session("default", True)
         result = await session.execute(select(StudentInnerTransaction).where(

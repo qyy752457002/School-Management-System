@@ -4,7 +4,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teacher_transaction_dao import TeacherTransactionDAO
 from models.teacher_transaction import TeacherTransaction
 from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
-    TeacherTransactionQuery,TeacherTransactionQueryRe
+    TeacherTransactionQuery, TeacherTransactionQueryRe
 
 
 @dataclass_inject
@@ -54,10 +54,4 @@ class TeacherTransactionRule(object):
             teacher_transaction.append(orm_model_to_view_model(item, TeacherTransactionModel))
         return teacher_transaction
 
-    async def query_teacher(self, teacher_transaction: TeacherTransactionQuery):
-        teacher_transaction_db = await self.teacher_transaction_dao.query_teacher(teacher_transaction)
-        teacher_transaction = []
-        for item in teacher_transaction_db.items:
-            teacher_transaction.append(orm_model_to_view_model(item, TeacherTransactionQueryRe))
-        return teacher_transaction
 
