@@ -173,7 +173,7 @@ class StudentTransactionRule(object):
         paging = await self.student_transaction_dao.query_studenttransaction_with_page(page_request, **kdict)
         print(2222222222222, vars(paging.items[0]))
         paging_result = PaginatedResponse.from_paging(paging, StudentEduInfoOut)
-        # print(3333333333333333,paging_result)
+        print(3333333333333333,paging_result)
         return paging_result
 
     async def query_student_transaction(self, student_transaction_name):

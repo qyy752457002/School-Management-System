@@ -32,12 +32,13 @@ class StudentTransactionDAO(DAOBase):
 		return result.scalar_one_or_none()
 
 	async def query_studenttransaction_with_page(self, page_request: PageRequest, **kwargs,):
-		query = select(StudentTransaction,StudentTransaction.id,Student.student_name,Student.student_gender,
-					   ).select_from(  StudentTransaction).join(Student, StudentTransaction.student_id == Student.student_id )
+		query = select(StudentTransaction,StudentTransaction.id,Student.student_name,
+					   Student.student_gender,
+					   ).select_from(  StudentTransaction).join(Student, StudentTransaction.student_id == Student.student_id,isouter=True )
 		query = query.order_by(StudentTransaction.id.desc())
 
 		for key, value in kwargs.items():
-			if key == 'student_gender':
+			if key == 'student_gender' or key == 'student_name':
 				query = query.where(getattr(Student, key) == value)
 			# elif key == 'school_id':
 			# 	cond1 = StudentTransaction.in_school_id == value

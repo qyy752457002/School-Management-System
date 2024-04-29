@@ -87,6 +87,7 @@ doc_upload: str = Field('',   description=" 附件",examples=[''])
 
     major_id: Mapped[str] = mapped_column(String(30), nullable=True, comment="专业id", default='')
     major_name: Mapped[str] = mapped_column(String(30), nullable=True, comment="专业", default='')
+    remark: Mapped[str] = mapped_column(String(255), nullable=True, comment="备注", default='')
     status: Mapped[str] = mapped_column(String(64), nullable=True, comment="状态", default='')
 
     is_valid: Mapped[bool] = mapped_column(nullable=False, comment="是否有效", default=True)
