@@ -89,6 +89,7 @@ class StudentsRule(object):
         }
         if students_db.id_number:
             kdict["id_number"] = students_db.id_number
+            kdict["is_deleted"] =  False
             exist = self.students_dao.get_students_by_param(**kdict)
             if exist:
                 raise Exception("当前身份证号的学生已经在系统内")
