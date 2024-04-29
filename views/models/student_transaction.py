@@ -57,7 +57,7 @@ class StudentEduInfo(BaseModel):
     doc_upload: str = Field('', description=" 附件", examples=[''])
     id: int = Query(0, description="id", examples=["1"], example="1"),
     relation_id: int = Query(0, description="关联id", examples=["1"], example="1"),
-    remark: str = Query('', title="", description="", examples=["备注"])
+    remark: str|None = Query('', title="", description="", examples=["备注"])
 
 
 class StudentEduInfoOut(BaseModel):

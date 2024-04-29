@@ -1,4 +1,7 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+import datetime
+from datetime import date
+
 from fastapi import Query
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
@@ -103,7 +106,9 @@ class StudentTransactionRule(object):
             student_transaction_db.class_id = str(student_transaction.class_id)
         if isinstance(student_transaction.major_id,int):
             student_transaction_db.major_id = str(student_transaction.major_id)
-        # student_transaction_db.student_transaction_no = student_transaction.student_transaction_no
+        special_date =   datetime.datetime.now()
+
+        student_transaction_db.apply_time = special_date.strftime("%Y-%m-%d %H:%M:%S")
         # student_transaction_db.student_transaction_alias = student_transaction.student_transaction_alias
         # student_transaction_db.description = student_transaction.description
 

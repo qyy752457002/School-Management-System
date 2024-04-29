@@ -100,6 +100,21 @@ class CurrentStudentsView(BaseView):
                                                                                                 )
         return paging_result
 
+    async def get_student_transaction_info(self,
+
+                  apply_id: int = Query(..., description=" ", example='1'),
+
+                  ):
+        tinfo  = await self.student_transaction_rule.get_student_transaction_by_id(apply_id,)
+        relationinfo=''
+        if tinfo.relation_id:
+            relationinfo = await self.student_transaction_rule.get_student_transaction_by_id(tinfo.relation_id,)
+
+        stubaseinfo = await self.students_rule.get_students_by_id(tinfo.student_id)
+
+        return {'student_transaction_in': tinfo, 'student_transaction_out': relationinfo,
+                'student_info': stubaseinfo,  }
+
     # 在校生转入    届别 班级
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
         # print(new_students_key_info)
