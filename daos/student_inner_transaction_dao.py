@@ -54,9 +54,9 @@ class StudentInnerTransactionDAO(DAOBase):
 
         ### 此处填写查询条件
         if student_inner_transaction_search.student_name:
-            query = query.where(Student.name.like(f'%{student_inner_transaction_search.student_name}%'))
+            query = query.where(Student.student_name.like(f'%{student_inner_transaction_search.student_name}%'))
         if student_inner_transaction_search.student_gender:
-            query = query.where(Student.gender == student_inner_transaction_search.student_gender)
+            query = query.where(Student.student_gender == student_inner_transaction_search.student_gender)
         if student_inner_transaction_search.edu_number:
             query = query.where(StudentBaseInfo.edu_number == student_inner_transaction_search.edu_number)
         if student_inner_transaction_search.school_id:
