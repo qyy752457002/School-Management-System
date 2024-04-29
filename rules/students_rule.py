@@ -28,27 +28,29 @@ class StudentsRule(object):
         baseinfo2 = await self.students_baseinfo_dao.get_students_base_info_ext_by_student_id(students_id)
         # print(baseinfo2)
         # baseinfo= baseinfo2[0]
-        graduation_student = baseinfo2[0]
-        for key, value in graduation_student.items():
-            if value is None:
-                baseinfo2[0][key] = ''
-            # delattr(graduation_student, key)
+        if  baseinfo2:
+            # raise StudentNotFoundError("学生不存在")
+            graduation_student = baseinfo2[0]
+            for key, value in graduation_student.items():
+                if value is None:
+                    baseinfo2[0][key] = ''
+                # delattr(graduation_student, key)
 
-        baseinfo = orm_model_to_view_model(baseinfo2[0], StudentsKeyinfoDetail, exclude=[""],
-                                           other_mapper={"major_name": "major_name", })
+            baseinfo = orm_model_to_view_model(baseinfo2[0], StudentsKeyinfoDetail, exclude=[""],
+                                               other_mapper={"major_name": "major_name", })
 
-        if baseinfo:
-            students.province = baseinfo.province
-            students.city = baseinfo.city
-            students.school_name = baseinfo.school_name
-            students.session = baseinfo.session
-            students.grade_name = baseinfo.grade_name
-            students.class_name = baseinfo.class_name
-            students.major_name = baseinfo.major_name
-            students.block = baseinfo.block
-            students.borough = baseinfo.borough
-            students.loc_area_pro = baseinfo.loc_area_pro
-            students.loc_area = baseinfo.loc_area
+            if baseinfo:
+                students.province = baseinfo.province
+                students.city = baseinfo.city
+                students.school_name = baseinfo.school_name
+                students.session = baseinfo.session
+                students.grade_name = baseinfo.grade_name
+                students.class_name = baseinfo.class_name
+                students.major_name = baseinfo.major_name
+                students.block = baseinfo.block
+                students.borough = baseinfo.borough
+                students.loc_area_pro = baseinfo.loc_area_pro
+                students.loc_area = baseinfo.loc_area
 
         return students
 
@@ -84,6 +86,7 @@ class StudentsRule(object):
         print(students)
 
         students_db = view_model_to_orm_model(students, Student, exclude=["student_id"])
+        students_db.student_gender = students.student_gender
         kdict = {
 
         }
