@@ -32,8 +32,10 @@ class StudentTransactionDAO(DAOBase):
 		return result.scalar_one_or_none()
 
 	async def query_studenttransaction_with_page(self, page_request: PageRequest, **kwargs,):
-		query = select(StudentTransaction,StudentTransaction.id,Student.student_name,
+		query = select(StudentTransaction,StudentTransaction.id,
 					   Student.student_gender,
+					   Student.student_name,
+
 					   ).select_from(  StudentTransaction).join(Student, StudentTransaction.student_id == Student.student_id,isouter=True )
 		query = query.order_by(StudentTransaction.id.desc())
 
