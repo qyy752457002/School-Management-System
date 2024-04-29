@@ -2,7 +2,7 @@ from typing import List
 
 from mini_framework.web.views import BaseView
 
-from models.student_transaction import AuditAction, TransactionDirection
+from models.student_transaction import AuditAction, TransactionDirection, AuditFlowStatus
 from models.students import StudentGraduatedType
 from rules.graduation_student_rule import GraduationStudentRule
 from rules.student_transaction import StudentTransactionRule
@@ -123,7 +123,16 @@ class CurrentStudentsView(BaseView):
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
         # print(new_students_key_info)
         student_edu_info.status = AuditAction.NEEDAUDIT.value
-        res = await self.student_transaction_rule.add_student_transaction(student_edu_info)
+        audit_info=res = await self.student_transaction_rule.add_student_transaction(student_edu_info)
+        # 流乘记录
+        student_trans_flow = StudentTransactionFlow(apply_id=audit_info.id,
+                                                    stage=AuditFlowStatus.FLOWBEGIN.value,
+                                                    remark= '')
+        res2 = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+        student_trans_flow = StudentTransactionFlow(apply_id=audit_info.id,
+                                                    stage=AuditFlowStatus.APPLY_SUBMIT.value,
+                                                    remark= '')
+        res2 = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
 
         return res
 
@@ -140,7 +149,6 @@ class CurrentStudentsView(BaseView):
         student_trans_flow = StudentTransactionFlow(apply_id=audit_info.transferin_audit_id,
                                                     status=audit_info.transferin_audit_action.value,
                                                     remark=audit_info.remark)
-
         res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
 
         # print(new_students_key_info)
