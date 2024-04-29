@@ -236,6 +236,8 @@ class StudentsBaseInfo(BaseModel):
     block: str = Field("", title="", description="", max_length=50)
     borough: str = Field("", title="", description="", max_length=50)
     loc_area: str = Field("", title="", description="", max_length=50)
+    edu_number: str = Field('', title="", description="学籍号码")
+
     loc_area_pro: str = Field("", title="", description="", max_length=50)
 
 
