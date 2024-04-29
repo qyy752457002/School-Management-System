@@ -10,7 +10,8 @@ from sqlalchemy import select
 from daos.student_transaction_dao import StudentTransactionDAO
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from models.student_transaction import StudentTransaction, TransactionDirection
-from views.models.student_transaction import StudentEduInfo as StudentTransactionModel, StudentEduInfo
+from views.models.student_transaction import StudentEduInfo as StudentTransactionModel, StudentEduInfo, \
+    StudentEduInfoOut
 
 
 @dataclass_inject
@@ -170,13 +171,9 @@ class StudentTransactionRule(object):
             kdict["country_no"] = edu_no
 
         paging = await self.student_transaction_dao.query_studenttransaction_with_page(page_request, **kdict)
-        # print(2222222222222,paging)
-
-        # 字段映射的示例写法   , {"hash_password": "password"} other_mapper={"in_school_id": "school_id","in_grade": "grade_name",
-        #                                                                                                     "in_class": "classes",
-        #                                                                                                     }
-        paging_result = PaginatedResponse.from_paging(paging, StudentTransactionModel)
-        # print(3333333333333333,paging_result)
+        print(2222222222222, vars(paging.items[0]))
+        paging_result = PaginatedResponse.from_paging(paging, StudentEduInfoOut)
+        print(3333333333333333,paging_result)
         return paging_result
 
     async def query_student_transaction(self, student_transaction_name):
