@@ -46,11 +46,11 @@ class StudentEduInfo(BaseModel):
     school_name: str = Query('', title="", description="学校名称", examples=["XXxiaoxue"])
     session: str = Query('', title="", description="届别", examples=["2003"])
     attached_class: str = Query("", title="", description="附设班", examples=["3班"])
-    grade_id: str = Query(..., title="", description="年级ID", examples=["102"])
+    grade_id: str|int = Query(..., title="", description="年级ID", examples=["102"])
     grade_name: str = Query('', title="", description="年级", examples=["2年级"])
-    class_id: str = Query(..., title="", description="班级id", examples=["125"])
+    class_id: str|int = Query(..., title="", description="班级id", examples=["125"])
     classes: str = Query('', title="", description="班级", examples=["二2班"])
-    major_id: str = Query(..., title="", description="专业", examples=["农业"])
+    major_id: str|int = Query(..., title="", description="专业", examples=["农业"])
     transfer_time: str = Query("", description="转学时间", min_length=1, max_length=20, examples=["2020-10-10"]),
     transfer_reason: str = Query("", description="转学原因", min_length=1, max_length=20, examples=["家庭搬迁..."]),
     status: str = Query('', description="", min_length=1, max_length=20, examples=["..."]),

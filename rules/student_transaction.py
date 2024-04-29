@@ -96,6 +96,12 @@ class StudentTransactionRule(object):
         # student_transaction_db = StudentTransaction()
         student_transaction_db.direction = direction
         student_transaction_db.relation_id = int(relation_id)
+        if isinstance(student_transaction.grade_id,int):
+            student_transaction_db.grade_id = str(student_transaction.grade_id)
+        if isinstance(student_transaction.class_id,int):
+            student_transaction_db.class_id = str(student_transaction.class_id)
+        if isinstance(student_transaction.major_id,int):
+            student_transaction_db.major_id = str(student_transaction.major_id)
         # student_transaction_db.student_transaction_no = student_transaction.student_transaction_no
         # student_transaction_db.student_transaction_alias = student_transaction.student_transaction_alias
         # student_transaction_db.description = student_transaction.description
