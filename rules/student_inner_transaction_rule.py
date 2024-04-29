@@ -4,13 +4,14 @@ from datetime import datetime
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
-from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 
 # from business_exceptions.student_inner_transaction import StudentInnerTransactionAlreadyExistError
 from daos.student_inner_transaction_dao import StudentInnerTransactionDAO
 from models.student_inner_transaction import StudentInnerTransaction
+from rules.student_transaction import StudentTransactionRule
 from views.models.student_inner_transaction import StudentInnerTransactionRes as StudentInnerTransactionModel, \
     StudentInnerTransactionRes
 
@@ -43,8 +44,11 @@ class StudentInnerTransactionRule(object):
         student_inner_transaction_db = view_model_to_orm_model(student_inner_transaction, StudentInnerTransaction,    exclude=["id"])
         student_inner_transaction_db.created_at =   datetime.now()
                                  # .strftime("%Y-%m-%d %H:%M:%S"))
+        stutran= get_injector(StudentTransactionRule)
 
-
+        student_edu_info_out = await stutran.get_student_edu_info_by_id(student_inner_transaction.student_id, )
+        student_inner_transaction_db.school_id = int(student_edu_info_out.school_id)
+        student_inner_transaction_db.class_id =  str(student_edu_info_out.class_id)
 
         student_inner_transaction_db = await self.student_inner_transaction_dao.add_student_inner_transaction(student_inner_transaction_db)
         student_inner_transaction = orm_model_to_view_model(student_inner_transaction_db, StudentInnerTransactionModel, exclude=["created_at",'updated_at','transaction_time'])
@@ -89,7 +93,7 @@ class StudentInnerTransactionRule(object):
     async def query_student_inner_transaction_with_page(self,  page_request: PageRequest,student_inner_transaction_search ):
         paging = await self.student_inner_transaction_dao.query_student_inner_transaction_with_page(student_inner_transaction_search ,page_request)
         # 字段映射的示例写法   , {"hash_password": "password"}
-        paging_result = PaginatedResponse.from_paging(paging, StudentInnerTransactionRes)
+        paging_result = PaginatedResponse.from_paging(paging, StudentInnerTransactionRes, {"student_name": "student_name", "school_name": "school_name"})
         return paging_result
 
 

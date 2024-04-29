@@ -31,7 +31,6 @@ class StudentInnerTransactionRes(BaseModel):
 
 class StudentInnerTransaction(BaseModel):
     student_id: int = Field(..., title="", description="", examples=['1'])
-
     # id: int = Query(None, title="", description="id", example='1'),
     student_name: str = Field('', title="", description="姓名", examples=[''])
     transaction_type: str = Field('', title="", description="异动类别", examples=[''])

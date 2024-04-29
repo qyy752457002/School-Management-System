@@ -23,6 +23,8 @@ class StudentInnerTransactionView(BaseView):
 
     async def post(self, student_inner_transaction: StudentInnerTransaction):
         # print(graduation_student)
+
+
         res =await self.student_inner_transaction_rule.add_student_inner_transaction(student_inner_transaction)
 
         return res
