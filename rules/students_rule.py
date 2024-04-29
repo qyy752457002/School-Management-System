@@ -10,7 +10,7 @@ from models.students import Student
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel, StudentsKeyinfoDetail, StudentsKeyinfo, \
     NewStudentTransferIn
 from views.models.students import NewStudents
-from business_exceptions.student import StudentNotFoundError
+from business_exceptions.student import StudentNotFoundError, StudentExistsError
 
 
 @dataclass_inject
@@ -31,7 +31,7 @@ class StudentsRule(object):
         graduation_student = baseinfo2[0]
         for key, value in graduation_student.items():
             if value is None:
-                baseinfo2[0][key]=''
+                baseinfo2[0][key] = ''
             # delattr(graduation_student, key)
 
         baseinfo = orm_model_to_view_model(baseinfo2[0], StudentsKeyinfoDetail, exclude=[""],
@@ -65,8 +65,10 @@ class StudentsRule(object):
 
     async def add_student_new_student_transferin(self, students):
         """
+        校验 一个身份证 布能重复 新增学生
         """
-        if isinstance(students.birthday,tuple) or (isinstance(students.birthday,str) and  len(students.birthday)==0):
+
+        if isinstance(students.birthday, tuple) or (isinstance(students.birthday, str) and len(students.birthday) == 0):
 
             # 使用 strptime 函数将字符串转换为 datetime 对象
             special_date = date(1970, 1, 1)
@@ -74,15 +76,31 @@ class StudentsRule(object):
 
             # 从 datetime 对象中提取 date 部分
             # date_obj = dt_obj.date()
-            students.birthday =special_date
+            students.birthday = special_date
         else:
             pass
             # students.birthday = datetime.strptime(students.birthday, '%Y-%m-%d').date()
 
-
         print(students)
 
         students_db = view_model_to_orm_model(students, Student, exclude=["student_id"])
+        kdict = {
+
+        }
+        if students_db.id_number:
+            kdict["id_number"] = students_db.id_number
+            kdict["is_deleted"] =  False
+            exist = await self.students_dao.get_students_by_param(**kdict)
+            # print(exist)
+
+            # studentsex = orm_model_to_view_model(exist, NewStudents, exclude=[""])
+            # print(studentsex)
+
+
+            if exist:
+                # print(exist)
+                raise StudentExistsError()
+
         # print(students_db)
         students_db = await self.students_dao.add_students(students_db)
         students = orm_model_to_view_model(students_db, NewStudentTransferIn, exclude=[""])
