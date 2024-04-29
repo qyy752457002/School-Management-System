@@ -11,7 +11,8 @@ from sqlalchemy import select
 # from business_exceptions.student_inner_transaction import StudentInnerTransactionAlreadyExistError
 from daos.student_inner_transaction_dao import StudentInnerTransactionDAO
 from models.student_inner_transaction import StudentInnerTransaction
-from views.models.student_inner_transaction import StudentInnerTransactionRes as StudentInnerTransactionModel
+from views.models.student_inner_transaction import StudentInnerTransactionRes as StudentInnerTransactionModel, \
+    StudentInnerTransactionRes
 
 
 @dataclass_inject
@@ -85,10 +86,10 @@ class StudentInnerTransactionRule(object):
     async def get_student_inner_transaction_count(self):
         return await self.student_inner_transaction_dao.get_student_inner_transaction_count()
 
-    async def query_student_inner_transaction_with_page(self,  page_request: PageRequest,student_inner_transaction_name=None,school_id=None,):
-        paging = await self.student_inner_transaction_dao.query_student_inner_transaction_with_page(student_inner_transaction_name,school_id, page_request)
+    async def query_student_inner_transaction_with_page(self,  page_request: PageRequest,student_inner_transaction_search ):
+        paging = await self.student_inner_transaction_dao.query_student_inner_transaction_with_page(student_inner_transaction_search ,page_request)
         # 字段映射的示例写法   , {"hash_password": "password"}
-        paging_result = PaginatedResponse.from_paging(paging, StudentInnerTransactionModel)
+        paging_result = PaginatedResponse.from_paging(paging, StudentInnerTransactionRes)
         return paging_result
 
 

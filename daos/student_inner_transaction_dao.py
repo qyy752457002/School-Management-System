@@ -3,7 +3,11 @@ from mini_framework.databases.entities.dao_base import DAOBase, get_update_conte
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
+from models.planning_school import PlanningSchool
+from models.school import School
 from models.student_inner_transaction import StudentInnerTransaction
+from models.students import Student
+from models.students_base_info import StudentBaseInfo
 
 
 class StudentInnerTransactionDAO(DAOBase):
@@ -30,10 +34,24 @@ class StudentInnerTransactionDAO(DAOBase):
 		result = await session.execute(select(StudentInnerTransaction).where(StudentInnerTransaction.id == id))
 		return result.scalar_one_or_none()
 
-	async def query_student_inner_transaction_with_page(self, pageQueryModel, page_request: PageRequest):
-		query = select(StudentInnerTransaction)
+	async def query_student_inner_transaction_with_page(self, student_inner_transaction_search, page_request: PageRequest):
+		query = select(StudentInnerTransaction).select_from(StudentInnerTransaction).join(School, StudentInnerTransaction.school_id == School.id).join(PlanningSchool, School.planning_school_id == PlanningSchool.id).join(Student, StudentInnerTransaction.student_id == Student.id).join(StudentBaseInfo, StudentBaseInfo.student_id == Student.id)
 		
 		### 此处填写查询条件
+		if student_inner_transaction_search.student_name:
+			query = query.where(Student.name.like(f'%{student_inner_transaction_search.student_name}%'))
+		if student_inner_transaction_search.student_gender:
+			query = query.where(Student.gender == student_inner_transaction_search.student_gender)
+		if student_inner_transaction_search.edu_number:
+			query = query.where(StudentBaseInfo.edu_number == student_inner_transaction_search.edu_number)
+		if student_inner_transaction_search.school_id:
+			query = query.where(StudentInnerTransaction.school_id == student_inner_transaction_search.school_id)
+		if student_inner_transaction_search.borough:
+			query = query.where(PlanningSchool.borough == student_inner_transaction_search.borough)
+		if student_inner_transaction_search.class_id:
+			query = query.where(StudentInnerTransaction.class_id == student_inner_transaction_search.class_id)
+
+
 		
 		paging = await self.query_page(query, page_request)
 		return paging
