@@ -5,6 +5,7 @@ from mini_framework.web.std_models.page import PageRequest
 
 from models.student_transaction import StudentTransaction
 from models.students import Student
+from models.students_base_info import StudentBaseInfo
 
 
 class StudentTransactionDAO(DAOBase):
@@ -40,11 +41,12 @@ class StudentTransactionDAO(DAOBase):
 			# StudentTransaction.id,StudentTransaction.student_id,StudentTransaction.in_school_id,StudentTransaction.out_school_id,
 			Student.student_name.label('student_name'),
 			Student.student_gender,
-					   ).select_from(  StudentTransaction).join(Student, StudentTransaction.student_id == Student.student_id,isouter=True )
+			StudentBaseInfo.edu_number,
+					   ).select_from(  StudentTransaction).join(Student, StudentTransaction.student_id == Student.student_id,isouter=True ).join(StudentBaseInfo, StudentBaseInfo.student_id == Student.student_id,isouter=True )
 		query = query.order_by(StudentTransaction.id.desc())
 		# 过滤掉  入  且 有关联ID的
-		# 排除direction为'in'且relation_id大于0的记录
-		query = query.filter(or_( StudentTransaction.direction!='in' ,  StudentTransaction.relation_id <= 0 ) )
+		# 排除direction为'in'且relation_id大于0的记录  出  且学校ID =0
+		query = query.filter(or_( StudentTransaction.direction!='out' ,  StudentTransaction.school_id != 0 ) )
 
 		for key, value in kwargs.items():
 			if key == 'student_gender' or key == 'student_name':

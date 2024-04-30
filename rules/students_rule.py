@@ -4,7 +4,7 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
-from business_exceptions.common import IdCardError
+from business_exceptions.common import IdCardError, EnrollNumberError, EduNumberError
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.students import Student
@@ -66,6 +66,10 @@ class StudentsRule(object):
             idstatus= check_id_number(students.id_number)
             if not idstatus:
                 raise IdCardError()
+        # 报名号 去重  学籍号去重
+        if students.enrollment_number:
+            if await self.students_dao.get_students_by_param(enrollment_number=students.enrollment_number,is_deleted=False):
+                raise EnrollNumberError()
 
         students_db = await self.students_dao.add_students(students_db)
         print(students_db)
@@ -91,7 +95,16 @@ class StudentsRule(object):
             pass
             # students.birthday = datetime.strptime(students.birthday, '%Y-%m-%d').date()
 
-        print(students)
+        # print(students)
+        # 校验学籍号
+        if students.edu_number:
+            kdict = {
+                "edu_number": students.edu_number,
+                "is_deleted": False
+            }
+            exist = await self.students_baseinfo_dao.get_students_base_info_by_param(**kdict)
+            if exist:
+                raise EduNumberError()
 
         students_db = view_model_to_orm_model(students, Student, exclude=["student_id"])
         students_db.student_gender = students.student_gender
@@ -114,7 +127,7 @@ class StudentsRule(object):
 
         # print(students_db)
         students_db = await self.students_dao.add_students(students_db)
-        students = orm_model_to_view_model(students_db, NewStudentTransferIn, exclude=[""])
+        students = orm_model_to_view_model(students_db, NewStudentTransferIn, exclude=[""],other_mapper={"id": "student_id"})
         return students
 
     async def update_students(self, students):
