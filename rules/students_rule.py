@@ -4,7 +4,7 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
-from business_exceptions.common import IdCardError, EnrollNumberError
+from business_exceptions.common import IdCardError, EnrollNumberError, EduNumberError
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.students import Student
@@ -68,7 +68,7 @@ class StudentsRule(object):
                 raise IdCardError()
         # 报名号 去重  学籍号去重
         if students.enrollment_number:
-            if await self.students_dao.get_students_by_param(enrollment_number=students.enrollment_number,is_delete=False):
+            if await self.students_dao.get_students_by_param(enrollment_number=students.enrollment_number,is_deleted=False):
                 raise EnrollNumberError()
 
         students_db = await self.students_dao.add_students(students_db)
@@ -102,7 +102,7 @@ class StudentsRule(object):
                 "edu_number": students.edu_number,
                 "is_deleted": False
             }
-            exist = await self.students_dao.get_students_by_param(**kdict)
+            exist = await self.students_baseinfo_dao.get_students_base_info_by_param(**kdict)
             if exist:
                 raise EduNumberError()
 
