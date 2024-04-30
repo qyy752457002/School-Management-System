@@ -1,6 +1,6 @@
 from datetime import date
 
-from sqlalchemy import select, func, update
+from sqlalchemy import select, func, update, and_, or_
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
@@ -61,8 +61,13 @@ class ClassDivisionRecordsDAO(DAOBase):
         ).select_from(Student).join(ClassDivisionRecords, ClassDivisionRecords.student_id == Student.student_id, isouter=True).join(Classes, ClassDivisionRecords.class_id == Classes.id, isouter=True)
 
         ### 此处填写查询条件
-        query = query.where(ClassDivisionRecords.is_deleted == False)
+        # query = query.where(ClassDivisionRecords.is_deleted == False)
         query = query.where(Student.is_deleted == False)
+        cond1 = ClassDivisionRecords.is_deleted == False
+        cond2 = ClassDivisionRecords.id == None
+        mcond = or_(cond1, cond2)
+
+        query = query.filter(    mcond)
 
 
         if school_id:
