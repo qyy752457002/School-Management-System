@@ -4,9 +4,11 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
+from business_exceptions.common import IdCardError
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.students import Student
+from views.common.common_view import check_id_number
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel, StudentsKeyinfoDetail, StudentsKeyinfo, \
     NewStudentTransferIn
 from views.models.students import NewStudents
@@ -59,6 +61,12 @@ class StudentsRule(object):
         新增学生关键信息
         """
         students_db = view_model_to_orm_model(students, Student, exclude=["student_id"])
+        # 校验身份证号
+        if  students.id_type=='resident_id_card':
+            idstatus= check_id_number(students.id_number)
+            if not idstatus:
+                raise IdCardError()
+
         students_db = await self.students_dao.add_students(students_db)
         print(students_db)
         students = orm_model_to_view_model(students_db, StudentsKeyinfoModel, exclude=[""])
