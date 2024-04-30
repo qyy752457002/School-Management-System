@@ -205,9 +205,10 @@ class StudentsBaseInfo(BaseModel):
     常住地址：permanent_address
     备注：remark
     """
-    student_base_id: int = Field(..., title="学生信息id", description="学生信息id")
+    student_base_id: int = Field(0, title="学生信息id", description="学生信息id")
     student_id: int = Field(..., title="学生id", description="学生id")
     grade_id: int|None = Field(0, title="", description="")
+    school_id: int|None = Field(0, title="", description="")
 
     name_pinyin: str = Field("", title="姓名拼音", description="姓名拼音")
     session: str = Field("", title="届别", description="届别")
