@@ -65,10 +65,7 @@ class StudentTransactionRule(object):
                                       direction=TransactionDirection.IN.value, relation_id=0):
         relation_id = int(relation_id)
         #   根据ID  兆 name
-        if student_transaction.class_id:
-            classinfo = await self.class_dao.get_classes_by_id(student_transaction.class_id)
-            if classinfo:
-                student_transaction.classes = classinfo.class_name
+
         if student_transaction.grade_id:
             classinfo = await self.grade_dao.get_grade_by_id(student_transaction.grade_id)
             if classinfo:
@@ -101,9 +98,8 @@ class StudentTransactionRule(object):
             if isinstance(value, tuple):
                 exclude.append(key)
 
-
         student_transaction_db = view_model_to_orm_model(student_transaction, StudentTransaction,
-                                                          exclude=exclude,other_mapper={"classes": "class_name",})
+                                                          exclude=exclude,other_mapper={"classes": "classes",})
         # student_transaction_db = StudentTransaction()
         # todo 读取 当前操作的老师 token 
         student_transaction_db.apply_user  ='xxx'
@@ -118,6 +114,11 @@ class StudentTransactionRule(object):
         special_date =   datetime.datetime.now()
 
         student_transaction_db.apply_time = special_date.strftime("%Y-%m-%d %H:%M:%S")
+        if student_transaction.class_id:
+            classinfo = await self.class_dao.get_classes_by_id(student_transaction.class_id)
+            if classinfo:
+                student_transaction_db.classes = classinfo.class_name
+
 
         student_transaction_db = await self.student_transaction_dao.add_studenttransaction(student_transaction_db)
         # todo
