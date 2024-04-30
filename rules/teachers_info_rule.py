@@ -42,6 +42,7 @@ class TeachersInfoRule(object):
             raise TeacherInfoExitError()
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
+        print(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
         return teachers_info
 
