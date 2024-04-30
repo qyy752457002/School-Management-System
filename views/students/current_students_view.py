@@ -169,8 +169,10 @@ class CurrentStudentsView(BaseView):
 
                                            ):
         # print(new_students_key_info)
-        #  新增学生   同时写入 转出和转入 流程
+        #  新增学生   同时写入 转出和转入 流程 在校生加 年级
         res_student = await self.students_rule.add_student_new_student_transferin(student_baseinfo)
+        res_student2 = await self.students_base_info_rule.add_students_base_info(StudentsBaseInfo(student_id=res_student.student_id,edu_number=student_baseinfo.edu_number))
+
         print(res_student)
         # 转出
 

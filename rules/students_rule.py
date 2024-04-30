@@ -119,7 +119,7 @@ class StudentsRule(object):
 
         # print(students_db)
         students_db = await self.students_dao.add_students(students_db)
-        students = orm_model_to_view_model(students_db, NewStudentTransferIn, exclude=[""])
+        students = orm_model_to_view_model(students_db, NewStudentTransferIn, exclude=[""],other_mapper={"id": "student_id"})
         return students
 
     async def update_students(self, students):
