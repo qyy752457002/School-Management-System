@@ -45,8 +45,8 @@ class StudentTransactionDAO(DAOBase):
 					   ).select_from(  StudentTransaction).join(Student, StudentTransaction.student_id == Student.student_id,isouter=True ).join(StudentBaseInfo, StudentBaseInfo.student_id == Student.student_id,isouter=True )
 		query = query.order_by(StudentTransaction.id.desc())
 		# 过滤掉  入  且 有关联ID的
-		# 排除direction为'in'且relation_id大于0的记录
-		query = query.filter(or_( StudentTransaction.direction!='in' ,  StudentTransaction.relation_id <= 0 ) )
+		# 排除direction为'in'且relation_id大于0的记录  出  且学校ID =0
+		query = query.filter(or_( StudentTransaction.direction!='out' ,  StudentTransaction.school_id != 0 ) )
 
 		for key, value in kwargs.items():
 			if key == 'student_gender' or key == 'student_name':
