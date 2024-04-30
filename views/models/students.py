@@ -283,6 +283,7 @@ class NewBaseInfoCreate(BaseModel):
     permanent_address: str = Field("", title="常住地址", description="常住地址")
     school_id: int = Field(0, title="学校id", description="学校id")
     session_id: int = Field(0, title="", description="届别id")
+    registration_date: date = Field(date(1970, 1, 1), title="登记日期", description="登记日期")
 
 
 
