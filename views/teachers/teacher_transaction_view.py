@@ -6,7 +6,8 @@ from fastapi import Query
 from views.models.teacher_transaction import TransferDetailsModel, TransferDetailsUpdateModel
 from rules.transfer_details_rule import TransferDetailsRule
 
-from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel,TeacherTransactionQuery
+from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
+    TeacherTransactionQuery
 from rules.teacher_transaction_rule import TeacherTransactionRule
 
 
@@ -23,8 +24,12 @@ class TransferDetailsView(BaseView):
         res = await self.transfer_details_rule.get_transfer_details_by_transfer_details_id(transfer_details_id)
         return res
 
-    async def post_transfer_details(self, transfer_details: TransferDetailsModel):
-        res = await self.transfer_details_rule.add_transfer_details(transfer_details)
+    async def post_transfer_in_details(self, transfer_details: TransferDetailsModel):
+        res = await self.transfer_details_rule.add_transfer_in_details(transfer_details)
+        return res
+
+    async def post_transfer_out_details(self, transfer_details: TransferDetailsModel):
+        res = await self.transfer_details_rule.add_transfer_out_details(transfer_details)
         return res
 
     async def delete_transfer_details(self,
@@ -41,6 +46,10 @@ class TransferDetailsView(BaseView):
                                                                      description="transfer_detailsID", example=1234)):
         return await self.transfer_details_rule.get_all_transfer_details(teacher_id)
 
+    async def query_teacher(self, teacher_transaction: TeacherTransactionQuery):
+        res = await self.transfer_details_rule.query_teacher(teacher_transaction)
+        return res
+
 
 class TeacherTransactionView(BaseView):
     def __init__(self):
@@ -55,10 +64,6 @@ class TeacherTransactionView(BaseView):
                                       ):
         res = await self.teacher_transaction_rule.get_teacher_transaction_by_teacher_transaction_id(
             teacher_transaction_id)
-        return res
-
-    async def query_teacher(self, teacher_transaction: TeacherTransactionQuery):
-        res = await self.teacher_transaction_rule.query_teacher(teacher_transaction)
         return res
 
     async def post_teacher_transaction(self, teacher_transaction: TeacherTransactionModel):

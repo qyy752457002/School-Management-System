@@ -66,4 +66,4 @@ class TeacherSkillCertificatesRule(object):
         for teacher_skill_certificate in teacher_skill_certificates_db:
             teacher_skill_certificates.append(
                 orm_model_to_view_model(teacher_skill_certificate, TeacherSkillCertificatesUpdateModel))
-        return teacher_skill_certificates_db
+        return teacher_skill_certificates
