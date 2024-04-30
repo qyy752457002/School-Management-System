@@ -207,6 +207,8 @@ class StudentsBaseInfo(BaseModel):
     """
     student_base_id: int = Field(..., title="学生信息id", description="学生信息id")
     student_id: int = Field(..., title="学生id", description="学生id")
+    grade_id: int|None = Field(0, title="", description="")
+
     name_pinyin: str = Field("", title="姓名拼音", description="姓名拼音")
     session: str = Field("", title="届别", description="届别")
     grade: str = Field("", title="年级", description="年级")
