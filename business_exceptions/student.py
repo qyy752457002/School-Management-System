@@ -10,3 +10,6 @@ class StudentExistsError(MiniHTTPException):
 class StudentFamilyInfoNotFoundError(MiniHTTPException):
     def __init__(self):
         super().__init__(404, "STUDENT_FAMILY_INFO_NOT_FOUND", "Student family info not found.", "学生家庭信息不存在")
+class StudentFamilyInfoExistsError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(400, "STUDENT_FAMILY_INFO_EXISTS", "Student family info already exists.", "学生家庭信息已存在")
