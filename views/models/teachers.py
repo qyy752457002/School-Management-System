@@ -93,9 +93,9 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
     """
 
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    ethnicity: Optional[str] = Field(None, title="民族", description="民族", example="汉族")
+    ethnicity: str = Field("", title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家地区", description="国家地区", example="中国")
-    political_status: Optional[str] = Field(..., title="政治面貌", description="政治面貌", example="党员")
+    political_status: str= Field("", title="政治面貌", description="政治面貌", example="党员")
     native_place: str = Field("", title="籍贯", description="籍贯", example="沈阳")
     birth_place: str = Field("", title="出生地", description="出生地", example="沈阳")
     former_name: str = Field("", title="曾用名", description="曾用名", example="张三")
@@ -203,9 +203,9 @@ class TeacherInfo(BaseModel):  # 基本信息
     """
     teacher_base_id: int = Field(..., title="教师ID", description="教师ID")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    ethnicity: Optional[str] = Field(None, title="民族", description="民族", example="汉族")
+    ethnicity: str= Field("", title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家地区", description="国家地区", example="中国")
-    political_status: Optional[str] = Field(..., title="政治面貌", description="政治面貌", example="党员")
+    political_status: str = Field("", title="政治面貌", description="政治面貌", example="党员")
     native_place: str = Field("", title="籍贯", description="籍贯", example="沈阳")
     birth_place: str = Field("", title="出生地", description="出生地", example="沈阳")
     former_name: str = Field("", title="曾用名", description="曾用名", example="张三")
@@ -729,9 +729,9 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
     """
     teacher_base_id: int = Field(0, title="教师ID", description="教师ID")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    ethnicity: Optional[str] = Field("", title="民族", description="民族", example="汉族")
+    ethnicity: str = Field("", title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家地区", description="国家地区", example="中国")
-    political_status: Optional[str] = Field("", title="政治面貌", description="政治面貌", example="党员")
+    political_status: str = Field("", title="政治面貌", description="政治面貌", example="党员")
     native_place: str = Field("", title="籍贯", description="籍贯", example="沈阳")
     birth_place: str = Field("", title="出生地", description="出生地", example="沈阳")
     former_name: str = Field("", title="曾用名", description="曾用名", example="张三")
