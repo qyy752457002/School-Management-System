@@ -1,6 +1,6 @@
 from datetime import date
 
-from pydantic import BaseModel, Field, model_validator,ValidationError
+from pydantic import BaseModel, Field, model_validator, ValidationError,field_validator
 from fastapi import Query
 from typing import Optional
 from models.teachers import TeacherApprovalAtatus
@@ -157,6 +157,7 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
             if self.political_status is None:
                 raise ValueError("政治面貌不能为空")
 
+
 class TeacherInfo(BaseModel):  # 基本信息
     """
     姓名：name
@@ -303,7 +304,7 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
     招聘方式：recruitment_method
     教职工号：teacher_number
     """
-    teacher_base_id: int = Field(-1, title="教师ID", description="教师ID")
+    teacher_base_id: Optional[int] = Field(..., title="教师ID", description="教师ID")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     ethnicity: str = Field("", title="民族", description="民族", example="汉族")
     nationality: str = Field("", title="国家地区", description="国家地区", example="中国")
@@ -364,6 +365,8 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
                                                                       description="是否心理健康教育教师")
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
+
+
 
 
 class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
@@ -619,7 +622,7 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
     招聘方式：recruitment_method
     教职工号：teacher_number
     """
-    teacher_base_id: int = Field(-1, title="教师ID", description="教师ID")
+    teacher_base_id: int = Field(0, title="教师ID", description="教师ID")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     ethnicity: Optional[str] = Field(None, title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家地区", description="国家地区", example="中国")
@@ -684,7 +687,6 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
                 raise ValueError("民族不能为空")
             if self.political_status is None:
                 raise ValueError("政治面貌不能为空")
-
 
 
 # 查询新入职员工模型3.1
