@@ -86,8 +86,7 @@ class StudentEduInfoOut(BaseModel):
     apply_user: str = Query('', title="", description="", examples=["申请人"])
     apply_time: str = Query('', title="", description="", examples=["申请时间"])
     student_gender: str|None = Query('', title="", description="", examples=[""])
-
-
+    student_name: str|None = Query('', title="", description="", examples=[""])
 
 class StudentTransaction(BaseModel):
     id: int = Query(None, title="", description="id", example='1'),
