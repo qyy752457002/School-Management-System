@@ -9,7 +9,7 @@ from models.teachers import Teacher
 from views.common.common_view import check_id_number
 from views.models.teachers import Teachers as TeachersModel
 from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel
-from business_exceptions.teacher import TeacherNotFoundError
+from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 
 import hashlib
 
@@ -44,10 +44,17 @@ class TeachersRule(object):
     #     return teachers
 
     async def add_teachers(self, teachers: TeachersCreatModel):
+        teacher_id_number = teachers.teacher_id_number
+        teacher_id_type = teachers.teacher_id_type
+        teacher_name = teachers.teacher_name
+        teacher_gender=teachers.teacher_gender
+        length = await self.teachers_info_dao.get_teachers_info_by_prams(teacher_id_number, teacher_id_type,teacher_name,teacher_gender)
+        if length>0:
+            raise TeacherExistsError()
         teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
         # 校验身份证号
-        if  teachers_db.teacher_id_type=='resident_id_card':
-            idstatus= check_id_number(teachers_db.teacher_id_number)
+        if teachers_db.teacher_id_type == 'resident_id_card':
+            idstatus = check_id_number(teachers_db.teacher_id_number)
             if not idstatus:
                 raise IdCardError()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)

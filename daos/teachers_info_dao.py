@@ -1,4 +1,4 @@
-from datetime import date,datetime
+from datetime import date, datetime
 
 from sqlalchemy import select, func, update
 
@@ -164,3 +164,13 @@ class TeachersInfoDao(DAOBase):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(TeacherInfo))
         return result.scalar()
+
+    async def get_teachers_info_by_prams(self, teacher_id_number, teacher_id_type, teacher_name, teacher_gender):
+        session = await self.slave_db()
+        query = select(TeacherInfo).where(Teacher.teacher_id_number == teacher_id_number,
+                                          Teacher.teacher_id_type == teacher_id_type,
+                                          Teacher.teacher_name == teacher_name,
+                                          Teacher.teacher_gender == teacher_gender)
+        result = await session.execute(query)
+        length = len(result.scalars().all())
+        return length
