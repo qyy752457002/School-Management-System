@@ -68,6 +68,9 @@ class ClassDivisionRecordsDAO(DAOBase):
                                     ClassDivisionRecords.student_id == Student.student_id, isouter=True)
 
         ### 此处填写查询条件
+        query = query.where(ClassDivisionRecords.is_deleted == False)
+        query = query.where(Student.is_deleted == False)
+
 
         if school_id:
             query = query.where(ClassDivisionRecords.school_id == school_id)
