@@ -62,6 +62,7 @@ class NewTeachersView(BaseView):
         保存不经过验证
         """
         exits = await self.teacher_info_rule.get_teachers_info_by_teacher_id_exit(teacher_info.teacher_id)
+        print(exits)
         if exits:
             res = await self.teacher_info_rule.update_teachers_info(teacher_info)
         else:
