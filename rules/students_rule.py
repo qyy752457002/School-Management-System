@@ -66,6 +66,10 @@ class StudentsRule(object):
             idstatus= check_id_number(students.id_number)
             if not idstatus:
                 raise IdCardError()
+        # 报名号 去重  学籍号去重
+        if students.enrollment_number:
+            if await self.students_dao.get_students_by_enrollment_number(students.enrollment_number):
+                raise StudentExistsError("报名号已存在")
 
         students_db = await self.students_dao.add_students(students_db)
         print(students_db)
@@ -91,7 +95,8 @@ class StudentsRule(object):
             pass
             # students.birthday = datetime.strptime(students.birthday, '%Y-%m-%d').date()
 
-        print(students)
+        # print(students)
+        # 校验学籍号
 
         students_db = view_model_to_orm_model(students, Student, exclude=["student_id"])
         students_db.student_gender = students.student_gender

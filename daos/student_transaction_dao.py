@@ -40,6 +40,7 @@ class StudentTransactionDAO(DAOBase):
 			# StudentTransaction.id,StudentTransaction.student_id,StudentTransaction.in_school_id,StudentTransaction.out_school_id,
 			Student.student_name.label('student_name'),
 			Student.student_gender,
+			Student.edu_number,
 					   ).select_from(  StudentTransaction).join(Student, StudentTransaction.student_id == Student.student_id,isouter=True )
 		query = query.order_by(StudentTransaction.id.desc())
 		# 过滤掉  入  且 有关联ID的
