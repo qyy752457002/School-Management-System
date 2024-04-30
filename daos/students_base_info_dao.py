@@ -159,6 +159,7 @@ class StudentsBaseInfoDao(DAOBase):
                                                                                                                                           isouter=True).join(Grade,
                                                                                                                                                              Grade.id == StudentBaseInfo.grade_id,
                                                                                                                                                              isouter=True).order_by(desc(Student.student_id))
+        query = query.where(Student.is_deleted == False)
 
         if query_model.student_name:
             query = query.where(Student.student_name == query_model.student_name)
