@@ -34,11 +34,13 @@ class StudentsBaseInfoRule(object):
             raise StudentNotFoundError()
         students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfo, exclude=[""])
         schoolinfo = await self.school_dao.get_school_by_id(students_base_info_db.school_id)
-        students_base_info.block = schoolinfo.block
-        students_base_info.borough = schoolinfo.borough
+        if schoolinfo:
+            students_base_info.block = schoolinfo.block
+            students_base_info.borough = schoolinfo.borough
         schoolcominfo = await self.school_commu_dao.get_school_communication_by_school_id(students_base_info_db.school_id)
-        students_base_info.loc_area = schoolcominfo.loc_area
-        students_base_info.loc_area_pro = schoolcominfo.loc_area_pro
+        if schoolcominfo:
+            students_base_info.loc_area = schoolcominfo.loc_area
+            students_base_info.loc_area_pro = schoolcominfo.loc_area_pro
 
         return students_base_info
 
