@@ -1,5 +1,5 @@
 from mini_framework.databases.entities import BaseDBModel
-from sqlalchemy import select, func, update
+from sqlalchemy import select, func, update, desc
 
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
@@ -158,7 +158,7 @@ class StudentsBaseInfoDao(DAOBase):
                                                                                                                                           Classes.id == StudentBaseInfo.class_id,
                                                                                                                                           isouter=True).join(Grade,
                                                                                                                                                              Grade.id == StudentBaseInfo.grade_id,
-                                                                                                                                                             isouter=True)
+                                                                                                                                                             isouter=True).order_by(desc(Student.student_id))
 
         if query_model.student_name:
             query = query.where(Student.student_name == query_model.student_name)
