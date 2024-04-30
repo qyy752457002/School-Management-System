@@ -47,10 +47,16 @@ class StudentsDao(DAOBase):
 
     async def delete_students(self, students: Student):
         """
-        删除单个学生信息
+        删除单个学生信息 无法自动识别主键  故手写
         """
         session = await self.master_db()
-        return await self.delete(session, students)
+        deleted_status= True
+        update_stmt = update(Student).where(Student.student_id == students.student_id).values(
+            is_deleted= deleted_status,
+        )
+        await session.execute(update_stmt)
+        await session.commit()
+        return students
 
     async def get_all_students(self):
         session = await self.slave_db()
