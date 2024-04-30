@@ -10,17 +10,24 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 
+from daos.class_dao import ClassesDAO
+from daos.grade_dao import GradeDAO
+from daos.school_dao import SchoolDAO
 from daos.student_transaction_dao import StudentTransactionDAO
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from models.student_transaction import StudentTransaction, TransactionDirection
 from views.models.student_transaction import StudentEduInfo as StudentTransactionModel, StudentEduInfo, \
-    StudentEduInfoOut
+    StudentEduInfoOut, StudentTransactionStatus
+from views.models.students import StudentsBaseInfo
 
 
 @dataclass_inject
 class StudentTransactionRule(object):
     student_transaction_dao: StudentTransactionDAO
     students_baseinfo_dao: StudentsBaseInfoDao
+    class_dao: ClassesDAO
+    grade_dao: GradeDAO
+    school_dao: SchoolDAO
 
     async def get_student_transaction_by_id(self, student_transaction_id):
         student_transaction_db = await self.student_transaction_dao.get_studenttransaction_by_id(student_transaction_id)
@@ -57,28 +64,25 @@ class StudentTransactionRule(object):
     async def add_student_transaction(self, student_transaction,
                                       direction=TransactionDirection.IN.value, relation_id=0):
         relation_id = int(relation_id)
-        # exists_student_transaction = await self.student_transaction_dao.get_studenttransaction_by_studenttransaction_name(student_transaction.student_transaction_name)
-        # if exists_student_transaction:
-        #     raise Exception(f"转学申请{student_transaction.student_transaction_name}已存在")
+        #   根据ID  兆 name
+
+        if student_transaction.grade_id:
+            classinfo = await self.grade_dao.get_grade_by_id(student_transaction.grade_id)
+            if classinfo:
+                student_transaction.grade_name = classinfo.grade_name
+        if student_transaction.school_id:
+            classinfo = await self.school_dao.get_school_by_id(student_transaction.school_id)
+            if classinfo:
+                student_transaction.school_name = classinfo.school_name
 
         # 定义 视图和model的映射关系
 
         original_dict_map_view_orm = {
-            # "natural_edu_no": "country_no",
-            # "grade_name": "in_grade",
-            # "classes": "in_class",
-            # "transferin_time": "transfer_time",
-            # "transferin_reason": "transfer_reason",
-            # "school_id": "in_school_id",
+
         }
         if direction == TransactionDirection.OUT.value:
             original_dict_map_view_orm = {
-                # "natural_edu_no": "country_no",
-                # "grade_name": "out_grade",
-                # "classes": "out_class",
-                # "transferin_time": "transfer_time",
-                # "transferin_reason": "transfer_reason",
-                # "school_id": "out_school_id",
+
             }
         exclude = []
 
@@ -94,11 +98,8 @@ class StudentTransactionRule(object):
             if isinstance(value, tuple):
                 exclude.append(key)
 
-        # print(exclude)
-        # print(student_transaction)
-
         student_transaction_db = view_model_to_orm_model(student_transaction, StudentTransaction,
-                                                          exclude=exclude)
+                                                          exclude=exclude,other_mapper={"classes": "classes",})
         # student_transaction_db = StudentTransaction()
         # todo 读取 当前操作的老师 token 
         student_transaction_db.apply_user  ='xxx'
@@ -113,23 +114,24 @@ class StudentTransactionRule(object):
         special_date =   datetime.datetime.now()
 
         student_transaction_db.apply_time = special_date.strftime("%Y-%m-%d %H:%M:%S")
-        # student_transaction_db.student_transaction_alias = student_transaction.student_transaction_alias
-        # student_transaction_db.description = student_transaction.description
+        if student_transaction.class_id:
+            classinfo = await self.class_dao.get_classes_by_id(student_transaction.class_id)
+            if classinfo:
+                student_transaction_db.classes = classinfo.class_name
 
-        # print(student_transaction_db)
 
         student_transaction_db = await self.student_transaction_dao.add_studenttransaction(student_transaction_db)
         # todo
 
         flipped_dict = {v: k for k, v in original_dict_map_view_orm.items()}
         student_transaction_db.edu_number=''
-        print(student_transaction_db)
-        print(vars(student_transaction_db))
+        # print(student_transaction_db)
+        # print(vars(student_transaction_db))
 
         student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""],
                                                       other_mapper=flipped_dict)
-        print(student_transaction)
-        print(vars(student_transaction))
+        # print(student_transaction)
+        # print(vars(student_transaction))
 
         return student_transaction
 
@@ -205,3 +207,28 @@ class StudentTransactionRule(object):
 
             lst.append(planning_school)
         return lst
+
+
+    async def deal_student_transaction(self, student_edu_info):
+        # todo  转入  需要设置到当前学校  转出 则该状态
+        res = await self.update_student_transaction(student_edu_info)
+        # print(res )
+        if student_edu_info.status == StudentTransactionStatus.PASS.value:
+            # 入信息
+            tinfo = await self.student_transaction_dao.get_studenttransaction_by_id( student_edu_info.id)
+
+            if isinstance(tinfo, object) and hasattr(tinfo, 'relation_id') and tinfo.relation_id:
+                # 出信息
+                relationinfo = await self.get_student_transaction_by_id(tinfo.relation_id, )
+                pass
+            if tinfo.direction == TransactionDirection.IN.value:
+                # 入信息
+                students_base_info = StudentsBaseInfo(student_id=tinfo.student_id,school_id=tinfo.school_id,grade_id=tinfo.grade_id,class_id=tinfo.class_id)
+                need_update_list = ['school_id','grade_id','class_id']
+
+                print(need_update_list,students_base_info)
+                await self.students_baseinfo_dao.update_students_base_info(students_base_info,*need_update_list)
+
+
+        # student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
+        return student_edu_info
