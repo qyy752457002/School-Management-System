@@ -15,7 +15,9 @@ from daos.grade_dao import GradeDAO
 from daos.school_dao import SchoolDAO
 from daos.student_transaction_dao import StudentTransactionDAO
 from daos.students_base_info_dao import StudentsBaseInfoDao
+from daos.students_dao import StudentsDao
 from models.student_transaction import StudentTransaction, TransactionDirection
+from models.students import StudentApprovalAtatus
 from views.models.student_transaction import StudentEduInfo as StudentTransactionModel, StudentEduInfo, \
     StudentEduInfoOut, StudentTransactionStatus
 from views.models.students import StudentsBaseInfo
@@ -25,6 +27,8 @@ from views.models.students import StudentsBaseInfo
 class StudentTransactionRule(object):
     student_transaction_dao: StudentTransactionDAO
     students_baseinfo_dao: StudentsBaseInfoDao
+    students_dao: StudentsDao
+
     class_dao: ClassesDAO
     grade_dao: GradeDAO
     school_dao: SchoolDAO
@@ -228,6 +232,13 @@ class StudentTransactionRule(object):
 
                 print(need_update_list,students_base_info)
                 await self.students_baseinfo_dao.update_students_base_info(students_base_info,*need_update_list)
+                #学生的状态为 已经 入学
+                stu = await self.students_dao.get_students_by_id ( tinfo.student_id)
+                stu.approval_status = StudentApprovalAtatus.ASSIGNMENT.value
+                need_update_list = ['approval_status']
+
+                await self.students_dao.update_students(stu,*need_update_list)
+
 
 
         # student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
