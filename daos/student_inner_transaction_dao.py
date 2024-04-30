@@ -39,7 +39,7 @@ class StudentInnerTransactionDAO(DAOBase):
                                                         page_request: PageRequest):
         query = select(
             # StudentInnerTransaction,
-                       StudentInnerTransaction.id, StudentInnerTransaction.student_id, StudentInnerTransaction.school_id, StudentInnerTransaction.class_id, StudentInnerTransaction.transaction_type, StudentInnerTransaction.transaction_reason, StudentInnerTransaction.transaction_remark, StudentInnerTransaction.transaction_time, StudentInnerTransaction.transaction_user, StudentInnerTransaction.transaction_user_id, StudentInnerTransaction.created_uid, StudentInnerTransaction.updated_uid, StudentInnerTransaction.created_at, StudentInnerTransaction.updated_at, StudentInnerTransaction.approval_status, StudentInnerTransaction.is_deleted,
+                       StudentInnerTransaction.id, StudentInnerTransaction.student_id, StudentInnerTransaction.school_id, StudentInnerTransaction.class_id, StudentInnerTransaction.transaction_type, StudentInnerTransaction.transaction_reason, StudentInnerTransaction.transaction_remark, StudentInnerTransaction.transaction_time, StudentInnerTransaction.transaction_user, StudentInnerTransaction.transaction_user_id, StudentInnerTransaction.created_uid, StudentInnerTransaction.updated_uid, StudentInnerTransaction.created_at, StudentInnerTransaction.updated_at, Student.approval_status, StudentInnerTransaction.is_deleted,
                        School.school_name,
                        Classes.class_name,
                        PlanningSchool.borough,
@@ -54,7 +54,7 @@ class StudentInnerTransactionDAO(DAOBase):
             StudentBaseInfo, StudentBaseInfo.student_id == Student.student_id,isouter=True).join(Classes,
                                                                                     StudentInnerTransaction.class_id == Classes.id,isouter=True)
 
-        ### ´Ë´¦ÌîÐ´²éÑ¯Ìõ¼þ
+        ### ï¿½Ë´ï¿½ï¿½ï¿½Ð´ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
         if student_inner_transaction_search.student_name:
             query = query.where(Student.student_name.like(f'%{student_inner_transaction_search.student_name}%'))
         if student_inner_transaction_search.student_gender:
