@@ -57,11 +57,12 @@ class NewTeachersView(BaseView):
 
     # 新教职工基本信息的功能
     # 新增教职工基本信息
-    async def post_newteacherinfosave(self, teacher_info: CurrentTeacherInfoSaveModel):
+    async def post_newteacherinfosave(self, teacher_info: TeacherInfoSaveModel):
         """
         保存不经过验证
         """
-        if teacher_info.teacher_base_id > 0:
+        exits = await self.teacher_info_rule.get_teachers_info_by_teacher_id_exit(teacher_info.teacher_id)
+        if exits:
             res = await self.teacher_info_rule.update_teachers_info(teacher_info)
         else:
             res = await self.teacher_info_rule.add_teachers_info(teacher_info)

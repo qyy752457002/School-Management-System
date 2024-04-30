@@ -66,3 +66,5 @@ class StudentsFamilyInfoDao(DAOBase):
             query = query.where(getattr(StudentFamilyInfo, key) == value)
         result = await session.execute(query)
         return result.scalar_one_or_none()
+
+
