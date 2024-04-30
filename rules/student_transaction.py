@@ -98,8 +98,10 @@ class StudentTransactionRule(object):
         # print(student_transaction)
 
         student_transaction_db = view_model_to_orm_model(student_transaction, StudentTransaction,
-                                                         original_dict_map_view_orm, exclude=exclude)
+                                                          exclude=exclude)
         # student_transaction_db = StudentTransaction()
+        # todo 读取 当前操作的老师 token 
+        student_transaction_db.apply_user  ='xxx'
         student_transaction_db.direction = direction
         student_transaction_db.relation_id = int(relation_id)
         if isinstance(student_transaction.grade_id,int):
@@ -186,8 +188,8 @@ class StudentTransactionRule(object):
 
         paging = await self.student_transaction_dao.query_studenttransaction_with_page(page_request, **kdict)
         # print(2222222222222, vars(paging.items[0]))
-        paging_result = PaginatedResponse.from_paging(paging, StudentEduInfoOut,other_mapper={"student_name_origin":"student_name"})
-        print(3333333333333333,paging_result)
+        paging_result = PaginatedResponse.from_paging(paging, StudentEduInfoOut,other_mapper={"student_name":"student_name"})
+        # print(3333333333333333,paging_result)
         return paging_result
 
     async def query_student_transaction(self, student_transaction_name):
