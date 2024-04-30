@@ -117,11 +117,18 @@ class StudentTransactionRule(object):
         # print(student_transaction_db)
 
         student_transaction_db = await self.student_transaction_dao.add_studenttransaction(student_transaction_db)
+        # todo
 
         flipped_dict = {v: k for k, v in original_dict_map_view_orm.items()}
+        student_transaction_db.edu_number=''
+        print(student_transaction_db)
+        print(vars(student_transaction_db))
 
         student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""],
                                                       other_mapper=flipped_dict)
+        print(student_transaction)
+        print(vars(student_transaction))
+
         return student_transaction
 
     async def update_student_transaction(self, student_transaction):
