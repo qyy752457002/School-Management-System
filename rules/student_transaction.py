@@ -223,10 +223,9 @@ class StudentTransactionRule(object):
             if tinfo.direction == TransactionDirection.IN.value:
                 # 入信息
                 students_base_info = StudentsBaseInfo(student_id=tinfo.student_id,school_id=tinfo.school_id,grade_id=tinfo.grade_id,class_id=tinfo.class_id)
-                need_update_list = []
-                for key, value in students_base_info.dict().items():
-                    if value:
-                        need_update_list.append(key)
+                need_update_list = ['school_id','grade_id','class_id']
+
+                print(need_update_list,students_base_info)
                 await self.students_baseinfo_dao.update_students_base_info(students_base_info,*need_update_list)
 
 
