@@ -4,7 +4,8 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.transfer_details_dao import TransferDetailsDAO
 from models.transfer_details import TransferDetails
 from views.models.teacher_extend import TransferDetailsModel, TransferDetailsUpdateModel
-
+from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
+    TeacherTransactionQuery, TeacherTransactionQueryRe
 
 @dataclass_inject
 class TransferDetailsRule(object):
@@ -50,3 +51,10 @@ class TransferDetailsRule(object):
         for item in transfer_details_db:
             transfer_details.append(orm_model_to_view_model(item, TransferDetailsModel))
         return transfer_details_db
+
+    async def query_teacher(self, teacher_transaction: TeacherTransactionQuery):
+        teacher_transaction_db = await self.teacher_transaction_dao.query_teacher(teacher_transaction)
+        teacher_transaction = []
+        for item in teacher_transaction_db.items:
+            teacher_transaction.append(orm_model_to_view_model(item, TeacherTransactionQueryRe))
+        return teacher_transaction
