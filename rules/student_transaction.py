@@ -98,8 +98,10 @@ class StudentTransactionRule(object):
         # print(student_transaction)
 
         student_transaction_db = view_model_to_orm_model(student_transaction, StudentTransaction,
-                                                         original_dict_map_view_orm, exclude=exclude)
+                                                          exclude=exclude)
         # student_transaction_db = StudentTransaction()
+        # todo 读取 当前操作的老师 token 
+        student_transaction_db.apply_user  ='xxx'
         student_transaction_db.direction = direction
         student_transaction_db.relation_id = int(relation_id)
         if isinstance(student_transaction.grade_id,int):
