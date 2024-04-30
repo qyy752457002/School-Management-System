@@ -41,7 +41,7 @@ class ClassDivisionRecordsDAO(DAOBase):
         query = select(
             func.coalesce(Student.student_name, '').label('student_name') ,
             func.coalesce(ClassDivisionRecords.class_id, 0).label('class_id') ,
-            func.coalesce(ClassDivisionRecords.student_id, 0).label('student_id'),
+            func.coalesce(Student.student_id, 0).label('student_id'),
             func.coalesce(ClassDivisionRecords.school_id, 0).label('school_id'),
             func.coalesce(ClassDivisionRecords.id, 0).label('id'),
             func.coalesce(ClassDivisionRecords.created_at, specific_date).label('created_at'),
