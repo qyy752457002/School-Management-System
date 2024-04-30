@@ -27,7 +27,7 @@ class StudentsBaseInfoDao(DAOBase):
         await session.refresh(students_base_info)
         return students_base_info
 
-    async def update_students_base_info(self, students_base_info: Student, *args, is_commit: bool = True):
+    async def update_students_base_info(self, students_base_info, *args, is_commit: bool = True):
         """
         编辑学生基本信息
         """

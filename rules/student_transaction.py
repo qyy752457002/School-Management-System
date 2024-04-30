@@ -14,7 +14,8 @@ from daos.student_transaction_dao import StudentTransactionDAO
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from models.student_transaction import StudentTransaction, TransactionDirection
 from views.models.student_transaction import StudentEduInfo as StudentTransactionModel, StudentEduInfo, \
-    StudentEduInfoOut
+    StudentEduInfoOut, StudentTransactionStatus
+from views.models.students import StudentsBaseInfo
 
 
 @dataclass_inject
@@ -205,3 +206,29 @@ class StudentTransactionRule(object):
 
             lst.append(planning_school)
         return lst
+
+
+    async def deal_student_transaction(self, student_edu_info):
+        # todo  转入  需要设置到当前学校  转出 则该状态
+        res = await self.update_student_transaction(student_edu_info)
+        # print(res )
+        if student_edu_info.status == StudentTransactionStatus.PASS.value:
+            # 入信息
+            tinfo = await self.student_transaction_dao.get_studenttransaction_by_id( student_edu_info.id)
+
+            if isinstance(tinfo, object) and hasattr(tinfo, 'relation_id') and tinfo.relation_id:
+                # 出信息
+                relationinfo = await self.get_student_transaction_by_id(tinfo.relation_id, )
+                pass
+            if tinfo.direction == TransactionDirection.IN.value:
+                # 入信息
+                students_base_info = StudentsBaseInfo(student_id=tinfo.student_id,school_id=tinfo.school_id,grade_id=tinfo.grade_id,class_id=tinfo.class_id)
+                need_update_list = []
+                for key, value in students_base_info.dict().items():
+                    if value:
+                        need_update_list.append(key)
+                await self.students_baseinfo_dao.update_students_base_info(students_base_info,*need_update_list)
+
+
+        # student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
+        return student_edu_info
