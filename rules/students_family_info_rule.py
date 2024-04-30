@@ -5,8 +5,10 @@ from daos.students_family_info_dao import StudentsFamilyInfoDao
 from daos.students_dao import StudentsDao
 from models.students_family_info import StudentFamilyInfo
 from views.models.students import StudentsFamilyInfo as StudentsFamilyInfoModel
-from business_exceptions.student import StudentFamilyInfoNotFoundError, StudentNotFoundError
+from business_exceptions.student import StudentFamilyInfoNotFoundError, StudentNotFoundError, \
+    StudentFamilyInfoExistsError
 from views.models.students import StudentsFamilyInfoCreate
+
 
 @dataclass_inject
 class StudentsFamilyInfoRule(object):
@@ -31,6 +33,16 @@ class StudentsFamilyInfoRule(object):
         exits_student = await self.students_dao.get_students_by_id(students_family_info.student_id)
         if not exits_student:
             raise StudentNotFoundError()
+        #  去重  根据 姓名  性别  关系
+        kdict = {"name": students_family_info.name, "gender":  students_family_info.gender, "relationship":  students_family_info.relationship}
+        exist = await self.students_family_info_dao.get_student_family_info_by_param( **kdict)
+
+        # print(exist)
+
+        if exist:
+            # print(exist)
+            raise StudentFamilyInfoExistsError()
+
         students_family_info_db = view_model_to_orm_model(students_family_info, StudentFamilyInfo, exclude=[""])
         students_family_info_db = await self.students_family_info_dao.add_students_family_info(students_family_info_db)
         students_family_info = orm_model_to_view_model(students_family_info_db, StudentsFamilyInfoModel, exclude=[""])

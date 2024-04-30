@@ -1,9 +1,12 @@
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+
+from business_exceptions.common import IdCardError
 from daos.teachers_dao import TeachersDao
 from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers import Teacher
+from views.common.common_view import check_id_number
 from views.models.teachers import Teachers as TeachersModel
 from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel
 from business_exceptions.teacher import TeacherNotFoundError
@@ -42,6 +45,11 @@ class TeachersRule(object):
 
     async def add_teachers(self, teachers: TeachersCreatModel):
         teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
+        # 校验身份证号
+        if  teachers_db.teacher_id_type=='resident_id_card':
+            idstatus= check_id_number(teachers_db.teacher_id_number)
+            if not idstatus:
+                raise IdCardError()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
         return teachers

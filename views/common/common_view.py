@@ -13,6 +13,7 @@ from mini_framework.web.views import BaseView
 from models.grade import Grade
 from rules.grade_rule import GradeRule
 from views.models.grades import Grades
+from id_validator import validator
 
 
 
@@ -67,4 +68,8 @@ def page_none_deal( paging):
     return paging
 
 
+def check_id_number(id_number: str):
+    is_valid = validator.is_valid(id_number)
+    print(is_valid, )
+    return is_valid
 
