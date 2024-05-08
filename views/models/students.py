@@ -208,6 +208,7 @@ class StudentsBaseInfo(BaseModel):
     student_base_id: int = Field(0, title="学生信息id", description="学生信息id")
     student_id: int = Field(..., title="学生id", description="学生id")
     grade_id: int|None = Field(0, title="", description="")
+    class_id: int|None = Field(0, title="", description="")
     school_id: int|None = Field(0, title="", description="")
 
     name_pinyin: str = Field("", title="姓名拼音", description="姓名拼音")
@@ -283,6 +284,7 @@ class NewBaseInfoCreate(BaseModel):
     permanent_address: str = Field("", title="常住地址", description="常住地址")
     school_id: int = Field(0, title="学校id", description="学校id")
     session_id: int = Field(0, title="", description="届别id")
+    registration_date: date = Field(date(1970, 1, 1), title="登记日期", description="登记日期")
 
 
 

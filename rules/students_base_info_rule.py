@@ -67,7 +67,7 @@ class StudentsBaseInfoRule(object):
             students_base_info.student_id)
         if exits_student_base_info:
             raise StudentExistsError()
-        students_base_info_db = view_model_to_orm_model(students_base_info, StudentBaseInfo, exclude=[""])
+        students_base_info_db = view_model_to_orm_model(students_base_info, StudentBaseInfo, exclude=["student_base_id"])
         # 读取当前开启的届别  赋值
         param = {"session_status":  StudentSessionstatus.ENABLE.value}
         res  = await self.student_session_dao.get_student_session_by_param(**param)

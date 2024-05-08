@@ -139,7 +139,8 @@ class CurrentStudentsView(BaseView):
         # 审批通过 操作 或者拒绝
         student_edu_info = StudentTransaction(id=audit_info.transferin_audit_id,
                                               status=audit_info.transferin_audit_action.value, )
-        res = await self.student_transaction_rule.update_student_transaction(student_edu_info)
+        res2 = await self.student_transaction_rule.deal_student_transaction(student_edu_info)
+
         # 流乘记录
         student_trans_flow = StudentTransactionFlow(apply_id=audit_info.transferin_audit_id,
                                                     status=audit_info.transferin_audit_action.value,
@@ -168,8 +169,10 @@ class CurrentStudentsView(BaseView):
 
                                            ):
         # print(new_students_key_info)
-        #  新增学生   同时写入 转出和转入 流程
+        #  新增学生   同时写入 转出和转入 流程 在校生加 年级
         res_student = await self.students_rule.add_student_new_student_transferin(student_baseinfo)
+        res_student2 = await self.students_base_info_rule.add_students_base_info(StudentsBaseInfo(student_id=res_student.student_id,edu_number=student_baseinfo.edu_number))
+
         print(res_student)
         # 转出
 

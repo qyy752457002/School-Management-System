@@ -22,6 +22,8 @@ class SchoolCommunicationRule(object):
         return school
     async def get_school_communication_by_school_id(self, school_communication_id):
         school_communication_db = await self.school_communication_dao.get_school_communication_by_school_id(school_communication_id)
+        if not school_communication_db:
+            return None
         # 可选 , exclude=[""]
         school = orm_model_to_view_model(school_communication_db, SchoolCommunicationModel)
         return school

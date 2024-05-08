@@ -27,7 +27,7 @@ class StudentsBaseInfoDao(DAOBase):
         await session.refresh(students_base_info)
         return students_base_info
 
-    async def update_students_base_info(self, students_base_info: Student, *args, is_commit: bool = True):
+    async def update_students_base_info(self, students_base_info, *args, is_commit: bool = True):
         """
         编辑学生基本信息
         """
@@ -226,3 +226,15 @@ class StudentsBaseInfoDao(DAOBase):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(StudentBaseInfo))
         return result.scalar()
+
+
+    async def get_students_base_info_by_param(self, **kwargs):
+        """
+        获取单个学生信息
+        """
+        session = await self.slave_db()
+        query = select(StudentBaseInfo)
+        for key, value in kwargs.items():
+            query = query.where(getattr(StudentBaseInfo, key) == value)
+        result = await session.execute(query)
+        return result.scalar_one_or_none()

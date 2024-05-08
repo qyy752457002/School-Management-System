@@ -85,9 +85,9 @@ class StudentEduInfoOut(BaseModel):
     relation_id: int = Query(0, description="关联id", examples=["1"], example="1"),
     apply_user: str = Query('', title="", description="", examples=["申请人"])
     apply_time: str = Query('', title="", description="", examples=["申请时间"])
-    student_gender: str = Query('', title="", description="", examples=[""])
-
-
+    student_gender: str|None = Query('', title="", description="", examples=[""])
+    student_name: str|None = Query('', title="", description="", examples=[""])
+    edu_number: str|None = Query("", description="国家学籍号码", min_length=1, max_length=30, examples=["DF23321312"]),
 
 class StudentTransaction(BaseModel):
     id: int = Query(None, title="", description="id", example='1'),

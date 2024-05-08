@@ -30,6 +30,8 @@ class SchoolRule(object):
     async def get_school_by_id(self, school_id,extra_model=None):
         school_db = await self.school_dao.get_school_by_id(school_id)
         # 可选 , exclude=[""]
+        if not school_db:
+            return None
         if extra_model:
             school = orm_model_to_view_model(school_db, extra_model)
 
