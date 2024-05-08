@@ -333,7 +333,7 @@ class PlanningSchoolView(BaseView):
 
         return res
 
-    # 正式开办  传全部  插入或者更新  todo
+    # 正式开办  传全部  插入或者更新
     async def put_open(self,
 
                        planning_school: PlanningSchoolBaseInfo,
