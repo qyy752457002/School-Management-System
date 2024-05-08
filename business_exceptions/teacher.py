@@ -3,6 +3,10 @@ class TeacherNotFoundError(MiniHTTPException):
     def __init__(self):
         super().__init__(404, "TEACHER_NOT_FOUND", "Teacher not found.", "教师不存在")
 
+class TeacherExistsError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "TEACHER_EXISTS_ERROR", "Teacher exists error.", "教师已存在")
+
 class TeacherInfoNotFoundError(MiniHTTPException):
     def __init__(self):
         super().__init__(404, "TEACHER_INFO_NOT_FOUND", "TeacherInfo not found.", "教师信息不存在")

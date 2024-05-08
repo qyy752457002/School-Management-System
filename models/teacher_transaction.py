@@ -31,7 +31,6 @@ class TeacherTransaction(BaseDBModel):
     transaction_time: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, nullable=False, comment="操作时间")
     transaction_user: Mapped[str] = mapped_column(String(255),  nullable=True, comment="操作人",default='')
     transaction_user_id: Mapped[int] = mapped_column(  nullable=True , comment="操作人ID",default=0)
-
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)
     updated_uid: Mapped[int] = mapped_column( nullable=True , comment="操作人",default=0)
     created_at = mapped_column(DateTime, default=datetime.now, nullable=False, comment="创建时间")

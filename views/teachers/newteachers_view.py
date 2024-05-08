@@ -61,8 +61,12 @@ class NewTeachersView(BaseView):
         """
         保存不经过验证
         """
-        print(teacher_info)
-        res = await self.teacher_info_rule.add_teachers_info(teacher_info)
+        exits = await self.teacher_info_rule.get_teachers_info_by_teacher_id_exit(teacher_info.teacher_id)
+        print(exits)
+        if exits:
+            res = await self.teacher_info_rule.update_teachers_info(teacher_info)
+        else:
+            res = await self.teacher_info_rule.add_teachers_info(teacher_info)
         return res
 
     async def get_newteacherinfo(self, teacher_id: int = Query(..., title="教师名称", description="教师名称",
@@ -79,6 +83,7 @@ class NewTeachersView(BaseView):
         return res
 
     async def put_newteacherinforesave(self, teacher_info: CurrentTeacherInfoSaveModel):
+
         res = await self.teacher_info_rule.update_teachers_info(teacher_info)
         return res
 
