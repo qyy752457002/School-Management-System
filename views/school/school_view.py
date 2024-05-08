@@ -10,7 +10,7 @@ from views.models.operation_record import OperationRecord, OperationModule, Oper
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
 from views.models.school_communications import SchoolCommunications
 from views.models.school_eduinfo import SchoolEduInfo
-from views.models.school import School, SchoolBaseInfo, SchoolKeyInfo, SchoolKeyAddInfo
+from views.models.school import School, SchoolBaseInfo, SchoolKeyInfo, SchoolKeyAddInfo, SchoolBaseInfoOptional
 
 from fastapi import Query, Depends
 from pydantic import BaseModel, Field
@@ -258,7 +258,7 @@ class SchoolView(BaseView):
     # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性
     async def put(self,
 
-                  school: SchoolBaseInfo,
+                  school: SchoolBaseInfoOptional,
                   school_communication: SchoolCommunications,
                   school_eduinfo: SchoolEduInfo,
                   school_id: int = Query(..., title="", description="学校id/园所id", example='38'),
@@ -268,6 +268,8 @@ class SchoolView(BaseView):
         school.id = school_id
         school_communication.school_id = school_id
         school_eduinfo.school_id = school_id
+        school_communication.id = None
+        school_eduinfo.id = None
 
         origin = await self.school_rule.get_school_by_id(school.id)
         log_con = compare_modify_fields(school, origin)
