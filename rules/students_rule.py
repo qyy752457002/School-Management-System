@@ -1,3 +1,4 @@
+import pprint
 from datetime import datetime, date
 
 from mini_framework.storage.manager import storage_manager
@@ -34,11 +35,21 @@ class StudentsRule(object):
         students = orm_model_to_view_model(students_db, StudentsKeyinfoDetail, exclude=[""])
         # 照片等  处理URL 72
         if students.photo:
-            fileinfo = self.file_storage_dao.get_file_by_id( students.photo)
+            fileinfo = await self.file_storage_dao.get_file_by_id( students.photo)
+            if fileinfo:
+                fileinfo2 = orm_model_to_view_model(fileinfo, FileStorageModel, exclude=[""])
+                print(fileinfo2)
+                file_storage=FileStorageModel(file_name=fileinfo.file_name,bucket_name=fileinfo.bucket_name,file_size=fileinfo.file_size, )
+                students.photo= storage_manager.query_get_object_url_with_token(file_storage)
+            else:
+                print('文件not found ')
+                pass
+
+
             storage_rule  = get_injector(StorageRule)
             # res =storage_rule.get_upload_student_info_token_uri(fileinfo.file_name, fileinfo.file_size)
-            file_storage=FileStorageModel(file_name=fileinfo.file_name,bucket_name=fileinfo.bucket_name,file_size=fileinfo.file_size, )
-            students.photo= storage_manager.query_get_object_url_with_token(file_storage)
+            # pprint.pprint((fileinfo2))
+
 
 
         # 查其他的信息
