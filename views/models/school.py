@@ -140,7 +140,7 @@ class SchoolBaseInfo(BaseModel):
     department_unit_number: str = Field('', title="", description="属地管理行政部门单位号",examples=['SC562369322SG'])
     sy_zones: str = Field('', title="", description="属地管理行政部门所在地地区",examples=['铁西区'])
     historical_evolution: str = Field('', title="", description="历史沿革",examples=['xxxxxxxxxxxxxxxxxxxx'])
-    status: str = Field(None, title="", description=" 状态",examples=['正常'])
+    status: str = Field(None, title="", description=" 状态",examples=[])
     school_en_name: str = Field('', title="", description="园所英文名称",examples=['MinxingPrimarySCHOOL'])
     social_credit_code: str = Field('', title="", description="统一社会信用代码",examples=['XH423423876867'])
     school_closure_date: str = Field('', title="", description="学校关闭日期",examples=[''])

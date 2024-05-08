@@ -314,14 +314,15 @@ class SchoolView(BaseView):
         school_eduinfo.school_id = school_id
         school_communication.id = None
         school_communication.id = None
+        delattr(school, 'status')
 
-        origin = await self.school_rule.get_planning_school_by_id(school.id)
+        origin = await self.school_rule.get_school_by_id(school.id)
         log_con = compare_modify_fields(school, origin)
 
-        res = await self.school_rule.update_planning_school_byargs(school)
-        res_com = await self.school_communication_rule.update_planning_school_communication_byargs(
+        res = await self.school_rule.update_school_byargs(school)
+        res_com = await self.school_communication_rule.update_school_communication_byargs(
             school_communication)
-        res_edu = await self.school_eduinfo_rule.update_planning_school_eduinfo_byargs(school_eduinfo)
+        res_edu = await self.school_eduinfo_rule.update_school_eduinfo_byargs(school_eduinfo)
 
         #  调用 内部方法 开办
 
