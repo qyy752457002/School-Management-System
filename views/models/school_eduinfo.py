@@ -13,7 +13,7 @@ class SchoolEduInfo(BaseModel):
 
     is_ethnic_school: bool = Field(None, title="", description="是否民族校", examples=[False])
     is_att_class: bool = Field(None, title="", description="是否附设班", examples=[False])
-    att_class_type: str = Field(None, title="", description="附设班类型", examples=['是'])
+    att_class_type: str|bool = Field(None, title="", description="附设班类型", examples=['是'])
     is_province_feat: bool = Field(None, title="", description="是否省特色", examples=[False])
     is_bilingual_clas: bool = Field(None, title="", description="是否具有双语教学班", examples=[False])
     minority_lang_code: str = Field(None, title="", description="少数民族语言编码", examples=['是'])

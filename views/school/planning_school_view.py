@@ -304,6 +304,8 @@ class PlanningSchoolView(BaseView):
         planning_school_eduinfo.planning_school_id = planning_school_id
         planning_school_communication.id = None
         planning_school_eduinfo.id = None
+        if isinstance(planning_school_eduinfo.att_class_type,  bool):
+            planning_school_eduinfo.att_class_type= str( planning_school_eduinfo.att_class_type )
 
         origin = await self.planning_school_rule.get_planning_school_by_id(planning_school.id)
         log_con = compare_modify_fields(planning_school, origin)
@@ -348,6 +350,8 @@ class PlanningSchoolView(BaseView):
         planning_school_eduinfo.planning_school_id = planning_school_id
         planning_school_communication.id = None
         planning_school_eduinfo.id = None
+        if isinstance(planning_school_eduinfo.att_class_type,  bool):
+            planning_school_eduinfo.att_class_type= str( planning_school_eduinfo.att_class_type )
 
         origin = await self.planning_school_rule.get_planning_school_by_id(planning_school.id)
         log_con = compare_modify_fields(planning_school, origin)
