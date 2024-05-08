@@ -52,10 +52,21 @@ class TransferDetailsDAO(DAOBase):
                        Teacher.teacher_gender, TeacherInfo.teacher_number, TeacherInfo.birth_place).join(TeacherInfo,
                                                                                                          Teacher.teacher_id == TeacherInfo.teacher_id)
         if query_model.teacher_name:
-            query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
+            query = query.where(Teacher.teacher_name == query_model.teacher_name)
         if query_model.teacher_id_number:
             query = query.where(Teacher.teacher_id_number == query_model.teacher_id_number)
         if query_model.teacher_id_type:
             query = query.where(Teacher.teacher_id_type == query_model.teacher_id_type)
         result = await session.execute(query)
         return result.scalars().all()
+
+    async def query_teacher_transfer(self, query_model: TeacherTransactionQuery):
+        session = await self.slave_db()
+        query = select(Teacher).where(Teacher.teacher_name == query_model.teacher_name,
+                                      Teacher.teacher_id_number == query_model.teacher_id_number,
+                                      Teacher.teacher_id_type == query_model.teacher_id_type)
+        result = await session.execute(query)
+        return result.scalar_one_or_none()
+
+
+

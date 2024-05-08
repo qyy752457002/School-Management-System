@@ -53,5 +53,3 @@ class TeacherTransactionRule(object):
         for item in teacher_transaction_db:
             teacher_transaction.append(orm_model_to_view_model(item, TeacherTransactionModel))
         return teacher_transaction
-
-

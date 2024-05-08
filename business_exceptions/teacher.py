@@ -74,3 +74,14 @@ class ResearchAchievementsNotFoundError(MiniHTTPException):
 class TalentProgramNotFoundError(MiniHTTPException):
     def __init__(self):
         super().__init__(404, "TALENT_PROGRAM_NOT_FOUND", "TalentProgram not found.", "人才项目不存在")
+
+class EthnicityNoneError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404,"ETHNICITY_NONE_ERROR","Ethnicity none error.","国籍为中国时，民族不能为空")
+
+class PoliticalStatusNoneError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404,"POLITICAL_STATUS_NONE_ERROR","Political status none error.","国籍为中国时，政治面貌不能为空")
+class TestValueError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404,"TEST_VALUE_ERROR","Test value error.","测试值错误")
