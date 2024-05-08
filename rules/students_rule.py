@@ -37,21 +37,26 @@ class StudentsRule(object):
         if students.photo:
             fileinfo = await self.file_storage_dao.get_file_by_id( students.photo)
             if fileinfo:
-                # fileinfo2 = orm_model_to_view_model(fileinfo, FileStorageModel, exclude=[""])
-                print(fileinfo)
+                # 获取行的数据
+                fileinfo = fileinfo._asdict()['FileStorage']
+                print(fileinfo)  # 使用 _asdict() 方法转换为字典
                 if hasattr(fileinfo, 'file_name'):
 
                     file_storage=FileStorageModel(file_name=fileinfo.file_name,bucket_name=fileinfo.bucket_name,file_size=fileinfo.file_size, )
-                    students.photo= storage_manager.query_get_object_url_with_token(file_storage)
+                    try:
+                        students.photo= storage_manager.query_get_object_url_with_token(file_storage)
+                    except Exception as e:
+                        print(e)
+                        if hasattr(e, 'user_message'):
+
+                            students.photo=  e.user_message
+
+                        pass
+                    pprint.pprint(students.photo)
+
             else:
                 print('文件not found ')
                 pass
-
-
-            storage_rule  = get_injector(StorageRule)
-            # res =storage_rule.get_upload_student_info_token_uri(fileinfo.file_name, fileinfo.file_size)
-            # pprint.pprint((fileinfo2))
-
 
 
         # 查其他的信息
