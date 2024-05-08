@@ -4,7 +4,6 @@ from views.models.teachers import Teachers
 
 from views.teachers.teachers_view import TeachersView
 from views.teachers.newteachers_view import NewTeachersView
-from views.teachers.test_teacher import TestNewTeachersView
 from views.teachers.teachers_extend_view import TeacherLearnExperienceView, TeacherWorkExperienceView, \
     TeacherJobAppointmentsView, TeacherProfessionalTitlesView, TeacherQualificationsView, TeacherSkillCertificatesView, \
     TeacherEthicRecordsView,EducationalTeachingView
@@ -29,6 +28,5 @@ def routers():
     router.include_api_view_class(TalentProgramView, "/v1/teacher-extend", description="教师入学人才项目信息管理")
     router.include_api_view_class(AnnualReviewView, "/v1/teacher-extend", description="教师年度考核信息管理")
     router.include_api_view_class(ResearchAchievementsView, "/v1/teacher-extend", description="教师科研项目管理")
-    router.include_api_view_class(TestNewTeachersView, "/v1/test-new-teachers", description="测试新入职教师管理")
 
     return router
