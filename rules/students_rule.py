@@ -37,10 +37,12 @@ class StudentsRule(object):
         if students.photo:
             fileinfo = await self.file_storage_dao.get_file_by_id( students.photo)
             if fileinfo:
-                fileinfo2 = orm_model_to_view_model(fileinfo, FileStorageModel, exclude=[""])
-                print(fileinfo2)
-                file_storage=FileStorageModel(file_name=fileinfo.file_name,bucket_name=fileinfo.bucket_name,file_size=fileinfo.file_size, )
-                students.photo= storage_manager.query_get_object_url_with_token(file_storage)
+                # fileinfo2 = orm_model_to_view_model(fileinfo, FileStorageModel, exclude=[""])
+                print(fileinfo)
+                if hasattr(fileinfo, 'file_name'):
+
+                    file_storage=FileStorageModel(file_name=fileinfo.file_name,bucket_name=fileinfo.bucket_name,file_size=fileinfo.file_size, )
+                    students.photo= storage_manager.query_get_object_url_with_token(file_storage)
             else:
                 print('文件not found ')
                 pass
