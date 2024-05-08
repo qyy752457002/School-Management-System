@@ -210,7 +210,7 @@ class PlanningSchoolView(BaseView):
         return paging_result
 
 
-    # 开办 todo 校验合法性等  业务逻辑   开班式 校验所有的数据是否 都填写了
+    # 开办   校验合法性等  业务逻辑   开班式 校验所有的数据是否 都填写了
     async def patch_open(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
                                                                min_length=1, max_length=20, example='SC2032633')):
         # print(planning_school)
