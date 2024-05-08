@@ -289,7 +289,7 @@ class PlanningSchoolView(BaseView):
         print(planning_school)
         return planning_school
 
-    # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性  todo  允许 部分 不填  现保存
+    # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性     允许 部分 不填  现保存
     async def put(self,
 
                   planning_school: PlanningSchoolBaseInfoOptional,
@@ -357,7 +357,8 @@ class PlanningSchoolView(BaseView):
             planning_school_communication)
         res_edu = await self.planning_school_eduinfo_rule.update_planning_school_eduinfo_byargs(planning_school_eduinfo)
 
-        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        #  调用 内部方法 开办
+
         res2 = await self.patch_open(str(planning_school_id))
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
