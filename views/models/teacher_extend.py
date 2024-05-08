@@ -152,7 +152,7 @@ class TeacherJobAppointmentsModel(BaseModel):
     position_category: str = Field(..., title="岗位类别", description="岗位类别")
     position_level: str = Field(..., title="岗位等级", description="岗位等级")
     school_level_position: str = Field(..., title="校级职务", description="校级职务")
-    is_concurrent_other_positions: YesOrNo = Field("N", title="是否兼任其他岗位", description="是否兼任其他岗位")
+    is_concurrent_other_positions: bool = Field(False, title="是否兼任其他岗位", description="是否兼任其他岗位")
     concurrent_position: Optional[List[dict]] = Field(default=[{"category": "默认类别", "level": "默认等级"}],
                                                       title="兼任岗位", description="兼任岗位")
     appointment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
@@ -178,7 +178,7 @@ class TeacherJobAppointmentsUpdateModel(BaseModel):
     position_category: str = Field(..., title="岗位类别", description="岗位类别")
     position_level: str = Field(..., title="岗位等级", description="岗位等级")
     school_level_position: str = Field(..., title="校级职务", description="校级职务")
-    is_concurrent_other_positions: YesOrNo = Field("N", title="是否兼任其他岗位", description="是否兼任其他岗位")
+    is_concurrent_other_positions: bool = Field(False, title="是否兼任其他岗位", description="是否兼任其他岗位")
     concurrent_position: Optional[List[dict]] = Field(default=[{"category": "默认类别", "level": "默认等级"}],
                                                       title="兼任岗位", description="兼任岗位")
     appointment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
@@ -670,7 +670,7 @@ class ResearchAchievementsModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Field(..., title="科研成果种类", description="科研成果种类")
     type: str = Field("", title="类型", description="类型")
-    representative_or_project: Optional[YesOrNo] = Field(None, title="是否代表性成果或项目",
+    representative_or_project: Optional[bool] = Field(None, title="是否代表性成果或项目",
                                                          description="是否代表性成果或项目")
     name: str = Field("", title="名称", description="名称")
     disciplinary_field: str = Field("", title="学科领域", description="学科领域")
@@ -754,7 +754,7 @@ class ResearchAchievementsUpdateModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Field(..., title="科研成果种类", description="科研成果种类")
     type: str = Field("", title="类型", description="类型")
-    representative_or_project: Optional[YesOrNo] = Field(None, title="是否代表性成果或项目",
+    representative_or_project: Optional[bool] = Field(None, title="是否代表性成果或项目",
                                                          description="是否代表性成果或项目")
     name: str = Field("", title="名称", description="名称")
     disciplinary_field: str = Field("", title="学科领域", description="学科领域")
@@ -806,7 +806,7 @@ class ResearchAchievementsQueryModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Query("", title="姓名", description="姓名", example="张三")
     type: str = Query("", title="类型", description="类型", example="类型")
-    representative_or_project: Optional[YesOrNo] = Query(False, title="是否代表性成果或项目",
+    representative_or_project: Optional[bool] = Query(False, title="是否代表性成果或项目",
                                                          description="是否代表性成果或项目")
     name: str = Query("", title="名称", description="名称", example="名称")
     disciplinary_field: str = Query("", title="学科领域", description="学科领域", example="学科领域")
@@ -828,7 +828,7 @@ class ResearchAchievementsQueryReModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Query("", title="姓名", description="姓名", example="张三")
     type: str = Query("", title="类型", description="类型", example="类型")
-    representative_or_project: Optional[YesOrNo] = Query(False, title="是否代表性成果或项目",
+    representative_or_project: Optional[bool] = Query(False, title="是否代表性成果或项目",
                                                          description="是否代表性成果或项目")
     name: str = Query("", title="名称", description="名称", example="名称")
     disciplinary_field: str = Query("", title="学科领域", description="学科领域", example="学科领域")

@@ -47,6 +47,7 @@ class TransferDetailsView(BaseView):
         return await self.transfer_details_rule.get_all_transfer_details(teacher_id)
 
     async def query_teacher(self, teacher_transaction: TeacherTransactionQuery):
+
         res = await self.transfer_details_rule.query_teacher(teacher_transaction)
         return res
 
@@ -85,3 +86,5 @@ class TeacherTransactionView(BaseView):
                                                                         description="teacher_transactionID",
                                                                         example=1234)):
         return await self.teacher_transaction_rule.get_all_teacher_transaction(teacher_id)
+
+

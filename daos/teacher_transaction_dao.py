@@ -11,38 +11,36 @@ from models.teachers import Teacher
 
 class TeacherTransactionDAO(DAOBase):
 
-    async def add_teachertransaction(self, teachertransaction: TeacherTransaction):
+    async def add_teacher_transaction(self, teacher_transaction: TeacherTransaction):
         session = await self.master_db()
-        session.add(teachertransaction)
+        session.add(teacher_transaction)
         await session.commit()
-        await session.refresh(teachertransaction)
-        return teachertransaction
+        await session.refresh(teacher_transaction)
+        return teacher_transaction
 
-    async def get_teachertransaction_count(self, ):
+    async def get_teacher_transaction_count(self, ):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(TeacherTransaction))
         return result.scalar()
 
-    async def delete_teachertransaction(self, teachertransaction: TeacherTransaction):
+    async def delete_teacher_transaction(self, teacher_transaction: TeacherTransaction):
         session = await self.master_db()
-        await session.delete(teachertransaction)
+        await session.delete(teacher_transaction)
         await session.commit()
 
-    async def get_teachertransaction_by_id(self, id):
+    async def get_teacher_transaction_by_teacher_transaction_id(self, teacher_transaction_id):
         session = await self.slave_db()
-        result = await session.execute(select(TeacherTransaction).where(TeacherTransaction.id == id))
+        result = await session.execute(select(TeacherTransaction).where(TeacherTransaction.id == teacher_transaction_id))
         return result.scalar_one_or_none()
 
-    async def query_teachertransaction_with_page(self, pageQueryModel, page_request: PageRequest):
+    async def query_teacher_transaction_with_page(self, pageQueryModel, page_request: PageRequest):
         query = select(TeacherTransaction)
         paging = await self.query_page(query, page_request)
         return paging
 
-    async def update_teachertransaction(self, teachertransaction, *args, is_commit=True):
+    async def update_teacher_transaction(self, teacher_transaction, *args, is_commit=True):
         session = await self.master_db()
-        update_contents = get_update_contents(teachertransaction, *args)
-        query = update(TeacherTransaction).where(TeacherTransaction.id == teachertransaction.id).values(
+        update_contents = get_update_contents(teacher_transaction, *args)
+        query = update(TeacherTransaction).where(TeacherTransaction.id == teacher_transaction.id).values(
             **update_contents)
-        return await self.update(session, query, teachertransaction, update_contents, is_commit=is_commit)
-
-
+        return await self.update(session, query, teacher_transaction, update_contents, is_commit=is_commit)

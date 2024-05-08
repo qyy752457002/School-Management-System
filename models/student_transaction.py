@@ -56,7 +56,6 @@ class StudentTransaction(BaseDBModel):
 transfer_time:str= Query("", description="转入/出时间" ,min_length=1,max_length=20,examples=["2020-10-10"]),
 transfer_reason:str= Query("", description="转学原因" ,min_length=1,max_length=20,examples=["家庭搬迁..."]),
 doc_upload: str = Field('',   description=" 附件",examples=[''])
-
     """
     __tablename__ = 'lfun_student_transaction'
     __table_args__ = {'comment': '转学休学入学毕业申请表'}

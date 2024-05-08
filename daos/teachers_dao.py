@@ -29,10 +29,6 @@ class TeachersDao(DAOBase):
         result = await session.execute(select(Teacher).where(Teacher.teacher_id == teachers_id))
         return result.scalar_one_or_none()
 
-    # async def get_teachers_by_username(self, username):
-    #     session = await self.slave_db()
-    #     result = await session.execute(select(Teacher).where(Teacher.username) == username)
-    #     return result.scalar_one_or_none()
 
     #删除单个教师信息
     async def delete_teachers(self, teachers: Teacher):

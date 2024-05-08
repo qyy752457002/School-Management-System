@@ -66,7 +66,7 @@ class TeachersInfoDao(DAOBase):
                        func.coalesce(TeacherInfo.teacher_base_id, 0).label('teacher_base_id'),
                        func.coalesce(TeacherInfo.highest_education, '').label('highest_education'),
                        func.coalesce(TeacherInfo.political_status, '').label('political_status'),
-                       func.coalesce(TeacherInfo.in_post, '').label('in_post'),
+                       func.coalesce(TeacherInfo.in_post, False).label('in_post'),
                        func.coalesce(TeacherInfo.employment_form, '').label('employment_form'),
                        func.coalesce(TeacherInfo.enter_school_time, None).label('enter_school_time'),
                        Teacher.teacher_name, Teacher.teacher_id_number,

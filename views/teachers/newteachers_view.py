@@ -3,16 +3,15 @@ from datetime import datetime, date
 from mini_framework.web.views import BaseView
 
 from models.public_enum import YesOrNo
-from views.models.teachers import NewTeacher, TeacherInfo, TeacherInfoCreateModel
+from views.models.teachers import NewTeacher
 from fastapi import Query, Depends
 
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
-from models.teachers import Teacher
 from rules.teachers_rule import TeachersRule
 from views.models.teachers import Teachers, TeacherInfo, TeachersCreatModel, CurrentTeacherInfoSaveModel, \
-    TeacherInfoSaveModel, TeacherInfoSubmit, CurrentTeacherQuery
+    TeacherInfoSaveModel, TeacherInfoSubmit
 from rules.teachers_info_rule import TeachersInfoRule
 
 
@@ -62,7 +61,6 @@ class NewTeachersView(BaseView):
         保存不经过验证
         """
         exits = await self.teacher_info_rule.get_teachers_info_by_teacher_id_exit(teacher_info.teacher_id)
-        print(exits)
         if exits:
             res = await self.teacher_info_rule.update_teachers_info(teacher_info)
         else:
