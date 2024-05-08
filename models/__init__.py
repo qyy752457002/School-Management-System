@@ -59,6 +59,5 @@ from . import student_transaction
 from . import student_transaction_flow
 from . import tasks
 from . import student_inner_transaction
-from . import test_teacher
 
 metadata = BaseDBModel.metadata
