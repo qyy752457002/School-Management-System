@@ -297,6 +297,54 @@ class SchoolView(BaseView):
 
         return res
 
+    # 正式开办  传全部  插入或者更新
+    async def put_open(self,
+
+                       school: SchoolBaseInfo,
+                       school_communication: SchoolCommunications,
+                       school_eduinfo: SchoolEduInfo,
+                       school_id: int = Query(..., title="", description="学校id/园所id", example='38'),
+
+                       ):
+        # print(planning_school)
+        school.id = school_id
+        school_communication.school_id = school_id
+        school_eduinfo.school_id = school_id
+        school_communication.id = None
+        school_communication.id = None
+
+        origin = await self.school_rule.get_planning_school_by_id(school.id)
+        log_con = compare_modify_fields(school, origin)
+
+        res = await self.school_rule.update_planning_school_byargs(school)
+        res_com = await self.school_communication_rule.update_planning_school_communication_byargs(
+            school_communication)
+        res_edu = await self.school_eduinfo_rule.update_planning_school_eduinfo_byargs(school_eduinfo)
+
+        #  调用 内部方法 开办
+
+        res2 = await self.patch_open(str(school_id))
+
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(school_id),
+            operator='admin',
+            module=OperationModule.BASEINFO.value,
+            target=OperationTargetType.PLANNING_SCHOOL.value,
+
+            action_type=OperationType.MODIFY.value,
+            ip='127.0.0.1',
+            change_data=str(log_con)[0:1000],
+            change_field='关键信息',
+            change_item='关键信息',
+            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason='修改基本信息',
+            doc_upload='',
+            status='1',
+            account='', ))
+
+        return res2
+
     async def get_search(self,
                          school_name: str = Query("", title="学校名称", description="1-20字符", ),
 
