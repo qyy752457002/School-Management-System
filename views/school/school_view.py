@@ -270,8 +270,8 @@ class SchoolView(BaseView):
         school_eduinfo.school_id = school_id
         school_communication.id = None
         school_eduinfo.id = None
-        if isinstance(school_eduinfo.att_class_type,  bool):
-            school_eduinfo.att_class_type= str( school_eduinfo.att_class_type )
+        # if isinstance(school_eduinfo.att_class_type,  bool):
+        #     school_eduinfo.att_class_type= str( school_eduinfo.att_class_type )
 
         origin = await self.school_rule.get_school_by_id(school.id)
         log_con = compare_modify_fields(school, origin)
@@ -316,8 +316,8 @@ class SchoolView(BaseView):
         school_eduinfo.school_id = school_id
         school_communication.id = None
         school_communication.id = None
-        if isinstance(school_eduinfo.att_class_type,  bool):
-            school_eduinfo.att_class_type= str( school_eduinfo.att_class_type )
+        # if isinstance(school_eduinfo.att_class_type,  bool):
+        #     school_eduinfo.att_class_type= str( school_eduinfo.att_class_type )
         delattr(school, 'status')
 
         origin = await self.school_rule.get_school_by_id(school.id)
