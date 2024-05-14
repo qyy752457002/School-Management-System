@@ -150,8 +150,30 @@ class CurrentStudentsView(BaseView):
 
         # print(new_students_key_info)
         return res
+    # 转学异动 撤回
+    async def patch_transaction_cancel(self,
+                                       transferin_id: int = Query(..., description="转入申请id", example='2')
 
-    # 在校生转入   审批的流程
+                                     # audit_info: StudentTransactionAudit
+
+                                     ):
+        # todo 校验是否本人或者老师
+
+        student_edu_info = StudentTransaction(id=transferin_id,
+                                              status=StudentTransactionStatus.CANCEL.value, )
+        res2 = await self.student_transaction_rule.update_student_transaction(student_edu_info)
+
+        # 流乘记录
+        student_trans_flow = StudentTransactionFlow(apply_id=transferin_id,
+                                                    status=StudentTransactionStatus.CANCEL.value,
+                                                    # stage=audit_info.transferin_audit_action.value,
+                                                    remark= '用户撤回')
+        res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+
+        # print(new_students_key_info)
+        return res
+
+    # 在校生转入    详情
     async def get_transferin_audit(self,
                                    apply_id: int = Query(..., description=" ", example='1'),
 
