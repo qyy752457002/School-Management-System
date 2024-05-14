@@ -27,7 +27,7 @@ class LotteryAllocateTempClass:
         if self.is_full:
             return False
         self.students.append(student)
-        self.total_student_num+=1
+        self.total_student_num = len(self.students)
         self.total_score+=student.score
         # self.gender_percent+=student.gender_percent
         if self.total_student_num == self.class_capacity:
@@ -35,6 +35,7 @@ class LotteryAllocateTempClass:
         self.total_male_num=0
         self.total_female_num=0
         for i,v in enumerate(self.students):
+
             if v.gender == '男':
                 self.total_male_num+=1
             else:
@@ -159,7 +160,7 @@ def main():
             print(f"学生 {student} 分配到班级 {id} 成功")
         else:
             print(f"学生 {student} 分配到班级 {id} 失败")
-            studic.append(student)
+            # studic.append(student)
 
 
 
@@ -241,6 +242,8 @@ def main():
     # 打印最终的班级分配结果
     for cls, stu_list in classes.items():
         print(f"Class {cls}: {stu_list}")
+        print(stu_list.students.__str__())
+        print(vars(stu_list))
 
 
 if __name__ == '__main__':
