@@ -1,5 +1,6 @@
 import pprint
 import random
+import statistics
 from heapq import nsmallest
 
 class Student:
@@ -77,7 +78,8 @@ def main():
         if not min_total_student_num:
             print('没有最小值班级')
             continue
-        target_class_id = random.choice(list(common_classes)) if common_classes else min_total_student_num[0]
+        target_class_id =  list(common_classes).pop() if common_classes else min_total_student_num[0]
+        # target_class_id = random.choice( list(common_classes)) if common_classes else min_total_student_num[0]
 
         class_obj, res = classes[target_class_id].allocate(student)
         if res:
@@ -85,13 +87,18 @@ def main():
         else:
             print(f"学生 {student} 分配到班级 {target_class_id} 失败")
 
-    for cls, stu_list in classes.items():
-        # print(stu_list)
-        print(vars(stu_list))
+    res=[]
     for cls, stu_list in classes.items():
         print(stu_list)
+        res.append(stu_list.total_score)
         # print(vars(stu_list))
         # print(stu_list.__str__())
+    for cls, stu_list in classes.items():
+    # print(stu_list)
+        print(vars(stu_list))
+    # 使用statistics模块计算方差
+    variance = statistics.variance(res)
+    print(f"方差: {variance}")
 
 if __name__ == '__main__':
     main()
