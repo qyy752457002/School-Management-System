@@ -4,7 +4,10 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
 from rules.student_inner_transaction_rule import StudentInnerTransactionRule
-from views.models.student_inner_transaction import StudentInnerTransaction, StudentInnerTransactionSearch
+from rules.student_transaction_flow import StudentTransactionFlowRule
+from views.models.student_inner_transaction import StudentInnerTransaction, StudentInnerTransactionSearch, \
+    StudentInnerTransactionRes
+from views.models.student_transaction import StudentTransactionStatus, StudentTransactionFlow
 from views.models.students import NewStudents, NewStudentsQuery, StudentsKeyinfo, StudentsBaseInfo, StudentGraduation
 # from fastapi import Field
 from fastapi import Query, Depends
@@ -19,6 +22,7 @@ class StudentInnerTransactionView(BaseView):
     def __init__(self):
         super().__init__()
         self.student_inner_transaction_rule = get_injector(StudentInnerTransactionRule)
+        self.student_transaction_flow_rule = get_injector(StudentTransactionFlowRule)
 
 
     async def post(self, student_inner_transaction: StudentInnerTransaction):
@@ -38,4 +42,24 @@ class StudentInnerTransactionView(BaseView):
         items = []
 
         res = await self.student_inner_transaction_rule.query_student_inner_transaction_with_page(page_request, student_inner_transaction_search )
+        return res
+
+    # 异动 撤回
+    async def patch_student_inner_transaction_cancel(self,
+                                       transaction_id: int = Query(..., description="异动id", example='2')
+                                       ):
+        # todo 校验是否本人或者老师
+
+        student_edu_info = StudentInnerTransactionRes(id=transaction_id,
+                                              status=StudentTransactionStatus.CANCEL.value, )
+        res2 = await self.student_inner_transaction_rule.update_student_transaction(student_edu_info)
+
+        # 流乘记录
+        student_trans_flow = StudentTransactionFlow(apply_id=transaction_id,
+                                                    status=StudentTransactionStatus.CANCEL.value,
+                                                    # stage=audit_info.transferin_audit_action.value,
+                                                    remark= '用户撤回')
+        res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+
+        # print(new_students_key_info)
         return res
