@@ -169,7 +169,7 @@ ID,Name,Gender,Score
 168,Student223,Female,99
 169,Student49,Male,61
 170,Student188,Male,81
-171,Student172,Female,87
+171,Student172,Female,59
 172,Student84,Male,78
 173,Student8,Male,94
 174,Student69,Male,67
@@ -191,7 +191,7 @@ ID,Name,Gender,Score
 190,Student155,Male,63
 191,Student156,Male,69
 192,Student102,Female,93
-193,Student279,Female,76
+193,Student279,Female,36
 194,Student208,Male,90
 195,Student36,Female,99
 196,Student292,Male,66
@@ -216,7 +216,7 @@ ID,Name,Gender,Score
 215,Student242,Male,73
 216,Student12,Male,99
 217,Student157,Female,66
-218,Student270,Female,75
+218,Student270,Female,55
 219,Student19,Female,84
 220,Student65,Male,99
 221,Student105,Female,95
@@ -238,7 +238,7 @@ ID,Name,Gender,Score
 237,Student123,Male,96
 238,Student117,Male,98
 239,Student127,Male,97
-240,Student142,Female,100
+240,Student142,Female,20
 241,Student235,Female,94
 242,Student155,Female,66
 243,Student83,Female,87
@@ -263,7 +263,7 @@ ID,Name,Gender,Score
 262,Student278,Male,74
 263,Student120,Female,65
 264,Student268,Male,84
-265,Student145,Female,67
+265,Student145,Female,33
 266,Student143,Male,98
 267,Student191,Male,65
 268,Student209,Female,97
@@ -289,7 +289,7 @@ ID,Name,Gender,Score
 288,Student127,Female,83
 289,Student299,Male,61
 290,Student36,Male,76
-291,Student206,Female,100
+291,Student206,Female,15
 292,Student34,Male,61
 293,Student110,Male,74
 294,Student67,Male,84

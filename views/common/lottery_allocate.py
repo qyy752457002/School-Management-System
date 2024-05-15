@@ -15,13 +15,15 @@ class LotteryClass:
     def __init__(self, id: int, capacity: int):
         # 属性定义放在init里  不是直接写的 是因为要初始化
         self.id = id
-        self.students = []
-        self.class_capacity = capacity
-        self.total_score = 0
+        self.avg_score = 0
         self.gender_percent = 0
         self.total_student_num = 0
         self.total_male_num = 0
         self.total_female_num = 0
+        self.students = []
+        self.class_capacity = capacity
+        self.total_score = 0
+
         self.is_full = False
 
     def allocate(self, student):
@@ -35,6 +37,8 @@ class LotteryClass:
         self.total_male_num = sum(1 for s in self.students if s.gender == '男')
         self.total_female_num = sum(1 for s in self.students if s.gender == '女')
         self.gender_percent = self.total_male_num / self.total_female_num if self.total_female_num > 0 else self.total_male_num
+        self.gender_percent = round( self.gender_percent ,2)
+        self.avg_score = round( self.total_score / self.total_student_num,2)
         return self, True
 
     def __str__(self):
@@ -109,20 +113,28 @@ def main():
             print(f"学生 {student} 分配到班级 {target_class_id} 失败")
 
     res=[]
+    res_avg=[]
     res2=[]
     for cls, stu_list in classes.items():
-        print(stu_list)
+        # print(stu_list,1111)
         res.append(stu_list.total_score)
+        res_avg.append(stu_list.avg_score)
         res2.append(stu_list.gender_percent)
         # print(vars(stu_list))
         # print(stu_list.__str__())
     for cls, stu_list in classes.items():
-    # print(stu_list)
-        print(vars(stu_list))
+        if cls<=1:
+            # print( (stu_list.students))
+            print(stu_list)
+
+        delattr(stu_list, 'students')
+        print(vars(stu_list),222)
     # 使用statistics模块计算方差
     variance = statistics.variance(res)
+    variance_avg = statistics.variance(res_avg)
     variance2 = statistics.variance(res2)
     print(f"分数方差: {variance}")
+    print(f"平君分方差: {variance_avg}")
     print(f"性别方差: {variance2}")
 
 if __name__ == '__main__':
