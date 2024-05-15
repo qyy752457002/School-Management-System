@@ -17,6 +17,11 @@ def balance_classes(students, num_classes):
     # 分配学生到班级
     for student in sorted_students:
         # 找到当前人数最少的班级
+        # 寻找最小类别索引
+        # 根据学生的性别和各个类别的计数，找出类别计数中最小的类别索引。
+        # 这个表达式首先生成一个数字范围(0到num_classes-1)，然后使用lambda函数作为key参数，
+        # 该函数根据学生的性别和类别的计数来计算每个范围内的索引对应的计数值。
+        # 最后，返回计数值最小的类别索引。
         min_class_index = min(range(num_classes), key=lambda i: class_counts[student.gender][i])
         # 将学生添加到该班级
         classes[f'班级{min_class_index+1}'][student.gender].append(student)

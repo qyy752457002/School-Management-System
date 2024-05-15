@@ -13,6 +13,7 @@ class Student:
 
 class LotteryClass:
     def __init__(self, id: int, capacity: int):
+        # 属性定义放在init里  不是直接写的 是因为要初始化
         self.id = id
         self.students = []
         self.class_capacity = capacity
