@@ -27,6 +27,11 @@ class LotteryClass:
         self.is_full = False
 
     def allocate(self, student):
+        self.total_student_num = self.students.__len__()
+
+        if self.total_student_num < self.class_capacity:
+            self.is_full = False
+
         if self.is_full:
             return self, False
         student.class_id = self.id
@@ -40,6 +45,7 @@ class LotteryClass:
         self.gender_percent = self.total_male_num / self.total_female_num if self.total_female_num > 0 else self.total_male_num
         self.gender_percent = round( self.gender_percent ,2)
         self.avg_score = round( self.total_score / self.total_student_num,2)
+        print('分配suc')
         return self, True
 
     def __str__(self):
@@ -105,6 +111,36 @@ def read_csv(file_path):
             i+=1
 
         return students
+def exchange(index, jindex,classes):
+    for i in classes[index].students:
+        if classes[index].gender_percent<1:
+            if i.gender == '女':
+                # classes[index].students.remove(i)
+                # classes[jindex].students.append(i)
+                # classes[jindex].allocate(i)
+                # return classes
+                pass
+
+            else:
+                continue
+
+        for j in classes[jindex].students:
+            if i.score == j.score and i.gender != j.gender:
+                # i ,j  =  j,i
+                # classes[index].students[   classes[index].students.index(i)  ] = j
+                # classes[jindex].students[   classes[jindex].students.index(j)  ] = i
+
+                classes[index].students.remove( i )
+                classes[jindex].students.remove( j )
+                r= classes[index].allocate( j )
+                r2= classes[jindex].allocate( i )
+                # classes[index].students[   classes[index].students.index(i)  ] = i
+                # j.class_id = classes[index].id
+                # exchange(index,jindex,classes)
+                return classes,True
+    return classes,False
+
+
 
 def main():
     student_total = 300
@@ -169,14 +205,24 @@ def main():
     # classes =  dict(classes)
 
     sorted_dict_by_value = {k: v for k, v in sorted(classes.items(), key=lambda item: item[1].gender_percent, reverse=True)}
-    print(sorted_dict_by_value)  # 输出: {'cherry': 1, 'banana': 3, 'apple': 4}
-    classes= sorted_dict_by_value
+    new_dict = {i: sorted_dict_by_value[value] for i, value in enumerate(sorted_dict_by_value)}
+    # print(sorted_dict_by_value)  # 输出: {'cherry': 1, 'banana': 3, 'apple': 4}
+    classes= new_dict
     res=[]
     res_avg=[]
     res2=[]
     i=0
-    # todo 尝试匆最高和最低的 取  分数一直 性别相反的交换
-    
+    ii = 0
+    #  尝试匆最高和最低的 取  分数一直 性别相反的交换
+    # classes,is_changed=exchange( len(classes)-1,0, classes)
+    is_changed=False
+    while not is_changed and ii< len(classes)-2 :
+        classes,is_changed=exchange( len(classes)-1,ii , classes)
+        ii+=1
+        print(is_changed)
+    # classes=exchange( len(classes)-2,1, classes)
+    classes,is_changed=exchange( len(classes)-2,1 , classes)
+
     for cls, stu_list in classes.items():
         # print(stu_list,1111)
 
