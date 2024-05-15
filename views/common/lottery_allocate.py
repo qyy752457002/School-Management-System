@@ -29,6 +29,7 @@ class LotteryClass:
     def allocate(self, student):
         if self.is_full:
             return self, False
+        student.class_id = self.id
         self.students.append(student)
         self.total_student_num += 1
         self.total_score += student.score
@@ -112,20 +113,35 @@ def main():
         else:
             print(f"学生 {student} 分配到班级 {target_class_id} 失败")
 
+    # classes = sorted(classes, key=lambda stu_list: stu_list.gender_percent, reverse=True)
+
+    # classes =  dict(classes)
+
+    sorted_dict_by_value = {k: v for k, v in sorted(classes.items(), key=lambda item: item[1].gender_percent, reverse=True)}
+    print(sorted_dict_by_value)  # 输出: {'cherry': 1, 'banana': 3, 'apple': 4}
+    classes= sorted_dict_by_value
     res=[]
     res_avg=[]
     res2=[]
+    i=0
     for cls, stu_list in classes.items():
         # print(stu_list,1111)
+
         res.append(stu_list.total_score)
         res_avg.append(stu_list.avg_score)
         res2.append(stu_list.gender_percent)
+        if i==0 or i== len(classes)-1:
+            # print( (stu_list.students))
+            print(stu_list)
+            pass
+        i+=1
         # print(vars(stu_list))
         # print(stu_list.__str__())
     for cls, stu_list in classes.items():
-        if cls<=1:
+        if cls<=1 or cls== len(classes):
             # print( (stu_list.students))
-            print(stu_list)
+            # print(stu_list)
+            pass
 
         delattr(stu_list, 'students')
         print(vars(stu_list),222)
