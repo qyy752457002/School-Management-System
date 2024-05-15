@@ -69,7 +69,7 @@ doc_upload: str = Field('',   description=" 附件",examples=[''])
     doc_upload: Mapped[str] = mapped_column(String(255), nullable=True, comment="附件", default='')
 
     student_id: Mapped[int] = mapped_column(nullable=True, comment="学生ID", default=0)
-    student_no: Mapped[str] = mapped_column(String(255), nullable=True, comment="学籍号", default='')
+    student_no: Mapped[str] = mapped_column(String(255), nullable=True, comment="学号", default='')
     student_name: Mapped[str] = mapped_column(String(255), nullable=True, comment="学生姓名", default='')
 
     current_org: Mapped[str] = mapped_column(String(255), nullable=True, comment="当前机构", default='')

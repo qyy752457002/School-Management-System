@@ -18,7 +18,7 @@ class PlanningSchoolEduinfo(BaseDBModel):
 
     is_ethnic_school: Mapped[bool] = mapped_column(  nullable=False,default=False, comment="是否民族校")
     is_att_class: Mapped[ bool] = mapped_column( nullable=False,default=False, comment="是否附设班")
-    att_class_type: Mapped[bool] = mapped_column(  nullable=False,default=False, comment="附设班类型")
+    att_class_type: Mapped[str] = mapped_column( String(64), nullable=True,default='', comment="附设班类型")
     is_province_feat: Mapped[ bool] = mapped_column( nullable=False,default=False, comment="是否省特色")
     is_bilingual_clas: Mapped[ bool] = mapped_column( nullable=False,default=False, comment="是否具有双语教学班")
     minority_lang_code: Mapped[str] = mapped_column(String(64), nullable=False,default='', comment="少数民族语言编码")
