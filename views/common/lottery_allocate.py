@@ -54,11 +54,31 @@ def generate_students(num_students):
     # return [Student(i, f"Student{i}", '女' if random.randint(0, 1) == 0 else '男', random.randint(1, 100), 0) for i in range(1, num_students + 1)]
     return [Student(i, f"Student{i}", '女' if i%2 == 0 else '男',  100- (i%13)*2 , 0) for i in range(1, num_students + 1)]
 
+# 读取csv 格式 学生1,M,85
+def read_csv(file_path):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+        students = []
+        i=0
+        for line in lines:
+            if i==0:
+                i+=1
+                continue
+            parts = line.strip().split(',')
+            name = parts[1]
+            gender = '男' if  parts[2]=='Male' else '女'
+            score = int(parts[3])
+            students.append(Student(i,name, gender, score,0))
+            i+=1
+
+        return students
+
 def main():
-    student_total = 200
-    num_classes = 7
+    student_total = 300
+    num_classes = 10
     classes_capacity = 30
-    students = generate_students(student_total)
+    # students = generate_students(student_total)
+    students = read_csv( 'students_data_300.csv')
     pprint.pprint(students)
     # 按照成绩倒序排序
     students = nsmallest(student_total, students, key=lambda s: s.score)
