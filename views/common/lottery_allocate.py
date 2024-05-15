@@ -49,10 +49,38 @@ class LotteryClass:
         return f"Class {self.id}: {self.students}"
 
 def get_min_value(classes, attribute):
-    """获取具有最小属性值的班级列表"""
-    values = [getattr(cls, attribute) for cls in classes.values()]
-    min_value = min(values)
-    return [k for k, v in classes.items() if getattr(v, attribute) == min_value]
+    """
+    获取具有最小属性值的班级列表，排除满的。
+
+    参数:
+    classes: 包含班级对象的字典。
+    attribute: 需要比较的属性名。
+    """
+    # 初始化结果列表和最小值变量
+    result = []
+    min_value = None
+
+    # 遍历字典中的每个班级对象
+    for class_key, class_obj in classes.items():
+        if class_obj.is_full:
+            continue
+        try:
+            # 尝试获取指定属性的值
+            value = getattr(class_obj, attribute)
+        except AttributeError:
+            # 如果属性不存在，跳过当前班级
+            continue
+
+        # 如果min_value尚未设置，或当前值更小
+        if min_value is None or value < min_value:
+            # 更新最小值和结果列表
+            min_value = value
+            result = [class_key]
+        # 如果当前值与最小值相等，添加当前班级到结果列表
+        elif value == min_value:
+            result.append(class_key)
+
+    return result
 
 def generate_students(num_students):
     """生成随机学生数据"""
@@ -104,8 +132,31 @@ def main():
         if not min_total_student_num:
             print('没有最小值班级')
             continue
-        target_class_id =  list(common_classes).pop() if common_classes else min_total_student_num[0]
+        # target_class_id =  list(common_classes).pop() if common_classes else min_total_student_num[0]
         # target_class_id = random.choice( list(common_classes)) if common_classes else min_total_student_num[0]
+        # 如果是多个 招出比例 和当前性别相反的那个 否则0
+        if common_classes:
+            target_class_id =  list(common_classes).pop()
+        else:
+            target_class_id =  min_total_student_num[0]
+            if len(min_total_student_num)>1:
+                tt = dict()
+                for i in min_total_student_num:
+                    # if i != target_class_id:
+                        tt[i]=classes[i].gender_percent
+                # sorted(tt)
+                sorted_dict_by_value = [k  for k, v in sorted(tt.items(), key=lambda item: item[1], reverse=True)]
+
+                # print(tt)
+                if student.gender == '女':
+                    target_class_id =  sorted_dict_by_value[0]
+                else:
+                    target_class_id =  sorted_dict_by_value[len(sorted_dict_by_value)-1]
+
+
+
+
+
 
         class_obj, res = classes[target_class_id].allocate(student)
         if res:
@@ -124,6 +175,8 @@ def main():
     res_avg=[]
     res2=[]
     i=0
+    # todo 尝试匆最高和最低的 取  分数一直 性别相反的交换
+    
     for cls, stu_list in classes.items():
         # print(stu_list,1111)
 
