@@ -1,59 +1,111 @@
 {
-    "web_server":{
-        "name":"school",
-        "description":"学校综合管理系统",
-        "version":"0.0.1"
-    },
-    "databases": {
-            "default": {
-                "async_driver": "kingbase+asyncpg",
-                "sync_driver":"kingbase",
-                "master": {
-                    "host": "10.0.0.42",
-                    "port": 54321,
-                    "user": "schooloms",
-                    "password": "J16s10Wp08yfEskmVAJH",
-                    "database": "schooloms",
-                    "pool_size": 50
-                },
-                "slaves": [
-                    {
-                        "host": "10.0.0.42",
-                        "port": 54321,
-                        "user": "schooloms",
-                        "password": "J16s10Wp08yfEskmVAJH",
-                        "database": "schooloms",
-                        "pool_size": 50
-                    },
-                    {
-                        "host": "10.0.0.42",
-                        "port": 54321,
-                        "user": "schooloms",
-                        "password": "J16s10Wp08yfEskmVAJH",
-                        "database": "schooloms",
-                        "pool_size": 50
-                    }
-                ]
-            }
+  "web_server": {
+    "name": "school",
+    "description": "学校综合管理系统",
+    "version": "0.0.1"
+  },
+  "databases": {
+    "default": {
+      "async_driver": "kingbase+asyncpg",
+      "sync_driver": "kingbase",
+      "master": {
+        "host": "10.0.0.42",
+        "port": 54321,
+        "user": "schooloms",
+        "password": "J16s10Wp08yfEskmVAJH",
+        "database": "schooloms",
+        "pool_size": 50
+      },
+      "slaves": [
+        {
+          "host": "10.0.0.42",
+          "port": 54321,
+          "user": "schooloms",
+          "password": "J16s10Wp08yfEskmVAJH",
+          "database": "schooloms",
+          "pool_size": 50
         },
-                 "storage":{
-                     "endpoint": "minio.f123.pub",
-                     "access_key": "BeZHOqpqs4u5jjuv",
-                     "secret_key": "MtuM5ZBlARTQMqRsb6mGIMecPlJhCE2D",
-                     "token_exp_sec": 600,
-                     "buckets":{
-                         "student":{
-                             "name":"k8s",
-                             "path":"/student"
-                         },
-                         "school":{
-                             "name":"k8s",
-                             "path":"/school"
-                         },
-                         "teacher":{
-                             "name":"k8s",
-                             "path":"/teacher"
-                         }
-                     }
-                 }
+        {
+          "host": "10.0.0.42",
+          "port": 54321,
+          "user": "schooloms",
+          "password": "J16s10Wp08yfEskmVAJH",
+          "database": "schooloms",
+          "pool_size": 50
+        }
+      ]
+    }
+  },
+  "storage": {
+    "endpoint": "minio.f123.pub",
+    "access_key": "BeZHOqpqs4u5jjuv",
+    "secret_key": "MtuM5ZBlARTQMqRsb6mGIMecPlJhCE2D",
+    "token_exp_sec": 600,
+    "buckets": {
+      "student": {
+        "name": "k8s",
+        "path": "/student"
+      },
+      "school": {
+        "name": "k8s",
+        "path": "/school"
+      },
+      "teacher": {
+        "name": "k8s",
+        "path": "/teacher"
+      }
+    }
+  },
+  "redis": {
+    "servers": {
+      "default": {
+        "host": "redis-standalone.databases.svc.cluster.local",
+        "port": 6379,
+        "password": ""
+      }
+    },
+    "dbs": {
+      "session": {
+        "db": 0,
+        "prefix": "",
+        "server_key": "default"
+      },
+      "jwt_blacklist": {
+        "db": 1,
+        "prefix": "",
+        "server_key": "default"
+      },
+      "login_state": {
+        "db": 2,
+        "prefix": "",
+        "server_key": "default"
+      }
+    }
+  },
+  "authentication": {
+    "jwt": {
+      "secret": "Jci5NpY9p2D7JPKXrVL3J8",
+      "algorithm": "HS256",
+      "expires": 3600,
+      "issuer": "lfun",
+      "audience": "manager",
+      "issue_at": 0
+    },
+    "oauth2": {
+      "client_id": "62de2359c3b57ef6abea",
+      "client_secret": "6a4648f4773dd46fd9ccb3d5c9f33ca9ecec657b",
+      "authorization_url": "https://org-center.f123.pub/login/oauth/authorize",
+      "token_url": "https://org-center.f123.pub/api/login/oauth/access_token",
+      "user_info_url": "https://org-center.f123.pub/api/userinfo",
+      "redirect_url": "https://school-oms-dev.f123.pub/",
+      "grant_type": "authorization_code",
+      "scope": "scope",
+      "cert": "cert",
+      "home_url": "https://school-oms-dev.f123.pub/",
+      "no_login_urls": [
+        "/api/school/openapi.json",
+        "/api/school/docs"
+      ]
+    }
+  }
 }
