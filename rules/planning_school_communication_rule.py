@@ -31,6 +31,10 @@ class PlanningSchoolCommunicationRule(object):
 
         else:
             planning_school = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel)
+            # 图片转换地址
+            url= planning_school_communication_db.related_license_upload
+
+
 
 
             # raise PlanningSchoolCommunicationNotFoundError(f"规划校通信信息{planning_school_communication_id}不存在")

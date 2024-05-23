@@ -1,25 +1,16 @@
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+
+from business_exceptions.common import IdCardError
 from daos.teachers_dao import TeachersDao
 from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers import Teacher
+from views.common.common_view import check_id_number
 from views.models.teachers import Teachers as TeachersModel
 from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel
-from business_exceptions.teacher import TeacherNotFoundError
+from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 
-import hashlib
-
-import shortuuid
-
-
-def hash_password(password):
-    salt = shortuuid.uuid()
-    password = password + "mini_framework" + "web_test" + "123456"
-    password = salt + "|" + password
-    sha256 = hashlib.sha256()
-    sha256.update(password.encode("utf-8"))
-    return salt + "|" + sha256.hexdigest()
 
 
 @dataclass_inject
@@ -41,7 +32,20 @@ class TeachersRule(object):
     #     return teachers
 
     async def add_teachers(self, teachers: TeachersCreatModel):
+        teacher_id_number = teachers.teacher_id_number
+        teacher_id_type = teachers.teacher_id_type
+        teacher_name = teachers.teacher_name
+        teacher_gender = teachers.teacher_gender
+        length = await self.teachers_info_dao.get_teachers_info_by_prams(teacher_id_number, teacher_id_type,
+                                                                         teacher_name, teacher_gender)
+        if length > 0:
+            raise TeacherExistsError()
         teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
+
+        if teachers_db.teacher_id_type == 'resident_id_card':
+            idstatus = check_id_number(teachers_db.teacher_id_number)
+            if not idstatus:
+                raise IdCardError()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
         return teachers
@@ -106,3 +110,6 @@ class TeachersRule(object):
             raise TeacherNotFoundError()
         teachers.teacher_approval_status = "rejected"
         return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
+
+
+

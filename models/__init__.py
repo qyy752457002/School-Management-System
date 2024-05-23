@@ -58,5 +58,6 @@ from . import class_division_records
 from . import student_transaction
 from . import student_transaction_flow
 from . import tasks
+from . import student_inner_transaction
 
 metadata = BaseDBModel.metadata

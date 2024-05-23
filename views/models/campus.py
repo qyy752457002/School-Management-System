@@ -130,10 +130,6 @@ class CampusKeyAddInfo(BaseModel):
     detailed_address: str = Query('', title="", description="园所详细地址",examples=['3'])
     related_license_upload: str = Query('', title="相关证照上传", description="相关证照上传",examples=['3'])
 
-
-
-
-
     campus_name: str = Query(..., title="校区名称", description="园所名称",examples=['XX小学'])
     campus_no:str= Query(None, title="校区编号", description="校区编号/园所代码",min_length=1,max_length=20,example='SC2032633')
     school_id: int = Field(None, title="", description="规划校id",examples=['1'])

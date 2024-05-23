@@ -1,5 +1,5 @@
 from mini_framework.databases.entities import BaseDBModel
-from sqlalchemy import select, func, update
+from sqlalchemy import select, func, update, desc
 
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
@@ -27,7 +27,7 @@ class StudentsBaseInfoDao(DAOBase):
         await session.refresh(students_base_info)
         return students_base_info
 
-    async def update_students_base_info(self, students_base_info: Student, *args, is_commit: bool = True):
+    async def update_students_base_info(self, students_base_info, *args, is_commit: bool = True):
         """
         编辑学生基本信息
         """
@@ -71,13 +71,28 @@ class StudentsBaseInfoDao(DAOBase):
         通过学生id获取单个学生基本信息   专业
         """
         session = await self.slave_db()
-        query = select(Classes.class_name,Major.major_name,School.school_name,
-                       func.coalesce(PlanningSchool.province,'').label('province'),
-                       func.coalesce(PlanningSchool.city,'').label('city'),
-                       func.coalesce(Grade.grade_name ,'').label('grade_name'),
-                       # PlanningSchool.province,
-                       # PlanningSchool.city,
-                       StudentBaseInfo.session,).join(Classes, Classes.id == StudentBaseInfo.class_id,isouter=True).join(Grade, Grade.id == StudentBaseInfo.grade_id,isouter=True).join(School, School.id == StudentBaseInfo.school_id,isouter=True).join(PlanningSchool, PlanningSchool.id == School.planning_school_id,isouter=True).join(Major, Major.id == Classes.major_for_vocational,isouter=True).where(StudentBaseInfo.student_id == students_id)
+        query = select(Classes.class_name, Major.major_name, School.school_name, StudentBaseInfo.student_id,
+                       func.coalesce(Classes.id, 0).label('class_id'),
+                       func.coalesce(School.id, 0).label('school_id'),
+                       func.coalesce(Grade.id, 0).label('grade_id'),
+                       func.coalesce(Major.id, 0).label('major_id'),
+                       func.coalesce(PlanningSchool.province, '').label('province'),
+                       func.coalesce(PlanningSchool.city, '').label('city'),
+                       func.coalesce(Grade.grade_name, '').label('grade_name'),
+                       func.coalesce(PlanningSchool.block, '').label('block'),
+                       func.coalesce(PlanningSchool.borough, '').label('borough'),
+                       func.coalesce(SchoolCommunication.loc_area, '').label('loc_area'),
+                       func.coalesce(SchoolCommunication.loc_area_pro, '').label('loc_area_pro'),
+                       StudentBaseInfo.session, ).join(Classes, Classes.id == StudentBaseInfo.class_id,
+                                                       isouter=True).join(Grade, Grade.id == StudentBaseInfo.grade_id,
+                                                                          isouter=True).join(School,
+                                                                                             School.id == StudentBaseInfo.school_id,
+                                                                                             isouter=True).join(
+            SchoolCommunication, SchoolCommunication.school_id == School.id, isouter=True).join(PlanningSchool,
+                                                                                                PlanningSchool.id == School.planning_school_id,
+                                                                                                isouter=True).join(
+            Major, Major.id == Classes.major_for_vocational, isouter=True).where(
+            StudentBaseInfo.student_id == students_id)
         result_list = await session.execute(query)
         column_names = query.columns.keys()
         # ret = result.scalar_one_or_none()
@@ -121,7 +136,14 @@ class StudentsBaseInfoDao(DAOBase):
         状态：status
         """
         query = select(Student.student_id, Student.student_name, Student.id_type, Student.id_number,
-                       Student.enrollment_number,  Student.photo,  Student.birthday,
+                       Student.enrollment_number, Student.photo, Student.birthday,
+                       StudentBaseInfo.session,
+                       StudentBaseInfo.edu_number,
+                       StudentBaseInfo.enrollment_date,
+                       Classes.class_name,
+                       Grade.grade_name,
+                       PlanningSchool.block,
+                       PlanningSchool.borough,
                        Student.student_gender, Student.approval_status, StudentBaseInfo.residence_district,
                        StudentBaseInfo.school, School.block, School.school_name, School.borough,
                        SchoolCommunication.loc_area, SchoolCommunication.loc_area_pro).select_from(Student).join(
@@ -130,7 +152,14 @@ class StudentsBaseInfoDao(DAOBase):
                                                                                  School.id == StudentBaseInfo.school_id,
                                                                                  isouter=True).join(SchoolCommunication,
                                                                                                     School.id == SchoolCommunication.school_id,
-                                                                                                    isouter=True)
+                                                                                                    isouter=True).join(PlanningSchool,
+                                                                                                                       School.planning_school_id == PlanningSchool.id,
+                                                                                                                       isouter=True).join(Classes,
+                                                                                                                                          Classes.id == StudentBaseInfo.class_id,
+                                                                                                                                          isouter=True).join(Grade,
+                                                                                                                                                             Grade.id == StudentBaseInfo.grade_id,
+                                                                                                                                                             isouter=True).order_by(desc(Student.student_id))
+        query = query.where(Student.is_deleted == False)
 
         if query_model.student_name:
             query = query.where(Student.student_name == query_model.student_name)
@@ -144,10 +173,16 @@ class StudentsBaseInfoDao(DAOBase):
             query = query.where(StudentBaseInfo.school == query_model.school)
         if query_model.school_id:
             query = query.where(StudentBaseInfo.school_id == query_model.school_id)
+        if query_model.class_id:
+            query = query.where(StudentBaseInfo.class_id == query_model.class_id)
         if query_model.enrollment_date:
             query = query.where(StudentBaseInfo.enrollment_date == query_model.enrollment_date)
         if query_model.county:
             query = query.where(StudentBaseInfo.county == query_model.county)
+        if query_model.emporary_borrowing_status:
+            query = query.where(StudentBaseInfo.emporary_borrowing_status == query_model.emporary_borrowing_status)
+        if query_model.edu_number:
+            query = query.where(StudentBaseInfo.edu_number == query_model.edu_number)
         if query_model.approval_status:
             # 多选的处理
             if ',' in query_model.approval_status:
@@ -155,6 +190,30 @@ class StudentsBaseInfoDao(DAOBase):
                 query = query.where(Student.approval_status.in_(approval_status))
             else:
                 query = query.where(Student.approval_status == query_model.approval_status)
+        if query_model.enrollment_date_range:
+            # 多选的处理
+            if ',' in query_model.enrollment_date_range:
+                enrollment_date_range = query_model.enrollment_date_range.split(',')
+                if len(enrollment_date_range) == 2:
+                    if enrollment_date_range[0] != '':
+                        query = query.where(StudentBaseInfo.enrollment_date >= enrollment_date_range[0])
+                    if enrollment_date_range[1] != '':
+                        query = query.where(StudentBaseInfo.enrollment_date <= enrollment_date_range[1])
+                    # query = query.where(StudentBaseInfo.enrollment_date.between(enrollment_date_range[0],
+                    #                                                          enrollment_date_range[1]))
+                elif len(enrollment_date_range) == 1:
+                    if enrollment_date_range[0] != '':
+                        query = query.where(StudentBaseInfo.enrollment_date >= enrollment_date_range[0])
+                    else:
+                        query = query.where(StudentBaseInfo.enrollment_date <= enrollment_date_range[1])
+
+                    # query = query.where(StudentBaseInfo.enrollment_date == enrollment_date_range[0])
+                # query = query.where(Student.enrollment_date_range.in_(approval_status))
+            else:
+                query = query.where(StudentBaseInfo.enrollment_date >=query_model.enrollment_date_range)
+
+
+                # query = query.where(Student.approval_status == query_model.approval_status)
         paging = await self.query_page(query, page_request)
         return paging
 
@@ -167,3 +226,15 @@ class StudentsBaseInfoDao(DAOBase):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(StudentBaseInfo))
         return result.scalar()
+
+
+    async def get_students_base_info_by_param(self, **kwargs):
+        """
+        获取单个学生信息
+        """
+        session = await self.slave_db()
+        query = select(StudentBaseInfo)
+        for key, value in kwargs.items():
+            query = query.where(getattr(StudentBaseInfo, key) == value)
+        result = await session.execute(query)
+        return result.scalar_one_or_none()

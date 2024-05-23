@@ -6,7 +6,7 @@ from models.teachers_info import TeacherInfo
 from views.common.common_view import page_none_deal
 from views.models.teachers import TeacherInfo as TeachersInfoModel
 from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel, TeacherInfoSubmit, \
-    CurrentTeacherQuery, CurrentTeacherQueryRe,CurrentTeacherInfoSaveModel
+    CurrentTeacherQuery, CurrentTeacherQueryRe, CurrentTeacherInfoSaveModel, NewTeacherInfoSaveModel
 from sqlalchemy import select, func, update
 from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError
 from daos.teachers_dao import TeachersDao
@@ -22,8 +22,12 @@ class TeachersInfoRule(object):
         teachers_info_db = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teachers_id)
         if not teachers_info_db:
             raise TeacherInfoNotFoundError()
-        teachers_info = orm_model_to_view_model(teachers_info_db, TeachersInfoModel, exclude=[""])
+        teachers_info = orm_model_to_view_model(teachers_info_db, NewTeacherInfoSaveModel, exclude=[""])
         return teachers_info
+
+    async def get_teachers_info_by_teacher_id_exit(self, teachers_id):
+        exits = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teachers_id)
+        return exits
 
     async def get_teachers_info_by_id(self, teachers_base_id):
         teachers_info_db = await self.teachers_info_dao.get_teachers_info_by_id(teachers_base_id)
@@ -33,7 +37,10 @@ class TeachersInfoRule(object):
         return teachers_info
 
     async def add_teachers_info(self, teachers_info: TeacherInfoSaveModel):
-        teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=[" "])
+        exits_teacher_base = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teachers_info.teacher_id)
+        if exits_teacher_base:
+            raise TeacherInfoExitError()
+        teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
         return teachers_info
@@ -85,8 +92,6 @@ class TeachersInfoRule(object):
         paging_result = PaginatedResponse.from_paging(paging, CurrentTeacherQueryRe)
         return paging_result
 
-
-
     async def submitting(self, teachers_base_id):
         teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_base_id)
         if not teachers_info:
@@ -114,6 +119,3 @@ class TeachersInfoRule(object):
             raise TeacherInfoNotFoundError()
         teachers_info.approval_status = "rejected"
         return await self.teachers_info_dao.update_teachers_info(teachers_info, "approval_status")
-
-
-

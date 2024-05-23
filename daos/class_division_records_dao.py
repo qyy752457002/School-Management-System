@@ -1,11 +1,12 @@
 from datetime import date
 
-from sqlalchemy import select, func, update
+from sqlalchemy import select, func, update, and_, or_
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.class_division_records import ClassDivisionRecords
+from models.classes import Classes
 
 from models.students import Student, StudentApprovalAtatus
 
@@ -39,24 +40,17 @@ class ClassDivisionRecordsDAO(DAOBase):
                                                      ):
         specific_date = date(1970, 1, 1)
         query = select(
+            func.coalesce(Classes.class_name, '').label('class_name') ,
             func.coalesce(Student.student_name, '').label('student_name') ,
             func.coalesce(ClassDivisionRecords.class_id, 0).label('class_id') ,
-            func.coalesce(ClassDivisionRecords.student_id, 0).label('student_id'),
+            func.coalesce(Student.student_id, 0).label('student_id'),
             func.coalesce(ClassDivisionRecords.school_id, 0).label('school_id'),
             func.coalesce(ClassDivisionRecords.id, 0).label('id'),
             func.coalesce(ClassDivisionRecords.created_at, specific_date).label('created_at'),
-            # func.coalesce(ClassDivisionRecords.class_id, 0),
-            # ClassDivisionRecords.student_id,
-            # ClassDivisionRecords.student_name,
-            # ClassDivisionRecords.,
+
             Student.approval_status,
-            # ClassDivisionRecords.school_id, ClassDivisionRecords.id,
-            # ClassDivisionRecords.class_id,
-            # ClassDivisionRecords.student_id,
-            # ClassDivisionRecords.student_name,
-            # ClassDivisionRecords.created_at,
+
             ClassDivisionRecords.status,
-            # ClassDivisionRecords.school_id,
             Student.id_number,
             Student.student_id,
             Student.student_name, Student.enrollment_number,
@@ -64,10 +58,17 @@ class ClassDivisionRecordsDAO(DAOBase):
 
             Student.id_type,
 
-        ).select_from(Student).join(ClassDivisionRecords,
-                                    ClassDivisionRecords.student_id == Student.student_id, isouter=True)
+        ).select_from(Student).join(ClassDivisionRecords, ClassDivisionRecords.student_id == Student.student_id, isouter=True).join(Classes, ClassDivisionRecords.class_id == Classes.id, isouter=True)
 
         ### 此处填写查询条件
+        # query = query.where(ClassDivisionRecords.is_deleted == False)
+        query = query.where(Student.is_deleted == False)
+        cond1 = ClassDivisionRecords.is_deleted == False
+        cond2 = ClassDivisionRecords.id == None
+        mcond = or_(cond1, cond2)
+
+        query = query.filter(    mcond)
+
 
         if school_id:
             query = query.where(ClassDivisionRecords.school_id == school_id)

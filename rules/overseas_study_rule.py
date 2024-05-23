@@ -55,4 +55,4 @@ class OverseasStudyRule(object):
         overseas_study = []
         for item in overseas_study_db:
             overseas_study.append(orm_model_to_view_model(item, OverseasStudyUpdateModel))
-        return overseas_study_db
+        return overseas_study

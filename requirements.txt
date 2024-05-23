@@ -2,3 +2,4 @@
 
 lfun-mini-framework==0.0.51
 
+id-validator==1.0.20

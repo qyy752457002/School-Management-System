@@ -1,3 +1,7 @@
+ALTER TABLE public.lfun_student_transaction ADD remark varchar(255) NULL;
+
+
+
 CREATE INDEX lfun_enum_value_enum_name_idx ON public.lfun_enum_value (enum_name,parent_id);
 
 
@@ -16,6 +20,15 @@ INSERT INTO public.lfun_enum_value (enum_name,enum_value,description,sort_number
 	 INSERT INTO public.lfun_enum_value (enum_name,enum_value,description,sort_number,parent_id,is_enabled,created_uid,updated_uid,created_at,updated_at,is_deleted) VALUES
      	 ('school_nature_lv3','301','幼儿园',0,'201',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
      	 ('school_nature_lv3','302','附设幼儿班',0,'201',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false);
+
+
+INSERT INTO public.lfun_enum_value (enum_name,enum_value,description,sort_number,parent_id,is_enabled,created_uid,updated_uid,created_at,updated_at,is_deleted) VALUES
+     	 ('school_nature','102','中等教育',0,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('school_nature','103','其他教育',0,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('school_nature','104','培训机构',0,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('school_nature','105','特殊教育',0,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false);
+
+
 
 
 school_system
@@ -125,6 +138,23 @@ INSERT INTO "public"."lfun_course"( "school_id", "course_no", "grade_id", "cours
 
 
 
+	 INSERT INTO public.lfun_enum_value (enum_name,enum_value,description,sort_number,parent_id,is_enabled,created_uid,updated_uid,created_at,updated_at,is_deleted) VALUES
+     	 ('grade','11','小学一年级',1,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('grade','12','小学二年级',2,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('grade','13','小学三年级',3,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('grade','14','小学四年级',4,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('grade','15','小学五年级',5,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('grade','16','小学六年级',6,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('grade','21','初中一年级',7,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('grade','22','初中二年级',8,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('grade','23','初中三年级',9,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('grade','31','高中一年级',10,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('grade','32','高中二年级',11,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('grade','33','高中三年级',12,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('grade','40','托班',13,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('grade','41','小班',14,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('grade','42','中班',15,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false),
+     	 ('grade','43','大班',16,'',true,0,0,'2020-10-01 00:00:00','2020-10-01 00:00:00',false);
 
 
 

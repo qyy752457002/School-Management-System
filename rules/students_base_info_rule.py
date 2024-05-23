@@ -34,11 +34,13 @@ class StudentsBaseInfoRule(object):
             raise StudentNotFoundError()
         students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfo, exclude=[""])
         schoolinfo = await self.school_dao.get_school_by_id(students_base_info_db.school_id)
-        students_base_info.block = schoolinfo.block
-        students_base_info.borough = schoolinfo.borough
+        if schoolinfo:
+            students_base_info.block = schoolinfo.block
+            students_base_info.borough = schoolinfo.borough
         schoolcominfo = await self.school_commu_dao.get_school_communication_by_school_id(students_base_info_db.school_id)
-        students_base_info.loc_area = schoolcominfo.loc_area
-        students_base_info.loc_area_pro = schoolcominfo.loc_area_pro
+        if schoolcominfo:
+            students_base_info.loc_area = schoolcominfo.loc_area
+            students_base_info.loc_area_pro = schoolcominfo.loc_area_pro
 
         return students_base_info
 
@@ -65,7 +67,7 @@ class StudentsBaseInfoRule(object):
             students_base_info.student_id)
         if exits_student_base_info:
             raise StudentExistsError()
-        students_base_info_db = view_model_to_orm_model(students_base_info, StudentBaseInfo, exclude=[""])
+        students_base_info_db = view_model_to_orm_model(students_base_info, StudentBaseInfo, exclude=["student_base_id"])
         # 读取当前开启的届别  赋值
         param = {"session_status":  StudentSessionstatus.ENABLE.value}
         res  = await self.student_session_dao.get_student_session_by_param(**param)

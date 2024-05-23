@@ -1,3 +1,4 @@
+import datetime
 from typing import List
 
 from mini_framework.web.views import BaseView
@@ -38,9 +39,9 @@ class NewsStudentsView(BaseView):
         """
         res = await self.students_rule.add_students(students)
         students.student_id =  res.student_id
-        vm2 = NewBaseInfoCreate(student_id=students.student_id,school_id=students.school_id )
-        # vm2.student_id = students.student_id
+        special_date =   datetime.datetime.now()
 
+        vm2 = NewBaseInfoCreate(student_id=students.student_id,school_id=students.school_id,registration_date=  special_date.strftime("%Y-%m-%d"))
         res2 = await self.students_base_info_rule.add_students_base_info(vm2)
 
         return res
@@ -137,7 +138,9 @@ class NewsStudentsInfoView(BaseView):
         分班
         """
         res = await self.students_base_info_rule.update_students_class_division(class_id, student_id)
-        res = await self.class_division_records_rule.add_class_division_records(class_id, student_id)
+        res_div = await self.class_division_records_rule.add_class_division_records(class_id, student_id)
+        # 更新学生的 班级和 学校信息
+        res3 = await self.students_base_info_rule.update_students_base_info( StudentsBaseInfo(student_id=student_id,class_id=class_id,school_id=res_div.school_id,grade_id=res_div.grade_id))
 
         return res
 
