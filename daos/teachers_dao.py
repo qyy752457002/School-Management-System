@@ -4,7 +4,7 @@ from mini_framework.databases.entities.dao_base import DAOBase,get_update_conten
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 from models.teachers import Teacher
-from models.teachers_info import TeacherInfo
+
 
 
 class TeachersDao(DAOBase):
@@ -29,10 +29,6 @@ class TeachersDao(DAOBase):
         result = await session.execute(select(Teacher).where(Teacher.teacher_id == teachers_id))
         return result.scalar_one_or_none()
 
-    # async def get_teachers_by_username(self, username):
-    #     session = await self.slave_db()
-    #     result = await session.execute(select(Teacher).where(Teacher.username) == username)
-    #     return result.scalar_one_or_none()
 
     #删除单个教师信息
     async def delete_teachers(self, teachers: Teacher):
@@ -52,12 +48,7 @@ class TeachersDao(DAOBase):
         result = await session.execute(select(func.count()).select_from(Teacher))
         return result.scalar()
 
-    # async def query_teacher_with_page(self,username, page_request: PageRequest):
-    #     query = select(Teacher)
-    #     if username:
-    #         query = query.where(Teacher.username == username)
-    #     paging = await self.query_page(query, page_request)
-    #     return paging
+
 
 
 

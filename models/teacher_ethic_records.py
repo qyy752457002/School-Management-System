@@ -35,7 +35,7 @@ class TeacherEthicRecords(BaseDBModel):
     assessment_institution_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="考核单位名称")
     honor_level: Mapped[str] = mapped_column(String(64), nullable=False, comment="荣誉级别")
     honor_title: Mapped[str] = mapped_column(String(64), nullable=False, comment="荣誉称号")
-    honor_date: Mapped[date] = mapped_column(Date, nullable=False, comment="荣誉日期")
+    honor_date: Mapped[date] = mapped_column(Date, nullable=True, comment="荣誉日期")
     awarding_institution_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="荣誉授予单位名称")
     honor_record_description: Mapped[str] = mapped_column(String(64), nullable=False, comment="荣誉记录描述")
     disciplinary_category: Mapped[str] = mapped_column(String(64), nullable=False, comment="处分类别")

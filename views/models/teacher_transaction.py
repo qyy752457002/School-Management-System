@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
-from datetime import date
+from fastapi import Query
+from datetime import date, datetime
 
 
 class TeacherTransactionModel(BaseModel):
@@ -13,10 +14,10 @@ class TeacherTransactionModel(BaseModel):
     """
     transfer_type: str = Field(..., title="异动类型", description="异动类型")
     transfer_reason: str = Field(..., title="异动原因", description="异动原因")
-    remark: str = Field(..., title="备注", description="备注")
+    remark: str = Field("", title="备注", description="备注")
     operator: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    operation_time: date = Field(..., title="操作时间", description="操作时间")
+    operation_time: datetime = Field(..., title="操作时间", description="操作时间")
 
 
 class TeacherTransactionUpdateModel(BaseModel):
@@ -32,18 +33,43 @@ class TeacherTransactionUpdateModel(BaseModel):
     teacher_transaction_id: int = Field(..., title="teacher_transaction_id", description="teacher_transaction_id")
     transfer_type: str = Field(..., title="异动类型", description="异动类型")
     transfer_reason: str = Field(..., title="异动原因", description="异动原因")
-    remark: str = Field(..., title="备注", description="备注")
+    remark: str = Field("", title="备注", description="备注")
     operator: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     operation_time: date = Field(..., title="操作时间", description="操作时间")
+
+
+class TeacherTransactionQuery(BaseModel):
+    """
+    姓名：teacher_name
+    证件类型：teacher_id_type
+    证件号码：teacher_id_number
+    """
+    teacher_name: str = Query(..., title="姓名", description="姓名")
+    teacher_id_type: str = Query(..., title="证件类型", description="证件类型")
+    teacher_id_number: str = Query(..., title="证件号码", description="证件号码")
+
+
+class TeacherTransactionQueryRe(BaseModel):
+    teacher_name: str = Field(..., title="姓名", description="姓名")
+    teacher_id_type: str = Field(..., title="证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="证件号码", description="证件号码")
+    teacher_gender: str = Field(..., title="性别", description="性别")
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_number: str = Field(..., title="教师编号", description="教师编号")
+    teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
 
 
 class TransferDetailsModel(BaseModel):
     """
     原单位：original_unit
     原岗位：original_position
+    原行政属地：original_district
+    调入日期：transfer_in_date
     现单位：current_unit
     现岗位：current_position
+    现行政属地：current_district
+    调出日期：transfer_out_date
     调动原因：transfer_reason
     备注：remark
     操作人：operator
@@ -52,13 +78,17 @@ class TransferDetailsModel(BaseModel):
     """
     original_unit: str = Field(..., title="原单位", description="原单位")
     original_position: str = Field(..., title="原岗位", description="原岗位")
+    original_district: str = Field(..., title="原行政属地", description="原行政属地")
+    transfer_in_date: date = Field(..., title="调入日期", description="调入日期")
     current_unit: str = Field(..., title="现单位", description="现单位")
     current_position: str = Field(..., title="现岗位", description="现岗位")
+    current_district: str = Field(..., title="现行政属地", description="现行政属地")
+    transfer_out_date: date = Field(..., title="调出日期", description="调出日期")
     transfer_reason: str = Field(..., title="调动原因", description="调动原因")
     remark: str = Field(..., title="备注", description="备注")
     operator: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    operation_time: date = Field(..., title="操作时间", description="操作时间")
+    operation_time: datetime = Field(..., title="操作时间", description="操作时间")
 
 
 class TransferDetailsUpdateModel(BaseModel):
@@ -83,7 +113,4 @@ class TransferDetailsUpdateModel(BaseModel):
     remark: str = Field(..., title="备注", description="备注")
     operator: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    operation_time: date = Field(..., title="操作时间", description="操作时间")
-
-
-
+    operation_time: datetime = Field(..., title="操作时间", description="操作时间")

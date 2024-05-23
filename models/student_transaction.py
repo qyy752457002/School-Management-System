@@ -32,6 +32,21 @@ class AuditAction(str, Enum):
     def to_list(cls):
         return [cls.NEEDAUDIT,cls.PASS, cls.REFUSE]
 
+class AuditFlowStatus(str, Enum):
+    """
+    流程 的状态定义
+    """
+    FLOWBEGIN = "flow_begin"
+    APPLY_SUBMIT = "apply_submit"
+    PASS = "pass"
+    REFUSE = "refuse"
+    RECEIVECOMPLETED = "refuse"
+    FLOWEND = "flow_begin"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.FLOWBEGIN,cls.APPLY_SUBMIT, cls.PASS, cls.REFUSE, cls.RECEIVECOMPLETED, cls.FLOWEND]
+
 
 class StudentTransaction(BaseDBModel):
     """
@@ -41,7 +56,6 @@ class StudentTransaction(BaseDBModel):
 transfer_time:str= Query("", description="转入/出时间" ,min_length=1,max_length=20,examples=["2020-10-10"]),
 transfer_reason:str= Query("", description="转学原因" ,min_length=1,max_length=20,examples=["家庭搬迁..."]),
 doc_upload: str = Field('',   description=" 附件",examples=[''])
-
     """
     __tablename__ = 'lfun_student_transaction'
     __table_args__ = {'comment': '转学休学入学毕业申请表'}
@@ -55,7 +69,7 @@ doc_upload: str = Field('',   description=" 附件",examples=[''])
     doc_upload: Mapped[str] = mapped_column(String(255), nullable=True, comment="附件", default='')
 
     student_id: Mapped[int] = mapped_column(nullable=True, comment="学生ID", default=0)
-    student_no: Mapped[str] = mapped_column(String(255), nullable=True, comment="学籍号", default='')
+    student_no: Mapped[str] = mapped_column(String(255), nullable=True, comment="学号", default='')
     student_name: Mapped[str] = mapped_column(String(255), nullable=True, comment="学生姓名", default='')
 
     current_org: Mapped[str] = mapped_column(String(255), nullable=True, comment="当前机构", default='')
@@ -87,6 +101,7 @@ doc_upload: str = Field('',   description=" 附件",examples=[''])
 
     major_id: Mapped[str] = mapped_column(String(30), nullable=True, comment="专业id", default='')
     major_name: Mapped[str] = mapped_column(String(30), nullable=True, comment="专业", default='')
+    remark: Mapped[str] = mapped_column(String(255), nullable=True, comment="备注", default='')
     status: Mapped[str] = mapped_column(String(64), nullable=True, comment="状态", default='')
 
     is_valid: Mapped[bool] = mapped_column(nullable=False, comment="是否有效", default=True)

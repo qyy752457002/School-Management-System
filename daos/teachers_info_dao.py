@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from sqlalchemy import select, func, update
 
@@ -61,31 +61,23 @@ class TeachersInfoDao(DAOBase):
         进本校时间：enter_school_time
         审核状态：approval_status
         """
-        specific_date = date(1970, 1, 1)
+        specific_date = datetime.now().date()
         query = select(Teacher.teacher_id,
                        func.coalesce(TeacherInfo.teacher_base_id, 0).label('teacher_base_id'),
                        func.coalesce(TeacherInfo.highest_education, '').label('highest_education'),
                        func.coalesce(TeacherInfo.political_status, '').label('political_status'),
-                       func.coalesce(TeacherInfo.in_post, '').label('in_post'),
+                       func.coalesce(TeacherInfo.in_post, False).label('in_post'),
                        func.coalesce(TeacherInfo.employment_form, '').label('employment_form'),
-                       func.coalesce(TeacherInfo.enter_school_time, specific_date).label('enter_school_time'),
-
-                       # TeacherInfo.teacher_base_id,
+                       func.coalesce(TeacherInfo.enter_school_time, None).label('enter_school_time'),
                        Teacher.teacher_name, Teacher.teacher_id_number,
                        Teacher.teacher_gender,
                        Teacher.teacher_employer, Teacher.teacher_approval_status,
-                       # TeacherInfo.highest_education,
-                       # TeacherInfo.political_status,
-                       # TeacherInfo.in_post,
-                       # TeacherInfo.employment_form,
                        School.school_name,
-
-                       # TeacherInfo.enter_school_time
                        ).outerjoin(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
-                                                           ).outerjoin(School, Teacher.teacher_employer == School.id,
-                                                                  )
+                                   ).outerjoin(School, Teacher.teacher_employer == School.id,
+                                               )
         if query_model.teacher_name:
-            query = query.where(Teacher.teacher_name == query_model.teacher_name)
+            query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
         if query_model.teacher_id_number:
             query = query.where(Teacher.teacher_id_number == query_model.teacher_id_number)
         if query_model.teacher_gender:
@@ -130,13 +122,14 @@ class TeachersInfoDao(DAOBase):
         query = select(Teacher.teacher_id, TeacherInfo.teacher_base_id, Teacher.teacher_name, Teacher.teacher_id_number,
                        Teacher.teacher_gender,
                        Teacher.teacher_employer, TeacherInfo.highest_education,
-                       TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,School.school_name,
+                       TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
+                       School.school_name,
                        TeacherInfo.enter_school_time).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
                                                            ).join(School, Teacher.teacher_employer == School.id,
                                                                   )
 
         if query_model.teacher_name:
-            query = query.where(Teacher.teacher_name == query_model.teacher_name)
+            query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
         if query_model.teacher_id_number:
             query = query.where(Teacher.teacher_id_number == query_model.teacher_id_number)
         if query_model.teacher_gender:
@@ -171,3 +164,13 @@ class TeachersInfoDao(DAOBase):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(TeacherInfo))
         return result.scalar()
+
+    async def get_teachers_info_by_prams(self, teacher_id_number, teacher_id_type, teacher_name, teacher_gender):
+        session = await self.slave_db()
+        query = select(TeacherInfo).where(Teacher.teacher_id_number == teacher_id_number,
+                                          Teacher.teacher_id_type == teacher_id_type,
+                                          Teacher.teacher_name == teacher_name,
+                                          Teacher.teacher_gender == teacher_gender)
+        result = await session.execute(query)
+        length = len(result.scalars().all())
+        return length

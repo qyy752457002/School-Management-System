@@ -2,13 +2,17 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.transfer_details_dao import TransferDetailsDAO
+from daos.teachers_dao import TeachersDao
 from models.transfer_details import TransferDetails
-from views.models.teacher_extend import TransferDetailsModel, TransferDetailsUpdateModel
+from views.models.teacher_transaction import TransferDetailsModel, TransferDetailsUpdateModel
+from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
+    TeacherTransactionQuery, TeacherTransactionQueryRe
 
 
 @dataclass_inject
 class TransferDetailsRule(object):
     transfer_details_dao: TransferDetailsDAO
+    teachers_dao: TeachersDao
 
     async def get_transfer_details_by_transfer_details_id(self, transfer_details_id):
         transfer_details_db = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
@@ -17,6 +21,12 @@ class TransferDetailsRule(object):
         return transfer_details
 
     async def add_transfer_details(self, transfer_details: TransferDetailsModel):
+        transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
+        transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
+        transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsModel)
+        return transfer_details
+
+    async def add_transfer_in_details(self, transfer_details: TransferDetailsModel):
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
         transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsModel)
@@ -50,3 +60,21 @@ class TransferDetailsRule(object):
         for item in transfer_details_db:
             transfer_details.append(orm_model_to_view_model(item, TransferDetailsModel))
         return transfer_details_db
+
+    async def query_teacher(self, teacher_transaction: TeacherTransactionQuery):
+        teacher_transaction_db = await self.transfer_details_dao.query_teacher(teacher_transaction)
+        teacher_transaction = []
+        for item in teacher_transaction_db.items:
+            teacher_transaction.append(orm_model_to_view_model(item, TeacherTransactionQueryRe))
+        return teacher_transaction
+
+
+    async def query_teacher_transfer(self, teacher_transaction: TeacherTransactionQuery):
+        teacher_transaction_db = await self.transfer_details_dao.query_teacher_transfer(teacher_transaction)
+        return teacher_transaction_db
+
+
+
+
+
+
