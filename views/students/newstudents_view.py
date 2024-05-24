@@ -10,7 +10,7 @@ from views.models.students import NewStudents, NewStudentsQuery, NewStudentsQuer
 from mini_framework.web.views import BaseView
 
 from views.models.teachers import NewTeacher, TeacherInfo
-from fastapi import Query, Depends
+from fastapi import Query, Depends, BackgroundTasks
 
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
@@ -143,6 +143,25 @@ class NewsStudentsInfoView(BaseView):
         res3 = await self.students_base_info_rule.update_students_base_info( StudentsBaseInfo(student_id=student_id,class_id=class_id,school_id=res_div.school_id,grade_id=res_div.grade_id))
 
         return res
+    # 摇号分班
+    async def patch_newstudent_lottery_classdivision(self,
+                                                     background_tasks: BackgroundTasks,
+
+                                             school_id: int  = Query(..., title="", description="学校ID",),
+                                             grade_id: int  = Query(..., title="", description="年级ID",),
+
+                                             ):
+        """
+        """
+        background_tasks.add_task(self.lottery_class_division, (school_id,grade_id), message="some notification")
+        return {"message": "Notification sent in the background"}
+
+
+    def lottery_class_division(self,args , message=""):
+        print(args,message)
+        with open("log.txt", mode="a") as log:
+            log.write(message)
+
 
     # 分页查询
     #

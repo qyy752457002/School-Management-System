@@ -6,7 +6,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
 from business_exceptions.graduation_student import GraduationStudentNotFoundError, GraduationStudentAlreadyExistError
-from daos.GraduationStudent_dao import GraduationStudentDAO
+from daos.graduation_student_dao import GraduationStudentDAO
 from daos.students_dao import StudentsDao
 from models.graduation_student import GraduationStudent
 from models.students import Student, StudentApprovalAtatus
