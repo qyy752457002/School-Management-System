@@ -31,6 +31,13 @@ class EnumValue(BaseDBModel):
     is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)
 
 
+    @staticmethod
+    def seed():
+        return [
+            EnumValue(id=2, enum_name="founder_type", enum_value="regional", description="地方", sort_number=0,parent_id='0',is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+
+
+        ]
 
 
 
