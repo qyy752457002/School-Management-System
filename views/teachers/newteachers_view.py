@@ -116,6 +116,16 @@ class NewTeachersView(BaseView):
         await self.teacher_rule.rejected(teacher_id)
         return teacher_id
 
+
+
+    async def patch_recall(self,
+                               teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
+        """
+        撤回
+        """
+        await self.teacher_rule.recall(teacher_id)
+        return teacher_id
+
     async def patch_info_submitting(self,
                                     teacher_base_id: int = Query(..., title="教师基本信息编号",
                                                                  description="教师基本信息编号",
@@ -143,3 +153,5 @@ class NewTeachersView(BaseView):
                                                                example=123)):
         await self.teacher_info_rule.rejected(teacher_base_id)
         return teacher_base_id
+
+

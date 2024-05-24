@@ -6,7 +6,9 @@ from daos.teachers_dao import TeachersDao
 from models.transfer_details import TransferDetails
 from views.models.teacher_transaction import TransferDetailsModel, TransferDetailsUpdateModel
 from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
-    TeacherTransactionQuery, TeacherTransactionQueryRe
+    TeacherTransactionQuery, TeacherTransactionQueryRe, TransferDetailsCreateReModel, \
+    TransferDetailsReModel, TransferDetailsGetModel
+from business_exceptions.teacher import TeacherNotFoundError
 
 
 @dataclass_inject
@@ -20,16 +22,22 @@ class TransferDetailsRule(object):
         transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsModel)
         return transfer_details
 
-    async def add_transfer_details(self, transfer_details: TransferDetailsModel):
+    async def add_transfer_details(self, transfer_details: TransferDetailsCreateModel):
+        """
+        仅仅是校内的岗位调动
+        """
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
-        transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsModel)
+        transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsCreateReModel)
         return transfer_details
 
     async def add_transfer_in_details(self, transfer_details: TransferDetailsModel):
+        """
+        调入
+        """
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
-        transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsModel)
+        transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
         return transfer_details
 
     async def delete_transfer_details(self, transfer_details_id):
@@ -54,12 +62,17 @@ class TransferDetailsRule(object):
         return transfer_details
 
     async def get_all_transfer_details(self, teacher_id):
+        """
+        详情页查询单个老师所有调动信息
+        """
+        exit_teacher = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        if not exit_teacher:
+            raise TeacherNotFoundError()
         transfer_details_db = await self.transfer_details_dao.get_all_transfer_details(teacher_id)
-        #          transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsModel, exclude=[""])
         transfer_details = []
         for item in transfer_details_db:
-            transfer_details.append(orm_model_to_view_model(item, TransferDetailsModel))
-        return transfer_details_db
+            transfer_details.append(orm_model_to_view_model(item, TransferDetailsGetModel))
+        return transfer_details
 
     async def query_teacher(self, teacher_transaction: TeacherTransactionQuery):
         teacher_transaction_db = await self.transfer_details_dao.query_teacher(teacher_transaction)
@@ -68,13 +81,16 @@ class TransferDetailsRule(object):
             teacher_transaction.append(orm_model_to_view_model(item, TeacherTransactionQueryRe))
         return teacher_transaction
 
-
     async def query_teacher_transfer(self, teacher_transaction: TeacherTransactionQuery):
+        """
+        查询老师是否在系统内
+        """
         teacher_transaction_db = await self.transfer_details_dao.query_teacher_transfer(teacher_transaction)
-        return teacher_transaction_db
-
-
-
-
-
+        transfer_inner = True #系统内互转
+        if teacher_transaction_db:
+            teacher_transaction_db = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionQueryRe)
+            return teacher_transaction_db, transfer_inner
+        else:
+            transfer_inner = False
+            return teacher_transaction_db, transfer_inner
 
