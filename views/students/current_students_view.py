@@ -272,7 +272,7 @@ class CurrentStudentsView(BaseView):
 
     async def put_studentkeyinfo(self, new_students_key_info: StudentsKeyinfo):
         """
-        在校生 编辑关键信息
+        在校生 编辑关键信息 插入 关键信息变更表
         """
         res = await self.students_rule.update_students(new_students_key_info)
         return res
@@ -283,6 +283,7 @@ class CurrentStudentsView(BaseView):
         """
         await self.students_rule.delete_students(student_id)
         return str(student_id)
+#     撤回   审核  查看
 
 
 class CurrentStudentsBaseInfoView(BaseView):
