@@ -22,7 +22,7 @@ class TransferDetailsRule(object):
         transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsModel)
         return transfer_details
 
-    async def add_transfer_details(self, transfer_details: TransferDetailsCreateModel):
+    async def add_transfer_details(self, transfer_details: TransferDetailsModel):
         """
         仅仅是校内的岗位调动
         """
@@ -94,3 +94,31 @@ class TransferDetailsRule(object):
             transfer_inner = False
             return teacher_transaction_db, transfer_inner
 
+
+    async def submitting(self, transfer_details_id):
+        transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(transfer_details_id)
+        if not transfer_details:
+            raise Exception(f"编号为{transfer_details_id}的transfer_details不存在")
+        transfer_details.approval_status = "submitting"
+        return await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
+
+    async def submitted(self, transfer_details_id):
+        transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(transfer_details_id)
+        if not transfer_details:
+            raise Exception(f"编号为{transfer_details_id}的transfer_details不存在")
+        transfer_details.approval_status = "submitted"
+        return await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
+
+    async def approved(self, transfer_details_id):
+        transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(transfer_details_id)
+        if not transfer_details:
+            raise Exception(f"编号为{transfer_details_id}的transfer_details不存在")
+        transfer_details.approval_status = "approved"
+        return await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
+
+    async def rejected(self, transfer_details_id):
+        transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(transfer_details_id)
+        if not transfer_details:
+            raise Exception(f"编号为{transfer_details_id}的transfer_details不存在")
+        transfer_details.approval_status = "rejected"
+        return await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")

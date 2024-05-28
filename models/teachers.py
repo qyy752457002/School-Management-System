@@ -59,3 +59,5 @@ class Teacher(BaseDBModel):
                                                          default="submitting")  # 审批状态待定
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
 
+
+

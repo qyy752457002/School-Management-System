@@ -3,6 +3,7 @@ from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
 from datetime import date
 
+
 class TeacherBorrow(BaseDBModel):
     """
     teacher_borrow：teacher_borrow_id
@@ -35,6 +36,6 @@ class TeacherBorrow(BaseDBModel):
     remark: Mapped[str] = mapped_column(String(64), nullable=False, comment="备注")
     operator: Mapped[str] = mapped_column(String(64), nullable=False, comment="操作人")
     teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")
-    operation_time: Mapped[date] = mapped_column(Date, nullable=False, comment="操作时间")
+    approval_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="审批状态")
+    operation_time: Mapped[date] = mapped_column(Date, default="submitting", nullable=False, comment="操作时间")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
-    
