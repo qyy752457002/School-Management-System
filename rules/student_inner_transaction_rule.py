@@ -64,7 +64,7 @@ class StudentInnerTransactionRule(object):
         exists_student_inner_transaction = await self.student_inner_transaction_dao.get_student_inner_transaction_by_id(
             student_inner_transaction.id)
         if not exists_student_inner_transaction:
-            raise Exception(f"年级{student_inner_transaction.id}不存在")
+            raise Exception(f"申请{student_inner_transaction.id}不存在")
 
         need_update_list = []
         for key, value in student_inner_transaction.dict().items():
@@ -81,7 +81,7 @@ class StudentInnerTransactionRule(object):
         exists_student_inner_transaction = await self.student_inner_transaction_dao.get_student_inner_transaction_by_id(
             student_inner_transaction_id)
         if not exists_student_inner_transaction:
-            raise Exception(f"年级{student_inner_transaction_id}不存在")
+            raise Exception(f"申请{student_inner_transaction_id}不存在")
         student_inner_transaction_db = await self.student_inner_transaction_dao.delete_student_inner_transaction(
             exists_student_inner_transaction)
         student_inner_transaction = orm_model_to_view_model(student_inner_transaction_db, StudentInnerTransactionModel,
@@ -92,7 +92,7 @@ class StudentInnerTransactionRule(object):
         exists_student_inner_transaction = await self.student_inner_transaction_dao.get_student_inner_transaction_by_id(
             student_inner_transaction_id)
         if not exists_student_inner_transaction:
-            raise Exception(f"年级信息{student_inner_transaction_id}不存在")
+            raise Exception(f"申请信息{student_inner_transaction_id}不存在")
         student_inner_transaction_db = await self.student_inner_transaction_dao.softdelete_student_inner_transaction(
             exists_student_inner_transaction)
         return student_inner_transaction_db
