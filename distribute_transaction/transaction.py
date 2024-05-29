@@ -2,7 +2,7 @@ import requests
 from kazoo.client import KazooClient
 import os
 import logging
-
+# todo  回滚失败的 事务的 补偿 处理   模拟3中情况的  全成功  失败  回滚失败
 # 使用环境变量或配置文件来获取敏感信息
 API_URLS = {
     "A_school": os.getenv("API_A_SCHOOL", "http://127.0.0.1:5001/prepare"),
@@ -56,7 +56,11 @@ def pre_commit_transaction(prepare_responses):
 def commit_transaction(prepare_responses):
     for system, response in prepare_responses.items():
         url = f"{response.get('baseurl')}{response.get('commit_url')}"
-        api_call(url, response)
+        # api_call(url, response)
+        if not api_call(url, response):
+            # 如果预提交失败，则回滚
+            rollback_transaction(prepare_responses)
+            return False
     logging.info("Transaction committed successfully.")
 
 def rollback_transaction(prepare_responses):
@@ -74,7 +78,12 @@ def execute_transfer(data):
                 prepare_responses = prepare_transaction(data)
                 if prepare_responses:
                     if pre_commit_transaction(prepare_responses):
-                        commit_transaction(prepare_responses)
+
+                        if commit_transaction(prepare_responses):
+                            # commit_transaction(prepare_responses)
+                            pass
+                        else:
+                            logging.info("ultar-commit failed, transaction rolled back.")
                     else:
                         logging.info("Pre-commit failed, transaction rolled back.")
                 else:
