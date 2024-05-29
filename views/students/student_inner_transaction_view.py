@@ -6,7 +6,7 @@ from mini_framework.web.views import BaseView
 from rules.student_inner_transaction_rule import StudentInnerTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
 from views.models.student_inner_transaction import StudentInnerTransaction, StudentInnerTransactionSearch, \
-    StudentInnerTransactionRes
+    StudentInnerTransactionRes, StudentInnerTransactionAudit
 from views.models.student_transaction import StudentTransactionStatus, StudentTransactionFlow
 from views.models.students import NewStudents, NewStudentsQuery, StudentsKeyinfo, StudentsBaseInfo, StudentGraduation
 # from fastapi import Field
@@ -63,3 +63,18 @@ class StudentInnerTransactionView(BaseView):
 
         # print(new_students_key_info)
         return res
+    # 在校生校内异动审核
+    async def patch_student_inner_transaction_audit(self,
+                                                    audit_info: StudentInnerTransactionAudit
+
+                                                     ):
+        # todo 校验是否本人或者老师
+
+        student_inner_transaction_info = StudentInnerTransactionRes(id=audit_info.transaction_id,
+                                                      approval_status=audit_info.transaction_audit_action.value, )
+        res2 = await self.student_inner_transaction_rule.update_student_inner_transaction(student_inner_transaction_info)
+
+        # 流乘记录 todo 接入 工作流 状态
+
+        # print(new_students_key_info)
+        return res2

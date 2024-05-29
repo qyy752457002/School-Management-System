@@ -43,3 +43,9 @@ class StudentInnerTransactionSearch(BaseModel):
     student_gender: str = Query('', title="", description="", examples=[""])
     edu_number: str = Query('', title="", description="学籍号码")
     class_id: int  = Query( 0, title="", description="班级", examples=["二2班"])
+
+class StudentInnerTransactionAudit(BaseModel):
+    remark: str = Query("", description="审批的备注", min_length=0, max_length=200,
+                        example='同意 无误')
+    transaction_id: int = Query(..., description="申请id", example='2')
+    transaction_audit_action: AuditAction = Query(..., description="审批的操作")
