@@ -10,7 +10,7 @@ from daos.students_dao import StudentsDao
 from models.student_session import StudentSessionstatus
 from models.students_key_info_change import   StudentKeyInfoChange
 from views.common.common_view import page_none_deal
-from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
+from views.models.student_inner_transaction import StudentsKeyinfo as StudentsKeyinfoModel
 from views.models.students import NewBaseInfoCreate,NewBaseInfoUpdate,StudentsBaseInfo
 from views.models.students import StudentsBaseInfo as StudentsBaseInfoModel
 from views.models.students import NewStudentsQuery, NewStudentsQueryRe
@@ -83,16 +83,6 @@ class StudentsKeyInfoChangeRule(object):
                 need_update_list.append(key)
         student_key_info_change = await self.student_key_info_change_dao.update_student_key_info_change(student_key_info_change,
                                                                                          *need_update_list)
-        return student_key_info_change
-
-    async def update_students_class_division(self, class_id, student_ids):
-        """
-        编辑学生基本信息
-        """
-
-        student_key_info_change = await self.student_key_info_change_dao.update_students_class_division(class_id, student_ids)
-        # 写入分班记录表
-        # await self.students_dao.add_students_class_division(class_id, student_ids)
         return student_key_info_change
 
     async def delete_student_key_info_change(self, students_id):

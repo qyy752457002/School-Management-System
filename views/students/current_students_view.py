@@ -295,6 +295,27 @@ class CurrentStudentsView(BaseView):
         """
         res = await self.student_key_info_change_rule.get_student_key_info_change_by_id(apply_id)
         return res
+    # 撤回 学生 关键信息变更
+    async def patch_studentkeyinfochange_cancel(self, apply_id: str = Query(..., title=" 学生 关键信息变更的申请ID", description="",
+                                                                   example="1")):
+        """
+        在校生 查看关键信息变更
+        """
+
+        student_edu_info = StudentsKeyInfoChangeRule(id=apply_id,
+                                                      approval_status=StudentTransactionStatus.CANCEL.value, )
+        res = await self.student_key_info_change_rule.update_student_key_info_change(student_edu_info)
+
+        # res2 = await self.student_inner_transaction_rule.update_student_transaction(student_edu_info)
+
+        # 流乘记录
+        student_trans_flow = StudentTransactionFlow(apply_id=transaction_id,
+                                                    status=StudentTransactionStatus.CANCEL.value,
+                                                    # stage=audit_info.transferin_audit_action.value,
+                                                    remark= '用户撤回')
+        res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+
+        return res
 
 
 class CurrentStudentsBaseInfoView(BaseView):
