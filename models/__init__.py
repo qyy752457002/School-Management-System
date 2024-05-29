@@ -41,6 +41,8 @@ from . import course
 from . import operation_record
 from . import sub_system
 from mini_framework.storage.persistent.models import FileStorage
+from mini_framework.authentication.persistent.models import AuthAccount, JWTBlacklist
+from mini_framework.async_task.data_access.models import TaskProgress, TaskResults, TaskInfo
 
 from . import attachments
 from . import data_sync_records
@@ -57,7 +59,6 @@ from . import transfer_details
 from . import class_division_records
 from . import student_transaction
 from . import student_transaction_flow
-from . import tasks
 from . import student_inner_transaction
 from . import students_key_info_change
 
