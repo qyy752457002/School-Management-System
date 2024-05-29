@@ -5,7 +5,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
 from business_exceptions.course import CourseNotFoundError, CourseAlreadyExistError
-from daos.Course_dao import CourseDAO
+from daos.course_dao import CourseDAO
 from models.course import Course
 from views.models.course import Course  as CourseModel
 

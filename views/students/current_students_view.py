@@ -5,6 +5,7 @@ from models.student_transaction import AuditAction, TransactionDirection, AuditF
 from rules.graduation_student_rule import GraduationStudentRule
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
+from rules.students_key_info_change_rule import StudentsKeyInfoChangeRule
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
     StudentEduInfo, StudentTransactionAudit, StudentEduInfoOut
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, \
@@ -30,6 +31,7 @@ class CurrentStudentsView(BaseView):
         self.student_transaction_flow_rule = get_injector(StudentTransactionFlowRule)
         self.students_family_info_rule = get_injector(StudentsFamilyInfoRule)
         self.graduation_student_rule = get_injector(GraduationStudentRule)
+        self.student_key_info_change_rule = get_injector(StudentsKeyInfoChangeRule)
 
     async def get_student_session(self, sessions_id: int = Query(..., title="", description="届别id",
                                                                  example="1")):
@@ -150,8 +152,30 @@ class CurrentStudentsView(BaseView):
 
         # print(new_students_key_info)
         return res
+    # 转学异动 撤回
+    async def patch_transaction_cancel(self,
+                                       transferin_id: int = Query(..., description="转入申请id", example='2')
 
-    # 在校生转入   审批的流程
+                                     # audit_info: StudentTransactionAudit
+
+                                     ):
+        # todo 校验是否本人或者老师
+
+        student_edu_info = StudentTransaction(id=transferin_id,
+                                              status=StudentTransactionStatus.CANCEL.value, )
+        res2 = await self.student_transaction_rule.update_student_transaction(student_edu_info)
+
+        # 流乘记录
+        student_trans_flow = StudentTransactionFlow(apply_id=transferin_id,
+                                                    status=StudentTransactionStatus.CANCEL.value,
+                                                    # stage=audit_info.transferin_audit_action.value,
+                                                    remark= '用户撤回')
+        res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+
+        # print(new_students_key_info)
+        return res
+
+    # 在校生转入    详情
     async def get_transferin_audit(self,
                                    apply_id: int = Query(..., description=" ", example='1'),
 
@@ -250,9 +274,10 @@ class CurrentStudentsView(BaseView):
 
     async def put_studentkeyinfo(self, new_students_key_info: StudentsKeyinfo):
         """
-        在校生 编辑关键信息
+        在校生 编辑关键信息 插入 关键信息变更表
         """
-        res = await self.students_rule.update_students(new_students_key_info)
+        res = await self.student_key_info_change_rule.add_student_key_info_change(new_students_key_info)
+        # res = await self.students_rule.update_students(new_students_key_info)
         return res
 
     async def delete_studentkeyinfo(self, student_id: str = Query(..., title="学生编号", description="学生编号", )):
@@ -261,6 +286,7 @@ class CurrentStudentsView(BaseView):
         """
         await self.students_rule.delete_students(student_id)
         return str(student_id)
+#     撤回   审核  查看
 
 
 class CurrentStudentsBaseInfoView(BaseView):

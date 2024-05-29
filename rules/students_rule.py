@@ -1,13 +1,18 @@
+import pprint
 from datetime import datetime, date
 
+from mini_framework.storage.manager import storage_manager
+from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
+from mini_framework.storage.view_model import FileStorageModel
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
 from business_exceptions.common import IdCardError, EnrollNumberError, EduNumberError
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.students import Student
+from rules.storage_rule import StorageRule
 from views.common.common_view import check_id_number
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel, StudentsKeyinfoDetail, StudentsKeyinfo, \
     NewStudentTransferIn
@@ -19,6 +24,8 @@ from business_exceptions.student import StudentNotFoundError, StudentExistsError
 class StudentsRule(object):
     students_dao: StudentsDao
     students_baseinfo_dao: StudentsBaseInfoDao
+    file_storage_dao: FileStorageDAO
+
 
     async def get_students_by_id(self, students_id):
         """
@@ -26,6 +33,32 @@ class StudentsRule(object):
         """
         students_db = await self.students_dao.get_students_by_id(students_id)
         students = orm_model_to_view_model(students_db, StudentsKeyinfoDetail, exclude=[""])
+        # 照片等  处理URL 72
+        if students.photo:
+            fileinfo = await self.file_storage_dao.get_file_by_id( students.photo)
+            if fileinfo:
+                # 获取行的数据
+                fileinfo = fileinfo._asdict()['FileStorage']
+                print(fileinfo)  # 使用 _asdict() 方法转换为字典
+                if hasattr(fileinfo, 'file_name'):
+
+                    file_storage=FileStorageModel(file_name=fileinfo.file_name,bucket_name=fileinfo.bucket_name,file_size=fileinfo.file_size, )
+                    try:
+                        students.photo= storage_manager.query_get_object_url_with_token(file_storage)
+                    except Exception as e:
+                        print(e)
+                        if hasattr(e, 'user_message'):
+
+                            students.photo=  e.user_message
+
+                        pass
+                    pprint.pprint(students.photo)
+
+            else:
+                print('文件not found ')
+                pass
+
+
         # 查其他的信息
         baseinfo2 = await self.students_baseinfo_dao.get_students_base_info_ext_by_student_id(students_id)
         # print(baseinfo2)

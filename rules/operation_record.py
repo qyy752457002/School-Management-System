@@ -7,7 +7,7 @@ from sqlalchemy import select
 
 from business_exceptions.operation_record import OperationRecordNotFoundError
 # from business_exceptions.operation_record import OperationRecordNotFoundError
-from daos.OperationRecord_dao import OperationRecordDAO
+from daos.operation_record_dao import OperationRecordDAO
 from models.operation_record import OperationRecord
 from views.models.operation_record import OperationRecord as OperationRecordModel
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager

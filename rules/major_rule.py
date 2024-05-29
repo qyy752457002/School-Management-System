@@ -5,7 +5,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
 from business_exceptions.major import MajorAlreadyExistError
-from daos.Major_dao import MajorDAO
+from daos.major_dao import MajorDAO
 from models.major import Major
 from views.models.majors import Majors  as MajorModel
 

@@ -40,8 +40,15 @@ class SchoolView(BaseView):
         school = await self.school_rule.get_school_by_id(school_id)
         school_keyinfo = await self.school_rule.get_school_by_id(school_id, extra_model=SchoolKeyInfo)
 
+        school_eduinfo={}
         school_communication = await self.school_communication_rule.get_school_communication_by_school_id(school_id)
-        school_eduinfo = await self.school_eduinfo_rule.get_school_eduinfo_by_school_id(school_id)
+        # todo 异常可能导致orm转换时 的链接释放
+        try:
+
+            school_eduinfo = await self.school_eduinfo_rule.get_school_eduinfo_by_school_id(school_id)
+        except Exception as e:
+            print(e)
+
 
         return {'school': school, 'school_communication': school_communication, 'school_eduinfo': school_eduinfo,
                 'school_keyinfo': school_keyinfo}
@@ -362,3 +369,15 @@ class SchoolView(BaseView):
         # return page_search
         paging_result = await self.school_rule.query_schools(school_name)
         return paging_result
+    # 学校开设审核
+    async def patch_open_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
+                                                                     min_length=1, max_length=20, example='SC2032633')):
+        pass
+    # 学校关闭审核
+    async def patch_close_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
+                                                                      min_length=1, max_length=20, example='SC2032633')):
+        pass
+    # 学校关键信息变更审核
+    async def patch_keyinfo_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
+                                                                        min_length=1, max_length=20, example='SC2032633')):
+        pass
