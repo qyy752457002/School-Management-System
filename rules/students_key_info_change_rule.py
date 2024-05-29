@@ -46,12 +46,12 @@ class StudentsKeyInfoChangeRule(object):
 
     async def get_student_key_info_change_by_id(self, students_base_id):
         """
-        获取单个学生信息
+        获取单个信息
         """
         student_key_info_change_db = await self.student_key_info_change_dao.get_student_key_info_change_by_id(students_base_id)
         if not student_key_info_change_db:
             raise StudentNotFoundError()
-        student_key_info_change = orm_model_to_view_model(student_key_info_change_db, StudentsBaseInfo, exclude=[""])
+        student_key_info_change = orm_model_to_view_model(student_key_info_change_db, StudentKeyInfoChange, exclude=[""])
         return student_key_info_change
 
 

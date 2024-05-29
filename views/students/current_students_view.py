@@ -287,6 +287,14 @@ class CurrentStudentsView(BaseView):
         await self.students_rule.delete_students(student_id)
         return str(student_id)
 #     撤回   审核  查看
+    # 查看 学生 关键信息变更
+    async def get_studentkeyinfochange(self, apply_id: str = Query(..., title=" 学生 关键信息变更的申请ID", description="",
+                                                               example="1")):
+        """
+        在校生 查看关键信息变更
+        """
+        res = await self.student_key_info_change_rule.get_student_key_info_change_by_id(apply_id)
+        return res
 
 
 class CurrentStudentsBaseInfoView(BaseView):
