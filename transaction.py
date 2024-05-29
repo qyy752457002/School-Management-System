@@ -1,31 +1,34 @@
 import requests
 from kazoo.client import KazooClient
+import os
+import logging
 
-# todo  回滚失败的 事务的 补偿 处理   模拟3中情况的  全成功  失败  回滚失败
-# 各系统的 API 接口 URL
+# 使用环境变量或配置文件来获取敏感信息
 API_URLS = {
-    "A_school": "http://127.0.0.1:5001/prepare",
-    "B_school": "http://127.0.0.1:5002/prepare",
-    "A_district": "http://127.0.0.1:5003/prepare",
-    "B_district": "http://127.0.0.1:5004/prepare",
-    "workflow": "http://127.0.0.1:5005/prepare"
+    "A_school": os.getenv("API_A_SCHOOL", "http://127.0.0.1:5001/prepare"),
+    "B_school": os.getenv("API_B_SCHOOL", "http://127.0.0.1:5002/prepare"),
+    "A_district": os.getenv("API_A_DISTRICT", "http://127.0.0.1:5003/prepare"),
+    "B_district": os.getenv("API_B_DISTRICT", "http://127.0.0.1:5004/prepare"),
+    "workflow": os.getenv("API_WORKFLOW", "http://127.0.0.1:5005/prepare")
 }
-# 定义路径前缀
 PREFIX = "transfer_"
-# 分布式锁路径
-
 LOCK_PATH = PREFIX + "/transfer_lock"
-# zk = kazoo("127.0.0.1:2181") 10.0.9.1
-# 10.0.9.2
-# 10.0.9.3s
-zk = KazooClient("10.0.9.1:2181,10.0.9.2:2181,10.0.9.3:2181")
+ZOOKEEPER_HOSTS = os.getenv("ZOOKEEPER_HOSTS", "10.0.9.1:2181,10.0.9.2:2181,10.0.9.3:2181")
+
+# 设置日志记录
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+zk = KazooClient(ZOOKEEPER_HOSTS)
+zk.start()
+
 def api_call(url, data):
     try:
-        response = requests.post(url, json=data)
+        response = requests.post(url, json=data, timeout=10)
         response.raise_for_status()
+        logging.info(f"API call succeeded: {url}")
         return response.json()
     except requests.exceptions.RequestException as e:
-        print(f"API call failed: {e}")
+        logging.error(f"API call failed: {e}")
         return None
 
 def prepare_transaction(data):
@@ -33,48 +36,58 @@ def prepare_transaction(data):
     for system, url in API_URLS.items():
         response = api_call(url, data)
         if response and response.get("status") == "prepared":
+            response["baseurl"]= url.replace('prepare','')
             prepare_responses[system] = response
         else:
+            # 尝试回滚已准备的操作
             rollback_transaction(prepare_responses)
             return False
     return prepare_responses
 
 def pre_commit_transaction(prepare_responses):
     for system, response in prepare_responses.items():
-        url = f"http://127.0.0.1:5000{response.get('pre_commit_url')}"
+        url = f"{response.get('baseurl')}{response.get('pre_commit_url')}"
         if not api_call(url, response):
+            # 如果预提交失败，则回滚
             rollback_transaction(prepare_responses)
             return False
     return True
 
 def commit_transaction(prepare_responses):
     for system, response in prepare_responses.items():
-        url = f"http://127.0.0.1:5000{response.get('commit_url')}"
+        url = f"{response.get('baseurl')}{response.get('commit_url')}"
         api_call(url, response)
+    logging.info("Transaction committed successfully.")
 
 def rollback_transaction(prepare_responses):
     for system, response in prepare_responses.items():
-        url = f"http://127.0.0.1:5000{response.get('rollback_url')}"
+        url = f"{response.get('baseurl')}{response.get('rollback_url')}"
         api_call(url, response)
+    logging.info("Transaction rolled back.")
 
 def execute_transfer(data):
     lock = zk.Lock(LOCK_PATH)
 
-    if lock.acquire(blocking=True):
-        try:
-            prepare_responses = prepare_transaction(data)
-            if prepare_responses:
-                if pre_commit_transaction(prepare_responses):
-                    commit_transaction(prepare_responses)
-                    print("Transaction committed successfully.")
+    try:
+        if lock.acquire(blocking=True, timeout=10):
+            try:
+                prepare_responses = prepare_transaction(data)
+                if prepare_responses:
+                    if pre_commit_transaction(prepare_responses):
+                        commit_transaction(prepare_responses)
+                    else:
+                        logging.info("Pre-commit failed, transaction rolled back.")
                 else:
-                    print("Pre-commit failed, transaction rolled back.")
-            else:
-                print("Prepare phase failed, transaction rolled back.")
-        finally:
-            lock.release()
-    else:
-        print("Failed to acquire lock, transaction aborted.")
+                    logging.info("Prepare phase failed, transaction rolled back.")
+            finally:
+                lock.release()
+        else:
+            logging.info("Failed to acquire lock, transaction aborted.")
+    except Exception as e:
+        logging.error(f"Exception occurred: {e}")
+        zk.stop()
+        zk.close()
+        raise
 
 if __name__ == '__main__':
     transfer_data = {
@@ -85,6 +98,5 @@ if __name__ == '__main__':
         "old_district": "B_district"
     }
     execute_transfer(transfer_data)
-
-# 关闭 Zookeeper 客户端
-zk.stop()
+    zk.stop()
+    zk.close()
