@@ -11,7 +11,7 @@ async def prepare(  ):
 
 @app.post("/precommit")
 async def precommit(  ):
-    return {'status':  'prepared','commit_url':'ultracommit'}
+    return {'status':  'prepared2','commit_url':'ultracommit'}
 @app.post("/ultracommit")
 async def ultracommit(  ):
     return {'status':  'prepared','pre_commit_url':''}
