@@ -10,13 +10,15 @@ API_URLS = {
     "B_district": "http://127.0.0.1:5004/prepare",
     "workflow": "http://127.0.0.1:5005/prepare"
 }
-
+# 定义路径前缀
+PREFIX = "transfer_"
 # 分布式锁路径
-LOCK_PATH = "/transfer_lock"
+
+LOCK_PATH = PREFIX + "/transfer_lock"
 # zk = kazoo("127.0.0.1:2181") 10.0.9.1
 # 10.0.9.2
-# 10.0.9.3
-zk = KazooClient("10.0.9.1,10.0.9.2,10.0.9.3")
+# 10.0.9.3s
+zk = KazooClient("10.0.9.1:2181,10.0.9.2:2181,10.0.9.3:2181")
 def api_call(url, data):
     try:
         response = requests.post(url, json=data)
@@ -71,6 +73,8 @@ def execute_transfer(data):
                 print("Prepare phase failed, transaction rolled back.")
         finally:
             lock.release()
+    else:
+        print("Failed to acquire lock, transaction aborted.")
 
 if __name__ == '__main__':
     transfer_data = {
