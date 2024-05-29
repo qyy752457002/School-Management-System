@@ -9,7 +9,7 @@ from rules.students_key_info_change_rule import StudentsKeyInfoChangeRule
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
     StudentEduInfo, StudentTransactionAudit, StudentEduInfoOut
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, \
-    NewStudentTransferIn, StudentGraduation, StudentsKeyinfoChange
+    NewStudentTransferIn, StudentGraduation, StudentsKeyinfoChange, StudentsKeyinfoChangeAudit
 from fastapi import Query, Depends
 from mini_framework.web.std_models.page import PageRequest
 
@@ -315,6 +315,19 @@ class CurrentStudentsView(BaseView):
         #                                             # stage=audit_info.transferin_audit_action.value,
         #                                             remark= '用户撤回')
         # res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+
+        return res
+    #审核 学生 关键信息变更
+    async def patch_studentkeyinfochange_audit(self,
+        audit_info: StudentsKeyinfoChangeAudit
+
+                                               ):
+
+
+        student_inner_transaction_info = StudentsKeyinfoChange(id=audit_info.apply_id,
+                                                                    approval_status=audit_info.audit_action.value)
+        res = await self.student_key_info_change_rule.update_student_inner_transaction(student_inner_transaction_info)
+
 
         return res
 

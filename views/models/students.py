@@ -4,6 +4,7 @@ from fastapi import Query
 from pydantic import BaseModel, Field
 from datetime import date
 from models.public_enum import YesOrNo, Gender, IDtype
+from models.student_transaction import AuditAction
 from models.students import  Relationship, Registration,HealthStatus,StudentApprovalAtatus
 from typing import Optional
 
@@ -186,8 +187,19 @@ class StudentsKeyinfoChange(BaseModel):
     id_type: str = Field(..., title="证件类别", description="证件类别")
     id_number: str = Field(..., title="证件号码", description="证件号码")
     photo: str = Field('', title="照片", description="照片")
+    approval_status: Optional[str] = Query(None, title="状态", description="状态")
 
 
+class StudentsKeyinfoChangeAudit(BaseModel):
+    # id:int= Query(None, title="", description="id", example='1'),
+    # in_school_id: int = Field(0, title="学校ID", description="学校ID",examples=['1'])
+    # grade_id: int = Field(0, title="年级ID", description="年级ID",examples=['1'])
+    # status: str = Field('', title="",description="状态",examples=[''])
+    apply_id: int = Query(..., description="申请id", example='2')
+    audit_action: AuditAction = Query(..., description="审批的操作",
+                                                 example='pass')
+    remark: str = Query("", description="审批的备注", min_length=0, max_length=200,
+                        example='同意 无误')
 
 class StudentsBaseInfo(BaseModel):
     """
