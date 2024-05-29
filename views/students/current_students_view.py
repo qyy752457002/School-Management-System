@@ -9,7 +9,7 @@ from rules.students_key_info_change_rule import StudentsKeyInfoChangeRule
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
     StudentEduInfo, StudentTransactionAudit, StudentEduInfoOut
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, \
-    NewStudentTransferIn, StudentGraduation
+    NewStudentTransferIn, StudentGraduation, StudentsKeyinfoChange
 from fastapi import Query, Depends
 from mini_framework.web.std_models.page import PageRequest
 
@@ -299,21 +299,22 @@ class CurrentStudentsView(BaseView):
     async def patch_studentkeyinfochange_cancel(self, apply_id: str = Query(..., title=" 学生 关键信息变更的申请ID", description="",
                                                                    example="1")):
         """
-        在校生 查看关键信息变更
+        在校生 查看关键信息变更 todo  审核状态
         """
 
-        student_edu_info = StudentsKeyInfoChangeRule(id=apply_id,
-                                                      approval_status=StudentTransactionStatus.CANCEL.value, )
+        student_edu_info = StudentsKeyinfoChange(id=apply_id,
+                                                      # approval_status=StudentTransactionStatus.CANCEL.value,
+                                                 )
         res = await self.student_key_info_change_rule.update_student_key_info_change(student_edu_info)
 
         # res2 = await self.student_inner_transaction_rule.update_student_transaction(student_edu_info)
-
-        # 流乘记录
-        student_trans_flow = StudentTransactionFlow(apply_id=transaction_id,
-                                                    status=StudentTransactionStatus.CANCEL.value,
-                                                    # stage=audit_info.transferin_audit_action.value,
-                                                    remark= '用户撤回')
-        res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+        #
+        # # 流乘记录
+        # student_trans_flow = StudentTransactionFlow(apply_id=transaction_id,
+        #                                             status=StudentTransactionStatus.CANCEL.value,
+        #                                             # stage=audit_info.transferin_audit_action.value,
+        #                                             remark= '用户撤回')
+        # res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
 
         return res
 

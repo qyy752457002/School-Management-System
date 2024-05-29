@@ -11,7 +11,7 @@ from models.student_session import StudentSessionstatus
 from models.students_key_info_change import   StudentKeyInfoChange
 from views.common.common_view import page_none_deal
 from views.models.student_inner_transaction import StudentsKeyinfo as StudentsKeyinfoModel
-from views.models.students import NewBaseInfoCreate,NewBaseInfoUpdate,StudentsBaseInfo
+from views.models.students import NewBaseInfoCreate, NewBaseInfoUpdate, StudentsBaseInfo, StudentsKeyinfo
 from views.models.students import StudentsBaseInfo as StudentsBaseInfoModel
 from views.models.students import NewStudentsQuery, NewStudentsQueryRe
 from business_exceptions.student import StudentNotFoundError,StudentExistsError
@@ -51,7 +51,7 @@ class StudentsKeyInfoChangeRule(object):
         student_key_info_change_db = await self.student_key_info_change_dao.get_student_key_info_change_by_id(students_base_id)
         if not student_key_info_change_db:
             raise StudentNotFoundError()
-        student_key_info_change = orm_model_to_view_model(student_key_info_change_db, StudentKeyInfoChange, exclude=[""])
+        student_key_info_change = orm_model_to_view_model(student_key_info_change_db, StudentsKeyinfo, exclude=[""])
         return student_key_info_change
 
 

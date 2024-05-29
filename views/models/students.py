@@ -166,6 +166,28 @@ class StudentsKeyinfoDetail(BaseModel):
 
 
 
+class StudentsKeyinfoChange(BaseModel):
+    """
+    学生id：student_id
+    学生姓名：student_name
+    报名号：enrollment_number
+    生日：birthday
+    性别：gender
+    证件类别：id_type
+    证件号码：id_number
+    照片：photo
+    """
+    id: int = Field(None, title="id", description="id")
+    student_id: int = Field(None, title="学生id", description="学生id")
+    student_name: str = Field(..., title="学生姓名", description="学生姓名")
+    enrollment_number: str = Field('', title="报名号", description="报名号")
+    birthday: date = Field(..., title="生日", description="生日")
+    student_gender: Gender = Field(..., title="性别", description="性别")
+    id_type: str = Field(..., title="证件类别", description="证件类别")
+    id_number: str = Field(..., title="证件号码", description="证件号码")
+    photo: str = Field('', title="照片", description="照片")
+
+
 
 class StudentsBaseInfo(BaseModel):
     """
