@@ -10,7 +10,7 @@ from daos.students_dao import StudentsDao
 from models.student_session import StudentSessionstatus
 from models.students_key_info_change import   StudentKeyInfoChange
 from views.common.common_view import page_none_deal
-from views.models.student_inner_transaction import StudentsKeyinfo as StudentsKeyinfoModel
+# from views.models.student_inner_transaction import StudentsKeyinfo as StudentsKeyinfoModel
 from views.models.students import NewBaseInfoCreate, NewBaseInfoUpdate, StudentsBaseInfo, StudentsKeyinfo
 from views.models.students import StudentsBaseInfo as StudentsBaseInfoModel
 from views.models.students import NewStudentsQuery, NewStudentsQueryRe
