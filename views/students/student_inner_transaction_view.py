@@ -51,7 +51,7 @@ class StudentInnerTransactionView(BaseView):
         # todo 校验是否本人或者老师
 
         student_edu_info = StudentInnerTransactionRes(id=transaction_id,
-                                              status=StudentTransactionStatus.CANCEL.value, )
+                                              approval_status=StudentTransactionStatus.CANCEL.value, )
         res2 = await self.student_inner_transaction_rule.update_student_transaction(student_edu_info)
 
         # 流乘记录

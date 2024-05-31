@@ -4,6 +4,7 @@ from fastapi import Query
 from pydantic import BaseModel, Field
 from datetime import date
 from models.public_enum import YesOrNo, Gender, IDtype
+from models.student_transaction import AuditAction
 from models.students import  Relationship, Registration,HealthStatus,StudentApprovalAtatus
 from typing import Optional
 
@@ -166,6 +167,39 @@ class StudentsKeyinfoDetail(BaseModel):
 
 
 
+class StudentsKeyinfoChange(BaseModel):
+    """
+    学生id：student_id
+    学生姓名：student_name
+    报名号：enrollment_number
+    生日：birthday
+    性别：gender
+    证件类别：id_type
+    证件号码：id_number
+    照片：photo
+    """
+    id: int = Field(None, title="id", description="id")
+    student_id: int = Field(None, title="学生id", description="学生id")
+    student_name: str = Field(..., title="学生姓名", description="学生姓名")
+    enrollment_number: str = Field('', title="报名号", description="报名号")
+    birthday: date = Field(..., title="生日", description="生日")
+    student_gender: Gender = Field(..., title="性别", description="性别")
+    id_type: str = Field(..., title="证件类别", description="证件类别")
+    id_number: str = Field(..., title="证件号码", description="证件号码")
+    photo: str = Field('', title="照片", description="照片")
+    approval_status: Optional[str] = Query(None, title="状态", description="状态")
+
+
+class StudentsKeyinfoChangeAudit(BaseModel):
+    # id:int= Query(None, title="", description="id", example='1'),
+    # in_school_id: int = Field(0, title="学校ID", description="学校ID",examples=['1'])
+    # grade_id: int = Field(0, title="年级ID", description="年级ID",examples=['1'])
+    # status: str = Field('', title="",description="状态",examples=[''])
+    apply_id: int = Query(..., description="申请id", example='2')
+    audit_action: AuditAction = Query(..., description="审批的操作",
+                                                 example='pass')
+    remark: str = Query("", description="审批的备注", min_length=0, max_length=200,
+                        example='同意 无误')
 
 class StudentsBaseInfo(BaseModel):
     """

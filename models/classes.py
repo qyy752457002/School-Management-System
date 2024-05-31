@@ -35,7 +35,7 @@ class Classes(BaseDBModel):
     grade_id: Mapped[int] = mapped_column( comment="年级ID",default=0,nullable=True)
     grade_no: Mapped[str] = mapped_column(String(20), nullable=True,default='', comment="年级编号")
 
-    is_att_class: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="是否附设班")
+    is_att_class: Mapped[bool] = mapped_column(  nullable=True,default=False, comment="是否附设班")
     att_class_type: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="附设班类型")
     class_name: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班级名称")
     class_number: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班号")
@@ -46,7 +46,7 @@ class Classes(BaseDBModel):
     school_system: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="学制")
     monitor: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班长")
     class_type: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="中小学班级类型")
-    is_bilingual_class: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="是否少数民族双语教学班")
+    is_bilingual_class: Mapped[bool] = mapped_column(  nullable=True,default=False, comment="是否少数民族双语教学班")
     major_for_vocational: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="中职班级专业")
     bilingual_teaching_mode: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="双语教学模式")
     ethnic_language: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="少数民族语言")

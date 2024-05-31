@@ -10,8 +10,8 @@ from daos.students_dao import StudentsDao
 from models.student_session import StudentSessionstatus
 from models.students_key_info_change import   StudentKeyInfoChange
 from views.common.common_view import page_none_deal
-from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
-from views.models.students import NewBaseInfoCreate,NewBaseInfoUpdate,StudentsBaseInfo
+# from views.models.student_inner_transaction import StudentsKeyinfo as StudentsKeyinfoModel
+from views.models.students import NewBaseInfoCreate, NewBaseInfoUpdate, StudentsBaseInfo, StudentsKeyinfo
 from views.models.students import StudentsBaseInfo as StudentsBaseInfoModel
 from views.models.students import NewStudentsQuery, NewStudentsQueryRe
 from business_exceptions.student import StudentNotFoundError,StudentExistsError
@@ -46,12 +46,12 @@ class StudentsKeyInfoChangeRule(object):
 
     async def get_student_key_info_change_by_id(self, students_base_id):
         """
-        获取单个学生信息
+        获取单个信息
         """
         student_key_info_change_db = await self.student_key_info_change_dao.get_student_key_info_change_by_id(students_base_id)
         if not student_key_info_change_db:
             raise StudentNotFoundError()
-        student_key_info_change = orm_model_to_view_model(student_key_info_change_db, StudentsBaseInfo, exclude=[""])
+        student_key_info_change = orm_model_to_view_model(student_key_info_change_db, StudentsKeyinfo, exclude=[""])
         return student_key_info_change
 
 
@@ -83,16 +83,6 @@ class StudentsKeyInfoChangeRule(object):
                 need_update_list.append(key)
         student_key_info_change = await self.student_key_info_change_dao.update_student_key_info_change(student_key_info_change,
                                                                                          *need_update_list)
-        return student_key_info_change
-
-    async def update_students_class_division(self, class_id, student_ids):
-        """
-        编辑学生基本信息
-        """
-
-        student_key_info_change = await self.student_key_info_change_dao.update_students_class_division(class_id, student_ids)
-        # 写入分班记录表
-        # await self.students_dao.add_students_class_division(class_id, student_ids)
         return student_key_info_change
 
     async def delete_student_key_info_change(self, students_id):
