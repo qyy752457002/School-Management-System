@@ -12,17 +12,12 @@ from models.work_flow_define import WorkFlowDefine
 from models.work_flow_node_depend_strategy import WorkFlowNodeDependStrategy
 
 
-
-
 @dataclass_inject
 class WorkFlowNodeDefineRule(object):
     work_flow_node_define_dao: WorkFlowNodeDefineDAO
     work_flow_define_dao: WorkFlowDefineDAO
     work_flow_node_depend_dao: WorkFlowNodeDependDAO
     work_flow_node_depend_strategy_dao: WorkFlowNodeDependStrategyDAO
-
-
-
 
     async def add_transfer_node(self, process_code, is_transfer, transfer_initiate, **kwargs):
 
@@ -109,7 +104,7 @@ class WorkFlowNodeDefineRule(object):
         nodes_list.append({
             'process_code': process_code,
             'node_name': nodes_info['fail'][0],
-            'node_ncode': nodes_info['fail'][1]
+            'node_code': nodes_info['fail'][1]
         })
 
         db_records = []
@@ -123,6 +118,7 @@ class WorkFlowNodeDefineRule(object):
         """
         添加依赖
         """
+        process_type = process_type
         if process_type == "transfer":
             is_transfer = kwargs.get('is_transfer')
             transfer_initiate = kwargs.get('transfer_initiate')
@@ -168,17 +164,20 @@ class WorkFlowNodeDefineRule(object):
                     "next_node": current_node['node_code']
                 })
                 depend_data.append({
-                    "depend_code": generate_depend_code(current_node['node_code'], node_list[0]['node_code']),
+                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
+                                                        node_list[0]['node_code']),
                     "source_node": current_node['node_code'],
                     "next_node": node_list[0]['node_code']
                 })
                 depend_data.append({
-                    "depend_code": generate_depend_code(current_node['node_code'], fail_node['node_code']),
+                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
+                                                        fail_node['node_code']),
                     "source_node": current_node['node_code'],
                     "next_node": fail_node['node_code']
                 })
                 depend_data.append({
-                    "depend_code": generate_depend_code(current_node['node_code'], next_node['node_code']),
+                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
+                                                        next_node['node_code']),
                     "source_node": current_node['node_code'],
                     "next_node": next_node['node_code']
                 })
@@ -186,17 +185,20 @@ class WorkFlowNodeDefineRule(object):
             elif i == num_nodes - 3:
                 # Last approval node
                 depend_data.append({
-                    "depend_code": generate_depend_code(current_node['node_code'], previous_node['node_code']),
+                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
+                                                        previous_node['node_code']),
                     "source_node": current_node['node_code'],
                     "next_node": previous_node['node_code']
                 })
                 depend_data.append({
-                    "depend_code": generate_depend_code(current_node['node_code'], fail_node['node_code']),
+                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
+                                                        fail_node['node_code']),
                     "source_node": current_node['node_code'],
                     "next_node": fail_node['node_code']
                 })
                 depend_data.append({
-                    "depend_code": generate_depend_code(current_node['node_code'], success_node['node_code']),
+                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
+                                                        success_node['node_code']),
                     "source_node": current_node['node_code'],
                     "next_node": success_node['node_code']
                 })
@@ -204,17 +206,20 @@ class WorkFlowNodeDefineRule(object):
             else:
                 # Intermediate approval nodes
                 depend_data.append({
-                    "depend_code": generate_depend_code(current_node['node_code'], previous_node['node_code']),
+                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
+                                                        previous_node['node_code']),
                     "source_node": current_node['node_code'],
                     "next_node": previous_node['node_code']
                 })
                 depend_data.append({
-                    "depend_code": generate_depend_code(current_node['node_code'], fail_node['node_code']),
+                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
+                                                        fail_node['node_code']),
                     "source_node": current_node['node_code'],
                     "next_node": fail_node['node_code']
                 })
                 depend_data.append({
-                    "depend_code": generate_depend_code(current_node['node_code'], next_node['node_code']),
+                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
+                                                        next_node['node_code']),
                     "source_node": current_node['node_code'],
                     "next_node": next_node['node_code']
                 })
@@ -223,7 +228,6 @@ class WorkFlowNodeDefineRule(object):
             record = create_model_instance(WorkFlowNodeDepend, depend)
             depends_list.append(record)
         return depends_list
-
 
     async def add_strategy(self, depends_list, node_list):
         """
@@ -279,8 +283,7 @@ class WorkFlowNodeDefineRule(object):
             strategy_list.append(record)
         return strategy_list
 
-
-    async def add_work_flow_node_define(self, work_flow_define: WorkFlowDefineModel):
+    async def add_work_flow_define(self, work_flow_define: WorkFlowDefineModel):
 
         process_type = work_flow_define.process_type
         process_code = work_flow_define.process_code
@@ -318,13 +321,25 @@ class WorkFlowNodeDefineRule(object):
 
         if process_type == "transfer":
 
-            work_flow_node_list_db = await self.add_transfer_node(process_code, is_transfer, transfer_initiate,
-                                                                    is_transfer_in_school_approval=is_transfer_in_school_approval,
-                                                                    is_transfer_out_school_approval=is_transfer_out_school_approval,
-                                                                    is_transfer_in_area_approval=is_transfer_in_area_approval,
-                                                                    is_transfer_out_area_approval=is_transfer_out_area_approval,
-                                                                    is_transfer_city_approval=is_transfer_city_approval)
-            work_flow_node_list_db = await self.work_flow_node_define_dao.add_work_flow_node_define(work_flow_node_list_db)
+            work_flow_node_list = await self.add_transfer_node(process_code, is_transfer, transfer_initiate,
+                                                               is_transfer_in_school_approval=is_transfer_in_school_approval,
+                                                               is_transfer_out_school_approval=is_transfer_out_school_approval,
+                                                               is_transfer_in_area_approval=is_transfer_in_area_approval,
+                                                               is_transfer_out_area_approval=is_transfer_out_area_approval,
+                                                               is_transfer_city_approval=is_transfer_city_approval)
+            work_flow_node_list_db = await self.work_flow_node_define_dao.add_work_flow_node_define(
+                work_flow_node_list)  # 添加节点
+            work_flow_node_depends_list = await self.add_depend(work_flow_node_list_db, process_type,
+                                                                is_transfer=is_transfer,
+                                                                transfer_initiate=transfer_initiate)  # 获得依赖节点
+            work_flow_node_depends_db = await self.work_flow_node_depend_dao.add_work_flow_node_depend(
+                work_flow_node_depends_list)  # 获取数据库依赖节点
+
+            work_flow_node_depends_strategy_list = await self.add_strategy(work_flow_node_depends_list,
+                                                                           work_flow_node_list)
+            work_flow_node_depends_strategy_db = await self.work_flow_node_depend_strategy_dao.add_work_flow_node_depend_strategy(
+                work_flow_node_depends_strategy_list)  # 获取数据策略依赖节点
+
 
 
         elif process_type == "borrow":
@@ -335,10 +350,6 @@ class WorkFlowNodeDefineRule(object):
             pass
         elif process_type == "change":
             pass
-
-
-
-
 
 
 def create_model_instance(model, element):
@@ -360,6 +371,7 @@ def create_model_instance(model, element):
 
 def generate_depend_code(pre, process_type, source, target):
     """生成depend的主键"""
+
     if process_type == "transfer" or process_type == "borrow":
         source_keywords = "_".join([word[3:5] for word in source.split('_')])
         target_keywords = "_".join([word[3:5] for word in target.split('_')])

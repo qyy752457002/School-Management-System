@@ -8,6 +8,7 @@ from views.teachers.teachers_extend_view import TeacherLearnExperienceView, Teac
     TeacherJobAppointmentsView, TeacherProfessionalTitlesView, TeacherQualificationsView, TeacherSkillCertificatesView, \
     TeacherEthicRecordsView,EducationalTeachingView
 from views.teachers.teachers_extend_view import DomesticTrainingView,OverseasStudyView,TalentProgramView,AnnualReviewView,ResearchAchievementsView
+from views.teachers.teacher_work_flow_define import WorkFlowDefineView
 
 
 def routers():
@@ -28,5 +29,6 @@ def routers():
     router.include_api_view_class(TalentProgramView, "/v1/teacher-extend", description="教师入学人才项目信息管理")
     router.include_api_view_class(AnnualReviewView, "/v1/teacher-extend", description="教师年度考核信息管理")
     router.include_api_view_class(ResearchAchievementsView, "/v1/teacher-extend", description="教师科研项目管理")
+    router.include_api_view_class(WorkFlowDefineView, "/v1/teacher-workflow", description="教师工作流定义配置管理")
 
     return router
