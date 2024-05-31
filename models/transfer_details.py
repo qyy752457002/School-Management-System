@@ -2,6 +2,19 @@ from sqlalchemy import String, Date
 from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
 from datetime import date
+from enum import Enum
+
+
+class TransferType(str, Enum):
+    """
+    调动类型
+    """
+    IN = "transfer_in"
+    OUT = "transfer_out"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.IN, cls.OUT,]
 
 
 class TransferDetails(BaseDBModel):
@@ -37,10 +50,10 @@ class TransferDetails(BaseDBModel):
     transfer_out_date: Mapped[date] = mapped_column(Date, nullable=False, comment="调出日期")
     transfer_reason: Mapped[str] = mapped_column(String(64), nullable=False, comment="调动原因")
     remark: Mapped[str] = mapped_column(String(64), nullable=False, comment="备注")
-    operator: Mapped[str] = mapped_column(String(64), nullable=False, comment="操作人")
+    operator_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="操作人")
     teacher_id: Mapped[int] = mapped_column(nullable=True, comment="教师ID")
     operation_time: Mapped[date] = mapped_column(Date, nullable=False, comment="操作时间")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
-    transfer_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="调动状态")
+    transfer_type: Mapped[str] = mapped_column(String(255), nullable=False, comment="调动类型")
     approval_status: Mapped[str] = mapped_column(String(255), nullable=False, comment="审批状态",
                                                  default="submitting")

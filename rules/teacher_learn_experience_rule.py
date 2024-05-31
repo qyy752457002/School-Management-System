@@ -42,7 +42,7 @@ class TeacherLearnExperienceRule(object):
                                                            exclude=[""])
         return teacher_learn_experience
 
-    async def update_teacher_learn_experience(self, teacher_learn_experience: TeacherLearnExperienceModel):
+    async def update_teacher_learn_experience(self, teacher_learn_experience: TeacherLearnExperienceUpdateModel):
         exists_teacher_learn_experience_info = await self.teacher_learn_experience_dao.get_teacher_learn_experience_by_teacher_learn_experience_id(
             teacher_learn_experience.teacher_learn_experience_id)
         if not exists_teacher_learn_experience_info:
