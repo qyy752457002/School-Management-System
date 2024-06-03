@@ -36,7 +36,7 @@ class SystemView(BaseView):
         # res,title  = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
 
         return {'app_name':title,
-                'menu': res
+                'menu':list(res.values())
 
                 }
         # res = SubSystem(system_name='学校版',

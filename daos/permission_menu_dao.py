@@ -81,7 +81,16 @@ class PermissionMenuDAO(DAOBase):
 		if role_id:
 			query = query.where(Roles.id == role_id)
 		if parent_id:
-			query = query.where(PermissionMenu.parent_id == parent_id)
+			if isinstance(parent_id,list):
+				query = query.where(PermissionMenu.parent_id .in_(parent_id))
+				pass
+			else:
+				query = query.where(PermissionMenu.parent_id == parent_id)
+
+				pass
+		else:
+			query = query.where(PermissionMenu.parent_id == 0)
+
 		if system_type:
 			query = query.where(Roles.system_type == system_type)
 

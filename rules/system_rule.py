@@ -92,9 +92,11 @@ class SystemRule(object):
         # 字段映射的示例写法   , {"hash_password": "password"} SubSystemSearchRes
         # print(paging)
         # paging_result = PaginatedResponse.from_paging(paging,
-        res = [ ]
+        res = dict()
+        ids  = [ ]
         title = ''
         for item in paging:
+            ids.append(item['id'])
             if title == '':
                 title= item['app_name']
 
@@ -106,10 +108,16 @@ class SystemRule(object):
                 "menu_code": "power_code",
                 "menu_type": "power_type",
             })
-            res.append(system)
+            res[ item['id']] = system
+            # res.append(system)
             print(system)
-        print(paging)
+        paging2 = await self.permission_menu_dao.query_permission_menu_with_args( unit_type, edu_type, system_type, role_id,ids)
+        print(paging2,res.keys())
+        for item in paging2:
+            if int(item['parent_id']) in res.keys():
+                res[int(item['parent_id'])].children.append(item)
+
         # print(list(paging))
 
         # print(dict(paging))
-        return paging,title
+        return res,title
