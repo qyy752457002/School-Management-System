@@ -30,7 +30,6 @@ class RolePermissions(BaseDBModel):
     @staticmethod
     def seed():
         return [
-
             RolePermissions(role_id=1,menu_id=1,sort_order=1,created_uid=1,updated_uid=1,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
             RolePermissions(role_id=1,menu_id=2,sort_order=1,created_uid=1,updated_uid=1,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
             RolePermissions(role_id=1,menu_id=3,sort_order=1,created_uid=1,updated_uid=1,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
@@ -38,7 +37,5 @@ class RolePermissions(BaseDBModel):
             RolePermissions(role_id=1,menu_id=4,sort_order=1,created_uid=1,updated_uid=1,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
             RolePermissions(role_id=1,menu_id=5,sort_order=1,created_uid=1,updated_uid=1,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
         ]
-
-
 
 
