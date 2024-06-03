@@ -69,23 +69,31 @@ class SystemRule(object):
             "menu_code": "power_code",
             "menu_type": "power_type",
         })
+        if paging_result and hasattr(  paging_result,'items'):
+            ids = [ ]
+            for item in paging_result.items:
+                ids.append(item.id)
+                # item.children= await self.query_system_with_kwargs(role_id,unit_type, edu_type, system_type,item.id)
+                # print(ids,item)
+
+
         return paging_result
 
-    async def query_system_with_kwargs(self, role_id,unit_type, edu_type, system_type,  ):
-        paging = await self.permission_menu_dao.query_permission_menu_with_args( unit_type, edu_type, system_type, role_id)
+    async def query_system_with_kwargs(self, role_id,unit_type, edu_type, system_type,parent_id  ):
+        paging = await self.permission_menu_dao.query_permission_menu_with_args( unit_type, edu_type, system_type, role_id,parent_id)
         # 字段映射的示例写法   , {"hash_password": "password"} SubSystemSearchRes
         # print(paging)
         # paging_result = PaginatedResponse.from_paging(paging,
         res = [ ]
-        for item in paging:
+        # for item in paging:
+        #
+        #
+        #     system = orm_model_to_view_model(item, PermissionMenuModel,other_mapper={
+        #         "menu_name": "power_name",
+        #         "menu_path": "power_url",
+        #         "menu_code": "power_code",
+        #         "menu_type": "power_type",
+        #     })
+        #     res.append(system)
 
-
-            system = orm_model_to_view_model(item, PermissionMenuModel,other_mapper={
-                "menu_name": "power_name",
-                "menu_path": "power_url",
-                "menu_code": "power_code",
-                "menu_type": "power_type",
-            })
-            res.append(system)
-
-        return res
+        return paging

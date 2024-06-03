@@ -29,6 +29,7 @@ class PermissionMenu(BaseModel):
     parent_id: str = Query('', title="", description="父级菜单id", example='1')
     permission_id: int = Query(0, title="", description="权限ID", example='1')
     sort_order: int = Query(0, title="", description="排序 从校到大", example='1')
+    children: list = Query([], title="", description="", example= [])
 
 
 

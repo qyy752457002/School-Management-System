@@ -1,3 +1,4 @@
+from mini_framework.databases.entities import BaseDBModel
 from sqlalchemy import select, func, update, desc
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
@@ -54,9 +55,10 @@ class PermissionMenuDAO(DAOBase):
 		paging = await self.query_page(query, page_request)
 		return paging
 
-	async def query_permission_menu_with_args(self,  unit_type, edu_type, system_type, role_id: int = None,):
-		query = select(PermissionMenu).join(RolePermissions, RolePermissions.menu_id == PermissionMenu.id, isouter=True).order_by(desc(RolePermissions.id)).join(Roles, Roles.id == RolePermissions.role_id,  isouter=True)
-		query = query.where(PermissionMenu.is_deleted == False)
+	async def query_permission_menu_with_args(self,  unit_type, edu_type, system_type, role_id: int = None,parent_id=0):
+		query = (select(PermissionMenu
+					   ).select_from( PermissionMenu).join(RolePermissions, RolePermissions.menu_id == PermissionMenu.id, isouter=True).order_by(desc(RolePermissions.id)).join(Roles, Roles.id == RolePermissions.role_id,  isouter=True))
+		query = query.where(PermissionMenu.is_deleted == False).where(Roles.is_deleted == False)
 
 
 		if unit_type:
@@ -67,14 +69,28 @@ class PermissionMenuDAO(DAOBase):
 
 		if role_id:
 			query = query.where(Roles.id == role_id)
-
+		if parent_id:
+			query = query.where(PermissionMenu.parent_id == parent_id)
 		if system_type:
 			query = query.where(Roles.system_type == system_type)
 
 		### �˴���д��ѯ����
 		session = await self.slave_db()
+		column_names = query.columns.keys()
+
 		result = await session.execute(query)
-		return result.scalars().all()
+		result_items= result.scalars().all()
+
+		items = []
+		# for item in result_items:
+		# 	item_dict = dict(zip(column_names, item))
+		# 	items.append(item_dict)
+			# if issubclass(item[0].__class__, BaseDBModel):
+			# 	items.append(item[0])
+			# else:
+			# 	item_dict = dict(zip(column_names, item))
+			# 	items.append(item_dict)
+		return result_items
 
 
 

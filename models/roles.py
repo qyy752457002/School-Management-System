@@ -44,6 +44,7 @@ county_id: 区id
     system_type: Mapped[str] = mapped_column(String(255),  nullable=True, comment="系统类型",default='')
     edu_type: Mapped[str] = mapped_column(String(255),  nullable=True, comment="教育类型",default='')
     unit_type: Mapped[str] = mapped_column(String(255),  nullable=True, comment="单位类型",default='')
+    app_name: Mapped[str] = mapped_column(String(255),  nullable=True, comment=" ",default='')
     unit_id: Mapped[int] = mapped_column(nullable=True, comment="单位ID",default=0)
     school_id: Mapped[int] =mapped_column(nullable=True, comment="学校id",default=0)
     county_id: Mapped[int] =mapped_column(nullable=True, comment="区id",default=0)

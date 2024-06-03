@@ -31,8 +31,8 @@ class SystemView(BaseView):
                    ):
         print(page_request)
         items = []
-        res = await self.system_rule.query_system_with_kwargs( role_id, unit_type, edu_type, system_type )
-        # res = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
+        # res = await self.system_rule.query_system_with_kwargs( role_id, unit_type, edu_type, system_type )
+        res = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
 
         return {'app_name':'',
                 'menu': res
