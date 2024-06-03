@@ -2,6 +2,7 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
 from rules.sub_system_rule import SubSystemRule
+from rules.system_rule import SystemRule
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo
 from views.models.school import School
 # from fastapi import Field
@@ -16,7 +17,7 @@ from views.models.sub_system import SubSystem
 class SystemView(BaseView):
     def __init__(self):
         super().__init__()
-        self.sub_system_rule = get_injector(SubSystemRule)
+        self.system_rule = get_injector(SystemRule)
 
     async def page_menu(self,
                    page_request=Depends(PageRequest),
@@ -30,7 +31,7 @@ class SystemView(BaseView):
                    ):
         print(page_request)
         items = []
-        res = await self.sub_system_rule.query_sub_system_with_page(page_request, )
+        res = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
         return res
         # res = SubSystem(system_name='学校版',
         #                 system_no='02',
