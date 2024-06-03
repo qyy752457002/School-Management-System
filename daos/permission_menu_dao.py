@@ -86,10 +86,17 @@ class PermissionMenuDAO(DAOBase):
 			query = query.where(Roles.system_type == system_type)
 
 		session = await self.slave_db()
-		result = await session.execute(query)
-		result_items= result.scalars().all()
+		columns=query.columns.keys()
 
-		return result_items
+		result = await session.execute(query)
+		# columns=result.keys()
+		result_items= result.all()
+
+
+# 将元组列表转换为字典列表
+		dict_result_items = [dict(zip(columns, item)) for item in result_items]
+
+		return dict_result_items
 
 
 

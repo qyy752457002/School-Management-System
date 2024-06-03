@@ -93,16 +93,23 @@ class SystemRule(object):
         # print(paging)
         # paging_result = PaginatedResponse.from_paging(paging,
         res = [ ]
-        # for item in paging:
-        #
-        #
-        #     system = orm_model_to_view_model(item, PermissionMenuModel,other_mapper={
-        #         "menu_name": "power_name",
-        #         "menu_path": "power_url",
-        #         "menu_code": "power_code",
-        #         "menu_type": "power_type",
-        #     })
-        #     res.append(system)
-        print(paging)
+        title = ''
+        for item in paging:
+            if title == '':
+                title= item['app_name']
 
-        return paging
+
+
+            system = orm_model_to_view_model(item, PermissionMenuModel,other_mapper={
+                "menu_name": "power_name",
+                "menu_path": "power_url",
+                "menu_code": "power_code",
+                "menu_type": "power_type",
+            })
+            res.append(system)
+            print(system)
+        print(paging)
+        # print(list(paging))
+
+        # print(dict(paging))
+        return paging,title
