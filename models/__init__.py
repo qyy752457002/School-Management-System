@@ -61,5 +61,6 @@ from . import student_transaction
 from . import student_transaction_flow
 from . import student_inner_transaction
 from . import students_key_info_change
+from . import education_year
 
 metadata = BaseDBModel.metadata
