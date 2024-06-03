@@ -76,11 +76,16 @@ class SystemRule(object):
         # 字段映射的示例写法   , {"hash_password": "password"} SubSystemSearchRes
         # print(paging)
         # paging_result = PaginatedResponse.from_paging(paging,
-        system = orm_model_to_view_model(paging, PermissionMenuModel,other_mapper={
-            "menu_name": "power_name",
-            "menu_path": "power_url",
-            "menu_code": "power_code",
-            "menu_type": "power_type",
-        })
+        res = [ ]
+        for item in paging:
 
-        return system
+
+            system = orm_model_to_view_model(item, PermissionMenuModel,other_mapper={
+                "menu_name": "power_name",
+                "menu_path": "power_url",
+                "menu_code": "power_code",
+                "menu_type": "power_type",
+            })
+            res.append(system)
+
+        return res
