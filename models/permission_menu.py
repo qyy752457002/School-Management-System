@@ -38,6 +38,19 @@ class PermissionMenu(BaseDBModel):
     is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)
 
 
+    @staticmethod
+    def seed():
+        return [
+
+            PermissionMenu(id=1, menu_name="园所信息管理（规划）", menu_path="/planning", menu_icon="", menu_type="menu", menu_code="planning", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=2, menu_name="园所信息管理（学校）", menu_path="/school", menu_icon="", menu_type="menu", menu_code="school", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=3, menu_name="园所配置管理", menu_path="", menu_icon="", menu_type="root", menu_code="config", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+            PermissionMenu(id=4, menu_name="年级管理", menu_path="/grade", menu_icon="", menu_type="menu", menu_code="grade", menu_status="", menu_remark="", parent_id="3", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+            PermissionMenu(id=5, menu_name="班级管理", menu_path="/class", menu_icon="", menu_type="menu", menu_code="class", menu_status="", menu_remark="", parent_id="3", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+        ]
 
 
 

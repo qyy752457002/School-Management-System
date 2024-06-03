@@ -57,6 +57,13 @@ county_id: 区id
     is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)
 
 
+    @staticmethod
+    def seed():
+        return [
+
+            Roles(id=1,system_type='unit',edu_type='kg',unit_type='city',app_name='园所信息管理系统',unit_id=0,school_id=0,county_id=0,created_uid=1,updated_uid=1,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+        ]
 
 
 
