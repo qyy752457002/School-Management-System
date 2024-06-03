@@ -19,8 +19,8 @@ class PermissionMenu(BaseDBModel):
     __table_args__ = {'comment': '菜单权限表'}
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID",autoincrement=True)
-    menu_name: Mapped[str] = mapped_column(String(255),  nullable=True, comment="菜单名称",default='')
-    menu_path: Mapped[str] = mapped_column(String(255),  nullable=True, comment="菜单路径",default='')
+    menu_name: Mapped[str] = mapped_column(String(64),  nullable=True, comment="菜单名称",default='')
+    menu_path: Mapped[str] = mapped_column(String(64),  nullable=True, comment="菜单路径",default='')
     menu_icon: Mapped[str] = mapped_column(String(255),  nullable=True, comment="菜单图标",default='')
     menu_type: Mapped[str] = mapped_column(String(255),  nullable=True, comment="菜单类型",default='')
     menu_code: Mapped[str] = mapped_column(String(255),  nullable=True, comment="菜单简码",default='')

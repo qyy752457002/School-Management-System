@@ -41,7 +41,7 @@ county_id: 区id
     __table_args__ = {'comment': '角色'}
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="角色ID",autoincrement=True)
-    system_type: Mapped[str] = mapped_column(String(255),  nullable=True, comment="系统类型",default='')
+    system_type: Mapped[str] = mapped_column(String(64),  nullable=True, comment="系统类型",default='')
     edu_type: Mapped[str] = mapped_column(String(255),  nullable=True, comment="教育类型",default='')
     unit_type: Mapped[str] = mapped_column(String(255),  nullable=True, comment="单位类型",default='')
     app_name: Mapped[str] = mapped_column(String(255),  nullable=True, comment=" ",default='')
