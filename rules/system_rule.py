@@ -9,6 +9,7 @@ from models.permission_menu import PermissionMenu
 
 
 from views.models.sub_system import SubSystem as SubSystemModel
+from views.models.permission_menu import PermissionMenu as PermissionMenuModel
 
 @dataclass_inject
 class SystemRule(object):
@@ -62,5 +63,24 @@ class SystemRule(object):
         paging = await self.permission_menu_dao.query_permission_menu_with_page(page_request, unit_type, edu_type, system_type, role_id)
         # 字段映射的示例写法   , {"hash_password": "password"} SubSystemSearchRes
         # print(paging)
-        paging_result = PaginatedResponse.from_paging(paging, PermissionMenu)
+        paging_result = PaginatedResponse.from_paging(paging, PermissionMenuModel,other_mapper={
+            "menu_name": "power_name",
+            "menu_path": "power_url",
+            "menu_code": "power_code",
+            "menu_type": "power_type",
+        })
         return paging_result
+
+    async def query_system_with_kwargs(self, role_id,unit_type, edu_type, system_type,  ):
+        paging = await self.permission_menu_dao.query_permission_menu_with_args( unit_type, edu_type, system_type, role_id)
+        # 字段映射的示例写法   , {"hash_password": "password"} SubSystemSearchRes
+        # print(paging)
+        # paging_result = PaginatedResponse.from_paging(paging,
+        system = orm_model_to_view_model(paging, PermissionMenuModel,other_mapper={
+            "menu_name": "power_name",
+            "menu_path": "power_url",
+            "menu_code": "power_code",
+            "menu_type": "power_type",
+        })
+
+        return system

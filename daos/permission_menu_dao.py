@@ -54,6 +54,30 @@ class PermissionMenuDAO(DAOBase):
 		paging = await self.query_page(query, page_request)
 		return paging
 
+	async def query_permission_menu_with_args(self,  unit_type, edu_type, system_type, role_id: int = None,):
+		query = select(PermissionMenu).join(RolePermissions, RolePermissions.menu_id == PermissionMenu.id, isouter=True).order_by(desc(RolePermissions.id)).join(Roles, Roles.id == RolePermissions.role_id,  isouter=True)
+		query = query.where(PermissionMenu.is_deleted == False)
+
+
+		if unit_type:
+			query = query.where(Roles.unit_type == unit_type)
+
+		if edu_type:
+			query = query.where(Roles.edu_type == edu_type)
+
+		if role_id:
+			query = query.where(Roles.id == role_id)
+
+		if system_type:
+			query = query.where(Roles.system_type == system_type)
+
+		### �˴���д��ѯ����
+		session = await self.slave_db()
+		result = await session.execute(query)
+		return result.scalars().all()
+
+
+
 	async def update_permission_menu(self, permission_menu, *args, is_commit=True):
 		session = await self.master_db()
 		update_contents = get_update_contents(permission_menu, *args)
