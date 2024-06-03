@@ -24,9 +24,9 @@ class SystemView(BaseView):
                    role_id: int = Query(None, title="", description="角色id",
                                                  example='1'),
 
-                   unit_type :str= Query(None, title="单位类型 例如学校 市/区", description="",min_length=1,max_length=20,example='学校'),
-                   edu_type :str= Query(None, title="教育阶段类型 例如幼儿园 中小学 职高", description="",min_length=1,max_length=20,example='幼儿园'),
-                   system_type :str= Query(None, title="系统类型 例如老师 单位 学生", description="",min_length=1,max_length=20,example='老师'),
+                   unit_type :str= Query(None, title="单位类型 例如学校 市/区", description="",min_length=1,max_length=20,example='city'),
+                   edu_type :str= Query(None, title="教育阶段类型 例如幼儿园 中小学 职高", description="",min_length=1,max_length=20,example='kg'),
+                   system_type :str= Query(None, title="系统类型 例如老师 单位 学生", description="",min_length=1,max_length=20,example='unit'),
 
                    ):
         print(page_request)

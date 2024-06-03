@@ -1,9 +1,11 @@
-from sqlalchemy import select, func, update
+from sqlalchemy import select, func, update, desc
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.permission_menu import PermissionMenu
+from models.role_permissions import RolePermissions
+from models.roles import Roles
 
 
 class PermissionMenuDAO(DAOBase):
@@ -31,7 +33,21 @@ class PermissionMenuDAO(DAOBase):
 		return result.scalar_one_or_none()
 
 	async def query_permission_menu_with_page(self,  page_request: PageRequest,unit_type, edu_type, system_type, role_id: int = None,):
-		query = select(PermissionMenu)
+		query = select(PermissionMenu).join(RolePermissions, RolePermissions.menu_id == PermissionMenu.id, isouter=True).order_by(desc(RolePermissions.id)).join(Roles, Roles.id == RolePermissions.role_id,  isouter=True)
+		query = query.where(PermissionMenu.is_deleted == False)
+
+
+		if unit_type:
+			query = query.where(Roles.unit_type == unit_type)
+
+		if edu_type:
+			query = query.where(Roles.edu_type == edu_type)
+
+		if role_id:
+			query = query.where(Roles.id == role_id)
+
+		if system_type:
+			query = query.where(Roles.system_type == system_type)
 		
 		### �˴���д��ѯ����
 		

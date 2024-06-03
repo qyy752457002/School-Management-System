@@ -3,15 +3,12 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
-from daos.system_dao import SubSystemDAO
-from models.system import SubSystem
-from views.models.system import SubSystem as SubSystemModel
 
 from daos.permission_menu_dao import PermissionMenuDAO
 from models.permission_menu import PermissionMenu
 
 
-# from views.models.system import SubSystemSearchRes
+from views.models.sub_system import SubSystem as SubSystemModel
 
 @dataclass_inject
 class SystemRule(object):
@@ -61,7 +58,7 @@ class SystemRule(object):
     async def get_system_count(self):
         return await self.system_dao.get_subsystem_count()
 
-    async def query_system_with_page(self, page_request: PageRequest,unit_type, edu_type, system_type, role_id: int = None, ):
+    async def query_system_with_page(self, page_request: PageRequest,role_id,unit_type, edu_type, system_type,  ):
         paging = await self.permission_menu_dao.query_permission_menu_with_page(page_request, unit_type, edu_type, system_type, role_id)
         # 字段映射的示例写法   , {"hash_password": "password"} SubSystemSearchRes
         # print(paging)
