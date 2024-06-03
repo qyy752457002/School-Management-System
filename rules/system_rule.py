@@ -5,6 +5,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
 from daos.permission_menu_dao import PermissionMenuDAO
+from daos.roles_dao import RolesDAO
 from models.permission_menu import PermissionMenu
 
 
@@ -14,6 +15,7 @@ from views.models.permission_menu import PermissionMenu as PermissionMenuModel
 @dataclass_inject
 class SystemRule(object):
     permission_menu_dao: PermissionMenuDAO
+    roles_dao: RolesDAO
 
     async def get_system_by_id(self, system_id):
         system_db = await self.system_dao.get_subsystem_by_id(system_id)
@@ -69,15 +71,21 @@ class SystemRule(object):
             "menu_code": "power_code",
             "menu_type": "power_type",
         })
+        title= ''
         if paging_result and hasattr(  paging_result,'items'):
             ids = [ ]
             for item in paging_result.items:
                 ids.append(item.id)
+                if title == '':
+                    role = await self.roles_dao.get_roles_by_id(item.id)
+                    title = role.app_name
+
+
                 # item.children= await self.query_system_with_kwargs(role_id,unit_type, edu_type, system_type,item.id)
                 # print(ids,item)
 
 
-        return paging_result
+        return paging_result,title
 
     async def query_system_with_kwargs(self, role_id,unit_type, edu_type, system_type,parent_id  ):
         paging = await self.permission_menu_dao.query_permission_menu_with_args( unit_type, edu_type, system_type, role_id,parent_id)
