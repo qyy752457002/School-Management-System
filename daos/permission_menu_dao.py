@@ -1,5 +1,5 @@
 from mini_framework.databases.entities import BaseDBModel
-from sqlalchemy import select, func, update, desc
+from sqlalchemy import select, func, update, desc, asc
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
@@ -56,10 +56,21 @@ class PermissionMenuDAO(DAOBase):
 		return paging
 
 	async def query_permission_menu_with_args(self,  unit_type, edu_type, system_type, role_id: int = None,parent_id=0):
-		query = (select(PermissionMenu
-					   ).select_from( PermissionMenu).join(RolePermissions, RolePermissions.menu_id == PermissionMenu.id, isouter=True).order_by(desc(RolePermissions.id)).join(Roles, Roles.id == RolePermissions.role_id,  isouter=True))
+		query = (select(PermissionMenu.id,
+						PermissionMenu.menu_name,
+						PermissionMenu.menu_path,
+						PermissionMenu.menu_type,
+						PermissionMenu.menu_code,
+						PermissionMenu.parent_id,
+						PermissionMenu.permission_id,
+						PermissionMenu.sort_order,
+						PermissionMenu.created_at,
+						PermissionMenu.updated_at,
+						PermissionMenu.created_uid,
+						PermissionMenu.updated_uid,
+						Roles.app_name
+					   ).select_from( PermissionMenu).join(RolePermissions, RolePermissions.menu_id == PermissionMenu.id, isouter=True).join(Roles, Roles.id == RolePermissions.role_id,  isouter=True).order_by(asc(RolePermissions.sort_order)))
 		query = query.where(PermissionMenu.is_deleted == False).where(Roles.is_deleted == False)
-
 
 		if unit_type:
 			query = query.where(Roles.unit_type == unit_type)
@@ -74,22 +85,10 @@ class PermissionMenuDAO(DAOBase):
 		if system_type:
 			query = query.where(Roles.system_type == system_type)
 
-		### �˴���д��ѯ����
 		session = await self.slave_db()
-		column_names = query.columns.keys()
-
 		result = await session.execute(query)
 		result_items= result.scalars().all()
 
-		items = []
-		# for item in result_items:
-		# 	item_dict = dict(zip(column_names, item))
-		# 	items.append(item_dict)
-			# if issubclass(item[0].__class__, BaseDBModel):
-			# 	items.append(item[0])
-			# else:
-			# 	item_dict = dict(zip(column_names, item))
-			# 	items.append(item_dict)
 		return result_items
 
 

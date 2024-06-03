@@ -87,7 +87,7 @@ class SystemRule(object):
 
         return paging_result,title
 
-    async def query_system_with_kwargs(self, role_id,unit_type, edu_type, system_type,parent_id  ):
+    async def query_system_with_kwargs(self, role_id,unit_type, edu_type, system_type,parent_id ='' ):
         paging = await self.permission_menu_dao.query_permission_menu_with_args( unit_type, edu_type, system_type, role_id,parent_id)
         # 字段映射的示例写法   , {"hash_password": "password"} SubSystemSearchRes
         # print(paging)
@@ -103,5 +103,6 @@ class SystemRule(object):
         #         "menu_type": "power_type",
         #     })
         #     res.append(system)
+        print(paging)
 
         return paging
