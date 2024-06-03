@@ -10,8 +10,11 @@ def main():
     root_path = os.path.dirname(os.path.abspath(__file__))
     cli = CLI(root_path)
     cli.register('db-init', DatabaseInitCommand, metadata_model="models.metadata")
-    cli.register('dao-gen', DAOGenerateCommand, model_list=[('models.teacher_transaction', 'TeacherTransaction'),
-                                                            ('models.transfer_details', 'TransferDetails')])
+    cli.register('dao-gen', DAOGenerateCommand, model_list=[('models.work_flow_define', 'WorkFlowDefine'),
+                                                            ('models.work_flow_node_define', 'WorkFlowNodeDefine'),
+                                                            ('models.work_flow_node_depend', 'WorkFlowNodeDepend'), (
+                                                            'models.work_flow_node_depend_strategy',
+                                                            'WorkFlowNodeDependStrategy')])
     cli.register('web', WebCommand, router_func_module="views.router.init_router")
     cli.setup()
 

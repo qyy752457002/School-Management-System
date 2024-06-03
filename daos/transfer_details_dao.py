@@ -68,5 +68,12 @@ class TransferDetailsDAO(DAOBase):
         result = await session.execute(query)
         return result.scalar_one_or_none()
 
+    async def get_all_transfer_details(self, teacher_id):
+        session = await self.slave_db()
+        query = select(TransferDetails).join(Teacher, TransferDetails.teacher_id == Teacher.teacher_id).where(
+            TransferDetails.teacher_id == teacher_id)
+        result = await session.execute(query)
+        return result.scalars().all()
+
 
 

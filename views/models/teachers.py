@@ -1,10 +1,10 @@
-from datetime import date
+from datetime import date,datetime
 
 from pydantic import BaseModel, Field, model_validator, ValidationError, field_validator
 from fastapi import Query
 from typing import Optional
 from models.teachers import TeacherApprovalAtatus
-from models.public_enum import  Gender
+from models.public_enum import Gender
 from business_exceptions.teacher import EthnicityNoneError, PoliticalStatusNoneError
 
 
@@ -268,8 +268,6 @@ class TeacherInfo(BaseModel):  # 基本信息
             if self.political_status is None:
                 raise PoliticalStatusNoneError()
         return self
-
-
 
 
 # class TeacherInfoSaveModel(BaseModel):  # 基本信息
@@ -743,7 +741,7 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     ethnicity: Optional[str] = Field(None, title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家地区", description="国家地区", example="中国")
-    political_status:Optional[str] = Field(None,  title="政治面貌", description="政治面貌", example="党员")
+    political_status: Optional[str] = Field(None, title="政治面貌", description="政治面貌", example="党员")
     native_place: str = Field("", title="籍贯", description="籍贯", example="沈阳")
     birth_place: str = Field("", title="出生地", description="出生地", example="沈阳")
     former_name: str = Field("", title="曾用名", description="曾用名", example="张三")
@@ -896,10 +894,83 @@ class CurrentTeacherQueryRe(BaseModel):
     teacher_name: str = Query("", title="姓名", description="姓名", example="张三")
     teacher_id_number: str = Query("", title="身份证号", description="身份证号", example="123456789012345678")
     teacher_gender: str = Query("", title="性别", description="性别", example="男")
-    teacher_employer: int = Query("", title="任职单位", description="任职单位", example="xx学校")
+    teacher_employer: int = Query(1, title="任职单位", description="任职单位", example="xx学校")
     highest_education: Optional[str] = Query("", title="最高学历", description="最高学历", example="本科")
     political_status: Optional[str] = Query("", title="政治面貌", description="政治面貌", example="群众")
     in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
     employment_form: Optional[str] = Query("", title="用人形式", description="用人形式", example="合同")
     enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
     school_name: Optional[str] = Query("", title="", description="", example="")
+
+
+class TeacherApprovalQuery(BaseModel):
+    """
+    新教职工审核查询模型
+    教师姓名：teacher_name
+    所属机构：teacher_employer
+    教师性别：teacher_gender
+    申请人：operator_name
+    审核人：approval_name
+    身份证号：teacher_id_number
+    """
+    teacher_name: Optional[str] = Query("", title="姓名", description="姓名", example="张三")
+    teacher_employer: Optional[int] = Query(None, title="任职单位", description="任职单位", example="xx学校")
+    teacher_gender: Optional[Gender] = Query(None, title="性别", description="性别", example="男")
+    operator_name: Optional[str] = Query("", title="申请人", description="申请人", example="张三")
+    approval_name: Optional[str] = Query("", title="审核人", description="审核人", example="张三")
+    teacher_id_number: Optional[str] = Query("", title="身份证号", description="身份证号", example="123456789012345678")
+
+
+class TeacherApprovalQueryRe(BaseModel):
+    """
+    新教职工入职审批模块查看的四个模型
+    教师姓名：teacher_name
+    所属学校名称：school_name
+    教师性别：teacher_gender
+    身份证号：teacher_id_number
+    用人形式：employment_form
+    教师id：teacher_id
+    申请人：operator_name
+    审批人：approval_name
+    申请时间：apply_time
+    """
+    teacher_name: str = Field("", title="姓名", description="姓名", example="张三")
+    teacher_gender: Gender = Field("male", title="性别", description="性别", example="男")
+    school_name: str = Query("", title="任职单位名称", description="任职单位名称", example="xx小学")
+    teacher_id_number: str = Field("", title="身份证号", description="身份证号", example="123456789012345678")
+    employment_form: str = Field("", title="用人形式", description="用人形式", example="合同")
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    operator_name: str = Field("", title="申请人", description="申请人", example="张三")
+    approval_name: str = Field("", title="审核人", description="审核人", example="张三")
+    apply_time: datetime = Field(..., title="申请时间", description="申请时间", example="2021-10-10 10:10:10")
+
+class TeacherLaunch(TeacherApprovalQueryRe):
+    """
+    发起审核
+    审核状态：approval_status
+    审批时间：approval_time
+    审批人：approval_name
+    """
+    approval_status: str = Field("submitting", title="审批状态", description="审批状态")
+    approval_time: datetime = Field(..., title="审批时间", description="审批时间", example="2021-10-10 10:10:10")
+
+
+class TeacherSubmitted(TeacherApprovalQueryRe):
+    """
+    已提交
+    """
+    pass
+
+class TeacherApprovaled(TeacherApprovalQueryRe):
+    """
+    已审核
+    """
+    approval_status: str = Field("submitting", title="审批状态", description="审批状态")
+    approval_time: datetime = Field(..., title="审批时间", description="审批时间", example="2021-10-10 10:10:10")
+
+class TeacherAll(TeacherApprovalQueryRe):
+    """
+    已审核
+    """
+    approval_status: str = Field("submitting", title="审批状态", description="审批状态")
+    approval_time: datetime = Field(..., title="审批时间", description="审批时间", example="2021-10-10 10:10:10")

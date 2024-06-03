@@ -68,4 +68,3 @@ class ResearchAchievementsDAO(DAOBase):
                 item_dict = dict(zip(column_names, item))
                 items.append(item_dict)
         return items
-

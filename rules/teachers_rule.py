@@ -10,6 +10,7 @@ from views.common.common_view import check_id_number
 from views.models.teachers import Teachers as TeachersModel
 from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
+from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
 
 
 
@@ -41,13 +42,26 @@ class TeachersRule(object):
         if length > 0:
             raise TeacherExistsError()
         teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
-
         if teachers_db.teacher_id_type == 'resident_id_card':
             idstatus = check_id_number(teachers_db.teacher_id_number)
             if not idstatus:
                 raise IdCardError()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
+        return teachers
+
+
+    async def add_transfer_teachers(self, teachers: TeacherAddModel):
+        """
+        系统外调入系统内时使用，增加老师
+        """
+        teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
+        if teachers_db.teacher_id_type == 'resident_id_card':
+            idstatus = check_id_number(teachers_db.teacher_id_number)
+            if not idstatus:
+                raise IdCardError()
+        teachers_db = await self.teachers_dao.add_teachers(teachers_db)
+        teachers = orm_model_to_view_model(teachers_db, TeacherAddReModel, exclude=[""])
         return teachers
 
     async def update_teachers(self, teachers):
@@ -111,5 +125,13 @@ class TeachersRule(object):
         teachers.teacher_approval_status = "rejected"
         return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
 
-
+    async def recall(self, teachers_id):
+        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
+        if not teachers:
+            raise TeacherNotFoundError()
+        if teachers.teacher_approval_status == "submitted":
+            teachers.teacher_approval_status = "submitting"
+        else:
+            raise Exception("只有待审核的教师信息才能撤回")
+        return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
 
