@@ -47,6 +47,7 @@ class ProcessCode(str, Enum):
     def to_list(cls):
         return [cls.BORROW_IN, cls.BORROW_OUT, cls.TRANSFER_IN, cls.TRANSFER_OUT, cls.INFO, cls.CHANGE, cls.ENTRY]
 
+
 class ProcessName(str, Enum):
     """
     借入：borrow_in
@@ -67,11 +68,13 @@ class ProcessName(str, Enum):
 
     @classmethod
     def to_list(cls):
-        return [cls.BORROW_IN, cls.BORROW_OUT,cls.TRANSFER_IN, cls.TRANSFER_OUT, cls.INFO, cls.CHANGE, cls.ENTRY]
+        return [cls.BORROW_IN, cls.BORROW_OUT, cls.TRANSFER_IN, cls.TRANSFER_OUT, cls.INFO, cls.CHANGE, cls.ENTRY]
+
 
 class WorkFlowDefine(BaseDBModel):
     """
-    流程code：process_code 主键
+    流程id：process_id 主键
+    流程code：process_code
     流程名称：process_name
     流程描述：process_description
     流程类型：process_type
@@ -96,19 +99,22 @@ class WorkFlowDefine(BaseDBModel):
     是否入职校审批：is_entry_school_approval
     是否入职区审批：is_entry_area_approval
     是否入职市审批：is_entry_city_approval
+    区县
     是否作废：status
     删除状态：is_deleted
     """
     __tablename__ = 'lfun_work_flow_define'
     __table_args__ = {'comment': 'work_flow_define信息表'}
 
-    process_code: Mapped[str] = mapped_column(String(64), primary_key=True, autoincrement=False, comment="流程code")
+    process_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, comment="流程code")
+
+    process_code: Mapped[str] = mapped_column(String(64), nullable=False, unique=True, comment="流程code")
     process_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="流程名称")
     process_description: Mapped[str] = mapped_column(String(64), nullable=False, comment="流程描述")
     process_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="流程类型")
 
     is_borrow: Mapped[bool] = mapped_column(default=False, comment="true:借出")
-    borrow_initiate: Mapped[bool] = mapped_column(default=False, comment="true:借出发起")
+    is_borrow_external: Mapped[bool] = mapped_column(default=False, comment="是否涉及系统外")
     is_borrow_in_school_approval: Mapped[bool] = mapped_column(default=False, comment="是否借入校审批")
     is_borrow_out_school_approval: Mapped[bool] = mapped_column(default=False, comment="是否借出校审批")
     is_borrow_in_area_approval: Mapped[bool] = mapped_column(default=False, comment="是否借入区审批")
@@ -116,7 +122,7 @@ class WorkFlowDefine(BaseDBModel):
     is_borrow_city_approval: Mapped[bool] = mapped_column(default=False, comment="是否借动市审批")
 
     is_transfer: Mapped[bool] = mapped_column(default=False, comment="true:调出")
-    transfer_initiate: Mapped[bool] = mapped_column(default=False, comment="true:调出发起")
+    is_transfer_external: Mapped[bool] = mapped_column(default=False, comment="是否涉及系统外")
     is_transfer_in_school_approval: Mapped[bool] = mapped_column(default=False, comment="是否调入校审批")
     is_transfer_out_school_approval: Mapped[bool] = mapped_column(default=False, comment="是否调出校审批")
     is_transfer_in_area_approval: Mapped[bool] = mapped_column(default=False, comment="是否调入区审批")

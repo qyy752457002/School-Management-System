@@ -10,6 +10,7 @@ from models.work_flow_node_define import WorkFlowNodeDefine
 from models.work_flow_node_depend import WorkFlowNodeDepend
 from models.work_flow_define import WorkFlowDefine
 from models.work_flow_node_depend_strategy import WorkFlowNodeDependStrategy
+from mini_framework.databases.entities import BaseDBModel, to_dict
 
 
 @dataclass_inject
@@ -19,62 +20,56 @@ class WorkFlowNodeDefineRule(object):
     work_flow_node_depend_dao: WorkFlowNodeDependDAO
     work_flow_node_depend_strategy_dao: WorkFlowNodeDependStrategyDAO
 
-    async def add_transfer_node(self, process_code, is_transfer, transfer_initiate, **kwargs):
+    async def add_transfer_node(self, process_code, is_transfer, is_transfer_external, **kwargs):
 
-        # 定义调出时调出校发起节点信息映射
+        # 定义调出时，由系统内向外发起节点信息映射
         out_transfer_out_nodes = {
-            'is_transfer_out_school_approval': ('调出之调出发起调入校审批节点', 'out_out_tf_in_school_approval'),
-            'is_transfer_out_area_approval': ('调出之调出发起调出区审批节点', 'out_out_tf_out_area_approval'),
-            'is_transfer_in_area_approval': ('调出之调出发起调入区审批节点', 'out_out_tf_in_area_approval'),
-            'is_transfer_city_approval': ('调出之调出发起调动市审批节点', 'out_out_tf_lc_city_approval'),
+            'is_transfer_out_area_approval': ('由内向外调出调出区审批节点', 'out_out_tf_out_area_approval'),
+            'is_transfer_city_approval': ('由内向外调出调动市审批节点', 'out_out_tf_lc_city_approval'),
             'start': ('调出之调出校发起节点', 'out_out_tf_start_node'),
-            'success': ('调出之调出发起调动成功节点', 'out_out_tf_success_end'),
-            'fail': ('调出之调出发起调动失败节点', 'out_out_tf_fail_end')
+            'success': ('由内向外调出调动成功节点', 'out_out_tf_success_end'),
+            'fail': ('由内向外调出调动失败节点', 'out_out_tf_fail_end')
         }
 
-        # 定义调出时调入校发起节点信息映射
-        out_transfer_in_nodes = {
-            'is_transfer_in_school_approval': ('调出之调入发起调出校审批节点', 'out_in_tf_out_school_approval'),
-            'is_transfer_in_area_approval': ('调出之调入发起调入区审批节点', 'out_in_tf_in_area_approval'),
-            'is_transfer_out_area_approval': ('调出之调入发起调出区审批节点', 'out_in_tf_out_area_approval'),
-            'is_transfer_city_approval': ('调出之调入发起调动市审批节点', 'out_in_tf_lc_city_approval'),
-            'start': ('调出之调入发起调入校发起节点', 'out_in_tf_start_node'),
-            'success': ('调出之调入发起调动成功节点', 'out_in_tf_success_end'),
-            'fail': ('调出之调入发起调动失败节点', 'out_in_tf_fail_end')
-        }
+        # # 定义调出时调入校发起节点信息映射
+        # out_transfer_in_nodes = {
+        #     'is_transfer_out_school_approval': ('调出之调入发起调出校审批节点', 'out_in_tf_out_school_approval'),
+        #     'is_transfer_in_area_approval': ('调出之调入发起调入区审批节点', 'out_in_tf_in_area_approval'),
+        #     'is_transfer_out_area_approval': ('调出之调入发起调出区审批节点', 'out_in_tf_out_area_approval'),
+        #     'is_transfer_city_approval': ('调出之调入发起调动市审批节点', 'out_in_tf_lc_city_approval'),
+        #     'start': ('调出之调入发起调入校发起节点', 'out_in_tf_start_node'),
+        #     'success': ('调出之调入发起调动成功节点', 'out_in_tf_success_end'),
+        #     'fail': ('调出之调入发起调动失败节点', 'out_in_tf_fail_end')
+        # }
 
-        # 定义调入时调出校发起节点信息映射
+        # 定义调入校发起调入时，由系统外向系统内节点信息映射
         in_transfer_out_nodes = {
-            'is_transfer_out_school_approval': ('调入之调出发起调入校审批节点', 'in_out_tf_in_school_approval'),
-            'is_transfer_out_area_approval': ('调入之调出发起调出区审批节点', 'in_out_tf_out_area_approval'),
-            'is_transfer_in_area_approval': ('调入之调出发起调入区审批节点', 'in_out_tf_in_area_approval'),
-            'is_transfer_city_approval': ('调入之调出发起调动市审批节点', 'in_out_tf_lc_city_approval'),
+            'is_transfer_in_area_approval': ('由外向内调入调入区审批节点', 'in_out_tf_in_area_approval'),
+            'is_transfer_city_approval': ('由外向内调入调动市审批节点', 'in_out_tf_lc_city_approval'),
             'start': ('调入之调出校发起节点', 'in_out_tf_start_node'),
-            'success': ('调入之调出发起调动成功节点', 'in_out_tf_success_end'),
-            'fail': ('调入之调出发起调动失败节点', 'in_out_tf_fail_end')
+            'success': ('由外向内调入调动成功节点', 'in_out_tf_success_end'),
+            'fail': ('由外向内调入调动失败节点', 'in_out_tf_fail_end')
         }
 
-        # 定义调入时调入校发起节点信息映射
+        # 定义调入校发起调入时，由系统内向系统内发起节点信息映射
         in_transfer_in_nodes = {
-            'is_transfer_in_school_approval': ('调入之调入发起调出校审批节点', 'in_in_tf_out_school_approval'),
-            'is_transfer_in_area_approval': ('调入之调入发起调入区审批节点', 'in_in_tf_in_area_approval'),
-            'is_transfer_out_area_approval': ('调入之调入发起调出区审批节点', 'in_in_tf_out_area_approval'),
-            'is_transfer_city_approval': ('调入之调入发起调动市审批节点', 'in_in_tf_lc_city_approval'),
-            'start': ('调入之调入发起调入校发起节点', 'in_in_tf_start_node'),
-            'success': ('调入之调入发起调动成功节点', 'in_in_tf_success_end'),
-            'fail': ('调入之调入发起调动失败节点', 'in_in_tf_fail_end')
+            'is_transfer_out_school_approval': ('由内向内调入调出校审批节点', 'in_in_tf_out_school_approval'),
+            'is_transfer_in_area_approval': ('由内向内调入调入区审批节点', 'in_in_tf_in_area_approval'),
+            'is_transfer_out_area_approval': ('由内向内调入调出区审批节点', 'in_in_tf_out_area_approval'),
+            'is_transfer_city_approval': ('由内向内调入调动市审批节点', 'in_in_tf_lc_city_approval'),
+            'start': ('由内向内调入调入校发起节点', 'in_in_tf_start_node'),
+            'success': ('由内向内调入调动成功节点', 'in_in_tf_success_end'),
+            'fail': ('由内向内调入调动失败节点', 'in_in_tf_fail_end')
         }
 
         # 初始化节点定义表
         nodes_list = []
         # 根据是调入流程还是调出流程分别处理
         if is_transfer:  # 代表是调出流程
-            if transfer_initiate:  # 代表是调出校发起
-                nodes_info = out_transfer_out_nodes
-            else:
-                nodes_info = out_transfer_in_nodes
+            nodes_info = out_transfer_out_nodes
+
         else:  # 代表是调入流程
-            if transfer_initiate:
+            if is_transfer_external:
                 nodes_info = in_transfer_out_nodes
             else:
                 nodes_info = in_transfer_in_nodes
@@ -106,11 +101,18 @@ class WorkFlowNodeDefineRule(object):
             'node_name': nodes_info['fail'][0],
             'node_code': nodes_info['fail'][1]
         })
-
+        print("增加的列表节点-----------------------开始")
+        print(nodes_list)
+        print("增加的列表节点-----------------------结束")
+        print("\n")
         db_records = []
         for node in nodes_list:
             record = create_model_instance(WorkFlowNodeDefine, node)
             db_records.append(record)
+        print("增加的节点-----------------------开始")
+        print([to_dict(item) for item in db_records])
+        print("增加的节点-----------------------结束")
+        print("\n")
 
         return db_records
 
@@ -121,17 +123,15 @@ class WorkFlowNodeDefineRule(object):
         process_type = process_type
         if process_type == "transfer":
             is_transfer = kwargs.get('is_transfer')
-            transfer_initiate = kwargs.get('transfer_initiate')
+            is_transfer_external = kwargs.get('is_transfer_external')
             if is_transfer:
-                if transfer_initiate:
-                    pre = "ootf"  # 调出之调出校发起
-                else:
-                    pre = "oitf"  # 调出之调入校发起
+                if is_transfer_external:
+                    pre = "ootf"  # 调出时，由系统内向外发起节点
             else:
-                if transfer_initiate:
-                    pre = "iotf"
+                if is_transfer_external:
+                    pre = "iotf"  # 调入时，由系统外向内调入节点
                 else:
-                    pre = "iitf"
+                    pre = "iitf"  # 调入时，由系统内向系统内发起节点
         elif process_type == "borrow":
             pass
 
@@ -159,70 +159,75 @@ class WorkFlowNodeDefineRule(object):
             if i == 1:
                 # First approval node
                 depend_data.append({
-                    "depend_code": generate_depend_code(node_list[0]['node_code'], current_node['node_code']),
-                    "source_node": node_list[0]['node_code'],
-                    "next_node": current_node['node_code']
+                    "depend_code": generate_depend_code(pre, process_type, node_list[0].node_code,
+                                                        current_node.node_code),
+                    "source_node": node_list[0].node_code,
+                    "next_node": current_node.node_code
                 })
                 depend_data.append({
-                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
-                                                        node_list[0]['node_code']),
-                    "source_node": current_node['node_code'],
-                    "next_node": node_list[0]['node_code']
+                    "depend_code": generate_depend_code(pre, process_type, current_node.node_code,
+                                                        node_list[0].node_code),
+                    "source_node": current_node.node_code,
+                    "next_node": node_list[0].node_code
                 })
                 depend_data.append({
-                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
-                                                        fail_node['node_code']),
-                    "source_node": current_node['node_code'],
-                    "next_node": fail_node['node_code']
+                    "depend_code": generate_depend_code(pre, process_type, current_node.node_code,
+                                                        fail_node.node_code),
+                    "source_node": current_node.node_code,
+                    "next_node": fail_node.node_code
                 })
                 depend_data.append({
-                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
-                                                        next_node['node_code']),
-                    "source_node": current_node['node_code'],
-                    "next_node": next_node['node_code']
+                    "depend_code": generate_depend_code(pre, process_type, current_node.node_code,
+                                                        next_node.node_code),
+                    "source_node": current_node.node_code,
+                    "next_node": next_node.node_code
                 })
 
             elif i == num_nodes - 3:
                 # Last approval node
                 depend_data.append({
-                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
-                                                        previous_node['node_code']),
-                    "source_node": current_node['node_code'],
-                    "next_node": previous_node['node_code']
+                    "depend_code": generate_depend_code(pre, process_type, current_node.node_code,
+                                                        previous_node.node_code),
+                    "source_node": current_node.node_code,
+                    "next_node": previous_node.node_code
                 })
                 depend_data.append({
-                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
-                                                        fail_node['node_code']),
-                    "source_node": current_node['node_code'],
-                    "next_node": fail_node['node_code']
+                    "depend_code": generate_depend_code(pre, process_type, current_node.node_code,
+                                                        fail_node.node_code),
+                    "source_node": current_node.node_code,
+                    "next_node": fail_node.node_code
                 })
                 depend_data.append({
-                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
-                                                        success_node['node_code']),
-                    "source_node": current_node['node_code'],
-                    "next_node": success_node['node_code']
+                    "depend_code": generate_depend_code(pre, process_type, current_node.node_code,
+                                                        success_node.node_code),
+                    "source_node": current_node.node_code,
+                    "next_node": success_node.node_code
                 })
 
             else:
                 # Intermediate approval nodes
                 depend_data.append({
-                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
-                                                        previous_node['node_code']),
-                    "source_node": current_node['node_code'],
-                    "next_node": previous_node['node_code']
+                    "depend_code": generate_depend_code(pre, process_type, current_node.node_code,
+                                                        previous_node.node_code),
+                    "source_node": current_node.node_code,
+                    "next_node": previous_node.node_code
                 })
                 depend_data.append({
-                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
-                                                        fail_node['node_code']),
-                    "source_node": current_node['node_code'],
-                    "next_node": fail_node['node_code']
+                    "depend_code": generate_depend_code(pre, process_type, current_node.node_code,
+                                                        fail_node.node_code),
+                    "source_node": current_node.node_code,
+                    "next_node": fail_node.node_code
                 })
                 depend_data.append({
-                    "depend_code": generate_depend_code(pre, process_type, current_node['node_code'],
-                                                        next_node['node_code']),
-                    "source_node": current_node['node_code'],
-                    "next_node": next_node['node_code']
+                    "depend_code": generate_depend_code(pre, process_type, current_node.node_code,
+                                                        next_node.node_code),
+                    "source_node": current_node.node_code,
+                    "next_node": next_node.node_code
                 })
+        print("依赖列表节点-----------------------开始")
+        print(depend_data)
+        print("依赖列表节点-----------------------结束")
+        print("\n")
         depends_list = []
         for depend in depend_data:
             record = create_model_instance(WorkFlowNodeDepend, depend)
@@ -233,12 +238,21 @@ class WorkFlowNodeDefineRule(object):
         """
         添加依赖策略
         """
-        node_priority = {node['node_code']: idx for idx, node in enumerate(node_list)}
+        print("获取的测试依赖节点-----------------------开始")
+        print([to_dict(item) for item in depends_list])
+        print("获取的测试依赖节点-----------------------结束")
+        print("\n")
+
+        print("获取的测试节点-----------------------开始")
+        print([to_dict(item) for item in node_list])
+        print("获取的测试节点-----------------------结束")
+        print("\n")
+        node_priority = {node.node_code: idx for idx, node in enumerate(node_list)}
         strategy_data = []
         for depend in depends_list:
-            source_node = depend['source_node']
-            next_node = depend['next_node']
-            depend_code = depend['depend_code']
+            source_node = depend.source_node
+            next_node = depend.next_node
+            depend_code = depend.depend_code
             # 一条依赖关系除了开始节点，审批节点的写入的顺序是：审批节点->失败节点，审批节点->下一个审批节点，审批节点->上一个审批节点
             if "start" in source_node:
                 strategy_data.append({
@@ -277,9 +291,13 @@ class WorkFlowNodeDefineRule(object):
                     "parameter_value": "pending",
                     "operation": "="
                 })
+        print("策略列表节点-----------------------开始")
+        print(strategy_data)
+        print("策略列表节点-----------------------结束")
+        print("\n")
         strategy_list = []
         for strategy in strategy_data:
-            record = create_model_instance(WorkFlowNodeDepend, strategy)
+            record = create_model_instance(WorkFlowNodeDependStrategy, strategy)
             strategy_list.append(record)
         return strategy_list
 
@@ -288,7 +306,7 @@ class WorkFlowNodeDefineRule(object):
         process_type = work_flow_define.process_type
         process_code = work_flow_define.process_code
         is_borrow = work_flow_define.is_borrow
-        borrow_initiate = work_flow_define.borrow_initiate
+        is_borrow_external = work_flow_define.is_borrow_external
         is_borrow_in_school_approval = work_flow_define.is_borrow_in_school_approval
         is_borrow_out_school_approval = work_flow_define.is_borrow_out_school_approval
         is_borrow_in_area_approval = work_flow_define.is_borrow_in_area_approval
@@ -296,7 +314,7 @@ class WorkFlowNodeDefineRule(object):
         is_borrow_city_approval = work_flow_define.is_borrow_city_approval
 
         is_transfer = work_flow_define.is_transfer
-        transfer_initiate = work_flow_define.transfer_initiate
+        is_transfer_external = work_flow_define.is_transfer_external
         is_transfer_in_school_approval = work_flow_define.is_transfer_in_school_approval
         is_transfer_out_school_approval = work_flow_define.is_transfer_out_school_approval
         is_transfer_in_area_approval = work_flow_define.is_transfer_in_area_approval
@@ -321,24 +339,64 @@ class WorkFlowNodeDefineRule(object):
 
         if process_type == "transfer":
 
-            work_flow_node_list = await self.add_transfer_node(process_code, is_transfer, transfer_initiate,
+            work_flow_node_list = await self.add_transfer_node(process_code, is_transfer, is_transfer_external,
                                                                is_transfer_in_school_approval=is_transfer_in_school_approval,
                                                                is_transfer_out_school_approval=is_transfer_out_school_approval,
                                                                is_transfer_in_area_approval=is_transfer_in_area_approval,
                                                                is_transfer_out_area_approval=is_transfer_out_area_approval,
                                                                is_transfer_city_approval=is_transfer_city_approval)
+
             work_flow_node_list_db = await self.work_flow_node_define_dao.add_work_flow_node_define(
                 work_flow_node_list)  # 添加节点
+            print("获取的数据库节点-----------------------开始")
+            print([to_dict(item) for item in work_flow_node_list_db])
+            print("获取的数据库节点-----------------------结束")
+            print("\n")
             work_flow_node_depends_list = await self.add_depend(work_flow_node_list_db, process_type,
                                                                 is_transfer=is_transfer,
-                                                                transfer_initiate=transfer_initiate)  # 获得依赖节点
+                                                                transfer_initiate=is_transfer_external)  # 获得依赖节点
+            print("获取的依赖节点-----------------------开始")
+            print(work_flow_node_list)
+            print(work_flow_node_list_db)
+            print([to_dict(item) for item in work_flow_node_depends_list])
+            print("获取的依赖节点-----------------------结束")
+            print("\n")
+
             work_flow_node_depends_db = await self.work_flow_node_depend_dao.add_work_flow_node_depend(
                 work_flow_node_depends_list)  # 获取数据库依赖节点
+            print("获取的数据库依赖节点-----------------------开始")
+            print([to_dict(item) for item in work_flow_node_depends_db])
+            print("获取的数据库依赖节点-----------------------结束")
+            print("\n")
 
-            work_flow_node_depends_strategy_list = await self.add_strategy(work_flow_node_depends_list,
-                                                                           work_flow_node_list)
+
+            print("获取的测试-----------------------开始")
+            print(work_flow_node_list)
+            print(work_flow_node_list_db)
+            print([to_dict(item) for item in work_flow_node_list])
+            print("获取的测试-----------------------结束")
+            print("\n")
+
+
+            print("获取的测试-----------------------开始")
+            print([to_dict(item) for item in work_flow_node_list_db])
+            print("获取的测试-----------------------结束")
+            print("\n")
+
+
+            work_flow_node_depends_strategy_list = await self.add_strategy(work_flow_node_depends_db,
+                                                                           work_flow_node_list_db)
+            print("获取的依赖策略-----------------------开始")
+            print([to_dict(item) for item in work_flow_node_depends_strategy_list])
+            print("获取的依赖策略-----------------------结束")
+            print("\n")
             work_flow_node_depends_strategy_db = await self.work_flow_node_depend_strategy_dao.add_work_flow_node_depend_strategy(
                 work_flow_node_depends_strategy_list)  # 获取数据策略依赖节点
+            print("获取的数据库依赖策略-----------------------开始")
+            print([to_dict(item) for item in work_flow_node_depends_strategy_db])
+            print("获取的数据库依赖策略-----------------------结束")
+            print("\n")
+
 
 
 
@@ -373,10 +431,10 @@ def generate_depend_code(pre, process_type, source, target):
     """生成depend的主键"""
 
     if process_type == "transfer" or process_type == "borrow":
-        source_keywords = "_".join([word[3:5] for word in source.split('_')])
-        target_keywords = "_".join([word[3:5] for word in target.split('_')])
+        source_keywords = "_".join([word for word in source.split('_')][3:5])
+        target_keywords = "_".join([word for word in target.split('_')][3:5])
         return f"{pre}_{source_keywords}_to_{target_keywords}"
     elif process_type == "entry" or process_type == "info" or process_type == "change":
-        source_keywords = "_".join([word[3:5] for word in source.split('_')])
-        target_keywords = "_".join([word[3:5] for word in target.split('_')])
+        source_keywords = "_".join([word for word in source.split('_')][1:3])
+        target_keywords = "_".join([word for word in target.split('_')][1:3])
         return f"{pre}_{source_keywords}_to_{target_keywords}"
