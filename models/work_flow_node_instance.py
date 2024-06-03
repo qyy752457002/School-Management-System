@@ -7,7 +7,7 @@ class WorkFlowNodeInstance(BaseDBModel):
     """
     节点实例id：node_instance_id
     流程实例id：process_instance_id
-    节点定义的id：node_definition_id
+    节点定义的id：node_code
     节点状态：node_status
     操作人角色：operator_role
     操作人id：operator_id
