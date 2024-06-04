@@ -1,0 +1,75 @@
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  1, 2, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  1, 3, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  1,4, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  1, 5, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  1, 1, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+
+
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  4, 2, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  4, 3, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  4,4, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  4, 5, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  4, 6, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+
+
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  5, 2, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  5, 3, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  5,4, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  5, 5, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  5, 6, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+
+
+
+
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  2, 2, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  2, 3, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  2,4, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  2, 5, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  2, 1, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+
+INSERT INTO "public"."lfun_permission_menu" ( "menu_name", "menu_path", "menu_icon", "menu_type", "menu_status", "menu_remark", "parent_id", "permission_id", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "menu_code", "sort_order") VALUES ( '年级管理', '/grade', '', 'menu', '', '', '9', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'grade', 0);
+INSERT INTO "public"."lfun_permission_menu" ( "menu_name", "menu_path", "menu_icon", "menu_type", "menu_status", "menu_remark", "parent_id", "permission_id", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "menu_code", "sort_order") VALUES ( '班级管理', '/class', '', 'menu', '', '', '9', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'class', 0);
+INSERT INTO "public"."lfun_permission_menu" ( "menu_name", "menu_path", "menu_icon", "menu_type", "menu_status", "menu_remark", "parent_id", "permission_id", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "menu_code", "sort_order") VALUES ('课程管理', '/course', '', 'menu', '', '', '9', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'course', 0);
+
+
+
+
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  7, 8, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  7, 9, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  7,18, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  7, 19, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  7, 20, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+
+
+
+
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  6, 8, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  6, 9, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  6,18, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  6, 19, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  6, 20, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+
+//职高
+
+
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  3, 10, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  3, 11, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  3, 12, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  3,21, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  3, 22, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+
+
+INSERT INTO "public"."lfun_permission_menu" ( "menu_name", "menu_path", "menu_icon", "menu_type", "menu_status", "menu_remark", "parent_id", "permission_id", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "menu_code", "sort_order") VALUES (  '年级管理', '/grade', '', 'menu', '', '', '12', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'grade', 0);
+INSERT INTO "public"."lfun_permission_menu" ( "menu_name", "menu_path", "menu_icon", "menu_type", "menu_status", "menu_remark", "parent_id", "permission_id", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "menu_code", "sort_order") VALUES (  '班级管理', '/class', '', 'menu', '', '', '12', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'class', 0);
+INSERT INTO "public"."lfun_permission_menu" ( "menu_name", "menu_path", "menu_icon", "menu_type", "menu_status", "menu_remark", "parent_id", "permission_id", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "menu_code", "sort_order") VALUES ( '课程管理', '/course', '', 'menu', '', '', '12', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'course', 0);
+
+
+
+
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  8, 10, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  8, 11, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  8, 12, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  8,21, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  8, 22, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+
+
