@@ -20,7 +20,7 @@ class Course(BaseDBModel):
     id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID",autoincrement=True)
     city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城市")
 
-    district: Mapped[str] = mapped_column(String(64), nullable=False, comment="")
+    district: Mapped[str] = mapped_column(String(64), nullable=True, comment="",default='')
     school_id: Mapped[int] = mapped_column( comment="学校ID",nullable=True,default=0)
     course_no: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="课程编码")
     grade_id: Mapped[int] = mapped_column( comment="年级ID",nullable=True,default=0)
@@ -38,43 +38,43 @@ class Course(BaseDBModel):
 
             Course(id=1,school_id=0,
                    course_no="14",grade_id=0,
-                   course_name="数学",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+                   course_name="数学",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False,district=''),
             Course(id=2,school_id=0,
                    course_no="13",grade_id=0,
-                   course_name="语文",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+                   course_name="语文",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False,district=''),
             Course(id=5,school_id=0,
                    course_no="15",grade_id=0,
-                   course_name="科学",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+                   course_name="科学",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False,district=''),
             Course(id=149,school_id=0,
                    course_no="11",grade_id=0,
-                   course_name="品德与生活(社会)",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+                   course_name="品德与生活(社会)",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False,district=''),
             Course(id=150,school_id=0,
                    course_no="12",grade_id=0,
-                   course_name="思想品德(政治)",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+                   course_name="思想品德(政治)",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False,district=''),
             Course(id=151,school_id=0,
                    course_no="16",grade_id=0,
-                   course_name="物理",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+                   course_name="物理",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False,district=''),
             Course(id=152,school_id=0,
                    course_no="17",grade_id=0,
-                   course_name="化学",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+                   course_name="化学",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False,district=''),
             Course(id=153,school_id=0,
                    course_no="18",grade_id=0,
-                   course_name="生物",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+                   course_name="生物",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False,district=''),
             Course(id=154,school_id=0,
                    course_no="19",grade_id=0,
-                   course_name="历史与社会",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+                   course_name="历史与社会",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False,district=''),
             Course(id=155,school_id=0,
                    course_no="20",grade_id=0,
-                   course_name="地理",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+                   course_name="地理",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False,district=''),
             Course(id=156,school_id=0,
                    course_no="21",grade_id=0,
-                   course_name="历史",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+                   course_name="历史",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False,district=''),
             Course(id=157,school_id=0,
                    course_no="23",grade_id=0,
-                   course_name="艺术",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+                   course_name="艺术",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False,district=''),
             Course(id=158,school_id=0,
                    course_no="22",grade_id=0,
-                   course_name="体育与健康",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+                   course_name="体育与健康",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False,district=''),
 
 
         ]

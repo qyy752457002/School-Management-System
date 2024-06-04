@@ -17,7 +17,8 @@ class Grade(BaseDBModel):
     school_id: Mapped[int] = mapped_column( comment="学校ID")
 
     city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城市")
-    district: Mapped[str] = mapped_column(String(64), nullable=False, comment="")
+    district: Mapped[str] = mapped_column(String(64), nullable=True, comment="",default='')
+
     grade_no: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级编号")
     grade_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级名称")
     grade_alias: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级别名")

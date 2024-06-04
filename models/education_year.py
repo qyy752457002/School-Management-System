@@ -18,7 +18,7 @@ class EducationYear(BaseDBModel):
 
     education_year: Mapped[int] = mapped_column( comment="学制年限（如：6年/3年）",)
     city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城市")
-    district: Mapped[str] = mapped_column(String(64), nullable=False, comment="")
+    district: Mapped[str] = mapped_column(String(64), nullable=True, comment="",default='')
 
     is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)
     created_at = mapped_column(DateTime, default=datetime.now, nullable=True, comment="创建时间")
