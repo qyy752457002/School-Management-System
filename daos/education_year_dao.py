@@ -67,8 +67,8 @@ class EducationYearDAO(DAOBase):
 		# 将元组列表转换为字典列表
 		nl = [ ]
 		dict_result_items = [dict(zip(columns, item)) for item in result_items]
-		# for item in dict_result_items:
-		# 	# item['id'] = item.pop('id')
-		# 	nl.append( item.values() )
+		for item in dict_result_items:
+			# item['id'].pop('id',None)
+			nl.append( item['id'] )
 
-		return dict_result_items
+		return nl
