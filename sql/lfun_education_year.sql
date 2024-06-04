@@ -14,7 +14,12 @@
 
  Date: 04/06/2024 15:18:55
 */
-
+CREATE SEQUENCE lfun_education_year_id_seq
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
 
 -- ----------------------------
 -- Table structure for lfun_education_year

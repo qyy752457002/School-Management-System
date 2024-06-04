@@ -8,6 +8,8 @@ class Grades(BaseModel):
     grade_alias: str = Field('',  description="年级别名",examples=['一年级'])
     school_id: int = Field(0, title="学校ID", description="学校ID",examples=[0])
     grade_no: str = Field("", title="年级编号", description="年级编号",examples=['一年级'])
+    city: str|None = Field("", title="", description="",examples=[''])
+    district: str|None = Field("", title="", description="",examples=[''])
 
     description: str = Field('',  description="简介",examples=['fsdfdsfsdxxx'])
     created_at: datetime = Field('',  description="简介",examples=['2020-01-01'])
