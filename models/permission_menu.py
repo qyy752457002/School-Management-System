@@ -49,6 +49,7 @@ class PermissionMenu(BaseDBModel):
             PermissionMenu(id=4, menu_name="年级管理", menu_path="/grade", menu_icon="", menu_type="menu", menu_code="grade", menu_status="", menu_remark="", parent_id="3", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
 
             PermissionMenu(id=5, menu_name="班级管理", menu_path="/class", menu_icon="", menu_type="menu", menu_code="class", menu_status="", menu_remark="", parent_id="3", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=6, menu_name="课程管理", menu_path="/course", menu_icon="", menu_type="menu", menu_code="course", menu_status="", menu_remark="", parent_id="3", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
 
         ]
 
