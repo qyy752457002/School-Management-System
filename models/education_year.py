@@ -14,7 +14,8 @@ class EducationYear(BaseDBModel):
     __table_args__ = {'comment': '学制表'}
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="年级ID",autoincrement=True)
-    school_type: Mapped[int] = mapped_column( comment="学校类型（小学/初中）",)
+    school_type: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="学校类型（小学/初中）")
+
     education_year: Mapped[int] = mapped_column( comment="学制年限（如：6年/3年）",)
     city: Mapped[str] = mapped_column(String(64), nullable=False, comment="")
     district: Mapped[str] = mapped_column(String(64), nullable=False, comment="")
