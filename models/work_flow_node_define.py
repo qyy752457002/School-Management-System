@@ -19,4 +19,5 @@ class WorkFlowNodeDefine(BaseDBModel):
     node_code: Mapped[str] = mapped_column(String(64), nullable=False, comment="节点code")
     process_code: Mapped[str] = mapped_column(String(64), nullable=False, comment="流程code,外键到work_flow_define表")
     node_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="节点名称")
+    # required_role: Mapped[str] = mapped_column(String(64), nullable=False, comment="需要的角色")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
