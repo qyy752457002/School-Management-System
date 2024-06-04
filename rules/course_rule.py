@@ -28,7 +28,7 @@ class CourseRule(object):
 
     async def add_course(self, course: CourseModel):
         exists_course = await self.course_dao.get_course_by_name(
-            course.course_name)
+            course.course_name,course)
         if exists_course:
             raise CourseAlreadyExistError()
         course_db = view_model_to_orm_model(course, Course,    exclude=["id"])
