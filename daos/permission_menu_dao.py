@@ -5,7 +5,7 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.permission_menu import PermissionMenu
-from models.role_permissions import RolePermissions
+from models.role_permission import RolePermission
 from models.roles import Role
 
 
@@ -34,7 +34,7 @@ class PermissionMenuDAO(DAOBase):
 		return result.scalar_one_or_none()
 
 	async def query_permission_menu_with_page(self,  page_request: PageRequest,unit_type, edu_type, system_type, role_id: int = None,):
-		query = select(PermissionMenu).join(RolePermissions, RolePermissions.menu_id == PermissionMenu.id, isouter=True).order_by(desc(RolePermissions.id)).join(Role, Role.id == RolePermissions.role_id, isouter=True)
+		query = select(PermissionMenu).join(RolePermission, RolePermission.menu_id == PermissionMenu.id, isouter=True).order_by(desc(RolePermission.id)).join(Role, Role.id == RolePermission.role_id, isouter=True)
 		query = query.where(PermissionMenu.is_deleted == False)
 
 
@@ -69,7 +69,7 @@ class PermissionMenuDAO(DAOBase):
                         PermissionMenu.created_uid,
                         PermissionMenu.updated_uid,
                         Role.app_name
-                        ).select_from( PermissionMenu).join(RolePermissions, RolePermissions.menu_id == PermissionMenu.id, isouter=True).join(Role, Role.id == RolePermissions.role_id, isouter=True).order_by(asc(RolePermissions.sort_order)))
+                        ).select_from( PermissionMenu).join(RolePermission, RolePermission.menu_id == PermissionMenu.id, isouter=True).join(Role, Role.id == RolePermission.role_id, isouter=True).order_by(asc(RolePermission.sort_order)))
 		query = query.where(PermissionMenu.is_deleted == False).where(Role.is_deleted == False)
 
 		if unit_type:

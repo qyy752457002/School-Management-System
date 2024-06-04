@@ -3,12 +3,12 @@ from mini_framework.databases.entities.dao_base import DAOBase, get_update_conte
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
-from models.role_permissions import RolePermissions
+from models.role_permission import RolePermission
 
 
 class RolePermissionsDAO(DAOBase):
 
-	async def add_rolepermissions(self, rolepermissions: RolePermissions):
+	async def add_rolepermissions(self, rolepermissions: RolePermission):
 		session = await self.master_db()
 		session.add(rolepermissions)
 		await session.commit()
@@ -17,23 +17,23 @@ class RolePermissionsDAO(DAOBase):
 
 	async def get_rolepermissions_count(self, ):
 		session = await self.slave_db()
-		result = await session.execute(select(func.count()).select_from(RolePermissions))
+		result = await session.execute(select(func.count()).select_from(RolePermission))
 		return result.scalar()
 
-	async def delete_rolepermissions(self, rolepermissions: RolePermissions):
+	async def delete_rolepermissions(self, rolepermissions: RolePermission):
 		session = await self.master_db()
 		await session.delete(rolepermissions)
 		await session.commit()
 
 	async def get_rolepermissions_by_id(self, id):
 		session = await self.slave_db()
-		result = await session.execute(select(RolePermissions).where(RolePermissions.id == id))
+		result = await session.execute(select(RolePermission).where(RolePermission.id == id))
 		return result.scalar_one_or_none()
 
 	async def query_rolepermissions_with_page(self, pageQueryModel, page_request: PageRequest):
-		query = select(RolePermissions)
+		query = select(RolePermission)
 		
-		### ´Ë´¦ÌîÐ´²éÑ¯Ìõ¼þ
+		### ï¿½Ë´ï¿½ï¿½ï¿½Ð´ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
 		
 		paging = await self.query_page(query, page_request)
 		return paging
@@ -41,5 +41,5 @@ class RolePermissionsDAO(DAOBase):
 	async def update_rolepermissions(self, rolepermissions, *args, is_commit=True):
 		session = await self.master_db()
 		update_contents = get_update_contents(rolepermissions, *args)
-		query = update(RolePermissions).where(RolePermissions.id == rolepermissions.id).values(**update_contents)
+		query = update(RolePermission).where(RolePermission.id == rolepermissions.id).values(**update_contents)
 		return await self.update(session, query, rolepermissions, update_contents, is_commit=is_commit)
