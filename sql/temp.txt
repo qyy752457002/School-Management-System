@@ -73,3 +73,16 @@ INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order
 INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  8, 22, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
 
 
+
+
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  9, 11, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  9, 12, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  9, 21, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  9,22, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  9, 23, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+
+INSERT INTO "public"."lfun_role_permission" (  "role_id", "menu_id", "sort_order", "created_uid", "updated_uid", "created_at", "updated_at", "is_deleted", "remark") VALUES (  9, 13, 1, 0, 0, '2024-06-04 10:45:29', '2024-06-04 10:45:33', 'f', '');
+
+
+教师
+ 
