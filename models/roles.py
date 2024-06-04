@@ -20,6 +20,7 @@ class Roles(BaseDBModel):
     edu_type: Mapped[str] = mapped_column(String(64),  nullable=True, comment="教育类型",default='')
     unit_type: Mapped[str] = mapped_column(String(64),  nullable=True, comment="单位类型",default='')
     app_name: Mapped[str] = mapped_column(String(64),  nullable=True, comment=" ",default='')
+    remark: Mapped[str] = mapped_column(String(64),  nullable=True, comment=" ",default='')
     unit_id: Mapped[int] = mapped_column(nullable=True, comment="单位ID",default=0)
     school_id: Mapped[int] =mapped_column(nullable=True, comment="学校id",default=0)
     county_id: Mapped[int] =mapped_column(nullable=True, comment="区id",default=0)
@@ -35,7 +36,6 @@ class Roles(BaseDBModel):
         return [
             Roles(id=1,system_type='unit',edu_type='kg',unit_type='city',app_name='园所信息管理系统',unit_id=0,school_id=0,county_id=0,created_uid=1,updated_uid=1,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
             Roles(id=2,system_type='teacher',edu_type='kg',unit_type='city',app_name='园所信息管理系统',unit_id=0,school_id=0,county_id=0,created_uid=1,updated_uid=1,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
-            Roles()
         ]
 
 
