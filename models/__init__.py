@@ -62,7 +62,7 @@ from . import student_transaction_flow
 from . import student_inner_transaction
 from . import students_key_info_change
 from . import education_year
-from . import roles
+from . import role
 from . import role_permissions
 
 #教师工作流定以相关

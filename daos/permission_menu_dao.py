@@ -6,7 +6,7 @@ from mini_framework.web.std_models.page import PageRequest
 
 from models.permission_menu import PermissionMenu
 from models.role_permissions import RolePermissions
-from models.roles import Roles
+from models.roles import Role
 
 
 class PermissionMenuDAO(DAOBase):
@@ -34,21 +34,21 @@ class PermissionMenuDAO(DAOBase):
 		return result.scalar_one_or_none()
 
 	async def query_permission_menu_with_page(self,  page_request: PageRequest,unit_type, edu_type, system_type, role_id: int = None,):
-		query = select(PermissionMenu).join(RolePermissions, RolePermissions.menu_id == PermissionMenu.id, isouter=True).order_by(desc(RolePermissions.id)).join(Roles, Roles.id == RolePermissions.role_id,  isouter=True)
+		query = select(PermissionMenu).join(RolePermissions, RolePermissions.menu_id == PermissionMenu.id, isouter=True).order_by(desc(RolePermissions.id)).join(Role, Role.id == RolePermissions.role_id, isouter=True)
 		query = query.where(PermissionMenu.is_deleted == False)
 
 
 		if unit_type:
-			query = query.where(Roles.unit_type == unit_type)
+			query = query.where(Role.unit_type == unit_type)
 
 		if edu_type:
-			query = query.where(Roles.edu_type == edu_type)
+			query = query.where(Role.edu_type == edu_type)
 
 		if role_id:
-			query = query.where(Roles.id == role_id)
+			query = query.where(Role.id == role_id)
 
 		if system_type:
-			query = query.where(Roles.system_type == system_type)
+			query = query.where(Role.system_type == system_type)
 		
 		### �˴���д��ѯ����
 		
@@ -57,29 +57,29 @@ class PermissionMenuDAO(DAOBase):
 
 	async def query_permission_menu_with_args(self,  unit_type, edu_type, system_type, role_id: int = None,parent_id=0):
 		query = (select(PermissionMenu.id,
-						PermissionMenu.menu_name,
-						PermissionMenu.menu_path,
-						PermissionMenu.menu_type,
-						PermissionMenu.menu_code,
-						PermissionMenu.parent_id,
-						PermissionMenu.permission_id,
-						PermissionMenu.sort_order,
-						PermissionMenu.created_at,
-						PermissionMenu.updated_at,
-						PermissionMenu.created_uid,
-						PermissionMenu.updated_uid,
-						Roles.app_name
-					   ).select_from( PermissionMenu).join(RolePermissions, RolePermissions.menu_id == PermissionMenu.id, isouter=True).join(Roles, Roles.id == RolePermissions.role_id,  isouter=True).order_by(asc(RolePermissions.sort_order)))
-		query = query.where(PermissionMenu.is_deleted == False).where(Roles.is_deleted == False)
+                        PermissionMenu.menu_name,
+                        PermissionMenu.menu_path,
+                        PermissionMenu.menu_type,
+                        PermissionMenu.menu_code,
+                        PermissionMenu.parent_id,
+                        PermissionMenu.permission_id,
+                        PermissionMenu.sort_order,
+                        PermissionMenu.created_at,
+                        PermissionMenu.updated_at,
+                        PermissionMenu.created_uid,
+                        PermissionMenu.updated_uid,
+                        Role.app_name
+                        ).select_from( PermissionMenu).join(RolePermissions, RolePermissions.menu_id == PermissionMenu.id, isouter=True).join(Role, Role.id == RolePermissions.role_id, isouter=True).order_by(asc(RolePermissions.sort_order)))
+		query = query.where(PermissionMenu.is_deleted == False).where(Role.is_deleted == False)
 
 		if unit_type:
-			query = query.where(Roles.unit_type == unit_type)
+			query = query.where(Role.unit_type == unit_type)
 
 		if edu_type:
-			query = query.where(Roles.edu_type == edu_type)
+			query = query.where(Role.edu_type == edu_type)
 
 		if role_id:
-			query = query.where(Roles.id == role_id)
+			query = query.where(Role.id == role_id)
 		if parent_id:
 			if isinstance(parent_id,list):
 				query = query.where(PermissionMenu.parent_id .in_(parent_id))
@@ -92,7 +92,7 @@ class PermissionMenuDAO(DAOBase):
 			query = query.where(PermissionMenu.parent_id == 0)
 
 		if system_type:
-			query = query.where(Roles.system_type == system_type)
+			query = query.where(Role.system_type == system_type)
 
 		session = await self.slave_db()
 		columns=query.columns.keys()
