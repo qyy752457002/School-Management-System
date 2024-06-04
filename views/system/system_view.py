@@ -32,6 +32,11 @@ class SystemView(BaseView):
         print(page_request)
         items = []
         title=''
+        if system_type=='teacher' or system_type=='student':
+            # title='学校版'
+            unit_type=''
+            edu_type=''
+
         res ,title= await self.system_rule.query_system_with_kwargs( role_id, unit_type, edu_type, system_type )
         # res,title  = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
 
