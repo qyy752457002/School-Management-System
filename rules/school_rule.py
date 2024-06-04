@@ -9,6 +9,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select, or_
 
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
+from daos.enum_value_dao import EnumValueDAO
 from daos.planning_school_dao import PlanningSchoolDAO
 from daos.school_dao import SchoolDAO
 from models.planning_school import PlanningSchool
@@ -27,6 +28,7 @@ from views.models.planning_school import PlanningSchool as PlanningSchoolModel, 
 class SchoolRule(object):
     school_dao: SchoolDAO
     p_school_dao: PlanningSchoolDAO
+    enum_value_dao: EnumValueDAO
 
     async def get_school_by_id(self, school_id,extra_model=None):
         school_db = await self.school_dao.get_school_by_id(school_id)
@@ -290,8 +292,9 @@ class SchoolRule(object):
 
             if extend_params.county_id:
                 # 区的转换   or todo
+                enuminfo =self.enum_value_dao.get_enum_value_by_value(extend_params.county_id )
 
-                query = query.filter( or_( School.block == extend_params.school_name , School.borough == extend_params.school_name))
+                query = query.filter( or_( School.block == enuminfo.description , School.borough == enuminfo.description))
                 pass
             if extend_params.system_type:
                 pass
