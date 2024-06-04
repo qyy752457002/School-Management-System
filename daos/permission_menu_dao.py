@@ -69,7 +69,7 @@ class PermissionMenuDAO(DAOBase):
                         PermissionMenu.created_uid,
                         PermissionMenu.updated_uid,
                         Role.app_name
-                        ).select_from( PermissionMenu).join(RolePermission, RolePermission.menu_id == PermissionMenu.id, isouter=True).join(Role, Role.id == RolePermission.role_id, isouter=True).order_by(asc(RolePermission.sort_order)))
+                        ).select_from( PermissionMenu).join(RolePermission, RolePermission.menu_id == PermissionMenu.id, isouter=True).join(Role, Role.id == RolePermission.role_id, isouter=True).order_by(asc(RolePermission.sort_order)).order_by(asc(RolePermission.id)))
 		query = query.where(PermissionMenu.is_deleted == False).where(Role.is_deleted == False).where(RolePermission.is_deleted == False)
 
 		if unit_type:
