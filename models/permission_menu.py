@@ -19,22 +19,76 @@ class PermissionMenu(BaseDBModel):
     __table_args__ = {'comment': '菜单权限表'}
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID",autoincrement=True)
-    menu_name: Mapped[str] = mapped_column(String(255),  nullable=True, comment="菜单名称",default='')
-    menu_path: Mapped[str] = mapped_column(String(255),  nullable=True, comment="菜单路径",default='')
+    menu_name: Mapped[str] = mapped_column(String(64),  nullable=True, comment="菜单名称",default='')
+    menu_path: Mapped[str] = mapped_column(String(64),  nullable=True, comment="菜单路径",default='')
     menu_icon: Mapped[str] = mapped_column(String(255),  nullable=True, comment="菜单图标",default='')
     menu_type: Mapped[str] = mapped_column(String(255),  nullable=True, comment="菜单类型",default='')
+    menu_code: Mapped[str] = mapped_column(String(255),  nullable=True, comment="菜单简码",default='')
     menu_status: Mapped[str] = mapped_column(String(255),  nullable=True, comment="菜单状态",default='')
     menu_remark: Mapped[str] = mapped_column(String(255),  nullable=True, comment="菜单备注",default='')
     parent_id: Mapped[str] = mapped_column(String(255),  nullable=True, comment="父级菜单id",default='')
     permission_id: Mapped[int] = mapped_column(nullable=True, comment="权限ID",default=0)
+    sort_order: Mapped[int] = mapped_column(nullable=True, comment="排序 从校到大",default=0)
 
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)
     updated_uid: Mapped[int] = mapped_column( nullable=True , comment="操作人",default=0)
-    created_at = mapped_column(DateTime, default=datetime.now, nullable=False, comment="创建时间")
-    updated_at = mapped_column(DateTime, onupdate=datetime.now, default=datetime.now, nullable=False, comment="更新时间")
+
+    created_at = mapped_column(DateTime, default=datetime.now, nullable=True, comment="创建时间")
+    updated_at = mapped_column(DateTime, onupdate=datetime.now, default=datetime.now, nullable=True, comment="更新时间")
     is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)
 
 
+    @staticmethod
+    def seed():
+        return [
+
+            PermissionMenu(id=1, menu_name="园所信息管理（规划）", menu_path="/planning", menu_icon="", menu_type="menu", menu_code="planning", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=2, menu_name="园所信息管理（学校）", menu_path="/school", menu_icon="", menu_type="menu", menu_code="school", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=3, menu_name="园所配置管理", menu_path="", menu_icon="", menu_type="root", menu_code="config", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+            PermissionMenu(id=4, menu_name="年级管理", menu_path="/grade", menu_icon="", menu_type="menu", menu_code="grade", menu_status="", menu_remark="", parent_id="3", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+            PermissionMenu(id=5, menu_name="班级管理", menu_path="/class", menu_icon="", menu_type="menu", menu_code="class", menu_status="", menu_remark="", parent_id="3", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=6, menu_name="课程管理", menu_path="/course", menu_icon="", menu_type="menu", menu_code="course", menu_status="", menu_remark="", parent_id="3", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+            PermissionMenu(id=7, menu_name="中小学信息管理（规划）", menu_path="/planning", menu_icon="", menu_type="menu", menu_code="planning", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=8, menu_name="中小学信息管理（学校）", menu_path="/school", menu_icon="", menu_type="menu", menu_code="school", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=9, menu_name="中小学配置管理", menu_path="", menu_icon="", menu_type="root", menu_code="config", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+            PermissionMenu(id=10, menu_name="职高信息管理（规划）", menu_path="/planning", menu_icon="", menu_type="menu", menu_code="planning", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=11, menu_name="职高信息管理（学校）", menu_path="/school", menu_icon="", menu_type="menu", menu_code="school", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=12, menu_name="职高配置管理", menu_path="", menu_icon="", menu_type="root", menu_code="config", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=13, menu_name="专业管理", menu_path="/major", menu_icon="", menu_type="menu", menu_code="major", menu_status="", menu_remark="", parent_id="12", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+            PermissionMenu(id=14, menu_name="新教职工管理", menu_path="", menu_icon="", menu_type="root", menu_code="onboarding", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+            PermissionMenu(id=15, menu_name="新教职工入职", menu_path="/onboarding", menu_icon="", menu_type="menu", menu_code="onboarding", menu_status="", menu_remark="", parent_id="14", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=16, menu_name="新教职工审批", menu_path="/onboarding/approve", menu_icon="", menu_type="menu", menu_code="approve", menu_status="", menu_remark="", parent_id="14", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+
+            PermissionMenu(id=17, menu_name="在职教职工管理", menu_path="", menu_icon="", menu_type="root", menu_code="employed", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+
+            PermissionMenu(  menu_name="在职教职工管理", menu_path="/employed", menu_icon="", menu_type="menu", menu_code="employed", menu_status="", menu_remark="", parent_id="17", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+            PermissionMenu(  menu_name="新教职工审批", menu_path="/employed/approve", menu_icon="", menu_type="menu", menu_code="employedapprove", menu_status="", menu_remark="", parent_id="17", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(  menu_name="变动管理", menu_path="/employed/workchange", menu_icon="", menu_type="menu", menu_code="employedworkchange", menu_status="", menu_remark="", parent_id="17", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(  menu_name="借入信息管理", menu_path="/employed/borrowin", menu_icon="", menu_type="menu", menu_code="employedworkborrowin", menu_status="", menu_remark="", parent_id="17", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(  menu_name="借出信息管理", menu_path="/employed/borrowout", menu_icon="", menu_type="menu", menu_code="employedworkborrowout", menu_status="", menu_remark="", parent_id="17", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(  menu_name="调入信息管理", menu_path="/employed/transferin", menu_icon="", menu_type="menu", menu_code="employedworktransferin", menu_status="", menu_remark="", parent_id="17", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+            PermissionMenu(  menu_name="调出信息管理", menu_path="/employed/transferout", menu_icon="", menu_type="menu", menu_code="employedworktransferout", menu_status="", menu_remark="", parent_id="17", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+
+
+            PermissionMenu(  menu_name="非在职教职工管理", menu_path="", menu_icon="", menu_type="root", menu_code="nonemployed", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+            PermissionMenu(  menu_name="系统管理", menu_path="", menu_icon="", menu_type="root", menu_code="trchsys", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+            PermissionMenu(  menu_name="系统配置", menu_path="/trchsys/config", menu_icon="", menu_type="menu", menu_code="trchsysconfig", menu_status="", menu_remark="", parent_id="17", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(  menu_name="任务管理", menu_path="/trchsys/task", menu_icon="", menu_type="menu", menu_code="trchsystask", menu_status="", menu_remark="", parent_id="17", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+        ]
 
 
 
