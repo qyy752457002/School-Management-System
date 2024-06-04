@@ -14,6 +14,7 @@ from daos.school_dao import SchoolDAO
 from models.planning_school import PlanningSchool
 from models.school import School
 from rules.enum_value_rule import EnumValueRule
+from views.models.extend_params import ExtendParams
 # from rules.planning_school_rule import PlanningSchoolRule
 from views.models.planning_school import PlanningSchoolStatus
 from views.models.school import School as SchoolModel, SchoolKeyAddInfo
@@ -279,10 +280,19 @@ class SchoolRule(object):
 
 
 
-    async def query_schools(self,planning_school_name):
+    async def query_schools(self,planning_school_name,extend_params:ExtendParams|None):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(School).where(School.school_name.like(f'%{planning_school_name}%') ))
+        query = select(School).where(School.school_name.like(f'%{planning_school_name}%') )
+        if extend_params:
+            if extend_params.school_id:
+                query = query.where(School.id == extend_params.school_id)
+            if extend_params.school_name:
+                query = query.where(School.school_name == extend_params.school_name)
+            if extend_params.school_code:
+                query = query.where(School.school_code == extend_params.school_code)
+
+        result = await session.execute(query)
         res= result.scalars().all()
 
         lst = []
