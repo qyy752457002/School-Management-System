@@ -1,6 +1,7 @@
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
+from rules.education_year_rule import EducationYearRule
 from rules.sub_system_rule import SubSystemRule
 from rules.system_rule import SystemRule
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo
@@ -18,6 +19,7 @@ class SystemView(BaseView):
     def __init__(self):
         super().__init__()
         self.system_rule = get_injector(SystemRule)
+        self.education_year_rule = get_injector(EducationYearRule)
 
     async def page_menu(self,
                    page_request=Depends(PageRequest),
@@ -56,3 +58,22 @@ class SystemView(BaseView):
         #
         # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10,
         #                          per_page=page_request.per_page, total=100, items=items)
+
+    async def get_education_year(self,
+                        # page_request=Depends(PageRequest),
+
+
+                                 school_type :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
+                                 city :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
+                                 district :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
+
+                        ):
+        # print(page_request)
+        items = []
+        title=''
+
+
+        res = await self.education_year_rule.get_education_year_all( school_type, city, district,  )
+        # res,title  = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
+
+        return res
