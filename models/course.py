@@ -18,8 +18,8 @@ class Course(BaseDBModel):
     __table_args__ = {'comment': '课程表模型'}
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID",autoincrement=True)
-    # city: Mapped[str] = mapped_column(String(64), nullable=False, comment="")
-    # district: Mapped[str] = mapped_column(String(64), nullable=False, comment="")
+    city: Mapped[str] = mapped_column(String(64), nullable=False, comment="")
+    district: Mapped[str] = mapped_column(String(64), nullable=False, comment="")
     school_id: Mapped[int] = mapped_column( comment="学校ID",nullable=True,default=0)
     course_no: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="课程编码")
     grade_id: Mapped[int] = mapped_column( comment="年级ID",nullable=True,default=0)
