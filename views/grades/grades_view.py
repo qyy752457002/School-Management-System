@@ -44,7 +44,7 @@ class GradesView(BaseView):
                    district :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
                    ):
         print(page_request)
-        paging_result = await self.grade_rule.query_grade_with_page(page_request, grade_name, school_id)
+        paging_result = await self.grade_rule.query_grade_with_page(page_request, grade_name, school_id,city, district)
 
         items = []
         # for i in range(page_request.per_page):

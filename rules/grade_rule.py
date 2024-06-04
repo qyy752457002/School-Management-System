@@ -86,8 +86,8 @@ class GradeRule(object):
     async def get_grade_count(self):
         return await self.grade_dao.get_grade_count()
 
-    async def query_grade_with_page(self,  page_request: PageRequest,grade_name=None,school_id=None,):
-        paging = await self.grade_dao.query_grade_with_page(grade_name,school_id, page_request)
+    async def query_grade_with_page(self,  page_request: PageRequest,grade_name=None,school_id=None,city='', district=''):
+        paging = await self.grade_dao.query_grade_with_page(grade_name,school_id, page_request,city, district)
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, GradeModel)
         return paging_result
