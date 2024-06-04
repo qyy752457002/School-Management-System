@@ -17,3 +17,10 @@ class WorkFlowNodeDependDAO(DAOBase):
         for work_flow_node_depend in db_records:
             await session.refresh(work_flow_node_depend)
         return db_records
+
+    #获取依赖关系
+    async def get_work_flow_node_depend_by_node_code(self, node_code):
+        session = await self.slave_db()
+        query = select(WorkFlowNodeDepend).where(WorkFlowNodeDepend.source_node == node_code)
+        result = await session.execute(query)
+        return result.scalars().all()

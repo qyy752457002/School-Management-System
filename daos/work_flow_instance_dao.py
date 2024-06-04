@@ -27,6 +27,7 @@ class WorkFlowInstanceDAO(DAOBase):
         result = await session.execute(stmt)
         return result.one_or_none()
 
+
     # 更新工作流实例
     async def update_work_flow_instance(self, work_flow_instance: WorkFlowInstance, *args, is_commit: bool = True):
         session = await self.master_db()

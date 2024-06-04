@@ -830,7 +830,8 @@ class NewTeacher(BaseModel):
     in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
     employment_form: Optional[str] = Query("", title="用人形式", description="用人形式", example="合同")
     enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
-    teacher_approval_status: Optional[str] = Query("", title="审核状态", description="审核状态", example="待审核")
+    teacher_main_status: Optional[str] = Query("", title="主要状态", description="主要状态", example="unemployed")
+
 
 
 class NewTeacherRe(BaseModel):
@@ -844,7 +845,7 @@ class NewTeacherRe(BaseModel):
     political_status: Optional[str] = Field("", title="政治面貌", description="政治面貌", example="群众")
     employment_form: Optional[str] = Field("", title="用人形式", description="用人形式", example="合同")
     enter_school_time: Optional[date] = Field(None, title="进本校时间", description="进本校时间", example="2010-01-01")
-    teacher_approval_status: str = Field("", title="审核状态", description="审核状态", example="待审核")
+    teacher_main_status: Optional[str] = Query("", title="主要状态", description="主要状态", example="unemployed")
     in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
     school_name: str = Field("", title="", description="", example="")
 
