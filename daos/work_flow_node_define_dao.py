@@ -33,6 +33,12 @@ class WorkFlowNodeDefineDAO(DAOBase):
         session = await self.slave_db()
         query = select(WorkFlowNodeDefine).join(WorkFlowDefine,
                                                 WorkFlowDefine.process_code == WorkFlowNodeDefine.process_code).where(
-            WorkFlowNodeDefine.process_code == process_code).where(WorkFlowNodeDefine.node_code == 'start')
+            WorkFlowNodeDefine.process_code == process_code).where(WorkFlowNodeDefine.node_code == process_code)
         result = await session.execute(query)
         return result.scalars().first()
+
+    async def get_work_flow_node_define_by_node_code(self, node_code):
+        session = await self.slave_db()
+        query = select(WorkFlowNodeDefine).where(WorkFlowNodeDefine.node_code == node_code)
+        result = await session.execute(query)
+        return result.scalar_one_or_none()

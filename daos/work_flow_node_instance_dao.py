@@ -4,6 +4,7 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.work_flow_define import WorkFlowDefine
+from models.work_flow_node_define import WorkFlowNodeDefine
 from models.work_flow_instance import WorkFlowInstance
 from models.work_flow_node_instance import WorkFlowNodeInstance
 from typing import List
@@ -27,7 +28,6 @@ class WorkFlowNodeInstanceDAO(DAOBase):
         result = await session.execute(stmt)
         return result.one_or_none()
 
-
     async def update_work_flow_node_instance(self, work_flow_node_instance: WorkFlowNodeInstance, *args,
                                              is_commit: bool = True):
         session = await self.master_db()
@@ -37,4 +37,13 @@ class WorkFlowNodeInstanceDAO(DAOBase):
             **update_contents)
         return await self.update(session, query, work_flow_node_instance, update_contents, is_commit=is_commit)
 
-    # 返回下一个节点
+    async def get_work_flow_node_instance_by_node_code_and_process_instance_id(self, node_code, process_instance_id):
+        session = await self.slave_db()
+        query = (select(WorkFlowNodeInstance).join(WorkFlowInstance,
+                                                   WorkFlowInstance.process_instance_id == WorkFlowNodeInstance.process_instance_id).join(
+            WorkFlowNodeDefine, WorkFlowNodeDefine.node_code == WorkFlowNodeInstance.node_code).where(
+            WorkFlowNodeInstance.node_code == node_code,
+            WorkFlowNodeInstance.process_instance_id == process_instance_id,
+            WorkFlowNodeInstance.node_status == "pending"))
+        result = await session.execute(query)
+        return result.one_or_none

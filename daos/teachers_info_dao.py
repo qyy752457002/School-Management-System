@@ -59,7 +59,6 @@ class TeachersInfoDao(DAOBase):
         是否在编：in_post
         用人形式：employment_form
         进本校时间：enter_school_time
-        审核状态：approval_status
         """
         specific_date = datetime.now().date()
         query = select(Teacher.teacher_id,
@@ -71,7 +70,7 @@ class TeachersInfoDao(DAOBase):
                        func.coalesce(TeacherInfo.enter_school_time, None).label('enter_school_time'),
                        Teacher.teacher_name, Teacher.teacher_id_number,
                        Teacher.teacher_gender,
-                       Teacher.teacher_employer, Teacher.teacher_approval_status,
+                       Teacher.teacher_employer, Teacher.teacher_main_status,
                        School.school_name,
                        ).outerjoin(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
                                    ).outerjoin(School, Teacher.teacher_employer == School.id,
@@ -97,8 +96,8 @@ class TeachersInfoDao(DAOBase):
             query = query.where(TeacherInfo.employment_form == query_model.employment_form)
         if query_model.enter_school_time:
             query = query.where(TeacherInfo.enter_school_time == query_model.enter_school_time)
-        if query_model.teacher_approval_status:
-            query = query.where(Teacher.teacher_approval_status == query_model.teacher_approval_status)
+        if query_model.teacher_main_status:
+            query = query.where(Teacher.teacher_main_status== query_model.teacher_main_status)
         query = query.order_by(Teacher.teacher_id.desc())
         paging = await self.query_page(query, page_request)
         return paging

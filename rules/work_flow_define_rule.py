@@ -224,10 +224,6 @@ class WorkFlowNodeDefineRule(object):
                     "source_node": current_node.node_code,
                     "next_node": next_node.node_code
                 })
-        print("依赖列表节点-----------------------开始")
-        print(depend_data)
-        print("依赖列表节点-----------------------结束")
-        print("\n")
         depends_list = []
         for depend in depend_data:
             record = create_model_instance(WorkFlowNodeDepend, depend)
@@ -356,8 +352,8 @@ class WorkFlowNodeDefineRule(object):
                                                                 is_transfer=is_transfer,
                                                                 transfer_initiate=is_transfer_external)  # 获得依赖节点
             print("获取的依赖节点-----------------------开始")
-            print(work_flow_node_list)
-            print(work_flow_node_list_db)
+            print([to_dict(item) for item in work_flow_node_list])
+            print([to_dict(item) for item in work_flow_node_list_db])
             print([to_dict(item) for item in work_flow_node_depends_list])
             print("获取的依赖节点-----------------------结束")
             print("\n")

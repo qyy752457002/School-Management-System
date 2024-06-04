@@ -72,11 +72,12 @@ class NodeAction(str, Enum):
     REJECTED = "rejected"
     APPROVED = "approved"
     REVOKE = "revoke"
+    CREATE= "create"
     NONE = "none"
 
     @classmethod
     def to_list(cls):
-        return [cls.REJECTED, cls.APPROVED, cls.REVOKE]
+        return [cls.REJECTED, cls.APPROVED, cls.REVOKE, cls.CREATE, cls.NONE]
 
 
 class WorkFlowNodeCreatInstanceModel(BaseModel):
@@ -94,7 +95,6 @@ class WorkFlowNodeCreatInstanceModel(BaseModel):
     process_instance_id: str = Field(..., title="流程实例id", description="流程实例id")
     node_code: str = Field(..., title="节点定义的id", description="节点定义的id")
     node_status: WorkFlowNodeInstanceStatus = Field("pending", title="节点状态", description="节点状态")
-    operator_role: str = Field(..., title="操作人角色", description="操作人角色")
     operator_id: str = Field(..., title="操作人id", description="操作人id")
     operation_time: str = Field(..., title="操作时间", description="操作时间")
     action: NodeAction = Field("none", title="动作", description="动作")
