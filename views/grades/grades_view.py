@@ -2,7 +2,9 @@ import datetime
 
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
+from starlette.requests import Request
 
+from views.models.extend_params import ExtendParams
 from views.models.grades import Grades
 
 from fastapi import Query, Depends, Body
@@ -13,6 +15,7 @@ from mini_framework.web.views import BaseView
 from models.grade import Grade
 from rules.grade_rule import GradeRule
 from views.models.grades import Grades
+from views.models.system import UnitType
 
 
 class GradesView(BaseView):
@@ -31,8 +34,18 @@ class GradesView(BaseView):
 
         return account
 
-    async def post(self, grades: Grades):
+    async def post(self, grades: Grades,request:Request):
         print(grades)
+        #
+        headers = request.headers
+        obj= None
+        if 'Extendparams'  in headers:
+            extparam= headers['Extendparams']
+
+            obj = ExtendParams(**extparam)
+            if obj.unit_type== UnitType.CITY.value:
+                grades.city=  ''
+
         res = await self.grade_rule.add_grade(grades)
         return res
 
