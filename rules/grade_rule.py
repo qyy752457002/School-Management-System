@@ -30,7 +30,7 @@ class GradeRule(object):
         return grade
 
     async def add_grade(self, grade: GradeModel):
-        exists_grade = await self.grade_dao.get_grade_by_grade_name(grade.grade_name)
+        exists_grade = await self.grade_dao.get_grade_by_grade_name(grade.grade_name,grade)
         if exists_grade:
             raise GradeAlreadyExistError()
         # grade_db = Grade()
@@ -60,7 +60,8 @@ class GradeRule(object):
                 need_update_list.append(key)
 
 
-        grade_db = await self.grade_dao.update_grade_byargs(exists_grade,*need_update_list)
+        print(need_update_list,222,grade)
+        grade_db = await self.grade_dao.update_grade_byargs(grade,*need_update_list)
         grade = orm_model_to_view_model(grade_db, GradeModel, exclude=[""])
         return grade
 

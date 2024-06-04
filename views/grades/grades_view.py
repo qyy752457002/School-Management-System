@@ -24,6 +24,8 @@ class GradesView(BaseView):
                   # school_id: int = Query(None, title="学校ID", description="学校ID"  ),
                   # grade_no: str = Query(None, description="年级编号", min_length=1, max_length=20, example=''),
                   grade_id: int = Query(None, title="", description="年级ID"),
+                  city :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
+                  district :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
                   ):
         account = await self.grade_rule.get_grade_by_id(grade_id)
 
@@ -37,7 +39,9 @@ class GradesView(BaseView):
     async def page(self,
                    page_request=Depends(PageRequest),
                    school_id: int = Query(None, title="学校ID", description="学校ID"),
-                   grade_name: str = Query(None, description="年级名称", min_length=1, max_length=20)
+                   grade_name: str = Query(None, description="年级名称", min_length=1, max_length=20),
+                   city :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
+                   district :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
                    ):
         print(page_request)
         paging_result = await self.grade_rule.query_grade_with_page(page_request, grade_name, school_id)
@@ -55,7 +59,10 @@ class GradesView(BaseView):
         return paging_result
 
     #   搜索的 待处理
-    async def query(self, grade_name: str = Query('', description="年级名称", min_length=1, max_length=20)):
+    async def query(self, grade_name: str = Query('', description="年级名称", min_length=1, max_length=20),
+                    city :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
+                    district :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
+                    ):
         lst = await self.grade_rule.query_grade(grade_name)
 
         return lst
@@ -74,10 +81,11 @@ class GradesView(BaseView):
                   grade_id: int = Query(..., title="", description="年级id", example='1'),
 
                   ):
-        # print(planning_school)
+        print(grades,1111)
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         grades.id = grade_id
         grades.created_at = None
+        delattr(grades, 'created_at')
         res = await self.grade_rule.update_grade(grades)
 
         return res

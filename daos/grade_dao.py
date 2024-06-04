@@ -13,9 +13,17 @@ class GradeDAO(DAOBase):
         result = await session.execute(select(Grade).where(Grade.id == grade_id))
         return result.scalar_one_or_none()
 
-    async def get_grade_by_grade_name(self, grade_name):
+    async def get_grade_by_grade_name(self, grade_name,grade=None):
         session = await self.slave_db()
-        result = await session.execute(select(Grade).where(Grade.grade_name == grade_name))
+        query = select(Grade).where(Grade.grade_name == grade_name)
+        if grade.school_id:
+            query = query.where(Grade.school_id == grade.school_id)
+        if grade.city:
+            query = query.where(Grade.city == grade.city)
+        if grade.district:
+            query = query.where(Grade.district == grade.district)
+
+        result = await session.execute(query)
         return result.first()
 
     async def add_grade(self, grade):
