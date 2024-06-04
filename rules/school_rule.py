@@ -6,7 +6,7 @@ import hashlib
 import shortuuid
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
-from sqlalchemy import select
+from sqlalchemy import select, or_
 
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from daos.planning_school_dao import PlanningSchoolDAO
@@ -287,10 +287,14 @@ class SchoolRule(object):
         if extend_params:
             if extend_params.school_id:
                 query = query.where(School.id == extend_params.school_id)
-            if extend_params.school_name:
-                query = query.where(School.school_name == extend_params.school_name)
-            if extend_params.school_code:
-                query = query.where(School.school_code == extend_params.school_code)
+
+            if extend_params.county_id:
+                # 区的转换   or todo
+
+                query = query.filter( or_( School.block == extend_params.school_name , School.borough == extend_params.school_name))
+                pass
+            if extend_params.system_type:
+                pass
 
         result = await session.execute(query)
         res= result.scalars().all()
