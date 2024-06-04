@@ -51,6 +51,22 @@ class PermissionMenu(BaseDBModel):
             PermissionMenu(id=5, menu_name="班级管理", menu_path="/class", menu_icon="", menu_type="menu", menu_code="class", menu_status="", menu_remark="", parent_id="3", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
             PermissionMenu(id=6, menu_name="课程管理", menu_path="/course", menu_icon="", menu_type="menu", menu_code="course", menu_status="", menu_remark="", parent_id="3", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
 
+            PermissionMenu(id=7, menu_name="中小学信息管理（规划）", menu_path="/planning", menu_icon="", menu_type="menu", menu_code="planning", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=8, menu_name="中小学信息管理（学校）", menu_path="/school", menu_icon="", menu_type="menu", menu_code="school", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=9, menu_name="中小学配置管理", menu_path="", menu_icon="", menu_type="root", menu_code="config", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+            PermissionMenu(id=10, menu_name="职高信息管理（规划）", menu_path="/planning", menu_icon="", menu_type="menu", menu_code="planning", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=11, menu_name="职高信息管理（学校）", menu_path="/school", menu_icon="", menu_type="menu", menu_code="school", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=12, menu_name="职高配置管理", menu_path="", menu_icon="", menu_type="root", menu_code="config", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=13, menu_name="专业管理", menu_path="/major", menu_icon="", menu_type="menu", menu_code="major", menu_status="", menu_remark="", parent_id="12", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+            PermissionMenu(id=14, menu_name="新教职工管理", menu_path="", menu_icon="", menu_type="root", menu_code="onboarding", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+            PermissionMenu(id=15, menu_name="新教职工入职", menu_path="/onboarding", menu_icon="", menu_type="menu", menu_code="onboarding", menu_status="", menu_remark="", parent_id="14", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+            PermissionMenu(id=16, menu_name="新教职工审批", menu_path="/onboarding/approve", menu_icon="", menu_type="menu", menu_code="approve", menu_status="", menu_remark="", parent_id="14", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
+
+
+            PermissionMenu(id=17, menu_name="在职教职工管理", menu_path="", menu_icon="", menu_type="root", menu_code="employed", menu_status="", menu_remark="", parent_id="0", permission_id=1, sort_order=0,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False  ),
         ]
 
 
