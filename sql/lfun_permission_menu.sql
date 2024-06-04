@@ -1,19 +1,23 @@
-/*
- Navicat Premium Data Transfer
+CREATE SEQUENCE lfun_role_id_seq
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
+CREATE SEQUENCE lfun_role_permission_id_seq
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
 
- Source Server         : 10.0.0.42_54321_schooloms
- Source Server Type    : PostgreSQL
- Source Server Version : 120001 (120001)
- Source Host           : 10.0.0.42:54321
- Source Catalog        : school_oms_dev
- Source Schema         : public
+CREATE SEQUENCE lfun_permission_menu_id_seq
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
 
- Target Server Type    : PostgreSQL
- Target Server Version : 120001 (120001)
- File Encoding         : 65001
-
- Date: 04/06/2024 13:43:28
-*/
 
 
 -- ----------------------------
