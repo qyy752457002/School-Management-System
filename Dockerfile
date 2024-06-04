@@ -5,7 +5,6 @@ RUN mkdir -p /etc/lfun
 COPY deploy/config.json /etc/lfun/config.json
 COPY . /app
 WORKDIR /app
-RUN python3 main.py db-init upgrade
 ENV DEBUG=True
 EXPOSE 8080/tcp
 CMD ["uvicorn", "wsgi:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8080"]
