@@ -3,7 +3,7 @@ from mini_framework.databases.entities.dao_base import DAOBase, get_update_conte
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
-from models.roles import Role
+from models.role import Role
 
 
 class RolesDAO(DAOBase):

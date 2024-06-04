@@ -6,7 +6,7 @@ from mini_framework.web.std_models.page import PageRequest
 
 from models.permission_menu import PermissionMenu
 from models.role_permission import RolePermission
-from models.roles import Role
+from models.role import Role
 
 
 class PermissionMenuDAO(DAOBase):
@@ -70,7 +70,7 @@ class PermissionMenuDAO(DAOBase):
                         PermissionMenu.updated_uid,
                         Role.app_name
                         ).select_from( PermissionMenu).join(RolePermission, RolePermission.menu_id == PermissionMenu.id, isouter=True).join(Role, Role.id == RolePermission.role_id, isouter=True).order_by(asc(RolePermission.sort_order)))
-		query = query.where(PermissionMenu.is_deleted == False).where(Role.is_deleted == False)
+		query = query.where(PermissionMenu.is_deleted == False).where(Role.is_deleted == False).where(RolePermission.is_deleted == False)
 
 		if unit_type:
 			query = query.where(Role.unit_type == unit_type)
