@@ -11,3 +11,9 @@ pip install --upgrade pip
 pip install "psycopg[binary,pool]"
 
 pip install id-validator
+
+
+
+python main.py db-init revision
+
+python main.py db-init upgrade

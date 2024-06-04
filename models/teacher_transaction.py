@@ -1,6 +1,6 @@
 from datetime import datetime, date
 
-from sqlalchemy import String, DateTime, TIMESTAMP, func, Date
+from sqlalchemy import String, DateTime, Date
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -28,7 +28,7 @@ class TeacherTransaction(BaseDBModel):
     original_position: Mapped[str] = mapped_column(String(64), nullable=False, comment="原任职岗位")
     current_position: Mapped[str] = mapped_column(String(64), nullable=False, comment="现任职岗位")
     position_date: Mapped[date] = mapped_column(Date, nullable=False, comment="任职日期")
-    transaction_time: Mapped[datetime] = mapped_column(TIMESTAMP, default=func.current_timestamp(), nullable=False,
+    transaction_time: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(), nullable=False,
                                                        comment="创建时间")
     operator_name: Mapped[str] = mapped_column(String(255), nullable=False, comment="操作人", default='')
     operator_id: Mapped[int] = mapped_column(nullable=False, comment="操作人ID", default=0)
