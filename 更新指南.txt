@@ -17,3 +17,8 @@ pip install id-validator
 python main.py db-init revision
 
 python main.py db-init upgrade
+
+
+单独启动 任务服务
+python main.py task
+
