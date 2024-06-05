@@ -292,9 +292,10 @@ class SchoolRule(object):
 
             if extend_params.county_id:
                 # 区的转换   or todo
-                enuminfo =self.enum_value_dao.get_enum_value_by_value(extend_params.county_id )
+                enuminfo = await self.enum_value_dao.get_enum_value_by_value(extend_params.county_id, 'country' )
 
-                query = query.filter( or_( School.block == enuminfo.description , School.borough == enuminfo.description))
+                if enuminfo:
+                    query = query.filter( or_( School.block == enuminfo.description , School.borough == enuminfo.description))
                 pass
             if extend_params.system_type:
                 pass
