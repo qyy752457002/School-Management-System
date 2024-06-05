@@ -143,7 +143,7 @@
     "task_types": {
       "institution_import": {
         "topic": "institution_import",
-        "name": "定义任务的参数   下面定义各类的位置  ",
+        "name": "",
         "consumer_group_id": "service",
         "description": "事业单位导入任务",
         "executor_cls_model": "views.tasks.institution_task.InstitutionExecutor",
