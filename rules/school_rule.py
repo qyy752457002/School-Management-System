@@ -288,7 +288,7 @@ class SchoolRule(object):
         query = select(School).where(School.school_name.like(f'%{planning_school_name}%') )
         if extend_params:
             if extend_params.school_id:
-                query = query.where(School.id == extend_params.school_id)
+                query = query.where(School.id == int(extend_params.school_id)  )
 
             if extend_params.county_id:
                 # 区的转换   or todo
