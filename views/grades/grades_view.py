@@ -49,6 +49,8 @@ class GradesView(BaseView):
         return res
 
     async def page(self,
+                   request:Request,
+
                    page_request=Depends(PageRequest),
                    school_id: int = Query(None, title="学校ID", description="学校ID"),
                    grade_name: str = Query(None, description="年级名称", min_length=1, max_length=20),
@@ -56,6 +58,15 @@ class GradesView(BaseView):
                    district :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
                    ):
         print(page_request)
+        obj= await get_extend_params(request)
+
+        if obj.school_id:
+            school_id = int(obj.school_id)
+        if obj.city:
+            city = str(obj.city)
+        if obj.county_id:
+            district = str(obj.county_id)
+
         paging_result = await self.grade_rule.query_grade_with_page(page_request, grade_name, school_id,city, district)
 
         items = []
