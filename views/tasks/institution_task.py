@@ -9,6 +9,7 @@ from rules.institution_rule import InstitutionRule
 # from web_test.rules.institution_rule import InstitutionRule
 # from web_test.views.models.account import InstitutionCreateModel
 from models.institution import Institution as Institutions
+from views.models.institutions import Institutions as InstitutionsModel
 
 class InstitutionExecutor(TaskExecutor):
     def __init__(self):
@@ -16,14 +17,19 @@ class InstitutionExecutor(TaskExecutor):
         super().__init__()
 
     async def execute(self, context: 'Context'):
+        print('开始执行task')
         task: Task = context.task
+        print(task)
         if isinstance(task.payload, dict):
             institution_import: Institutions = Institutions(**task.payload)
         elif isinstance(task.payload, Institutions):
             institution_import: Institutions = task.payload
+        elif isinstance(task.payload, InstitutionsModel):
+            institution_import: InstitutionsModel = task.payload
         else:
             raise ValueError("Invalid payload type")
-        await self.institution_rule.add_institution(institution_import)
+        res = await self.institution_rule.add_institution(institution_import)
+        print('插入数据res',res)
         logger.info(f"Institution {institution_import.username} created")
 
 # 导出  todo

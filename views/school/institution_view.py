@@ -55,6 +55,7 @@ class InstitutionView(BaseView):
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
+        print('发生任务成功')
         return task
 
 
