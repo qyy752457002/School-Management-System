@@ -2,4 +2,4 @@
 class Constant():
     """
     """
-    CURRENT_CITY = "沈阳市"
+    CURRENT_CITY = "210100"
