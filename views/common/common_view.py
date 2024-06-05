@@ -3,6 +3,7 @@ import datetime
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 
+from views.models.extend_params import ExtendParams
 from views.models.grades import Grades
 
 from fastapi import Query, Depends, Body
@@ -72,4 +73,13 @@ def check_id_number(id_number: str):
     is_valid = validator.is_valid(id_number)
     print(is_valid, )
     return is_valid
+def get_extend_params(request):
+    headers = request.headers
+    obj= None
+    if 'Extendparams'  in headers:
+        extparam= headers['Extendparams']
+        if isinstance(extparam, str):
+            extparam = eval(extparam)
+        obj = ExtendParams(**extparam)
 
+    return obj
