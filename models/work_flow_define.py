@@ -110,7 +110,7 @@ class WorkFlowDefine(BaseDBModel):
 
     process_code: Mapped[str] = mapped_column(String(64), nullable=False, unique=True, comment="流程code")
     process_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="流程名称")
-    process_description: Mapped[str] = mapped_column(String(64), nullable=False, comment="流程描述")
+    process_description: Mapped[str] = mapped_column(String(64), nullable=True, comment="流程描述")
     process_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="流程类型")
 
     is_borrow: Mapped[bool] = mapped_column(default=False, comment="true:借出")

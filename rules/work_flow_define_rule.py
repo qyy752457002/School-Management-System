@@ -253,9 +253,9 @@ class WorkFlowNodeDefineRule(object):
             if "start" in source_node:
                 strategy_data.append({
                     "depend_code": depend_code,
-                    "parameter_name": None,
-                    "parameter_value": None,
-                    "operation": None
+                    "parameter_name": "action",
+                    "parameter_value": "create",
+                    "operation": "="
                 })
                 continue
             source_priority = node_priority[source_node]
@@ -283,7 +283,7 @@ class WorkFlowNodeDefineRule(object):
                 })
                 strategy_data.append({
                     "depend_code": depend_code,
-                    "parameter_name": "nodes.status",
+                    "parameter_name": "node_status",
                     "parameter_value": "pending",
                     "operation": "="
                 })
@@ -330,8 +330,8 @@ class WorkFlowNodeDefineRule(object):
         is_entry_city_approval = work_flow_define.is_entry_city_approval
 
         work_flow_define_db = view_model_to_orm_model(work_flow_define, WorkFlowDefine)
-        work_flow_define_db = await self.work_flow_define_dao.add_work_flow_define(work_flow_define_db)
-        work_flow_define_db = orm_model_to_view_model(work_flow_define_db, WorkFlowDefineModel)
+        # work_flow_define_db = await self.work_flow_define_dao.add_work_flow_define(work_flow_define_db)
+        # work_flow_define_db = orm_model_to_view_model(work_flow_define_db, WorkFlowDefineModel)
 
         if process_type == "transfer":
 
@@ -342,59 +342,54 @@ class WorkFlowNodeDefineRule(object):
                                                                is_transfer_out_area_approval=is_transfer_out_area_approval,
                                                                is_transfer_city_approval=is_transfer_city_approval)
 
-            work_flow_node_list_db = await self.work_flow_node_define_dao.add_work_flow_node_define(
-                work_flow_node_list)  # 添加节点
-            print("获取的数据库节点-----------------------开始")
-            print([to_dict(item) for item in work_flow_node_list_db])
-            print("获取的数据库节点-----------------------结束")
-            print("\n")
-            work_flow_node_depends_list = await self.add_depend(work_flow_node_list_db, process_type,
+            # work_flow_node_list_db = await self.work_flow_node_define_dao.add_work_flow_node_define(
+            #     work_flow_node_list)  # 添加节点
+            # print("获取的数据库节点-----------------------开始")
+            # print([to_dict(item) for item in work_flow_node_list_db])
+            # print("获取的数据库节点-----------------------结束")
+            # print("\n")
+            work_flow_node_depends_list = await self.add_depend(work_flow_node_list, process_type,
                                                                 is_transfer=is_transfer,
                                                                 transfer_initiate=is_transfer_external)  # 获得依赖节点
             print("获取的依赖节点-----------------------开始")
             print([to_dict(item) for item in work_flow_node_list])
-            print([to_dict(item) for item in work_flow_node_list_db])
+            # print([to_dict(item) for item in work_flow_node_list_db])
             print([to_dict(item) for item in work_flow_node_depends_list])
             print("获取的依赖节点-----------------------结束")
             print("\n")
 
-            work_flow_node_depends_db = await self.work_flow_node_depend_dao.add_work_flow_node_depend(
-                work_flow_node_depends_list)  # 获取数据库依赖节点
-            print("获取的数据库依赖节点-----------------------开始")
-            print([to_dict(item) for item in work_flow_node_depends_db])
-            print("获取的数据库依赖节点-----------------------结束")
-            print("\n")
-
+            # work_flow_node_depends_db = await self.work_flow_node_depend_dao.add_work_flow_node_depend(
+            #     work_flow_node_depends_list)  # 获取数据库依赖节点
+            # print("获取的数据库依赖节点-----------------------开始")
+            # print([to_dict(item) for item in work_flow_node_depends_db])
+            # print("获取的数据库依赖节点-----------------------结束")
+            # print("\n")
 
             print("获取的测试-----------------------开始")
             print(work_flow_node_list)
-            print(work_flow_node_list_db)
+            # print(work_flow_node_list_db)
             print([to_dict(item) for item in work_flow_node_list])
             print("获取的测试-----------------------结束")
             print("\n")
 
+            # print("获取的测试-----------------------开始")
+            # print([to_dict(item) for item in work_flow_node_list_db])
+            # print("获取的测试-----------------------结束")
+            # print("\n")
 
-            print("获取的测试-----------------------开始")
-            print([to_dict(item) for item in work_flow_node_list_db])
-            print("获取的测试-----------------------结束")
-            print("\n")
-
-
-            work_flow_node_depends_strategy_list = await self.add_strategy(work_flow_node_depends_db,
-                                                                           work_flow_node_list_db)
+            work_flow_node_depends_strategy_list = await self.add_strategy(work_flow_node_depends_list,
+                                                                           work_flow_node_list)
             print("获取的依赖策略-----------------------开始")
             print([to_dict(item) for item in work_flow_node_depends_strategy_list])
             print("获取的依赖策略-----------------------结束")
             print("\n")
-            work_flow_node_depends_strategy_db = await self.work_flow_node_depend_strategy_dao.add_work_flow_node_depend_strategy(
-                work_flow_node_depends_strategy_list)  # 获取数据策略依赖节点
+            await self.work_flow_node_depend_strategy_dao.add_work_flow_process(
+                work_flow_define_db, work_flow_node_list, work_flow_node_depends_list,
+                work_flow_node_depends_strategy_list)
             print("获取的数据库依赖策略-----------------------开始")
-            print([to_dict(item) for item in work_flow_node_depends_strategy_db])
+            # print([to_dict(item) for item in work_flow_node_depends_strategy_db])
             print("获取的数据库依赖策略-----------------------结束")
             print("\n")
-
-
-
 
         elif process_type == "borrow":
             pass

@@ -19,7 +19,7 @@ class WorkFlowInstance(BaseDBModel):
 
     process_instance_id: Mapped[int] = mapped_column(primary_key=True, comment="流程实例id", autoincrement=True)
     process_code: Mapped[str] = mapped_column(String(64), nullable=False, comment="关联流程定义")
-    applicant_id: Mapped[str] = mapped_column(String(64), nullable=False, comment="申请人id")
+    applicant_id: Mapped[int] = mapped_column(nullable=False, comment="申请人id", default=0)
     start_time: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(), comment="开始时间")
     end_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, comment="结束时间")
     process_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="流程状态")
