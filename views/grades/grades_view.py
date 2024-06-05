@@ -82,11 +82,17 @@ class GradesView(BaseView):
         return paging_result
 
     #   搜索的 待处理
-    async def query(self, grade_name: str = Query('', description="年级名称", min_length=1, max_length=20),
+    async def query(self,
+                    request:Request,
+
+                    grade_name: str = Query('', description="年级名称", min_length=1, max_length=20),
+
                     city :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
                     district :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
                     ):
-        lst = await self.grade_rule.query_grade(grade_name)
+        obj= await get_extend_params(request)
+
+        lst = await self.grade_rule.query_grade(grade_name,obj)
 
         return lst
 

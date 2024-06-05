@@ -94,10 +94,19 @@ class GradeRule(object):
 
 
 
-    async def query_grade(self,grade_name):
+    async def query_grade(self,grade_name,extendparams=None):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(Grade).where(Grade.grade_name.like(f'%{grade_name}%') ))
+        query =select(Grade).where(Grade.grade_name.like(f'%{grade_name}%') )
+        if extendparams:
+            if extendparams.school_id:
+                query = query.where(Grade.school_id == extendparams.school_id)
+            if extendparams.city:
+                query = query.where(Grade.city == extendparams.city)
+            if extendparams.county_id :
+                query = query.where(Grade.district == extendparams.county_id)
+
+        result = await session.execute(query)
         res= result.scalars().all()
 
         lst = []
