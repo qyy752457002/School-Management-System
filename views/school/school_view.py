@@ -377,14 +377,8 @@ class SchoolView(BaseView):
 
         if 'Extendparams'  in headers:
             extparam= headers['Extendparams']
-            # 单位类型 市区还是学校
-            unit_type= extparam['unit_type']
-            # 单位类型  学生 老师还是 学校
-            system_type= extparam['system_type']
-            # 教育阶段
-            edu_type= extparam['edu_type']
-            school_id= extparam['school_id']
-            county_id= extparam['county_id']
+            extparam = eval(extparam)
+
             obj = ExtendParams(**extparam)
 
 
