@@ -370,11 +370,8 @@ class SchoolView(BaseView):
 
     ):
         headers = request.headers
-        print(page_request, request,111, headers, type(headers))
+        # print(page_request, request,111, headers, type(headers))
         obj= None
-        if 'host'  in headers:
-            print(headers['host'])
-
         if 'Extendparams'  in headers:
             extparam= headers['Extendparams']
             extparam = eval(extparam)
