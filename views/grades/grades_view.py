@@ -41,6 +41,8 @@ class GradesView(BaseView):
         obj= await get_extend_params(request)
         grades.city = obj.city
         grades.district = obj.county_id
+        if obj.school_id:
+            grades.school_id = int(obj.school_id)
 
 
         res = await self.grade_rule.add_grade(grades,obj)
