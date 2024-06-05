@@ -7,27 +7,27 @@ from rules.institution_rule import InstitutionRule
 from views.models.institutions import Institutions
 
 
-# from web_test.rules.account_rule import InstitutionRule
+# from web_test.rules.institution_rule import InstitutionRule
 # from web_test.views.models.account import InstitutionCreateModel
 
 
 class InstitutionExecutor(TaskExecutor):
     def __init__(self):
-        self.account_rule = get_injector(InstitutionRule)
+        self.institution_rule = get_injector(InstitutionRule)
         super().__init__()
 
     async def execute(self, context: 'Context'):
         task: Task = context.task
         if isinstance(task.payload, dict):
-            account_create: Institutions = Institutions(**task.payload)
+            institution_import: Institutions = Institutions(**task.payload)
         elif isinstance(task.payload, Institutions):
-            account_create: Institutions = task.payload
+            institution_import: Institutions = task.payload
         else:
             raise ValueError("Invalid payload type")
-        await self.account_rule.add_account(account_create)
-        logger.info(f"Institution {account_create.username} created")
+        await self.institution_rule.add_institution(institution_import)
+        logger.info(f"Institution {institution_import.username} created")
 
-
+# 导出  todo
 class InstitutionExportExecutor(TaskExecutor):
     async def execute(self, task: 'Task'):
         print("test")
