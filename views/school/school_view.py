@@ -376,7 +376,7 @@ class SchoolView(BaseView):
         items = []
         # exit(1)
         # return page_search
-        paging_result = await self.school_rule.query_schools(school_name,get_extend_params(request))
+        paging_result = await self.school_rule.query_schools(school_name,await get_extend_params(request))
         return paging_result
     # 学校开设审核
     async def patch_open_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",

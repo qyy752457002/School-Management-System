@@ -3,6 +3,9 @@ import datetime
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 
+from daos import enum_value_dao
+from daos.enum_value_dao import EnumValueDAO
+from views.common.constant import Constant
 from views.models.extend_params import ExtendParams
 from views.models.grades import Grades
 
@@ -16,7 +19,7 @@ from rules.grade_rule import GradeRule
 from views.models.grades import Grades
 from id_validator import validator
 
-
+from views.models.system import UnitType
 
 
 def compare_modify_fields( planning_school,orm_model):
@@ -73,7 +76,7 @@ def check_id_number(id_number: str):
     is_valid = validator.is_valid(id_number)
     print(is_valid, )
     return is_valid
-def get_extend_params(request):
+async def get_extend_params(request):
     headers = request.headers
     obj= None
     if 'Extendparams'  in headers:
@@ -81,5 +84,15 @@ def get_extend_params(request):
         if isinstance(extparam, str):
             extparam = eval(extparam)
         obj = ExtendParams(**extparam)
+        if obj.unit_type == UnitType.CITY.value:
+            obj.city = Constant.CURRENT_CITY
+        # if obj.unit_type == UnitType.COUNTRY.value:
+        #     obj.county_id = Constant.CURRENT_CITY
+        if obj.county_id:
+            # 区的转换   or todo
+            enuminfo = await (  EnumValueDAO()).get_enum_value_by_value(obj.county_id, 'country' )
+            if enuminfo:
+                obj.county_name = enuminfo.description
+
 
     return obj

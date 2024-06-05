@@ -286,16 +286,20 @@ class SchoolRule(object):
 
         session = await db_connection_manager.get_async_session("default", True)
         query = select(School).where(School.school_name.like(f'%{planning_school_name}%') )
+        # print(extend_params,3333333333)
         if extend_params:
             if extend_params.school_id:
                 query = query.where(School.id == int(extend_params.school_id)  )
+            if extend_params.planning_school_id:
+                query = query.where(School.planning_school_id == int(extend_params.planning_school_id)  )
 
-            if extend_params.county_id:
+            if extend_params.county_name:
                 # 区的转换   or todo
-                enuminfo = await self.enum_value_dao.get_enum_value_by_value(extend_params.county_id, 'country' )
+                # enuminfo = await self.enum_value_dao.get_enum_value_by_value(extend_params.county_id, 'country' )
+                query = query.filter( or_( School.block == extend_params.county_name , School.borough == extend_params.county_name))
 
-                if enuminfo:
-                    query = query.filter( or_( School.block == enuminfo.description , School.borough == enuminfo.description))
+
+                # if enuminfo:
                 pass
             if extend_params.system_type:
                 pass
