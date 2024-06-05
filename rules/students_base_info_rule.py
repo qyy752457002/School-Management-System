@@ -14,7 +14,7 @@ from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
 from views.models.students import NewBaseInfoCreate,NewBaseInfoUpdate,StudentsBaseInfo
 from views.models.students import StudentsBaseInfo as StudentsBaseInfoModel
 from views.models.students import NewStudentsQuery, NewStudentsQueryRe
-from business_exceptions.student import StudentNotFoundError,StudentExistsError
+from business_exceptions.student import StudentNotFoundError, StudentExistsError, StudentSessionNotFoundError
 
 
 @dataclass_inject
@@ -72,6 +72,9 @@ class StudentsBaseInfoRule(object):
         param = {"session_status":  StudentSessionstatus.ENABLE.value}
         res  = await self.student_session_dao.get_student_session_by_param(**param)
         # session = orm_model_to_view_model(res, StudentSessionModel, exclude=[""])
+        if not res or  not  res.session_id:
+            raise StudentSessionNotFoundError()
+            pass
         students_base_info_db.session_id = res.session_id
         students_base_info_db.session= res.session_name
 

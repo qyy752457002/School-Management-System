@@ -6,14 +6,16 @@ import hashlib
 import shortuuid
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
-from sqlalchemy import select
+from sqlalchemy import select, or_
 
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
+from daos.enum_value_dao import EnumValueDAO
 from daos.planning_school_dao import PlanningSchoolDAO
 from daos.school_dao import SchoolDAO
 from models.planning_school import PlanningSchool
 from models.school import School
 from rules.enum_value_rule import EnumValueRule
+from views.models.extend_params import ExtendParams
 # from rules.planning_school_rule import PlanningSchoolRule
 from views.models.planning_school import PlanningSchoolStatus
 from views.models.school import School as SchoolModel, SchoolKeyAddInfo
@@ -26,6 +28,7 @@ from views.models.planning_school import PlanningSchool as PlanningSchoolModel, 
 class SchoolRule(object):
     school_dao: SchoolDAO
     p_school_dao: PlanningSchoolDAO
+    enum_value_dao: EnumValueDAO
 
     async def get_school_by_id(self, school_id,extra_model=None):
         school_db = await self.school_dao.get_school_by_id(school_id)
@@ -279,10 +282,24 @@ class SchoolRule(object):
 
 
 
-    async def query_schools(self,planning_school_name):
+    async def query_schools(self,planning_school_name,extend_params:ExtendParams|None):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(School).where(School.school_name.like(f'%{planning_school_name}%') ))
+        query = select(School).where(School.school_name.like(f'%{planning_school_name}%') )
+        if extend_params:
+            if extend_params.school_id:
+                query = query.where(School.id == int(extend_params.school_id)  )
+
+            if extend_params.county_id:
+                # 区的转换   or todo
+                enuminfo =self.enum_value_dao.get_enum_value_by_value(extend_params.county_id )
+
+                query = query.filter( or_( School.block == enuminfo.description , School.borough == enuminfo.description))
+                pass
+            if extend_params.system_type:
+                pass
+
+        result = await session.execute(query)
         res= result.scalars().all()
 
         lst = []

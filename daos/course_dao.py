@@ -68,9 +68,14 @@ class CourseDAO(DAOBase):
 		await session.execute(update_stmt)
 		await session.commit()
 		return school_id
-	async def get_course_by_name(self, name):
+	async def get_course_by_name(self, name,course=None):
 		session = await self.slave_db()
-		result = await session.execute(select(Course).where(Course.course_name == name))
+		query = select(Course).where(Course.course_name == name)
+		if course.city:
+			query = query.where(Course.city == course.city)
+		if course.district:
+			query = query.where(Course.district == course.district)
+		result = await session.execute( query)
 		return result.scalar_one_or_none()
 
 

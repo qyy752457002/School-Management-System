@@ -13,6 +13,11 @@ class EnumValueDAO(DAOBase):
         result = await session.execute(select(EnumValue).where(EnumValue.id == enum_value_id))
         return result.scalar_one_or_none()
 
+    async def get_enum_value_by_value(self, enum_value):
+        session = await self.slave_db()
+        result = await session.execute(select(EnumValue).where(EnumValue.enum_value == enum_value))
+        return result.scalar_one_or_none()
+
     async def get_enum_value_by_enum_value_name(self, enum_value_name):
         session = await self.slave_db()
         result = await session.execute(select(EnumValue).where(EnumValue.enum_name == enum_value_name))
