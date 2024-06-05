@@ -4,6 +4,7 @@ from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
+from views.common.common_view import get_extend_params
 from views.models.extend_params import ExtendParams
 from views.models.grades import Grades
 
@@ -37,16 +38,10 @@ class GradesView(BaseView):
     async def post(self, grades: Grades,request:Request):
         print(grades)
         #
-        headers = request.headers
-        obj= None
-        if 'Extendparams'  in headers:
-            extparam= headers['Extendparams']
+        obj= await get_extend_params(request)
 
-            obj = ExtendParams(**extparam)
-            if obj.unit_type== UnitType.CITY.value:
-                grades.city=  ''
 
-        res = await self.grade_rule.add_grade(grades)
+        res = await self.grade_rule.add_grade(grades,obj)
         return res
 
     async def page(self,

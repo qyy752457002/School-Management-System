@@ -29,7 +29,7 @@ class GradeRule(object):
         grade = orm_model_to_view_model(grade_db, GradeModel, exclude=[""])
         return grade
 
-    async def add_grade(self, grade: GradeModel):
+    async def add_grade(self, grade: GradeModel,obj=None):
         exists_grade = await self.grade_dao.get_grade_by_grade_name(grade.grade_name,grade)
         if exists_grade:
             raise GradeAlreadyExistError()
