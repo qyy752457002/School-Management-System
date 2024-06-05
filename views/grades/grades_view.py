@@ -4,6 +4,7 @@ from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
+from views.common.common_view import get_extend_params
 from views.models.extend_params import ExtendParams
 from views.models.grades import Grades
 
@@ -37,19 +38,19 @@ class GradesView(BaseView):
     async def post(self, grades: Grades,request:Request):
         print(grades)
         #
-        headers = request.headers
-        obj= None
-        if 'Extendparams'  in headers:
-            extparam= headers['Extendparams']
+        obj= await get_extend_params(request)
+        grades.city = obj.city
+        grades.district = obj.county_id
+        if obj.school_id:
+            grades.school_id = int(obj.school_id)
 
-            obj = ExtendParams(**extparam)
-            if obj.unit_type== UnitType.CITY.value:
-                grades.city=  ''
 
-        res = await self.grade_rule.add_grade(grades)
+        res = await self.grade_rule.add_grade(grades,obj)
         return res
 
     async def page(self,
+                   request:Request,
+
                    page_request=Depends(PageRequest),
                    school_id: int = Query(None, title="学校ID", description="学校ID"),
                    grade_name: str = Query(None, description="年级名称", min_length=1, max_length=20),
@@ -57,6 +58,15 @@ class GradesView(BaseView):
                    district :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
                    ):
         print(page_request)
+        obj= await get_extend_params(request)
+
+        if obj.school_id:
+            school_id = int(obj.school_id)
+        if obj.city:
+            city = str(obj.city)
+        if obj.county_id:
+            district = str(obj.county_id)
+
         paging_result = await self.grade_rule.query_grade_with_page(page_request, grade_name, school_id,city, district)
 
         items = []
@@ -72,11 +82,17 @@ class GradesView(BaseView):
         return paging_result
 
     #   搜索的 待处理
-    async def query(self, grade_name: str = Query('', description="年级名称", min_length=1, max_length=20),
+    async def query(self,
+                    request:Request,
+
+                    grade_name: str = Query('', description="年级名称", min_length=1, max_length=20),
+
                     city :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
                     district :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
                     ):
-        lst = await self.grade_rule.query_grade(grade_name)
+        obj= await get_extend_params(request)
+
+        lst = await self.grade_rule.query_grade(grade_name,obj)
 
         return lst
 
