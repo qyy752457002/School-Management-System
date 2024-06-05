@@ -4,12 +4,11 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.logging import logger
 
 from rules.institution_rule import InstitutionRule
-from views.models.institutions import Institutions
 
 
 # from web_test.rules.institution_rule import InstitutionRule
 # from web_test.views.models.account import InstitutionCreateModel
-
+from models.institution import Institution as Institutions
 
 class InstitutionExecutor(TaskExecutor):
     def __init__(self):
