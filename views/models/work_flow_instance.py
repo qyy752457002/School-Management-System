@@ -29,7 +29,7 @@ class WorkFlowInstanceCreateModel(BaseModel):
     """
 
     process_code: str = Field(..., title="流程定义id", description="流程定义id")
-    applicant_id: str = Field(..., title="申请人id", description="申请人id")
+    applicant_id: int = Field(..., title="申请人id", description="申请人id")
     start_time: datetime = Field(datetime.now(), title="开始时间", description="开始时间")
     end_time: Optional[datetime] = Field(None, title="结束时间", description="结束时间")
     process_status: WorkFlowInstanceStatus = Field("pending", title="流程状态", description="流程状态")
