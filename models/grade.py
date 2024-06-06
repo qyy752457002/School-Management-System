@@ -14,10 +14,10 @@ class Grade(BaseDBModel):
     __table_args__ = {'comment': '年级表模型'}
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="年级ID",autoincrement=True)
-    school_id: Mapped[int] = mapped_column( comment="学校ID")
+    school_id: Mapped[int] = mapped_column( comment="学校ID",default=0,nullable=True)
 
-    city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城市")
-    district: Mapped[str] = mapped_column(String(64), nullable=True, comment="",default='')
+    city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城市 编码")
+    district: Mapped[str] = mapped_column(String(64), nullable=True, comment="区 编码",default='')
 
     grade_no: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级编号")
     grade_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级名称")

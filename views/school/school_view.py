@@ -6,7 +6,7 @@ from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
 from rules.operation_record import OperationRecordRule
-from views.common.common_view import compare_modify_fields
+from views.common.common_view import compare_modify_fields, get_extend_params
 from views.models.extend_params import ExtendParams
 from views.models.operation_record import OperationRecord, OperationModule, OperationTargetType, OperationType
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
@@ -369,33 +369,14 @@ class SchoolView(BaseView):
                          page_request=Depends(PageRequest),
 
     ):
-        headers = request.headers
-        print(page_request, request,111, headers, type(headers))
-        obj= None
-        if 'host'  in headers:
-            print(headers['host'])
-
-        if 'Extendparams'  in headers:
-            extparam= headers['Extendparams']
-            # 单位类型 市区还是学校
-            unit_type= extparam['unit_type']
-            # 单位类型  学生 老师还是 学校
-            system_type= extparam['system_type']
-            # 教育阶段
-            edu_type= extparam['edu_type']
-            school_id= extparam['school_id']
-            county_id= extparam['county_id']
-            obj = ExtendParams(**extparam)
-
-
-
+        # print(page_request, request,111, headers, type(headers))
 
 
         # print(unit_type)
         items = []
         # exit(1)
         # return page_search
-        paging_result = await self.school_rule.query_schools(school_name,obj)
+        paging_result = await self.school_rule.query_schools(school_name,await get_extend_params(request))
         return paging_result
     # 学校开设审核
     async def patch_open_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
