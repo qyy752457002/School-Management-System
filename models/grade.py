@@ -15,12 +15,16 @@ class Grade(BaseDBModel):
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="年级ID",autoincrement=True)
     school_id: Mapped[int] = mapped_column( comment="学校ID",default=0,nullable=True)
+    sort_number: Mapped[int] = mapped_column( comment="排序",default=0,nullable=True)
 
+    school_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="教育阶段/学校类别 例如 小学 初中")
     city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城市 编码")
     district: Mapped[str] = mapped_column(String(64), nullable=True, comment="区 编码",default='')
 
     grade_no: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级编号")
-    grade_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级名称")
+    grade_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="年级类型/班级类型 例如 一年级 二年级 三年级")
+
+    grade_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级名称/班级名称")
     grade_alias: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级别名")
     description: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="简介")
     is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)

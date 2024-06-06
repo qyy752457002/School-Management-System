@@ -4417,6 +4417,8 @@ class EnumValue(BaseDBModel):
             EnumValue(id=4395, enum_name="grade", enum_value="41", description="小班", sort_number=12,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=4396, enum_name="grade", enum_value="42", description="中班", sort_number=13,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=4397, enum_name="grade", enum_value="43", description="大班", sort_number=14,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+        #     todo  3季专业调整
+
             
 
 
