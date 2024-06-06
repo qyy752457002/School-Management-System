@@ -2,14 +2,17 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teacher_transaction_dao import TeacherTransactionDAO
+from daos.teachers_dao import TeachersDao
 from models.teacher_transaction import TeacherTransaction
 from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
-    TeacherTransactionQueryModel,TeacherTransactionLaunch
+    TeacherTransactionQueryModel,TransactionLaunch
+from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 
 
 @dataclass_inject
 class TeacherTransactionRule(object):
     teacher_transaction_dao: TeacherTransactionDAO
+    teachers_dao: TeachersDao
 
     async def get_teacher_transaction_by_teacher_transaction_id(self, teacher_transaction_id):
         teacher_transaction_db = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
@@ -17,8 +20,13 @@ class TeacherTransactionRule(object):
         teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionModel)
         return teacher_transaction
 
+
+
     async def add_teacher_transaction(self, teacher_transaction: TeacherTransactionModel):
         teacher_transaction_db = view_model_to_orm_model(teacher_transaction, TeacherTransaction)
+        teacher_db = await self.teachers_dao.get_teachers_by_id(teacher_transaction_db.teacher_id)
+        if not teacher_db:
+            raise TeacherNotFoundError()
         teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
         teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionModel)
         return teacher_transaction
@@ -56,7 +64,7 @@ class TeacherTransactionRule(object):
     async def query_transaction_with_page(self, query_model: TeacherTransactionQueryModel, page_request: PageRequest):
         teacher_transaction_db = await self.teacher_transaction_dao.query_transaction_with_page(query_model,
                                                                                                 page_request)
-        paging_result = PaginatedResponse.from_paging(teacher_transaction_db, TeacherTransactionLaunch)
+        paging_result = PaginatedResponse.from_paging(teacher_transaction_db, TransactionLaunch)
         return paging_result
     
     async def submitting(self, teacher_transaction_id):

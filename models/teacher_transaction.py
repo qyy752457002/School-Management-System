@@ -20,10 +20,11 @@ class TeacherTransaction(BaseDBModel):
     """
     __tablename__ = 'lfun_teacher_transaction'
     __table_args__ = {'comment': '教师变动修改表'}
-    transaction_id: Mapped[int] = mapped_column(primary_key=True, comment="教师变动ID", autoincrement=True)
-    teacher_id: Mapped[int] = mapped_column(nullable=True, comment="教师ID", default=0)  # 与教师表关联，关系为一对n
+
+    transaction_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, comment="变动主键id")
+    teacher_id: Mapped[int] = mapped_column(nullable=False, default=0, comment="教师ID")  # 与教师表关联，关系为一对n
+
     transaction_type: Mapped[str] = mapped_column(String(255), nullable=True, comment="变动类型", default='')
-    # transaction_reason: Mapped[str] = mapped_column(String(255), nullable=False, comment="变动原因", default='')
     transaction_remark: Mapped[str] = mapped_column(String(255), nullable=False, comment="备注", default='')
     original_position: Mapped[str] = mapped_column(String(64), nullable=False, comment="原任职岗位")
     current_position: Mapped[str] = mapped_column(String(64), nullable=False, comment="现任职岗位")
