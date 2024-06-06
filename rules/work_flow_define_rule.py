@@ -147,33 +147,18 @@ class WorkFlowNodeDefineRule(object):
             raise Exception("未知流程类型")
 
         # 添加开始节点
-        nodes_list.append({
-            'process_code': process_code,
-            'node_name': nodes_info['start'][0],
-            'node_code': nodes_info['start'][1]
-        })
+        nodes_list.append(generate_node(process_code, nodes_info['start'][0], nodes_info['start'][1]))
 
         # 遍历检查条件，判断是否需要新增节点
         for key, value in kwargs.items():
             if value and key in nodes_info:
-                nodes_list.append({
-                    'process_code': process_code,
-                    'node_name': nodes_info[key][0],
-                    'node_code': nodes_info[key][1]
-                })
+                nodes_list.append(generate_node(process_code, nodes_info[key][0], nodes_info[key][1]))
 
         # 添加成功和失败节点
-        nodes_list.append({
-            'process_code': process_code,
-            'node_name': nodes_info['success'][0],
-            'node_code': nodes_info['success'][1]
-        })
-        nodes_list.append({
-            'process_code': process_code,
-            'node_name': nodes_info['fail'][0],
-            'node_code': nodes_info['fail'][1]
-        })
+        nodes_list.append(generate_node(process_code, nodes_info['success'][0], nodes_info['success'][1]))
+        nodes_list.append(generate_node(process_code, nodes_info['fail'][0], nodes_info['fail'][1]))
 
+        # 转化为数据库模型
         db_records = []
         for node in nodes_list:
             record = create_model_instance(WorkFlowNodeDefine, node)
@@ -268,42 +253,17 @@ class WorkFlowNodeDefineRule(object):
             depend_code = depend.depend_code
             # 一条依赖关系除了开始节点，审批节点的写入的顺序是：审批节点->失败节点，审批节点->下一个审批节点，审批节点->上一个审批节点
             if "start" in source_node:
-                strategy_data.append({
-                    "depend_code": depend_code,
-                    "parameter_name": "action",
-                    "parameter_value": "create",
-                    "operation": "="
-                })
+                strategy_data.append(generate_strategy(depend_code, "action", "create", "="))
                 continue
             source_priority = node_priority[source_node]
             next_priority = node_priority[next_node]
             if "fail" in next_node:
-                strategy_data.append({
-                    "depend_code": depend_code,
-                    "parameter_name": "action",
-                    "parameter_value": "rejected",
-                    "operation": "="
-                })
+                strategy_data.append(generate_strategy(depend_code, "action", "rejected", "="))
             elif source_priority < next_priority:
-                strategy_data.append({
-                    "depend_code": depend_code,
-                    "parameter_name": "action",
-                    "parameter_value": "approved",
-                    "operation": "="
-                })
+                strategy_data.append(generate_strategy(depend_code, "action", "approved", "="))
             elif source_priority > next_priority:
-                strategy_data.append({
-                    "depend_code": depend_code,
-                    "parameter_name": "action",
-                    "parameter_value": "revoke",
-                    "operation": "="
-                })
-                strategy_data.append({
-                    "depend_code": depend_code,
-                    "parameter_name": "node_status",
-                    "parameter_value": "pending",
-                    "operation": "="
-                })
+                strategy_data.append(generate_strategy(depend_code, "action", "revoke", "="))
+                strategy_data.append(generate_strategy(depend_code, "node_status", "pending", "="))
         strategy_list = []
         for strategy in strategy_data:
             record = create_model_instance(WorkFlowNodeDependStrategy, strategy)
@@ -371,15 +331,15 @@ class WorkFlowNodeDefineRule(object):
                                                   is_entry_city_approval=is_entry_city_approval
                                                   )
         if process_type == "transfer":
-            work_flow_node_depends_list = await self.add_depend(work_flow_node_list, process_code,process_type,
+            work_flow_node_depends_list = await self.add_depend(work_flow_node_list, process_code, process_type,
                                                                 is_transfer=is_transfer,
                                                                 transfer_initiate=is_transfer_external)  # 获得依赖节点
         elif process_type == "borrow":
-            work_flow_node_depends_list = await self.add_depend(work_flow_node_list,process_code, process_type,
+            work_flow_node_depends_list = await self.add_depend(work_flow_node_list, process_code, process_type,
                                                                 is_borrow=is_borrow,
                                                                 borrow_initiate=is_borrow_external)
         else:
-            work_flow_node_depends_list = await self.add_depend(work_flow_node_list, process_code,process_type)
+            work_flow_node_depends_list = await self.add_depend(work_flow_node_list, process_code, process_type)
 
         work_flow_node_depends_strategy_list = await self.add_strategy(work_flow_node_depends_list,
                                                                        work_flow_node_list)
@@ -430,3 +390,22 @@ def generate_depend(pre, process_type, current_node_node_code,
               "source_node": current_node_node_code,
               "next_node": next_node_node_code}
     return depend
+
+
+def generate_strategy(depend_code, parameter_name, parameter_value, operation):
+    """添加单个strategy"""
+
+    strategy = {"depend_code": depend_code,
+                "parameter_name": parameter_name,
+                "parameter_value": parameter_value,
+                "operation": operation}
+    return strategy
+
+
+def generate_node(process_code, node_name, node_code):
+    """添加单个node"""
+
+    node = {"process_code": process_code,
+            "node_name": node_name,
+            "node_code": node_code}
+    return node
