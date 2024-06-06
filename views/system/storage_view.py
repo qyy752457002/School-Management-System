@@ -17,3 +17,9 @@ class StorageView(BaseView):
 
     async def get_teacher_upload_uri(self, filename: str, file_size: int):
         return await self._storage_rule.get_upload_teacher_info_token_uri(filename, file_size)
+
+#     解析 文件和桶  返回 数据结构
+    async def get_file_data_preview(self, filename: str, bucket,sence=''):
+        return await self._storage_rule.get_file_data_preview(filename, bucket,sence)
+
+
