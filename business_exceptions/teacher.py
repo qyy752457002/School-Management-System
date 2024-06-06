@@ -85,3 +85,4 @@ class PoliticalStatusNoneError(MiniHTTPException):
 class TestValueError(MiniHTTPException):
     def __init__(self):
         super().__init__(404,"TEST_VALUE_ERROR","Test value error.","测试值错误")
+
