@@ -8,3 +8,6 @@ class EduNumberError(MiniHTTPException):
 class EnrollNumberError(MiniHTTPException):
     def __init__(self):
         super().__init__(400, "ENROLLNUMBER_ALREADY_EXIST", "EnrollNumber already exist.", "报名号已经存在")
+class BizDataEmptyError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(400, "BIZDATA_CANNOT_NULL", "BizData can not be null .", "业务数据不能为空")
