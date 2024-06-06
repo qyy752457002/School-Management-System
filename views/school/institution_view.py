@@ -37,15 +37,6 @@ class InstitutionView(BaseView):
         res = await self.institution_rule.query_institution_with_page(page_request,)
         return res
 
-        #
-        # res = Institutions(institution_name='XXX',institution_en_name='XXX',institution_category='XXX',institution_type='XXX',fax_number='XXX',email='XXX',contact_number='XXX',area_code='XXX',institution_code='XXX',create_date='XXX',leg_repr_name='XXX',party_leader_name='XXX',party_leader_position='XXX',adm_leader_name='XXX',adm_leader_position='XXX',department_unit_number='XXX',sy_zones='XXX',social_credit_code='XXX',postal_code='XXX',detailed_address='XXX',related_license_upload='XXX',long='XXX',lat='XXX', urban_rural_nature='XXX',location_economic_attribute='XXX',leg_repr_certificatenumber='XXX',is_entity='XXX',website_uRL='XXX',status='XXX',membership_no='XXX',membership_category='XXX',)
-        # for i in range(0,page_request.per_page):
-        #     items.append(res)
-        #
-        # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
-
-
-
     async def post_institution_import_example(self, account: Institutions = Body(..., description="")) -> Task:
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
@@ -63,7 +54,7 @@ class InstitutionView(BaseView):
     async def post_institution_import(self,
                                       filename: str = Query(..., description="文件名"),
                                       bucket: str = Query(..., description="文件名"),
-                                      scene: str = Query(..., description="文件名"),
+                                      scene: str = Query('', description="文件名"),
                                       ) -> Task:
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
