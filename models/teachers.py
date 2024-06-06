@@ -13,18 +13,20 @@ class TeacherApprovalAtatus(str, Enum):
     待审核
     已通过
     已拒绝
+    已撤回
     """
     SUBMITTING = "submitting"
     SUBMITTED = "submitted"
     APPROVED = "approved"
     REJECTED = "rejected"
+    REVOKED = "revoked"
 
     @classmethod
     def to_list(cls):
-        return [cls.SUBMITTING, cls.SUBMITTED, cls.APPROVED, cls.REJECTED]
+        return [cls.SUBMITTING, cls.SUBMITTED, cls.APPROVED, cls.REJECTED, cls.REVOKED]
+
 
 # class Gender(str, Enum):
-
 
 
 class Teacher(BaseDBModel):
@@ -48,18 +50,18 @@ class Teacher(BaseDBModel):
     __table_args__ = {'comment': '教师表模型'}
 
     teacher_id: Mapped[int] = mapped_column(primary_key=True, comment="教师ID", autoincrement=True)
-    teacher_gender: Mapped[str] = mapped_column(String(64), nullable=True,default="", comment="教师性别")
-    teacher_name: Mapped[str] = mapped_column(String(64), nullable=True,default="", comment="教师名称")
-    teacher_id_type: Mapped[str] = mapped_column(String(64), nullable=True,default="", comment="证件类型")
-    teacher_id_number: Mapped[str] = mapped_column(String(64), nullable=True,default="", comment="证件号")
+    teacher_gender: Mapped[str] = mapped_column(String(64), nullable=True, default="", comment="教师性别")
+    teacher_name: Mapped[str] = mapped_column(String(64), nullable=True, default="", comment="教师名称")
+    teacher_id_type: Mapped[str] = mapped_column(String(64), nullable=True, default="", comment="证件类型")
+    teacher_id_number: Mapped[str] = mapped_column(String(64), nullable=True, default="", comment="证件号")
     teacher_date_of_birth: Mapped[date] = mapped_column(Date, nullable=True, comment="出生日期")
     teacher_employer: Mapped[int] = mapped_column(default=0, nullable=True, comment="任职单位")
-    teacher_avatar: Mapped[str] = mapped_column(String(64), nullable=True, default="",comment="头像")  # 图像处理再定
+    teacher_avatar: Mapped[str] = mapped_column(String(64), nullable=True, default="", comment="头像")  # 图像处理再定
     teacher_main_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="主状态",
-                                                         default="unemployed")
+                                                     default="unemployed")
     teacher_sub_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="子状态",
-                                                        default="normal")
+                                                    default="normal")
+    teacher_approval_status: Mapped[str] = mapped_column(String(64), default="submitting",nullable=False,
+                                                         comment="审批状态",
+                                                         )
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
-
-
-
