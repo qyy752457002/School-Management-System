@@ -4,7 +4,6 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
-from business_exceptions.common import BizDataEmptyError
 from business_exceptions.major import MajorAlreadyExistError
 from daos.major_dao import MajorDAO
 from models.major import Major
@@ -46,9 +45,6 @@ class MajorRule(object):
         # 定义 视图和model的映射关系
         original_dict_map_view_orm ={"major_no":"major_id"}
         flipped_dict = {v: k for k, v in original_dict_map_view_orm.items()}
-        res=None
-        if not major_list:
-            return {"msg":"操作成功"}
         for major in major_list:
             major_db= view_model_to_orm_model(major, Major, exclude=["id"],other_mapper=original_dict_map_view_orm)
             major_db.school_id=school_id
