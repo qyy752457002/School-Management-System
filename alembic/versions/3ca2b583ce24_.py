@@ -1,8 +1,8 @@
 """
 
-Revision ID: fc1d3775ae8c
+Revision ID: 3ca2b583ce24
 Revises: e689d89db492
-Create Date: 2024-06-06 15:11:49.017133
+Create Date: 2024-06-06 15:14:20.561543
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'fc1d3775ae8c'
+revision: str = '3ca2b583ce24'
 down_revision: Union[str, None] = 'e689d89db492'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -128,7 +128,7 @@ def upgrade() -> None:
                existing_comment='年级名称',
                existing_nullable=False)
     op.add_column('lfun_leader_info', sa.Column('identity', sa.String(length=64), nullable=True, comment='身份'))
-    op.add_column('lfun_student_session', sa.Column('year', sa.String(length=64), nullable=False, comment='年度'))
+    op.add_column('lfun_student_session', sa.Column('year', sa.String(length=64), nullable=True, comment='年度'))
     op.add_column('lfun_students_base_info', sa.Column('identity', sa.String(length=64), nullable=True, comment='身份'))
     # ### end Alembic commands ###
 
