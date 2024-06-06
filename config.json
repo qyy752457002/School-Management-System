@@ -104,5 +104,60 @@
         "/api/school/docs"
       ]
     }
+  },
+  "kafka": {
+    "bootstrap_servers": [
+      "10.0.9.4:9092",
+      "10.0.9.5:9092",
+      "10.0.9.6:9092"
+    ],
+    "auto_offset_reset": "earliest",
+    "group_id": "test",
+    "topics": {
+      "account_create": {
+        "partitions": 3,
+        "replication_factor": 3
+      },
+      "account_export": {
+        "partitions": 3,
+        "replication_factor": 3
+      }
+    }
+  },
+  "task_service": {
+    "app_id": "task_service",
+    "retry": {
+      "max_attempts": 3,
+      "delay": 1,
+      "backoff": 2,
+      "jitter": true
+    },
+    "alert": {
+      "email_from": "",
+      "email_to": [],
+      "email_smtp_server": "",
+      "email_smtp_port": 25,
+      "sms_api_endpoint": "",
+      "sms_api_key": ""
+    },
+    "task_types": {
+      "institution_import": {
+        "topic": "institution_import",
+        "name": "",
+        "consumer_group_id": "service",
+        "description": "事业单位导入任务",
+        "executor_cls_model": "views.tasks.institution_task.InstitutionExecutor",
+        "payload_cls_model": "views.models.institutions.Institutions"
+      },
+      "account_export": {
+        "topic": "account_export",
+        "name": "测试任务",
+        "consumer_group_id": "service",
+        "description": "测试任务",
+        "executor_cls_model": "web_test.views.account.account_task.AccountExportExecutor",
+        "payload_cls_model": "web_test.views.models.account.AccountModel",
+        "payload_is_list": true
+      }
+    }
   }
 }

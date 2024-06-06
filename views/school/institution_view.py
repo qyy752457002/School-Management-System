@@ -4,13 +4,16 @@ from mini_framework.web.views import BaseView
 from views.models.planning_school import PlanningSchool,PlanningSchoolBaseInfo
 from views.models.school import School
 # from fastapi import Field
-from fastapi import Query, Depends
+from fastapi import Query, Depends, Body
 from pydantic import BaseModel, Field
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
 from views.models.institutions import Institutions
 from rules.institution_rule import InstitutionRule
+from mini_framework.web.request_context import request_context_manager
 
+from mini_framework.async_task.app.app_factory import app
+from mini_framework.async_task.task import Task
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
 class InstitutionView(BaseView):
     def __init__(self):
@@ -39,5 +42,20 @@ class InstitutionView(BaseView):
         #     items.append(res)
         #
         # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
+
+
+    # 导入 事业单位      上传文件获取 桶底值    todo 3段流程后面再搞
+
+    async def post_institution_import(self, account: Institutions = Body(..., description="")) -> Task:
+        task = Task(
+            # 需要 在cofnig里有配置   对应task类里也要有这个 键
+            task_type="institution_import",
+            # 文件 要对应的 视图模型
+            payload=account,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
 
 
