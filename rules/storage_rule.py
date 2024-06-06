@@ -65,6 +65,8 @@ class StorageRule(object):
         # 根据不同场景 获取不同的模型
         sheetname= 'Sheet1'
         SampleModel=None
+        SampleModel = Institutions
+
         if sence == 'institution':
 
             SampleModel = Institutions

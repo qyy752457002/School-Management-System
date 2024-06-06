@@ -35,6 +35,11 @@ class Institutions(BaseModel):
     membership_no: str = Field(...,   description=" 隶属单位号",examples=['DFF1565165656'])
     membership_category: str = Field(...,   description=" 隶属单位类型",examples=['行政'])
 
+class InstitutionTask(BaseModel):
+    """{'file_name':filename,'bucket':bucket,'scene':scene},"""
+    file_name: str = Field('', title="",description="",examples=[' '])
+    bucket: str = Field('', title="",description="",examples=[' '])
+    scene: str = Field('', title="",description="",examples=[' '])
 
 
 

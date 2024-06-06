@@ -8,13 +8,12 @@ from fastapi import Query, Depends, Body
 from pydantic import BaseModel, Field
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
-from views.models.institutions import Institutions
+from views.models.institutions import Institutions, InstitutionTask
 from rules.institution_rule import InstitutionRule
 from mini_framework.web.request_context import request_context_manager
 
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task import Task
-from views.models.filetask import FileTask
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
 class InstitutionView(BaseView):
     def __init__(self):
@@ -60,7 +59,7 @@ class InstitutionView(BaseView):
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="institution_import",
             # 文件 要对应的 视图模型
-            payload=FileTask(file_name=filename, bucket=bucket, scene=scene),
+            payload=InstitutionTask(file_name=filename, bucket=bucket, scene=scene),
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)

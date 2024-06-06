@@ -147,7 +147,7 @@
         "consumer_group_id": "service",
         "description": "事业单位导入任务",
         "executor_cls_model": "views.tasks.institution_task.InstitutionExecutor",
-        "payload_cls_model": "views.models.filetask.FileTask"
+        "payload_cls_model": "views.models.institutions.InstitutionTask"
       },
       "account_export": {
         "topic": "account_export",
