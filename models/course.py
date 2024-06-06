@@ -17,7 +17,7 @@ class Course(BaseDBModel):
     __tablename__ = 'lfun_course'
     __table_args__ = {'comment': '课程表模型'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID",autoincrement=True)
+    id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID")
     city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城市")
 
     district: Mapped[str] = mapped_column(String(64), nullable=True, comment="",default='')

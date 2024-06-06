@@ -22,7 +22,7 @@ class TeacherTransaction(BaseDBModel):
     __table_args__ = {'comment': '教师变动修改表'}
 
     transaction_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, comment="变动主键id")
-    teacher_id: Mapped[int] = mapped_column(nullable=False, default=0, comment="教师ID")  # 与教师表关联，关系为一对n
+    teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")  # 与教师表关联，关系为一对n
 
     transaction_type: Mapped[str] = mapped_column(String(255), nullable=True, comment="变动类型", default='')
     transaction_remark: Mapped[str] = mapped_column(String(255), nullable=False, comment="备注", default='')
