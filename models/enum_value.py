@@ -4441,9 +4441,20 @@ class EnumValue(BaseDBModel):
             EnumValue(  enum_name="major", enum_value="63", description="能源动力与材料大类", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(  enum_name="major", enum_value="64", description="土木建筑大类", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(  enum_name="major", enum_value="65", description="水利大类", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major", enum_value="66", description="装备制造大类", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major", enum_value="67", description="生物与化工大类", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major", enum_value="68", description="轻工纺织大类", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+
+
+
             EnumValue(  enum_name="major_lv2", enum_value="6301", description="电力技术类", sort_number=0,parent_id="63",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
-            EnumValue(  enum_name="major_lv2", enum_value="6401", description="建筑设计类", sort_number=0,parent_id="63",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
-            EnumValue(  enum_name="major_lv2", enum_value="6501", description="水文水资源类", sort_number=0,parent_id="63",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major_lv2", enum_value="6401", description="建筑设计类", sort_number=0,parent_id="64",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major_lv2", enum_value="6501", description="水文水资源类", sort_number=0,parent_id="65",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major_lv2", enum_value="6601", description="机械设计制造类", sort_number=0,parent_id="66",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+
+
+
+
             EnumValue(  enum_name="major_lv3", enum_value="630101", description="发电厂及变电站运行与维护", sort_number=0,parent_id="6301",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
 
 
