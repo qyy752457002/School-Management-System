@@ -4315,8 +4315,8 @@ class EnumValue(BaseDBModel):
             EnumValue(id=4291, enum_name="country", enum_value="820203", description="路氹填海区", sort_number=0,parent_id="820200",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=4292, enum_name="country", enum_value="820204", description="圣方济各堂区", sort_number=0,parent_id="820200",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=4293, enum_name="major", enum_value="61", description="农林牧渔大类", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
-            EnumValue(id=4294, enum_name="major", enum_value="52", description="交通运输大类", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
-            
+            EnumValue(id=4294, enum_name="major", enum_value="62", description="资源环境与安全大类", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+
             EnumValue(id=4300, enum_name="school_nature", enum_value="100", description="学前教育", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=4303, enum_name="school_nature", enum_value="101", description="初等教育", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=4304, enum_name="school_nature_lv2", enum_value="201", description="幼儿园", sort_number=0,parent_id="100",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
@@ -4424,6 +4424,28 @@ class EnumValue(BaseDBModel):
             EnumValue(  enum_name="urban_rural_nature_lv3", enum_value="301", description="城乡结合区", sort_number=0,parent_id="200",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
 
             EnumValue(  enum_name="major_lv2", enum_value="6101", description="农业类", sort_number=0,parent_id="61",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major_lv2", enum_value="6102", description="林业类", sort_number=0,parent_id="61",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major_lv2", enum_value="6103", description="畜牧业类", sort_number=0,parent_id="61",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major_lv2", enum_value="6104", description="渔业类", sort_number=0,parent_id="61",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major_lv2", enum_value="6201", description="资源勘查类", sort_number=0,parent_id="62",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major_lv2", enum_value="6202", description="地质类", sort_number=0,parent_id="62",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+
+
+
+            EnumValue(  enum_name="major_lv3", enum_value="610101", description="种子生产技术", sort_number=0,parent_id="6101",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major_lv3", enum_value="610102", description="作物生产技术", sort_number=0,parent_id="6101",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major_lv3", enum_value="610201", description="林业生产技术", sort_number=0,parent_id="6102",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major_lv3", enum_value="610301", description="畜禽生产技术", sort_number=0,parent_id="6103",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major_lv3", enum_value="620101", description="国土资源调查", sort_number=0,parent_id="6201",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+
+            EnumValue(  enum_name="major", enum_value="63", description="能源动力与材料大类", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major", enum_value="64", description="土木建筑大类", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major", enum_value="65", description="水利大类", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major_lv2", enum_value="6301", description="电力技术类", sort_number=0,parent_id="63",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major_lv2", enum_value="6401", description="建筑设计类", sort_number=0,parent_id="63",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major_lv2", enum_value="6501", description="水文水资源类", sort_number=0,parent_id="63",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="major_lv3", enum_value="630101", description="发电厂及变电站运行与维护", sort_number=0,parent_id="6301",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+
 
         ]
 
