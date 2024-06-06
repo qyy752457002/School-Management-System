@@ -1,4 +1,4 @@
-from datetime import date,datetime
+from datetime import date, datetime
 
 from pydantic import BaseModel, Field, model_validator, ValidationError, field_validator
 from fastapi import Query
@@ -834,7 +834,6 @@ class NewTeacher(BaseModel):
     teacher_approval_status: Optional[str] = Query(None, title="审核状态", description="审核状态", example="submitting")
 
 
-
 class NewTeacherRe(BaseModel):
     teacher_base_id: Optional[int] = Field(0, title="教师ID", description="教师ID")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
@@ -876,7 +875,6 @@ class CurrentTeacherQuery(BaseModel):
     in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
     employment_form: str = Query("", title="用人形式", description="用人形式", example="合同")
     enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
-
 
 
 class CurrentTeacherQueryRe(BaseModel):
@@ -948,6 +946,7 @@ class TeacherApprovalQueryRe(BaseModel):
     approval_name: str = Field("", title="审核人", description="审核人", example="张三")
     apply_time: datetime = Field(..., title="申请时间", description="申请时间", example="2021-10-10 10:10:10")
 
+
 class TeacherLaunch(TeacherApprovalQueryRe):
     """
     发起审核
@@ -965,12 +964,14 @@ class TeacherSubmitted(TeacherApprovalQueryRe):
     """
     pass
 
+
 class TeacherApprovaled(TeacherApprovalQueryRe):
     """
     已审核
     """
     approval_status: str = Field("submitting", title="审批状态", description="审批状态")
     approval_time: datetime = Field(..., title="审批时间", description="审批时间", example="2021-10-10 10:10:10")
+
 
 class TeacherAll(TeacherApprovalQueryRe):
     """

@@ -4,7 +4,7 @@ from mini_framework.web.views import BaseView
 
 from models.public_enum import YesOrNo
 from views.models.teachers import NewTeacher
-from fastapi import Query, Depends
+from fastapi import Query, Depends,Body
 
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
@@ -13,7 +13,10 @@ from rules.teachers_rule import TeachersRule
 from views.models.teachers import Teachers, TeacherInfo, TeachersCreatModel, CurrentTeacherInfoSaveModel, \
     TeacherInfoSaveModel, TeacherInfoSubmit
 from rules.teachers_info_rule import TeachersInfoRule
+from mini_framework.web.request_context import request_context_manager
 
+from mini_framework.async_task.app.app_factory import app
+from mini_framework.async_task.task import Task
 
 class NewTeachersView(BaseView):
     def __init__(self):
@@ -155,3 +158,15 @@ class NewTeachersView(BaseView):
         return teacher_base_id
 
 
+
+
+
+    async def post_new_teacher_import(self,account:TeachersCreatModel = Body(...,description="") )-> Task:
+        task = Task(
+            task_type="teacher_import",
+            payload=account,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
