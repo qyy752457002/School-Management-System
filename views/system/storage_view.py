@@ -20,6 +20,6 @@ class StorageView(BaseView):
 
 #     解析 文件和桶  返回 数据结构
     async def get_file_data_preview(self, filename: str, bucket,sence=''):
-        return await self._storage_rule.get_file_data_preview(filename, bucket,sence)
+        return await self._storage_rule.get_file_data(filename, bucket,sence)
 
 

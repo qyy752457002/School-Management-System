@@ -52,7 +52,7 @@ class StorageRule(object):
 
 
     #     解析 文件和桶  返回 数据结构
-    async def get_file_data_preview(self, filename: str, bucket,sence=''):
+    async def get_file_data(self, filename: str, bucket,sence=''):
         # 根据不同场景 获取不同的模型
         SampleModel=sheetname=None
         if sence == 'institution':
