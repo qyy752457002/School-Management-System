@@ -2,7 +2,8 @@ from pydantic import BaseModel, Field
 
 
 class Institutions(BaseModel):
-    institution_name: str = Field(...,  description="单位名称",examples=['文化部'])
+    # todo title 等 必须和表头一样
+    institution_name: str = Field(..., title='单位名称', description="单位名称",examples=['文化部'])
     institution_en_name: str = Field(...,   description=" 单位名称英文",examples=['CEDUCUL'])
     institution_category: str = Field(...,   description=" 单位分类",examples=['事业单位'])
     institution_type: str = Field(...,   description="单位类型 ",examples=[''])

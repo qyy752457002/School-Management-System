@@ -58,19 +58,22 @@ class StorageRule(object):
         random_id = str(uuid.uuid4())
         local_filepath='temp/'+ random_id+filename
 
-        resp = await storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
+        resp =  storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
 
 
 
         # 根据不同场景 获取不同的模型
-        SampleModel=sheetname=None
+        sheetname= 'Sheet1'
+        SampleModel=None
         if sence == 'institution':
 
             SampleModel = Institutions
-            sheetname= ''
+            sheetname= 'Sheet1'
 
 
-        return TestExcelReader(local_filepath,sheetname, SampleModel).read_valid()
+        resdata = TestExcelReader(local_filepath,sheetname, SampleModel).read_valid()
+        print(resdata)
+        return resdata
 
 
 
