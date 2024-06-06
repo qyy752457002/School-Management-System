@@ -31,20 +31,3 @@ class EnumValueView(BaseView):
 
         res = await self.enum_value_rule.query_enum_value_with_page(page_request ,enum_name,parent_code )
         return res
-        #
-        # res = EnumValue(enum_name="国家", enum_value="中国", description="", sort_number=1, parent_id="")
-        #
-        #
-        # for i in range(0, 1):
-        #     items.append(res)
-        # print(items)
-        #
-        # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10,
-        #                          per_page=page_request.per_page, total=100, items=items)
-
-    # 获取所有的课程列表 给下拉
-    # async def get_all(self ):
-    #     # print(page_request)
-    #     items=[]
-    #     res = await self.enum_value_rule.get_enum_value_all( {'school_id':0} )
-    #     return res

@@ -93,18 +93,19 @@ class WorkFlowNodeInstanceRule(object):
         first_node = await self.work_flow_node_define_dao.get_first_node_by_process_code(process_code)
         node_code = first_node.node_code
         node_instance = WorkFlowNodeInstance(process_instance_id=process_instance_id,
-                                             node_code=node_code, node_status="pending", operator_role="",
+                                             node_code=node_code, node_status="pending",
                                              operator_id=operator_id, action="create", description="")
         node_instance = await self.work_flow_node_instance_dao.add_work_flow_node_instance(node_instance)
         return node_instance
 
     # 处理当前节点并确定下一个节点
-    async def process_current_node(self, node_instance, parameters):
+    async def process_current_node(self, node_instance: WorkFlowNodeInstance, parameters: dict):
         operator_id = parameters.get("user_id")
-        role = parameters.get("role")
+        role = query_role(operator_id)
         has_permission = await self.check_permission(operator_id, role, node_instance)
         if not has_permission:
             raise Exception(f"用户{operator_id}没有权限处理节点{node_instance.node_code}")
+        parameters["node.status"] = node_instance.node_status
 
         # 获取当前节点的依赖关系
         dependencies = await self.work_flow_node_depend_dao.get_work_flow_node_depend_by_node_code(
@@ -118,25 +119,25 @@ class WorkFlowNodeInstanceRule(object):
             for dependency in dependencies:
                 strategies = await self.work_flow_node_depend_strategy_dao.get_work_flow_node_depend_strategy_by_depend_code(
                     dependency.depend_code)
-                for strategy in strategies:
-                    if (strategy.parameter_name in parameters and
-                            parameters[strategy.parameter_name] == strategy.parameter_value):
-                        next_node_instance = await self.create_next_node_instance(node_instance, dependency.next_node)
-                        break
+                if all(strategy.parameter_name in parameters and
+                       parameters[strategy.parameter_name] == strategy.parameter_value for strategy in strategies):
+                    next_node_instance = await self.create_next_node_instance(node_instance, dependency.next_node)
                 if next_node_instance:  # 如果找到下一个节点，就不再继续查找
                     break
-        if parameters.get("action") != "none":
-            node_instance.node_status = "completed"
-        node_instance.operator_time = datetime.now()
         node_instance.action = parameters.get("action", "none")
+        if node_instance.action != "none" or "create":
+            node_instance.node_status = "completed"
+        else:
+            node_instance.node_status = "pending"
+        node_instance.operator_time = datetime.now()
+        node_instance.operator_id = operator_id
         await self.work_flow_node_instance_dao.update_work_flow_node_instance(node_instance,
-                                                                              "node_status",
+                                                                              "node_status", "operator_id",
                                                                               "operator_time", "action")
         if "fail" in node_instance.node_code:
             await self.flow_rejected(node_instance.process_instance_id)
         elif "success" in node_instance.node_code:
             await self.flow_approved(node_instance.process_instance_id)
-
         return next_node_instance
 
     # 创建下一个节点
@@ -155,15 +156,18 @@ class WorkFlowNodeInstanceRule(object):
                                                       node_code=next_node_definition.next_node_code,
                                                       node_status="pending",
                                                       operator_id=0, action="create", description="",
-                                                      operation_time=datetime.now())
+                                                      created_time=datetime.now())
             next_node_instance = await self.work_flow_node_instance_dao.add_work_flow_node_instance(next_node_instance)
             return next_node_instance
         return None
 
-    # 流程处理过程
+    # 流程初始化
 
     async def initiate_process(self, work_flow_instance: WorkFlowInstanceCreateModel):
-        work_flow_instance = await self.add_work_flow_instance(work_flow_instance)
+
+        work_flow_instance_db = view_model_to_orm_model(work_flow_instance, WorkFlowInstance)
+        work_flow_instance_db = await self.work_flow_instance_dao.add_work_flow_instance(work_flow_instance_db)
+        work_flow_instance = orm_model_to_view_model(work_flow_instance_db, WorkFlowInstanceModel)
         first_node_instance = await self.create_first_node_instance(work_flow_instance)
         return work_flow_instance, first_node_instance
 
@@ -187,9 +191,8 @@ class WorkFlowNodeInstanceRule(object):
 
     async def get_parameters(self, **kwargs):
         """
-        operator_id: 操作人id
-
-
+        user_id: 操作人id
+        action: 操作
         """
         parameters = {}
         for key, value in kwargs.items():
@@ -198,6 +201,8 @@ class WorkFlowNodeInstanceRule(object):
         return parameters
 
     async def check_permission(self, operator_id, role, node_instance):
-        pass
+        return True
 
 
+def query_role(user_id):
+    pass
