@@ -24,8 +24,9 @@ class InstitutionExecutor(TaskExecutor):
         task: Task = context.task
         print(task)
         # 读取 文件内容  再解析到 各个的 插入 库
+        info = task.payload
         data= [ ]
-        data =await self._storage_rule.get_file_data(task['file_name'], task['bucket'],task['scene'])
+        data =await self._storage_rule.get_file_data(info.file_name, info.bucket,info.scene)
 
         for item in data:
 
@@ -43,6 +44,6 @@ class InstitutionExecutor(TaskExecutor):
 
 # 导出  todo
 class InstitutionExportExecutor(TaskExecutor):
-    async def execute(self, task: 'Task'):
+    async def execute(self, task: 'FileTask'):
         print("test")
         print(dict(task))
