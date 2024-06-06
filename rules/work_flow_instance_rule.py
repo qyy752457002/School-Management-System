@@ -171,24 +171,6 @@ class WorkFlowNodeInstanceRule(object):
         first_node_instance = await self.create_first_node_instance(work_flow_instance)
         return work_flow_instance, first_node_instance
 
-    # async def initiate_and_process_workflow(self, work_flow_instance: WorkFlowInstanceCreateModel):
-    #     work_flow_instance, first_node_instance = await self.initiate_process(work_flow_instance)
-    #     # 模拟处理节点
-    #     current_node_instance = first_node_instance
-    #     while current_node_instance:
-    #         parameters = await self.get_parameters(current_node_instance) # 获取参数
-    #
-    #         if "fail" in current_node_instance.node_code:
-    #             await self.flow_rejected(work_flow_instance.process_instance_id)
-    #             break
-    #         elif "success" in current_node_instance.node_code:
-    #             await self.flow_approved(work_flow_instance.process_instance_id)
-    #             break
-    #         else:
-    #             next_node_instance = await self.process_current_node(current_node_instance, parameters)
-    #         current_node_instance = next_node_instance
-    #     return work_flow_instance
-
     async def get_parameters(self, **kwargs):
         """
         user_id: 操作人id
