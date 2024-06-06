@@ -20,6 +20,10 @@ class Grade(BaseDBModel):
     school_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="教育阶段/学校类别 例如 小学 初中")
     city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城市 编码")
     district: Mapped[str] = mapped_column(String(64), nullable=True, comment="区 编码",default='')
+    course_no: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="学科编码/中职用枚举")
+    course_no_lv2: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="学科编码2")
+    course_no_lv3: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="学科编码3")
+
 
     grade_no: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级编号")
     grade_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="年级类型/班级类型 例如 一年级 二年级 三年级")
