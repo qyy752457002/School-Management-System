@@ -4419,8 +4419,13 @@ class EnumValue(BaseDBModel):
             EnumValue(id=4397, enum_name="grade", enum_value="43", description="大班", sort_number=14,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
         #     todo  3季专业调整
 
-            
-
+            EnumValue(  enum_name="urban_rural_nature", enum_value="102", description="乡村", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="urban_rural_nature_lv2", enum_value="202", description="镇乡结合区", sort_number=0,parent_id="101",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="urban_rural_nature_lv2", enum_value="203", description="特殊区域", sort_number=0,parent_id="101",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="urban_rural_nature_lv2", enum_value="300", description="乡中心区", sort_number=0,parent_id="102",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="urban_rural_nature_lv2", enum_value="301", description="村庄", sort_number=0,parent_id="102",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="urban_rural_nature_lv3", enum_value="301", description="主城区", sort_number=0,parent_id="200",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  enum_name="urban_rural_nature_lv3", enum_value="301", description="城乡结合区", sort_number=0,parent_id="200",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
 
         ]
 
