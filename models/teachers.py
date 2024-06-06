@@ -13,15 +13,17 @@ class TeacherApprovalAtatus(str, Enum):
     待审核
     已通过
     已拒绝
+    已撤回
     """
     SUBMITTING = "submitting"
     SUBMITTED = "submitted"
     APPROVED = "approved"
     REJECTED = "rejected"
+    REVOKED = "revoked"
 
     @classmethod
     def to_list(cls):
-        return [cls.SUBMITTING, cls.SUBMITTED, cls.APPROVED, cls.REJECTED]
+        return [cls.SUBMITTING, cls.SUBMITTED, cls.APPROVED, cls.REJECTED, cls.REVOKED]
 
 
 # class Gender(str, Enum):

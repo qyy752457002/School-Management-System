@@ -37,6 +37,8 @@ class Classes(BaseDBModel):
 
     is_att_class: Mapped[bool] = mapped_column(  nullable=True,default=False, comment="是否附设班")
     att_class_type: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="附设班类型")
+    session_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="届别名称",default='')
+
     class_name: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班级名称")
     class_number: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班号")
     year_established: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="建班年份")
