@@ -5,7 +5,67 @@ from datetime import date, datetime
 from typing import Optional
 from models.transfer_details import TransferType
 from models.public_enum import Gender
+from enum import Enum
 
+class EmploymentStatus(str, Enum):
+    """
+    正常在职：active
+    调出中：transfer_out
+    借出中：borrowed_out
+    调入中：transfer_in
+    借入中：borrowed_in
+    病休：sick_leave
+    进修：training
+    交流：exchange
+    出国：abroad
+    早退休：early_retirement
+    落聘：unemployed
+    死亡：deceased
+    其他：other
+    """
+    ACTIVE = "active"
+    TRANSFER_OUT = "transfer_out"
+    BORROWED_OUT = "borrowed_out"
+    TRANSFER_IN = "transfer_in"
+    BORROWED_IN = "borrowed_in"
+    SICK_LEAVE = "sick_leave"
+    TRAINING = "training"
+    EXCHANGE = "exchange"
+    ABROAD = "abroad"
+    EARLY_RETIREMENT = "early_retirement"
+    UNEMPLOYED = "unemployed"
+    DECEASED = "deceased"
+    OTHER = "other"
+
+    @classmethod
+    def to_list(cls):
+        return [status.value for status in cls]
+
+class TransactionType(str, Enum):
+    """
+    校内岗位调动：internal
+    病休：sick_leave
+    进修：training
+    交流：exchange
+    出国：abroad
+    早退休：early_retirement
+    落聘：unemployed
+    死亡：deceased
+    其他：other
+    """
+    INTERNAL = "internal"
+    SICK_LEAVE = "sick_leave"
+    TRAINING = "training"
+    EXCHANGE = "exchange"
+    ABROAD = "abroad"
+    EARLY_RETIREMENT = "early_retirement"
+    UNEMPLOYED = "unemployed"
+    DECEASED = "deceased"
+    OTHER = "other"
+
+    @classmethod
+    def to_list(cls):
+        return [status.value for status in cls]
 
 # 异动相关模型
 class TeacherTransactionModel(BaseModel):
@@ -21,7 +81,7 @@ class TeacherTransactionModel(BaseModel):
     transaction_reason: str = Field("", title="异动原因", description="异动原因")
     transaction_remark: str = Field("", title="备注", description="备注")
     operator_name: str = Field(..., title="操作人", description="操作人")
-    transaction_time: datetime = Field(..., title="操作时间", description="操作时间")
+    transaction_time: datetime = Field(datetime.now(), title="操作时间", description="操作时间")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
 
 class TeacherTransactionUpdateModel(BaseModel):

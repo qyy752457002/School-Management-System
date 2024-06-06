@@ -5,7 +5,6 @@ from mini_framework.utils.logging import logger
 
 from rules.teachers_rule import TeachersRule
 from models.teachers import Teacher as Teachers
-from views.models.teachers import Teachers as TeachersModel
 from views.models.teachers import TeachersCreatModel
 
 class NewTeacherExecutor(TaskExecutor):
@@ -21,8 +20,8 @@ class NewTeacherExecutor(TaskExecutor):
             teacher_import: Teachers = Teachers(**task.payload)
         elif isinstance(task.payload, Teachers):
             teacher_import: Teachers = task.payload
-        elif isinstance(task.payload, TeachersModel):
-            teacher_import: TeachersModel = task.payload
+        elif isinstance(task.payload, TeachersCreatModel):
+            teacher_import: TeachersCreatModel = task.payload
         else:
             raise ValueError("Invalid payload type")
         res = await self.teacher_rule.add_teachers(teacher_import)
