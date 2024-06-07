@@ -7,10 +7,11 @@ from mini_framework.async_task.task import Task
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
+from starlette.requests import Request
 
 from business_exceptions.planning_school import PlanningSchoolValidateError, PlanningSchoolBaseInfoValidateError
 from rules.operation_record import OperationRecordRule
-from views.common.common_view import compare_modify_fields
+from views.common.common_view import compare_modify_fields, get_extend_params
 from views.models.operation_record import OperationRecord, OperationModule, OperationTargetType, OperationType
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
@@ -46,13 +47,16 @@ class PlanningSchoolView(BaseView):
         self.operation_record_rule = get_injector(OperationRecordRule)
 
     #   包含3部分信息 1.基本信息 2.通讯信息 3.教育信息
-    async def get(self, planning_school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1,
+    async def get(self,
+
+                  planning_school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1,
                                                         max_length=20, example='SC2032633'),
                   planning_school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
                                                     example='XX小学'),
                   planning_school_id: int = Query(..., description="学校id|根据学校查规划校", example='1'),
 
                   ):
+
         planning_school, extra_model = await self.planning_school_rule.get_planning_school_by_id(planning_school_id,
                                                                                                  PlanningSchoolKeyInfo)
         planning_school_communication = await self.planning_school_communication_rule.get_planning_school_communication_by_planning_shcool_id(
@@ -63,7 +67,12 @@ class PlanningSchoolView(BaseView):
         return {'planning_school': planning_school, 'planning_school_communication': planning_school_communication,
                 'planning_school_eduinfo': planning_school_eduinfo, 'planning_school_keyinfo': extra_model}
 
-    async def post(self, planning_school: PlanningSchoolKeyAddInfo):
+    async def post(self, planning_school: PlanningSchoolKeyAddInfo,
+                   request: Request  ,
+
+                   ):
+        # obj= await get_extend_params(request)
+
         # print(planning_school)
         # 保存 模型
         res = await self.planning_school_rule.add_planning_school(planning_school)

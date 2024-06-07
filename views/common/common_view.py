@@ -86,8 +86,7 @@ async def get_extend_params(request):
         obj = ExtendParams(**extparam)
         if obj.unit_type == UnitType.CITY.value:
             obj.city = Constant.CURRENT_CITY
-        # if obj.unit_type == UnitType.COUNTRY.value:
-        #     obj.county_id = Constant.CURRENT_CITY
+
         if obj.county_id:
             # 区的转换   or todo
             enuminfo = await (  EnumValueDAO()).get_enum_value_by_value(obj.county_id, 'country' )
