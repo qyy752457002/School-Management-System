@@ -369,13 +369,8 @@ class SchoolView(BaseView):
                          page_request=Depends(PageRequest),
 
     ):
-        # print(page_request, request,111, headers, type(headers))
-
-
-        # print(unit_type)
         items = []
-        # exit(1)
-        # return page_search
+        # 学校 区 只能看自己的范围内的数据
         paging_result = await self.school_rule.query_schools(school_name,await get_extend_params(request))
         return paging_result
     # 学校开设审核

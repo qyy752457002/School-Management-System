@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
@@ -92,6 +93,7 @@ async def get_extend_params(request):
             enuminfo = await (  EnumValueDAO()).get_enum_value_by_value(obj.county_id, 'country' )
             if enuminfo:
                 obj.county_name = enuminfo.description
+    print('Extendparams', obj)
 
 
     return obj
