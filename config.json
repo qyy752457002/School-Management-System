@@ -158,13 +158,13 @@
         "payload_cls_model": "web_test.views.models.account.AccountModel",
         "payload_is_list": true
       },
-      "new_teacher_import": {
-        "topic": "new_teacher_import",
-        "name": "新教师导入",
+      "teacher_import": {
+        "topic": "teacher_import",
+        "name": "教师导入",
         "consumer_group_id": "service",
-        "description": "新教师导入",
-        "executor_cls_model": "views.tasks.new_teacher_task.NewTeacherExecutor",
-        "payload_cls_model": "views.models.teacher.TeacherCreateModel",
+        "description": "教师导入",
+        "executor_cls_model": "views.tasks.new_teacher_task.TeacherExecutor",
+        "payload_cls_model": "views.models.teachers.TeacherImportTask",
         "payload_is_list": true
       }
     }
