@@ -48,7 +48,7 @@
       },
       "school": {
         "name": "k8s",
-        "path": "/school"
+        "path": "school"
       },
       "teacher": {
         "name": "k8s",
