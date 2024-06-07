@@ -149,14 +149,6 @@
         "executor_cls_model": "views.tasks.institution_task.InstitutionExecutor",
         "payload_cls_model": "views.models.institutions.InstitutionTask"
       },
-      "planning_school_import": {
-        "topic": "planning_school_import",
-        "name": "",
-        "consumer_group_id": "service",
-        "description": "规划校导入任务",
-        "executor_cls_model": "views.tasks.planning_school_task.PlanningSchoolExecutor",
-        "payload_cls_model": "views.models.planning_school.PlanningSchoolTask"
-      },
       "account_export": {
         "topic": "account_export",
         "name": "测试任务",
@@ -165,6 +157,14 @@
         "executor_cls_model": "web_test.views.account.account_task.AccountExportExecutor",
         "payload_cls_model": "web_test.views.models.account.AccountModel",
         "payload_is_list": true
+      },
+      "planning_school_import": {
+        "topic": "planning_school_import",
+        "name": "规划校上传和导入",
+        "consumer_group_id": "service",
+        "description": "",
+        "executor_cls_model": "views.tasks.planning_school_task.PlanningSchoolExecutor",
+        "payload_cls_model": "views.models.planning_school.PlanningSchoolTask"
       }
     }
   }
