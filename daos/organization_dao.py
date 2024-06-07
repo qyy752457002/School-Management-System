@@ -35,8 +35,12 @@ class OrganizationDAO(DAOBase):
 		result = await session.execute(select(Organization).where(Organization.org_name == name))
 		return result.scalar_one_or_none()
 
-	async def query_organization_with_page(self, pageQueryModel, page_request: PageRequest):
+	async def query_organization_with_page(self,  page_request: PageRequest,org_type , school_id):
 		query = select(Organization)
+		if org_type:
+			query = query.where(Organization.org_type == org_type)
+		if school_id:
+			query = query.where(Organization.school_id == school_id)
 		
 		### �˴���д��ѯ����
 		

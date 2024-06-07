@@ -141,30 +141,10 @@ class OrganizationRule(object):
     async def get_organization_count(self):
         return await self.organization_dao.get_organization_count()
 
-    async def query_organization_with_page(self, page_request: PageRequest,   organization_name,organization_no,organization_code,
-                                     block,organization_level,borough,status,founder_type,
-                                     founder_type_lv2,
-                                     founder_type_lv3,planning_organization_id ):
-        #  根据举办者类型  1及 -3级  处理为条件   1  2ji全部转换为 3级  最后in 3级查询
-        enum_value_rule = get_injector(EnumValueRule)
-        if founder_type:
-            if len(founder_type) > 0:
-
-                founder_type_lv2_res= await enum_value_rule.get_next_level_enum_values('founder_type'  ,founder_type)
-                for item in founder_type_lv2_res:
-                    founder_type_lv2.append(item.enum_value)
+    async def query_organization_with_page(self, page_request: PageRequest,   org_type , school_id ):
 
 
-            # query = query.where(PlanningSchool.founder_type_lv2 == founder_type_lv2)
-        if len(founder_type_lv2)>0:
-            founder_type_lv3_res= await enum_value_rule.get_next_level_enum_values('founder_type_lv2'  ,founder_type_lv2)
-            for item in founder_type_lv3_res:
-                founder_type_lv3.append(item.enum_value)
-
-        paging = await self.organization_dao.query_organization_with_page(page_request,  organization_name,organization_no,organization_code,
-                                                              block,organization_level,borough,status,founder_type,
-                                                              founder_type_lv2,
-                                                              founder_type_lv3,planning_organization_id
+        paging = await self.organization_dao.query_organization_with_page(page_request,  org_type , school_id
                                                               )
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, Organization)
