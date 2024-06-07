@@ -3,9 +3,11 @@ from mini_framework.async_task.task import Task, Context
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.logging import logger
 from rules.storage_rule import StorageRule
+from rules.storage_rule import TestExcelReader
 from rules.teachers_rule import TeachersRule
 from models.teachers import Teacher as Teachers
 from views.models.teachers import TeachersCreatModel
+import pandas as pd
 
 
 class TeacherExecutor(TaskExecutor):
@@ -20,9 +22,14 @@ class TeacherExecutor(TaskExecutor):
         print(task)
         try:
             print('开始执行task')
-            info = task.payload
+            SampleModel = TeachersCreatModel
+            source_file = task.source_file
+            excel_file = pd.ExcelFile(source_file)
+            sheet_name = excel_file.sheet_names[0]
+
             data = []
-            data = await self._storage_rule.get_file_data(info.file_name, info.bucket, info.scene)
+            data = TestExcelReader(source_file, sheet_name, SampleModel).read_valid()
+            print(len(data), 'data')
             for item in data:
                 if isinstance(item, dict):
                     teacher_import: Teachers = Teachers(**item)

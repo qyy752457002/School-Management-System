@@ -57,7 +57,7 @@ class StorageRule(object):
     async def get_file_data(self, filename: str, bucket,sence=''):
         # 下载保存本地
         random_id = str(uuid.uuid4())
-        local_filepath='b.xlsx'
+        source='c.xlsx'
         # local_filepath='a.xlsx'
 
         # local_filepath='temp/'+ random_id+filename
@@ -68,8 +68,6 @@ class StorageRule(object):
         sheetname= 'Sheet1'
 
         SampleModel=None
-        # SampleModel = Institutions
-        # SampleModel = InstitutionsValid
 
         if sence == 'institution':
             SampleModel = Institutions

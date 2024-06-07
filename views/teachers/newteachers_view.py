@@ -157,13 +157,12 @@ class NewTeachersView(BaseView):
         await self.teacher_info_rule.rejected(teacher_base_id)
         return teacher_base_id
 
-    async def post_new_teacher_import(self, filename: str = Query(..., description="文件名"),
-                                      bucket: str = Query(..., description="文件名"),
-                                      scene: str = Query('', description="文件名"),
+    async def post_new_teacher_import(self, source_file: str = Query(..., title="文件名", description="文件名"),
                                       ) -> Task:
+        source_file = "c.xlsx"
         task = Task(
             task_type="teacher_import",
-            payload=TeacherImportTask(file_name=filename, bucket=bucket, scene=scene),
+            source_file=source_file,
             operator=request_context_manager.current().current_login_account.account_id
         )
 
