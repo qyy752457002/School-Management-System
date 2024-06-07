@@ -59,9 +59,8 @@ class StorageRule(object):
         local_filepath='b.xlsx'
         # local_filepath='a.xlsx'
 
-        # local_filepath='temp/'+ random_id+filename
-
-        # resp =  storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
+        local_filepath='temp/'+ random_id+filename
+        resp =  storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
 
 
         # 根据不同场景 获取不同的模型
@@ -72,7 +71,6 @@ class StorageRule(object):
         # SampleModel = InstitutionsValid
 
         if sence == 'institution':
-
             SampleModel = Institutions
             sheetname= 'Sheet1'
 
