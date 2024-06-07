@@ -56,46 +56,21 @@ class OrganizationRule(object):
         organization = orm_model_to_view_model(organization_db, Organization, exclude=["created_at",'updated_at'])
         return organization
 
-    async def update_organization(self, organization,ctype=1):
-        # 默认 改 关键信息
+    async def update_organization(self, organization,):
+        # 默认 改
         exists_organization = await self.organization_dao.get_organization_by_id(organization.id)
         if not exists_organization:
-            raise Exception(f"校区{organization.id}不存在")
-        if ctype==1:
-            organization_db = Campus()
-            organization_db.id = organization.id
-            organization_db.organization_no = organization.organization_no
-            organization_db.organization_name = organization.organization_name
-            organization_db.block = organization.block
-            organization_db.borough = organization.borough
-            organization_db.organization_type = organization.organization_type
-            organization_db.organization_operation_type = organization.organization_operation_type
-            organization_db.organization_operation_type_lv2 = organization.organization_operation_type_lv2
-            organization_db.organization_operation_type_lv3 = organization.organization_operation_type_lv3
-            organization_db.organization_org_type = organization.organization_org_type
-            organization_db.organization_level = organization.organization_level
-        else:
-            organization_db = Campus()
-            organization_db.id = organization.id
-            organization_db.organization_name=organization.organization_name
-            organization_db.organization_short_name=organization.organization_short_name
-            organization_db.organization_code=organization.organization_code
-            organization_db.create_organization_date=organization.create_organization_date
-            organization_db.founder_type=organization.founder_type
-            organization_db.founder_name=organization.founder_name
-            organization_db.urban_rural_nature=organization.urban_rural_nature
-            organization_db.organization_operation_type=organization.organization_operation_type
-            organization_db.organization_org_form=organization.organization_org_form
-            organization_db.organization_operation_type_lv2=organization.organization_operation_type_lv2
-            organization_db.organization_operation_type_lv3=organization.organization_operation_type_lv3
-            organization_db.department_unit_number=organization.department_unit_number
-            organization_db.sy_zones=organization.sy_zones
-            organization_db.historical_evolution=organization.historical_evolution
+            raise Exception(f" {organization.id}不存在")
+        organization_db= view_model_to_orm_model(organization, OrganizationModel, exclude=[])
+        need_update_list = []
+        # 自动判断哪些字段需要更新
+        for key, value in organization.dict().items():
+            if value:
+                need_update_list.append(key)
 
 
-        organization_db = await self.organization_dao.update_organization(organization_db,ctype)
-        # 更新不用转换   因为得到的对象不熟全属性
-        # organization = orm_model_to_view_model(organization_db, Organization, exclude=[""])
+        organization_db = await self.organization_dao.update_organization(organization_db,*need_update_list)
+        print(organization_db,999)
         return organization_db
 
     async def update_organization_byargs(self, organization,ctype=1):
