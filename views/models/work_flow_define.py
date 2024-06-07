@@ -33,8 +33,8 @@ class WorkFlowDefineModel(BaseModel):
     是否入职区审批：is_entry_area_approval
     是否入职市审批：is_entry_city_approval
     """
-    process_code: ProcessCode = Field(..., title="流程code", description="流程code")
-    process_name: ProcessName = Field(..., title="流程名称", description="流程名称")
+    process_code: str = Field(..., title="流程code", description="流程code")
+    process_name: str = Field(..., title="流程名称", description="流程名称")
     process_description: str = Field("", title="流程描述", description="流程描述")
     process_type: ProcessType = Field(..., title="流程类型", description="流程类型")
     is_borrow: Optional[bool] = Field(False, title="借入/借出", description="借入/借出")

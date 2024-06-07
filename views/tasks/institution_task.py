@@ -9,31 +9,47 @@ from rules.institution_rule import InstitutionRule
 # from web_test.rules.institution_rule import InstitutionRule
 # from web_test.views.models.account import InstitutionCreateModel
 from models.institution import Institution as Institutions
+from rules.storage_rule import StorageRule
 from views.models.institutions import Institutions as InstitutionsModel
 
 class InstitutionExecutor(TaskExecutor):
     def __init__(self):
         self.institution_rule = get_injector(InstitutionRule)
+        self._storage_rule: StorageRule = get_injector(StorageRule)
+
         super().__init__()
 
     async def execute(self, context: 'Context'):
-        print('开始执行task')
         task: Task = context.task
         print(task)
-        if isinstance(task.payload, dict):
-            institution_import: Institutions = Institutions(**task.payload)
-        elif isinstance(task.payload, Institutions):
-            institution_import: Institutions = task.payload
-        elif isinstance(task.payload, InstitutionsModel):
-            institution_import: InstitutionsModel = task.payload
-        else:
-            raise ValueError("Invalid payload type")
-        res = await self.institution_rule.add_institution(institution_import)
-        print('插入数据res',res)
-        logger.info(f"Institution {institution_import.username} created")
+        # 读取 文件内容  再解析到 各个的 插入 库
+        try:
+            print('开始执行task')
+
+            info = task.payload
+            data= [ ]
+            data =await self._storage_rule.get_file_data(info.file_name, info.bucket,info.scene)
+
+            for item in data:
+
+                if isinstance(item, dict):
+                    institution_import: Institutions = Institutions(**item)
+                elif isinstance(item, Institutions):
+                    institution_import: Institutions = item
+                elif isinstance(item, InstitutionsModel):
+                    institution_import: InstitutionsModel = item
+                else:
+                    raise ValueError("Invalid payload type")
+                res = await self.institution_rule.add_institution(institution_import)
+                print('插入数据res',res)
+            logger.info(f"Institution   created")
+        except Exception as e:
+            print(e,'异常')
+            logger.error(f"Institution   create failed")
+
 
 # 导出  todo
 class InstitutionExportExecutor(TaskExecutor):
-    async def execute(self, task: 'Task'):
+    async def execute(self, task: 'FileTask'):
         print("test")
         print(dict(task))

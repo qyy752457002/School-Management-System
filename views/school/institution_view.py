@@ -8,7 +8,7 @@ from fastapi import Query, Depends, Body
 from pydantic import BaseModel, Field
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
-from views.models.institutions import Institutions
+from views.models.institutions import Institutions, InstitutionTask
 from rules.institution_rule import InstitutionRule
 from mini_framework.web.request_context import request_context_manager
 
@@ -36,22 +36,30 @@ class InstitutionView(BaseView):
         res = await self.institution_rule.query_institution_with_page(page_request,)
         return res
 
-        #
-        # res = Institutions(institution_name='XXX',institution_en_name='XXX',institution_category='XXX',institution_type='XXX',fax_number='XXX',email='XXX',contact_number='XXX',area_code='XXX',institution_code='XXX',create_date='XXX',leg_repr_name='XXX',party_leader_name='XXX',party_leader_position='XXX',adm_leader_name='XXX',adm_leader_position='XXX',department_unit_number='XXX',sy_zones='XXX',social_credit_code='XXX',postal_code='XXX',detailed_address='XXX',related_license_upload='XXX',long='XXX',lat='XXX', urban_rural_nature='XXX',location_economic_attribute='XXX',leg_repr_certificatenumber='XXX',is_entity='XXX',website_uRL='XXX',status='XXX',membership_no='XXX',membership_category='XXX',)
-        # for i in range(0,page_request.per_page):
-        #     items.append(res)
-        #
-        # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
-
-
-    # 导入 事业单位      上传文件获取 桶底值    todo 3段流程后面再搞
-
-    async def post_institution_import(self, account: Institutions = Body(..., description="")) -> Task:
+    async def post_institution_import_example(self, account: Institutions = Body(..., description="")) -> Task:
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个键
             task_type="institution_import",
             # 文件 要对应的 视图模型
             payload=account,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
+
+    # 导入 事业单位      上传文件获取 桶底值
+
+    async def post_institution_import(self,
+                                      filename: str = Query(..., description="文件名"),
+                                      bucket: str = Query(..., description="文件名"),
+                                      scene: str = Query('', description="文件名"),
+                                      ) -> Task:
+        task = Task(
+            # 需要 在cofnig里有配置   对应task类里也要有这个 键
+            task_type="institution_import",
+            # 文件 要对应的 视图模型
+            payload=InstitutionTask(file_name=filename, bucket=bucket, scene=scene),
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)

@@ -19,6 +19,4 @@ python main.py db-init revision
 python main.py db-init upgrade
 
 
-单独启动 任务服务
-python main.py task
-
+todo  状态键编辑接口

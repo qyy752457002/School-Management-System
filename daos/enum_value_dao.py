@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, or_
+from sqlalchemy import select, func, or_, asc
 
 from mini_framework.databases.entities.dao_base import DAOBase
 from mini_framework.databases.queries.pages import Paging
@@ -56,22 +56,15 @@ class EnumValueDAO(DAOBase):
         return result.scalar()
 
     async def query_enum_value_with_page(self, page_request: PageRequest, enum_value_name, parent_code) -> Paging:
-        query = select(EnumValue)
+        query = select(EnumValue).order_by(asc(EnumValue.sort_number)).order_by(asc(EnumValue.id))
         if enum_value_name:
             if ',' in enum_value_name:
                 enum_value_name = enum_value_name.split(',')
                 if isinstance(enum_value_name, list):
-                    # print(f"{var} 是一个列表")
                     query = query.where(EnumValue.enum_name.in_(enum_value_name))
-                # query = query.where(PlanningSchool.founder_type_lv3.in_(founder_type_lv3))
             else:
                 query = query.where(EnumValue.enum_name == enum_value_name)
-        # if enum_value_name == 'province':
-        #     # query = query.where(EnumValue.parent_id == '')
-        #
-        # else:
-        #     # query = query.where(EnumValue.parent_id != '')
-        #     pass
+
         if parent_code:
             if ',' in parent_code:
                 parent_code = parent_code.split(',')
@@ -79,22 +72,12 @@ class EnumValueDAO(DAOBase):
             if isinstance(parent_code, list):
                 # print(f"{var} 是一个列表")
                 query = query.where(EnumValue.parent_id.in_(parent_code))
-            # query = query.where(PlanningSchool.founder_type_lv3.in_(founder_type_lv3))
 
             else:
                 # print(f"{var} 不是一个列表")
                 if len(parent_code) > 0:
                     query = query.where(EnumValue.parent_id == parent_code)
-        # if not len(parent_code) > 0:
-        #     cond1 = EnumValue.parent_id == ''
-        #     cond2 = EnumValue.parent_id == '0'
-        #     mcond = or_(cond1, cond2)
-        #
-        #     query = query.filter(
-        #         mcond
-        #
-        #     )
-            # query = query.where(EnumValue.parent_id == '')
+
         paging = await self.query_page(query, page_request)
         return paging
 
