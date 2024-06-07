@@ -1,0 +1,61 @@
+from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
+from mini_framework.web.views import BaseView
+
+from rules.organization_rule import OrganizationRule
+# from views.models.organization import Organization
+from views.models.grades import Grades
+
+from fastapi import Query, Depends
+
+from views.models.organization import Organization
+
+
+# from rules.organization_rule import OrganizationRule
+
+
+class OrganizationView(BaseView):
+    def __init__(self):
+        super().__init__()
+        self.organization_rule = get_injector(OrganizationRule)
+
+    async def post(self, organization: Organization):
+        print(organization)
+        res = await  self.organization_rule.add_organization(organization)
+
+        return res
+
+    async def page(self,
+                   page_request=Depends(PageRequest),
+
+                   borough: str = Query('', title=" ", description=" 行政管辖区", examples=['铁西区']),
+                   block: str = Query('', title=" ", description="地域管辖区", examples=['铁西区']),
+
+                   school_id: int = Query(0, title="学校ID", description="学校ID", examples=[1]),
+
+                   grade_id: int = Query('', title="年级ID", description="年级ID", examples=[2]),
+                   class_name: str = Query('', title="Grade_name", description="班级名称", examples=['一年级'])
+
+                   ):
+        print(page_request)
+        items = []
+        res = await self.organization_rule.query_organization_with_page(page_request, borough, block, school_id, grade_id,
+                                                                   class_name)
+        return res
+
+    # 删除
+    async def delete(self, class_id: str = Query(..., title="", description="班级id", min_length=1, max_length=20,
+                                                 example='SC2032633'), ):
+        print(class_id)
+        res = await self.organization_rule.softdelete_organization(class_id)
+
+        return res
+
+    # 修改 关键信息
+    async def put(self, organization: Organization
+                  ):
+        # print(planning_school)
+        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res = await self.organization_rule.update_organization(organization)
+
+        return res
