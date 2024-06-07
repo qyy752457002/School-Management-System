@@ -22,7 +22,7 @@ class OrganizationDAO(DAOBase):
 
 	async def delete_organization(self, organization: Organization):
 		session = await self.master_db()
-		await session.delete(organization)
+		await self.delete(session,organization)
 		await session.commit()
 
 	async def get_organization_by_id(self, id,use_master=False):
