@@ -37,10 +37,11 @@ class OrganizationView(BaseView):
         return res
 
     # 删除
-    async def delete(self, class_id: str = Query(..., title="", description="班级id", min_length=1, max_length=20,
-                                                 example='SC2032633'), ):
-        print(class_id)
-        res = await self.organization_rule.softdelete_organization(class_id)
+    async def delete(self,
+                     org_id: int = Query(0, title="", description="", examples=[1]),
+                       ):
+        print(org_id)
+        res = await self.organization_rule.delete_organization(org_id)
 
         return res
 

@@ -25,8 +25,11 @@ class OrganizationDAO(DAOBase):
 		await session.delete(organization)
 		await session.commit()
 
-	async def get_organization_by_id(self, id):
-		session = await self.slave_db()
+	async def get_organization_by_id(self, id,use_master=False):
+		if use_master:
+			session = await self.master_db()
+		else:
+			session = await self.slave_db()
 		result = await session.execute(select(Organization).where(Organization.id == id))
 		return result.scalar_one_or_none()
 
@@ -36,7 +39,7 @@ class OrganizationDAO(DAOBase):
 		return result.scalar_one_or_none()
 
 	async def query_organization_with_page(self,  page_request: PageRequest,org_type , school_id):
-		query = select(Organization)
+		query = select(Organization).where(Organization.is_deleted == False)
 		if org_type:
 			query = query.where(Organization.org_type == org_type)
 		if school_id:

@@ -48,7 +48,7 @@ class OrganizationRule(object):
         #                                              exclude=["first_name", "last_name"]
         organization_db = view_model_to_orm_model(organization, OrganizationModel,    exclude=["id"])
         # school_db.status =  PlanningSchoolStatus.DRAFT.value
-        # 校区只有2步  故新增几位开设中 
+        # 只有2步  故新增几位开设中 
         organization_db.created_uid = 0
         organization_db.updated_uid = 0
 
@@ -76,7 +76,7 @@ class OrganizationRule(object):
     async def update_organization_byargs(self, organization,ctype=1):
         exists_organization = await self.organization_dao.get_organization_by_id(organization.id)
         if not exists_organization:
-            raise Exception(f"校区{organization.id}不存在")
+            raise Exception(f"{organization.id}不存在")
         # if exists_organization.status== PlanningSchoolStatus.DRAFT.value:
         #     exists_organization.status= PlanningSchoolStatus.OPENING.value
         #     organization.status= PlanningSchoolStatus.OPENING.value
@@ -95,9 +95,9 @@ class OrganizationRule(object):
         return organization_db
 
     async def delete_organization(self, organization_id):
-        exists_organization = await self.organization_dao.get_organization_by_id(organization_id)
+        exists_organization = await self.organization_dao.get_organization_by_id(organization_id,True)
         if not exists_organization:
-            raise Exception(f"校区{organization_id}不存在")
+            raise Exception(f"{organization_id}不存在")
         organization_db = await self.organization_dao.delete_organization(exists_organization)
         organization = orm_model_to_view_model(organization_db, Organization, exclude=[""],)
         return organization
@@ -105,7 +105,7 @@ class OrganizationRule(object):
     async def softdelete_organization(self, organization_id):
         exists_organization = await self.organization_dao.get_organization_by_id(organization_id)
         if not exists_organization:
-            raise Exception(f"校区{organization_id}不存在")
+            raise Exception(f"{organization_id}不存在")
         organization_db = await self.organization_dao.softdelete_organization(exists_organization)
         # organization = orm_model_to_view_model(organization_db, Organization, exclude=[""],)
         return organization_db
