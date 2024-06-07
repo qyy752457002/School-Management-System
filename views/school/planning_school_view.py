@@ -2,7 +2,10 @@ import logging
 from datetime import datetime
 from typing import List
 
+from mini_framework.async_task.app.app_factory import app
+from mini_framework.async_task.task import Task
 from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 
 from business_exceptions.planning_school import PlanningSchoolValidateError, PlanningSchoolBaseInfoValidateError
@@ -11,7 +14,7 @@ from views.common.common_view import compare_modify_fields
 from views.models.operation_record import OperationRecord, OperationModule, OperationTargetType, OperationType
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
-    PlanningSchoolBaseInfoOptional
+    PlanningSchoolBaseInfoOptional, PlanningSchoolTask
 from views.models.planning_school_communications import PlanningSchoolCommunications
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
 from views.models.school import School
@@ -284,10 +287,22 @@ class PlanningSchoolView(BaseView):
 
         return res
 
-    # 导入 todo 任务队列的
-    async def importing(self, planning_school: PlanningSchool):
-        print(planning_school)
-        return planning_school
+    # 导入   任务队列的
+    async def post_planning_school_import(self,
+                                      filename: str = Query(..., description="文件名"),
+                                      bucket: str = Query(..., description="文件名"),
+                                      scene: str = Query('', description="文件名"),
+                                      ) -> Task:
+        task = Task(
+            # 需要 在cofnig里有配置   对应task类里也要有这个 键
+            task_type="planning_school_import",
+            # 文件 要对应的 视图模型
+            payload=PlanningSchoolTask(file_name=filename, bucket=bucket, scene=scene),
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
 
     # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性     允许 部分 不填  现保存
     async def put(self,
