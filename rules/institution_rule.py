@@ -1,4 +1,5 @@
 import hashlib
+from datetime import datetime
 
 import shortuuid
 
@@ -18,91 +19,75 @@ class InstitutionRule(object):
     async def get_institution_by_id(self, institution_id):
         institution_db = await self.institution_dao.get_institution_by_id(institution_id)
         # 可选 , exclude=[""]
-        planning_school = orm_model_to_view_model(institution_db, InstitutionModel)
-        return planning_school
+        institution = orm_model_to_view_model(institution_db, InstitutionModel)
+        return institution
 
-    async def add_institution(self, planning_school: InstitutionModel):
-        exists_planning_school = await self.institution_dao.get_institution_by_id(
-            planning_school.planning_school_id)
-        if exists_planning_school:
-            raise Exception(f"行政事业单位{planning_school.institution_name}已存在")
+    async def add_institution(self, institution: InstitutionModel):
+        # exists_institution = await self.institution_dao.get_institution_by_id(
+        #     institution.id)
+        # if exists_institution:
+        #     raise Exception(f"行政事业单位{institution.institution_name}已存在")
+
+
         institution_db = Institution()
-        institution_db.is_ethnic_school = planning_school.is_ethnic_school
-        institution_db.is_att_class = planning_school.is_att_class
-        institution_db.att_class_type = planning_school.att_class_type
-        institution_db.is_province_feat = planning_school.is_province_feat
-        institution_db.is_bilingual_clas = planning_school.is_bilingual_clas
-        institution_db.minority_lang_code = planning_school.minority_lang_code
-        institution_db.is_profitable = planning_school.is_profitable
-        institution_db.prof_org_name = planning_school.prof_org_name
-        institution_db.is_prov_demo = planning_school.is_prov_demo
-        institution_db.is_latest_year = planning_school.is_latest_year
-        institution_db.is_town_kinderg = planning_school.is_town_kinderg
-        institution_db.is_incl_kinderg = planning_school.is_incl_kinderg
-        institution_db.is_affil_school = planning_school.is_affil_school
-        institution_db.affil_univ_code = planning_school.affil_univ_code
-        institution_db.affil_univ_name = planning_school.affil_univ_name
-        institution_db.is_last_yr_revok = planning_school.is_last_yr_revok
-        institution_db.is_school_counted = planning_school.is_school_counted
+        institution_db = view_model_to_orm_model(institution, Institution,    exclude=["id"])
+        institution_db.updated_at = datetime.now()
+        institution_db.created_at = datetime.now()
 
-        institution_db.planning_school_id = planning_school.planning_school_id
-
-        institution_db.deleted = 0
-        institution_db.created_uid = 0
-        institution_db.updated_uid = 0
 
 
         institution_db = await self.institution_dao.add_institution(institution_db)
-        planning_school = orm_model_to_view_model(institution_db, InstitutionModel, exclude=[""])
-        return planning_school
+        print(institution_db,'插入suc')
+        institution = orm_model_to_view_model(institution_db, InstitutionModel, exclude=[""])
+        return institution
 
-    async def update_institution(self, planning_school,ctype=1):
-        exists_planning_school = await self.institution_dao.get_institution_by_id(planning_school.id)
-        if not exists_planning_school:
-            raise Exception(f"行政事业单位{planning_school.id}不存在")
+    async def update_institution(self, institution,ctype=1):
+        exists_institution = await self.institution_dao.get_institution_by_id(institution.id)
+        if not exists_institution:
+            raise Exception(f"行政事业单位{institution.id}不存在")
         if ctype==1:
             institution_db = Institution()
-            institution_db.id = planning_school.id
-            institution_db.institution_no = planning_school.institution_no
-            institution_db.institution_name = planning_school.institution_name
-            institution_db.block = planning_school.block
-            institution_db.borough = planning_school.borough
-            institution_db.institution_type = planning_school.institution_type
-            institution_db.institution_operation_type = planning_school.institution_operation_type
-            institution_db.institution_operation_type_lv2 = planning_school.institution_operation_type_lv2
-            institution_db.institution_operation_type_lv3 = planning_school.institution_operation_type_lv3
-            institution_db.institution_org_type = planning_school.institution_org_type
-            institution_db.institution_level = planning_school.institution_level
+            institution_db.id = institution.id
+            institution_db.institution_no = institution.institution_no
+            institution_db.institution_name = institution.institution_name
+            institution_db.block = institution.block
+            institution_db.borough = institution.borough
+            institution_db.institution_type = institution.institution_type
+            institution_db.institution_operation_type = institution.institution_operation_type
+            institution_db.institution_operation_type_lv2 = institution.institution_operation_type_lv2
+            institution_db.institution_operation_type_lv3 = institution.institution_operation_type_lv3
+            institution_db.institution_org_type = institution.institution_org_type
+            institution_db.institution_level = institution.institution_level
         else:
             institution_db = Institution()
-            institution_db.id = planning_school.id
-            institution_db.institution_name=planning_school.institution_name
-            institution_db.institution_short_name=planning_school.institution_short_name
-            institution_db.institution_code=planning_school.institution_code
-            institution_db.create_institution_date=planning_school.create_institution_date
-            institution_db.founder_type=planning_school.founder_type
-            institution_db.founder_name=planning_school.founder_name
-            institution_db.urban_rural_nature=planning_school.urban_rural_nature
-            institution_db.institution_operation_type=planning_school.institution_operation_type
-            institution_db.institution_org_form=planning_school.institution_org_form
-            institution_db.institution_operation_type_lv2=planning_school.institution_operation_type_lv2
-            institution_db.institution_operation_type_lv3=planning_school.institution_operation_type_lv3
-            institution_db.department_unit_number=planning_school.department_unit_number
-            institution_db.sy_zones=planning_school.sy_zones
-            institution_db.historical_evolution=planning_school.historical_evolution
+            institution_db.id = institution.id
+            institution_db.institution_name=institution.institution_name
+            institution_db.institution_short_name=institution.institution_short_name
+            institution_db.institution_code=institution.institution_code
+            institution_db.create_institution_date=institution.create_institution_date
+            institution_db.founder_type=institution.founder_type
+            institution_db.founder_name=institution.founder_name
+            institution_db.urban_rural_nature=institution.urban_rural_nature
+            institution_db.institution_operation_type=institution.institution_operation_type
+            institution_db.institution_org_form=institution.institution_org_form
+            institution_db.institution_operation_type_lv2=institution.institution_operation_type_lv2
+            institution_db.institution_operation_type_lv3=institution.institution_operation_type_lv3
+            institution_db.department_unit_number=institution.department_unit_number
+            institution_db.sy_zones=institution.sy_zones
+            institution_db.historical_evolution=institution.historical_evolution
 
 
         institution_db = await self.institution_dao.update_institution(institution_db,ctype)
         # 更新不用转换   因为得到的对象不熟全属性
-        # planning_school = orm_model_to_view_model(institution_db, InstitutionModel, exclude=[""])
+        # institution = orm_model_to_view_model(institution_db, InstitutionModel, exclude=[""])
         return institution_db
 
     async def softdelete_institution(self, institution_id):
-        exists_planning_school = await self.institution_dao.get_institution_by_id(institution_id)
-        if not exists_planning_school:
+        exists_institution = await self.institution_dao.get_institution_by_id(institution_id)
+        if not exists_institution:
             raise Exception(f"行政事业单位{institution_id}不存在")
-        institution_db = await self.institution_dao.softdelete_institution(exists_planning_school)
-        # planning_school = orm_model_to_view_model(institution_db, InstitutionModel, exclude=[""],)
+        institution_db = await self.institution_dao.softdelete_institution(exists_institution)
+        # institution = orm_model_to_view_model(institution_db, InstitutionModel, exclude=[""],)
         return institution_db
 
 

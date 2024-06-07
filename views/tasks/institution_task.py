@@ -44,7 +44,7 @@ class InstitutionExecutor(TaskExecutor):
                 print('插入数据res',res)
             logger.info(f"Institution   created")
         except Exception as e:
-            print(e)
+            print(e,'异常')
             logger.error(f"Institution   create failed")
 
 
