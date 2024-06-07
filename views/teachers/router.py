@@ -9,6 +9,7 @@ from views.teachers.teachers_extend_view import TeacherLearnExperienceView, Teac
     TeacherEthicRecordsView,EducationalTeachingView
 from views.teachers.teachers_extend_view import DomesticTrainingView,OverseasStudyView,TalentProgramView,AnnualReviewView,ResearchAchievementsView
 from views.teachers.teacher_work_flow_define import WorkFlowDefineView
+from views.teachers.teacher_transaction_view import TeacherTransactionView
 
 
 def routers():
@@ -30,5 +31,8 @@ def routers():
     router.include_api_view_class(AnnualReviewView, "/v1/teacher-extend", description="教师年度考核信息管理")
     router.include_api_view_class(ResearchAchievementsView, "/v1/teacher-extend", description="教师科研项目管理")
     router.include_api_view_class(WorkFlowDefineView, "/v1/teacher-workflow", description="教师工作流定义配置管理")
+
+    router.include_api_view_class(TeacherTransactionView, "/v1/teacher-transaction", description="教师变动管理")
+
 
     return router

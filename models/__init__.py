@@ -64,6 +64,9 @@ from . import students_key_info_change
 from . import education_year
 from . import role
 from . import role_permission
+from . import subject
+from . import organization
+from . import organization_members
 
 #教师工作流定以相关
 from . import work_flow_define
@@ -71,10 +74,8 @@ from . import work_flow_node_define
 from . import work_flow_node_depend
 from . import work_flow_node_depend_strategy
 
-
 #教师工作流实例相关
 from . import work_flow_instance
 from . import work_flow_node_instance
-
 
 metadata = BaseDBModel.metadata
