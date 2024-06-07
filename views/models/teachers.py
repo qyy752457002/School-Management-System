@@ -979,3 +979,11 @@ class TeacherAll(TeacherApprovalQueryRe):
     """
     approval_status: str = Field("submitting", title="审批状态", description="审批状态")
     approval_time: datetime = Field(..., title="审批时间", description="审批时间", example="2021-10-10 10:10:10")
+
+
+# task相关模型
+class TeacherImportTask(BaseModel):
+    """{'file_name':filename,'bucket':bucket,'scene':scene},"""
+    file_name: str = Field('', title="", description="", examples=[' '])
+    bucket: str = Field('', title="", description="", examples=[' '])
+    scene: str = Field("teacher_import", title="场景", description="", examples=[' '])

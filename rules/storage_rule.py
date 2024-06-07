@@ -9,6 +9,7 @@ from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.storage.view_model import FileStorageResponseModel, FileStorageModel
 from views.models.institutions import Institutions, InstitutionsValid
+from views.models.teachers import TeachersCreatModel
 
 
 @dataclass_inject
@@ -59,21 +60,23 @@ class StorageRule(object):
         local_filepath='b.xlsx'
         # local_filepath='a.xlsx'
 
-        local_filepath='temp/'+ random_id+filename
-        resp =  storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
+        # local_filepath='temp/'+ random_id+filename
+        # resp =  storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
 
 
         # 根据不同场景 获取不同的模型
         sheetname= 'Sheet1'
 
         SampleModel=None
-        SampleModel = Institutions
+        # SampleModel = Institutions
         # SampleModel = InstitutionsValid
 
         if sence == 'institution':
             SampleModel = Institutions
             sheetname= 'Sheet1'
-
+        elif sence=="teacher_import":
+            SampleModel = TeachersCreatModel
+            sheetname= 'Sheet1'
 
         resdata = TestExcelReader(local_filepath,sheetname, SampleModel).read_valid()
         print(resdata)
