@@ -56,19 +56,21 @@ class StorageRule(object):
     async def get_file_data(self, filename: str, bucket,sence=''):
         # 下载保存本地
         random_id = str(uuid.uuid4())
-        local_filepath='a.xlsx'
+        local_filepath='b.xlsx'
+        # local_filepath='a.xlsx'
 
-        local_filepath='temp/'+ random_id+filename
+        # local_filepath='temp/'+ random_id+filename
 
-        resp =  storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
+        # resp =  storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
 
 
         # 根据不同场景 获取不同的模型
         sheetname= 'Sheet1'
-        SampleModel = InstitutionsValid
 
         SampleModel=None
         SampleModel = Institutions
+        # SampleModel = InstitutionsValid
+
         if sence == 'institution':
 
             SampleModel = Institutions
