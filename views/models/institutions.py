@@ -42,6 +42,10 @@ class InstitutionTask(BaseModel):
     scene: str = Field('', title="",description="",examples=[' '])
 
 
+class InstitutionsValid(BaseModel):
+    # todo title 等 必须和表头一样
+    institution_name: str = Field(..., title='单位名称', description="单位名称",examples=['文化部'])
+    institution_en_name: str = Field(..., title='单位名称英文',  description=" 单位名称英文",examples=['CEDUCUL'])
 
 
 

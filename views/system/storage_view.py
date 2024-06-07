@@ -19,7 +19,9 @@ class StorageView(BaseView):
         return await self._storage_rule.get_upload_teacher_info_token_uri(filename, file_size)
 
 #     解析 文件和桶  返回 数据结构
-    async def get_file_data_preview(self, filename: str, bucket,sence=''):
-        return await self._storage_rule.get_file_data(filename, bucket,sence)
+    def get_file_data_preview(self, filename: str, bucket,sence=''):
+        res =   self._storage_rule.get_file_data(filename, bucket,sence)
+        print(res)
+        return res
 
 
