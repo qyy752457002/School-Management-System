@@ -5,7 +5,6 @@ from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
 from views.common.common_view import get_extend_params
-from views.models.extend_params import ExtendParams
 from views.models.grades import Grades
 
 from fastapi import Query, Depends, Body
@@ -78,7 +77,6 @@ class GradesView(BaseView):
         #         grade_alias="Lfun technical",
         #     ))
         #
-        # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
         return paging_result
 
     #   搜索的 待处理

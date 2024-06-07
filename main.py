@@ -15,7 +15,8 @@ def main():
     cli.register('db-init', DatabaseInitCommand, metadata_model="models.metadata")
     cli.register('dao-gen', DAOGenerateCommand, model_list=[('models.work_flow_define', 'WorkFlowDefine'),
                                                             ('models.work_flow_node_define', 'WorkFlowNodeDefine'),
-                                                            ('models.education_year', 'EducationYear'),
+                                                            ('models.organization', 'Organization'),
+                                                            ('models.organization_members', 'OrganizationMembers'),
                                                             ('models.work_flow_node_depend', 'WorkFlowNodeDepend'), (
                                                             'models.work_flow_node_depend_strategy',
                                                             'WorkFlowNodeDependStrategy')])

@@ -9,6 +9,7 @@ from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.storage.view_model import FileStorageResponseModel, FileStorageModel
 from views.models.institutions import Institutions, InstitutionsValid
+from views.models.planning_school import PlanningSchool
 
 
 @dataclass_inject
@@ -73,6 +74,9 @@ class StorageRule(object):
         if sence == 'institution':
             SampleModel = Institutions
             sheetname= 'Sheet1'
+        if sence == 'planning_school_import':
+            SampleModel = PlanningSchool
+            sheetname= 'Sheet1'
 
 
         resdata = TestExcelReader(local_filepath,sheetname, SampleModel).read_valid()
@@ -89,15 +93,6 @@ class TestExcelReader:
         self.reader.register_model(sheetname, SampleModel)
 
     def read_valid(self):
-        # 创建一个带有有效数据的临时Excel文件
-        # with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
-        #     with pd.ExcelWriter(tmp.name, engine='xlsxwriter') as writer:
-        #         df = pd.DataFrame({
-        #             # todo
-        #             '账户ID': [1, 2],
-        #             '用户名': ['Alice', 'Bob']
-        #         })
-        #         df.to_excel(writer, sheet_name='Sheet1', index=False)
 
         # 执行读取操作
         self.reader.set_data(self.filename)
