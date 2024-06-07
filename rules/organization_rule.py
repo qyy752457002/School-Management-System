@@ -6,6 +6,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject, get_i
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 
+from business_exceptions.organization import OrganizationNotFoundError, OrganizationExistError
 from business_exceptions.school import SchoolNotFoundError
 # from daos.organization_dao import CampusDAO
 from daos.organization_dao import OrganizationDAO
@@ -43,7 +44,7 @@ class OrganizationRule(object):
         exists_organization = await self.organization_dao.get_organization_by_name(
             organization.org_name)
         if exists_organization:
-            raise Exception(f"{organization.organization_name}已存在")
+            raise OrganizationExistError()
         #  other_mapper={"password": "hash_password"},
         #                                              exclude=["first_name", "last_name"]
         organization_db = view_model_to_orm_model(organization, OrganizationModel,    exclude=["id"])
@@ -60,7 +61,7 @@ class OrganizationRule(object):
         # 默认 改
         exists_organization = await self.organization_dao.get_organization_by_id(organization.id)
         if not exists_organization:
-            raise Exception(f" {organization.id}不存在")
+            raise  OrganizationNotFoundError()
         organization_db= view_model_to_orm_model(organization, OrganizationModel, exclude=[])
         need_update_list = []
         # 自动判断哪些字段需要更新
@@ -76,7 +77,7 @@ class OrganizationRule(object):
     async def update_organization_byargs(self, organization,ctype=1):
         exists_organization = await self.organization_dao.get_organization_by_id(organization.id)
         if not exists_organization:
-            raise Exception(f"{organization.id}不存在")
+            raise  OrganizationNotFoundError()
         # if exists_organization.status== PlanningSchoolStatus.DRAFT.value:
         #     exists_organization.status= PlanningSchoolStatus.OPENING.value
         #     organization.status= PlanningSchoolStatus.OPENING.value
@@ -158,7 +159,7 @@ class OrganizationRule(object):
     async def query_organization(self,planning_organization_name):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(Campus).where(Campus.organization_name.like(f'%{planning_organization_name}%') ))
+        result = await session.execute(select(Campus).where(Campus.org_name.like(f'%{planning_organization_name}%') ))
         res= result.scalars().all()
 
         lst = []
