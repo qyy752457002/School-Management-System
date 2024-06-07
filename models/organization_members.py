@@ -14,6 +14,8 @@ class OrganizationMembers(BaseDBModel):
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True)
     org_id: Mapped[int] = mapped_column( comment="部门ID",default=0,nullable=True)
+    # 要求 这里出现的所有人必须在 教师表里有 
+    teacher_id: Mapped[int] = mapped_column( comment="教师ID",default=0,nullable=True)
 
     member_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="姓名")
 
