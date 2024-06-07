@@ -31,13 +31,6 @@ class TransferDetailsView(BaseView):
         res = await self.transfer_details_rule.get_transfer_details_by_transfer_details_id(transfer_details_id)
         return res
 
-    async def post_transfer_details(self, transfer_details: TransferInternalCreateModel):
-        """
-        校内岗位调动
-        """
-        res = await self.transfer_details_rule.add_transfer_details(transfer_details)
-        return res
-
     async def post_transfer_in_details(self, transfer_details: TransferDetailsModel,
                                        add_teacher: Optional[TeacherAddModel] = None,
                                        transfer_inner: bool = Query(True, title="transfer_status",
@@ -134,9 +127,9 @@ class TeacherTransactionView(BaseView):
         res = await self.teacher_transaction_rule.add_teacher_transaction(teacher_transaction)
         return res
 
-    async def put_teacher_transaction(self, teacher_transaction: TeacherTransactionUpdateModel):
-        res = await self.teacher_transaction_rule.update_teacher_transaction(teacher_transaction)
-        return res
+    # async def put_teacher_transaction(self, teacher_transaction: TeacherTransactionUpdateModel):
+    #     res = await self.teacher_transaction_rule.update_teacher_transaction(teacher_transaction)
+    #     return res
 
     async def get_teacher_transaction_all(self, teacher_id: int = Query(None, title="teacher_transactionID",
                                                                         description="teacher_transactionID",

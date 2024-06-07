@@ -22,19 +22,21 @@ class TransferDetailsRule(object):
         transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsModel)
         return transfer_details
 
-    async def add_transfer_details(self, transfer_details: TransferDetailsModel):
-        """
-        仅仅是校内的岗位调动
-        """
-        transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
-        transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
-        transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsCreateReModel)
-        return transfer_details
-
     async def add_transfer_in_details(self, transfer_details: TransferDetailsModel):
         """
         调入
         """
+        # todo 需要增加获取调入流程实例id
+        transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
+        transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
+        transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
+        return transfer_details
+
+    async def add_transfer_out_details(self, transfer_details: TransferDetailsModel):
+        """
+        调出
+        """
+        # todo 需要增加获取调出流程实例id
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
         transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
@@ -86,7 +88,7 @@ class TransferDetailsRule(object):
         查询老师是否在系统内
         """
         teacher_transaction_db = await self.transfer_details_dao.query_teacher_transfer(teacher_transaction)
-        transfer_inner = True #系统内互转
+        transfer_inner = True  # 系统内互转
         if teacher_transaction_db:
             teacher_transaction_db = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionQueryRe)
             return teacher_transaction_db, transfer_inner
@@ -94,30 +96,33 @@ class TransferDetailsRule(object):
             transfer_inner = False
             return teacher_transaction_db, transfer_inner
 
-
     async def submitting(self, transfer_details_id):
-        transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(transfer_details_id)
+        transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
+            transfer_details_id)
         if not transfer_details:
             raise Exception(f"编号为{transfer_details_id}的transfer_details不存在")
         transfer_details.approval_status = "submitting"
         return await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
 
     async def submitted(self, transfer_details_id):
-        transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(transfer_details_id)
+        transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
+            transfer_details_id)
         if not transfer_details:
             raise Exception(f"编号为{transfer_details_id}的transfer_details不存在")
         transfer_details.approval_status = "submitted"
         return await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
 
     async def approved(self, transfer_details_id):
-        transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(transfer_details_id)
+        transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
+            transfer_details_id)
         if not transfer_details:
             raise Exception(f"编号为{transfer_details_id}的transfer_details不存在")
         transfer_details.approval_status = "approved"
         return await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
 
     async def rejected(self, transfer_details_id):
-        transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(transfer_details_id)
+        transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
+            transfer_details_id)
         if not transfer_details:
             raise Exception(f"编号为{transfer_details_id}的transfer_details不存在")
         transfer_details.approval_status = "rejected"

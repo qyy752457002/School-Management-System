@@ -61,7 +61,8 @@ class Teacher(BaseDBModel):
                                                      default="unemployed")
     teacher_sub_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="子状态",
                                                     default="normal")
-    teacher_approval_status: Mapped[str] = mapped_column(String(64), default="submitting",nullable=False,
+    teacher_approval_status: Mapped[str] = mapped_column(String(64), default="submitting", nullable=False,
                                                          comment="审批状态",
                                                          )
+    identity: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份", default='')
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
