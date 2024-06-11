@@ -10,6 +10,7 @@ from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.storage.view_model import FileStorageResponseModel, FileStorageModel
 from views.models.institutions import Institutions, InstitutionsValid
 from views.models.planning_school import PlanningSchool
+from views.models.school import School
 
 
 @dataclass_inject
@@ -76,6 +77,9 @@ class StorageRule(object):
             sheetname= 'Sheet1'
         if sence == 'planning_school_import':
             SampleModel = PlanningSchool
+            sheetname= 'Sheet1'
+        if sence == 'school_import':
+            SampleModel = School
             sheetname= 'Sheet1'
 
 

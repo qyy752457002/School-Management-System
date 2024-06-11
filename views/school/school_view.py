@@ -1,7 +1,10 @@
 from datetime import datetime
 from typing import List
 
+from mini_framework.async_task.app.app_factory import app
+from mini_framework.async_task.task import Task
 from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
@@ -12,7 +15,8 @@ from views.models.operation_record import OperationRecord, OperationModule, Oper
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
 from views.models.school_communications import SchoolCommunications
 from views.models.school_eduinfo import SchoolEduInfo
-from views.models.school import School, SchoolBaseInfo, SchoolKeyInfo, SchoolKeyAddInfo, SchoolBaseInfoOptional
+from views.models.school import School, SchoolBaseInfo, SchoolKeyInfo, SchoolKeyAddInfo, SchoolBaseInfoOptional, \
+    SchoolTask
 
 from fastapi import Query, Depends
 from pydantic import BaseModel, Field
@@ -259,10 +263,7 @@ class SchoolView(BaseView):
 
         return res
 
-    # 导入 todo 任务队列的
-    async def importing(self, school: School):
-        print(school)
-        return school
+
 
     # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性
     async def put(self,
@@ -385,3 +386,21 @@ class SchoolView(BaseView):
     async def patch_keyinfo_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
                                                                         min_length=1, max_length=20, example='SC2032633')):
         pass
+
+
+    # 导入   任务队列的
+    async def post_school_import(self,
+                                 filename: str = Query(..., description="文件名"),
+                                 bucket: str = Query(..., description="文件名"),
+                                 scene: str = Query('', description="文件名"),
+                                 ) -> Task:
+        task = Task(
+            #todo sourcefile无法记录3个参数  故 暂时用3个参数来实现  需要 在cofnig里有配置   对应task类里也要有这个 键
+            task_type="school_import",
+            # 文件 要对应的 视图模型
+            payload=SchoolTask(file_name=filename, bucket=bucket, scene=scene),
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
