@@ -3,18 +3,14 @@ from mini_framework.async_task.task import Task, Context
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.logging import logger
 
-from rules.institution_rule import InstitutionRule
-
-
-# from web_test.rules.planning_school_rule import InstitutionRule
-# from web_test.views.models.account import InstitutionCreateModel
-from models.institution import Institution as Institutions
+# from rules.school_rule import PlanningSchoolRule
+from rules.school_rule import SchoolRule
 from rules.storage_rule import StorageRule
-from views.models.institutions import Institutions as InstitutionsModel
+from views.models.school import School
 
-class InstitutionExecutor(TaskExecutor):
+class SchoolExecutor(TaskExecutor):
     def __init__(self):
-        self.institution_rule = get_injector(InstitutionRule)
+        self.school_rule = get_injector(SchoolRule)
         self._storage_rule: StorageRule = get_injector(StorageRule)
 
         super().__init__()
@@ -33,23 +29,22 @@ class InstitutionExecutor(TaskExecutor):
             for item in data:
 
                 if isinstance(item, dict):
-                    institution_import: Institutions = Institutions(**item)
-                elif isinstance(item, Institutions):
-                    institution_import: Institutions = item
-                elif isinstance(item, InstitutionsModel):
-                    institution_import: InsttutionsModel = item
+                    data_import: School = School(**item)
+
+                elif isinstance(item, School):
+                    data_import: School = item
                 else:
                     raise ValueError("Invalid payload type")
-                res = await self.institution_rule.add_institution(institution_import)
+                res = await self.school_rule.add_school(data_import)
                 print('插入数据res',res)
-            logger.info(f"Institution   created")
+            logger.info(f"任务   created")
         except Exception as e:
             print(e,'异常')
-            logger.error(f"Institution   create failed")
+            logger.error(f"任务   create failed")
 
 
 # 导出  todo
-class InstitutionExportExecutor(TaskExecutor):
+class SchoolExportExecutor(TaskExecutor):
     async def execute(self, task: 'FileTask'):
         print("test")
         print(dict(task))

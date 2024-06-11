@@ -6,19 +6,18 @@ from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
 
 
-class Organization(BaseDBModel):
+class CourseSchoolNature(BaseDBModel):
     """
     """
-    __tablename__ = 'lfun_organization'
-    __table_args__ = {'comment': '组织架构模型'}
+    __tablename__ = 'lfun_course_school_nature'
+    __table_args__ = {'comment': '课程和学校关系表模型'}
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True)
-    org_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="组织分类 行政类等")
+    course_no: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="学科编码")
 
-    org_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="组织或者部门名称 例如行政部")
-    parent_id: Mapped[int] = mapped_column( comment="父级ID",default=0,nullable=True)
-    school_id: Mapped[int] = mapped_column( comment="学校ID",default=0,nullable=True)
-    member_cnt: Mapped[int] = mapped_column( comment="人数",default=0,nullable=True)
+
+    school_nature: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校性质 2级或者3级")
+
 
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)
     updated_uid: Mapped[int] = mapped_column( nullable=True , comment="操作人",default=0)
@@ -29,6 +28,15 @@ class Organization(BaseDBModel):
     @staticmethod
     def seed():
         return [
+            CourseSchoolNature(
+                course_no='12',
+                school_nature='303',
+                created_uid=0,
+                updated_uid=0,
+                created_at=datetime.now(),
+                updated_at=datetime.now(),
+                is_deleted=False,
+            ),
 
         ]
 

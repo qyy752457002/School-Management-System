@@ -67,6 +67,7 @@ from . import role_permission
 from . import subject
 from . import organization
 from . import organization_members
+from . import course_school_nature
 
 #教师工作流定以相关
 from . import work_flow_define
