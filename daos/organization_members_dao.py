@@ -25,11 +25,14 @@ class OrganizationMembersDAO(DAOBase):
 
 	async def delete_organization_members(self, organization_members: OrganizationMembers):
 		session = await self.master_db()
-		await session.delete(organization_members)
+		await self.delete(session,organization_members)
 		await session.commit()
 
-	async def get_organization_members_by_id(self, id):
-		session = await self.slave_db()
+	async def get_organization_members_by_id(self, id,use_master=False):
+		if use_master:
+			session = await self.master_db()
+		else:
+			session = await self.slave_db()
 		result = await session.execute(select(OrganizationMembers).where(OrganizationMembers.id == id))
 		return result.scalar_one_or_none()
 

@@ -84,3 +84,11 @@ class OrganizationView(BaseView):
         items = []
         res = await self.organization_members_rule.query_organization_members_with_page(page_request, parent_id , school_id,teacher_name,teacher_no,mobile,birthday  )
         return res
+
+    # 删除
+    async def delete_organization_members(self,
+                     id: int = Query(0, title="", description="", examples=[1]),
+                     ):
+        res = await self.organization_members_rule.delete_organization_members(id)
+
+        return res

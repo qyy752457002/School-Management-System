@@ -7,7 +7,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 
 from business_exceptions.organization import OrganizationNotFoundError, OrganizationExistError, \
-    OrganizationMemberExistError
+    OrganizationMemberExistError, OrganizationMemberNotFoundError
 from business_exceptions.school import SchoolNotFoundError
 from daos.organization_members_dao import OrganizationMembersDAO
 # from daos.organization_members_dao import CampusDAO
@@ -100,7 +100,7 @@ class OrganizationMembersRule(object):
     async def delete_organization_members(self, organization_members_id):
         exists_organization = await self.organization_members_dao.get_organization_members_by_id(organization_members_id,True)
         if not exists_organization:
-            raise Exception(f"{organization_members_id}不存在")
+            raise OrganizationMemberNotFoundError()
         organization_members_db = await self.organization_members_dao.delete_organization_members(exists_organization)
         organization = orm_model_to_view_model(organization_members_db, Organization, exclude=[""],)
         return organization
