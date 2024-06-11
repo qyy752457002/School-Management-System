@@ -17,7 +17,7 @@ from mini_framework.web.request_context import request_context_manager
 
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task import Task
-from views.models.teachers import TeacherImportTask
+from views.models.teachers import NewTeacherTask
 
 
 class NewTeachersView(BaseView):
@@ -157,12 +157,15 @@ class NewTeachersView(BaseView):
         await self.teacher_info_rule.rejected(teacher_base_id)
         return teacher_base_id
 
-    async def post_new_teacher_import(self, source_file: str = Query(..., title="文件名", description="文件名"),
+    async def post_new_teacher_import(self,
+                                      filename: str = Query(..., description="文件名"),
+                                      bucket: str = Query(..., description="文件名"),
+                                      scene: str = Query('', description="文件名"),
                                       ) -> Task:
-        source_file = "c.xlsx"
+
         task = Task(
             task_type="teacher_import",
-            source_file=source_file,
+            payload=NewTeacherTask(file_name=filename, bucket=bucket, scene=scene),
             operator=request_context_manager.current().current_login_account.account_id
         )
 

@@ -21,28 +21,29 @@ class TeacherExecutor(TaskExecutor):
         print(task)
         try:
             print('开始执行task')
-            SampleModel = TeachersCreatModel
-            source_file = task.source_file
-            excel_file = pd.ExcelFile(source_file)
-            sheet_name = excel_file.sheet_names[0]
-
+            # SampleModel = TeachersCreatModel
+            # source_file = task.source_file
+            # excel_file = pd.ExcelFile(source_file)
+            # sheet_name = excel_file.sheet_names[0]
+            info = task.payload
             data = []
-            data = TestExcelReader(source_file, sheet_name, SampleModel).read_valid()
+            data = await self._storage_rule.get_file_data(info.file_name, info.bucket, info.scene)
+
+            # data = []
+            # data = TestExcelReader(source_file, sheet_name, SampleModel).read_valid()
             print(len(data), 'data')
             for item in data:
                 if isinstance(item, dict):
                     teacher_import: Teachers = Teachers(**item)
-                elif isinstance(item, Teachers):
-                    teacher_import: Teachers = item
                 elif isinstance(item, TeachersCreatModel):
                     teacher_import: TeachersCreatModel = item
                 else:
                     raise ValueError("Invalid payload type")
                 res = await self.teacher_rule.add_teachers(teacher_import)
                 print('插入数据res', res)
-            logger.info(f"Teacher created")
+            logger.info("任务 created")
         except Exception as e:
             print(e, '异常')
-            logger.error(f"Teacher create failed")
+            logger.error("任务 create failed")
 
 # 导出  todo

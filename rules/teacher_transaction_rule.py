@@ -95,3 +95,5 @@ class TeacherTransactionRule(object):
             raise Exception(f"编号为{teacher_transaction_id}的teacher_transaction不存在")
         teacher_transaction.approval_status = "rejected"
         return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
+
+

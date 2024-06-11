@@ -984,7 +984,7 @@ class TeacherAll(TeacherApprovalQueryRe):
 
 
 # task相关模型
-class TeacherImportTask(BaseModel):
+class NewTeacherTask(BaseModel):
     """{'file_name':filename,'bucket':bucket,'scene':scene},"""
     file_name: str = Field('', title="", description="", examples=[' '])
     bucket: str = Field('', title="", description="", examples=[' '])
