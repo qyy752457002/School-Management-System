@@ -17,7 +17,6 @@ class TeacherExecutor(TaskExecutor):
         super().__init__()
 
     async def execute(self, context: 'Context'):
-
         task: Task = context.task
         print(task)
         try:
