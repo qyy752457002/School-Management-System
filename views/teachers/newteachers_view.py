@@ -168,7 +168,21 @@ class NewTeachersView(BaseView):
             payload=NewTeacherTask(file_name=filename, bucket=bucket, scene=scene),
             operator=request_context_manager.current().current_login_account.account_id
         )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
 
+    async def post_new_teacherinfo_import(self,
+                                          filename: str = Query(..., description="文件名"),
+                                          bucket: str = Query(..., description="文件名"),
+                                          scene: str = Query('', description="文件名"),
+                                          ) -> Task:
+
+        task = Task(
+            task_type="teacher_info_import",
+            payload=NewTeacherTask(file_name=filename, bucket=bucket, scene=scene),
+            operator=request_context_manager.current().current_login_account.account_id
+        )
         task = await app.task_topic.send(task)
         print('发生任务成功')
         return task

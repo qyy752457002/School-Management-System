@@ -34,10 +34,8 @@ class NewStudentExecutor(TaskExecutor):
             data = await self._storage_rule.get_file_data(info.file_name, info.bucket, info.scene)
 
             for item in data:
-
                 if isinstance(item, dict):
                     data_import: NewStudents = NewStudents(**item)
-
                 elif isinstance(item, NewStudents):
                     data_import: NewStudents = item
                 else:
