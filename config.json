@@ -158,6 +158,23 @@
         "payload_cls_model": "web_test.views.models.account.AccountModel",
         "payload_is_list": true
       },
+      "new_student_import": {
+        "topic": "new_student_import",
+        "name": "新生导入",
+        "consumer_group_id": "service",
+        "description": "",
+        "executor_cls_model": "views.tasks.new_student_task.NewStudentExecutor",
+        "payload_cls_model": "views.models.students.NewStudentTask"
+      },
+      "school_import": {
+        "topic": "school_import",
+        "name": "学校导入",
+        "consumer_group_id": "service",
+        "description": "",
+        "executor_cls_model": "views.tasks.school_task.SchoolExecutor",
+        "payload_cls_model": "views.models.school.SchoolTask"
+      },
+
       "planning_school_import": {
         "topic": "planning_school_import",
         "name": "规划校上传和导入",

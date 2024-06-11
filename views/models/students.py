@@ -541,3 +541,7 @@ class StudentGraduation(BaseModel):
     graduation_remarks: str = Query('', description="毕业备注",   max_length=200, examples=[""]),
     credential_notes: str = Query('', description="制证备注",  max_length=200, examples=[""])
     graduation_photo: str = Query('', description="毕业照",   max_length=200, examples=[""])
+class NewStudentTask(BaseModel):
+    file_name: str = Field('', title="",description="",examples=[' '])
+    bucket: str = Field('', title="",description="",examples=[' '])
+    scene: str = Field('', title="",description="",examples=[' '])
