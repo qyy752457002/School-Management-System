@@ -15,7 +15,7 @@ from daos.organization_members_dao import OrganizationMembersDAO
 # from daos.organization_members_members_dao import OrganizationMembersDAO
 # from models.organization import Campus
 from rules.enum_value_rule import EnumValueRule
-from views.models.organization import Organization, OrganizationMembers
+from views.models.organization import Organization, OrganizationMembers, OrganizationMembersSearchRes
 # from views.models.organization import Campus as Organization
 
 # from views.models.organization import CampusBaseInfo
@@ -119,7 +119,7 @@ class OrganizationMembersRule(object):
     async def get_organization_members_count(self):
         return await self.organization_members_dao.get_organization_members_count()
 
-    async def query_organization_members_with_page(self, page_request: PageRequest,   parent_id , school_id ):
+    async def query_organization_members_with_page(self, page_request: PageRequest,   parent_id , school_id ,teacher_name,teacher_no,mobile,birthday ):
         parent_id_lv2=[]
         if parent_id:
             # todo  参照 举办者类型   自动查出 23 级
@@ -130,12 +130,18 @@ class OrganizationMembersRule(object):
             pass
 
 
-
-
-        paging = await self.organization_members_dao.query_organization_members_with_page(page_request,  parent_id_lv2 , school_id
-                                                              )
+        paging = await self.organization_members_dao.query_organization_members_with_page(page_request,  parent_id_lv2 , school_id,teacher_name,teacher_no,mobile,birthday
+                                                                                          )
         # 字段映射的示例写法   , {"hash_password": "password"}
-        paging_result = PaginatedResponse.from_paging(paging, Organization)
+        paging_result = PaginatedResponse.from_paging(paging, OrganizationMembersSearchRes,other_mapper={
+            "teacher_name": "member_name",
+            "teacher_date_of_birth": "birthday",
+            "teacher_gender": "gender",
+            # "teacher_mobile": "updated_at",
+            "teacher_id_type": "card_type",
+            # "teacher_identity": "updated_at",
+            "teacher_id_number": "card_number",
+        })
         return paging_result
 
 

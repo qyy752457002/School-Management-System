@@ -3,7 +3,10 @@ from mini_framework.databases.entities.dao_base import DAOBase, get_update_conte
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
+from models.organization import Organization
 from models.organization_members import OrganizationMembers
+from models.teachers import Teacher
+from models.teachers_info import TeacherInfo
 
 
 class OrganizationMembersDAO(DAOBase):
@@ -34,8 +37,40 @@ class OrganizationMembersDAO(DAOBase):
 		session = await self.slave_db()
 		result = await session.execute(select(OrganizationMembers).where(OrganizationMembers.teacher_id == organization.teacher_id).where(OrganizationMembers.org_id == organization.org_id).where(OrganizationMembers.member_type == organization.member_type))
 		return result.scalar_one_or_none()
-	async def query_organization_members_with_page(self, pageQueryModel, page_request: PageRequest):
-		query = select(OrganizationMembers)
+	async def query_organization_members_with_page(self,  page_request: PageRequest,parent_id , school_id,teacher_name,teacher_no,mobile,birthday):
+		query = (select(OrganizationMembers.id,
+						OrganizationMembers.org_id,
+						OrganizationMembers.teacher_id,
+						OrganizationMembers.member_type,
+						Teacher.teacher_name,
+						Teacher.teacher_date_of_birth,
+						Teacher.teacher_gender,
+						Teacher.teacher_id_type,
+						Teacher.teacher_id_number,
+						# Teacher.tea,
+						).select_from(OrganizationMembers)
+				 .join(Organization, OrganizationMembers.org_id == Organization.id, isouter=True)
+				 .join(Teacher, OrganizationMembers.teacher_id == Teacher.teacher_id, isouter=True)
+				 .join(TeacherInfo, TeacherInfo.teacher_id == Teacher.teacher_id, isouter=True)
+				 )
+		if parent_id:
+			if isinstance(parent_id, list):
+				query = query.where(Organization.parent_id.in_(parent_id))
+			else:
+				query = query.where(Organization.parent_id == parent_id)
+
+		if school_id:
+			query = query.where(Organization.school_id == school_id)
+		if teacher_name:
+			query = query.where(Teacher.teacher_name.like(f'%{teacher_name}%'))
+		if teacher_no:
+			query = query.where(TeacherInfo.teacher_number.like(f'%{teacher_no}%'))
+		if mobile:
+			# query = query.where(Teacher.mobile.like(f'%{mobile}%'))
+			pass
+		if birthday:
+			query = query.where(Teacher.teacher_date_of_birth.like(f'%{birthday}%'))
+
 		
 		### �˴���д��ѯ����
 		

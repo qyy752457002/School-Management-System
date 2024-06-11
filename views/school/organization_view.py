@@ -68,4 +68,19 @@ class OrganizationView(BaseView):
         res = await  self.organization_members_rule.add_organization_members(organization_members)
 
         return res
+    # 分页 成员列表
+    async def page_organization_members(self,
+                   page_request=Depends(PageRequest),
+                   school_id: int = Query(0, title="学校ID", description="学校ID", examples=[1]),
 
+                   parent_id: int = Query(0, title="", description="", examples=[1]),
+                    teacher_name: str = Query('', title=" ", description=" ", examples=['']),
+                    teacher_no: str = Query('', title=" ", description=" ", examples=['']),
+                    mobile: str = Query('', title=" ", description=" ", examples=['']),
+                    birthday: str = Query('', title=" ", description=" ", examples=['']),
+
+                   ):
+        print(page_request)
+        items = []
+        res = await self.organization_members_rule.query_organization_members_with_page(page_request, parent_id , school_id,teacher_name,teacher_no,mobile,birthday  )
+        return res
