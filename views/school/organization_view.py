@@ -31,7 +31,7 @@ class OrganizationView(BaseView):
                    page_request=Depends(PageRequest),
                    school_id: int = Query(0, title="学校ID", description="学校ID", examples=[1]),
 
-                   parent_id: int = Query(0, title="", description="", examples=[1]),
+                   parent_id: int = Query(0, title="", description="表示要查询的部门ID ", examples=[1]),
                    ):
         print(page_request)
         items = []
@@ -73,7 +73,7 @@ class OrganizationView(BaseView):
                    page_request=Depends(PageRequest),
                    school_id: int = Query(0, title="学校ID", description="学校ID", examples=[1]),
 
-                   parent_id: int = Query(0, title="", description="", examples=[1]),
+                   parent_id: int = Query(0, title="", description="表示要查询的部门ID", examples=[1]),
                     teacher_name: str = Query('', title=" ", description=" ", examples=['']),
                     teacher_no: str = Query('', title=" ", description=" ", examples=['']),
                     mobile: str = Query('', title=" ", description=" ", examples=['']),

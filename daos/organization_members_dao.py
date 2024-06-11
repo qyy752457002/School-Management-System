@@ -55,9 +55,9 @@ class OrganizationMembersDAO(DAOBase):
 				 )
 		if parent_id:
 			if isinstance(parent_id, list):
-				query = query.where(Organization.parent_id.in_(parent_id))
+				query = query.where(Organization.id.in_(parent_id))
 			else:
-				query = query.where(Organization.parent_id == parent_id)
+				query = query.where(Organization.id == parent_id)
 
 		if school_id:
 			query = query.where(Organization.school_id == school_id)

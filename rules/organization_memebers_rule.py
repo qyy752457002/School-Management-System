@@ -122,7 +122,7 @@ class OrganizationMembersRule(object):
     async def query_organization_members_with_page(self, page_request: PageRequest,   parent_id , school_id ,teacher_name,teacher_no,mobile,birthday ):
         parent_id_lv2=[]
         if parent_id:
-            # todo  参照 举办者类型   自动查出 23 级
+            #   参照 举办者类型   自动查出 下一级的 23 级
             res= await self.query_organization_members( parent_id)
             for item in res:
                 parent_id_lv2.append(item.id)
@@ -182,7 +182,7 @@ class OrganizationMembersRule(object):
 
         lst = []
         for row in res:
-            planning_school = orm_model_to_view_model(row, OrganizationModel)
+            planning_school = orm_model_to_view_model(row, Organization)
 
             lst.append(planning_school)
         return lst
