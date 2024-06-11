@@ -128,6 +128,8 @@ class OrganizationMembersRule(object):
                 parent_id_lv2.append(item.id)
 
             pass
+        if not parent_id_lv2:
+            parent_id_lv2=  parent_id
 
 
         paging = await self.organization_members_dao.query_organization_members_with_page(page_request,  parent_id_lv2 , school_id,teacher_name,teacher_no,mobile,birthday

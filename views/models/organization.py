@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import Query
 from pydantic import BaseModel, Field
 
@@ -60,7 +62,7 @@ class OrganizationMembersSearchRes(BaseModel):
     teacher_id: int = Field(None, title="", description="教师ID",examples=['1'])
     member_name: str = Field(None, title="", description="姓名",examples=['张三'])
     member_type: str = Field(None, title="", description="成员类型/岗位 例如老师 领导 职工等",examples=['老师'])
-    birthday: str = Field(None, title="", description="生日",examples=['1990-01-01'])
+    birthday: str|datetime = Field(None, title="", description="生日",examples=['1990-01-01'])
     gender: str = Field(None, title="", description="性别",examples=['男'])
     mobile: str = Field(None, title="", description="手机",examples=['13800000000'])
     card_type: str = Field(None, title="", description="证件类型",examples=['身份证'])
