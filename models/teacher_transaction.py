@@ -34,5 +34,6 @@ class TeacherTransaction(BaseDBModel):
     operator_name: Mapped[str] = mapped_column(String(255), nullable=False, comment="操作人", default='')
     operator_id: Mapped[int] = mapped_column(nullable=False, comment="操作人ID", default=0)
     approval_status: Mapped[str] = mapped_column(String(255), nullable=False, comment="审批状态",
-                                                 default="submitting")
+                                                 default="submitted")
+    process_instance_id: Mapped[int] = mapped_column(nullable=False, comment="流程ID", default=0)
     is_deleted: Mapped[bool] = mapped_column(nullable=False, comment="删除态", default=False)

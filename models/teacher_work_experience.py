@@ -11,6 +11,7 @@ class TeacherWorkExperience(BaseDBModel):
     开始时间：start_date
     结束时间：end_date
     在职岗位：on_duty_position
+
     单位性质类别：institution_nature_category
     删除状态：is_deleted
     """
