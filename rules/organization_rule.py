@@ -117,10 +117,20 @@ class OrganizationRule(object):
     async def get_organization_count(self):
         return await self.organization_dao.get_organization_count()
 
-    async def query_organization_with_page(self, page_request: PageRequest,   org_type , school_id ):
+    async def query_organization_with_page(self, page_request: PageRequest,   parent_id , school_id ):
+        parent_id_lv2=[]
+        if parent_id:
+            # todo  参照 举办者类型   自动查出 23 级
+            res= await self.query_organization( parent_id)
+            for item in res:
+                parent_id_lv2.append(item.id)
+
+            pass
 
 
-        paging = await self.organization_dao.query_organization_with_page(page_request,  org_type , school_id
+
+
+        paging = await self.organization_dao.query_organization_with_page(page_request,  parent_id_lv2 , school_id
                                                               )
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, Organization)
@@ -156,15 +166,15 @@ class OrganizationRule(object):
 
 
 
-    async def query_organization(self,planning_organization_name):
+    async def query_organization(self,parent_id,):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(Campus).where(Campus.org_name.like(f'%{planning_organization_name}%') ))
+        result = await session.execute(select(OrganizationModel).where(OrganizationModel.parent_id == parent_id  ))
         res= result.scalars().all()
 
         lst = []
         for row in res:
-            planning_school = orm_model_to_view_model(row, Organization)
+            planning_school = orm_model_to_view_model(row, OrganizationModel)
 
             lst.append(planning_school)
         return lst
