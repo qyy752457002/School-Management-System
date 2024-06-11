@@ -3,7 +3,7 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 from fastapi import Query, Depends
 
-from views.models.teacher_transaction import TransferDetailsModel, TransferDetailsUpdateModel
+from views.models.teacher_transaction import TransferDetailsModel, TransferDetailsReModel
 from rules.transfer_details_rule import TransferDetailsRule
 
 from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
@@ -45,8 +45,6 @@ class TransferDetailsView(BaseView):
                 await self.teacher_rule.add_teachers(add_teacher)
             else:
                 raise Exception("请填写老师信息")
-            if transfer_details.original_position == "":
-                raise Exception("原岗位不能为空")
         res = await self.transfer_details_rule.add_transfer_in_details(transfer_details)
         return res
 
@@ -63,7 +61,7 @@ class TransferDetailsView(BaseView):
                                       ):
         await self.transfer_details_rule.delete_transfer_details(transfer_details_id)
 
-    async def put_transfer_details(self, transfer_details: TransferDetailsUpdateModel):
+    async def put_transfer_details(self, transfer_details: TransferDetailsReModel):
         res = await self.transfer_details_rule.update_transfer_details(transfer_details)
         return res
 

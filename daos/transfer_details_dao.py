@@ -4,7 +4,7 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.transfer_details import TransferDetails
-from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTransferQueryModel
+from views.models.teacher_transaction import  TeacherTransferQueryModel
 from models.teachers_info import TeacherInfo
 from models.teachers import Teacher
 from models.work_flow_node_instance import WorkFlowNodeInstance

@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import date
 
+
 class TeacherBorrowModel(BaseModel):
     """
     原单位：original_unit
@@ -28,8 +29,6 @@ class TeacherBorrowModel(BaseModel):
     operator: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     operation_time: date = Field(..., title="操作时间", description="操作时间")
-    
-    
 
 
 class TeacherBorrowUpdateModel(BaseModel):
@@ -61,7 +60,3 @@ class TeacherBorrowUpdateModel(BaseModel):
     operator: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     operation_time: date = Field(..., title="操作时间", description="操作时间")
-    
-    
-
-
