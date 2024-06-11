@@ -5,9 +5,8 @@ from daos.transfer_details_dao import TransferDetailsDAO
 from daos.teachers_dao import TeachersDao
 from models.transfer_details import TransferDetails
 from views.models.teacher_transaction import TransferDetailsModel, TransferDetailsUpdateModel
-from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
-    TeacherTransactionQuery, TeacherTransactionQueryRe, TransferDetailsCreateReModel, \
-    TransferDetailsReModel, TransferDetailsGetModel
+from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTransactionQueryRe, TransferDetailsCreateReModel, \
+    TransferDetailsReModel, TransferDetailsGetModel,TeacherTransferQueryModel,TeacherTransferQueryReModel
 from business_exceptions.teacher import TeacherNotFoundError
 
 
@@ -95,6 +94,18 @@ class TransferDetailsRule(object):
         else:
             transfer_inner = False
             return teacher_transaction_db, transfer_inner
+
+
+    #分页查询
+    async def query_transfer_with_page(self, query_model:TeacherTransferQueryModel,page_request: PageRequest):
+
+        teacher_transaction_db=await self.transfer_details_dao.query_transfer_with_page(query_model,page_request)
+
+        paging_result = PaginatedResponse.from_paging(teacher_transaction_db, TeacherTransferQueryReModel)
+        return paging_result
+
+
+
 
     async def submitting(self, transfer_details_id):
         transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(

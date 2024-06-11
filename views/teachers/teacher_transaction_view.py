@@ -7,7 +7,7 @@ from views.models.teacher_transaction import TransferDetailsModel, TransferDetai
 from rules.transfer_details_rule import TransferDetailsRule
 
 from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
-    TeacherTransactionQuery, TransferInternalCreateModel, TeacherTransactionQueryModel
+    TeacherTransactionQuery,TeacherTransferQueryModel, TeacherTransactionQueryModel
 from views.models.teacher_transaction import TeacherAddModel
 from rules.teacher_transaction_rule import TeacherTransactionRule
 from rules.teachers_rule import TeachersRule
@@ -80,6 +80,16 @@ class TransferDetailsView(BaseView):
         """
         res, transfer_inner = await self.transfer_details_rule.query_teacher_transfer(teacher_transaction)
         return res, transfer_inner
+
+    #调动管理查询
+    async def page_transfer_launch(self, transfer_details=Depends(TeacherTransferQueryModel),
+                                   page_request=Depends(PageRequest)):
+        """
+        分页查询
+        """
+        paging_result = await self.transfer_details_rule.query_transfer_with_page(transfer_details, page_request)
+        return paging_result
+
 
     #调动审批
     async def patch_transfer_submitting(self,
