@@ -11,6 +11,22 @@ from business_exceptions.teacher_transction import OriginPositionError, CurrentP
 from enum import Enum
 
 
+
+class ApprovalStatus(str, Enum):
+    """
+    未审批：submitted
+    已撤回：revoke
+    已通过：approved
+    已拒绝：rejected
+    """
+    SUBMITTED = "submitted"
+    REVOKE = "revoked"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
+    @classmethod
+    def to_list(cls):
+        return [status.value for status in cls]
 class EmploymentStatus(str, Enum):
     """
     正常在职：active
@@ -396,7 +412,17 @@ class TransferDetailsGetModel(TransferDetailsUpdateModel):
     """
     单个教师的所有的调动记录
     """
-    pass
+    original_region: Optional[str] = Field("", title="原地域管辖区域", description="原地域管辖区域")
+    original_district: Optional[str] = Field("", title="原行政属地", description="原行政属地")
+    original_unit: Optional[str] = Field("", title="原单位", description="原单位")
+    current_district: Optional[str] = Field("", title="现行政属地", description="现行政属地")
+    current_region: Optional[str] = Field("", title="现地域管辖区域", description="现地域管辖区域")
+    current_unit: Optional[str] = Field("", title="现单位", description="现单位")
+    approval_status: Optional[str] = Field("", title="审批状态", description="审批状态")
+    operation_time: Optional[date] = Field(None, title="申请时间", description="申请时间")
+    approval_time: Optional[date] = Field(None, title="审批时间", description="审批时间")
+    approval_name: Optional[str] = Field("", title="审批人", description="审批人")
+
 
 
 class TeacherTransferQueryModel(BaseModel):
@@ -423,9 +449,11 @@ class TeacherTransferQueryModel(BaseModel):
     teacher_id_type: Optional[str] = Field("", title="证件类型", description="证件类型")
     teacher_id_number: Optional[str] = Field("", title="证件号", description="证件号")
     teacher_gender: Optional[Gender] = Field(None, title="性别", description="性别")
+    original_region: Optional[str] = Field("", title="原地域管辖区域", description="原地域管辖区域")
     original_district: Optional[str] = Field("", title="原行政属地", description="原行政属地")
     original_unit: Optional[str] = Field("", title="原单位", description="原单位")
     current_district: Optional[str] = Field("", title="现行政属地", description="现行政属地")
+    current_region: Optional[str] = Field("", title="现地域管辖区域", description="现地域管辖区域")
     current_unit: Optional[str] = Field("", title="现单位", description="现单位")
     approval_status: Optional[str] = Field("", title="审批状态", description="审批状态")
     operation_time: Optional[date] = Field(None, title="申请时间", description="申请时间")
@@ -462,8 +490,10 @@ class TeacherTransferQueryReModel(BaseModel):
     teacher_id_number: Optional[str] = Field("", title="证件号", description="证件号")
     teacher_gender: Optional[Gender] = Field(None, title="性别", description="性别")
     original_district: Optional[str] = Field("", title="原行政属地", description="原行政属地")
+    original_region: Optional[str] = Field("", title="原地域管辖区域", description="原地域管辖区域")
     original_unit: Optional[str] = Field("", title="原单位", description="原单位")
     current_district: Optional[str] = Field("", title="现行政属地", description="现行政属地")
+    current_region: Optional[str] = Field("", title="现地域管辖区域", description="现地域管辖区域")
     current_unit: Optional[str] = Field("", title="现单位", description="现单位")
     approval_status: Optional[str] = Field("", title="审批状态", description="审批状态")
     operation_time: Optional[date] = Field(None, title="申请时间", description="申请时间")
@@ -472,57 +502,7 @@ class TeacherTransferQueryReModel(BaseModel):
     process_instance_id: int = Field(0, title="流程实例id", description="流程实例id")
 
 
-class TeacherTransferApproval(BaseModel):
-    """
-    调动审批中的四个基本模型
-    调动审批id：transfer_approval_id
-    教师姓名：teacher_name
-    教师ID：teacher_id
-    身份证号：teacher_id_number
-    性别：teacher_gender
-    申请人：operator_name
-    审批人：approval_name
-    原单位：original_unit
-    原岗位：original_position
-    现单位：current_unit
-    现岗位：current_position
-    操作时间：operation_time
-    """
-    transfer_approval_id: int = Field(..., title="调动审批id", description="调动审批id")
-    teacher_name: str = Field(..., title="姓名", description="姓名")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    teacher_id_number: str = Field(..., title="身份证号", description="身份证号")
-    teacher_gender: Optional[Gender] = Field(None, title="性别", description="性别")
-    operator_name: str = Field(..., title="申请人", description="申请人")
-    approval_name: str = Field("", title="审批人", description="审批人")
-    original_unit: str = Field(..., title="原单位", description="原单位")
-    original_position: str = Field(..., title="原岗位", description="原岗位")
-    current_unit: str = Field(..., title="现单位", description="现单位")
-    current_position: str = Field(..., title="现岗位", description="现岗位")
-    operation_time: datetime = Field(..., title="操作时间", description="操作时间")
 
-
-class TransferLaunch(TeacherTransferApproval):
-    """我发起"""
-    approval_status: str = Field("submitting", title="审批状态", description="审批状态")
-    approval_time: Optional[datetime] = Field(None, title="审批时间", description="审批时间")
-
-
-class TransferSubmitted(TeacherTransferApproval):
-    """待审核"""
-    pass
-
-
-class TransferApproved(TeacherTransferApproval):
-    """已审核"""
-    approval_status: str = Field("submitting", title="审批状态", description="审批状态")
-    approval_time: Optional[datetime] = Field(None, title="审批时间", description="审批时间")
-
-
-class TransferAll(TeacherTransferApproval):
-    """所有"""
-    approval_status: str = Field("submitting", title="审批状态", description="审批状态")
-    approval_time: Optional[datetime] = Field(None, title="审批时间", description="审批时间")
 
 
 # 借动的模型

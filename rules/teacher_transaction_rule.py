@@ -78,13 +78,13 @@ class TeacherTransactionRule(object):
         paging_result = PaginatedResponse.from_paging(teacher_transaction_db, TeacherTransactionApproval)
         return paging_result
 
-    async def submitting(self, teacher_transaction_id):
-        teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
-            teacher_transaction_id)
-        if not teacher_transaction:
-            raise Exception(f"编号为{teacher_transaction_id}的teacher_transaction不存在")
-        teacher_transaction.approval_status = "submitting"
-        return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
+    # async def submitting(self, teacher_transaction_id):
+    #     teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
+    #         teacher_transaction_id)
+    #     if not teacher_transaction:
+    #         raise Exception(f"编号为{teacher_transaction_id}的teacher_transaction不存在")
+    #     teacher_transaction.approval_status = "submitting"
+    #     return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
 
     async def submitted(self, teacher_transaction_id):
         teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
@@ -108,6 +108,14 @@ class TeacherTransactionRule(object):
         if not teacher_transaction:
             raise Exception(f"编号为{teacher_transaction_id}的teacher_transaction不存在")
         teacher_transaction.approval_status = "rejected"
+        return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
+
+    async def revoked(self, teacher_transaction_id):
+        teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
+            teacher_transaction_id)
+        if not teacher_transaction:
+            raise Exception(f"编号为{teacher_transaction_id}的teacher_transaction不存在")
+        teacher_transaction.approval_status = "revoked"
         return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
 
     async def get_process_id(self, teacher_transaction: TeacherTransactionModel, process_code: str):
