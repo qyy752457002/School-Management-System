@@ -24,16 +24,16 @@ class OrganizationView(BaseView):
         res = await  self.organization_rule.add_organization(organization)
 
         return res
-
+    # 分页 支持查询 一级类目下面的二三级类目
     async def page(self,
                    page_request=Depends(PageRequest),
                    school_id: int = Query(0, title="学校ID", description="学校ID", examples=[1]),
 
-                   org_type: str = Query('', title=" ", description=" ", examples=[''])
+                   parent_id: int = Query(0, title="", description="", examples=[1]),
                    ):
         print(page_request)
         items = []
-        res = await self.organization_rule.query_organization_with_page(page_request, org_type , school_id,  )
+        res = await self.organization_rule.query_organization_with_page(page_request, parent_id , school_id,  )
         return res
 
     # 删除

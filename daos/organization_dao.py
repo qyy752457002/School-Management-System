@@ -38,10 +38,13 @@ class OrganizationDAO(DAOBase):
 		result = await session.execute(select(Organization).where(Organization.org_name == name).where(Organization.parent_id == organization.parent_id))
 		return result.scalar_one_or_none()
 
-	async def query_organization_with_page(self,  page_request: PageRequest,org_type , school_id):
+	async def query_organization_with_page(self,  page_request: PageRequest,parent_id , school_id):
 		query = select(Organization).where(Organization.is_deleted == False)
-		if org_type:
-			query = query.where(Organization.org_type == org_type)
+		if parent_id:
+			if isinstance(parent_id, list):
+				query = query.where(Organization.parent_id.in_(parent_id))
+			else:
+				query = query.where(Organization.parent_id == parent_id)
 		if school_id:
 			query = query.where(Organization.school_id == school_id)
 		
