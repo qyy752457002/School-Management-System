@@ -42,7 +42,7 @@ class OrganizationRule(object):
 
     async def add_organization(self, organization: Organization):
         exists_organization = await self.organization_dao.get_organization_by_name(
-            organization.org_name)
+            organization.org_name,organization)
         if exists_organization:
             raise OrganizationExistError()
         #  other_mapper={"password": "hash_password"},
