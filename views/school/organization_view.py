@@ -92,3 +92,15 @@ class OrganizationView(BaseView):
         res = await self.organization_members_rule.delete_organization_members(id)
 
         return res
+
+    # 修改
+    async def put_organization_members(self,
+                                       organization_members: OrganizationMembers
+
+                  ):
+        # print(planning_school)
+        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        # organization= Organization(id=org_id, org_name=org_name,parent_id=parent_id)
+        res = await self.organization_members_rule.update_organization_members(organization_members)
+
+        return res

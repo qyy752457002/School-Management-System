@@ -63,8 +63,8 @@ class OrganizationMembersRule(object):
         # 默认 改
         exists_organization_members = await self.organization_members_dao.get_organization_members_by_id(organization.id)
         if not exists_organization_members:
-            raise  OrganizationNotFoundError()
-        organization_members_db= view_model_to_orm_model(organization, OrganizationModel, exclude=[])
+            raise  OrganizationMemberNotFoundError()
+        organization_members_db= view_model_to_orm_model(organization, OrganizationMembersModel, exclude=[])
         need_update_list = []
         # 自动判断哪些字段需要更新
         for key, value in organization.dict().items():
