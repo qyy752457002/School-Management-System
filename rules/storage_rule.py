@@ -11,6 +11,7 @@ from mini_framework.storage.view_model import FileStorageResponseModel, FileStor
 from views.models.institutions import Institutions, InstitutionsValid
 from views.models.planning_school import PlanningSchool
 from views.models.school import School
+from views.models.students import NewStudents
 
 
 @dataclass_inject
@@ -80,6 +81,9 @@ class StorageRule(object):
             sheetname= 'Sheet1'
         if sence == 'school_import':
             SampleModel = School
+            sheetname= 'Sheet1'
+        if sence == 'new_student_import':
+            SampleModel = NewStudents
             sheetname= 'Sheet1'
 
 

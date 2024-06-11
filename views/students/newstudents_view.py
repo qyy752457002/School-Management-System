@@ -1,11 +1,14 @@
 import datetime
 from typing import List
 
+from mini_framework.async_task.app.app_factory import app
+from mini_framework.async_task.task import Task
+from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 
 from rules.class_division_records_rule import ClassDivisionRecordsRule
 from views.models.students import NewStudents, NewStudentsQuery, NewStudentsQueryRe, StudentsKeyinfo, StudentsBaseInfo, \
-    StudentsFamilyInfo
+    StudentsFamilyInfo, NewStudentTask
 # from fastapi import Field
 from mini_framework.web.views import BaseView
 
@@ -94,6 +97,23 @@ class NewsStudentsView(BaseView):
         print(student_id)
         return student_id
 
+
+    # 导入   任务队列的
+    async def post_new_student_import(self,
+                                 filename: str = Query(..., description="文件名"),
+                                 bucket: str = Query(..., description="文件名"),
+                                 scene: str = Query('', description="文件名"),
+                                 ) -> Task:
+        task = Task(
+            #todo sourcefile无法记录3个参数  故 暂时用3个参数来实现  需要 在cofnig里有配置   对应task类里也要有这个 键
+            task_type="new_student_import",
+            # 文件 要对应的 视图模型
+            payload=NewStudentTask(file_name=filename, bucket=bucket, scene=scene),
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
 
 class NewsStudentsInfoView(BaseView):
     """
