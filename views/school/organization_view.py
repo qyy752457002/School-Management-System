@@ -2,13 +2,14 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 
+from rules.organization_memebers_rule import OrganizationMembersRule
 from rules.organization_rule import OrganizationRule
 # from views.models.organization import Organization
 from views.models.grades import Grades
 
 from fastapi import Query, Depends
 
-from views.models.organization import Organization
+from views.models.organization import Organization, OrganizationMembers
 
 
 # from rules.organization_rule import OrganizationRule
@@ -18,6 +19,7 @@ class OrganizationView(BaseView):
     def __init__(self):
         super().__init__()
         self.organization_rule = get_injector(OrganizationRule)
+        self.organization_members_rule = get_injector(OrganizationMembersRule)
 
     async def post(self, organization: Organization):
         print(organization)
@@ -59,3 +61,11 @@ class OrganizationView(BaseView):
         res = await self.organization_rule.update_organization(organization)
 
         return res
+#     todo  成员的curd
+
+    async def post_organization_members(self, organization_members: OrganizationMembers):
+        # print(organization)
+        res = await  self.organization_members_rule.add_organization_members(organization_members)
+
+        return res
+

@@ -30,6 +30,10 @@ class OrganizationMembersDAO(DAOBase):
 		result = await session.execute(select(OrganizationMembers).where(OrganizationMembers.id == id))
 		return result.scalar_one_or_none()
 
+	async def get_organization_members_by_param(self, organization:OrganizationMembers):
+		session = await self.slave_db()
+		result = await session.execute(select(OrganizationMembers).where(OrganizationMembers.teacher_id == organization.teacher_id).where(OrganizationMembers.org_id == organization.org_id).where(OrganizationMembers.member_type == organization.member_type))
+		return result.scalar_one_or_none()
 	async def query_organization_members_with_page(self, pageQueryModel, page_request: PageRequest):
 		query = select(OrganizationMembers)
 		
