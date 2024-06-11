@@ -27,6 +27,7 @@ class Teachers(BaseModel):
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
     teacher_employer: int = Field(0, title="任职单位", description="任职单位")
     teacher_avatar: str = Field("", title="头像", description="头像")
+    mobile: str = Field("", title="手机号", description="手机号")
 
 
 class TeachersCreatModel(BaseModel):
@@ -46,7 +47,7 @@ class TeachersCreatModel(BaseModel):
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
     teacher_employer: int = Field(0, title="任职单位", description="任职单位", gt=0)
     teacher_avatar: str = Field("", title="头像", description="头像")
-
+    mobile: str = Field("", title="手机号", description="手机号")
 
 class TeacherInfoCreateModel(BaseModel):  # 基本信息
     """
@@ -149,6 +150,7 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field('', title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
+    department: str = Field("", title="部门", description="部门", example="行政")
 
     # @model_validator(mode="after")
     # def check_special_ethnicity_teacher(self):
@@ -259,7 +261,7 @@ class TeacherInfo(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-
+    department: str = Field("", title="部门", description="部门", example="行政")
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
         if self.nationality == "CN":
@@ -482,7 +484,7 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-
+    department: str = Field("", title="部门", description="部门", example="行政")
 
 class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
     """
@@ -587,7 +589,7 @@ class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-
+    department: str = Field("", title="部门", description="部门", example="行政")
 
 class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
     """
@@ -692,7 +694,7 @@ class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-
+    department: str = Field("", title="部门", description="部门", example="行政")
 
 class TeacherInfoSubmit(BaseModel):  # 基本信息
     """
@@ -794,7 +796,7 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-
+    department: str = Field("", title="部门", description="部门", example="行政")
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
         if self.nationality == "CN":
