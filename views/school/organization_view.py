@@ -49,12 +49,13 @@ class OrganizationView(BaseView):
     async def put(self,
 
                   org_id: int = Query(0, title="", description="", examples=[1]),
+                  parent_id: int = Query(0, title="", description="", examples=[1]),
 
                   org_name: str = Query('', title=" ", description=" ", examples=[''])
                   ):
         # print(planning_school)
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        organization= Organization(id=org_id, org_name=org_name)
+        organization= Organization(id=org_id, org_name=org_name,parent_id=parent_id)
         res = await self.organization_rule.update_organization(organization)
 
         return res
