@@ -88,13 +88,13 @@ class WorkFlowNodeInstanceRule(object):
     # 创建第一个节点
     async def create_first_node_instance(self, work_flow_instance: WorkFlowInstanceModel):
         process_code = work_flow_instance.process_code
-        operator_id = work_flow_instance.applicant_id
+        operator_name = work_flow_instance.applicant_name
         process_instance_id = work_flow_instance.process_instance_id
         first_node = await self.work_flow_node_define_dao.get_first_node_by_process_code(process_code)
         node_code = first_node.node_code
         node_instance = WorkFlowNodeInstance(process_instance_id=process_instance_id,
                                              node_code=node_code, node_status="pending",
-                                             operator_id=operator_id, action="create", description="")
+                                             operator_name=operator_name, action="create", description="")
         node_instance = await self.work_flow_node_instance_dao.add_work_flow_node_instance(node_instance)
         return node_instance
 
@@ -125,7 +125,7 @@ class WorkFlowNodeInstanceRule(object):
                 if next_node_instance:  # 如果找到下一个节点，就不再继续查找
                     break
         node_instance.action = parameters.get("action", "none")
-        if node_instance.action != "none" or "create":
+        if node_instance.action != "create":
             node_instance.node_status = "completed"
         else:
             node_instance.node_status = "pending"
@@ -188,3 +188,22 @@ class WorkFlowNodeInstanceRule(object):
 
 def query_role(user_id):
     pass
+
+
+def create_work_flow_instance(self, process_code, applicant_name):
+    """
+    process_code: str = Field(..., title="流程定义id", description="流程定义id")
+    applicant_name: str = Field(..., title="申请人姓名", description="申请人姓名")
+    start_time: datetime = Field(datetime.now(), title="开始时间", description="开始时间")
+    end_time: Optional[datetime] = Field(None, title="结束时间", description="结束时间")
+    process_status: WorkFlowInstanceStatus = Field("pending", title="流程状态", description="流程状态")
+    description: str = Field("", title="说明", description="说明")
+    """
+    process_code = process_code
+    applicant_name = applicant_name
+    work_flow_instance = WorkFlowInstanceCreateModel(process_code=process_code,
+                                                     applicant_name=applicant_name,
+                                                     start_time=datetime.now(),
+                                                     end_time=None,
+                                                     process_status="pending",
+                                                     description="")

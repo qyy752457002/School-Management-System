@@ -13,7 +13,6 @@ from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
 
 
-
 @dataclass_inject
 class TeachersRule(object):
     teachers_dao: TeachersDao
@@ -49,7 +48,6 @@ class TeachersRule(object):
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
         return teachers
-
 
     async def add_transfer_teachers(self, teachers: TeacherAddModel):
         """
@@ -135,3 +133,10 @@ class TeachersRule(object):
             raise Exception("只有待审核的教师信息才能撤回")
         return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
 
+    async def teacher_active(self, teachers_id):
+        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
+        if not teachers:
+            raise TeacherNotFoundError()
+        if teachers.teacher_sub_status != "active":
+            teachers.teacher_sub_status = "active"
+        return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")

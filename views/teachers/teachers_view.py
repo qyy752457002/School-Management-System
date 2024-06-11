@@ -110,3 +110,8 @@ class TeachersView(BaseView):
                                                                example=123)):
         await self.teacher_info_rule.rejected(teacher_base_id)
         return teacher_base_id
+
+    async def patch_teacher_active(self,
+                                       teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),):
+        await self.teacher_rule.teacher_active(teacher_id)
+        return teacher_id
