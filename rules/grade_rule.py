@@ -1,18 +1,13 @@
-# from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 from datetime import datetime
-
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
-
 from business_exceptions.grade import GradeAlreadyExistError
 from daos.grade_dao import GradeDAO
 from models.grade import Grade
 from views.models.grades import Grades as GradeModel
-
 
 @dataclass_inject
 class GradeRule(object):
@@ -33,17 +28,10 @@ class GradeRule(object):
         exists_grade = await self.grade_dao.get_grade_by_grade_name(grade.grade_name,grade)
         if exists_grade:
             raise GradeAlreadyExistError()
-        # grade_db = Grade()
-        # grade_db.grade_name = grade.grade_name
-        # grade_db.school_id = grade.school_id
-        # grade_db.grade_no = grade.grade_no
-        # grade_db.grade_alias = grade.grade_alias
-        # grade_db.description = grade.description
+
         grade_db = view_model_to_orm_model(grade, Grade,    exclude=["id"])
         grade_db.created_at =   datetime.now()
                                  # .strftime("%Y-%m-%d %H:%M:%S"))
-
-
 
         grade_db = await self.grade_dao.add_grade(grade_db)
         grade = orm_model_to_view_model(grade_db, GradeModel, exclude=[""])
@@ -58,7 +46,6 @@ class GradeRule(object):
         for key, value in grade.dict().items():
             if value:
                 need_update_list.append(key)
-
 
         print(need_update_list,222,grade)
         grade_db = await self.grade_dao.update_grade_byargs(grade,*need_update_list)
@@ -97,7 +84,7 @@ class GradeRule(object):
     async def query_grade(self,grade_name,extendparams=None):
 
         session = await db_connection_manager.get_async_session("default", True)
-        query =select(Grade).where(Grade.grade_name.like(f'%{grade_name}%') )
+        query =select(Grade).where(Grade.grade_name.like(f'%{grade_name}%') ).where(Grade.is_deleted == False)
         if extendparams:
             if extendparams.school_id:
                 query = query.where(Grade.school_id == extendparams.school_id)
@@ -111,8 +98,7 @@ class GradeRule(object):
 
         lst = []
         for row in res:
-            planning_school = orm_model_to_view_model(row, GradeModel)
-
-            lst.append(planning_school)
+            item = orm_model_to_view_model(row, GradeModel)
+            lst.append(item)
         return lst
 
