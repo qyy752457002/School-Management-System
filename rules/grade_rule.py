@@ -33,17 +33,10 @@ class GradeRule(object):
         exists_grade = await self.grade_dao.get_grade_by_grade_name(grade.grade_name,grade)
         if exists_grade:
             raise GradeAlreadyExistError()
-        # grade_db = Grade()
-        # grade_db.grade_name = grade.grade_name
-        # grade_db.school_id = grade.school_id
-        # grade_db.grade_no = grade.grade_no
-        # grade_db.grade_alias = grade.grade_alias
-        # grade_db.description = grade.description
+
         grade_db = view_model_to_orm_model(grade, Grade,    exclude=["id"])
         grade_db.created_at =   datetime.now()
                                  # .strftime("%Y-%m-%d %H:%M:%S"))
-
-
 
         grade_db = await self.grade_dao.add_grade(grade_db)
         grade = orm_model_to_view_model(grade_db, GradeModel, exclude=[""])
@@ -58,7 +51,6 @@ class GradeRule(object):
         for key, value in grade.dict().items():
             if value:
                 need_update_list.append(key)
-
 
         print(need_update_list,222,grade)
         grade_db = await self.grade_dao.update_grade_byargs(grade,*need_update_list)
