@@ -41,25 +41,21 @@ class GradeRule(object):
                                  # .strftime("%Y-%m-%d %H:%M:%S"))
 
         grade_db_res = await self.grade_dao.add_grade(grade_db)
+        grade_res = orm_model_to_view_model(grade_db_res, GradeModel, exclude=[""])
+
         #  市级添加  自动传递到 区级 自动到 校
         if grade.city:
             # 区的转换   or todo
             districts =await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY,grade.city)
             print('区域',districts, '')
             for district in districts:
+                grade_db = view_model_to_orm_model(grade, Grade,    exclude=["id"])
+                grade_db.created_at =   datetime.now()
                 grade_db.district = district.enum_value
-                # grade_db.id = 0
-                print(grade_db,333)
-                grade_db = await self.grade_dao.add_grade(grade_db)
 
-            # enuminfo = await (  EnumValueDAO()).get_enum_value_by_enum_value_name( DISTRICT_ENUM_KEY,grade.city )
-            # if enuminfo:
-            #     obj.county_name = enuminfo.description
-            # await self.grade_dao.update_grade(grade_db)
+                await self.grade_dao.add_grade(grade_db)
 
-
-        grade = orm_model_to_view_model(grade_db_res, GradeModel, exclude=[""])
-        return grade
+        return grade_res
 
     async def update_grade(self, grade):
         exists_grade = await self.grade_dao.get_grade_by_id(grade.id)
