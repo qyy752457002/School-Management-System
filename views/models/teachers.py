@@ -49,6 +49,11 @@ class TeachersCreatModel(BaseModel):
     teacher_avatar: str = Field("", title="头像", description="头像")
     mobile: str = Field("", title="手机号", description="手机号")
 
+
+class TeacherCreateResultModel(TeachersCreatModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
+
 class TeacherInfoCreateModel(BaseModel):  # 基本信息
     """
     姓名：name
@@ -262,6 +267,7 @@ class TeacherInfo(BaseModel):  # 基本信息
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="行政")
+
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
         if self.nationality == "CN":
@@ -486,6 +492,7 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="行政")
 
+
 class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
     """
     保存再查看的模型，有些是不需要经过验证
@@ -590,6 +597,7 @@ class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="行政")
+
 
 class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
     """
@@ -696,6 +704,7 @@ class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="行政")
 
+
 class TeacherInfoSubmit(BaseModel):  # 基本信息
     """
     姓名：name
@@ -797,6 +806,7 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="行政")
+
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
         if self.nationality == "CN":

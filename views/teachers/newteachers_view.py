@@ -19,6 +19,8 @@ from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task import Task
 from views.models.teachers import NewTeacherTask
 
+from mini_framework.storage.view_model import FileStorageModel
+
 
 class NewTeachersView(BaseView):
     def __init__(self):
@@ -157,32 +159,24 @@ class NewTeachersView(BaseView):
         await self.teacher_info_rule.rejected(teacher_base_id)
         return teacher_base_id
 
-    async def post_new_teacher_import(self,
-                                      filename: str = Query(..., description="文件名"),
-                                      bucket: str = Query(..., description="文件名"),
-                                      scene: str = Query('', description="文件名"),
-                                      ) -> Task:
+    async def post_new_teacher_import(self, filestorage: FileStorageModel)-> Task:
 
         task = Task(
             task_type="teacher_import",
-            payload=NewTeacherTask(file_name=filename, bucket=bucket, scene=scene),
+            payload=filestorage,
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
         print('发生任务成功')
         return task
 
-    async def post_new_teacherinfo_import(self,
-                                          filename: str = Query(..., description="文件名"),
-                                          bucket: str = Query(..., description="文件名"),
-                                          scene: str = Query('', description="文件名"),
-                                          ) -> Task:
 
-        task = Task(
-            task_type="teacher_info_import",
-            payload=NewTeacherTask(file_name=filename, bucket=bucket, scene=scene),
-            operator=request_context_manager.current().current_login_account.account_id
-        )
-        task = await app.task_topic.send(task)
-        print('发生任务成功')
-        return task
+async def post_new_teacherinfo_import(self,filestorage) -> Task:
+    task = Task(
+        task_type="teacher_info_import",
+        payload=NewTeacherTask(file_name=filename, bucket=bucket, scene=scene),
+        operator=request_context_manager.current().current_login_account.account_id
+    )
+    task = await app.task_topic.send(task)
+    print('发生任务成功')
+    return task
