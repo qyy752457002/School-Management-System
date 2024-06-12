@@ -1,13 +1,16 @@
 from datetime import datetime
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 from business_exceptions.grade import GradeAlreadyExistError
 from daos.grade_dao import GradeDAO
 from models.grade import Grade
+from rules.enum_value_rule import EnumValueRule
 from views.models.grades import Grades as GradeModel
+from views.models.system import GRADE_ENUM_KEY
+
 
 @dataclass_inject
 class GradeRule(object):
@@ -28,6 +31,9 @@ class GradeRule(object):
         exists_grade = await self.grade_dao.get_grade_by_grade_name(grade.grade_name,grade)
         if exists_grade:
             raise GradeAlreadyExistError()
+        # 校验 枚举值
+        enum_value_rule = get_injector(EnumValueRule)
+        await enum_value_rule.check_enum_values(GRADE_ENUM_KEY,grade.grade_type)
 
         grade_db = view_model_to_orm_model(grade, Grade,    exclude=["id"])
         grade_db.created_at =   datetime.now()
