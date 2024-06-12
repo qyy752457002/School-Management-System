@@ -10,7 +10,6 @@ from mini_framework.web.views import BaseView
 from rules.grade_rule import GradeRule
 from views.models.grades import Grades
 
-
 class GradesView(BaseView):
     def __init__(self):
         super().__init__()
@@ -43,8 +42,8 @@ class GradesView(BaseView):
                    page_request=Depends(PageRequest),
                    school_id: int = Query(None, title="学校ID", description="学校ID"),
                    grade_name: str = Query(None, description="年级名称", min_length=1, max_length=20),
-                   city :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
-                   district :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
+                   city :str= Query(None, title="市", description="",min_length=1,max_length=20,example=''),
+                   district :str= Query(None, title="区", description="",min_length=1,max_length=20,example=''),
                    ):
         print(page_request)
         obj= await get_extend_params(request)

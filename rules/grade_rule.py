@@ -1,18 +1,13 @@
-# from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 from datetime import datetime
-
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
-
 from business_exceptions.grade import GradeAlreadyExistError
 from daos.grade_dao import GradeDAO
 from models.grade import Grade
 from views.models.grades import Grades as GradeModel
-
 
 @dataclass_inject
 class GradeRule(object):
@@ -103,8 +98,7 @@ class GradeRule(object):
 
         lst = []
         for row in res:
-            planning_school = orm_model_to_view_model(row, GradeModel)
-
-            lst.append(planning_school)
+            item = orm_model_to_view_model(row, GradeModel)
+            lst.append(item)
         return lst
 
