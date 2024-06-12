@@ -20,10 +20,23 @@ class ClassesRule(object):
 
     async def add_classes(self, classes: ClassesModel):
         exists_classes = await self.classes_dao.get_classes_by_classes_name(
-            classes.class_name, classes.school_id)
+            classes.class_name, classes.school_id,classes)
         if exists_classes:
             raise Exception(f"班级信息{classes.class_name}已存在")
-        classes_db = view_model_to_orm_model(classes, Classes, exclude=["id"])
+        classes_db = view_model_to_orm_model(classes, Classes, exclude=["id"],other_mapper={
+            "teacher_phone": "teacher_phone",
+            # "teacher_job_number": "",
+            # "teacher_card_type": "",
+            # "teacher_id_card": "",
+            # "care_teacher_phone": "",
+            # "care_teacher_job_number": "",
+            # "care_teacher_card_type": "",
+            # "care_teacher_id_card": "",
+            # "care_teacher_name": "",
+
+
+
+        })
 
         classes_db = await self.classes_dao.add_classes(classes_db)
         classes = orm_model_to_view_model(classes_db, ClassesModel, exclude=["created_at", 'updated_at'])

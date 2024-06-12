@@ -15,12 +15,20 @@ class ClassesDAO(DAOBase):
         result = await session.execute(select(Classes).where(Classes.id == classes_id))
         return result.scalar_one_or_none()
 
-    async def get_classes_by_classes_name(self, classes_name,school_id=None):
+    async def get_classes_by_classes_name(self, classes_name,school_id=None,classes=None):
         session = await self.slave_db()
+        query =  select(Classes).where(Classes.class_name == classes_name)
         if school_id:
-            result = await session.execute(select(Classes).where(and_(Classes.class_name == classes_name,Classes.school_id==school_id)))
+            query = query.where(Classes.school_id == school_id)
+            # result = await session.execute(select(Classes).where(and_(Classes.class_name == classes_name,Classes.school_id==school_id)))
         else:
-            result = await session.execute(  select(Classes).where(Classes.class_name == classes_name))
+            pass
+        if classes.session_id:
+            query = query.where(Classes.session_id == classes.session_id)
+        if classes.grade_id:
+            query = query.where(Classes.grade_id == classes.grade_id)
+
+        result = await session.execute(query )
         return result.first()
 
     async def add_classes(self, classes):
