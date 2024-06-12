@@ -5,11 +5,12 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject, get_i
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 from business_exceptions.grade import GradeAlreadyExistError
+from daos.enum_value_dao import EnumValueDAO
 from daos.grade_dao import GradeDAO
 from models.grade import Grade
 from rules.enum_value_rule import EnumValueRule
 from views.models.grades import Grades as GradeModel
-from views.models.system import GRADE_ENUM_KEY
+from views.models.system import GRADE_ENUM_KEY, DISTRICT_ENUM_KEY
 
 
 @dataclass_inject
@@ -40,6 +41,17 @@ class GradeRule(object):
                                  # .strftime("%Y-%m-%d %H:%M:%S"))
 
         grade_db = await self.grade_dao.add_grade(grade_db)
+        # todo 市级添加  自动传递到 区级 自动到 校
+        if grade.city:
+            # 区的转换   or todo
+            districts =await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY,grade.city)
+
+            # enuminfo = await (  EnumValueDAO()).get_enum_value_by_enum_value_name( DISTRICT_ENUM_KEY,grade.city )
+            # if enuminfo:
+            #     obj.county_name = enuminfo.description
+            # await self.grade_dao.update_grade(grade_db)
+
+
         grade = orm_model_to_view_model(grade_db, GradeModel, exclude=[""])
         return grade
 

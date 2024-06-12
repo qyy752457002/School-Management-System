@@ -106,3 +106,21 @@ class GradesView(BaseView):
         res = await self.grade_rule.update_grade(grades)
 
         return res
+
+        # 手动进行 年级的继承
+    async def put_grade_extend(self,
+                  request:Request,
+
+                  city: str  = Query('', title="", description="", example='1'),
+                  district: str  = Query('', title="", description="", example='1'),
+                  school_id: int   = Query(0, title="", description="", example='1'),
+
+                  ):
+
+
+        obj= await get_extend_params(request)
+
+
+        res = await self.grade_rule.update_grade(None)
+
+        return res
