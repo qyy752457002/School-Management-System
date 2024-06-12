@@ -10,8 +10,8 @@ class Grades(BaseModel):
 
     """
     grade_name: str = Field(..., title="",description="年级名称",examples=['一年级'])
-    grade_type: str = Field('',  description="年级类型/班级类型 例如 一年级 二年级 三年级",examples=['一年级'])
-    school_type: str = Field('',  description="教育阶段/学校类别 例如 小学 初中",examples=['小学'])
+    grade_type: str|None = Field(...,  description="年级类型/班级类型 例如 一年级 二年级 三年级",examples=['一年级'])
+    school_type: str|None = Field(...,  description="教育阶段/学校类别 例如 小学 初中",examples=['小学'])
 
     grade_alias: str = Field('',  description="年级别名",examples=['一年级'])
     school_id: int = Field(0, title="学校ID", description="学校ID",examples=[0])

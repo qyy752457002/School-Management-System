@@ -84,7 +84,7 @@ class GradeRule(object):
     async def query_grade(self,grade_name,extendparams=None):
 
         session = await db_connection_manager.get_async_session("default", True)
-        query =select(Grade).where(Grade.grade_name.like(f'%{grade_name}%') )
+        query =select(Grade).where(Grade.grade_name.like(f'%{grade_name}%') ).where(Grade.is_deleted == False)
         if extendparams:
             if extendparams.school_id:
                 query = query.where(Grade.school_id == extendparams.school_id)

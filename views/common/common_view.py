@@ -79,7 +79,8 @@ def check_id_number(id_number: str):
     return is_valid
 async def get_extend_params(request):
     headers = request.headers
-    obj= None
+    obj = ExtendParams()
+
     if 'Extendparams'  in headers:
         extparam= headers['Extendparams']
         if isinstance(extparam, str):

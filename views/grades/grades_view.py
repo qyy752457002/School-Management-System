@@ -78,6 +78,7 @@ class GradesView(BaseView):
     async def delete(self, grade_id: int = Query(..., title="", description="年级id", example='1'), ):
         print(grade_id)
         # return  grade_id
+        # todo 权限校验
         res = await self.grade_rule.delete_grade(grade_id)
 
         return res
@@ -85,6 +86,8 @@ class GradesView(BaseView):
     # 修改 关键信息
     async def put(self,
                   grades: Grades,
+                  request:Request,
+
                   grade_id: int = Query(..., title="", description="年级id", example='1'),
 
                   ):
@@ -93,6 +96,13 @@ class GradesView(BaseView):
         grades.id = grade_id
         grades.created_at = None
         delattr(grades, 'created_at')
+
+        obj= await get_extend_params(request)
+        grades.city = obj.city
+        grades.district = obj.county_id
+        if obj.school_id:
+            grades.school_id = int(obj.school_id)
+
         res = await self.grade_rule.update_grade(grades)
 
         return res
