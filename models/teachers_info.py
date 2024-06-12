@@ -48,6 +48,7 @@ class TeacherInfo(BaseDBModel):
        是否心理健康教育教师：psychological_health_education_teacher
        招聘方式：recruitment_method
        教职工号：teacher_number
+       部门：department
        用户名：username
         密码：hash_password
        """
@@ -111,6 +112,7 @@ class TeacherInfo(BaseDBModel):
     recruitment_method: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="招聘方式")
     teacher_number: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="教职工号")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
+    department: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="部门")
     approval_status: Mapped[str] = mapped_column(String(255), nullable=False, comment="审批状态",
                                                  default="submitting")
     # username: Mapped[str] = mapped_column(String(255), nullable=False, comment="用户名")

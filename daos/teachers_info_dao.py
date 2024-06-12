@@ -38,12 +38,16 @@ class TeachersInfoDao(DAOBase):
     # 获取单个教师基本信息
     async def get_teachers_info_by_id(self, teacher_base_id):
         session = await self.slave_db()
-        result = await session.execute(select(TeacherInfo).where(TeacherInfo.teacher_base_id == teacher_base_id))
+        result = await session.execute(
+            select(TeacherInfo).join(Teacher, Teacher.teacher_id == TeacherInfo.teacher_id).where(
+                TeacherInfo.teacher_base_id == teacher_base_id))
         return result.scalar_one_or_none()
 
     async def get_teachers_info_by_teacher_id(self, teacher_id):
         session = await self.slave_db()
-        result = await session.execute(select(TeacherInfo).where(TeacherInfo.teacher_id == teacher_id))
+        result = await session.execute(
+            select(TeacherInfo).join(Teacher, Teacher.teacher_id == TeacherInfo.teacher_id).where(
+                TeacherInfo.teacher_id == teacher_id))
         return result.scalar_one_or_none()
 
     async def query_teacher_with_page(self, query_model: NewTeacher, page_request: PageRequest) -> Paging:
@@ -97,7 +101,7 @@ class TeachersInfoDao(DAOBase):
         if query_model.enter_school_time:
             query = query.where(TeacherInfo.enter_school_time == query_model.enter_school_time)
         if query_model.teacher_main_status:
-            query = query.where(Teacher.teacher_main_status== query_model.teacher_main_status)
+            query = query.where(Teacher.teacher_main_status == query_model.teacher_main_status)
         query = query.order_by(Teacher.teacher_id.desc())
         paging = await self.query_page(query, page_request)
         return paging

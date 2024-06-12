@@ -12,6 +12,7 @@ from views.models.institutions import Institutions, InstitutionsValid
 from views.models.planning_school import PlanningSchool
 from views.models.school import School
 from views.models.students import NewStudents
+from views.models.teachers import TeachersCreatModel
 
 
 @dataclass_inject
@@ -54,54 +55,51 @@ class StorageRule(object):
         resp = await storage_manager.add_file(self.storage_dao, storage_info)
         return resp
 
-
     #     解析 文件和桶  返回 数据结构
-    async def get_file_data(self, filename: str, bucket,sence=''):
+    async def get_file_data(self, filename: str, bucket, sence=''):
         # 下载保存本地
         random_id = str(uuid.uuid4())
-        local_filepath='b.xlsx'
-        # local_filepath='a.xlsx'
+        # source='c.xlsx'
+        local_filepath = 'c.xlsx'
 
-        local_filepath='temp/'+ random_id+filename
-        resp =  storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
-
+        # local_filepath='temp/'+ random_id+filename
+        # resp =  storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
 
         # 根据不同场景 获取不同的模型
-        sheetname= 'Sheet1'
+        sheetname = 'Sheet1'
 
-        SampleModel=None
-        SampleModel = Institutions
-        # SampleModel = InstitutionsValid
+        SampleModel = None
 
         if sence == 'institution':
             SampleModel = Institutions
-            sheetname= 'Sheet1'
+            sheetname = 'Sheet1'
         if sence == 'planning_school_import':
             SampleModel = PlanningSchool
-            sheetname= 'Sheet1'
+            sheetname = 'Sheet1'
         if sence == 'school_import':
             SampleModel = School
-            sheetname= 'Sheet1'
+            sheetname = 'Sheet1'
         if sence == 'new_student_import':
             SampleModel = NewStudents
-            sheetname= 'Sheet1'
+            sheetname = 'Sheet1'
+        if sence == 'teacher_import':
+            SampleModel = TeachersCreatModel
+            sheetname = 'Sheet1'
 
 
-        resdata = TestExcelReader(local_filepath,sheetname, SampleModel).read_valid()
+        resdata = TestExcelReader(local_filepath, sheetname, SampleModel).read_valid()
         print(resdata)
         return resdata
 
 
-
 class TestExcelReader:
-    def __init__(self,filename,sheetname, SampleModel):
+    def __init__(self, filename, sheetname, SampleModel):
         self.reader = ExcelReader()
         self.filename = filename
         self.sheetname = sheetname
         self.reader.register_model(sheetname, SampleModel)
 
     def read_valid(self):
-
         # 执行读取操作
         self.reader.set_data(self.filename)
         result = self.reader.execute()

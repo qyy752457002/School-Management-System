@@ -13,7 +13,7 @@ class Organization(BaseDBModel):
     __table_args__ = {'comment': '组织架构模型'}
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True)
-    org_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="组织分类 行政类等")
+    org_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="组织分类 行政类等")
 
     org_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="组织或者部门名称 例如行政部")
     parent_id: Mapped[int] = mapped_column( comment="父级ID",default=0,nullable=True)

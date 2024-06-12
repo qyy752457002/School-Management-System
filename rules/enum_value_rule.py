@@ -135,20 +135,12 @@ class EnumValueRule(object):
 
         enum_value_db = await self.enum_value_dao.update_enum_value_byargs(enum_value, *need_update_list)
 
-        # 更新不用转换   因为得到的对象不熟全属性
         # enum_value = orm_model_to_view_model(enum_value_db, SchoolModel, exclude=[""])
         return enum_value_db
+    # 根据键名查询 值
+    async def query_enum_values(self, enum_value_name,parent_code=None):
+        return await self.enum_value_dao.get_enum_value_all({"enum_name":enum_value_name,"parent_id":parent_code})
 
-    async def query_enum_values(self, enum_value_name):
-
-        session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(EnumValue).where(EnumValue.enum_value_name.like(f'%{enum_value_name}%')))
-        res = result.scalars().all()
-        lst = []
-        for row in res:
-            enum_value = orm_model_to_view_model(row, EnumValueModel)
-            lst.append(enum_value)
-        return lst
     # 校验 枚举值是否合法
     async def check_enum_values(self, enum_value_key,enum_value):
 
@@ -164,7 +156,7 @@ class EnumValueRule(object):
         else:
             return True
         # return lst
-
+    # 获取下一级 的 键值对
     async def get_next_level_enum_values(self, enum_value_name, enum_values: List[str]):
 
         session = await db_connection_manager.get_async_session("default", True)
