@@ -8,10 +8,11 @@ from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers import Teacher
 from views.common.common_view import check_id_number
 from views.models.teachers import Teachers as TeachersModel
-from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel,TeacherCreateResultModel
+from views.models.teachers import TeachersCreatModel, TeacherInfoCreateModel, TeacherCreateResultModel, CombinedModel, \
+    TeacherInfoCreateResultModel,TeacherFileStorageModel
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
-
+from rules.teachers_info_rule import TeachersInfoRule
 
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
@@ -29,6 +30,7 @@ class TeachersRule(object):
     teachers_info_dao: TeachersInfoDao
     file_storage_dao: FileStorageDAO
     task_dao: TaskDAO
+    teachers_info_rule: TeachersInfoRule
 
     async def get_teachers_by_id(self, teachers_id):
         teacher_db = await self.teachers_dao.get_teachers_by_id(teachers_id)
@@ -102,7 +104,6 @@ class TeachersRule(object):
         teachers_count = await self.teachers_dao.get_teachers_count()
         return teachers_count
 
-
     async def submitting(self, teachers_id):
         teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
         if not teachers:
@@ -149,10 +150,9 @@ class TeachersRule(object):
             teachers.teacher_sub_status = "active"
         return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
 
-
-#导入相关
+    # 导入相关
     async def import_teachers(self, task: Task):
-        if not isinstance(task.payload, FileStorageModel):
+        if not isinstance(task.payload, TeacherFileStorageModel):
             raise
         source_file = task.payload
         local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
@@ -161,26 +161,64 @@ class TeachersRule(object):
         )
         reader = ExcelReader()
         reader.set_data(local_file_path)
+        # reader.register_model("Sheet1", CombinedModel)
         reader.register_model("Sheet1", TeachersCreatModel)
+        # reader.register_model("Sheet1", TeacherInfoCreateModel)
         data = reader.execute()
         if not isinstance(data, list):
             raise
         results = []
-        for item in data:
-            result_dict = item.dict()
+        # 两个一起写
+        # for idx, item in enumerate(data):
+        #     teacher_data = {key: item[key] for key in TeachersCreatModel.__fields__.keys() if key in item}
+        #     teacher_model = TeachersCreatModel(**teacher_data)
+        #
+        #     result_dict = teacher_data.copy()
+        #     result_dict["failed_msg"] = "成功"
+        #     result = TeacherCreateResultModel(**result_dict)
+        #     try:
+        #         teacher = await self.add_teachers(teacher_model)
+        #         teacher_id = teacher.teacher_id
+        #     except Exception as ex:
+        #         result.failed_msg = str(ex)
+        #     results.append(result)
+        #
+        #     if teacher_id:
+        #         info_data = {key: item[key] for key in TeacherInfoCreateModel.__fields__.keys()}
+        #         info_data["teacher_id"] = teacher_id
+        #         info_model = TeacherInfoCreateModel(**info_data)
+        #
+        #         info_result_dict = info_data.copy()
+        #         info_result_dict["failed_msg"] = "成功"
+        #         info_result = TeacherInfoCreateResultModel(**info_result_dict)
+        #
+        #         try:
+        #             await self.teachers_info_rule.add_teachers_info_import(info_model)
+        #         except Exception as ex:
+        #             info_result.failed_msg = str(ex)
+        #
+        #         results.append(info_result)
+
+        for idx, item in enumerate(data):
+            teacher_data = {key: item[key] for key in TeachersCreatModel.__fields__.keys() if key in item}
+            teacher_model = TeachersCreatModel(**teacher_data)
+
+            result_dict = teacher_data.copy()
             result_dict["failed_msg"] = "成功"
             result = TeacherCreateResultModel(**result_dict)
             try:
-                # await self.verify_account_create_model(item)
-                await self.add_teachers(item)
+                await self.add_teachers(teacher_model)
+                # teacher_id = teacher.teacher_id
             except Exception as ex:
                 result.failed_msg = str(ex)
             results.append(result)
+
         local_results_path = f"/tmp/{source_file.file_name}"
         excel_writer = ExcelWriter()
-        excel_writer.add_data("账号", results)
+        excel_writer.add_data("Sheet1", results)
         excel_writer.set_data(local_results_path)
         excel_writer.execute()
+
         random_file_name = shortuuid.uuid() + ".xlsx"
         file_storage = await storage_manager.put_file_to_object(
             source_file.bucket_name, f"{random_file_name}.xlsx", local_results_path
@@ -188,6 +226,7 @@ class TeachersRule(object):
         file_storage_resp = await storage_manager.add_file(
             self.file_storage_dao, file_storage
         )
+
         task_result = TaskResult()
         task_result.task_id = task.task_id
         task_result.result_file = file_storage_resp.file_name
