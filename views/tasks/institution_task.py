@@ -37,7 +37,7 @@ class InstitutionExecutor(TaskExecutor):
                 elif isinstance(item, Institutions):
                     institution_import: Institutions = item
                 elif isinstance(item, InstitutionsModel):
-                    institution_import: InstitutionsModel = item
+                    institution_import: InsttutionsModel = item
                 else:
                     raise ValueError("Invalid payload type")
                 res = await self.institution_rule.add_institution(institution_import)

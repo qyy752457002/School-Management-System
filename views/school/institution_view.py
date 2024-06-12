@@ -38,7 +38,7 @@ class InstitutionView(BaseView):
 
     async def post_institution_import_example(self, account: Institutions = Body(..., description="")) -> Task:
         task = Task(
-            # 需要 在cofnig里有配置   对应task类里也要有这个 键
+            # 需要 在cofnig里有配置   对应task类里也要有这个键
             task_type="institution_import",
             # 文件 要对应的 视图模型
             payload=account,
@@ -55,6 +55,7 @@ class InstitutionView(BaseView):
                                       bucket: str = Query(..., description="文件名"),
                                       scene: str = Query('', description="文件名"),
                                       ) -> Task:
+
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="institution_import",
