@@ -10,7 +10,7 @@ class GradeDAO(DAOBase):
 
     async def get_grade_by_id(self, grade_id):
         session = await self.slave_db()
-        result = await session.execute(select(Grade).where(Grade.id == grade_id))
+        result = await session.execute(select(Grade).where(Grade.id == grade_id).where(Grade.is_deleted == False))
         return result.scalar_one_or_none()
 
     async def get_grade_by_grade_name(self, grade_name,grade=None):
@@ -23,6 +23,10 @@ class GradeDAO(DAOBase):
             query = query.where(Grade.city == grade.city)
         if grade.district:
             query = query.where(Grade.district == grade.district)
+        if grade.school_type:
+            query = query.where(Grade.school_type == grade.school_type)
+        if grade.grade_type:
+            query = query.where(Grade.grade_type == grade.grade_type)
 
         result = await session.execute(query)
         return result.first()
@@ -58,8 +62,9 @@ class GradeDAO(DAOBase):
 
     async def delete_grade(self, grade):
         session = await self.master_db()
-        await session.execute(  delete(Grade).where(Grade.id == grade.id) )
-        await session.commit()
+        await self.delete(session, grade)
+        # await session.execute(  delete(Grade).where(Grade.id == grade.id) )
+        # await session.commit()
         return grade
 
     async def get_all_grades(self):
@@ -73,7 +78,7 @@ class GradeDAO(DAOBase):
         return result.scalar()
 
     async def query_grade_with_page(self, grade_name,school_id, page_request: PageRequest,city='', district='') -> Paging:
-        query = select(Grade)
+        query = select(Grade).where(Grade.is_deleted == False)
         if grade_name:
             query = query.where(Grade.grade_name.like(f'%{grade_name}%') )
         if school_id:

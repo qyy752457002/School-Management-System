@@ -4,7 +4,7 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
-from business_exceptions.enum_value import EnumValueNotFoundError
+from business_exceptions.enum_value import EnumValueNotFoundError, EnumValueNotMatchError
 from daos.enum_value_dao import EnumValueDAO
 from models.enum_value import EnumValue
 from views.models.enum_value import EnumValue as EnumValueModel
@@ -149,6 +149,21 @@ class EnumValueRule(object):
             enum_value = orm_model_to_view_model(row, EnumValueModel)
             lst.append(enum_value)
         return lst
+    # 校验 枚举值是否合法
+    async def check_enum_values(self, enum_value_key,enum_value):
+
+        session = await db_connection_manager.get_async_session("default", True)
+        result = await session.execute(select(EnumValue).where(EnumValue.enum_name.like(f'%{enum_value_key}%')))
+        res = result.scalars().all()
+        lst = []
+        for row in res:
+            # enum_value = orm_model_to_view_model(row, EnumValueModel)
+            lst.append(row.enum_value)
+        if enum_value not  in lst:
+            raise EnumValueNotMatchError()
+        else:
+            return True
+        # return lst
 
     async def get_next_level_enum_values(self, enum_value_name, enum_values: List[str]):
 

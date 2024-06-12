@@ -1,6 +1,9 @@
 from enum import Enum
+from typing import Final
 
 from pydantic import BaseModel, Field
+
+GRADE_ENUM_KEY:Final = 'grade'
 
 class UnitType(str, Enum):
     """
