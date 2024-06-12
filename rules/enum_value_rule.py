@@ -153,12 +153,12 @@ class EnumValueRule(object):
     async def check_enum_values(self, enum_value_key,enum_value):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(EnumValue).where(EnumValue.enum_value_name.like(f'%{enum_value_key}%')))
+        result = await session.execute(select(EnumValue).where(EnumValue.enum_name.like(f'%{enum_value_key}%')))
         res = result.scalars().all()
         lst = []
         for row in res:
-            enum_value = orm_model_to_view_model(row, EnumValueModel)
-            lst.append(enum_value)
+            # enum_value = orm_model_to_view_model(row, EnumValueModel)
+            lst.append(row.enum_value)
         if enum_value not  in lst:
             raise EnumValueNotMatchError()
         else:
