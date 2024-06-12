@@ -35,7 +35,7 @@ class OrganizationDAO(DAOBase):
 
 	async def get_organization_by_name(self, name,organization):
 		session = await self.slave_db()
-		result = await session.execute(select(Organization).where(Organization.org_name == name).where(Organization.parent_id == organization.parent_id))
+		result = await session.execute(select(Organization).where(Organization.org_name == name).where(Organization.parent_id == organization.parent_id).where(Organization.school_id == organization.school_id))
 		return result.scalar_one_or_none()
 
 	async def query_organization_with_page(self,  page_request: PageRequest,parent_id , school_id):
