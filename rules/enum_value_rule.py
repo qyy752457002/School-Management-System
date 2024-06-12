@@ -139,18 +139,8 @@ class EnumValueRule(object):
         return enum_value_db
     # 根据键名查询 值
     async def query_enum_values(self, enum_value_name,parent_code=None):
+        return await self.enum_value_dao.get_enum_value_all({"enum_name":enum_value_name,"parent_id":parent_code})
 
-        session = await db_connection_manager.get_async_session("default", True)
-        query = select(EnumValue).where(EnumValue.enum_value_name.like(f'%{enum_value_name}%'))
-        if parent_code:
-            query = query.where(EnumValue.parent_id.like(f'%{parent_code}%'))
-        result = await session.execute(query)
-        res = result.scalars().all()
-        lst = []
-        for row in res:
-            enum_value = orm_model_to_view_model(row, EnumValueModel)
-            lst.append(enum_value)
-        return lst
     # 校验 枚举值是否合法
     async def check_enum_values(self, enum_value_key,enum_value):
 

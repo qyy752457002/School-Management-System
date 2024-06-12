@@ -85,7 +85,7 @@ class EnumValueDAO(DAOBase):
 
         paging = await self.query_page(query, page_request)
         return paging
-
+    # 返回多条
     async def get_enum_value_all(self, filterdict):
         session = await self.slave_db()
         temodel = select(EnumValue)
@@ -95,4 +95,10 @@ class EnumValueDAO(DAOBase):
             # result = await session.execute(select(EnumValue).where(getattr(EnumValue, key) == value))
             # return result.scalars().all()
         result = await session.execute(temodel)
-        return result.scalars().all()
+        res =result.scalars().all()
+
+        lst = []
+        for row in res:
+            # enum_value = orm_model_to_view_model(row, EnumValueModel)
+            lst.append(row)
+        return lst
