@@ -14,11 +14,7 @@ class CourseSchoolNature(BaseDBModel):
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True)
     course_no: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="学科编码")
-
-
-    school_nature: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校性质 2级或者3级")
-
-
+    school_nature: Mapped[str] = mapped_column(String(40), nullable=True,default='', comment="学校性质 2级或者3级")
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)
     updated_uid: Mapped[int] = mapped_column( nullable=True , comment="操作人",default=0)
     created_at = mapped_column(DateTime, default=datetime.now, nullable=False, comment="创建时间")
@@ -37,7 +33,33 @@ class CourseSchoolNature(BaseDBModel):
                 updated_at=datetime.now(),
                 is_deleted=False,
             ),
-
+            CourseSchoolNature(
+                course_no='13',
+                school_nature='小学',
+                created_uid=0,
+                updated_uid=0,
+                created_at=datetime.now(),
+                updated_at=datetime.now(),
+                is_deleted=False,
+            ),
+            CourseSchoolNature(
+                course_no='13',
+                school_nature='初中',
+                created_uid=0,
+                updated_uid=0,
+                created_at=datetime.now(),
+                updated_at=datetime.now(),
+                is_deleted=False,
+            ),
+            CourseSchoolNature(
+                course_no='13',
+                school_nature='普通高中',
+                created_uid=0,
+                updated_uid=0,
+                created_at=datetime.now(),
+                updated_at=datetime.now(),
+                is_deleted=False,
+            ),
         ]
 
 

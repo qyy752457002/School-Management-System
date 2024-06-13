@@ -5,15 +5,6 @@ from pydantic import BaseModel, Field
 class Classes(BaseModel):
     """
     班级表
-
-    teacher_phone: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任电话")
-    teacher_job_number: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任工号")
-    care_teacher_id_card: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="保育员身份证")
-    care_teacher_card_type: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任证件类型")
-    care_teacher_name: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="保育员姓名")
-    care_teacher_phone: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任电话")
-    care_teacher_job_number: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任工号")
-
     """
     id: int = Query(None, title="", description="id", example='1'),
 
@@ -27,18 +18,21 @@ class Classes(BaseModel):
     class_number: str = Field('', description="班号", examples=['一年级'])
     year_established: str = Field(None, description="建班年份", examples=['fsdfdsfsdxxx'])
     teacher_id_card: str = Field(None, description="班主任身份证", examples=['fsdfdsfsdxxx'])
+    teacher_card_type: str = Field(None, description="班主任证件类型", examples=['idcard'])
+
     teacher_name: str = Field(None, description="班主任姓名", examples=['fsdfdsfsdxxx'])
     teacher_phone: str = Field(None, description="班主任电话", examples=['fsdfdsfsdxxx'])
     teacher_job_number: str = Field(None, description="班主任工号", examples=['fsdfdsfsdxxx'])
     care_teacher_id_card: str = Field(None, description="保育员身份证", examples=['fsdfdsfsdxxx'])
-    care_teacher_card_type: str = Field(None, description="班主任证件类型", examples=['fsdfdsfsdxxx'])
+    care_teacher_card_type: str = Field(None, description="保育员证件类型", examples=['fsdfdsfsdxxx'])
     care_teacher_name: str = Field(None, description="保育员姓名", examples=['fsdfdsfsdxxx'])
-    care_teacher_phone: str = Field(None, description="班主任电话", examples=['fsdfdsfsdxxx'])
-    care_teacher_job_number: str = Field(None, description="班主任工号", examples=['fsdfdsfsdxxx'])
+    care_teacher_phone: str = Field(None, description="保育员电话", examples=['fsdfdsfsdxxx'])
+    care_teacher_job_number: str = Field(None, description="保育员工号", examples=['fsdfdsfsdxxx'])
 
     education_stage: str = Field(None, description="教育阶段", examples=['中职'])
     school_system: str = Field(None, description="学制", examples=['fsdfdsfsdxxx'])
     monitor: str = Field(None, description="班长", examples=['fsdfdsfsdxxx'])
+    monitor_student_number: str = Field(None, description="班长学号", examples=['S11000236001'])
     class_type: str = Field(None, description="中小学班级类型", examples=['小学教学点班'])
     is_bilingual_class: str|bool = Field(None, description="是否少数民族双语教学班", examples=['fsdfdsfsdxxx'])
     major_for_vocational: str = Field(None, description="中职班级专业", examples=['fsdfdsfsdxxx'])
@@ -50,15 +44,6 @@ class Classes(BaseModel):
 
 class ClassesSearchRes(BaseModel):
     """
-    session_id: Mapped[int] = mapped_column( comment="届别ID",default=0,nullable=True)
-    session_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="届别名称",default='')
-teacher_phone: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任电话")
-    teacher_job_number: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任工号")
-    care_teacher_id_card: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="保育员身份证")
-    care_teacher_card_type: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任证件类型")
-    care_teacher_name: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="保育员姓名")
-    care_teacher_phone: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任电话")
-    care_teacher_job_number: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任工号")
     """
     id: int = Query(None, title="", description="id", example='1'),
 
@@ -69,10 +54,13 @@ teacher_phone: Mapped[str] = mapped_column(String(48), nullable=True,default='',
     class_number: str = Field(None, description="班号", examples=['一年级'])
     year_established: str = Field(None, description="建班年份", examples=['fsdfdsfsdxxx'])
     teacher_id_card: str = Field(None, description="班主任身份证", examples=['fsdfdsfsdxxx'])
+    teacher_card_type: str = Field(None, description="班主任证件类型", examples=['idcard'])
+
     teacher_name: str = Field(None, description="班主任姓名", examples=['fsdfdsfsdxxx'])
     education_stage: str = Field(None, description="教育阶段", examples=['中职'])
     school_system: str = Field(None, description="学制", examples=['fsdfdsfsdxxx'])
     monitor: str = Field(None, description="班长", examples=['fsdfdsfsdxxx'])
+    monitor_student_number: str = Field(None, description="班长学号", examples=['S11000236001'])
     class_type: str = Field(None, description="中小学班级类型", examples=['小学教学点班'])
     is_bilingual_class: str|bool = Field(None, description="是否少数民族双语教学班", examples=['fsdfdsfsdxxx'])
     major_for_vocational: str = Field(None, description="中职班级专业", examples=['fsdfdsfsdxxx'])

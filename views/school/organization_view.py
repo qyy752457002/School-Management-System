@@ -20,7 +20,7 @@ class OrganizationView(BaseView):
         super().__init__()
         self.organization_rule = get_injector(OrganizationRule)
         self.organization_members_rule = get_injector(OrganizationMembersRule)
-
+    #  添加时过滤 删除态
     async def post(self, organization: Organization):
         print(organization)
         res = await  self.organization_rule.add_organization(organization)
@@ -38,7 +38,7 @@ class OrganizationView(BaseView):
         res = await self.organization_rule.query_organization_with_page(page_request, parent_id , school_id,  )
         return res
 
-    # 删除
+    # 删除 todo 自动级联删除下层的部门
     async def delete(self,
                      org_id: int = Query(0, title="", description="", examples=[1]),
                        ):
@@ -49,16 +49,15 @@ class OrganizationView(BaseView):
 
     # 修改
     async def put(self,
-
-                  org_id: int = Query(0, title="", description="", examples=[1]),
-                  parent_id: int = Query(0, title="", description="", examples=[1]),
-
-                  org_name: str = Query('', title=" ", description=" ", examples=[''])
+                  orginization: Organization,
+                  # org_id: int = Query(0, title="", description="", examples=[1]),
+                  # parent_id: int = Query(0, title="", description="", examples=[1]),
+                  # org_name: str = Query('', title=" ", description=" ", examples=[''])
                   ):
-        # print(planning_school)
+        print(orginization)
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        organization= Organization(id=org_id, org_name=org_name,parent_id=parent_id)
-        res = await self.organization_rule.update_organization(organization)
+        # organization= Organization(id=org_id, org_name=org_name,parent_id=parent_id)
+        res = await self.organization_rule.update_organization(orginization)
 
         return res
 #     todo  成员的curd

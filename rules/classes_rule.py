@@ -24,7 +24,7 @@ class ClassesRule(object):
         if exists_classes:
             raise Exception(f"班级信息{classes.class_name}已存在")
         classes_db = view_model_to_orm_model(classes, Classes, exclude=["id"],other_mapper={
-            "teacher_phone": "teacher_phone",
+            # "teacher_phone": "teacher_phone",
             # "teacher_job_number": "",
             # "teacher_card_type": "",
             # "teacher_id_card": "",
@@ -33,9 +33,6 @@ class ClassesRule(object):
             # "care_teacher_card_type": "",
             # "care_teacher_id_card": "",
             # "care_teacher_name": "",
-
-
-
         })
 
         classes_db = await self.classes_dao.add_classes(classes_db)
