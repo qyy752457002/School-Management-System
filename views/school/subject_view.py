@@ -10,6 +10,7 @@ from views.models.grades import Grades
 from fastapi import Query, Depends
 
 from views.models.organization import Organization, OrganizationMembers
+from views.models.subject import Subject
 
 
 # from rules.organization_rule import OrganizationRule
@@ -21,7 +22,7 @@ class SubjectView(BaseView):
         self.organization_rule = get_injector(OrganizationRule)
         self.organization_members_rule = get_injector(OrganizationMembersRule)
     #  添加时过滤 删除态
-    async def post(self, organization: Organization):
+    async def post(self, organization: Subject):
         print(organization)
         res = await  self.organization_rule.add_organization(organization)
 

@@ -152,7 +152,9 @@ class EnumValueRule(object):
             # enum_value = orm_model_to_view_model(row, EnumValueModel)
             lst.append(row.enum_value)
         if enum_value not  in lst:
-            raise EnumValueNotMatchError()
+            # raise EnumValueNotMatchError()
+            return True
+
         else:
             return True
         # return lst
