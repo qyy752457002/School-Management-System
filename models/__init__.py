@@ -42,7 +42,7 @@ from . import operation_record
 from . import sub_system
 from mini_framework.storage.persistent.models import FileStorage
 from mini_framework.authentication.persistent.models import AuthAccount, JWTBlacklist
-from mini_framework.async_task.data_access.models import TaskProgress, TaskResults, TaskInfo
+from mini_framework.async_task.data_access.models import TaskProgress, TaskResult, TaskInfo
 
 from . import attachments
 from . import data_sync_records
