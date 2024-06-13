@@ -1,4 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from typing import List
+
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -61,12 +63,11 @@ class CourseRule(object):
         course_db = await self.course_dao.softdelete_course(exists_course)
         return course_db
     async def softdelete_course_by_school_id(self, course_id):
-        # exists_course = await self.course_dao.get_course_by_school_id(course_id)
-        # if not exists_course:
-        #     raise Exception(f"课程信息{course_id}不存在")
         course_db = await self.course_dao.softdelete_course_by_school_id(course_id)
         return course_db
-
+    async def softdelete_course_by_district(self, course_id):
+        course_db = await self.course_dao.softdelete_course_by_district(course_id)
+        return course_db
 
     async def get_course_count(self):
         return await self.course_dao.get_course_count()
@@ -79,6 +80,7 @@ class CourseRule(object):
             "course_id": course_id,
             "course_no": course_no,
             "city": extobj.city,
+            "district": extobj.district,
             "is_deleted":False
         }
         if not kdict["course_name"]:
@@ -91,6 +93,8 @@ class CourseRule(object):
             del kdict["course_no"]
         if not kdict["city"]:
             del kdict["city"]
+        if not kdict["district"]:
+            del kdict["district"]
 
         paging = await self.course_dao.query_course_with_page(page_request,**kdict
                                                                                 )
@@ -103,22 +107,21 @@ class CourseRule(object):
         return await self.course_dao.get_all_course(filterdict)
 
 
-    async def add_course_school(self,school_id,course_list):
-        exists_course = await self.course_dao.get_course_by_school_id(      school_id)
-        if exists_course:
-            raise CourseAlreadyExistError()
-        # course_db =  Course(school_id=school_id,course_list=course_list)
+    async def add_course_school(self,school_id,course_list:List[CourseModel],obj:ExtendParams=None):
+        res=None
+        if school_id:
+            exists_course = await self.course_dao.get_course_by_school_id(      school_id)
+            if exists_course:
+                raise CourseAlreadyExistError()
         for course in course_list:
+            # 扩展参数 放入到视图模型 再转换给orm
+            if obj.county_id:
+                course.district=obj.county_id
+            if obj.edu_type:
+                course.school_type=obj.edu_type
             course_db= view_model_to_orm_model(course, Course, exclude=["id"])
+
             res = await self.course_dao.add_course(course_db)
-
-            # print(course_db.course_list)
-
-
-
-
-
-        # course_db = await self.course_dao.add_course(course_db)
         course = orm_model_to_view_model(res, CourseModel, exclude=["created_at",'updated_at'])
         return course
 

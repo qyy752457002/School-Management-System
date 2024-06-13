@@ -69,6 +69,15 @@ class CourseDAO(DAOBase):
 		await session.execute(update_stmt)
 		await session.commit()
 		return school_id
+	async def softdelete_course_by_district(self, district):
+		session = await self.master_db()
+		deleted_status= True
+		update_stmt = update(Course).where(Course.district == district).values(
+			is_deleted= deleted_status,
+		)
+		await session.execute(update_stmt)
+		await session.commit()
+		return district
 	async def get_course_by_name(self, name,course=None):
 		session = await self.slave_db()
 		query = select(Course).where(Course.course_name == name)

@@ -20,7 +20,7 @@ class OrganizationView(BaseView):
         super().__init__()
         self.organization_rule = get_injector(OrganizationRule)
         self.organization_members_rule = get_injector(OrganizationMembersRule)
-
+    # todo 添加时过滤 删除态
     async def post(self, organization: Organization):
         print(organization)
         res = await  self.organization_rule.add_organization(organization)
@@ -38,7 +38,7 @@ class OrganizationView(BaseView):
         res = await self.organization_rule.query_organization_with_page(page_request, parent_id , school_id,  )
         return res
 
-    # 删除
+    # 删除 todo 自动级联删除下层的部门
     async def delete(self,
                      org_id: int = Query(0, title="", description="", examples=[1]),
                        ):

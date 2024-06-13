@@ -15,7 +15,6 @@ class CourseView(BaseView):
     # 新增课程  市区  校
     async def post(self,
                    request:Request,
-
                    school_id:int= Query(...,   description="学校ID", example='1'),
                    course_list:List[Course]= Body([], description="选择的课程" , example= [{"course_id":1,"course_name":"语文","course_no":"19","school_id":1,} ]),
 
@@ -45,6 +44,8 @@ class CourseView(BaseView):
                    ):
         print(page_request)
         obj= await get_extend_params(request)
+        if obj.school_id:
+            school_id = obj.school_id
 
         items=[]
 
@@ -59,16 +60,26 @@ class CourseView(BaseView):
 
         return  res
 
-    # 修改 当前用的这个  学校的课程选择 的变更
+    # 修改 当前用的这个  学校的课程选择 的变更 区的配置课程也是这个接口
     async def put(self,
-        school_id:int= Query(...,   description="学校ID", example='1'),
-        course_list:List[Course]= Body([], description="选择的课程" , example= [{"course_id":1,"course_name":"语文","course_no":"19","school_id":1,} ]),
-                  ):
-        # print(planning_school)
-        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res = await self.course_rule.softdelete_course_by_school_id(school_id)
+                  request:Request,
 
-        res =await self.course_rule.add_course_school(school_id,course_list )
+        school_id:int= Query(0,   description="学校ID", example='1'),
+        course_list:List[Course]= Body([], description="选择的课程" , example= [
+            {"grade_id":1,"course_name":"语文","course_no":"13", }
+        ]),
+                  ):
+        obj= await get_extend_params(request)
+
+        # print(planning_school)
+        if obj.school_id:
+            school_id = obj.school_id
+        if obj.county_id:
+            res = await self.course_rule.softdelete_course_by_district(obj.county_id)
+
+        else:
+            res = await self.course_rule.softdelete_course_by_school_id(school_id)
+        res =await self.course_rule.add_course_school(school_id,course_list,obj )
 
         return  res
 
