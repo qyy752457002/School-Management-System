@@ -30,10 +30,12 @@ class SubjectDAO(DAOBase):
 		result = await session.execute(select(Subject).where(Subject.id == id))
 		return result.scalar_one_or_none()
 
-	async def query_subject_with_page(self, pageQueryModel, page_request: PageRequest):
-		query = select(Subject)
+	async def query_subject_with_page(self,  page_request: PageRequest , school_id=None,subject_name=None,city=None,district=None):
+		query = select(Subject).where(Subject.is_deleted == False)
 		
-		### ´Ë´¦ÌîÐ´²éÑ¯Ìõ¼þ
+		### ï¿½Ë´ï¿½ï¿½ï¿½Ð´ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
+		if school_id:
+			query = query.where(Subject.school_id == school_id)
 		
 		paging = await self.query_page(query, page_request)
 		return paging

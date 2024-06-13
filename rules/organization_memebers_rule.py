@@ -43,7 +43,7 @@ class OrganizationMembersRule(object):
             organization_members_name)
         organization = orm_model_to_view_model(organization_members_db, Organization, exclude=[""])
         return organization
-
+    # todo 增加 对 部门计数的更新
     async def add_organization_members(self, organization: OrganizationMembers):
         exists_organization_members = await self.organization_members_dao.get_organization_members_by_param(
              organization)
