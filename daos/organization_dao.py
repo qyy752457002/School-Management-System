@@ -69,4 +69,4 @@ class OrganizationDAO(DAOBase):
 	async def delete_organization_by_ids(self, organization_ids, ):
 		session = await self.master_db()
 		query = update(Organization).where(Organization.id.in_(organization_ids)).values(is_deleted=True)
-		return await self.update(session, query, Organization, {is_deleted: True},  )
+		return await self.update(session, query, Organization, {'is_deleted': True},  )
