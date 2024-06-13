@@ -119,7 +119,7 @@ class OrganizationMembersRule(object):
     async def get_organization_members_count(self):
         return await self.organization_members_dao.get_organization_members_count()
 
-    async def query_organization_members_with_page(self, page_request: PageRequest,   parent_id , school_id ,teacher_name,teacher_no,mobile,birthday ):
+    async def query_organization_members_with_page(self, page_request: PageRequest,   parent_id , school_id ,teacher_name,teacher_no,mobile,birthday,org_ids  ):
         parent_id_lv2=[]
         if parent_id:
             #   参照 举办者类型   自动查出 下一级的 23 级
@@ -129,8 +129,11 @@ class OrganizationMembersRule(object):
 
             pass
         if not parent_id_lv2:
-            parent_id_lv2=  parent_id
-
+            parent_id_lv2= [int(parent_id)]
+        if isinstance(org_ids, str):
+            org_ids=org_ids.split(',')
+            int_list = [int(i) for i in org_ids]
+            parent_id_lv2= parent_id_lv2+int_list
 
         paging = await self.organization_members_dao.query_organization_members_with_page(page_request,  parent_id_lv2 , school_id,teacher_name,teacher_no,mobile,birthday
                                                                                           )
