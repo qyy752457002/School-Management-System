@@ -32,15 +32,16 @@ class OrganizationMemberView(BaseView):
                    school_id: int = Query(0, title="学校ID", description="学校ID", examples=[1]),
 
                    parent_id: int = Query(0, title="", description="表示要查询的部门ID", examples=[1]),
+                   org_ids: str = Query('', title="", description="", examples=[1]),
                     teacher_name: str = Query('', title=" ", description=" ", examples=['']),
-                    teacher_no: str = Query('', title=" ", description=" ", examples=['']),
-                    mobile: str = Query('', title=" ", description=" ", examples=['']),
-                    birthday: str = Query('', title=" ", description=" ", examples=['']),
+                    teacher_no: str = Query('', alias='teacher_number', title=" ", description=" ", examples=['']),
+                    mobile: str = Query('', alias='teacher_mobile',title=" ", description=" ", examples=['']),
+                   birthday: str = Query('', alias='teacher_date_of_birth',title=" ", description=" ", examples=['']),
 
                    ):
         print(page_request)
         items = []
-        res = await self.organization_members_rule.query_organization_members_with_page(page_request, parent_id , school_id,teacher_name,teacher_no,mobile,birthday  )
+        res = await self.organization_members_rule.query_organization_members_with_page(page_request, parent_id , school_id,teacher_name,teacher_no,mobile,birthday,org_ids  )
         return res
 
     # 删除
