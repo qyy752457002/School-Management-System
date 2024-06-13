@@ -2,6 +2,7 @@ from sqlalchemy import select, func, update
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
+from sqlalchemy_utils.functions.orm import is_deleted
 
 from models.organization import Organization
 
@@ -58,3 +59,14 @@ class OrganizationDAO(DAOBase):
 		update_contents = get_update_contents(organization, *args)
 		query = update(Organization).where(Organization.id == organization.id).values(**update_contents)
 		return await self.update(session, query, organization, update_contents, is_commit=is_commit)
+
+	async def get_child_organization_ids(self, organization_ids):
+		session = await self.slave_db()
+		result = await session.execute(select(Organization).where(Organization.parent_id.in_(organization_ids)))
+		res= result.scalars().all()
+		return [i.id for i in res]
+
+	async def delete_organization_by_ids(self, organization_ids, ):
+		session = await self.master_db()
+		query = update(Organization).where(Organization.id.in_(organization_ids)).values(is_deleted=True)
+		return await self.update(session, query, Organization, {is_deleted: True},  )

@@ -38,7 +38,7 @@ class OrganizationView(BaseView):
         res = await self.organization_rule.query_organization_with_page(page_request, parent_id , school_id,  )
         return res
 
-    # 删除 todo 自动级联删除下层的部门
+    # 删除  自动级联删除下层的部门
     async def delete(self,
                      org_id: int = Query(0, title="", description="", examples=[1]),
                        ):

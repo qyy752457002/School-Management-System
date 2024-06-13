@@ -103,6 +103,9 @@ class OrganizationRule(object):
         organization = orm_model_to_view_model(organization_db, Organization, exclude=[""],)
         # 查询下层的部门
         if exists_organization.parent_id:
+            parent_id_lv2 = await self.organization_dao.get_child_organization_ids([exists_organization.parent_id])
+            parent_id_lv3 = await self.organization_dao.get_child_organization_ids(parent_id_lv2)
+            await self.organization_dao.delete_organization_by_ids(parent_id_lv3+parent_id_lv2)
             # organization_db = await self.organization_dao.softdelete_organization(exists_organization)
             pass
         return organization
