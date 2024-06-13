@@ -101,6 +101,10 @@ class OrganizationRule(object):
             raise Exception(f"{organization_id}不存在")
         organization_db = await self.organization_dao.delete_organization(exists_organization)
         organization = orm_model_to_view_model(organization_db, Organization, exclude=[""],)
+        # 查询下层的部门
+        if exists_organization.parent_id:
+            # organization_db = await self.organization_dao.softdelete_organization(exists_organization)
+            pass
         return organization
 
     async def softdelete_organization(self, organization_id):

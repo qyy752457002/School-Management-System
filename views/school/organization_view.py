@@ -20,7 +20,7 @@ class OrganizationView(BaseView):
         super().__init__()
         self.organization_rule = get_injector(OrganizationRule)
         self.organization_members_rule = get_injector(OrganizationMembersRule)
-    # todo 添加时过滤 删除态
+    #  添加时过滤 删除态
     async def post(self, organization: Organization):
         print(organization)
         res = await  self.organization_rule.add_organization(organization)
