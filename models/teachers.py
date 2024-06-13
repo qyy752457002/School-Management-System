@@ -65,5 +65,6 @@ class Teacher(BaseDBModel):
                                                          comment="审批状态",
                                                          )
     identity: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份", default='')
+    mobile: Mapped[str] = mapped_column(String(64), nullable=True, default="", comment="手机号")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
     mobile: Mapped[str] = mapped_column(String(64), nullable=True, comment="手机号", default='')

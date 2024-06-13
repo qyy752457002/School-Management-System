@@ -17,3 +17,6 @@ pip install id-validator
 python main.py db-init revision
 
 python main.py db-init upgrade
+
+
+todo  状态键编辑接口

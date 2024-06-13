@@ -4,6 +4,7 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.course import Course
+from models.course_school_nature import CourseSchoolNature
 
 
 class CourseDAO(DAOBase):
@@ -37,9 +38,9 @@ class CourseDAO(DAOBase):
 		return result.scalar_one_or_none()
 
 	async def query_course_with_page(self,  page_request: PageRequest,**kwargs):
-		query = select(Course).where(Course.is_deleted == False)
+		query = select(Course).select_from(Course).join(CourseSchoolNature, CourseSchoolNature.course_no == Course.course_no,isouter=True).where(Course.is_deleted == False)
 		for key, value in kwargs.items():
-		   query = query.where(getattr(Course, key) == value)
+			query = query.where(getattr(Course, key) == value)
 		paging = await self.query_page(query, page_request)
 		return paging
 
@@ -68,6 +69,15 @@ class CourseDAO(DAOBase):
 		await session.execute(update_stmt)
 		await session.commit()
 		return school_id
+	async def softdelete_course_by_district(self, district):
+		session = await self.master_db()
+		deleted_status= True
+		update_stmt = update(Course).where(Course.district == district).values(
+			is_deleted= deleted_status,
+		)
+		await session.execute(update_stmt)
+		await session.commit()
+		return district
 	async def get_course_by_name(self, name,course=None):
 		session = await self.slave_db()
 		query = select(Course).where(Course.course_name == name)

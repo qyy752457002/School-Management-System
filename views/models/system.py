@@ -1,6 +1,10 @@
 from enum import Enum
+from typing import Final
 
 from pydantic import BaseModel, Field
+# 系统常量 定义在这里
+GRADE_ENUM_KEY:Final = 'grade'
+DISTRICT_ENUM_KEY:Final = 'country'
 
 class UnitType(str, Enum):
     """

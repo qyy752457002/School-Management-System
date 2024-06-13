@@ -117,6 +117,8 @@ class StudentBaseInfo(BaseDBModel):
     county: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="区县")
     emporary_borrowing_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="临时借读状态",
                                                            default="Y")
+    identity: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份",default='')
+
     flow_out_time: Mapped[str] = mapped_column(String(64), default='', nullable=True, comment="流出时间")
     flow_out_reason: Mapped[str] = mapped_column(String(64), nullable=True, comment="流出原因")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")

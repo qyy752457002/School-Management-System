@@ -181,3 +181,7 @@ class SchoolKeyAddInfo(BaseModel):
     school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
 
 
+class SchoolTask(BaseModel):
+    file_name: str = Field('', title="",description="",examples=[' '])
+    bucket: str = Field('', title="",description="",examples=[' '])
+    scene: str = Field('', title="",description="",examples=[' '])

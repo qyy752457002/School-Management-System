@@ -1,17 +1,16 @@
-# from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 from datetime import datetime
-
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-
-from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
-
 from business_exceptions.grade import GradeAlreadyExistError
+from daos.enum_value_dao import EnumValueDAO
 from daos.grade_dao import GradeDAO
 from models.grade import Grade
+from rules.enum_value_rule import EnumValueRule
 from views.models.grades import Grades as GradeModel
+from views.models.system import GRADE_ENUM_KEY, DISTRICT_ENUM_KEY
 
 
 @dataclass_inject
@@ -33,21 +32,30 @@ class GradeRule(object):
         exists_grade = await self.grade_dao.get_grade_by_grade_name(grade.grade_name,grade)
         if exists_grade:
             raise GradeAlreadyExistError()
-        # grade_db = Grade()
-        # grade_db.grade_name = grade.grade_name
-        # grade_db.school_id = grade.school_id
-        # grade_db.grade_no = grade.grade_no
-        # grade_db.grade_alias = grade.grade_alias
-        # grade_db.description = grade.description
+        # 校验 枚举值
+        enum_value_rule = get_injector(EnumValueRule)
+        await enum_value_rule.check_enum_values(GRADE_ENUM_KEY,grade.grade_type)
+
         grade_db = view_model_to_orm_model(grade, Grade,    exclude=["id"])
         grade_db.created_at =   datetime.now()
                                  # .strftime("%Y-%m-%d %H:%M:%S"))
 
+        grade_db_res = await self.grade_dao.add_grade(grade_db)
+        grade_res = orm_model_to_view_model(grade_db_res, GradeModel, exclude=[""])
 
+        #  市级添加  自动传递到 区级 自动到 校
+        if grade.city:
+            # 区的转换   or todo
+            districts =await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY,grade.city)
+            print('区域',districts, '')
+            for district in districts:
+                grade_db = view_model_to_orm_model(grade, Grade,    exclude=["id"])
+                grade_db.created_at =   datetime.now()
+                grade_db.district = district.enum_value
 
-        grade_db = await self.grade_dao.add_grade(grade_db)
-        grade = orm_model_to_view_model(grade_db, GradeModel, exclude=[""])
-        return grade
+                await self.grade_dao.add_grade(grade_db)
+
+        return grade_res
 
     async def update_grade(self, grade):
         exists_grade = await self.grade_dao.get_grade_by_id(grade.id)
@@ -58,7 +66,6 @@ class GradeRule(object):
         for key, value in grade.dict().items():
             if value:
                 need_update_list.append(key)
-
 
         print(need_update_list,222,grade)
         grade_db = await self.grade_dao.update_grade_byargs(grade,*need_update_list)
@@ -88,7 +95,7 @@ class GradeRule(object):
 
     async def query_grade_with_page(self,  page_request: PageRequest,grade_name=None,school_id=None,city='', district=''):
         paging = await self.grade_dao.query_grade_with_page(grade_name,school_id, page_request,city, district)
-        # 字段映射的示例写法   , {"hash_password": "password"}
+        # 字段映射的示例写法
         paging_result = PaginatedResponse.from_paging(paging, GradeModel)
         return paging_result
 
@@ -97,7 +104,7 @@ class GradeRule(object):
     async def query_grade(self,grade_name,extendparams=None):
 
         session = await db_connection_manager.get_async_session("default", True)
-        query =select(Grade).where(Grade.grade_name.like(f'%{grade_name}%') )
+        query =select(Grade).where(Grade.grade_name.like(f'%{grade_name}%') ).where(Grade.is_deleted == False)
         if extendparams:
             if extendparams.school_id:
                 query = query.where(Grade.school_id == extendparams.school_id)
@@ -111,8 +118,7 @@ class GradeRule(object):
 
         lst = []
         for row in res:
-            planning_school = orm_model_to_view_model(row, GradeModel)
-
-            lst.append(planning_school)
+            item = orm_model_to_view_model(row, GradeModel)
+            lst.append(item)
         return lst
 

@@ -45,6 +45,7 @@ institution_id
     job_responsibility: Mapped[str] = mapped_column(String(255),  nullable=True, comment="分管工作",default='')
     school_id: Mapped[int] = mapped_column(  nullable=True , comment="学校ID",default=0)
     institution_id: Mapped[int] = mapped_column(  nullable=True , comment="事业单位ID",default=0)
+    identity: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份",default='')
 
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)
     updated_uid: Mapped[int] = mapped_column( nullable=True , comment="操作人",default=0)

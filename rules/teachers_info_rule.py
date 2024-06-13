@@ -6,7 +6,7 @@ from models.teachers_info import TeacherInfo
 from views.common.common_view import page_none_deal
 from views.models.teachers import TeacherInfo as TeachersInfoModel
 from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel, TeacherInfoSubmit, \
-    CurrentTeacherQuery, CurrentTeacherQueryRe, CurrentTeacherInfoSaveModel, NewTeacherInfoSaveModel
+    CurrentTeacherQuery, CurrentTeacherQueryRe, CurrentTeacherInfoSaveModel, NewTeacherInfoSaveModel,TeacherInfoCreateModel
 from sqlalchemy import select, func, update
 from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError
 from daos.teachers_dao import TeachersDao
@@ -43,6 +43,15 @@ class TeachersInfoRule(object):
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
+        return teachers_info
+
+    async def add_teachers_info_import(self, teachers_info: TeacherInfoCreateModel):
+        exits_teacher_base = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teachers_info.teacher_id)
+        if exits_teacher_base:
+            raise TeacherInfoExitError()
+        teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo)
+        teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
+        teachers_info = orm_model_to_view_model(teachers_inf_db, TeachersInfoModel, exclude=[""])
         return teachers_info
 
     async def add_teachers_info_valid(self, teachers_info: TeacherInfoSubmit):
