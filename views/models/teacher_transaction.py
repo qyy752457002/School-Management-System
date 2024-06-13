@@ -290,27 +290,6 @@ class TeacherTransactionApproval(BaseModel):
     transaction_time: Optional[datetime] = Field(None, title="申请时间", description="申请时间")
 
 
-class TransactionLaunch(TeacherTransactionApproval):
-    """我发起"""
-    # approval_status: str = Field("submitting", title="审批状态", description="审批状态")
-    # approval_time: Optional[datetime] = Field(None, title="审批时间", description="审批时间")
-
-
-class TransactionSubmitted(TeacherTransactionApproval):
-    """待审核"""
-    pass
-
-
-class TransactionApproved(TeacherTransactionApproval):
-    """已审核"""
-    approval_status: str = Field("submitting", title="审批状态", description="审批状态")
-    approval_time: Optional[datetime] = Field(None, title="审批时间", description="审批时间")
-
-
-class TransactionAll(TeacherTransactionApproval):
-    """所有"""
-    approval_status: str = Field("submitting", title="审批状态", description="审批状态")
-    approval_time: Optional[datetime] = Field(None, title="审批时间", description="审批时间")
 
 
 # 调动相关模型
@@ -340,8 +319,8 @@ class TransferDetailsModel(BaseModel):
     current_unit: str = Field("", title="现单位", description="现单位")
     current_position: Optional[str] = Field(..., title="现岗位", description="现岗位")
     current_district: str = Field("", title="现行政属地", description="现行政属地")
-    transfer_out_date: date = Field(..., title="调出日期", description="调出日期")
-    transfer_reason: str = Field(..., title="调动原因", description="调动原因")
+    transfer_out_date: Optional[date] = Field(..., title="调出日期", description="调出日期")
+    transfer_reason: str = Field("", title="调动原因", description="调动原因")
     remark: str = Field("", title="备注", description="备注")
     operator: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
@@ -374,7 +353,7 @@ class TransferDetailsReModel(BaseModel):
     current_unit: str = Field("", title="现单位", description="现单位")
     current_position: Optional[str] = Field("", title="现岗位", description="现岗位")
     current_district: str = Field("", title="现行政属地", description="现行政属地")
-    transfer_out_date: date = Field(..., title="调出日期", description="调出日期")
+    transfer_out_date: Optional[date] = Field(..., title="调出日期", description="调出日期")
     transfer_reason: str = Field("", title="调动原因", description="调动原因")
     remark: str = Field("", title="备注", description="备注")
     operator: str = Field(..., title="操作人", description="操作人")
@@ -383,32 +362,7 @@ class TransferDetailsReModel(BaseModel):
     transfer_type: TransferType = Field("transfer_in", title="调动类型", description="调动类型")
 
 
-class TransferDetailsUpdateModel(BaseModel):
-    """
-    transfer_details：transfer_details_id
-    原单位：original_unit
-    原岗位：original_position
-    现单位：current_unit
-    现岗位：current_position
-    调动原因：transfer_reason
-    备注：remark
-    操作人：operator
-    教师ID：teacher_id
-    操作时间：operation_time
-    """
-    transfer_details_id: int = Field(..., title="transfer_details_id", description="transfer_details_id")
-    original_unit: str = Field(..., title="原单位", description="原单位")
-    original_position: str = Field(..., title="原岗位", description="原岗位")
-    current_unit: str = Field(..., title="现单位", description="现单位")
-    current_position: str = Field(..., title="现岗位", description="现岗位")
-    transfer_reason: str = Field(..., title="调动原因", description="调动原因")
-    remark: str = Field(..., title="备注", description="备注")
-    operator: str = Field(..., title="操作人", description="操作人")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    operation_time: datetime = Field(..., title="操作时间", description="操作时间")
-
-
-class TransferDetailsGetModel(TransferDetailsUpdateModel):
+class TransferDetailsGetModel(BaseModel):
     """
     单个教师的所有的调动记录
     """
@@ -506,62 +460,164 @@ class TeacherTransferQueryReModel(BaseModel):
 
 
 # 借动的模型
-class TransferInternalCreateModel(BaseModel):
+class TeacherBorrowModel(BaseModel):
     """
+
     原单位：original_unit
     原岗位：original_position
+    原行政属地：original_district
+    借入日期：borrow_in_date
     现单位：current_unit
     现岗位：current_position
-    调动原因：transfer_reason
+    现行政属地：current_district
+    借出日期：borrow_out_date
+    借动原因：transfer_reason
     备注：remark
     操作人：operator
     教师ID：teacher_id
     操作时间：operation_time
-    仅仅是校内岗位调动
-    """
-
-    original_unit: str = Field(..., title="原单位", description="原单位")
-    original_position: str = Field(..., title="原岗位", description="原岗位")
-    original_district: str = Field(..., title="原行政属地", description="原行政属地")
-    current_position: str = Field(..., title="现岗位", description="现岗位")
-    operator: str = Field(..., title="操作人", description="操作人")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    operation_time: datetime = Field(..., title="操作时间", description="操作时间")
-    transfer_type: TransferType = Field("internal", title="调动类型", description="调动类型")
-
-
-class TransferDetailsCreateReModel(BaseModel):
-    """
-    校内岗位调动返回模型
-    """
-    transfer_details_id: int = Field(..., title="transfer_details_id", description="transfer_details_id")
-    original_unit: str = Field(..., title="原单位", description="原单位")
-    original_position: str = Field(..., title="原岗位", description="原岗位")
-    original_district: str = Field(..., title="原行政属地", description="原行政属地")
-    current_position: str = Field(..., title="现岗位", description="现岗位")
-    operator: str = Field(..., title="操作人", description="操作人")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    operation_time: datetime = Field(..., title="操作时间", description="操作时间")
-
-
-class TransferDetailsModelQuery(BaseModel):
-    """
-    原单位：original_unit
-    原岗位：original_position
-    现单位：current_unit
-    现岗位：current_position
-    调动原因：transfer_reason
-    备注：remark
-    操作人：operator
-    教师ID：teacher_id
-    操作时间：operation_time
+    借动类型：borrow_type
+    流程id：process_instance_id
     """
     original_unit: str = Field(..., title="原单位", description="原单位")
-    original_position: str = Field(..., title="原岗位", description="原岗位")
-    current_unit: str = Field(..., title="现单位", description="现单位")
-    current_position: str = Field(..., title="现岗位", description="现岗位")
-    transfer_reason: str = Field(..., title="调动原因", description="调动原因")
+    original_position: str = Field("", title="原岗位", description="原岗位")
+    original_district: Optional[str] = Field(..., title="原行政属地", description="原行政属地")
+    borrow_in_date: Optional[date] = Field(None, title="借入日期", description="借入日期")
+    current_unit: str = Field("", title="现单位", description="现单位")
+    current_position: Optional[str] = Field(..., title="现岗位", description="现岗位")
+    current_district: str = Field("", title="现行政属地", description="现行政属地")
+    borrow_out_date: Optional[date] = Field(..., title="借出日期", description="借出日期")
+    transfer_reason: str = Field("", title="借动原因", description="借动原因")
     remark: str = Field("", title="备注", description="备注")
     operator: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     operation_time: datetime = Field(..., title="操作时间", description="操作时间")
+    borrow_type: TransferType = Field("borrow_in", title="借动类型", description="借入或者借出")
+    process_instance_id: int = Field(0, title="流程ID", description="流程ID")
+
+
+class TeacherBorrowReModel(BaseModel):
+    """
+    原单位：original_unit
+    原岗位：original_position
+    原行政属地：original_district
+    借入日期：borrow_in_date
+    现单位：current_unit
+    现岗位：current_position
+    现行政属地：current_district
+    借出日期：borrow_out_date
+    借动原因：transfer_reason
+    备注：remark
+    操作人：operator
+    教师ID：teacher_id
+    操作时间：operation_time
+    """
+    teacher_borrow_id: int = Field(..., title="teacher_borrow_id", description="teacher_borrow_id")
+    original_unit: str = Field(..., title="原单位", description="原单位")
+    original_position: Optional[str] = Field("", title="原岗位", description="原岗位")
+    original_district: str = Field(..., title="原行政属地", description="原行政属地")
+    borrow_in_date: Optional[date] = Field(..., title="借入日期", description="借入日期")
+    current_unit: str = Field("", title="现单位", description="现单位")
+    current_position: Optional[str] = Field("", title="现岗位", description="现岗位")
+    current_district: str = Field("", title="现行政属地", description="现行政属地")
+    borrow_out_date: Optional[date] = Field(..., title="借出日期", description="借出日期")
+    transfer_reason: str = Field("", title="借动原因", description="借动原因")
+    remark: str = Field("", title="备注", description="备注")
+    operator: str = Field(..., title="操作人", description="操作人")
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    operation_time: datetime = Field(..., title="操作时间", description="操作时间")
+    borrow_type: TransferType = Field("borrow_in", title="借动类型", description="借动类型")
+
+
+class TeacherBorrowGetModel(BaseModel):
+    """
+    单个教师的所有的借动记录
+    """
+    original_region: Optional[str] = Field("", title="原地域管辖区域", description="原地域管辖区域")
+    original_district: Optional[str] = Field("", title="原行政属地", description="原行政属地")
+    original_unit: Optional[str] = Field("", title="原单位", description="原单位")
+    current_district: Optional[str] = Field("", title="现行政属地", description="现行政属地")
+    current_region: Optional[str] = Field("", title="现地域管辖区域", description="现地域管辖区域")
+    current_unit: Optional[str] = Field("", title="现单位", description="现单位")
+    approval_status: Optional[str] = Field("", title="审批状态", description="审批状态")
+    operation_time: Optional[date] = Field(None, title="申请时间", description="申请时间")
+    approval_time: Optional[date] = Field(None, title="审批时间", description="审批时间")
+    approval_name: Optional[str] = Field("", title="审批人", description="审批人")
+
+
+
+class TeacherBorrowQueryModel(BaseModel):
+    """
+    借动审批的查询
+    教师姓名：teacher_name
+    教职工号：teacher_number
+    身份证类型：teacher_id_type
+    身份证号：teacher_id_number
+    教师性别：teacher_gender
+    原行政属地：original_district
+    原单位：original_unit
+    现行政属地：current_district
+    现单位：current_unit
+    审批状态：approval_status
+    申请时间：operation_time
+    审批时间：approval_time
+    申请人：operator_name
+    审批人：approval_name
+
+    """
+    teacher_name: Optional[str] = Field("", title="姓名", description="姓名")
+    teacher_number: Optional[str] = Field("", title="教职工号", description="教职工号")
+    teacher_id_type: Optional[str] = Field("", title="证件类型", description="证件类型")
+    teacher_id_number: Optional[str] = Field("", title="证件号", description="证件号")
+    teacher_gender: Optional[Gender] = Field(None, title="性别", description="性别")
+    original_region: Optional[str] = Field("", title="原地域管辖区域", description="原地域管辖区域")
+    original_district: Optional[str] = Field("", title="原行政属地", description="原行政属地")
+    original_unit: Optional[str] = Field("", title="原单位", description="原单位")
+    current_district: Optional[str] = Field("", title="现行政属地", description="现行政属地")
+    current_region: Optional[str] = Field("", title="现地域管辖区域", description="现地域管辖区域")
+    current_unit: Optional[str] = Field("", title="现单位", description="现单位")
+    approval_status: Optional[str] = Field("", title="审批状态", description="审批状态")
+    operation_time: Optional[date] = Field(None, title="申请时间", description="申请时间")
+    approval_time: Optional[date] = Field(None, title="审批时间", description="审批时间")
+    approval_name: Optional[str] = Field("", title="审批人", description="审批人")
+
+
+class TeacherBorrowQueryReModel(BaseModel):
+
+    """
+    借动审批的查询
+    借动主键：teacher_borrow_id
+    教师姓名：teacher_name
+    教职工号：teacher_number
+    身份证类型：teacher_id_type
+    身份证号：teacher_id_number
+    教师性别：teacher_gender
+    原行政属地：original_district
+    原单位：original_unit
+    现行政属地：current_district
+    现单位：current_unit
+    审批状态：approval_status
+    申请时间：operation_time
+    审批时间：approval_time
+    申请人：operator_name
+    审批人：approval_name
+    流程实例id：process_instance_id
+
+    """
+    teacher_borrow_id: int = Field(0, title="借动主键", description="借动主键")
+    teacher_name: str= Field("", title="姓名", description="姓名")
+    teacher_number: Optional[int] = Field("", title="教职工号", description="教职工号")
+    teacher_id_type: Optional[str] = Field("", title="证件类型", description="证件类型")
+    teacher_id_number: Optional[str] = Field("", title="证件号", description="证件号")
+    teacher_gender: Optional[Gender] = Field(None, title="性别", description="性别")
+    original_district: Optional[str] = Field("", title="原行政属地", description="原行政属地")
+    original_region: Optional[str] = Field("", title="原地域管辖区域", description="原地域管辖区域")
+    original_unit: Optional[str] = Field("", title="原单位", description="原单位")
+    current_district: Optional[str] = Field("", title="现行政属地", description="现行政属地")
+    current_region: Optional[str] = Field("", title="现地域管辖区域", description="现地域管辖区域")
+    current_unit: Optional[str] = Field("", title="现单位", description="现单位")
+    approval_status: Optional[str] = Field("", title="审批状态", description="审批状态")
+    operation_time: Optional[date] = Field(None, title="申请时间", description="申请时间")
+    approval_time: Optional[date] = Field(None, title="审批时间", description="审批时间")
+    approval_name: Optional[str] = Field("", title="审批人", description="审批人")
+    process_instance_id: int = Field(0, title="流程实例id", description="流程实例id")

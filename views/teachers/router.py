@@ -10,6 +10,8 @@ from views.teachers.teachers_extend_view import TeacherLearnExperienceView, Teac
 from views.teachers.teachers_extend_view import DomesticTrainingView,OverseasStudyView,TalentProgramView,AnnualReviewView,ResearchAchievementsView
 from views.teachers.teacher_work_flow_define import WorkFlowDefineView
 from views.teachers.teacher_transaction_view import TeacherTransactionView
+from views.teachers.teacher_transaction_view import TeacherBorrowView
+from views.teachers.teacher_transaction_view import TransferDetailsView
 
 
 def routers():
@@ -33,6 +35,8 @@ def routers():
     router.include_api_view_class(WorkFlowDefineView, "/v1/teacher-workflow", description="教师工作流定义配置管理")
 
     router.include_api_view_class(TeacherTransactionView, "/v1/teacher-transaction", description="教师变动管理")
+    router.include_api_view_class(TeacherBorrowView, "/v1/teacher-transaction", description="教师借动管理")
+    router.include_api_view_class(TransferDetailsView, "/v1/teacher-transaction", description="教师调动管理")
 
 
     return router
