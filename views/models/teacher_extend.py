@@ -30,7 +30,7 @@ class TeacherLearnExperienceModel(BaseModel):
     major_learned: str = Field(..., title="所学妆业", description="所学妆业")
     is_major_normal: str = Field(..., title="是否师范类专业", description="是否师范类专业")
     admission_date: Optional[date] = Field(None, title="入学时间", description="入学时间")
-    graduation_date: Optional[date] = Field(None,  title="毕业时间", description="毕业时间")
+    graduation_date: Optional[date] = Field(None, title="毕业时间", description="毕业时间")
     degree_level: str = Field(..., title="学位层次", description="学位层次")
     degree_name: str = Field(..., title="学位名称", description="学位名称")
     country_or_region_of_degree_obtained: str = Field(..., title="获取学位过家地区", description="获取学位过家地区")
@@ -38,6 +38,14 @@ class TeacherLearnExperienceModel(BaseModel):
     degree_award_date: date = Field(..., title="学位授予时间", description="学位授予时间")
     study_mode: str = Field(..., title="学习方式", description="学习方式")
     type_of_institution: str = Field("", title="在学单位类别", description="在学单位类别")
+
+
+class TeacherLearnExperienceComModel(TeacherLearnExperienceModel):
+    pass
+
+
+class TeacherLearnExperienceResultModel(TeacherLearnExperienceModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
 class TeacherLearnExperienceUpdateModel(BaseModel):
@@ -64,7 +72,7 @@ class TeacherLearnExperienceUpdateModel(BaseModel):
     institution_of_education_obtained: str = Field(..., title="获得学历的院校机构", description="获得学历的院校机构")
     major_learned: str = Field(..., title="所学妆业", description="所学妆业")
     is_major_normal: str = Field(..., title="是否师范类专业", description="是否师范类专业")
-    admission_date: Optional[date] = Field(None,  title="入学时间", description="入学时间")
+    admission_date: Optional[date] = Field(None, title="入学时间", description="入学时间")
     graduation_date: Optional[date] = Field(None, title="毕业时间", description="毕业时间")
     degree_level: str = Field(..., title="学位层次", description="学位层次")
     degree_name: str = Field(..., title="学位名称", description="学位名称")
@@ -90,6 +98,14 @@ class TeacherWorkExperienceModel(BaseModel):
     end_date: date = Field(..., title="结束时间", description="结束时间")
     on_duty_position: str = Field("", title="在职岗位", description="在职岗位")
     institution_nature_category: str = Field("", title="单位性质类别", description="单位性质类别")
+
+
+class TeacherWorkExperienceComModel(TeacherWorkExperienceModel):
+    pass
+
+
+class TeacherWorkExperienceResultModel(TeacherWorkExperienceModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
 class TeacherWorkExperienceUpdateModel(BaseModel):
@@ -156,7 +172,15 @@ class TeacherJobAppointmentsModel(BaseModel):
     concurrent_position: Optional[List[dict]] = Field(default=[{"category": "默认类别", "level": "默认等级"}],
                                                       title="兼任岗位", description="兼任岗位")
     appointment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
-    start_date: Optional[date] = Field(None,  title="任职开始年月", description="任职开始年月")
+    start_date: Optional[date] = Field(None, title="任职开始年月", description="任职开始年月")
+
+
+class TeacherJobAppointmentsComModel(TeacherJobAppointmentsModel):
+    pass
+
+
+class TeacherJobAppointmentsResultModel(TeacherJobAppointmentsModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
 class TeacherJobAppointmentsUpdateModel(BaseModel):
@@ -182,7 +206,7 @@ class TeacherJobAppointmentsUpdateModel(BaseModel):
     concurrent_position: Optional[List[dict]] = Field(default=[{"category": "默认类别", "level": "默认等级"}],
                                                       title="兼任岗位", description="兼任岗位")
     appointment_start_date: date = Field(..., title="聘任开始时间", description="聘任开始时间")
-    start_date: Optional[date] = Field(None,  description="任职开始年月")
+    start_date: Optional[date] = Field(None, description="任职开始年月")
 
 
 # class TeacherJobAppointmentsUpdateModel(BaseModel):
@@ -228,6 +252,14 @@ class TeacherProfessionalTitlesModel(BaseModel):
     employment_end_date: Optional[date] = Field(None, title="聘任结束时间", description="聘任结束时间")
 
 
+class TeacherProfessionalTitlesComModel(TeacherProfessionalTitlesModel):
+    pass
+
+
+class TeacherProfessionalTitlesResultModel(TeacherProfessionalTitlesModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
+
 class TeacherProfessionalTitlesUpdateModel(BaseModel):
     """
     teacher_professional_titles：teacher_professional_titles_id
@@ -267,6 +299,14 @@ class TeacherQualificationsModel(BaseModel):
     first_registration_date: Optional[date] = Field(None, title="首次注册日期", description="首次注册日期")
     regular_registration_date: Optional[date] = Field(None, title="定期注册日期", description="定期注册日期")
     regular_registration_conclusion: str = Field("", title="定期注册结论", description="定期注册结论")
+
+
+class TeacherQualificationsComModel(TeacherQualificationsModel):
+    pass
+
+
+class TeacherQualificationsResultModel(TeacherQualificationsModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
 class TeacherQualificationsUpdateModel(BaseModel):
@@ -315,9 +355,17 @@ class TeacherSkillCertificatesModel(BaseModel):
     other_skill_level: str = Field("", title="其他技能程度", description="其他技能程度")
     certificate_type: str = Field("", title="证书类型", description="证书类型")
     language_certificate_name: str = Field("", title="语言证书名称", description="语言证书名称")
-    issue_year_month: Optional[date] = Field(None,title="发证年月", description="发证年月")
+    issue_year_month: Optional[date] = Field(None, title="发证年月", description="发证年月")
     issuing_authority: str = Field("", title="发证单位", description="发证单位")
     certificate_number: str = Field("", title="证书编号", description="证书编号")
+
+
+class TeacherSkillCertificatesComModel(TeacherSkillCertificatesModel):
+    pass
+
+
+class TeacherSkillCertificatesResultModel(TeacherSkillCertificatesModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
 class TeacherSkillCertificatesUpdateModel(BaseModel):
@@ -343,7 +391,7 @@ class TeacherSkillCertificatesUpdateModel(BaseModel):
     other_skill_level: str = Field("", title="其他技能程度", description="其他技能程度")
     certificate_type: str = Field("", title="证书类型", description="证书类型")
     language_certificate_name: str = Field("", title="语言证书名称", description="语言证书名称")
-    issue_year_month: Optional[date] = Field(None,title="发证年月", description="发证年月")
+    issue_year_month: Optional[date] = Field(None, title="发证年月", description="发证年月")
     issuing_authority: str = Field("", title="发证单位", description="发证单位")
     certificate_number: str = Field("", title="证书编号", description="证书编号")
 
@@ -387,6 +435,14 @@ class TeacherEthicRecordsModel(BaseModel):
     disciplinary_revocation_reason: str = Field("", title="处分撤销原因", description="处分撤销原因")
 
 
+class TeacherEthicRecordsComModel(TeacherEthicRecordsModel):
+    pass
+
+
+class TeacherEthicRecordsResultModel(TeacherEthicRecordsModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
+
 class TeacherEthicRecordsUpdateModel(BaseModel):
     """
     teacher_ethic_records：teacher_ethic_records_id
@@ -415,7 +471,7 @@ class TeacherEthicRecordsUpdateModel(BaseModel):
     assessment_institution_name: str = Field("", title="考核单位名称", description="考核单位名称")
     honor_level: str = Field("", title="荣誉级别", description="荣誉级别")
     honor_title: str = Field("", title="荣誉称号", description="荣誉称号")
-    honor_date: Optional[date] = Field(None,title="荣誉日期", description="荣誉日期")
+    honor_date: Optional[date] = Field(None, title="荣誉日期", description="荣誉日期")
     awarding_institution_name: str = Field("", title="荣誉授予单位名称", description="荣誉授予单位名称")
     honor_record_description: str = Field("", title="荣誉记录描述", description="荣誉记录描述")
     disciplinary_category: str = Field(..., title="处分类别", description="处分类别")
@@ -456,6 +512,15 @@ class EducationalTeachingModel(BaseModel):
                                                    description="平均每周其他工作折合课时")
     concurrent_job: str = Field(..., title="兼任工作", description="兼任工作")
     concurrent_job_name: str = Field("", title="兼任工作名称", description="兼任工作名称")
+
+
+class EducationalTeachingComModel(EducationalTeachingModel):
+    pass
+
+class EducationalTeachingResultModel(EducationalTeachingModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
+
 
 
 class EducationalTeachingUpdateModel(BaseModel):
@@ -511,6 +576,16 @@ class DomesticTrainingModel(BaseModel):
     training_credits: str = Field("", title="培训学分", description="培训学分")
 
 
+class DomesticTrainingComModel(DomesticTrainingModel):
+    pass
+
+
+class DomesticTrainingResultModel(DomesticTrainingModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
+
+
+
 class DomesticTrainingUpdateModel(BaseModel):
     """
     domestic_training：domestic_training_id
@@ -553,6 +628,15 @@ class OverseasStudyModel(BaseModel):
     organizing_institution_name: str = Field("", title="项目组织单位名称", description="项目组织单位名称")
 
 
+class OverseasStudyComModel(OverseasStudyModel):
+    pass
+
+
+class OverseasStudyResultModel(OverseasStudyModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
+
+
 class OverseasStudyUpdateModel(BaseModel):
     """
     overseas_study：overseas_study_id
@@ -585,6 +669,14 @@ class TalentProgramModel(BaseModel):
     selected_year: str = Field("", title="入选年份", description="入选年份")
 
 
+class TalentProgramComModel(TalentProgramModel):
+    pass
+
+
+class TalentProgramResultModel(TalentProgramModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
+
 class TalentProgramUpdateModel(BaseModel):
     """
     talent_program：talent_program_id
@@ -609,6 +701,15 @@ class AnnualReviewModel(BaseModel):
     assessment_year: str = Field(..., title="考核年度", description="考核年度")
     assessment_result: str = Field(..., title="考核结果", description="考核结果")
     assessment_institution_name: str = Field("", title="考核单位名称", description="考核单位名称")
+
+
+class AnnualReviewComModel(AnnualReviewModel):
+    pass
+
+
+class AnnualReviewResultModel(AnnualReviewModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
 
 
 class AnnualReviewUpdateModel(BaseModel):
@@ -671,7 +772,7 @@ class ResearchAchievementsModel(BaseModel):
     research_achievement_type: str = Field(..., title="科研成果种类", description="科研成果种类")
     type: str = Field("", title="类型", description="类型")
     representative_or_project: Optional[bool] = Field(None, title="是否代表性成果或项目",
-                                                         description="是否代表性成果或项目")
+                                                      description="是否代表性成果或项目")
     name: str = Field("", title="名称", description="名称")
     disciplinary_field: str = Field("", title="学科领域", description="学科领域")
     role: str = Field("", title="本人角色", description="本人角色")
@@ -706,6 +807,14 @@ class ResearchAchievementsModel(BaseModel):
     validity_period: Optional[date] = Field(None, title="有效期", description="有效期")
     standard_number: str = Field("", title="标准号", description="标准号")
     publishing_organization: str = Field("", title="发布单位", description="发布单位")
+
+
+class ResearchAchievementsComModel(ResearchAchievementsModel):
+    pass
+
+
+class ResearchAchievementsResultModel(ResearchAchievementsModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
 class ResearchAchievementsUpdateModel(BaseModel):
@@ -755,7 +864,7 @@ class ResearchAchievementsUpdateModel(BaseModel):
     research_achievement_type: str = Field(..., title="科研成果种类", description="科研成果种类")
     type: str = Field("", title="类型", description="类型")
     representative_or_project: Optional[bool] = Field(None, title="是否代表性成果或项目",
-                                                         description="是否代表性成果或项目")
+                                                      description="是否代表性成果或项目")
     name: str = Field("", title="名称", description="名称")
     disciplinary_field: str = Field("", title="学科领域", description="学科领域")
     role: str = Field("", title="本人角色", description="本人角色")
@@ -807,7 +916,7 @@ class ResearchAchievementsQueryModel(BaseModel):
     research_achievement_type: str = Query("", title="姓名", description="姓名", example="张三")
     type: str = Query("", title="类型", description="类型", example="类型")
     representative_or_project: Optional[bool] = Query(False, title="是否代表性成果或项目",
-                                                         description="是否代表性成果或项目")
+                                                      description="是否代表性成果或项目")
     name: str = Query("", title="名称", description="名称", example="名称")
     disciplinary_field: str = Query("", title="学科领域", description="学科领域", example="学科领域")
     role: str = Query("", title="本人角色", description="本人角色", example="本人角色")
@@ -829,7 +938,7 @@ class ResearchAchievementsQueryReModel(BaseModel):
     research_achievement_type: str = Query("", title="姓名", description="姓名", example="张三")
     type: str = Query("", title="类型", description="类型", example="类型")
     representative_or_project: Optional[bool] = Query(False, title="是否代表性成果或项目",
-                                                         description="是否代表性成果或项目")
+                                                      description="是否代表性成果或项目")
     name: str = Query("", title="名称", description="名称", example="名称")
     disciplinary_field: str = Query("", title="学科领域", description="学科领域", example="学科领域")
     role: str = Query("", title="本人角色", description="本人角色", example="本人角色")
