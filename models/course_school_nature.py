@@ -21,46 +21,46 @@ class CourseSchoolNature(BaseDBModel):
     updated_at = mapped_column(DateTime, onupdate=datetime.now, default=datetime.now, nullable=False, comment="更新时间")
     is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)
 
-    @staticmethod
-    def seed():
-        return [
-            CourseSchoolNature(
-                course_no='12',
-                school_nature='303',
-                created_uid=0,
-                updated_uid=0,
-                created_at=datetime.now(),
-                updated_at=datetime.now(),
-                is_deleted=False,
-            ),
-            CourseSchoolNature(
-                course_no='13',
-                school_nature='小学',
-                created_uid=0,
-                updated_uid=0,
-                created_at=datetime.now(),
-                updated_at=datetime.now(),
-                is_deleted=False,
-            ),
-            CourseSchoolNature(
-                course_no='13',
-                school_nature='初中',
-                created_uid=0,
-                updated_uid=0,
-                created_at=datetime.now(),
-                updated_at=datetime.now(),
-                is_deleted=False,
-            ),
-            CourseSchoolNature(
-                course_no='13',
-                school_nature='普通高中',
-                created_uid=0,
-                updated_uid=0,
-                created_at=datetime.now(),
-                updated_at=datetime.now(),
-                is_deleted=False,
-            ),
-        ]
+    # @staticmethod
+    # def seed():
+    #     return [
+    #         CourseSchoolNature(
+    #             course_no='12',
+    #             school_nature='303',
+    #             created_uid=0,
+    #             updated_uid=0,
+    #             created_at=datetime.now(),
+    #             updated_at=datetime.now(),
+    #             is_deleted=False,
+    #         ),
+    #         CourseSchoolNature(
+    #             course_no='13',
+    #             school_nature='小学',
+    #             created_uid=0,
+    #             updated_uid=0,
+    #             created_at=datetime.now(),
+    #             updated_at=datetime.now(),
+    #             is_deleted=False,
+    #         ),
+    #         CourseSchoolNature(
+    #             course_no='13',
+    #             school_nature='初中',
+    #             created_uid=0,
+    #             updated_uid=0,
+    #             created_at=datetime.now(),
+    #             updated_at=datetime.now(),
+    #             is_deleted=False,
+    #         ),
+    #         CourseSchoolNature(
+    #             course_no='13',
+    #             school_nature='普通高中',
+    #             created_uid=0,
+    #             updated_uid=0,
+    #             created_at=datetime.now(),
+    #             updated_at=datetime.now(),
+    #             is_deleted=False,
+    #         ),
+    #     ]
 
 
 

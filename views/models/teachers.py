@@ -30,6 +30,7 @@ class Teachers(BaseModel):
     mobile: str = Field("", title="手机号", description="手机号")
 
 
+
 class TeachersCreatModel(BaseModel):
     """
     姓名：teacher_name
@@ -155,7 +156,8 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-    department: str = Field("", title="部门", description="部门", example="行政")
+    department: str = Field("", title="部门", description="部门", example="部门")
+    org_id: int = Field(..., title="组织ID", description="组织ID")
 
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
@@ -277,7 +279,8 @@ class TeacherInfo(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-    department: str = Field("", title="部门", description="部门", example="行政")
+    department: str = Field("", title="部门", description="部门", example="部门")
+    org_id: int = Field(..., title="组织ID", description="组织ID")
 
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
@@ -501,7 +504,8 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-    department: str = Field("", title="部门", description="部门", example="行政")
+    department: str = Field("", title="部门", description="部门", example="部门")
+    org_id: int = Field(..., title="组织ID", description="组织ID")
 
 
 class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
@@ -607,7 +611,8 @@ class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-    department: str = Field("", title="部门", description="部门", example="行政")
+    department: str = Field("", title="部门", description="部门", example="部门")
+    org_id: int = Field(..., title="组织ID", description="组织ID")
 
 
 class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
@@ -713,7 +718,8 @@ class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-    department: str = Field("", title="部门", description="部门", example="行政")
+    department: str = Field("", title="部门", description="部门", example="部门")
+    org_id: int = Field(..., title="组织ID", description="组织ID")
 
 
 class TeacherInfoSubmit(BaseModel):  # 基本信息
@@ -816,7 +822,8 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-    department: str = Field("", title="部门", description="部门", example="行政")
+    department: str = Field(..., title="部门", description="部门", example="部门")
+    org_id: int = Field(..., title="组织ID", description="组织ID")
 
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
@@ -967,7 +974,10 @@ class TeacherApprovalQueryRe(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     operator_name: str = Field("", title="申请人", description="申请人", example="张三")
     approval_name: str = Field("", title="审核人", description="审核人", example="张三")
-    apply_time: datetime = Field(..., title="申请时间", description="申请时间", example="2021-10-10 10:10:10")
+    operation_time: Optional[date] = Field(None, title="申请时间", description="申请时间")
+    approval_time: Optional[date] = Field(None, title="审批时间", description="审批时间")
+    approval_status: str = Field("pending", title="审批状态", description="审批状态")
+    process_instance_id: int = Field(0, title="流程实例id", description="流程实例id")
 
 
 class TeacherLaunch(TeacherApprovalQueryRe):

@@ -4,9 +4,8 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.transfer_details_dao import TransferDetailsDAO
 from daos.teachers_dao import TeachersDao
 from models.transfer_details import TransferDetails
-from views.models.teacher_transaction import TransferDetailsModel, TransferDetailsUpdateModel
-from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTransactionQueryRe, \
-    TransferDetailsCreateReModel, \
+from views.models.teacher_transaction import TransferDetailsModel
+from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTransactionQueryRe,\
     TransferDetailsReModel, TransferDetailsGetModel, TeacherTransferQueryModel, TeacherTransferQueryReModel
 from business_exceptions.teacher import TeacherNotFoundError
 
@@ -51,7 +50,7 @@ class TransferDetailsRule(object):
         transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsModel, exclude=[""])
         return transfer_details
 
-    async def update_transfer_details(self, transfer_details: TransferDetailsUpdateModel):
+    async def update_transfer_details(self, transfer_details: TransferDetailsReModel):
         exists_transfer_details_info = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
             transfer_details.transfer_details_id)
         if not exists_transfer_details_info:

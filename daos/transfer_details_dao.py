@@ -4,10 +4,11 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.transfer_details import TransferDetails
-from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTransferQueryModel
+from views.models.teacher_transaction import TeacherTransferQueryModel
 from models.teachers_info import TeacherInfo
 from models.teachers import Teacher
 from models.work_flow_node_instance import WorkFlowNodeInstance
+from models.work_flow_instance import WorkFlowInstance
 from models.school import School
 
 
@@ -64,6 +65,7 @@ class TransferDetailsDAO(DAOBase):
         申请人：operator_name
         审批人：approval_name
         """
+        # todo 还缺一个传过来的用户参数，就是筛选出我发起的审批
         subquery = (select(func.max(WorkFlowNodeInstance.operation_time).label("approval_time"),
                            WorkFlowNodeInstance.node_status.label("node_status"),
                            WorkFlowNodeInstance.process_instance_id.label("process_instance_id"),
@@ -72,18 +74,20 @@ class TransferDetailsDAO(DAOBase):
             WorkFlowNodeInstance.process_instance_id)).alias("subquery")
         query = select(TransferDetails, Teacher.teacher_name, Teacher.teacher_id_type, Teacher.teacher_gender,
                        Teacher.teacher_id_number, Teacher.teacher_employer, School.school_name,
-                       TeacherInfo.teacher_number, subquery.c.approval_time, subquery.c.node_status,
+                       TeacherInfo.teacher_number, subquery.c.approval_time, WorkFlowInstance.process_status,
                        subquery.c.approval_name,
                        subquery.c.node_code).join(Teacher, Teacher.teacher_id == TransferDetails.teacher_id,
                                                   isouter=True).join(
             TeacherInfo, TeacherInfo.teacher_id == TransferDetails.teacher_id, isouter=True).join(School,
                                                                                                   School.id == Teacher.teacher_employer,
                                                                                                   isouter=True).join(
+            WorkFlowInstance, WorkFlowInstance.process_instance_id == TransferDetails.process_instance_id).join(
             WorkFlowNodeInstance,
-            WorkFlowNodeInstance.process_instance_id == TransferDetails.process_instance_id,
+            WorkFlowNodeInstance.process_instance_id == WorkFlowInstance.process_instance_id,
             isouter=True).join(subquery,
                                subquery.c.process_instance_id == WorkFlowNodeInstance.process_instance_id,
                                isouter=True).where(TransferDetails.transfer_type == "transfer_out")
+        # query=query.where()
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
         if query_model.teacher_number:
@@ -152,8 +156,9 @@ class TransferDetailsDAO(DAOBase):
             TeacherInfo, TeacherInfo.teacher_id == TransferDetails.teacher_id, isouter=True).join(School,
                                                                                                   School.id == Teacher.teacher_employer,
                                                                                                   isouter=True).join(
+            WorkFlowInstance, WorkFlowInstance.process_instance_id == TransferDetails.process_instance_id).join(
             WorkFlowNodeInstance,
-            WorkFlowNodeInstance.process_instance_id == TransferDetails.process_instance_id,
+            WorkFlowNodeInstance.process_instance_id == WorkFlowInstance.process_instance_id,
             isouter=True).join(subquery,
                                subquery.c.process_instance_id == WorkFlowNodeInstance.process_instance_id,
                                isouter=True).where(TransferDetails.transfer_type == "transfer_out")
