@@ -129,7 +129,8 @@ class OrganizationMembersRule(object):
 
             pass
         if not parent_id_lv2:
-            parent_id_lv2= [int(parent_id)]
+            # parent_id_lv2= [int(parent_id)]
+            pass
         if isinstance(org_ids, str):
             org_ids=org_ids.split(',')
             int_list = [int(i) for i in org_ids]
