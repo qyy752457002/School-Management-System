@@ -8,7 +8,7 @@ from business_exceptions.course import CourseNotFoundError, CourseAlreadyExistEr
 from daos.course_dao import CourseDAO
 from models.course import Course
 from views.models.course import Course  as CourseModel
-
+from views.models.extend_params import ExtendParams
 
 
 @dataclass_inject
@@ -72,12 +72,13 @@ class CourseRule(object):
         return await self.course_dao.get_course_count()
 
     async def query_course_with_page(self, page_request: PageRequest,school_id=None, course_name=None,
-                                              course_id=None,course_no=None ):
+                                              course_id=None,course_no=None ,extobj:ExtendParams=None):
         kdict = {
             "course_name": course_name,
             "school_id": school_id,
             "course_id": course_id,
             "course_no": course_no,
+            "city": extobj.city,
             "is_deleted":False
         }
         if not kdict["course_name"]:
@@ -88,6 +89,8 @@ class CourseRule(object):
             del kdict["course_id"]
         if not kdict["course_no"]:
             del kdict["course_no"]
+        if not kdict["city"]:
+            del kdict["city"]
 
         paging = await self.course_dao.query_course_with_page(page_request,**kdict
                                                                                 )

@@ -4,6 +4,7 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.course import Course
+from models.course_school_nature import CourseSchoolNature
 
 
 class CourseDAO(DAOBase):
@@ -37,9 +38,9 @@ class CourseDAO(DAOBase):
 		return result.scalar_one_or_none()
 
 	async def query_course_with_page(self,  page_request: PageRequest,**kwargs):
-		query = select(Course).where(Course.is_deleted == False)
+		query = select(Course).select_from(Course).join(CourseSchoolNature, CourseSchoolNature.course_no == Course.course_no,isouter=True).where(Course.is_deleted == False)
 		for key, value in kwargs.items():
-		   query = query.where(getattr(Course, key) == value)
+			query = query.where(getattr(Course, key) == value)
 		paging = await self.query_page(query, page_request)
 		return paging
 
