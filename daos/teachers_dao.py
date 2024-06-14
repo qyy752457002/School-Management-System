@@ -29,7 +29,7 @@ class TeachersDao(DAOBase):
     async def get_teachers_by_id(self, teachers_id):
         session = await self.slave_db()
         result = await session.execute(
-            select(Teacher).where(Teacher.teacher_id == teachers_id, Teacher.is_deleted == 0))
+            select(Teacher).where(Teacher.teacher_id == teachers_id, Teacher.is_deleted == False))
         return result.scalar_one_or_none()
 
     # 删除单个教师信息
