@@ -93,3 +93,9 @@ class OrganizationMembersDAO(DAOBase):
 		update_contents = get_update_contents(organization_members, *args)
 		query = update(OrganizationMembers).where(OrganizationMembers.id == organization_members.id).values(**update_contents)
 		return await self.update(session, query, organization_members, update_contents, is_commit=is_commit)
+
+	async def delete_organization_members_by_teacher_id(self, teacher_id, is_commit=True):
+		session = await self.master_db()
+		update_contents = {"is_deleted":True}
+		query = update(OrganizationMembers).where(OrganizationMembers.teacher_id ==teacher_id).values(is_deleted=True)
+		return await self.update(session, query, OrganizationMembers, update_contents, is_commit=is_commit)
