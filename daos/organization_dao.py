@@ -66,3 +66,10 @@ class OrganizationDAO(DAOBase):
 		session = await self.master_db()
 		query = update(Organization).where(Organization.id.in_(organization_ids)).values(is_deleted=True)
 		return await self.update(session, query, Organization, {'is_deleted': True},  )
+
+
+	async def update_organization_increment_member_cnt(self, organization, *args, is_commit=True):
+		session = await self.master_db()
+
+		await session.query(Organization).filter_by(id=organization.id).update({Organization.value: Organization.value + 1})
+		await session.commit()
