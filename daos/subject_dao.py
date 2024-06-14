@@ -4,6 +4,9 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.subject import Subject
+from views.models.subject import Subject  as SubjectModel
+
+
 
 
 class SubjectDAO(DAOBase):
@@ -22,18 +25,41 @@ class SubjectDAO(DAOBase):
 
 	async def delete_subject(self, subject: Subject):
 		session = await self.master_db()
-		await session.delete(subject)
+		await self.delete(session,subject)
 		await session.commit()
+		return subject
 
-	async def get_subject_by_id(self, id):
-		session = await self.slave_db()
+	async def get_subject_by_id(self, id,use_master=False):
+		if use_master:
+			session = await self.master_db()
+		else:
+			session = await self.slave_db()
 		result = await session.execute(select(Subject).where(Subject.id == id))
 		return result.scalar_one_or_none()
+	async def get_subject_by_param(self, subject: SubjectModel):
+		session = await self.slave_db()
+		query = select(Subject).where(Subject.is_deleted == False)
+		if subject.id:
+			query = query.where(Subject.id == subject.id)
 
-	async def query_subject_with_page(self, pageQueryModel, page_request: PageRequest):
-		query = select(Subject)
+		if subject.subject_name:
+			query = query.where(Subject.subject_name == subject.subject_name)
+		if subject.course_no:
+			query = query.where(Subject.course_no == subject.course_no)
+		if subject.school_id:
+			query = query.where(Subject.school_id == subject.school_id)
+		if subject.grade_id:
+			query = query.where(Subject.grade_id == subject.grade_id)
+
+
+		result = await session.execute( query)
+		return result.scalar_one_or_none()
+	async def query_subject_with_page(self,  page_request: PageRequest , school_id=None,subject_name=None,city=None,district=None):
+		query = select(Subject).where(Subject.is_deleted == False)
 		
-		### ´Ë´¦ÌîÐ´²éÑ¯Ìõ¼þ
+		### ï¿½Ë´ï¿½ï¿½ï¿½Ð´ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
+		if school_id:
+			query = query.where(Subject.school_id == school_id)
 		
 		paging = await self.query_page(query, page_request)
 		return paging

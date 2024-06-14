@@ -506,6 +506,7 @@ class StudentSession(BaseModel):
     session_name: str = Query(..., description="届别名称", min_length=1, max_length=20, examples=["2020级"]),
     session_alias: str = Query(..., description="届别别名", min_length=1, max_length=20, examples=["2020届别"]),
     session_status: str = Query(..., description="届别状态", min_length=1, max_length=20, examples=["开"])
+    year: str = Query(..., description="年份", min_length=1, max_length=20, examples=["2024"])
 
 
 class NewStudentTransferIn(BaseModel):

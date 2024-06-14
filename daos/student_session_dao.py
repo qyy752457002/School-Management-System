@@ -64,12 +64,15 @@ class StudentSessionDao(DAOBase):
         return result.scalar()
 
 
-    async def query_session_with_page(self, page_request: PageRequest, status ) -> Paging:
+    async def query_session_with_page(self, page_request: PageRequest, status, session_name,session_alias ) -> Paging:
         query = select(StudentSession). order_by(desc(StudentSession.session_id))
 
         if status:
             query = query.where(StudentSession.session_status == status)
-
+        if session_name:
+            query = query.where(StudentSession.session_name == session_name)
+        if session_alias:
+            query = query.where(StudentSession.session_alias == session_alias)
 
         paging = await self.query_page(query, page_request)
         return paging

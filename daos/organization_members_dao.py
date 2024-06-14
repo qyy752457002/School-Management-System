@@ -38,7 +38,15 @@ class OrganizationMembersDAO(DAOBase):
 
 	async def get_organization_members_by_param(self, organization:OrganizationMembers):
 		session = await self.slave_db()
-		result = await session.execute(select(OrganizationMembers).where(OrganizationMembers.teacher_id == organization.teacher_id).where(OrganizationMembers.org_id == organization.org_id).where(OrganizationMembers.member_type == organization.member_type))
+		query = select(OrganizationMembers)
+		if organization.teacher_id:
+			query = query.where(OrganizationMembers.teacher_id == organization.teacher_id)
+		if organization.org_id:
+			query = query.where(OrganizationMembers.org_id == organization.org_id)
+		if organization.member_type:
+			query = query.where(OrganizationMembers.member_type == organization.member_type)
+
+		result = await session.execute(  query)
 		return result.scalar_one_or_none()
 	async def query_organization_members_with_page(self,  page_request: PageRequest,parent_id , school_id,teacher_name,teacher_no,mobile,birthday):
 		query = (select(OrganizationMembers.id,
@@ -85,3 +93,9 @@ class OrganizationMembersDAO(DAOBase):
 		update_contents = get_update_contents(organization_members, *args)
 		query = update(OrganizationMembers).where(OrganizationMembers.id == organization_members.id).values(**update_contents)
 		return await self.update(session, query, organization_members, update_contents, is_commit=is_commit)
+
+	async def delete_organization_members_by_teacher_id(self, teacher_id, is_commit=True):
+		session = await self.master_db()
+		update_contents = {"is_deleted":True}
+		query = update(OrganizationMembers).where(OrganizationMembers.teacher_id ==teacher_id).values(is_deleted=True)
+		return await self.update(session, query, OrganizationMembers, update_contents, is_commit=is_commit)
