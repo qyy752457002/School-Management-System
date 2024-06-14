@@ -60,8 +60,14 @@ class OrganizationMembersRule(object):
         return organization
 
     async def update_organization_members(self, organization,):
-        # 默认 改
-        exists_organization_members = await self.organization_members_dao.get_organization_members_by_id(organization.id)
+        # 默认 改 支持通过ID来修改或者通过教师ID 组织ID来修改
+        if organization.id:
+
+            exists_organization_members = await self.organization_members_dao.get_organization_members_by_id(organization.id)
+        else:
+            exists_organization_members = await self.organization_members_dao.get_organization_members_by_param(organization)
+            organization.id = exists_organization_members.id
+
         if not exists_organization_members:
             raise  OrganizationMemberNotFoundError()
         organization_members_db= view_model_to_orm_model(organization, OrganizationMembersModel, exclude=[])
