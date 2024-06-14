@@ -4,7 +4,7 @@ from mini_framework.async_task.consumers import TaskExecutor
 from mini_framework.async_task.task import Task, Context
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.logging import logger
-
+import traceback
 # from rules.new_student_rule import PlanningNewStudentRule
 # from rules.new_student_rule import NewStudentRule
 from rules.storage_rule import StorageRule
@@ -67,7 +67,7 @@ class NewStudentExportExecutor(TaskExecutor):
             logger.info("Test")
             logger.info(" export begins")
             task: Task = task
-            logger.info("Test2")
+            logger.info("负载" ,task.payload)
             if isinstance(task.payload, dict):
                 student_export: NewStudentsQuery = NewStudentsQuery(**task.payload)
             elif isinstance(task.payload, NewStudentsQuery):
@@ -80,6 +80,7 @@ class NewStudentExportExecutor(TaskExecutor):
             logger.info(f" import to {task_result.result_file}")
         except Exception as e:
             logger.error(f" export failed")
-            logger.error(e)
+            logger.error(e,)
+            traceback.print_exc()
             raise e
 

@@ -3,13 +3,16 @@ import pprint
 from datetime import datetime, date
 
 import shortuuid
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.data_access.models import TaskResult
+from mini_framework.async_task.task import Task, TaskState
+from mini_framework.data.tasks.excel_tasks import ExcelWriter
 from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.storage.view_model import FileStorageModel
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from mini_framework.async_task.data_access.task_dao import TaskDAO
 
 from business_exceptions.common import IdCardError, EnrollNumberError, EduNumberError
 from daos.students_base_info_dao import StudentsBaseInfoDao
@@ -18,16 +21,19 @@ from models.students import Student
 from rules.storage_rule import StorageRule
 from views.common.common_view import check_id_number
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel, StudentsKeyinfoDetail, StudentsKeyinfo, \
-    NewStudentTransferIn, NewStudentsQuery
+    NewStudentTransferIn, NewStudentsQuery, NewStudentsQueryRe
 from views.models.students import NewStudents
 from business_exceptions.student import StudentNotFoundError, StudentExistsError
 
+from mini_framework.utils.logging import logger
 
 @dataclass_inject
 class StudentsRule(object):
     students_dao: StudentsDao
     students_baseinfo_dao: StudentsBaseInfoDao
     file_storage_dao: FileStorageDAO
+    # students_base_info_dao: StudentsBaseInfoDao
+    task_dao: TaskDAO
 
 
     async def get_students_by_id(self, students_id):
@@ -218,13 +224,13 @@ class StudentsRule(object):
             os.makedirs(temp_file_path)
         temp_file_path = os.path.join(temp_file_path, random_file_name)
         while True:
-            paging = await self.students_info_dao.query_current_student_with_page(
+            paging = await self.students_baseinfo_dao.query_students_with_page(
                 export_params, page_request
             )
             paging_result = PaginatedResponse.from_paging(
                 paging, NewStudentsQueryRe, {"hash_password": "password"}
             )
-            logger.info(paging_result.items)
+            logger.info('分页的结果',paging_result.items)
             excel_writer = ExcelWriter()
             excel_writer.add_data("Sheet1", paging_result.items)
             excel_writer.set_data(temp_file_path)
