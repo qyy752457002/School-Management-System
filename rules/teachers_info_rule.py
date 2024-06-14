@@ -81,10 +81,12 @@ class TeachersInfoRule(object):
         organization.teacher_id = teachers_info.teacher_id
         organization.member_type = None
         organization.identity = None
-        await self.organization_members_rule.add_organization_members(organization)
+        if teachers_info.org_id:
+            await self.organization_members_rule.add_organization_members(organization)
         return teachers_info
 
     async def update_teachers_info(self, teachers_info):
+        print(teachers_info.teacher_id)
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
         if not exits_teacher:
             raise TeacherNotFoundError()
