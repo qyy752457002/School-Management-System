@@ -157,7 +157,7 @@ class TeachersRule(object):
             teachers.teacher_sub_status = "active"
         return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
 
-    # 导入相关
+    # 导入导出相关
     async def import_teachers(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
@@ -230,6 +230,32 @@ class TeachersRule(object):
                     print(ex, '表内数据异常')
                     raise ex
                 results.append(result)
+                
+            local_results_path = f"/tmp/{source_file.file_name}"
+            excel_writer = ExcelWriter()
+            excel_writer.add_data("Sheet1", results)
+            excel_writer.set_data(local_results_path)
+            excel_writer.execute()
+
+            random_file_name = shortuuid.uuid() + ".xlsx"
+            file_storage = await storage_manager.put_file_to_object(
+                source_file.bucket_name, f"{random_file_name}.xlsx", local_results_path
+            )
+            file_storage_resp = await storage_manager.add_file(
+                self.file_storage_dao, file_storage
+            )
+
+            task_result = TaskResult()
+            task_result.task_id = task.task_id
+            task_result.result_file = file_storage_resp.file_name
+            task_result.result_bucket = file_storage_resp.bucket_name
+            task_result.result_file_id = file_storage_resp.file_id
+            task_result.last_updated = datetime.now()
+            task_result.state = TaskState.succeeded
+            task_result.result_extra = {"file_size": 123}
+
+            await self.task_dao.add_task_result(task_result)
+            return task_result
 
             # local_results_path = f"/tmp/{source_file.file_name}"
             # excel_writer = ExcelWriter()
@@ -260,3 +286,8 @@ class TeachersRule(object):
             print(e, '异常')
             raise e
 
+    async def teachers_export(self, task: Task):
+        bucket = "test2"
+        export_params: TeachersCreatModel = (
+            task.payload if task.payload is TeachersCreatModel() else TeachersCreatModel()
+        )
