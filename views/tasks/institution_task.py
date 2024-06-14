@@ -37,12 +37,14 @@ class InstitutionExecutor(TaskExecutor):
                 elif isinstance(item, Institutions):
                     institution_import: Institutions = item
                 elif isinstance(item, InstitutionsModel):
-                    institution_import: InsttutionsModel = item
+                    institution_import: InstitutionsModel = item
                 else:
                     raise ValueError("Invalid payload type")
                 res = await self.institution_rule.add_institution(institution_import)
                 print('插入数据res',res)
             logger.info(f"Institution   created")
+            context.task.result_file=''
+            task.result_file=''
         except Exception as e:
             print(e,'异常')
             logger.error(f"Institution   create failed")
