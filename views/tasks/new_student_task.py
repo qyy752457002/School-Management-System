@@ -10,7 +10,7 @@ from mini_framework.utils.logging import logger
 from rules.storage_rule import StorageRule
 from rules.students_base_info_rule import StudentsBaseInfoRule
 from rules.students_rule import StudentsRule
-from views.models.students import NewStudents, NewBaseInfoCreate
+from views.models.students import NewStudents, NewBaseInfoCreate, NewStudentsQuery
 
 
 # from views.models.students import NewStudent
@@ -57,6 +57,29 @@ class NewStudentExecutor(TaskExecutor):
 
 # 导出  todo
 class NewStudentExportExecutor(TaskExecutor):
-    async def execute(self, task: 'FileTask'):
-        print("test")
-        print(dict(task))
+    def __init__(self):
+        self.student_rule = get_injector(StudentsRule)
+        super().__init__()
+
+    async def execute(self, context: Context):
+        try:
+            task = context.task
+            logger.info("Test")
+            logger.info(" export begins")
+            task: Task = task
+            logger.info("Test2")
+            if isinstance(task.payload, dict):
+                student_export: NewStudentsQuery = NewStudentsQuery(**task.payload)
+            elif isinstance(task.payload, NewStudentsQuery):
+                student_export: NewStudentsQuery = task.payload
+            else:
+                raise ValueError("Invalid payload type")
+            task_result = await self.student_rule.student_export(task)
+            task.result_file = task_result.file_name
+            task.result_bucket = task_result.bucket_name
+            logger.info(f" import to {task_result.result_file}")
+        except Exception as e:
+            logger.error(f" export failed")
+            logger.error(e)
+            raise e
+

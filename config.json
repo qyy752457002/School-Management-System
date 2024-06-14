@@ -182,6 +182,14 @@
         "executor_cls_model": "views.tasks.planning_school_task.PlanningSchoolExecutor",
         "payload_cls_model": "views.models.planning_school.PlanningSchoolTask"
       },
+      "student_export": {
+        "topic": "student_export",
+        "name": "学生导出",
+        "consumer_group_id": "service",
+        "description": "学生导出",
+        "executor_cls_model": "views.tasks.new_student_task.NewStudentExportExecutor",
+        "payload_cls_model": "views.models.students.NewStudentsQuery"
+      },
       "teacher_import": {
         "topic": "teacher_import",
         "name": "教师导入",
