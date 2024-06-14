@@ -104,7 +104,7 @@ class TeachersInfoRule(object):
         organization.teacher_id = teachers_info.teacher_id
         organization.member_type = None
         organization.identity = None
-        await self.organization_members_rule.update_organization_members(organization)
+        await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
         return teachers_info
 
     # 删除单个教职工基本信息
