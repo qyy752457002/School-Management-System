@@ -45,13 +45,13 @@ class OrganizationMembersRule(object):
         return organization
     # todo 增加 对 部门计数的更新
     async def add_organization_members(self, organization: OrganizationMembers):
+        # 去重和 新增插入  todo 有可能重复  手动处理去重
         exists_organization_members = await self.organization_members_dao.get_organization_members_by_param(
              organization)
         if exists_organization_members:
             raise OrganizationMemberExistError()
         organization_members_db = view_model_to_orm_model(organization, OrganizationMembersModel,    exclude=["id"])
         # school_db.status =  PlanningSchoolStatus.DRAFT.value
-        # 只有2步  故新增几位开设中 
         organization_members_db.created_uid = 0
         organization_members_db.updated_uid = 0
 
@@ -76,15 +76,11 @@ class OrganizationMembersRule(object):
         print(organization_members_db,999)
         return organization_members_db
 
-    async def update_organization_members_byargs(self, organization,ctype=1):
+    async def update_organization_members_byargs(self, organization,):
         exists_organization_members = await self.organization_members_dao.get_organization_members_by_id(organization.id)
         if not exists_organization_members:
             raise  OrganizationNotFoundError()
-        # if exists_organization.status== PlanningSchoolStatus.DRAFT.value:
-        #     exists_organization.status= PlanningSchoolStatus.OPENING.value
-        #     organization.status= PlanningSchoolStatus.OPENING.value
-        # else:
-        #     pass
+
         need_update_list = []
 
         for key, value in organization.dict().items():
@@ -93,8 +89,6 @@ class OrganizationMembersRule(object):
 
         organization_members_db = await self.organization_members_dao.update_organization_members_byargs(organization, *need_update_list)
 
-        # 更新不用转换   因为得到的对象不熟全属性
-        # organization = orm_model_to_view_model(organization_members_db, Organization, exclude=[""])
         return organization_members_db
 
     async def delete_organization_members(self, organization_members_id):
