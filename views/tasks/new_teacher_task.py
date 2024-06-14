@@ -5,7 +5,7 @@ from mini_framework.utils.logging import logger
 
 from rules.teachers_rule import TeachersRule
 from models.teachers import Teacher
-from views.models.teachers import TeachersCreatModel, TeacherFileStorageModel
+from views.models.teachers import TeachersCreatModel, TeacherFileStorageModel,CurrentTeacherQuery
 
 
 class TeacherImportExecutor(TaskExecutor):
@@ -49,9 +49,9 @@ class TeacherExportExecutor(TaskExecutor):
             task: Task = task
             logger.info("Test2")
             if isinstance(task.payload, dict):
-                teacher_export: TeachersCreatModel = TeachersCreatModel(**task.payload)
-            elif isinstance(task.payload, TeachersCreatModel):
-                teacher_export: TeachersCreatModel = task.payload
+                teacher_export: CurrentTeacherQuery = CurrentTeacherQuery(**task.payload)
+            elif isinstance(task.payload, CurrentTeacherQuery):
+                teacher_export: CurrentTeacherQuery = task.payload
             else:
                 raise ValueError("Invalid payload type")
             task_result = await self.teacher_rule.teachers_export(task)

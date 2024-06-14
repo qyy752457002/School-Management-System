@@ -53,7 +53,7 @@ class MajorView(BaseView):
     async def put(self,
                   school_id: int = Query(..., description="学校ID", example='1'),
                   major_list: List[Majors] = Body([], description="选择的专业", example=[
-                      {  "major_name": "语文", "major_no": "19",  }]),
+                      {  "major_name": "语文", "major_no": "19","school_id":1 ,  "major_type": "19","major_id_lv2": "19","major_id_lv3": "19", }]),
 
                   ):
         # print(planning_school)

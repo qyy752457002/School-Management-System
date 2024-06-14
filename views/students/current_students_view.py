@@ -1,4 +1,6 @@
-
+from mini_framework.async_task.app.app_factory import app
+from mini_framework.async_task.task import Task
+from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 
 from models.student_transaction import AuditAction, TransactionDirection, AuditFlowStatus
@@ -9,7 +11,7 @@ from rules.students_key_info_change_rule import StudentsKeyInfoChangeRule
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
     StudentEduInfo, StudentTransactionAudit, StudentEduInfoOut
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, \
-    NewStudentTransferIn, StudentGraduation, StudentsKeyinfoChange, StudentsKeyinfoChangeAudit
+    NewStudentTransferIn, StudentGraduation, StudentsKeyinfoChange, StudentsKeyinfoChangeAudit, NewStudentsQuery
 from fastapi import Query, Depends
 from mini_framework.web.std_models.page import PageRequest
 
@@ -332,6 +334,19 @@ class CurrentStudentsView(BaseView):
 
 
         return res
+
+    async def post_current_student_export(self,
+        students_query=Depends(NewStudentsQuery),
+
+                                          ) -> Task:
+        task = Task(
+            task_type="student_export",
+            payload=students_query,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
 
 
 class CurrentStudentsBaseInfoView(BaseView):

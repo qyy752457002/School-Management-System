@@ -4,7 +4,7 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
-from business_exceptions.grade import GradeAlreadyExistError
+from business_exceptions.grade import GradeAlreadyExistError, GradeNotFoundError
 from daos.enum_value_dao import EnumValueDAO
 from daos.grade_dao import GradeDAO
 from models.grade import Grade
@@ -58,9 +58,12 @@ class GradeRule(object):
         return grade_res
 
     async def update_grade(self, grade):
+        if isinstance(grade.id,tuple) or not grade.id>0:
+            raise GradeNotFoundError()
         exists_grade = await self.grade_dao.get_grade_by_id(grade.id)
         if not exists_grade:
-            raise Exception(f"年级{grade.id}不存在")
+            raise GradeNotFoundError()
+
 
         need_update_list = []
         for key, value in grade.dict().items():
@@ -75,7 +78,9 @@ class GradeRule(object):
     async def delete_grade(self, grade_id):
         exists_grade = await self.grade_dao.get_grade_by_id(grade_id)
         if not exists_grade:
-            raise Exception(f"年级{grade_id}不存在")
+            raise GradeNotFoundError()
+
+
         grade_db = await self.grade_dao.delete_grade(exists_grade)
         grade = orm_model_to_view_model(grade_db, GradeModel, exclude=[""])
         return grade
@@ -83,7 +88,9 @@ class GradeRule(object):
     async def softdelete_grade(self, grade_id):
         exists_grade = await self.grade_dao.get_grade_by_id(grade_id)
         if not exists_grade:
-            raise Exception(f"年级信息{grade_id}不存在")
+            raise GradeNotFoundError()
+
+
         grade_db = await self.grade_dao.softdelete_grade(exists_grade)
         return grade_db
 

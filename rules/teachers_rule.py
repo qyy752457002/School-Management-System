@@ -9,7 +9,7 @@ from models.teachers import Teacher
 from views.common.common_view import check_id_number
 from views.models.teachers import Teachers as TeachersModel
 from views.models.teachers import TeachersCreatModel, TeacherInfoCreateModel, TeacherCreateResultModel, CombinedModel, \
-    TeacherInfoCreateResultModel, TeacherFileStorageModel
+    TeacherInfoCreateResultModel, TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
 from rules.teachers_info_rule import TeachersInfoRule
@@ -23,6 +23,8 @@ from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.storage.view_model import FileStorageModel
 from mini_framework.utils.logging import logger
+
+import os
 
 
 @dataclass_inject
@@ -230,32 +232,32 @@ class TeachersRule(object):
                     print(ex, '表内数据异常')
                     raise ex
                 results.append(result)
-                
-            local_results_path = f"/tmp/{source_file.file_name}"
+
+            local_results_path = f"/tmp/c.xlsx"
             excel_writer = ExcelWriter()
             excel_writer.add_data("Sheet1", results)
             excel_writer.set_data(local_results_path)
             excel_writer.execute()
-
-            random_file_name = shortuuid.uuid() + ".xlsx"
-            file_storage = await storage_manager.put_file_to_object(
-                source_file.bucket_name, f"{random_file_name}.xlsx", local_results_path
-            )
-            file_storage_resp = await storage_manager.add_file(
-                self.file_storage_dao, file_storage
-            )
-
-            task_result = TaskResult()
-            task_result.task_id = task.task_id
-            task_result.result_file = file_storage_resp.file_name
-            task_result.result_bucket = file_storage_resp.bucket_name
-            task_result.result_file_id = file_storage_resp.file_id
-            task_result.last_updated = datetime.now()
-            task_result.state = TaskState.succeeded
-            task_result.result_extra = {"file_size": 123}
-
-            await self.task_dao.add_task_result(task_result)
-            return task_result
+            #
+            # random_file_name = shortuuid.uuid() + ".xlsx"
+            # file_storage = await storage_manager.put_file_to_object(
+            #     source_file.bucket_name, f"{random_file_name}.xlsx", local_results_path
+            # )
+            # file_storage_resp = await storage_manager.add_file(
+            #     self.file_storage_dao, file_storage
+            # )
+            #
+            # task_result = TaskResult()
+            # task_result.task_id = task.task_id
+            # task_result.result_file = file_storage_resp.file_name
+            # task_result.result_bucket = file_storage_resp.bucket_name
+            # task_result.result_file_id = file_storage_resp.file_id
+            # task_result.last_updated = datetime.now()
+            # task_result.state = TaskState.succeeded
+            # task_result.result_extra = {"file_size": 123}
+            #
+            # await self.task_dao.add_task_result(task_result)
+            # return task_result
 
             # local_results_path = f"/tmp/{source_file.file_name}"
             # excel_writer = ExcelWriter()
@@ -287,7 +289,45 @@ class TeachersRule(object):
             raise e
 
     async def teachers_export(self, task: Task):
-        bucket = "test2"
-        export_params: TeachersCreatModel = (
-            task.payload if task.payload is TeachersCreatModel() else TeachersCreatModel()
+        bucket = "teachers_export"
+        export_params: CurrentTeacherQuery = (
+            task.payload if task.payload is CurrentTeacherQuery() else CurrentTeacherQuery()
         )
+        page_request = PageRequest(page=1, per_page=10)
+        random_file_name = f"teacher_export_{shortuuid.uuid()}.xlsx"
+        temp_file_path = os.path.join(os.path.dirname(__file__), 'tmp')
+        if not os.path.exists(temp_file_path):
+            os.makedirs(temp_file_path)
+        temp_file_path = os.path.join(temp_file_path, random_file_name)
+        while True:
+            paging = await self.teachers_info_dao.query_current_teacher_with_page(
+                export_params, page_request
+            )
+            paging_result = PaginatedResponse.from_paging(
+                paging, CurrentTeacherQueryRe, {"hash_password": "password"}
+            )
+            logger.info(paging_result.items)
+            excel_writer = ExcelWriter()
+            excel_writer.add_data("Sheet1", paging_result.items)
+            excel_writer.set_data(temp_file_path)
+            excel_writer.execute()
+            if len(paging.items) < page_request.per_page:
+                break
+            page_request.page += 1
+        file_storage = await storage_manager.put_file_to_object(
+            bucket, f"{random_file_name}.xlsx", temp_file_path
+        )
+        file_storage_resp = await storage_manager.add_file(
+            self.file_storage_dao, file_storage
+        )
+        task_result = TaskResult()
+        task_result.task_id = task.task_id
+        task_result.result_file = file_storage_resp.file_name
+        task_result.result_bucket = file_storage_resp.bucket_name
+        task_result.result_file_id = file_storage_resp.file_id
+        task_result.last_updated = datetime.now()
+        task_result.state = TaskState.succeeded
+        task_result.result_extra = {"file_size": file_storage.file_size}
+
+        await self.task_dao.add_task_result(task_result)
+        return task_result
