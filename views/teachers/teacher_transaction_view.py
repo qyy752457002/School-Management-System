@@ -162,7 +162,7 @@ class TeacherTransactionView(BaseView):
         self.teacher_transaction_rule = get_injector(TeacherTransactionRule)
 
     async def get_teacher_transaction(self,
-                                      teacher_transaction_id: int = Query(None, title="teacher_transactionID",
+                                      teacher_transaction_id: int = Query(..., title="teacher_transactionID",
                                                                           description="teacher_transactionID",
                                                                           example=1234)
                                       ):

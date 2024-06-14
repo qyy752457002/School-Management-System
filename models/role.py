@@ -30,23 +30,23 @@ class Role(BaseDBModel):
     updated_at = mapped_column(DateTime, onupdate=datetime.now, default=datetime.now, nullable=True, comment="更新时间")
     is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)
 
-    @staticmethod
-    def seed():
-        return [
-            Role(id=1, system_type='unit', edu_type='kg', unit_type='city', app_name='园所信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-            Role(id=2, system_type='unit', edu_type='k12', unit_type='city', app_name='中小学信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-            Role(id=3, system_type='unit', edu_type='vocational', unit_type='city', app_name='职高信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-            Role(id=4, system_type='unit', edu_type='kg', unit_type='school', app_name='园所信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-            Role(id=5, system_type='unit', edu_type='kg', unit_type='county', app_name='园所信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-            Role(id=6, system_type='unit', edu_type='k12', unit_type='county', app_name='中小学信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-            Role(id=7, system_type='unit', edu_type='k12', unit_type='school', app_name='中小学信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-            Role(id=8, system_type='unit', edu_type='vocational', unit_type='county', app_name='职高信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-            Role(id=9, system_type='unit', edu_type='vocational', unit_type='school', app_name='职高信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-
-            Role(id=10, system_type='teacher', edu_type='', unit_type='', app_name='教职工信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-
-            Role(id=11, system_type='student', edu_type='', unit_type='', app_name='学生信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-        ]
+    # @staticmethod
+    # def seed():
+    #     return [
+    #         Role(id=1, system_type='unit', edu_type='kg', unit_type='city', app_name='园所信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
+    #         Role(id=2, system_type='unit', edu_type='k12', unit_type='city', app_name='中小学信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
+    #         Role(id=3, system_type='unit', edu_type='vocational', unit_type='city', app_name='职高信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
+    #         Role(id=4, system_type='unit', edu_type='kg', unit_type='school', app_name='园所信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
+    #         Role(id=5, system_type='unit', edu_type='kg', unit_type='county', app_name='园所信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
+    #         Role(id=6, system_type='unit', edu_type='k12', unit_type='county', app_name='中小学信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
+    #         Role(id=7, system_type='unit', edu_type='k12', unit_type='school', app_name='中小学信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
+    #         Role(id=8, system_type='unit', edu_type='vocational', unit_type='county', app_name='职高信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
+    #         Role(id=9, system_type='unit', edu_type='vocational', unit_type='school', app_name='职高信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
+    #
+    #         Role(id=10, system_type='teacher', edu_type='', unit_type='', app_name='教职工信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
+    #
+    #         Role(id=11, system_type='student', edu_type='', unit_type='', app_name='学生信息管理系统', unit_id=0, school_id=0, county_id=0, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
+    #     ]
 
 
 

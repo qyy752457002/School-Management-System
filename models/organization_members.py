@@ -33,11 +33,11 @@ class OrganizationMembers(BaseDBModel):
     updated_at = mapped_column(DateTime, onupdate=datetime.now, default=datetime.now, nullable=True, comment="更新时间")
     is_deleted: Mapped[bool] = mapped_column( nullable=True  , comment="删除态",default=False)
 
-    @staticmethod
-    def seed():
-        return [
-
-        ]
+    # @staticmethod
+    # def seed():
+    #     return [
+    #
+    #     ]
 
 
 
