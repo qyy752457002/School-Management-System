@@ -6,6 +6,7 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
+from business_exceptions.subject import SubjectAlreadyExistError
 # from business_exceptions.subject import CourseNotFoundError, CourseAlreadyExistError
 from daos.subject_dao import SubjectDAO
 from models.subject import Subject
@@ -29,11 +30,11 @@ class SubjectRule(object):
         return subject
 
     async def add_subject(self, subject: SubjectModel):
-        exists_subject = await self.subject_dao.get_subject_by_name(
-            subject.subject_name,subject)
+        exists_subject = await self.subject_dao.get_subject_by_param(
+            subject)
         if exists_subject:
-            raise CourseAlreadyExistError()
-        subject_db = view_model_to_orm_model(subject, Course,    exclude=["id"])
+            raise SubjectAlreadyExistError()
+        subject_db = view_model_to_orm_model(subject, Subject,    exclude=["id"])
 
         subject_db = await self.subject_dao.add_subject(subject_db)
         subject = orm_model_to_view_model(subject_db, SubjectModel, exclude=["created_at",'updated_at'])

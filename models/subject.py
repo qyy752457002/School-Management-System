@@ -18,8 +18,8 @@ class Subject(BaseDBModel):
     subject_level: Mapped[str] = mapped_column(String(64), nullable=False, comment="课程等级 国家/地方/校本")
     course_name: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="学科名称")
     grade_id: Mapped[int] = mapped_column( comment="年级ID",default=0,nullable=True)
-    # grade_id: Mapped[int] = mapped_column( comment="年级ID",default=0,nullable=True)
     school_id: Mapped[int] = mapped_column( comment="学校ID",nullable=True,default=0)
+    course_no: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="学科编码")
 
     subject_description: Mapped[str] = mapped_column(String(255), nullable=True,default='', comment="课程简介")
     subject_requirement: Mapped[str] = mapped_column(String(255), nullable=True,default='', comment="课程要求")
