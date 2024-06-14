@@ -43,15 +43,15 @@ class OrganizationMembersRule(object):
             organization_members_name)
         organization = orm_model_to_view_model(organization_members_db, Organization, exclude=[""])
         return organization
-
+    # todo 增加 对 部门计数的更新
     async def add_organization_members(self, organization: OrganizationMembers):
+        # 去重和 新增插入  todo 有可能重复  手动处理去重
         exists_organization_members = await self.organization_members_dao.get_organization_members_by_param(
              organization)
         if exists_organization_members:
             raise OrganizationMemberExistError()
         organization_members_db = view_model_to_orm_model(organization, OrganizationMembersModel,    exclude=["id"])
         # school_db.status =  PlanningSchoolStatus.DRAFT.value
-        # 只有2步  故新增几位开设中 
         organization_members_db.created_uid = 0
         organization_members_db.updated_uid = 0
 
@@ -60,8 +60,14 @@ class OrganizationMembersRule(object):
         return organization
 
     async def update_organization_members(self, organization,):
-        # 默认 改
-        exists_organization_members = await self.organization_members_dao.get_organization_members_by_id(organization.id)
+        # 默认 改 支持通过ID来修改或者通过教师ID 组织ID来修改
+        if organization.id:
+
+            exists_organization_members = await self.organization_members_dao.get_organization_members_by_id(organization.id)
+        else:
+            exists_organization_members = await self.organization_members_dao.get_organization_members_by_param(organization)
+            organization.id = exists_organization_members.id
+
         if not exists_organization_members:
             raise  OrganizationMemberNotFoundError()
         organization_members_db= view_model_to_orm_model(organization, OrganizationMembersModel, exclude=[])
@@ -76,26 +82,21 @@ class OrganizationMembersRule(object):
         print(organization_members_db,999)
         return organization_members_db
 
-    async def update_organization_members_byargs(self, organization,ctype=1):
-        exists_organization_members = await self.organization_members_dao.get_organization_members_by_id(organization.id)
-        if not exists_organization_members:
-            raise  OrganizationNotFoundError()
-        # if exists_organization.status== PlanningSchoolStatus.DRAFT.value:
-        #     exists_organization.status= PlanningSchoolStatus.OPENING.value
-        #     organization.status= PlanningSchoolStatus.OPENING.value
-        # else:
-        #     pass
-        need_update_list = []
+    async def update_organization_members_by_teacher_id(self, organization: OrganizationMembers,):
+        # 多个部门都删掉  再插入最新
 
-        for key, value in organization.dict().items():
-            if value:
-                need_update_list.append(key)
+        exists_organization_members = await self.organization_members_dao.delete_organization_members_by_teacher_id(organization.teacher_id)
 
-        organization_members_db = await self.organization_members_dao.update_organization_members_byargs(organization, *need_update_list)
+        organization_members_db = view_model_to_orm_model(organization, OrganizationMembersModel,    exclude=["id"])
+        # school_db.status =  PlanningSchoolStatus.DRAFT.value
+        organization_members_db.created_uid = 0
+        organization_members_db.updated_uid = 0
 
-        # 更新不用转换   因为得到的对象不熟全属性
-        # organization = orm_model_to_view_model(organization_members_db, Organization, exclude=[""])
-        return organization_members_db
+        organization_members_db = await self.organization_members_dao.add_organization_members(organization_members_db)
+        organization = orm_model_to_view_model(organization_members_db, Organization, exclude=["created_at",'updated_at'])
+        return organization
+
+
 
     async def delete_organization_members(self, organization_members_id):
         exists_organization = await self.organization_members_dao.get_organization_members_by_id(organization_members_id,True)
