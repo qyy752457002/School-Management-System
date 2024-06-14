@@ -6,7 +6,7 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
-from business_exceptions.subject import SubjectAlreadyExistError
+from business_exceptions.subject import SubjectAlreadyExistError, SubjectNotFoundError
 # from business_exceptions.subject import CourseNotFoundError, CourseAlreadyExistError
 from daos.subject_dao import SubjectDAO
 from models.subject import Subject
@@ -40,10 +40,10 @@ class SubjectRule(object):
         subject = orm_model_to_view_model(subject_db, SubjectModel, exclude=["created_at",'updated_at'])
         return subject
 
-    async def update_subject(self, subject,ctype=1):
+    async def update_subject(self, subject,):
         exists_subject = await self.subject_dao.get_subject_by_id(subject.id)
         if not exists_subject:
-            raise CourseNotFoundError()
+            raise SubjectNotFoundError()
         need_update_list = []
         for key, value in subject.dict().items():
             if value:
@@ -51,10 +51,6 @@ class SubjectRule(object):
 
         subject_db = await self.subject_dao.update_subject(subject, *need_update_list)
 
-
-        # subject_db = await self.subject_dao.update_subject(subject_db,ctype)
-        # 更新不用转换   因为得到的对象不熟全属性
-        # subject = orm_model_to_view_model(subject_db, SubjectModel, exclude=[""])
         return subject_db
 
     async def softdelete_subject(self, subject_id):
@@ -104,23 +100,11 @@ class SubjectRule(object):
     async def get_subject_all(self, filterdict):
         return await self.subject_dao.get_all_subject(filterdict)
 
-
-    async def add_subject_school(self,school_id,subject_list:List[SubjectModel],obj:ExtendParams=None):
-        res=None
-        if school_id:
-            exists_subject = await self.subject_dao.get_subject_by_school_id(      school_id)
-            if exists_subject:
-                raise CourseAlreadyExistError()
-        for subject in subject_list:
-            # 扩展参数 放入到视图模型 再转换给orm
-            if obj.county_id:
-                subject.district=obj.county_id
-            if obj.edu_type:
-                subject.school_type=obj.edu_type
-            subject_db= view_model_to_orm_model(subject, Course, exclude=["id"])
-
-            res = await self.subject_dao.add_subject(subject_db)
-        subject = orm_model_to_view_model(res, SubjectModel, exclude=["created_at",'updated_at'])
-        return subject
+    async def delete_subject(self, subject_id):
+        exists_organization = await self.subject_dao.get_subject_by_id(subject_id,True)
+        if not exists_organization:
+            raise SubjectNotFoundError()
+        subject_db = await self.subject_dao.delete_subject(exists_organization)
+        return exists_organization
 
 

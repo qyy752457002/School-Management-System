@@ -41,25 +41,19 @@ class SubjectView(BaseView):
         res = await self.subject_rule.query_subject_with_page(page_request,   school_id,subject_name, obj )
         return res
 
-    # 删除  自动级联删除下层的部门
+    # 删除
     async def delete(self,
-                     org_id: int = Query(0, title="", description="", examples=[1]),
+                     id: int = Query(0, title="", description="", examples=[1]),
                        ):
-        print(org_id)
-        res = await self.subject_rule.delete_subject(org_id)
+        res = await self.subject_rule.delete_subject(id)
 
         return res
 
     # 修改
     async def put(self,
                   orginization: Subject,
-                  # org_id: int = Query(0, title="", description="", examples=[1]),
-                  # parent_id: int = Query(0, title="", description="", examples=[1]),
-                  # org_name: str = Query('', title=" ", description=" ", examples=[''])
                   ):
         print(orginization)
-        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        # subject= Subject(id=org_id, org_name=org_name,parent_id=parent_id)
         res = await self.subject_rule.update_subject(orginization)
 
         return res

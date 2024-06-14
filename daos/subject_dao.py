@@ -25,11 +25,15 @@ class SubjectDAO(DAOBase):
 
 	async def delete_subject(self, subject: Subject):
 		session = await self.master_db()
-		await session.delete(subject)
+		await self.delete(session,subject)
 		await session.commit()
+		return subject
 
-	async def get_subject_by_id(self, id):
-		session = await self.slave_db()
+	async def get_subject_by_id(self, id,use_master=False):
+		if use_master:
+			session = await self.master_db()
+		else:
+			session = await self.slave_db()
 		result = await session.execute(select(Subject).where(Subject.id == id))
 		return result.scalar_one_or_none()
 	async def get_subject_by_param(self, subject: SubjectModel):
