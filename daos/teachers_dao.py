@@ -32,7 +32,13 @@ class TeachersDao(DAOBase):
             select(Teacher).where(Teacher.teacher_id == teachers_id, Teacher.is_deleted == False))
         return result.scalar_one_or_none()
 
-    # 删除单个教师信息
+    # 根据身份证号获取教师信息
+
+    async def get_teachers_by_teacher_id_number(self, teacher_id_number):
+        session = await self.slave_db()
+        result = await session.execute(
+            select(Teacher).where(Teacher.teacher_id_number == teacher_id_number, Teacher.is_deleted == 0))
+        return result.scalar_one_or_none()
 
     # 删除单个教师信息
     async def delete_teachers(self, teachers: Teacher):
