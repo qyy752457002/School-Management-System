@@ -157,7 +157,7 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="部门")
-    org_id: int = Field(..., title="组织ID", description="组织ID")
+    org_id:  Optional[int] = Field(None, title="组织ID", description="组织ID")
 
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
@@ -280,7 +280,7 @@ class TeacherInfo(BaseModel):  # 基本信息
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="部门")
-    org_id: int = Field(..., title="组织ID", description="组织ID")
+    org_id:  Optional[int] = Field(None, title="组织ID", description="组织ID")
 
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
@@ -505,7 +505,7 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="部门")
-    org_id: int = Field(..., title="组织ID", description="组织ID")
+    org_id:  Optional[int] = Field(None, title="组织ID", description="组织ID")
 
 
 class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
@@ -612,7 +612,7 @@ class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="部门")
-    org_id: int = Field(..., title="组织ID", description="组织ID")
+    org_id:  Optional[int] = Field(None, title="组织ID", description="组织ID")
 
 
 class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
@@ -719,7 +719,7 @@ class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="部门")
-    org_id: int = Field(..., title="组织ID", description="组织ID")
+    org_id:  Optional[int] = Field(None, title="组织ID", description="组织ID")
 
 
 class TeacherInfoSubmit(BaseModel):  # 基本信息
