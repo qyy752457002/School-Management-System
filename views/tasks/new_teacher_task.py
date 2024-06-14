@@ -34,4 +34,31 @@ class TeacherImportExecutor(TaskExecutor):
             logger.error(e)
             raise e
 
+
 # 导出  todo
+class TeacherExportExecutor(TaskExecutor):
+    def __init__(self):
+        self.teacher_rule = get_injector(TeachersRule)
+        super().__init__()
+
+    async def execute(self, context: Context):
+        try:
+            task = context.task
+            logger.info("Test")
+            logger.info("Teacher export begins")
+            task: Task = task
+            logger.info("Test2")
+            if isinstance(task.payload, dict):
+                teacher_export: TeachersCreatModel = TeachersCreatModel(**task.payload)
+            elif isinstance(task.payload, TeachersCreatModel):
+                teacher_export: TeachersCreatModel = task.payload
+            else:
+                raise ValueError("Invalid payload type")
+            task_result = await self.teacher_rule.teachers_export(task)
+            task.result_file = task_result.file_name
+            task.result_bucket = task_result.bucket_name
+            logger.info(f"Teacher import to {task_result.result_file}")
+        except Exception as e:
+            logger.error(f"Teacher export failed")
+            logger.error(e)
+            raise e
