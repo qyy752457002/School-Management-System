@@ -4456,6 +4456,14 @@ class EnumValue(BaseDBModel):
 
 
             EnumValue(  id=4425,enum_name="major_lv3", enum_value="630101", description="发电厂及变电站运行与维护", sort_number=0,parent_id="6301",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  id=4427,enum_name="major_lv3", enum_value="610103", description="循环农业与再生资源利用", sort_number=0,parent_id="6101",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  id=4428,enum_name="major_lv3", enum_value="610104", description="家庭农场生产经营", sort_number=0,parent_id="6101",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  id=4429,enum_name="major_lv3", enum_value="610105", description="园艺技术", sort_number=0,parent_id="6101",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  id=4430,enum_name="major_lv3", enum_value="610106", description="植物保护", sort_number=0,parent_id="6101",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  id=4431,enum_name="major_lv3", enum_value="610107", description="茶叶生产与加工", sort_number=0,parent_id="6101",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  id=4432,enum_name="major_lv3", enum_value="610108", description="中草药栽培", sort_number=0,parent_id="6101",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  id=4433,enum_name="major_lv3", enum_value="610109", description="烟草栽培与加工", sort_number=0,parent_id="6101",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(  id=4434,enum_name="major_lv3", enum_value="610110", description="饲草栽培与加工", sort_number=0,parent_id="6101",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
 
 
         ]
