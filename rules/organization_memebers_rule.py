@@ -59,7 +59,7 @@ class OrganizationMembersRule(object):
         organization_members_db = await self.organization_members_dao.add_organization_members(organization_members_db)
         organization = orm_model_to_view_model(organization_members_db, Organization, exclude=["created_at",'updated_at'])
         org_rule = get_injector(OrganizationRule)
-        await org_rule.increment_organization_member_cnt(organization.id)
+        await org_rule.increment_organization_member_cnt(organization_members_db.org_id)
 
         return organization
 
