@@ -81,10 +81,12 @@ class TeachersInfoRule(object):
         organization.teacher_id = teachers_info.teacher_id
         organization.member_type = None
         organization.identity = None
-        await self.organization_members_rule.add_organization_members(organization)
+        if teachers_info.org_id:
+            await self.organization_members_rule.add_organization_members(organization)
         return teachers_info
 
     async def update_teachers_info(self, teachers_info):
+        print(teachers_info.teacher_id)
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
         if not exits_teacher:
             raise TeacherNotFoundError()
@@ -96,6 +98,13 @@ class TeachersInfoRule(object):
             if value:
                 need_update_list.append(key)
         teachers_info = await self.teachers_info_dao.update_teachers_info(teachers_info, *need_update_list)
+        organization = OrganizationMembers()
+        organization.id = None
+        organization.org_id = teachers_info.org_id
+        organization.teacher_id = teachers_info.teacher_id
+        organization.member_type = None
+        organization.identity = None
+        await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
         return teachers_info
 
     # 删除单个教职工基本信息
