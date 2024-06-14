@@ -56,13 +56,15 @@ class CurrentStudentsView(BaseView):
         return res
 
     async def page_session(self,
+                           session_name: str = Query("", title="", description="", ),
+                           session_alias: str = Query("", title="", description="", ),
                            status: str = Query("", title="", description="状态", ),
                            page_request=Depends(PageRequest)
                            ):
         items = []
         # exit(1)
         # return page_search
-        paging_result = await self.student_session_rule.query_session_with_page(page_request, status)
+        paging_result = await self.student_session_rule.query_session_with_page(page_request, status,session_name,session_alias)
         return paging_result
 
     # 转学申请的 列表
