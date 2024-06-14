@@ -28,5 +28,5 @@ class Grades(BaseModel):
 
     description: str = Field('',  description="简介",examples=['fsdfdsfsdxxx'])
     created_at: datetime = Field('',  description="简介",examples=['2020-01-01'])
-    id:int= Query(0, title="", description="id", example='1'),
+    id:int= Field(0, title="", description="id", example='1'),
 

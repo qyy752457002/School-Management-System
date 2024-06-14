@@ -88,12 +88,14 @@ class GradesView(BaseView):
                   grades: Grades,
                   request:Request,
 
-                  grade_id: int = Query(..., title="", description="年级id", example='1'),
+                  # grade_id: int = Query(0, title="", description="年级id", example='1'),
 
                   ):
         print(grades,1111)
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        grades.id = grade_id
+        # if grade_id:
+
+            # grades.id = grade_id
         grades.created_at = None
         delattr(grades, 'created_at')
 
