@@ -174,7 +174,6 @@
         "executor_cls_model": "views.tasks.school_task.SchoolExecutor",
         "payload_cls_model": "views.models.school.SchoolTask"
       },
-
       "planning_school_import": {
         "topic": "planning_school_import",
         "name": "规划校上传和导入",
@@ -190,7 +189,14 @@
         "description": "教师导入",
         "executor_cls_model": "views.tasks.new_teacher_task.TeacherImportExecutor",
         "payload_cls_model": "views.models.teachers.TeacherFileStorageModel"
-
+      },
+      "teacher_export": {
+        "topic": "teacher_export",
+        "name": "教师导出",
+        "consumer_group_id": "service",
+        "description": "教师导出",
+        "executor_cls_model": "views.tasks.new_teacher_task.TeacherExportExecutor",
+        "payload_cls_model": "views.models.teachers.CurrentTeacherQuery"
       }
     }
   }
