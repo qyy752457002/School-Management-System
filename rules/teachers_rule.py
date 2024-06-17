@@ -142,6 +142,13 @@ class TeachersRule(object):
         teachers.teacher_approval_status = "rejected"
         return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
 
+    async def revoked(self, teachers_id):
+        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
+        if not teachers:
+            raise TeacherNotFoundError()
+        teachers.teacher_approval_status = "revoked"
+        return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
+
     async def recall(self, teachers_id):
         # todo 这个撤回的逻辑有问题，因为只有在流程结束时，老师的状态才会改，如果已经通过下一级审批，当前的操作者就无法撤回了。
         teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)

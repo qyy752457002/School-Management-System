@@ -8,6 +8,24 @@ from models.public_enum import Gender
 from business_exceptions.teacher import EthnicityNoneError, PoliticalStatusNoneError
 from mini_framework.storage.view_model import FileStorageModel
 
+from enum import Enum
+
+
+class TeacherMainStatus(str, Enum):
+    """
+    未入职：unemployed
+    在职：employed
+    离退休：retired
+    """
+    UNEMPLOYED = "unemployed"
+    EMPLOYED = "employed"
+    RETIRED = "retired"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.UNEMPLOYED, cls.EMPLOYED, cls.RETIRED]
+
+
 class Teachers(BaseModel):
     """
     教师ID:teacher_id
@@ -28,7 +46,6 @@ class Teachers(BaseModel):
     teacher_employer: int = Field(0, title="任职单位", description="任职单位")
     teacher_avatar: str = Field("", title="头像", description="头像")
     mobile: str = Field("", title="手机号", description="手机号")
-
 
 
 class TeachersCreatModel(BaseModel):
@@ -157,7 +174,7 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="部门")
-    org_id:  Optional[int] = Field(None, title="组织ID", description="组织ID")
+    org_id: Optional[int] = Field(None, title="组织ID", description="组织ID")
 
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
@@ -168,15 +185,17 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
                 raise PoliticalStatusNoneError()
         return self
 
+
 class TeacherInfoCreateResultModel(TeacherInfoCreateModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
 
 class CombinedModel(TeachersCreatModel, TeacherInfoCreateModel):
     pass
 
+
 class TeacherFileStorageModel(FileStorageModel):
     pass
-
 
 
 class TeacherInfo(BaseModel):  # 基本信息
@@ -280,7 +299,7 @@ class TeacherInfo(BaseModel):  # 基本信息
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="部门")
-    org_id:  Optional[int] = Field(None, title="组织ID", description="组织ID")
+    org_id: Optional[int] = Field(None, title="组织ID", description="组织ID")
 
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
@@ -505,7 +524,7 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="部门")
-    org_id:  Optional[int] = Field(None, title="组织ID", description="组织ID")
+    org_id: Optional[int] = Field(None, title="组织ID", description="组织ID")
 
 
 class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
@@ -612,7 +631,7 @@ class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="部门")
-    org_id:  Optional[int] = Field(None, title="组织ID", description="组织ID")
+    org_id: Optional[int] = Field(None, title="组织ID", description="组织ID")
 
 
 class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
@@ -719,7 +738,7 @@ class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="部门")
-    org_id:  Optional[int] = Field(None, title="组织ID", description="组织ID")
+    org_id: Optional[int] = Field(None, title="组织ID", description="组织ID")
 
 
 class TeacherInfoSubmit(BaseModel):  # 基本信息
@@ -978,9 +997,6 @@ class TeacherApprovalQueryRe(BaseModel):
     approval_time: Optional[date] = Field(None, title="审批时间", description="审批时间")
     approval_status: str = Field("pending", title="审批状态", description="审批状态")
     process_instance_id: int = Field(0, title="流程实例id", description="流程实例id")
-
-
-
 
 
 # task相关模型

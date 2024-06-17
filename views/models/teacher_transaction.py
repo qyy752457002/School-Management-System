@@ -15,7 +15,7 @@ from enum import Enum
 class ApprovalStatus(str, Enum):
     """
     未审批：submitted
-    已撤回：revoke
+    已撤回：revoked
     已通过：approved
     已拒绝：rejected
     """

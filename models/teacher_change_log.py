@@ -1,9 +1,9 @@
-from sqlalchemy import String, Date
+from sqlalchemy import String, Date,DateTime
 from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
-from datetime import date
+from datetime import date, datetime
 
-class TeacherChange(BaseDBModel):
+class TeacherChangeLog(BaseDBModel):
     """
     teacher_change：teacher_change_id
     变更ID：change_id
@@ -18,19 +18,22 @@ class TeacherChange(BaseDBModel):
     操作时间：operation_time
     删除状态：is_deleted
     """
-    __tablename__ = 'lfun_teacher_change'
-    __table_args__ = {'comment': 'teacher_change信息表'}
+    __tablename__ = 'lfun_teacher_change_log'
+    __table_args__ = {'comment': 'teacher_change_log信息表'}
 
     teacher_change_id: Mapped[int] = mapped_column(primary_key=True, comment="teacher_changeID")
-    change_id: Mapped[str] = mapped_column(String(64), nullable=False, comment="变更ID")
     teacher_id: Mapped[str] = mapped_column(String(64), nullable=False, comment="教师ID")
-    operator_id: Mapped[str] = mapped_column(String(64), nullable=False, comment="操作人ID")
-    operator_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="操作人姓名")
     change_module: Mapped[str] = mapped_column(String(64), nullable=False, comment="变更模块")
-    change_time: Mapped[str] = mapped_column(String(64), nullable=False, comment="变更时间")
+    change_detail: Mapped[str] = mapped_column(String(64), nullable=False, comment="变更详情")
+    log_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="审核状态")
+    apply_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="申请人姓名")
+    approval_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="审核人姓名")
+    apply_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, comment="申请时间")
+    approval_time: Mapped[datetime] = mapped_column(DateTime, nullable=True, comment="审核时间")
+
+
     changed_field: Mapped[str] = mapped_column(String(64), nullable=False, comment="变更字段")
     before_change: Mapped[str] = mapped_column(String(64), nullable=False, comment="变更前")
     after_change: Mapped[str] = mapped_column(String(64), nullable=False, comment="变更后")
-    operation_time: Mapped[str] = mapped_column(String(64), nullable=False, comment="操作时间")
-    is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
+
     

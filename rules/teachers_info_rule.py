@@ -123,6 +123,7 @@ class TeachersInfoRule(object):
         return paging_result
 
     async def query_current_teacher_with_page(self, query_model: CurrentTeacherQuery, page_request: PageRequest):
+        # todo 需要加一个返回一个能否变动的状态
         print(query_model)
         paging = await self.teachers_info_dao.query_current_teacher_with_page(query_model, page_request)
         paging_result = PaginatedResponse.from_paging(paging, CurrentTeacherQueryRe)
