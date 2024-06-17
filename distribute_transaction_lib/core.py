@@ -55,10 +55,10 @@ class DistributedTransactionCore:
         logging.info(f"Starting transaction with ID: {self.transaction_id}")
         return self.transaction_id
     #  这里改为 框架的 调api的方法
-    def safe_api_call(self, url, data):
+     async def safe_api_call(self, url, data):
         try:
             httpreq= HTTPRequest()
-            response =httpreq.post_json(url, data)
+            response = await httpreq.post_json(url, data)
 
             # response = requests.post(url, json=data, timeout=10)
             # response.raise_for_status()
@@ -68,55 +68,55 @@ class DistributedTransactionCore:
             logging.error(f"API call failed: {e}")
             return dict()
 
-    def prepare_transaction(self, data):
+    async def prepare_transaction(self, data):
         prepare_responses = {}
         for value in self.transaction_nodes:
             # 检查节点是否具有prepare_url字段
             if not hasattr(value,self.prepare_key_name):
                 print(value)
                 logging.error(f"事务节点缺少字段 :准备 url {value}")
-                self.rollback_transaction(prepare_responses)
+                await self.rollback_transaction(prepare_responses)
                 return False
                 # continue
             # 检查 各单位 具有基础url
             url = f"{getattr(value,self.baseurl_key_name)}{getattr(value,self.prepare_key_name)}"
 
-            response = self.safe_api_call(url,  self.data)
+            response = await self.safe_api_call(url,  self.data)
             # 检查是否 有状态  且是 成功的状态码
             if response and response["status"] == self.prepare_success_code:
                 # response["baseurl"] = self.api_urls[value['url']]
                 prepare_responses [  'url'] = response
             else:
-                self.rollback_transaction(prepare_responses)
+                await self.rollback_transaction(prepare_responses)
                 return False
         return prepare_responses
 
     # 以下方法类似地进行优化，主要是使用 self.safe_api_call 和改善错误处理...
     # pre_commit_transaction, commit_transaction, rollback_transaction 方法省略...
-    def pre_commit_transaction(self,prepare_responses):
+    async def pre_commit_transaction(self,prepare_responses):
         for system, response in prepare_responses.items():
             # 要求必须返回 pre_commit_url
             url = f"{response.get(self.baseurl_key_name)}{response.get(self.precommit_key_name)}"
-            if not self.safe_api_call(url, response):
-                self.rollback_transaction(prepare_responses)
+            if not await self.safe_api_call(url, response):
+                await self.rollback_transaction(prepare_responses)
                 return False
         return True
 
-    def commit_transaction(self,prepare_responses):
+    async def commit_transaction(self,prepare_responses):
         # 要求必须返回 commit_url
         for system, response in prepare_responses.items():
             url = f"{response.get(self.baseurl_key_name)}{response.get( self.commit_key_name)}"
-            if not self.safe_api_call(url, response):
-                self.rollback_transaction(prepare_responses)
+            if not await self.safe_api_call(url, response):
+                await self.rollback_transaction(prepare_responses)
                 return False
         logging.info("Transaction committed successfully.")
         return True
 
-    def rollback_transaction(self,prepare_responses):
+    async def rollback_transaction(self,prepare_responses):
         for system, response in prepare_responses.items():
             # 读取各个的 基础URL 和 rollback_url
             url = f"{response.get(self.baseurl_key_name)}{response.get( self.rollback_key_name)}"
-            res = self.safe_api_call(url, response)
+            res = await self.safe_api_call(url, response)
             # todo  重试回滚 放入队列 或者提示人工干预
             # 回滚接口要求必须返回 status 为 rollbacked
 
@@ -163,7 +163,7 @@ class DistributedTransactionCore:
                                 logging.info("Prepare phase failed, transaction rolled back.")
                             # 预提交 中间态
 
-                            precommit = self.pre_commit_transaction(prepare_responses)
+                            precommit = await self.pre_commit_transaction(prepare_responses)
                             if not precommit:
                                 logging.info("Pre-commit failed, transaction rolled back.")
 

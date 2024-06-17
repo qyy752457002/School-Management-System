@@ -2,7 +2,10 @@ from sqlalchemy import select, or_
 
 from mini_framework.databases.entities.dao_base import DAOBase
 
-from distribute_transaction_lib.data_access.models import UnitSystem
+from models.unit_system import UnitSystem
+
+
+# from distribute_transaction_lib.data_access.models import UnitSystem
 
 
 class UnitSystemDAO(DAOBase):
