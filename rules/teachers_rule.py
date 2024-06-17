@@ -59,7 +59,7 @@ class TeachersRule(object):
         teacher_id_type = teachers.teacher_id_type
         teacher_name = teachers.teacher_name
         teacher_gender = teachers.teacher_gender
-        length = await self.teachers_info_dao.get_teachers_info_by_prams(teacher_id_number, teacher_id_type,
+        length = await self.teachers_dao.get_teachers_info_by_prams(teacher_id_number, teacher_id_type,
                                                                          teacher_name, teacher_gender)
         if length > 0:
             raise TeacherExistsError()

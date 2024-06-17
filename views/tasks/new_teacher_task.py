@@ -59,6 +59,6 @@ class TeacherExportExecutor(TaskExecutor):
             task.result_bucket = task_result.bucket_name
             logger.info(f"Teacher import to {task_result.result_file}")
         except Exception as e:
-            logger.error(f"Teacher export failed")
+            logger.error("Teacher export failed")
             logger.error(e)
             raise e
