@@ -213,11 +213,13 @@ class StudentsRule(object):
 
 
     async def student_export(self, task: Task):
-        bucket = "students_export"
+        bucket =  'student'
+        print(bucket,'桶')
+
         export_params: NewStudentsQuery = (
             task.payload if task.payload is NewStudentsQuery() else NewStudentsQuery()
         )
-        page_request = PageRequest(page=1, per_page=10)
+        page_request = PageRequest(page=1, per_page=100)
         random_file_name = f"student_export_{shortuuid.uuid()}.xlsx"
         temp_file_path = os.path.join(os.path.dirname(__file__), 'tmp')
         if not os.path.exists(temp_file_path):
@@ -235,10 +237,11 @@ class StudentsRule(object):
             excel_writer.add_data("Sheet1", paging_result.items)
             excel_writer.set_data(temp_file_path)
             excel_writer.execute()
+            # break
             if len(paging.items) < page_request.per_page:
                 break
             page_request.page += 1
-        file_storage = await storage_manager.put_file_to_object(
+        file_storage =  storage_manager.put_file_to_object(
             bucket, f"{random_file_name}.xlsx", temp_file_path
         )
         file_storage_resp = await storage_manager.add_file(
