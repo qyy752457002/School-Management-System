@@ -9,7 +9,7 @@ from mini_framework.web.std_models.page import PageRequest
 from models.school import School
 from models.teachers_info import TeacherInfo
 from models.teachers import Teacher
-from views.models.teachers import CurrentTeacherQuery, NewTeacher
+from views.models.teachers import CurrentTeacherQuery, NewTeacher,TeacherApprovalQuery
 
 
 class TeachersInfoDao(DAOBase):
@@ -167,5 +167,8 @@ class TeachersInfoDao(DAOBase):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(TeacherInfo))
         return result.scalar()
+
+
+
 
 

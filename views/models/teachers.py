@@ -980,38 +980,7 @@ class TeacherApprovalQueryRe(BaseModel):
     process_instance_id: int = Field(0, title="流程实例id", description="流程实例id")
 
 
-class TeacherLaunch(TeacherApprovalQueryRe):
-    """
-    发起审核
-    审核状态：approval_status
-    审批时间：approval_time
-    审批人：approval_name
-    """
-    approval_status: str = Field("submitting", title="审批状态", description="审批状态")
-    approval_time: datetime = Field(..., title="审批时间", description="审批时间", example="2021-10-10 10:10:10")
 
-
-class TeacherSubmitted(TeacherApprovalQueryRe):
-    """
-    已提交
-    """
-    pass
-
-
-class TeacherApprovaled(TeacherApprovalQueryRe):
-    """
-    已审核
-    """
-    approval_status: str = Field("submitting", title="审批状态", description="审批状态")
-    approval_time: datetime = Field(..., title="审批时间", description="审批时间", example="2021-10-10 10:10:10")
-
-
-class TeacherAll(TeacherApprovalQueryRe):
-    """
-    已审核
-    """
-    approval_status: str = Field("submitting", title="审批状态", description="审批状态")
-    approval_time: datetime = Field(..., title="审批时间", description="审批时间", example="2021-10-10 10:10:10")
 
 
 # task相关模型

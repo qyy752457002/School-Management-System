@@ -13,6 +13,7 @@ from views.models.teachers import TeachersCreatModel, TeacherInfoCreateModel, Te
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
 from rules.teachers_info_rule import TeachersInfoRule
+from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe
 
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
@@ -60,7 +61,7 @@ class TeachersRule(object):
         teacher_name = teachers.teacher_name
         teacher_gender = teachers.teacher_gender
         length = await self.teachers_dao.get_teachers_info_by_prams(teacher_id_number, teacher_id_type,
-                                                                         teacher_name, teacher_gender)
+                                                                    teacher_name, teacher_gender)
         if length > 0:
             raise TeacherExistsError()
         teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
@@ -142,6 +143,7 @@ class TeachersRule(object):
         return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
 
     async def recall(self, teachers_id):
+        # todo 这个撤回的逻辑有问题，因为只有在流程结束时，老师的状态才会改，如果已经通过下一级审批，当前的操作者就无法撤回了。
         teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
         if not teachers:
             raise TeacherNotFoundError()
@@ -233,11 +235,11 @@ class TeachersRule(object):
                     raise ex
                 results.append(result)
 
-            local_results_path = f"/tmp/c.xlsx"
-            excel_writer = ExcelWriter()
-            excel_writer.add_data("Sheet1", results)
-            excel_writer.set_data(local_results_path)
-            excel_writer.execute()
+            # local_results_path = f"/tmp/c.xlsx"
+            # excel_writer = ExcelWriter()
+            # excel_writer.add_data("Sheet1", results)
+            # excel_writer.set_data(local_results_path)
+            # excel_writer.execute()
             #
             # random_file_name = shortuuid.uuid() + ".xlsx"
             # file_storage = await storage_manager.put_file_to_object(
@@ -280,7 +282,7 @@ class TeachersRule(object):
             # task_result.result_file_id = file_storage_resp.file_id
             # task_result.last_updated = datetime.now()
             # task_result.state = TaskState.succeeded
-            # task_result.result_extra = {"file_size": 123}
+            # task_result.result_extra = {"file_size": file_storage.file_size}
             #
             # await self.task_dao.add_task_result(task_result)
             # return task_result
@@ -328,6 +330,14 @@ class TeachersRule(object):
         task_result.last_updated = datetime.now()
         task_result.state = TaskState.succeeded
         task_result.result_extra = {"file_size": file_storage.file_size}
-
         await self.task_dao.add_task_result(task_result)
         return task_result
+
+    async def query_teacher_approval_with_page(self, type, query_model: TeacherApprovalQuery,
+                                               page_request: PageRequest):
+        if type == "launch":
+            paging = await self.teachers_dao.query_teacher_launch_with_page(query_model, page_request)
+        elif type == "approval":
+            paging = await self.teachers_dao.query_teacher_approval_with_page(query_model, page_request)
+        paging_result = PaginatedResponse.from_paging(paging, TeacherApprovalQueryRe)
+        return paging_result

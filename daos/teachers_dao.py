@@ -104,7 +104,27 @@ class TeachersDao(DAOBase):
             approval_status: str = Field("pending", title="审批状态", description="审批状态")
             process_instance_id: int = Field(0, title="流程实例id", description="流程实例id")
         """
-        # todo 模型还缺一个角色
+        # todo 模型还缺一个角色 没做流程的查询,模型是不是还缺一个操作人？
         query = select(Teacher, TeacherInfo.employment_form, School.school_name).join(School,
                                                                                       School.id == Teacher.teacher_employer,
                                                                                       isouter=True)
+        if query_model.teacher_name:
+            query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
+        if query_model.teacher_id_number:
+            query = query.where(Teacher.teacher_id_number == query_model.teacher_id_number)
+        if query_model.teacher_gender:
+            query = query.where(Teacher.teacher_gender == query_model.teacher_gender)
+        if query_model.teacher_employer:
+            if query_model.teacher_employer != 0:
+                query = query.where(Teacher.teacher_employer == query_model.teacher_employer)
+            else:
+                pass
+        if query_model.operator_name:
+            pass
+        if query_model.approval_name:
+            pass
+
+
+    async def query_teacher_approval_with_page(self, query_model: TeacherApprovalQuery,
+                                               page_request: PageRequest) -> Paging:
+        pass

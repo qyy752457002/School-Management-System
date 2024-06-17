@@ -155,7 +155,7 @@ class WorkFlowNodeInstanceRule(object):
             next_node_instance = WorkFlowNodeInstance(process_instance_id=current_node_instance.process_instance_id,
                                                       node_code=next_node_definition.next_node_code,
                                                       node_status="pending",
-                                                      operator_id=0, action="create", description="",
+                                                      action="create", description="",
                                                       created_time=datetime.now())
             next_node_instance = await self.work_flow_node_instance_dao.add_work_flow_node_instance(next_node_instance)
             return next_node_instance
