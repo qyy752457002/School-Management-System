@@ -3,3 +3,6 @@
 lfun-mini-framework==0.0.67
 
 id-validator==1.0.20
+setuptools~=68.2.0
+requests~=2.32.3
+kazoo~=2.10.0

@@ -148,12 +148,13 @@ class CurrentStudentsView(BaseView):
                                               status=audit_info.transferin_audit_action.value, )
         res2 = await self.student_transaction_rule.deal_student_transaction(student_edu_info)
 
-        # 流乘记录
+        # 流乘记录 todo 假设终态  则调用事务和审批流
         student_trans_flow = StudentTransactionFlow(apply_id=audit_info.transferin_audit_id,
                                                     status=audit_info.transferin_audit_action.value,
                                                     stage=audit_info.transferin_audit_action.value,
                                                     remark=audit_info.remark)
         res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+        resultra = await self.student_transaction_flow_rule.exe_student_transaction(student_trans_flow)
 
         # print(new_students_key_info)
         return res
