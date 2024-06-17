@@ -67,6 +67,16 @@ class TeachersDao(DAOBase):
         result = await session.execute(query)
         return result.scalar_one_or_none()
 
+    async def get_teachers_info_by_prams(self, teacher_id_number, teacher_id_type, teacher_name, teacher_gender):
+        session = await self.slave_db()
+        query = select(Teacher).where(Teacher.teacher_id_number == teacher_id_number,
+                                      Teacher.teacher_id_type == teacher_id_type,
+                                      Teacher.teacher_name == teacher_name,
+                                      Teacher.teacher_gender == teacher_gender)
+        result = await session.execute(query)
+        length = len(result.scalars().all())
+        return length
+
     async def query_teacher_launch_with_page(self, query_model: TeacherApprovalQuery,
                                              page_request: PageRequest) -> Paging:
         """
