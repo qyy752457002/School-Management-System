@@ -12,7 +12,7 @@ try:
             secondcate = ''
             thirdcode= ''
             thirdcate= ''
-            id= 4435
+            id= 4882
             with open('../aa.log', 'w', encoding='utf-8') as f2:
                 for i,line in enumerate(f.readlines()):
                     line=line.replace('\n', '')
@@ -22,6 +22,10 @@ try:
                         bigcode= line[0:2]
                         bigcate= line[2:]
                         print(f"一级 {bigcode} {bigcate}",i)
+                        outstr='EnumValue(  id=%s,enum_name="major", enum_value="%s", description="%s", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False), '
+                    # print(outstr%(id,thirdcode,thirdcate,secondcode))
+                        f2.write(outstr%(id,bigcode,bigcate)+'\n')
+                        id+=1
                         # print("suc")
                     elif line.find('	')>0:
                         res = line.split('	')
@@ -34,7 +38,7 @@ try:
                         print(f"{thirdcode} {thirdcate}",i)
                         outstr='EnumValue(  id=%s,enum_name="major_lv3", enum_value="%s", description="%s", sort_number=0,parent_id="%s",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False), '
                         print(outstr%(id,thirdcode,thirdcate,secondcode))
-                        f2.write(outstr%(id,thirdcode,thirdcate,secondcode)+'\n')
+                        # f2.write(outstr%(id,thirdcode,thirdcate,secondcode)+'\n')
                         id+=1
 
                         # print(f"{res} ",i,thirdcode,thirdcate)
@@ -47,7 +51,7 @@ try:
                         print(f"二级  {secondcode} {secondcate}",i)
                         outstr='EnumValue(  id=%s,enum_name="major_lv2", enum_value="%s", description="%s", sort_number=0,parent_id="%s",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False), '
                         # print(outstr%(id,thirdcode,thirdcate,secondcode))
-                        f2.write(outstr%(id,secondcode,secondcate,bigcode)+'\n')
+                        # f2.write(outstr%(id,secondcode,secondcate,bigcode)+'\n')
                         id+=1
 
                         # print("suc")
