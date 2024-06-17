@@ -16,7 +16,6 @@ class InstitutionExecutor(TaskExecutor):
     def __init__(self):
         self.institution_rule = get_injector(InstitutionRule)
         self._storage_rule: StorageRule = get_injector(StorageRule)
-
         super().__init__()
 
     async def execute(self, context: 'Context'):
@@ -25,13 +24,10 @@ class InstitutionExecutor(TaskExecutor):
         # 读取 文件内容  再解析到 各个的 插入 库
         try:
             print('开始执行task')
-
             info = task.payload
             data= [ ]
             data =await self._storage_rule.get_file_data(info.file_name, info.bucket,info.scene)
-
             for item in data:
-
                 if isinstance(item, dict):
                     institution_import: Institutions = Institutions(**item)
                 elif isinstance(item, Institutions):

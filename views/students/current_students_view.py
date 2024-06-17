@@ -120,7 +120,7 @@ class CurrentStudentsView(BaseView):
         return {'student_transaction_in': tinfo, 'student_transaction_out': relationinfo,
                 'student_info': stubaseinfo, }
 
-    # 在校生转入    届别 班级
+    # 在校生转入
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
         # print(new_students_key_info)
         student_edu_info.status = AuditAction.NEEDAUDIT.value
@@ -189,7 +189,7 @@ class CurrentStudentsView(BaseView):
         # print(new_students_key_info)
         return res
 
-    # 在校生转入   系统外转入    单独模型
+    # 在校生转入   系统外转入
     async def patch_transferin_fromoutside(self,
                                            student_baseinfo: NewStudentTransferIn,
                                            student_edu_info_in: StudentEduInfo,

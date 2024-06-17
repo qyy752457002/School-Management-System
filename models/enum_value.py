@@ -4879,8 +4879,22 @@ class EnumValue(BaseDBModel):
             EnumValue(  id=5305,enum_name="major", enum_value="77", description="教育与体育大类", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(  id=5322,enum_name="major", enum_value="78", description="公安与司法大类", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(  id=5327,enum_name="major", enum_value="79", description="公共管理与服务大类", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5328, enum_name="school_nature_lv2", enum_value="202", description="小学", sort_number=0,parent_id="101",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
 
+            EnumValue(id=5329, enum_name="school_nature_lv2", enum_value="203", description="成人小学", sort_number=0,parent_id="101",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
 
+            EnumValue(id=5330, enum_name="school_nature_lv2", enum_value="204", description="普通初中", sort_number=0,parent_id="102",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5331, enum_name="school_nature_lv2", enum_value="205", description="职业初中", sort_number=0,parent_id="102",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5332, enum_name="school_nature_lv2", enum_value="206", description="成人初中", sort_number=0,parent_id="102",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5333, enum_name="school_nature_lv2", enum_value="207", description="普通高中", sort_number=0,parent_id="102",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5334, enum_name="school_nature_lv2", enum_value="208", description="成人高中", sort_number=0,parent_id="102",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5335, enum_name="school_nature_lv2", enum_value="209", description="中等职业学校", sort_number=0,parent_id="102",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5336, enum_name="school_nature_lv2", enum_value="210", description="工读学校", sort_number=0,parent_id="102",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5337, enum_name="school_nature_lv2", enum_value="211", description="特殊教育学校", sort_number=0,parent_id="105",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5338, enum_name="school_nature_lv2", enum_value="212", description="进修机构", sort_number=0,parent_id="103",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5339, enum_name="school_nature_lv2", enum_value="213", description="研究机构", sort_number=0,parent_id="103",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5340, enum_name="school_nature_lv2", enum_value="214", description="实践机构", sort_number=0,parent_id="103",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5341, enum_name="school_nature_lv3", enum_value="303", description="小学", sort_number=0,parent_id="202",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
 
 
         ]
