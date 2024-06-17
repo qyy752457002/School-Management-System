@@ -124,6 +124,11 @@
       }
     }
   },
+  "workflow_service": {
+    "name": "workflow_service",
+    "description": "",
+    "url": "http://localhost:8080/workflowapi"
+  },
   "task_service": {
     "app_id": "task_service",
     "retry": {
