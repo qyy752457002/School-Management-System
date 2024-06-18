@@ -12,6 +12,7 @@ pip install "psycopg[binary,pool]"
 
 pip install id-validator
 
+pip install xlsxwriter
 
 
 python main.py db-init revision

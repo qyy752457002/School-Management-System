@@ -120,12 +120,12 @@ class CurrentStudentsView(BaseView):
         return {'student_transaction_in': tinfo, 'student_transaction_out': relationinfo,
                 'student_info': stubaseinfo, }
 
-    # 在校生转入    届别 班级
+    # 在校生转入
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
         # print(new_students_key_info)
         student_edu_info.status = AuditAction.NEEDAUDIT.value
         audit_info = res = await self.student_transaction_rule.add_student_transaction(student_edu_info)
-        # 流乘记录
+        # 流乘记录 todo 发起 审批流程的服务请求
         student_trans_flow = StudentTransactionFlow(apply_id=audit_info.id,
                                                     stage=AuditFlowStatus.FLOWBEGIN.value,
                                                     remark='')
@@ -134,6 +134,7 @@ class CurrentStudentsView(BaseView):
                                                     stage=AuditFlowStatus.APPLY_SUBMIT.value,
                                                     remark='')
         res2 = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_trans_flow)
 
         return res
 
@@ -189,7 +190,7 @@ class CurrentStudentsView(BaseView):
         # print(new_students_key_info)
         return res
 
-    # 在校生转入   系统外转入    单独模型
+    # 在校生转入   系统外转入
     async def patch_transferin_fromoutside(self,
                                            student_baseinfo: NewStudentTransferIn,
                                            student_edu_info_in: StudentEduInfo,

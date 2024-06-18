@@ -1,5 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
+from mini_framework.utils.http import HTTPRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -8,6 +9,7 @@ from sqlalchemy import select
 
 from daos.student_transaction_flow_dao import StudentTransactionFlowDAO
 from models.student_transaction_flow import StudentTransactionFlow
+from views.common.common_view import workflow_service_config
 from views.models.student_transaction import StudentTransactionFlow as StudentTransactionFlowModel
 
 
@@ -30,9 +32,6 @@ class StudentTransactionFlowRule(object):
         return student_transaction_flow
 
     async def add_student_transaction_flow(self, student_transaction_flow: StudentTransactionFlowModel):
-        # exists_student_transaction_flow = await self.student_transaction_flow_dao.get_studenttransaction_flow_by_studenttransaction_flow_name(student_transaction_flow.student_transaction_flow_name)
-        # if exists_student_transaction_flow:
-        #     raise Exception(f"转学申请{student_transaction_flow.student_transaction_flow_name}已存在")
 
         # 定义 视图和model的映射关系
         original_dict_map_view_orm = {
@@ -48,12 +47,7 @@ class StudentTransactionFlowRule(object):
 
         student_transaction_flow_db = view_model_to_orm_model(student_transaction_flow, StudentTransactionFlow,
                                                               exclude=["id"])
-        # student_transaction_flow_db = StudentTransaction()
-        # student_transaction_flow_db.direction = TransactionDirection.IN.value
-        # student_transaction_flow_db.school_id = student_transaction_flow.school_id
-        # student_transaction_flow_db.student_transaction_flow_no = student_transaction_flow.student_transaction_flow_no
-        # student_transaction_flow_db.student_transaction_flow_alias = student_transaction_flow.student_transaction_flow_alias
-        # student_transaction_flow_db.description = student_transaction_flow.description
+
 
         student_transaction_flow_db = await self.student_transaction_flow_dao.add_studenttransactionflow(
             student_transaction_flow_db)
@@ -120,3 +114,14 @@ class StudentTransactionFlowRule(object):
 
             lst.append(planning_school)
         return lst
+    # 向工作流中心发送申请
+    async def add_student_transaction_work_flow(self, student_transaction_flow: StudentTransactionFlowModel):
+        httpreq= HTTPRequest()
+        url= workflow_service_config.workflow_config.get("url")
+        data= student_transaction_flow
+        response = await httpreq.post_json(url, data.__dict__)
+        print(response)
+
+
+
+        return True
