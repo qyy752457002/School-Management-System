@@ -127,6 +127,11 @@
       }
     }
   },
+  "workflow_service": {
+    "name": "workflow_service",
+    "description": "",
+    "url": "http://localhost:8080/workflowapi"
+  },
   "transaction_service": {
     "retry": {
       "max_attempts": 3,
