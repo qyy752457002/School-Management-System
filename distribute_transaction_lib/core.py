@@ -60,12 +60,10 @@ class DistributedTransactionCore:
             httpreq= HTTPRequest()
             response =await httpreq.post_json(url, data)
 
-            # response = requests.post(url, json=data, timeout=10)
-            # response.raise_for_status()
-            logging.info(f"API call succeeded: {url}")
+            logging.info(f"API 成功 succeeded: {url}")
             return response
         except Exception as e:
-            logging.error(f"API call failed: {e}")
+            logging.error(f"API 失败 请检查: {e}",url,data)
             return dict()
 
     async def prepare_transaction(self, data):
@@ -113,6 +111,8 @@ class DistributedTransactionCore:
         return True
 
     async def rollback_transaction(self,prepare_responses):
+        if not hasattr(prepare_responses, 'items'):
+            return True
         for system, response in prepare_responses.items():
             # 读取各个的 基础URL 和 rollback_url
             url = f"{response.get(self.baseurl_key_name)}{response.get( self.rollback_key_name)}"
@@ -203,6 +203,7 @@ class DistributedTransactionCore:
             pass
         except Exception as e:
             self.logger.exception('事务异常',e)
+            traceback.print_exc()
 
 
 
