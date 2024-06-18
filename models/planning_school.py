@@ -35,11 +35,11 @@ class PlanningSchool(BaseDBModel):
     city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城市")
 
     planning_school_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="学校类型")
-    planning_school_edu_level: Mapped[str] = mapped_column(String(64), nullable=False, comment="教育层次")
+    planning_school_edu_level: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="教育层次")
     planning_school_nature: Mapped[str] = mapped_column(String(64), nullable=True, comment="学校性质",default='')
 
-    planning_school_category: Mapped[str] = mapped_column(String(64), nullable=False, comment="学校（机构）类别")
-    planning_school_operation_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="办学类型")
+    planning_school_category: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校（机构）类别")
+    planning_school_operation_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="办学类型")
     planning_school_org_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="学校办别")
     planning_school_level: Mapped[str] = mapped_column(String(64), nullable=False, comment="学校星级")
     status: Mapped[str] = mapped_column(String(64), nullable=False, comment="状态")
