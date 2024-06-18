@@ -12,11 +12,11 @@ class School(BaseModel):
     block: str = Field(..., title=" Author", description="地域管辖区",examples=['铁西区'])
     borough: str = Field(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
     school_type: str = Field(..., title="", description=" 学校类型",examples=['中小学'])
-    school_operation_type: str = Field(..., title="", description="办学类型",examples=['学前教育'])
+    school_edu_level: str = Field(..., title="", description="办学类型",examples=['学前教育'])
     school_nature: str = Field('', title="", description="学校性质",examples=['学前'])
 
-    school_operation_type_lv2: str = Field(..., title="", description=" 办学类型二级",examples=['小学'])
-    school_operation_type_lv3: str = Field(..., title="", description=" 办学类型三级",examples=['附设小学班'])
+    school_category: str = Field(..., title="", description=" 办学类型二级",examples=['小学'])
+    school_operation_type: str = Field(..., title="", description=" 办学类型三级",examples=['附设小学班'])
     school_org_type: str = Field(..., title="", description=" 学校办别",examples=['民办'])
     school_level: str = Field(..., title="", description=" 学校星级",examples=['5'])
     status: str = Field(..., title="", description=" 状态",examples=['正常'])
@@ -58,9 +58,9 @@ class School(BaseModel):
                 "block": "Lfun technical",
                 "borough": "cloud@lfun.cn",
                 "school_type": "Copyright © 2024 Lfun technical",
-                "school_operation_type":"Copyright © 2024 Lfun technical",
-                "school_operation_type_lv2": "Copyright © 2024 Lfun technical",
-                "school_operation_type_lv3": "Copyright © 2024 Lfun technical",
+                "school_edu_level":"Copyright © 2024 Lfun technical",
+                "school_category": "Copyright © 2024 Lfun technical",
+                "school_operation_type": "Copyright © 2024 Lfun technical",
                 "school_org_type": "Copyright © 2024 Lfun technical",
                 "school_level": "Copyright © 2024 Lfun technical",
                 "school_nature": "Copyright © 2024Lfun technical",
@@ -105,12 +105,12 @@ class SchoolBaseInfoOptional(BaseModel):
     founder_type: str = Field('', title="", description="举办者类型",examples=['地方'])
     founder_name: str = Field('', title="", description="举办者名称",examples=['上海教育局'])
     urban_rural_nature: str = Field('', title="", description="城乡性质",examples=['城镇'])
-    school_operation_type: str = Field('', title="", description="办学类型/学校性质",examples=['学前教育'])
+    school_edu_level: str = Field('', title="", description="办学类型/学校性质",examples=['学前教育'])
     school_org_form: str = Field('', title="", description="办学组织形式",examples=['教学点'])
     school_nature: str = Field('', title="", description="学校性质",examples=['学前'])
 
-    school_operation_type_lv2: str = Field('', title="", description=" 办学类型二级",examples=['小学'])
-    school_operation_type_lv3: str = Field('', title="", description=" 办学类型三级",examples=['附设小学班'])
+    school_category: str = Field('', title="", description=" 办学类型二级",examples=['小学'])
+    school_operation_type: str = Field('', title="", description=" 办学类型三级",examples=['附设小学班'])
     department_unit_number: str = Field('', title="", description="属地管理行政部门单位号",examples=['SC562369322SG'])
     sy_zones: str = Field('', title="", description="属地管理行政部门所在地地区",examples=['铁西区'])
     historical_evolution: str = Field('', title="", description="历史沿革",examples=['xxxxxxxxxxxxxxxxxxxx'])
@@ -131,12 +131,12 @@ class SchoolBaseInfo(BaseModel):
     founder_type: str = Field('', title="", description="举办者类型",examples=['地方'])
     founder_name: str = Field('', title="", description="举办者名称",examples=['上海教育局'])
     urban_rural_nature: str = Field('', title="", description="城乡性质",examples=['城镇'])
-    school_operation_type: str = Field('', title="", description="办学类型/学校性质",examples=['学前教育'])
+    school_edu_level: str = Field('', title="", description="办学类型/学校性质",examples=['学前教育'])
     school_org_form: str = Field('', title="", description="办学组织形式",examples=['教学点'])
     school_nature: str = Field('', title="", description="学校性质",examples=['学前'])
 
-    school_operation_type_lv2: str = Field('', title="", description=" 办学类型二级",examples=['小学'])
-    school_operation_type_lv3: str = Field('', title="", description=" 办学类型三级",examples=['附设小学班'])
+    school_category: str = Field('', title="", description=" 办学类型二级",examples=['小学'])
+    school_operation_type: str = Field('', title="", description=" 办学类型三级",examples=['附设小学班'])
     department_unit_number: str = Field('', title="", description="属地管理行政部门单位号",examples=['SC562369322SG'])
     sy_zones: str = Field('', title="", description="属地管理行政部门所在地地区",examples=['铁西区'])
     historical_evolution: str = Field('', title="", description="历史沿革",examples=['xxxxxxxxxxxxxxxxxxxx'])
@@ -157,9 +157,9 @@ class SchoolKeyInfo(BaseModel):
     block: str = Query('', title=" Author", description="地域管辖区",examples=['铁西区'])
     school_name: str = Query('', title="学校名称", description="园所名称",examples=['XX小学'])
     school_type: str = Query('', title="", description=" 学校类型",examples=['中小学'])
-    school_operation_type: str = Query('', title="", description="办学类型/学校性质",examples=['学前教育'])
-    school_operation_type_lv2: str = Query('', title="", description=" 办学类型二级",examples=['小学'])
-    school_operation_type_lv3: str = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
+    school_edu_level: str = Query('', title="", description="办学类型/学校性质",examples=['学前教育'])
+    school_category: str = Query('', title="", description=" 办学类型二级",examples=['小学'])
+    school_operation_type: str = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
     school_level: str = Query('', title="", description=" 学校星级",examples=['5'])
 
@@ -173,9 +173,9 @@ class SchoolKeyAddInfo(BaseModel):
     borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
     block: str = Query(..., title=" Author", description="地域管辖区",examples=['铁西区'])
     school_type: str = Query('', title="", description=" 学校类型",examples=['中小学'])
-    school_operation_type: str = Query('', title="", description="办学类型/学校性质",examples=['学前教育'])
-    school_operation_type_lv2: str = Query('', title="", description=" 办学类型二级",examples=['小学'])
-    school_operation_type_lv3: str = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
+    school_edu_level: str = Query('', title="", description="办学类型/学校性质",examples=['学前教育'])
+    school_category: str = Query('', title="", description=" 办学类型二级",examples=['小学'])
+    school_operation_type: str = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
     school_level: str = Query(..., title="", description=" 学校星级",examples=['5'])
     school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])

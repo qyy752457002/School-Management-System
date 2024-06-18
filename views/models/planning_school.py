@@ -51,11 +51,11 @@ class PlanningSchool(BaseModel):
     borough: str = Field(..., title="行政管辖区", description=" 行政管辖区", examples=['铁西区'])
     planning_school_type: str = Field(..., title="规划校类型", description=" 规划校类型", examples=['中小学'])
 
-    planning_school_operation_type: str = Field(..., title="办学类型", description="办学类型", examples=['学前教育'])
+    planning_school_edu_level: str = Field(..., title="办学类型", description="办学类型", examples=['学前教育'])
     planning_school_nature: str = Field('', title="规划校性质", description="规划校性质", examples=['学前'])
 
-    planning_school_operation_type_lv2: str = Field(..., title="办学类型二级", description=" 办学类型二级", examples=['小学'])
-    planning_school_operation_type_lv3: str = Field(..., title="办学类型三级", description=" 办学类型三级", examples=['附设小学班'])
+    planning_school_category: str = Field(..., title="办学类型二级", description=" 办学类型二级", examples=['小学'])
+    planning_school_operation_type: str = Field(..., title="办学类型三级", description=" 办学类型三级", examples=['附设小学班'])
     planning_school_org_type: str = Field(..., title="规划校办别", description=" 规划校办别", examples=['民办'])
     planning_school_level: str = Field(..., title="规划校星级", description=" 规划校星级", examples=['5'])
     status: str = Field(..., title="状态", description=" 状态", examples=['正常'])
@@ -101,7 +101,7 @@ class PlanningSchoolBaseInfo(BaseModel):
     founder_type_lv3: str = Query(..., title="", description="举办者类型三级", examples=['县级教育部门'])
     founder_name: str = Query(..., title="", description="举办者名称", examples=['上海教育局'])
     urban_rural_nature: str = Query(..., title="", description="城乡性质", examples=['城镇'])
-    planning_school_operation_type: str = Query(..., title="", description="办学类型/规划校性质", examples=['学前教育'])
+    planning_school_edu_level: str = Query(..., title="", description="办学类型/规划校性质", examples=['学前教育'])
     planning_school_nature: str = Query('', title="", description="规划校性质", examples=['学前'])
 
     planning_school_org_form: str = Query(..., title="", description="办学组织形式", examples=['教学点'])
@@ -111,8 +111,8 @@ class PlanningSchoolBaseInfo(BaseModel):
     planning_school_closure_date: str = Query('', title="", description="规划校关闭日期", examples=[''])
     planning_school_org_type: str = Query(..., title="", description=" 规划校办别", examples=['民办'])
 
-    planning_school_operation_type_lv2: str = Query(..., title="", description=" 办学类型二级", examples=['小学'])
-    planning_school_operation_type_lv3: str = Query(..., title="", description=" 办学类型三级", examples=['附设小学班'])
+    planning_school_category: str = Query(..., title="", description=" 办学类型二级", examples=['小学'])
+    planning_school_operation_type: str = Query(..., title="", description=" 办学类型三级", examples=['附设小学班'])
     department_unit_number: str = Query(..., title="", description="属地管理行政部门单位号", examples=['SC562369322SG'])
     sy_zones: str = Query(..., title="", description="属地管理行政部门所在地地区", examples=['铁西区'])
     historical_evolution: str = Query(..., title="", description="历史沿革", examples=['xxxxxxxxxxxxxxxxxxxx'])
@@ -132,7 +132,7 @@ class PlanningSchoolBaseInfoOptional(BaseModel):
     founder_type_lv3: str = Field(None, title="", description="举办者类型三级", examples=['县级教育部门'])
     founder_name: str = Field(None, title="", description="举办者名称", examples=['上海教育局'])
     urban_rural_nature: str = Field(None, title="", description="城乡性质", examples=['城镇'])
-    planning_school_operation_type: str = Field(None, title="", description="办学类型/规划校性质", examples=['学前教育'])
+    planning_school_edu_level: str = Field(None, title="", description="办学类型/规划校性质", examples=['学前教育'])
     planning_school_nature: str = Field('', title="", description="规划校性质", examples=['学前'])
 
     planning_school_org_form: str = Field(None, title="", description="办学组织形式", examples=['教学点'])
@@ -142,8 +142,8 @@ class PlanningSchoolBaseInfoOptional(BaseModel):
     planning_school_closure_date: str = Query('', title="", description="规划校关闭日期", examples=[''])
     planning_school_org_type: str = Query('', title="", description=" 规划校办别", examples=['民办'])
 
-    planning_school_operation_type_lv2: str = Field(None, title="", description=" 办学类型二级", examples=['小学'])
-    planning_school_operation_type_lv3: str = Field(None, title="", description=" 办学类型三级",
+    planning_school_category: str = Field(None, title="", description=" 办学类型二级", examples=['小学'])
+    planning_school_operation_type: str = Field(None, title="", description=" 办学类型三级",
                                                     examples=['附设小学班'])
     department_unit_number: str = Field(None, title="", description="属地管理行政部门单位号",
                                         examples=['SC562369322SG'])
@@ -168,9 +168,9 @@ class PlanningSchoolKeyAddInfo(BaseModel):
     city: str = Query('', title=" ", description="", examples=[''], min_length=1, max_length=30)
 
     planning_school_type: str = Query(..., title="", description=" 规划校类型", examples=['中小学'])
-    planning_school_operation_type: str = Query(..., title="", description="办学类型/规划校性质", examples=['学前教育'])
-    planning_school_operation_type_lv2: str = Query(..., title="", description=" 办学类型二级", examples=['小学'])
-    planning_school_operation_type_lv3: str = Query(..., title="", description=" 办学类型三级", examples=['附设小学班'])
+    planning_school_edu_level: str = Query(..., title="", description="办学类型/规划校性质", examples=['学前教育'])
+    planning_school_category: str = Query(..., title="", description=" 办学类型二级", examples=['小学'])
+    planning_school_operation_type: str = Query(..., title="", description=" 办学类型三级", examples=['附设小学班'])
     planning_school_org_type: str = Query(..., title="", description=" 规划校办别", examples=['民办'])
     planning_school_level: str = Query(..., title="", description=" 规划校星级", examples=['5'])
 
@@ -183,9 +183,9 @@ class PlanningSchoolKeyInfo(BaseModel):
     borough: str = Query(..., title=" Author Email", description=" 行政管辖区", examples=['铁西区']),
     block: str = Query(..., title=" Author", description="地域管辖区", examples=['铁西区']),
     planning_school_type: str = Query(..., title="", description=" 规划校类型", examples=['中小学']),
-    planning_school_operation_type: str = Query(..., title="", description="办学类型/规划校性质", examples=['学前教育']),
-    planning_school_operation_type_lv2: str = Query(..., title="", description=" 办学类型二级", examples=['小学']),
-    planning_school_operation_type_lv3: str = Query(..., title="", description=" 办学类型三级",
+    planning_school_edu_level: str = Query(..., title="", description="办学类型/规划校性质", examples=['学前教育']),
+    planning_school_category: str = Query(..., title="", description=" 办学类型二级", examples=['小学']),
+    planning_school_operation_type: str = Query(..., title="", description=" 办学类型三级",
                                                     examples=['附设小学班']),
     planning_school_org_type: str = Query(..., title="", description=" 规划校办别", examples=['民办']),
     planning_school_level: str = Query(..., title="", description=" 规划校星级", examples=['5'])
