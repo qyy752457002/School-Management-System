@@ -71,7 +71,7 @@ class TransactionRule(object):
 
 
 
-    def get_transactions_by_workflow(self,workflow_code, )->list[TransactionNode]:
+    async def get_transactions_by_workflow(self,workflow_code,)->list[TransactionNode]:
         # todo 读取 workflow_code配置的 事务 列表   路径  和 顺序   返回 data  依赖与 workflow_code的流程表和节点表
         return [
             TransactionNode(transaction_code='1',prepare_url='22',precommit_url='dd',commit_url='cc')

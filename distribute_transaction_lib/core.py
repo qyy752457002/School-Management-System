@@ -55,10 +55,10 @@ class DistributedTransactionCore:
         logging.info(f"Starting transaction with ID: {self.transaction_id}")
         return self.transaction_id
     #  这里改为 框架的 调api的方法
-     async def safe_api_call(self, url, data):
+    async def safe_api_call(self, url, data):
         try:
             httpreq= HTTPRequest()
-            response = await httpreq.post_json(url, data)
+            response =await httpreq.post_json(url, data)
 
             # response = requests.post(url, json=data, timeout=10)
             # response.raise_for_status()
@@ -116,7 +116,7 @@ class DistributedTransactionCore:
         for system, response in prepare_responses.items():
             # 读取各个的 基础URL 和 rollback_url
             url = f"{response.get(self.baseurl_key_name)}{response.get( self.rollback_key_name)}"
-            res = await self.safe_api_call(url, response)
+            res =await self.safe_api_call(url, response)
             # todo  重试回滚 放入队列 或者提示人工干预
             # 回滚接口要求必须返回 status 为 rollbacked
 
@@ -125,7 +125,7 @@ class DistributedTransactionCore:
         logging.info("Transaction rolled back.")
     async def get_workflow_trans(self,workflow_code):
         # 读取 流程
-        transactions = self.transaction_rule.get_transactions_by_workflow(workflow_code, )
+        transactions =await self.transaction_rule.get_transactions_by_workflow(workflow_code, )
         self.transaction_nodes = transactions
         unitcodes = [ ]
         # 各节点的单位code 提取
@@ -155,7 +155,7 @@ class DistributedTransactionCore:
                     if lock.acquire(blocking=True, timeout=10):
                         try:
                             # 开启事务流程  准备阶段 依次调用  todo 流程如何处理
-                            prepare_responses = self.prepare_transaction(data)
+                            prepare_responses =await self.prepare_transaction(data)
                             if prepare_responses:
                                 pass
 
@@ -163,13 +163,13 @@ class DistributedTransactionCore:
                                 logging.info("Prepare phase failed, transaction rolled back.")
                             # 预提交 中间态
 
-                            precommit = await self.pre_commit_transaction(prepare_responses)
+                            precommit =await self.pre_commit_transaction(prepare_responses)
                             if not precommit:
                                 logging.info("Pre-commit failed, transaction rolled back.")
 
                             # 提交 终态
 
-                            ultracommit = self.commit_transaction(prepare_responses)
+                            ultracommit =await self.commit_transaction(prepare_responses)
 
                             if not ultracommit :
 
@@ -187,7 +187,7 @@ class DistributedTransactionCore:
                             logging.error(f"Exception occurred: {e} ")
                             logging.error(f"Exception 追踪: {stack_trace} ")
                             #             异常的 触发回滚
-                            self.rollback_transaction(prepare_responses)
+                            await self.rollback_transaction(prepare_responses)
                         finally:
                             lock.release()
                     else:
@@ -199,7 +199,7 @@ class DistributedTransactionCore:
                     logging.error(f"Exception occurred: {e} ")
                     logging.error(f"Exception 追踪: {stack_trace} ")
                     #             异常的 触发回滚
-                    self.rollback_transaction(prepare_responses)
+                    await self.rollback_transaction(prepare_responses)
             pass
         except Exception as e:
             self.logger.exception('事务异常',e)
