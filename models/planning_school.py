@@ -9,7 +9,16 @@ from mini_framework.databases.entities import BaseDBModel
 class PlanningSchool(BaseDBModel):
     """
     规划校
-    planning_school_nature: str = Field('', title="", description="学校性质",examples=['学前'])
+
+    教育层次 : planning_school_edu_level   1学前教育  <-planning_school_operation_type
+
+
+    学校（机构）类别: planning_school_category 幼儿园<-  planning_school_operation_type2
+
+
+    办学类型 planning_school_operation_type  附设幼儿班 <-planning_school_operation_type3
+
+
     """
     __tablename__ = 'lfun_planning_school'
     __table_args__ = {'comment': '规划校'}
