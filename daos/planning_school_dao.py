@@ -39,7 +39,7 @@ class PlanningSchoolDAO(DAOBase):
                 planning_school_type=planning_school.planning_school_type,
                 planning_school_edu_level=planning_school.planning_school_edu_level,
                 planning_school_category=planning_school.planning_school_category,
-                planning_school_operation_type_lv3=planning_school.planning_school_operation_type_lv3,
+                planning_school_operation_type=planning_school.planning_school_operation_type,
                 planning_school_org_type=planning_school.planning_school_org_type,
                 planning_school_level=planning_school.planning_school_level,
 
@@ -56,7 +56,7 @@ class PlanningSchoolDAO(DAOBase):
                 planning_school_edu_level=planning_school.planning_school_edu_level,
                 planning_school_org_form=planning_school.planning_school_org_form,
                 planning_school_category=planning_school.planning_school_category,
-                planning_school_operation_type_lv3=planning_school.planning_school_operation_type_lv3,
+                planning_school_operation_type=planning_school.planning_school_operation_type,
                 department_unit_number=planning_school.department_unit_number,
                 sy_zones=planning_school.sy_zones,
                 historical_evolution=planning_school.historical_evolution,
