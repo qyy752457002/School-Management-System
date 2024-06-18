@@ -84,8 +84,8 @@ class SchoolRule(object):
 
                 # 办学者
                 school_db.school_type = p_exists_school.planning_school_type
-                school_db.school_operation_type = p_exists_school.planning_school_operation_type
-                school_db.school_operation_type_lv2 = p_exists_school.planning_school_operation_type_lv2
+                school_db.school_operation_type = p_exists_school.planning_school_edu_level
+                school_db.school_operation_type_lv2 = p_exists_school.planning_school_category
                 school_db.school_operation_type_lv3 = p_exists_school.planning_school_operation_type_lv3
 
                 school_db.school_nature = p_exists_school.planning_school_nature
@@ -114,8 +114,8 @@ class SchoolRule(object):
         school.borough = planning_school.borough
         school.block = planning_school.block
         school.school_type = planning_school.planning_school_type
-        school.school_operation_type = planning_school.planning_school_operation_type
-        school.school_operation_type_lv2 = planning_school.planning_school_operation_type_lv2
+        school.school_operation_type = planning_school.planning_school_edu_level
+        school.school_operation_type_lv2 = planning_school.planning_school_category
         school.school_operation_type_lv3 = planning_school.planning_school_operation_type_lv3
         school.school_org_type = planning_school.planning_school_org_type
         school.school_level = planning_school.planning_school_level
