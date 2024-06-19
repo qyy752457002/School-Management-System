@@ -61,6 +61,8 @@ class Classes(BaseDBModel):
     education_stage: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="教育阶段")
     school_system: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="学制")
     monitor: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班长")
+    monitor_id: Mapped[int] = mapped_column(  nullable=True,default=0, comment="班长的学生id")
+
     monitor_student_number: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班长学号")
     class_type: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="中小学班级类型")
     is_bilingual_class: Mapped[bool] = mapped_column(  nullable=True,default=False, comment="是否少数民族双语教学班")
