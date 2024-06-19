@@ -83,12 +83,12 @@ class SchoolRule(object):
             if p_exists_school:
 
                 # 办学者
-                school_db.school_type = p_exists_school.planning_school_type
+                # school_db.school_type = p_exists_school.planning_school_type
                 school_db.school_edu_level = p_exists_school.planning_school_edu_level
                 school_db.school_category = p_exists_school.planning_school_category
                 school_db.school_operation_type = p_exists_school.planning_school_operation_type
 
-                school_db.school_nature = p_exists_school.planning_school_nature
+                # school_db.school_nature = p_exists_school.planning_school_nature
                 school_db.school_org_type = p_exists_school.planning_school_org_type
                 school_db.school_org_form = p_exists_school.planning_school_org_form
                 school_db.founder_type = p_exists_school.founder_type
@@ -113,7 +113,7 @@ class SchoolRule(object):
         school.school_no = planning_school.planning_school_no
         school.borough = planning_school.borough
         school.block = planning_school.block
-        school.school_type = planning_school.planning_school_type
+        # school.school_type = planning_school.planning_school_type
         school.school_edu_level = planning_school.planning_school_edu_level
         school.school_category = planning_school.planning_school_category
         school.school_operation_type = planning_school.planning_school_operation_type
@@ -149,7 +149,7 @@ class SchoolRule(object):
             school_db.school_name = school.school_name
             school_db.block = school.block
             school_db.borough = school.borough
-            school_db.school_type = school.school_type
+            # school_db.school_type = school.school_type
             school_db.school_edu_level = school.school_edu_level
             school_db.school_category = school.school_category
             school_db.school_operation_type = school.school_operation_type

@@ -43,7 +43,7 @@ class SchoolDAO(DAOBase):
                 school_name=school.school_name,
                 block=school.block,
                 borough=school.borough,
-                school_type=school.school_type,
+                # school_type=school.school_type,
                 school_edu_level=school.school_edu_level,
                 school_category=school.school_category,
                 school_operation_type=school.school_operation_type,
