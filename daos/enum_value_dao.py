@@ -86,7 +86,7 @@ class EnumValueDAO(DAOBase):
         paging = await self.query_page(query, page_request)
         return paging
     # 返回多条
-    async def get_enum_value_all(self, filterdict):
+    async def get_enum_value_all(self, filterdict,return_keys=None):
         session = await self.slave_db()
         temodel = select(EnumValue)
         if filterdict:
@@ -96,9 +96,19 @@ class EnumValueDAO(DAOBase):
             # return result.scalars().all()
         result = await session.execute(temodel)
         res =result.scalars().all()
-
-        lst = []
-        for row in res:
-            # enum_value = orm_model_to_view_model(row, EnumValueModel)
-            lst.append(row)
-        return lst
+        # 如果定义了返回的key 则返回字典 以key作为字典键
+        if return_keys:
+            dic = {}
+            # for key in return_keys:
+            #     dic[key] = []
+            for row in res:
+                # for key in return_keys:
+                # dic.insert(getattr(row, return_keys), [])
+                dic[getattr(row, return_keys)] = row
+            return dic
+        else:
+            lst = []
+            for row in res:
+                # enum_value = orm_model_to_view_model(row, EnumValueModel)
+                lst.append(row)
+            return lst

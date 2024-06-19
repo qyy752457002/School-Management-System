@@ -138,8 +138,8 @@ class EnumValueRule(object):
         # enum_value = orm_model_to_view_model(enum_value_db, SchoolModel, exclude=[""])
         return enum_value_db
     # 根据键名查询 值
-    async def query_enum_values(self, enum_value_name,parent_code=None):
-        return await self.enum_value_dao.get_enum_value_all({"enum_name":enum_value_name,"parent_id":parent_code})
+    async def query_enum_values(self, enum_value_name,parent_code=None,return_keys=None):
+        return await self.enum_value_dao.get_enum_value_all({"enum_name":enum_value_name,"parent_id":parent_code},return_keys)
 
     # 校验 枚举值是否合法
     async def check_enum_values(self, enum_value_key,enum_value):
