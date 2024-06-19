@@ -1,4 +1,5 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from distribute_transaction_lib import DistributedTransactionCore
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
@@ -121,6 +122,18 @@ class StudentTransactionFlowRule(object):
         data= student_transaction_flow
         response = await httpreq.post_json(url, data.__dict__)
         print(response)
+
+
+
+        return True
+    async def exe_student_transaction(self, student_transaction_flow: StudentTransactionFlowModel):
+        transfer_data =[
+            {'url': 'A_school', 'prepare_api_name': 'prepare','precommit_api_name': 'updatemidelstatus_transferin','commit_api_name': 'ultracommit_transferin', 'data': ''},
+            {'url': 'B_school', 'api_name': 'xx', 'data': ''},
+            {'url': 'A_district', 'api_name': 'xx', 'data': ''}]
+
+        await DistributedTransactionCore().execute_transaction(111,transfer_data)
+
 
 
 
