@@ -108,18 +108,19 @@ class ClassesDAO(DAOBase):
                          Grade.grade_type,
                          Classes.created_at, Classes.updated_at,
                          Classes.created_uid, Classes.updated_uid,
+                         Teacher.teacher_id_number,
+                         Teacher.teacher_name,
+                         Teacher.teacher_id_type,
+                         Teacher.mobile,
+
                          func.coalesce(Teacher.teacher_id_number, '').label('teacher_id_card'),
-                         func.coalesce(Teacher.teacher_name, '').label('teacher_name'),
                          func.coalesce(Teacher.teacher_id_type, '').label('teacher_card_type'),
                          func.coalesce(Teacher.mobile, '').label('teacher_phone'),
-                         func.coalesce(TeacherInfo.teacher_number, '').label('teacher_number'),
+                         func.coalesce(TeacherInfo.teacher_number, '').label('teacher_job_number'),
+                         #
+                         # func.coalesce(teacher_alias.teacher_id_number, '').label('care_teacher_id_card'),
+                         # func.coalesce(teacher_alias.teacher_name, '').label('care_teacher_name'),
 
-
-
-                         func.coalesce(teacher_alias.teacher_id_number, '').label('care_teacher_id_card'),
-                         func.coalesce(teacher_alias.teacher_name, '').label('care_teacher_name'),
-
-                         # teacher_alias.teacher_id_number.label('teacher_id_card'),
                         ).select_from(Classes).join(School, School.id == Classes.school_id)
                  .join(Grade, Grade.id == Classes.grade_id)
                  .join(Teacher, Teacher.teacher_id == Classes.teacher_id)
