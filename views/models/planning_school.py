@@ -57,10 +57,10 @@ class PlanningSchool(BaseModel):
     planning_school_category: str|None = Field(..., title="办学类型二级", description=" 办学类型二级", examples=['小学'])
     planning_school_operation_type: str|None = Field(..., title="办学类型三级", description=" 办学类型三级", examples=['附设小学班'])
     planning_school_org_type: str = Field(..., title="规划校办别", description=" 规划校办别", examples=['民办'])
-    planning_school_level: str = Field(..., title="规划校星级", description=" 规划校星级", examples=['5'])
+    planning_school_level: str|None = Field('', title="规划校星级", description=" 规划校星级", examples=['5'])
     status: str = Field(..., title="状态", description=" 状态", examples=['正常'])
     planning_school_code: str = Field(..., title="规划校标识码", description=" 规划校标识码", examples=['SC562369322SG'])
-    kg_level: str = Field(..., title="星级", description="星级", examples=['5'])
+    kg_level: str|None = Field('', title="星级", description="星级", examples=['5'])
     created_uid: int = Field(..., title="创建人", description="创建人", examples=['1'])
    
     planning_school_short_name: str = Field(..., title="规划校简称", description="规划校简称", examples=['MXXX'])
