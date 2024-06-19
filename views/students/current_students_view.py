@@ -134,6 +134,7 @@ class CurrentStudentsView(BaseView):
                                                     stage=AuditFlowStatus.APPLY_SUBMIT.value,
                                                     remark='')
         res2 = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+        # 调用审批流 创建
         res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_trans_flow)
 
         return res
@@ -148,7 +149,7 @@ class CurrentStudentsView(BaseView):
                                               status=audit_info.transferin_audit_action.value, )
         res2 = await self.student_transaction_rule.deal_student_transaction(student_edu_info)
 
-        # 流乘记录 todo 假设终态  则调用事务和审批流
+        # 流乘记录 初审  转出校/转如校的老师 都会调用审批流    todo 假设终态  则调用事务和审批流
         student_trans_flow = StudentTransactionFlow(apply_id=audit_info.transferin_audit_id,
                                                     status=audit_info.transferin_audit_action.value,
                                                     stage=audit_info.transferin_audit_action.value,

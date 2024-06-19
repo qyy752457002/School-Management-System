@@ -12,6 +12,7 @@ from daos.student_transaction_flow_dao import StudentTransactionFlowDAO
 from models.student_transaction_flow import StudentTransactionFlow
 from views.common.common_view import workflow_service_config
 from views.models.student_transaction import StudentTransactionFlow as StudentTransactionFlowModel
+from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE
 
 
 @dataclass_inject
@@ -120,7 +121,10 @@ class StudentTransactionFlowRule(object):
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
         data= student_transaction_flow
-        response = await httpreq.post_json(url, data.__dict__)
+        datadict =  data.__dict__
+        datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
+
+        response = await httpreq.post_json(url,datadict)
         print(response)
 
 
