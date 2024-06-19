@@ -96,6 +96,8 @@ class ClassesDAO(DAOBase):
                         Classes.bilingual_teaching_mode, Classes.ethnic_language, Classes.is_att_class,
                         Classes.att_class_type, Classes.grade_no, Classes.grade_id, Classes.is_deleted,
                         Classes.school_id,
+                        Classes.teacher_id,
+                        Classes.care_teacher_id,
                          Grade.grade_type,
                          Classes.created_at, Classes.updated_at,
                          Classes.created_uid, Classes.updated_uid,
