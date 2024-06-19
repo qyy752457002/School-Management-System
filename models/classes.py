@@ -46,10 +46,13 @@ class Classes(BaseDBModel):
     class_index: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班级序号")
     year_established: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="建班年份")
     teacher_id_card: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任身份证")
+    teacher_id: Mapped[int] = mapped_column(  nullable=True,default=0, comment="班主任id")
     teacher_card_type: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任证件类型")
     teacher_name: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任姓名")
     teacher_phone: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任电话")
     teacher_job_number: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任工号")
+    care_teacher_id: Mapped[int] = mapped_column(  nullable=True,default=0, comment="保育员id")
+
     care_teacher_id_card: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="保育员身份证")
     care_teacher_card_type: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任证件类型")
     care_teacher_name: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="保育员姓名")
@@ -58,6 +61,8 @@ class Classes(BaseDBModel):
     education_stage: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="教育阶段")
     school_system: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="学制")
     monitor: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班长")
+    monitor_id: Mapped[int] = mapped_column(  nullable=True,default=0, comment="班长的学生id")
+
     monitor_student_number: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班长学号")
     class_type: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="中小学班级类型")
     is_bilingual_class: Mapped[bool] = mapped_column(  nullable=True,default=False, comment="是否少数民族双语教学班")
