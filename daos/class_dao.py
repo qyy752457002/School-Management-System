@@ -5,6 +5,7 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.classes import Classes
+from models.grade import Grade
 from models.school import School
 
 
@@ -95,9 +96,13 @@ class ClassesDAO(DAOBase):
                         Classes.bilingual_teaching_mode, Classes.ethnic_language, Classes.is_att_class,
                         Classes.att_class_type, Classes.grade_no, Classes.grade_id, Classes.is_deleted,
                         Classes.school_id,
+                        Classes.teacher_id,
+                        Classes.care_teacher_id,
+                         Grade.grade_type,
                          Classes.created_at, Classes.updated_at,
                          Classes.created_uid, Classes.updated_uid,
                         ).select_from(Classes).join(School, School.id == Classes.school_id)
+                 .join(Grade, Grade.id == Classes.grade_id)
                                     .where(Classes.is_deleted == False)
                  .order_by(Classes.id.desc()))
 

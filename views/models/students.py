@@ -58,21 +58,21 @@ class NewStudentsQuery(BaseModel):
     区县：county
     状态：status
     """
-    student_name: Optional[str] = Query(None, title="学生姓名", description="学生姓名")
-    enrollment_number: Optional[str] = Query(None, title="报名号", description="报名号")
+    student_name: Optional[str] = Query('', title="学生姓名", description="学生姓名")
+    enrollment_number: Optional[str] = Query('', title="报名号", description="报名号")
     student_gender: Optional[Gender] = Query(None, title="性别", description="性别")
-    id_type: Optional[str] = Query(None, title="证件类别", description="证件类别")
-    id_number: Optional[str] = Query(None, title="证件号码", description="证件号码")
-    school: Optional[str] = Query(None, title="学校", description="学校")
+    id_type: Optional[str] = Query('', title="证件类别", description="证件类别")
+    id_number: Optional[str] = Query('', title="证件号码", description="证件号码")
+    school: Optional[str] = Query('', title="学校", description="学校")
     school_id: Optional[int ] = Query(0, title="", description="学校id")
     class_id: Optional[int ] = Query(0, title="", description="班级ID")
 
     enrollment_date: Optional[date] = Query(None, title="登记时间", description="登记时间")
     enrollment_date_range: Optional[str] = Query(None, title="登记时间", description="登记时间区间 逗号分隔")
-    county: Optional[str] = Query(None, title="区县", description="区县")
-    approval_status: Optional[str] = Query(None, title="状态", description="状态")
-    emporary_borrowing_status: Optional[str] = Query(None, title="", description="临时借读")
-    edu_number: Optional[str] = Query(None, title="", description="学籍号")
+    county: Optional[str] = Query('', title="区县", description="区县")
+    approval_status: Optional[str] = Query('', title="状态", description="状态")
+    emporary_borrowing_status: Optional[str] = Query('', title="", description="临时借读")
+    edu_number: Optional[str] = Query('', title="", description="学籍号")
 
 
 class NewStudentsQueryRe(BaseModel):
@@ -96,16 +96,16 @@ class NewStudentsQueryRe(BaseModel):
     school: str = Field(None, title="学校", description="学校")
     county: str = Field(None, title="区县", description="区县")
     approval_status: StudentApprovalAtatus = Field(None, title="状态", description="状态")
-    block: str = Field(None, title="", description="")
-    borough: str = Field(None, title="", description="")
-    loc_area: str = Field(None, title="", description="")
-    loc_area_pro: str = Field(None, title="", description="")
-    school_name: str = Field(None, title="", description="")
+    block: str|None = Field(None, title="", description="")
+    borough: str |None= Field(None, title="", description="")
+    loc_area: str|None = Field(None, title="", description="")
+    loc_area_pro: str|None = Field(None, title="", description="")
+    school_name: str|None = Field(None, title="", description="")
     birthday: date = Field( '', title="生日", description="生日")
     photo: str = Field('', title="照片", description="照片")
     session: str = Field(None, title="", description="")
     edu_number: str = Field(None, title="", description="")
-    class_name: str = Field(None, title="", description="")
+    class_name: str|None = Field(None, title="", description="")
     enrollment_date: str|date = Field(None, title="", description="")
     grade_name: str = Field(None, title="", description="")
 
@@ -506,6 +506,7 @@ class StudentSession(BaseModel):
     session_name: str = Query(..., description="届别名称", min_length=1, max_length=20, examples=["2020级"]),
     session_alias: str = Query(..., description="届别别名", min_length=1, max_length=20, examples=["2020届别"]),
     session_status: str = Query(..., description="届别状态", min_length=1, max_length=20, examples=["开"])
+    year: str|None = Query(None, description="年份", min_length=1, max_length=20, examples=["2024"])
 
 
 class NewStudentTransferIn(BaseModel):

@@ -14,12 +14,15 @@ class Major(BaseDBModel):
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID",autoincrement=True)
     school_id: Mapped[int] = mapped_column( comment="学校ID",nullable=True,default=0)
+    city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城市")
+
+    district: Mapped[str] = mapped_column(String(64), nullable=True, comment="",default='')
 
     major_name: Mapped[str] = mapped_column(String(24), nullable=False, comment="专业名称")
-    major_id: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="专业ID")
-    major_type: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="专业类型")
-    major_id_lv2: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="2级专业ID")
-    major_id_lv3: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="3级专业ID")
+    major_id: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="专业code")
+    major_type: Mapped[str|None] = mapped_column(String(24), nullable=True,default='', comment="专业类型")
+    major_id_lv2: Mapped[str|None] = mapped_column(String(24), nullable=True,default='', comment="2级专业code")
+    major_id_lv3: Mapped[str|None] = mapped_column(String(24), nullable=True,default='', comment="3级专业code")
 
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)
     updated_uid: Mapped[int] = mapped_column( nullable=True , comment="操作人",default=0)

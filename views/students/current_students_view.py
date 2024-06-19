@@ -1,4 +1,6 @@
-
+from mini_framework.async_task.app.app_factory import app
+from mini_framework.async_task.task import Task
+from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 
 from models.student_transaction import AuditAction, TransactionDirection, AuditFlowStatus
@@ -9,7 +11,7 @@ from rules.students_key_info_change_rule import StudentsKeyInfoChangeRule
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
     StudentEduInfo, StudentTransactionAudit, StudentEduInfoOut
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, \
-    NewStudentTransferIn, StudentGraduation, StudentsKeyinfoChange, StudentsKeyinfoChangeAudit
+    NewStudentTransferIn, StudentGraduation, StudentsKeyinfoChange, StudentsKeyinfoChangeAudit, NewStudentsQuery
 from fastapi import Query, Depends
 from mini_framework.web.std_models.page import PageRequest
 
@@ -56,13 +58,15 @@ class CurrentStudentsView(BaseView):
         return res
 
     async def page_session(self,
+                           session_name: str = Query("", title="", description="", ),
+                           session_alias: str = Query("", title="", description="", ),
                            status: str = Query("", title="", description="状态", ),
                            page_request=Depends(PageRequest)
                            ):
         items = []
         # exit(1)
         # return page_search
-        paging_result = await self.student_session_rule.query_session_with_page(page_request, status)
+        paging_result = await self.student_session_rule.query_session_with_page(page_request, status,session_name,session_alias)
         return paging_result
 
     # 转学申请的 列表
@@ -116,12 +120,12 @@ class CurrentStudentsView(BaseView):
         return {'student_transaction_in': tinfo, 'student_transaction_out': relationinfo,
                 'student_info': stubaseinfo, }
 
-    # 在校生转入    届别 班级
+    # 在校生转入
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
         # print(new_students_key_info)
         student_edu_info.status = AuditAction.NEEDAUDIT.value
         audit_info = res = await self.student_transaction_rule.add_student_transaction(student_edu_info)
-        # 流乘记录
+        # 流乘记录 todo 发起 审批流程的服务请求
         student_trans_flow = StudentTransactionFlow(apply_id=audit_info.id,
                                                     stage=AuditFlowStatus.FLOWBEGIN.value,
                                                     remark='')
@@ -130,6 +134,8 @@ class CurrentStudentsView(BaseView):
                                                     stage=AuditFlowStatus.APPLY_SUBMIT.value,
                                                     remark='')
         res2 = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+        # 调用审批流 创建
+        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_trans_flow)
 
         return res
 
@@ -143,12 +149,13 @@ class CurrentStudentsView(BaseView):
                                               status=audit_info.transferin_audit_action.value, )
         res2 = await self.student_transaction_rule.deal_student_transaction(student_edu_info)
 
-        # 流乘记录
+        # 流乘记录 初审  转出校/转如校的老师 都会调用审批流    todo 假设终态  则调用事务和审批流
         student_trans_flow = StudentTransactionFlow(apply_id=audit_info.transferin_audit_id,
                                                     status=audit_info.transferin_audit_action.value,
                                                     stage=audit_info.transferin_audit_action.value,
                                                     remark=audit_info.remark)
         res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+        resultra = await self.student_transaction_flow_rule.exe_student_transaction(student_trans_flow)
 
         # print(new_students_key_info)
         return res
@@ -185,7 +192,7 @@ class CurrentStudentsView(BaseView):
         # print(new_students_key_info)
         return res
 
-    # 在校生转入   系统外转入    单独模型
+    # 在校生转入   系统外转入
     async def patch_transferin_fromoutside(self,
                                            student_baseinfo: NewStudentTransferIn,
                                            student_edu_info_in: StudentEduInfo,
@@ -330,6 +337,19 @@ class CurrentStudentsView(BaseView):
 
 
         return res
+
+    async def post_current_student_export(self,
+        students_query=Depends(NewStudentsQuery),
+
+                                          ) -> Task:
+        task = Task(
+            task_type="student_export",
+            payload=students_query,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
 
 
 class CurrentStudentsBaseInfoView(BaseView):

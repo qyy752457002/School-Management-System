@@ -9,7 +9,6 @@ from mini_framework.databases.entities import BaseDBModel
 class School(BaseDBModel):
     """
     学校
-     school_nature: str = Field('', title="", description="学校性质",examples=['学前'])
     """
     __tablename__ = 'lfun_school'
     __table_args__ = {'comment': '学校'}
@@ -23,11 +22,11 @@ class School(BaseDBModel):
     school_operation_license_number: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="办学许可证号")
     block: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="地域管辖区")
     borough: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="行政管辖区")
-    school_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校类型")
-    school_operation_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="办学类型/学校性质")
-    school_nature: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校性质")
-    school_operation_type_lv2: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="办学类型二级")
-    school_operation_type_lv3: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="办学类型三级")
+    # school_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校类型")
+    school_edu_level: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="教育层次")
+    # school_nature: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校性质")
+    school_category: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校（机构）类别")
+    school_operation_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="办学类型")
     school_org_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校办别")
     school_level: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校星级")
     status: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="状态")

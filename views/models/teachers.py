@@ -45,7 +45,7 @@ class Teachers(BaseModel):
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
     teacher_employer: int = Field(0, title="任职单位", description="任职单位")
     teacher_avatar: str = Field("", title="头像", description="头像")
-    mobile: str = Field("", title="手机号", description="手机号")
+    mobile: str|None = Field("", title="手机号", description="手机号")
 
 
 class TeachersCreatModel(BaseModel):

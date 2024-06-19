@@ -60,7 +60,7 @@ class StorageRule(object):
         # 下载保存本地
         random_id = str(uuid.uuid4())
         # source='c.xlsx'
-        local_filepath = 'c.xlsx'
+        local_filepath = 'b.xlsx'
 
         # local_filepath='temp/'+ random_id+filename
         # resp =  storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)

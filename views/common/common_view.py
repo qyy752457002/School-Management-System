@@ -1,6 +1,7 @@
 import datetime
 import logging
 
+from mini_framework.design_patterns.singleton import singleton
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 
@@ -98,3 +99,19 @@ async def get_extend_params(request):
 
 
     return obj
+
+
+@singleton
+class WorkflowServiceConfig:
+    def __init__(self):
+        from mini_framework.configurations import config_injection
+        manager = config_injection.get_config_manager()
+        # 读取 配置
+        workflow_service_dict = manager.get_domain_config("workflow_service")
+        if not workflow_service_dict:
+            raise ValueError('workflow_service configuration is required')
+        self.workflow_config =  workflow_service_dict
+
+
+
+workflow_service_config = WorkflowServiceConfig()

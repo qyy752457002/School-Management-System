@@ -67,10 +67,10 @@ class StudentSessionRule(object):
         return count
 
 
-    async def query_session_with_page(self, page_request: PageRequest,  status  ):
+    async def query_session_with_page(self, page_request: PageRequest,  status , session_name,session_alias ):
 
 
-        paging = await self.student_session_dao.query_session_with_page(  page_request, status )
+        paging = await self.student_session_dao.query_session_with_page(  page_request, status , session_name,session_alias)
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, StudentSessionModel)
         return paging_result

@@ -78,5 +78,6 @@ from . import work_flow_node_depend_strategy
 #教师工作流实例相关
 from . import work_flow_instance
 from . import work_flow_node_instance
+from . import unit_system
 
 metadata = BaseDBModel.metadata

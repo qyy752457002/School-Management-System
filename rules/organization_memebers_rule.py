@@ -15,6 +15,7 @@ from daos.organization_members_dao import OrganizationMembersDAO
 # from daos.organization_members_members_dao import OrganizationMembersDAO
 # from models.organization import Campus
 from rules.enum_value_rule import EnumValueRule
+from rules.organization_rule import OrganizationRule
 from views.models.organization import Organization, OrganizationMembers, OrganizationMembersSearchRes
 # from views.models.organization import Campus as Organization
 
@@ -57,6 +58,9 @@ class OrganizationMembersRule(object):
 
         organization_members_db = await self.organization_members_dao.add_organization_members(organization_members_db)
         organization = orm_model_to_view_model(organization_members_db, Organization, exclude=["created_at",'updated_at'])
+        org_rule = get_injector(OrganizationRule)
+        await org_rule.increment_organization_member_cnt(organization_members_db.org_id)
+
         return organization
 
     async def update_organization_members(self, organization,):
