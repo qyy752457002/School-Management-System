@@ -18,10 +18,10 @@ class School(BaseModel):
     school_category: str|None = Field(..., title="", description=" 办学类型二级",examples=['小学'])
     school_operation_type: str|None = Field(..., title="", description=" 办学类型三级",examples=['附设小学班'])
     school_org_type: str = Field(..., title="", description=" 学校办别",examples=['民办'])
-    school_level: str |None= Field('', title="", description=" 学校星级",examples=['5'])
+    school_level: str |None= Field(None, title="", description=" 学校星级",examples=['5'])
     status: str = Field(..., title="", description=" 状态",examples=['正常'])
     school_code: str = Field(..., title="", description=" 园所标识码",examples=['SC562369322SG'])
-    kg_level: str|None = Field('', title="", description="星级",examples=['5'])
+    kg_level: str|None = Field(None, title="", description="星级",examples=['5'])
     created_uid: int  = Field(..., title="", description="创建人",examples=['1'])
 
     school_short_name: str = Field(..., title="", description="园所简称",examples=['MXXX'])
@@ -161,7 +161,7 @@ class SchoolKeyInfo(BaseModel):
     school_category: str|None = Query('', title="", description=" 办学类型二级",examples=['小学'])
     school_operation_type: str|None = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
-    school_level: str = Query('', title="", description=" 学校星级",examples=['5'])
+    school_level: str|None = Query(None, title="", description=" 学校星级",examples=['5'])
 
 class SchoolKeyAddInfo(BaseModel):
     id:int= Query(None, title="", description="学校id", example='1')
@@ -177,7 +177,7 @@ class SchoolKeyAddInfo(BaseModel):
     school_category: str|None = Query('', title="", description=" 办学类型二级",examples=['小学'])
     school_operation_type: str|None = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
-    school_level: str|None = Query('', title="", description=" 学校星级",examples=['5'])
+    school_level: str|None = Query(None, title="", description=" 学校星级",examples=['5'])
     school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
 
 
