@@ -24,7 +24,7 @@ class Grades(BaseModel):
 
     city: str|None = Field("", title="", description="",examples=[''])
     district: str|None = Field("", title="", description="",examples=[''])
-    sort_number: int = Field(0, title="", description="排序序号",examples=[0])
+    sort_number: int|None = Field(None, title="", description="排序序号",examples=[0])
 
     description: str = Field('',  description="简介",examples=['fsdfdsfsdxxx'])
     created_at: datetime = Field('',  description="简介",examples=['2020-01-01'])
