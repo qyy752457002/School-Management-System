@@ -36,7 +36,7 @@ class PlanningSchoolDAO(DAOBase):
                 planning_school_name=planning_school.planning_school_name,
                 block=planning_school.block,
                 borough=planning_school.borough,
-                planning_school_type=planning_school.planning_school_type,
+                # planning_school_type=planning_school.planning_school_type,
                 planning_school_edu_level=planning_school.planning_school_edu_level,
                 planning_school_category=planning_school.planning_school_category,
                 planning_school_operation_type=planning_school.planning_school_operation_type,

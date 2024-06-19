@@ -43,6 +43,7 @@ class Classes(BaseDBModel):
 
     class_name: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班级名称")
     class_number: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班号")
+    class_index: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班级序号")
     year_established: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="建班年份")
     teacher_id_card: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任身份证")
     teacher_card_type: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任证件类型")

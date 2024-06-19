@@ -9,7 +9,6 @@ from mini_framework.databases.entities import BaseDBModel
 class School(BaseDBModel):
     """
     学校
-     school_nature: str = Field('', title="", description="学校性质",examples=['学前'])
     """
     __tablename__ = 'lfun_school'
     __table_args__ = {'comment': '学校'}
