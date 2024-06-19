@@ -26,14 +26,13 @@ class TeacherChangeLog(BaseDBModel):
     change_module: Mapped[str] = mapped_column(String(64), nullable=False, comment="变更模块")
     change_detail: Mapped[str] = mapped_column(String(64), nullable=False, comment="变更详情")
     log_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="审核状态")
-    apply_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="申请人姓名")
-    approval_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="审核人姓名")
-    apply_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, comment="申请时间")
-    approval_time: Mapped[datetime] = mapped_column(DateTime, nullable=True, comment="审核时间")
+    # apply_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="申请人姓名")
+    # approval_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="审核人姓名")
+    # apply_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, comment="申请时间")
+    # approval_time: Mapped[datetime] = mapped_column(DateTime, nullable=True, comment="审核时间")
+    process_instance_id: Mapped[int] = mapped_column(nullable=True, comment="流程ID")
 
 
-    changed_field: Mapped[str] = mapped_column(String(64), nullable=False, comment="变更字段")
-    before_change: Mapped[str] = mapped_column(String(64), nullable=False, comment="变更前")
-    after_change: Mapped[str] = mapped_column(String(64), nullable=False, comment="变更后")
+
 
     

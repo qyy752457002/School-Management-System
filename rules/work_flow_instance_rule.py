@@ -137,7 +137,7 @@ class WorkFlowNodeInstanceRule(object):
                     next_node_instance = await self.create_next_node_instance(node_instance, dependency.next_node)
                 if next_node_instance:  # 如果找到下一个节点，就不再继续查找
                     break
-        node_instance.action = parameters.get("action", "none")
+        node_instance.action = parameters.get("action")
         if node_instance.action != "create":
             node_instance.node_status = "completed"
         else:
@@ -147,6 +147,7 @@ class WorkFlowNodeInstanceRule(object):
         await self.work_flow_node_instance_dao.update_work_flow_node_instance(node_instance,
                                                                               "node_status", "operator_id",
                                                                               "operator_time", "action")
+        # todo 这里应该要记录一下操作日志。
         if "fail" in node_instance.node_code:
             await self.flow_rejected(node_instance.process_instance_id)
         elif "success" in node_instance.node_code:

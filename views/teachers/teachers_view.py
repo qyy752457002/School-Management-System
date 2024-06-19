@@ -30,10 +30,24 @@ class TeachersView(BaseView):
     async def put_teacher(self, teachers: Teachers):
         print(teachers)
         teacher_id = teachers.teacher_id
+        changes = []
         old_fields = await self.teacher_rule.get_teachers_by_id(teacher_id)
+        old_dic = old_fields.dict()
 
-        res = await self.teacher_rule.update_teachers(teachers)
-        return res
+        new_fields = await self.teacher_rule.update_teachers(teachers)
+        new_dic = new_fields.dict()
+
+        # todo 这个地方需要优化
+        for field, old_value in old_dic.items():
+            new_value = new_dic.get(field)
+            if old_value != new_value:
+                changes.append({
+                    "field": field,
+                    "old_value": old_value,
+                    "new_value": new_value
+                })
+
+        return new_fields
 
     async def page(self, current_teacher=Depends(CurrentTeacherQuery), page_request=Depends(PageRequest)):
         """

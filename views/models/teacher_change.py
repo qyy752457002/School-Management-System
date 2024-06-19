@@ -44,13 +44,13 @@ class TeacherChangeLogModel(BaseModel):
     """
 
     teacher_id: str = Field(..., title="教师ID", description="教师ID")
-    change_module: str = Field(..., title="变更模块", description="变更模块")
+    change_module: TeacherChangeModule = Field(..., title="变更模块", description="变更模块")
     change_detail: str = Field(..., title="变更详情", description="变更详情")
     log_status: Optional[str] = Field(..., title="日志状态", description="日志状态")
-    apply_name: Optional[str] = Field(..., title="申请人", description="申请人")
-    approval_name: str = Field(..., title="审核人", description="审核人")
-    apply_time: Optional[datetime] = Field(None, title="申请时间", description="申请时间")
-    approval_time: Optional[datetime] = Field(None, title="审核时间", description="审核时间")
+    # apply_name: Optional[str] = Field(..., title="申请人", description="申请人")
+    # approval_name: str = Field(..., title="审核人", description="审核人")
+    # apply_time: Optional[datetime] = Field(None, title="申请时间", description="申请时间")
+    # approval_time: Optional[datetime] = Field(None, title="审核时间", description="审核时间")
 
 
 class TeacherChangeLogReModel(TeacherChangeLogModel):
@@ -73,7 +73,7 @@ class TeacherChangeLogReModel(TeacherChangeLogModel):
 class TeacherChangeDetail(BaseModel):
     teacher_change_id: int = Field(..., title="teacher_change_id", description="teacher_change_id")
     teacher_id: str = Field(..., title="教师ID", description="教师ID")
-    change_module: str = Field(..., title="变更模块", description="变更模块")
+    change_module: TeacherChangeModule = Field(..., title="变更模块", description="变更模块")
     changed_field: str = Field(..., title="变更字段", description="变更字段")
     before_change: str = Field(..., title="变更前", description="变更前")
     after_change: str = Field(..., title="变更后", description="变更后")
