@@ -1,12 +1,15 @@
-from sqlalchemy import select, func, update, and_, or_
+from sqlalchemy import select, func, update, and_, or_, alias
 
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
+from sqlalchemy.orm import aliased
 
 from models.classes import Classes
 from models.grade import Grade
 from models.school import School
+from models.teachers import Teacher
+from models.teachers_info import TeacherInfo
 
 
 class ClassesDAO(DAOBase):
@@ -89,9 +92,13 @@ class ClassesDAO(DAOBase):
 
     async def query_classes_with_page(self, borough, block, school_id, grade_id, class_name,
                                       page_request: PageRequest) -> Paging:
+        teacher_alias = aliased(Teacher, name='teacher_alias')
         query = (select( School.block, School.borough,School.school_name,Classes.id, Classes.class_name,
-                        Classes.class_number, Classes.year_established, Classes.teacher_id_card,
-                        Classes.teacher_name, Classes.education_stage, Classes.school_system, Classes.monitor,
+                        Classes.class_number, Classes.year_established,
+                         # Classes.teacher_id_card,
+                        # Classes.teacher_name,
+                         Classes.education_stage, Classes.school_system,
+                         # Classes.monitor,
                         Classes.class_type, Classes.is_bilingual_class, Classes.major_for_vocational,
                         Classes.bilingual_teaching_mode, Classes.ethnic_language, Classes.is_att_class,
                         Classes.att_class_type, Classes.grade_no, Classes.grade_id, Classes.is_deleted,
@@ -101,8 +108,23 @@ class ClassesDAO(DAOBase):
                          Grade.grade_type,
                          Classes.created_at, Classes.updated_at,
                          Classes.created_uid, Classes.updated_uid,
+                         func.coalesce(Teacher.teacher_id_number, '').label('teacher_id_card'),
+                         func.coalesce(Teacher.teacher_name, '').label('teacher_name'),
+                         func.coalesce(Teacher.teacher_id_type, '').label('teacher_card_type'),
+                         func.coalesce(Teacher.mobile, '').label('teacher_phone'),
+                         func.coalesce(TeacherInfo.teacher_number, '').label('teacher_number'),
+
+
+
+                         func.coalesce(teacher_alias.teacher_id_number, '').label('care_teacher_id_card'),
+                         func.coalesce(teacher_alias.teacher_name, '').label('care_teacher_name'),
+
+                         # teacher_alias.teacher_id_number.label('teacher_id_card'),
                         ).select_from(Classes).join(School, School.id == Classes.school_id)
                  .join(Grade, Grade.id == Classes.grade_id)
+                 .join(Teacher, Teacher.teacher_id == Classes.teacher_id)
+                 .join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id)
+                 .join(teacher_alias, teacher_alias.teacher_id == Classes.care_teacher_id)
                                     .where(Classes.is_deleted == False)
                  .order_by(Classes.id.desc()))
 
