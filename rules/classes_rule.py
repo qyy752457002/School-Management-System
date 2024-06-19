@@ -6,6 +6,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.class_dao import ClassesDAO
 from models.classes import Classes
 from rules.enum_value_rule import EnumValueRule
+from rules.teachers_rule import TeachersRule
 from views.models.classes import Classes as ClassesModel
 from views.models.classes import ClassesSearchRes
 from views.models.system import DISTRICT_ENUM_KEY, GRADE_ENUM_KEY
@@ -26,6 +27,19 @@ class ClassesRule(object):
             classes.class_name, classes.school_id,classes)
         if exists_classes:
             raise Exception(f"班级信息{classes.class_name}已存在")
+        # 校验 teacher_id,care_teacher_id
+        teacher_rule = get_injector(TeachersRule)
+        if classes.teacher_id:
+            tea= await teacher_rule.get_teachers_by_id(classes.teacher_id)
+            if not tea:
+                raise Exception(f"班主任信息{classes.teacher_id}不存在")
+            pass
+        if classes.care_teacher_id:
+            tea= await teacher_rule.get_teachers_by_id(classes.care_teacher_id)
+            if not tea:
+                raise Exception(f"保育员信息{classes.care_teacher_id}不存在")
+            pass
+
         classes_db = view_model_to_orm_model(classes, Classes, exclude=["id"],other_mapper={
             # "teacher_phone": "teacher_phone",
             # "teacher_job_number": "",

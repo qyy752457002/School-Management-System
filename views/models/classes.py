@@ -18,12 +18,15 @@ class Classes(BaseModel):
     class_number: str = Field('', description="班号", examples=['一年级'])
     class_index: str = Field('', description="班级序号", examples=['一班'])
     year_established: str = Field(None, description="建班年份", examples=['2023'])
+    teacher_id: str = Field(None, description="班主任id", examples=['1'])
     teacher_id_card: str = Field(None, description="班主任身份证", examples=['fsdfdsfsdxxx'])
     teacher_card_type: str = Field(None, description="班主任证件类型", examples=['idcard'])
 
     teacher_name: str = Field(None, description="班主任姓名", examples=['fsdfdsfsdxxx'])
     teacher_phone: str = Field(None, description="班主任电话", examples=['fsdfdsfsdxxx'])
     teacher_job_number: str = Field(None, description="班主任工号", examples=['fsdfdsfsdxxx'])
+    care_teacher_id: str = Field(None, description="保育员id", examples=['1'])
+
     care_teacher_id_card: str = Field(None, description="保育员身份证", examples=['fsdfdsfsdxxx'])
     care_teacher_card_type: str = Field(None, description="保育员证件类型", examples=['fsdfdsfsdxxx'])
     care_teacher_name: str = Field(None, description="保育员姓名", examples=['fsdfdsfsdxxx'])
@@ -86,4 +89,5 @@ class ClassesSearchRes(BaseModel):
     care_teacher_name: str = Field(None, description="保育员姓名", examples=['fsdfdsfsdxxx'])
     care_teacher_phone: str = Field(None, description="班主任电话", examples=['fsdfdsfsdxxx'])
     care_teacher_job_number: str = Field(None, description="班主任工号", examples=['fsdfdsfsdxxx'])
-
+    teacher_id: str = Field(None, description="班主任id", examples=['1'])
+    care_teacher_id: str = Field(None, description="保育员id", examples=['1'])
