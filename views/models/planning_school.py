@@ -49,10 +49,10 @@ class PlanningSchool(BaseModel):
                                                           description="办学许可证号", examples=['EDU2024012569'])
     block: str = Field(..., title="地域管辖区", description="地域管辖区", examples=['铁西区'])
     borough: str = Field(..., title="行政管辖区", description=" 行政管辖区", examples=['铁西区'])
-    planning_school_type: str = Field(..., title="规划校类型", description=" 规划校类型", examples=['中小学'])
+    # planning_school_type: str = Field(..., title="规划校类型", description=" 规划校类型", examples=['中小学'])
 
     planning_school_edu_level: str|None = Field(..., title="办学类型", description="办学类型", examples=['学前教育'])
-    planning_school_nature: str|None = Field('', title="规划校性质", description="规划校性质", examples=['学前'])
+    # planning_school_nature: str|None = Field('', title="规划校性质", description="规划校性质", examples=['学前'])
 
     planning_school_category: str|None = Field(..., title="办学类型二级", description=" 办学类型二级", examples=['小学'])
     planning_school_operation_type: str|None = Field(..., title="办学类型三级", description=" 办学类型三级", examples=['附设小学班'])
@@ -102,7 +102,7 @@ class PlanningSchoolBaseInfo(BaseModel):
     founder_name: str = Query(..., title="", description="举办者名称", examples=['上海教育局'])
     urban_rural_nature: str = Query(..., title="", description="城乡性质", examples=['城镇'])
     planning_school_edu_level: str|None = Query(..., title="", description="办学类型/规划校性质", examples=['学前教育'])
-    planning_school_nature: str = Query('', title="", description="规划校性质", examples=['学前'])
+    # planning_school_nature: str = Query('', title="", description="规划校性质", examples=['学前'])
 
     planning_school_org_form: str = Query(..., title="", description="办学组织形式", examples=['教学点'])
     social_credit_code: str = Query(..., title="", description="统一社会信用代码", examples=['XH423423876867'])
@@ -133,7 +133,7 @@ class PlanningSchoolBaseInfoOptional(BaseModel):
     founder_name: str = Field(None, title="", description="举办者名称", examples=['上海教育局'])
     urban_rural_nature: str = Field(None, title="", description="城乡性质", examples=['城镇'])
     planning_school_edu_level: str|None = Field(None, title="", description="办学类型/规划校性质", examples=['学前教育'])
-    planning_school_nature: str = Field('', title="", description="规划校性质", examples=['学前'])
+    # planning_school_nature: str = Field('', title="", description="规划校性质", examples=['学前'])
 
     planning_school_org_form: str = Field(None, title="", description="办学组织形式", examples=['教学点'])
     social_credit_code: str = Query('', title="", description="统一社会信用代码", examples=['XH423423876867'])
@@ -167,7 +167,7 @@ class PlanningSchoolKeyAddInfo(BaseModel):
     province: str = Query('', title=" ", description="", examples=[''], min_length=1, max_length=30)
     city: str = Query('', title=" ", description="", examples=[''], min_length=1, max_length=30)
 
-    planning_school_type: str = Query(..., title="", description=" 规划校类型", examples=['中小学'])
+    # planning_school_type: str = Query(..., title="", description=" 规划校类型", examples=['中小学'])
     planning_school_edu_level: str|None = Query(..., title="", description="办学类型/规划校性质", examples=['学前教育'])
     planning_school_category: str|None = Query(..., title="", description=" 办学类型二级", examples=['小学'])
     planning_school_operation_type: str|None = Query(..., title="", description=" 办学类型三级", examples=['附设小学班'])
@@ -182,7 +182,7 @@ class PlanningSchoolKeyInfo(BaseModel):
                                     max_length=20, example='SC2032633'),
     borough: str = Query(..., title=" Author Email", description=" 行政管辖区", examples=['铁西区']),
     block: str = Query(..., title=" Author", description="地域管辖区", examples=['铁西区']),
-    planning_school_type: str = Query(..., title="", description=" 规划校类型", examples=['中小学']),
+    # planning_school_type: str = Query(..., title="", description=" 规划校类型", examples=['中小学']),
     planning_school_edu_level: str|None = Query(..., title="", description="办学类型/规划校性质", examples=['学前教育']),
     planning_school_category: str|None = Query(..., title="", description=" 办学类型二级", examples=['小学']),
     planning_school_operation_type: str|None = Query(..., title="", description=" 办学类型三级",
