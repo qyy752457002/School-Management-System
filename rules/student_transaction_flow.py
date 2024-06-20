@@ -13,7 +13,7 @@ from sqlalchemy import select
 from daos.student_transaction_flow_dao import StudentTransactionFlowDAO
 from models.student_transaction_flow import StudentTransactionFlow
 from views.common.common_view import workflow_service_config
-from views.models.student_transaction import StudentTransactionFlow as StudentTransactionFlowModel
+from views.models.student_transaction import StudentTransactionFlow as StudentTransactionFlowModel, StudentEduInfo
 from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE
 
 
@@ -148,13 +148,18 @@ class StudentTransactionFlowRule(object):
 
 
         return response
-    async def exe_student_transaction(self, student_transaction_flow: StudentTransactionFlowModel):
+    # 处理流程审批 的 操作
+    async def exe_student_transaction(self,student_transaction:StudentEduInfo, student_transaction_flow: StudentTransactionFlowModel):
         transfer_data =[
             {'url': 'A_school', 'prepare_api_name': 'prepare','precommit_api_name': 'updatemidelstatus_transferin','commit_api_name': 'ultracommit_transferin', 'data': ''},
             {'url': 'B_school', 'api_name': 'xx', 'data': ''},
             {'url': 'A_district', 'api_name': 'xx', 'data': ''}]
 
         # await DistributedTransactionCore().execute_transaction(111,transfer_data)
+        # 读取 节点ID
+
+
+
         # 发起审批流的 处理
         student_transaction_flow.id=0
         httpreq= HTTPRequest()
@@ -162,10 +167,11 @@ class StudentTransactionFlowRule(object):
         data= student_transaction_flow
         datadict =  data.__dict__
         datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
-        datadict['teacher_id'] =  0
-        datadict['applicant_name'] =  'tester'
+        # 节点实例id
+        datadict['node_instance_id'] =  student_transaction.process_instance_id
+
         # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
-        apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate'
+        apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
         url=url+apiname
         headerdict = {
             "accept": "application/json",
@@ -176,9 +182,11 @@ class StudentTransactionFlowRule(object):
         url+=  ('?' +urlencode(datadict))
 
         print('参数', url, datadict,headerdict)
-
+        # 字典参数
+        datadict['parameters'] =  'tester'
 
         response = await httpreq.post_json(url,datadict,headerdict)
+        print(response,'接口响应')
 
 
 

@@ -58,6 +58,7 @@ class StudentEduInfo(BaseModel):
     id: int = Query(0, description="id", examples=["1"], example="1"),
     relation_id: int = Query(0, description="关联id", examples=["1"], example="1"),
     remark: str|None = Query('', title="", description="", examples=["备注"])
+    process_instance_id: int|None = Field(0, title="", description="", examples=['1'])
 
 
 class StudentEduInfoOut(BaseModel):
@@ -93,6 +94,7 @@ class StudentTransaction(BaseModel):
     id: int = Query(None, title="", description="id", example='1'),
     in_school_id: int = Field(0, title="学校ID", description="学校ID", examples=['1'])
     grade_id: int = Field(0, title="年级ID", description="年级ID", examples=['1'])
+    process_instance_id: int = Field(0, title="", description="", examples=['1'])
     status: str = Field('', title="", description="状态", examples=[''])
 
 
