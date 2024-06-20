@@ -142,9 +142,9 @@ class CurrentStudentsView(BaseView):
 
             print(res3[0])
             transferin_id = res3[0]['process_instance_id']
-            student_edu_info = StudentTransaction(id=audit_info.id,
+            student_transaciton = StudentTransaction(id=audit_info.id,
                                                   process_instance_id=transferin_id,)
-            res4 = await self.student_transaction_rule.update_student_transaction(student_edu_info)
+            res4 = await self.student_transaction_rule.update_student_transaction(student_transaciton)
             json_str = json.dumps(res3, ensure_ascii=False)
 
             # res.flow = res3
@@ -163,9 +163,9 @@ class CurrentStudentsView(BaseView):
 
                                      ):
         # 审批通过 操作 或者拒绝
-        student_edu_info = StudentTransaction(id=audit_info.transferin_audit_id,
+        student_transaciton = StudentTransaction(id=audit_info.transferin_audit_id,
                                               status=audit_info.transferin_audit_action.value, )
-        res2 = await self.student_transaction_rule.deal_student_transaction(student_edu_info)
+        res2 = await self.student_transaction_rule.deal_student_transaction(student_transaciton)
 
         # 流乘记录 初审  转出校/转如校的老师 都会调用审批流    todo 假设终态  则调用事务和审批流
         student_trans_flow = StudentTransactionFlow(apply_id=audit_info.transferin_audit_id,
@@ -188,9 +188,9 @@ class CurrentStudentsView(BaseView):
                                      ):
         # todo 校验是否本人或者老师
 
-        student_edu_info = StudentTransaction(id=transferin_id,
+        student_transaciton = StudentTransaction(id=transferin_id,
                                               status=StudentTransactionStatus.CANCEL.value, )
-        res2 = await self.student_transaction_rule.update_student_transaction(student_edu_info)
+        res2 = await self.student_transaction_rule.update_student_transaction(student_transaciton)
 
         # 流乘记录
         student_trans_flow = StudentTransactionFlow(apply_id=transferin_id,

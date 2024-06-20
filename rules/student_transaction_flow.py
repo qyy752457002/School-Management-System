@@ -12,6 +12,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 
 from daos.student_transaction_flow_dao import StudentTransactionFlowDAO
+from models.student_transaction import AuditAction
 from models.student_transaction_flow import StudentTransactionFlow
 from views.common.common_view import workflow_service_config
 from views.models.student_transaction import StudentTransactionFlow as StudentTransactionFlowModel, StudentEduInfo
@@ -189,10 +190,12 @@ class StudentTransactionFlowRule(object):
         print('参数', url, datadict,headerdict)
         # 字典参数
         datadict ={"user_id":"11","action":"approved"}
+        if student_transaction.status== AuditAction.PASS.value:
+            datadict['action'] = 'approved'
+        if student_transaction.status== AuditAction.REFUSE.value:
+            datadict['action'] = 'approved'
 
         response = await httpreq.post_json(url,datadict,headerdict)
         print(response,'接口响应')
-
-
 
         return True
