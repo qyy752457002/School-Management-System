@@ -9,6 +9,9 @@ from views.models.teacher_transaction import TeacherTransactionModel, TeacherTra
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from business_exceptions.teacher_transction import TransactionApprovalError
 from rules.work_flow_instance_rule import WorkFlowNodeInstanceRule
+from mini_framework.utils.http import HTTPRequest
+from urllib.parse import urlencode
+from views.common.common_view import workflow_service_config
 
 
 @dataclass_inject
@@ -51,95 +54,113 @@ class TeacherTransactionRule(object):
                 is_transaction = False
         return is_transaction
 
+    async def delete_teacher_transaction(self, teacher_transaction_id):
+        exists_teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
+            teacher_transaction_id)
+        if not exists_teacher_transaction:
+            raise Exception(f"编号为的{teacher_transaction_id}teacher_transaction不存在")
+        teacher_transaction_db = await self.teacher_transaction_dao.delete_teacher_transaction(
+            exists_teacher_transaction)
+        teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionModel, exclude=[""])
+        return teacher_transaction
 
-async def delete_teacher_transaction(self, teacher_transaction_id):
-    exists_teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
-        teacher_transaction_id)
-    if not exists_teacher_transaction:
-        raise Exception(f"编号为的{teacher_transaction_id}teacher_transaction不存在")
-    teacher_transaction_db = await self.teacher_transaction_dao.delete_teacher_transaction(
-        exists_teacher_transaction)
-    teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionModel, exclude=[""])
-    return teacher_transaction
+    async def update_teacher_transaction(self, teacher_transaction: TeacherTransactionUpdateModel):
+        exists_teacher_transaction_info = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
+            teacher_transaction.teacher_transaction_id)
+        if not exists_teacher_transaction_info:
+            raise Exception(f"编号为{teacher_transaction.teacher_transaction_id}的teacher_transaction不存在")
+        need_update_list = []
+        for key, value in teacher_transaction.dict().items():
+            if value:
+                need_update_list.append(key)
+        teacher_transaction = await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction,
+                                                                                            *need_update_list)
+        return teacher_transaction
 
+    async def get_all_teacher_transaction(self, teacher_id):
+        teacher_transaction_db = await self.teacher_transaction_dao.get_all_transfer(teacher_id)
+        teacher_transaction = []
+        for item in teacher_transaction_db:
+            if item.node_status == "pending":
+                teacher_transaction.append(
+                    orm_model_to_view_model(item, TeacherTransactionGetModel,
+                                            exclude=["approval_time", "approval_name"]))
+            else:
+                teacher_transaction.append(orm_model_to_view_model(item, TeacherTransactionGetModel))
+        return teacher_transaction
 
-async def update_teacher_transaction(self, teacher_transaction: TeacherTransactionUpdateModel):
-    exists_teacher_transaction_info = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
-        teacher_transaction.teacher_transaction_id)
-    if not exists_teacher_transaction_info:
-        raise Exception(f"编号为{teacher_transaction.teacher_transaction_id}的teacher_transaction不存在")
-    need_update_list = []
-    for key, value in teacher_transaction.dict().items():
-        if value:
-            need_update_list.append(key)
-    teacher_transaction = await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction,
-                                                                                        *need_update_list)
-    return teacher_transaction
+    async def query_transaction_with_page(self, query_model: TeacherTransactionQueryModel, page_request: PageRequest):
+        teacher_transaction_db = await self.teacher_transaction_dao.query_transaction_with_page(query_model,
+                                                                                                page_request)
+        paging_result = PaginatedResponse.from_paging(teacher_transaction_db, TeacherTransactionApproval)
+        return paging_result
 
+    async def add_teacher_transaction_work_flow(self, process_code: str, teacher_id: int, applicant_name: str):
+        httpreq = HTTPRequest()
+        url = workflow_service_config.workflow_config.get("url")
+        params = {"process_code": process_code, "teacher_id": teacher_id, "applicant_name": applicant_name}
+        api_name = '/api/school/v1/teacher-workflow/work-flow-instance-initiate'
+        url += api_name
+        headerdict = {
+            "accept": "application/json",
+            # "Authorization": "{{bear}}",
+            "Content-Type": "application/json"
+        }
+        url += ('?' + urlencode(params))
+        result = await httpreq.post_json(url, params, headerdict)
+        work_flow_instance = result[0]
+        next_node_instance = result[1]
+        return work_flow_instance, next_node_instance
 
-async def get_all_teacher_transaction(self, teacher_id):
-    teacher_transaction_db = await self.teacher_transaction_dao.get_all_transfer(teacher_id)
-    teacher_transaction = []
-    for item in teacher_transaction_db:
-        if item.node_status == "pending":
-            teacher_transaction.append(
-                orm_model_to_view_model(item, TeacherTransactionGetModel,
-                                        exclude=["approval_time", "approval_name"]))
-        else:
-            teacher_transaction.append(orm_model_to_view_model(item, TeacherTransactionGetModel))
-    return teacher_transaction
+    async def process_teacher_transaction_work_flow(self, node_instance_id: int, parameters: dict):
+        httpreq = HTTPRequest()
+        url = workflow_service_config.workflow_config.get("url")
+        params = {"node_instance_id": node_instance_id}
+        data = parameters
+        # data = {"parameters": parameters}
+        api_name = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
+        url += api_name
+        headerdict = {
+            "accept": "application/json",
+            # "Authorization": "{{bear}}",
+            "Content-Type": "application/json"
+        }
+        url += ('?' + urlencode(params))
+        next_node_instance = await httpreq.post_json(url, data, headerdict)
+        print(next_node_instance)
+        return next_node_instance
 
+    async def submitted(self, teacher_transaction_id):
+        teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
+            teacher_transaction_id)
+        if not teacher_transaction:
+            raise Exception(f"编号为{teacher_transaction_id}的teacher_transaction不存在")
+        teacher_transaction.approval_status = "submitted"
+        return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
 
-async def query_transaction_with_page(self, query_model: TeacherTransactionQueryModel, page_request: PageRequest):
-    teacher_transaction_db = await self.teacher_transaction_dao.query_transaction_with_page(query_model,
-                                                                                            page_request)
-    paging_result = PaginatedResponse.from_paging(teacher_transaction_db, TeacherTransactionApproval)
-    return paging_result
+    async def approved(self, teacher_transaction_id):
+        teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
+            teacher_transaction_id)
+        if not teacher_transaction:
+            raise Exception(f"编号为{teacher_transaction_id}的teacher_transaction不存在")
+        teacher_transaction.approval_status = "approved"
+        return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
 
+    async def rejected(self, teacher_transaction_id):
+        teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
+            teacher_transaction_id)
+        if not teacher_transaction:
+            raise Exception(f"编号为{teacher_transaction_id}的teacher_transaction不存在")
+        teacher_transaction.approval_status = "rejected"
+        return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
 
-# async def submitting(self, teacher_transaction_id):
-#     teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
-#         teacher_transaction_id)
-#     if not teacher_transaction:
-#         raise Exception(f"编号为{teacher_transaction_id}的teacher_transaction不存在")
-#     teacher_transaction.approval_status = "submitting"
-#     return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
+    async def revoked(self, teacher_transaction_id):
+        teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
+            teacher_transaction_id)
+        if not teacher_transaction:
+            raise Exception(f"编号为{teacher_transaction_id}的teacher_transaction不存在")
+        teacher_transaction.approval_status = "revoked"
+        return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
 
-async def submitted(self, teacher_transaction_id):
-    teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
-        teacher_transaction_id)
-    if not teacher_transaction:
-        raise Exception(f"编号为{teacher_transaction_id}的teacher_transaction不存在")
-    teacher_transaction.approval_status = "submitted"
-    return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
-
-
-async def approved(self, teacher_transaction_id):
-    teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
-        teacher_transaction_id)
-    if not teacher_transaction:
-        raise Exception(f"编号为{teacher_transaction_id}的teacher_transaction不存在")
-    teacher_transaction.approval_status = "approved"
-    return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
-
-
-async def rejected(self, teacher_transaction_id):
-    teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
-        teacher_transaction_id)
-    if not teacher_transaction:
-        raise Exception(f"编号为{teacher_transaction_id}的teacher_transaction不存在")
-    teacher_transaction.approval_status = "rejected"
-    return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
-
-
-async def revoked(self, teacher_transaction_id):
-    teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
-        teacher_transaction_id)
-    if not teacher_transaction:
-        raise Exception(f"编号为{teacher_transaction_id}的teacher_transaction不存在")
-    teacher_transaction.approval_status = "revoked"
-    return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
-
-
-async def get_process_id(self, teacher_transaction: TeacherTransactionModel, process_code: str):
-    pass
+    async def get_process_id(self, teacher_transaction: TeacherTransactionModel, process_code: str):
+        pass

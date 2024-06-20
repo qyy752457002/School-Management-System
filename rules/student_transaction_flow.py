@@ -52,7 +52,6 @@ class StudentTransactionFlowRule(object):
         student_transaction_flow_db = view_model_to_orm_model(student_transaction_flow, StudentTransactionFlow,
                                                               exclude=["id"])
 
-
         student_transaction_flow_db = await self.student_transaction_flow_dao.add_studenttransactionflow(
             student_transaction_flow_db)
 
@@ -109,7 +108,7 @@ class StudentTransactionFlowRule(object):
 
         session = await db_connection_manager.get_async_session("default", True)
         result = await session.execute(
-            select(StudentTransactionFlow).where(StudentTransactionFlow.apply_id == apply_id  ))
+            select(StudentTransactionFlow).where(StudentTransactionFlow.apply_id == apply_id))
         res = result.scalars().all()
 
         lst = []
@@ -118,76 +117,73 @@ class StudentTransactionFlowRule(object):
 
             lst.append(planning_school)
         return lst
+
     # 向工作流中心发送申请
     async def add_student_transaction_work_flow(self, student_transaction_flow: StudentTransactionFlowModel):
-        student_transaction_flow.id=0
-        httpreq= HTTPRequest()
-        url= workflow_service_config.workflow_config.get("url")
-        data= student_transaction_flow
-        datadict =  data.__dict__
+        student_transaction_flow.id = 0
+        httpreq = HTTPRequest()
+        url = workflow_service_config.workflow_config.get("url")
+        data = student_transaction_flow
+        datadict = data.__dict__
         datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
-        datadict['teacher_id'] =  0
-        datadict['applicant_name'] =  'tester'
+        datadict['teacher_id'] = 0
+        datadict['applicant_name'] = 'tester'
         # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate'
-        url=url+apiname
+        url = url + apiname
         headerdict = {
             "accept": "application/json",
             # "Authorization": "{{bear}}",
             "Content-Type": "application/json"
         }
         # 如果是query 需要拼接参数
-        url+=  ('?' +urlencode(datadict))
+        url += ('?' + urlencode(datadict))
 
-        print('参数', url, datadict,headerdict)
+        print('参数', url, datadict, headerdict)
 
-
-        response = await httpreq.post_json(url,datadict,headerdict)
+        response = await httpreq.post_json(url, datadict, headerdict)
         print(response)
 
-
-
         return response
+
     # 处理流程审批 的 操作
-    async def exe_student_transaction(self,student_transaction:StudentEduInfo, student_transaction_flow: StudentTransactionFlowModel):
-        transfer_data =[
-            {'url': 'A_school', 'prepare_api_name': 'prepare','precommit_api_name': 'updatemidelstatus_transferin','commit_api_name': 'ultracommit_transferin', 'data': ''},
+    async def exe_student_transaction(self, student_transaction: StudentEduInfo,
+                                      student_transaction_flow: StudentTransactionFlowModel):
+        transfer_data = [
+            {'url': 'A_school', 'prepare_api_name': 'prepare', 'precommit_api_name': 'updatemidelstatus_transferin',
+             'commit_api_name': 'ultracommit_transferin', 'data': ''},
             {'url': 'B_school', 'api_name': 'xx', 'data': ''},
             {'url': 'A_district', 'api_name': 'xx', 'data': ''}]
 
         # await DistributedTransactionCore().execute_transaction(111,transfer_data)
         # 读取 节点ID
 
-
-
         # 发起审批流的 处理
-        student_transaction_flow.id=0
-        httpreq= HTTPRequest()
-        url= workflow_service_config.workflow_config.get("url")
-        data= student_transaction_flow
-        datadict =  data.__dict__
+        student_transaction_flow.id = 0
+        httpreq = HTTPRequest()
+        url = workflow_service_config.workflow_config.get("url")
+        data = student_transaction_flow
+        datadict = data.__dict__
         datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         # 节点实例id
-        datadict['node_instance_id'] =  student_transaction.process_instance_id
+        datadict['node_instance_id'] = student_transaction.process_instance_id
 
         # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
-        url=url+apiname
+        url = url + apiname
         headerdict = {
             "accept": "application/json",
             # "Authorization": "{{bear}}",
             "Content-Type": "application/json"
         }
         # 如果是query 需要拼接参数
-        url+=  ('?' +urlencode(datadict))
+        url += ('?' + urlencode(datadict))
 
-        print('参数', url, datadict,headerdict)
+        print('参数', url, datadict, headerdict)
         # 字典参数
-        datadict['parameters'] =  'tester'
+        datadict['parameters'] = 'tester'
 
-        response = await httpreq.post_json(url,datadict,headerdict)
-        print(response,'接口响应')
-
-
+        response = await httpreq.post_json(url, datadict, headerdict)
+        print(response, '接口响应')
 
         return True

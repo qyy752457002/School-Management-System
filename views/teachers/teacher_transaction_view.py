@@ -171,6 +171,20 @@ class TeacherTransactionView(BaseView):
             teacher_transaction_id)
         return res
 
+    async def post_teacher_transaction_work_flow(self, process_code: str = Query("skdgfaj", title="process_code")):
+        process_code = "t_transfer_out"
+        teacher_id = 1
+        applicant_name = "567"
+        res = await self.teacher_transaction_rule.add_teacher_transaction_work_flow(process_code, teacher_id,
+                                                                                    applicant_name)
+        return res
+
+    async def post_process_teacher_transaction_work_flow(self,
+                                                         node_instance_id: int = Query(1, title="node_instance_id")):
+        parameters = {"user_id": "sadklfh", "action": "approved"}
+        res = await self.teacher_transaction_rule.process_teacher_transaction_work_flow(node_instance_id, parameters)
+        return res
+
     async def post_teacher_transaction(self, teacher_transaction: TeacherTransactionModel):
         res = await self.teacher_transaction_rule.add_teacher_transaction(teacher_transaction)
         return res
