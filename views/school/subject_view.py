@@ -25,6 +25,7 @@ class SubjectView(BaseView):
     #  添加时过滤 删除态
     async def post(self, subject: Subject):
         print(subject)
+        subject.id=None
         res = await  self.subject_rule.add_subject(subject)
 
         return res
