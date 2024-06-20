@@ -1,4 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from urllib.parse import urlencode
+
 from distribute_transaction_lib import DistributedTransactionCore
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.utils.http import HTTPRequest
@@ -134,15 +136,18 @@ class StudentTransactionFlowRule(object):
             # "Authorization": "{{bear}}",
             "Content-Type": "application/json"
         }
+        # 如果是query 需要拼接参数
+        url+=  ('?' +urlencode(datadict))
+
         print('参数', url, datadict,headerdict)
 
 
         response = await httpreq.post_json(url,datadict,headerdict)
-        print(response)
+        # print(response)
 
 
 
-        return True
+        return response
     async def exe_student_transaction(self, student_transaction_flow: StudentTransactionFlowModel):
         transfer_data =[
             {'url': 'A_school', 'prepare_api_name': 'prepare','precommit_api_name': 'updatemidelstatus_transferin','commit_api_name': 'ultracommit_transferin', 'data': ''},

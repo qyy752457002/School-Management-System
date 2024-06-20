@@ -136,6 +136,10 @@ class CurrentStudentsView(BaseView):
         res2 = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
         # 调用审批流 创建
         res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_trans_flow)
+        
+        print(res3[0])
+        # res.flow = res3
+
 
         return res
 
