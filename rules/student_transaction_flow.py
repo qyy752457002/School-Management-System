@@ -1,4 +1,5 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+import json
 from urllib.parse import urlencode
 
 from distribute_transaction_lib import DistributedTransactionCore
@@ -22,7 +23,7 @@ class StudentTransactionFlowRule(object):
     student_transaction_flow_dao: StudentTransactionFlowDAO
 
     async def get_student_transaction_flow_by_id(self, student_transaction_flow_id):
-        student_transaction_flow_db = await self.student_transaction_flow_dao.get_studenttransaction_flow_by_id(
+        student_transaction_flow_db = await self.student_transaction_flow_dao.get_studenttransactionflow_by_id(
             student_transaction_flow_id)
         # 可选 , exclude=[""]
         student_transaction_flow = orm_model_to_view_model(student_transaction_flow_db, StudentTransactionFlowModel)
@@ -105,11 +106,13 @@ class StudentTransactionFlowRule(object):
         paging_result = PaginatedResponse.from_paging(paging, StudentTransactionFlowModel)
         return paging_result
 
-    async def query_student_transaction_flow(self, apply_id):
+    async def query_student_transaction_flow(self, apply_id,stage=None):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(
-            select(StudentTransactionFlow).where(StudentTransactionFlow.apply_id == apply_id  ))
+        query = select(StudentTransactionFlow).where(StudentTransactionFlow.apply_id == apply_id  )
+        if stage:
+            query= query.where(StudentTransactionFlow.stage == stage)
+        result = await session.execute(query)
         res = result.scalars().all()
 
         lst = []
@@ -157,6 +160,8 @@ class StudentTransactionFlowRule(object):
 
         # await DistributedTransactionCore().execute_transaction(111,transfer_data)
         # 读取 节点ID
+        trans_flow =await self.query_student_transaction_flow(student_transaction_flow.apply_id,stage='apply_submit')
+        json_object = json.loads(trans_flow[0].description)
 
 
 
@@ -168,7 +173,7 @@ class StudentTransactionFlowRule(object):
         datadict = dict()
         # datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         # 节点实例id
-        datadict['node_instance_id'] =  student_transaction.process_instance_id
+        datadict['node_instance_id'] =  json_object[1]['node_instance_id']
 
         # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'

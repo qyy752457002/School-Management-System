@@ -1,3 +1,5 @@
+import json
+
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task import Task
 from mini_framework.web.request_context import request_context_manager
@@ -130,14 +132,12 @@ class CurrentStudentsView(BaseView):
                                                     stage=AuditFlowStatus.FLOWBEGIN.value,
                                                     remark='')
         res2 = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
-        student_trans_flow = StudentTransactionFlow(apply_id=audit_info.id,
-                                                    stage=AuditFlowStatus.APPLY_SUBMIT.value,
-                                                    remark='')
-        res2 = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+
         # 调用审批流 创建
         res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_trans_flow)
         transferin_id =  0
 
+        json_str=''
         if len(res3)>0 :
 
             print(res3[0])
@@ -145,7 +145,14 @@ class CurrentStudentsView(BaseView):
             student_edu_info = StudentTransaction(id=audit_info.id,
                                                   process_instance_id=transferin_id,)
             res4 = await self.student_transaction_rule.update_student_transaction(student_edu_info)
+            json_str = json.dumps(res3, ensure_ascii=False)
+
             # res.flow = res3
+
+        student_trans_flow = StudentTransactionFlow(apply_id=audit_info.id,
+                                                    stage=AuditFlowStatus.APPLY_SUBMIT.value,
+                                                    remark='',description= json_str)
+        res2 = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
 
 
         return res
@@ -166,6 +173,7 @@ class CurrentStudentsView(BaseView):
                                                     stage=audit_info.transferin_audit_action.value,
                                                     remark=audit_info.remark)
         res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+        # 读取转学信息
         student_transaction=await self.student_transaction_rule.get_student_transaction_by_id(audit_info.transferin_audit_id)
         resultra = await self.student_transaction_flow_rule.exe_student_transaction(student_transaction,student_trans_flow)
 

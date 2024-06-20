@@ -24,7 +24,7 @@ class StudentTransactionFlow(BaseDBModel):
     apply_id: Mapped[int] = mapped_column(nullable=True , comment="申请ID",default=0)
 
     stage: Mapped[str] = mapped_column(String(255),  nullable=True, comment="阶段",default='')
-    description: Mapped[str] = mapped_column(String(255),  nullable=True, comment="流程描述",default='')
+    description: Mapped[str] = mapped_column(String(600),  nullable=True, comment="流程描述",default='')
     remark: Mapped[str] = mapped_column(String(255),  nullable=True, comment="流程备注",default='')
 
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)
