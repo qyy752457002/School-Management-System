@@ -83,3 +83,38 @@ class CourseView(BaseView):
 
         return  res
 
+    # 获取所有的课程列表 给下拉 在用
+    async def get_all(self ):
+        # print(page_request)
+        items=[]
+
+
+        res = await self.course_rule.get_course_all( {'school_id':0} )
+        return res
+
+
+
+    async def post_add_init_course(self, course: Course):
+        print(course)
+        res =await self.course_rule.add_course(course)
+
+        return res
+
+
+    # 删除
+    async def delete_init_course(self, course_id:int= Query(..., title="", description="课程id", example='SC2032633'),):
+        print(course_id)
+        # return  course_id
+        res = await self.course_rule.softdelete_course(course_id)
+
+        return  res
+
+    # 修改 关键信息
+    async def put_init_course(self,course:Course
+                              ):
+        # print(planning_school)
+        # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res = await self.course_rule.update_course(course)
+
+
+        return  res
