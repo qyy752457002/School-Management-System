@@ -165,8 +165,8 @@ class StudentTransactionFlowRule(object):
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
         data= student_transaction_flow
-        datadict =  data.__dict__
-        datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
+        datadict = dict()
+        # datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         # 节点实例id
         datadict['node_instance_id'] =  student_transaction.process_instance_id
 
@@ -183,7 +183,7 @@ class StudentTransactionFlowRule(object):
 
         print('参数', url, datadict,headerdict)
         # 字典参数
-        datadict['parameters'] =  'tester'
+        datadict ={"user_id":"11","action":"approved"}
 
         response = await httpreq.post_json(url,datadict,headerdict)
         print(response,'接口响应')
