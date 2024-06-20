@@ -9,5 +9,5 @@ class Course(BaseModel):
     city: str|None = Field('', title="", description="",examples=['19'])
     grade_id: int = Field(0, title="年级ID", description="年级ID",examples=['1'])
     course_name: str = Field(..., title="Grade_name",description="课程名称",examples=['语文'])
-    school_type: str = Field('', title="",description="",examples=[''])
+    school_type: str|None = Field('', title="",description="",examples=[''])
 
