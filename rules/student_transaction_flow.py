@@ -143,7 +143,7 @@ class StudentTransactionFlowRule(object):
 
 
         response = await httpreq.post_json(url,datadict,headerdict)
-        # print(response)
+        print(response)
 
 
 

@@ -141,7 +141,7 @@ class CurrentStudentsView(BaseView):
         if len(res3)>0 :
 
             print(res3[0])
-            # transferin_id = res3[0].id
+            transferin_id = res3[0]['process_instance_id']
             student_edu_info = StudentTransaction(id=audit_info.id,
                                                   process_instance_id=transferin_id,)
             res4 = await self.student_transaction_rule.update_student_transaction(student_edu_info)
@@ -166,7 +166,7 @@ class CurrentStudentsView(BaseView):
                                                     stage=audit_info.transferin_audit_action.value,
                                                     remark=audit_info.remark)
         res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
-        student_transaction= self.student_transaction_rule.get_student_transaction_by_id(audit_info.transferin_audit_id)
+        student_transaction=await self.student_transaction_rule.get_student_transaction_by_id(audit_info.transferin_audit_id)
         resultra = await self.student_transaction_flow_rule.exe_student_transaction(student_transaction,student_trans_flow)
 
         # print(new_students_key_info)
