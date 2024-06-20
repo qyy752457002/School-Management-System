@@ -118,13 +118,26 @@ class StudentTransactionFlowRule(object):
         return lst
     # 向工作流中心发送申请
     async def add_student_transaction_work_flow(self, student_transaction_flow: StudentTransactionFlowModel):
+        student_transaction_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
         data= student_transaction_flow
         datadict =  data.__dict__
-        datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
+        datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
+        datadict['teacher_id'] =  0
+        datadict['applicant_name'] =  'tester'
+        # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
+        apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate'
+        url=url+apiname
+        headerdict = {
+            "accept": "application/json",
+            # "Authorization": "{{bear}}",
+            "Content-Type": "application/json"
+        }
+        print('参数', url, datadict,headerdict)
 
-        response = await httpreq.post_json(url,datadict)
+
+        response = await httpreq.post_json(url,datadict,headerdict)
         print(response)
 
 
