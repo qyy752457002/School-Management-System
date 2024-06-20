@@ -154,8 +154,31 @@ class StudentTransactionFlowRule(object):
             {'url': 'B_school', 'api_name': 'xx', 'data': ''},
             {'url': 'A_district', 'api_name': 'xx', 'data': ''}]
 
-        await DistributedTransactionCore().execute_transaction(111,transfer_data)
+        # await DistributedTransactionCore().execute_transaction(111,transfer_data)
+        # 发起审批流的 处理
+        student_transaction_flow.id=0
+        httpreq= HTTPRequest()
+        url= workflow_service_config.workflow_config.get("url")
+        data= student_transaction_flow
+        datadict =  data.__dict__
+        datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
+        datadict['teacher_id'] =  0
+        datadict['applicant_name'] =  'tester'
+        # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
+        apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate'
+        url=url+apiname
+        headerdict = {
+            "accept": "application/json",
+            # "Authorization": "{{bear}}",
+            "Content-Type": "application/json"
+        }
+        # 如果是query 需要拼接参数
+        url+=  ('?' +urlencode(datadict))
 
+        print('参数', url, datadict,headerdict)
+
+
+        response = await httpreq.post_json(url,datadict,headerdict)
 
 
 
