@@ -80,7 +80,7 @@ class CourseRule(object):
             "course_id": course_id,
             "course_no": course_no,
             "city": extobj.city,
-            "district": extobj.district,
+            "district": extobj.county_id,
             "is_deleted":False
         }
         if not kdict["course_name"]:
