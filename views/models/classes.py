@@ -67,7 +67,7 @@ class ClassesSearchRes(BaseModel):
     teacher_card_type: str = Field(None, description="班主任证件类型", examples=['idcard'])
     teacher_id: int|None = Field(None, description="班主任id", examples=['1'])
 
-    teacher_name: str = Field(None, description="班主任姓名", examples=['fsdfdsfsdxxx'])
+    teacher_name: str|None = Field(None, description="班主任姓名", examples=['fsdfdsfsdxxx'])
     education_stage: str = Field(None, description="教育阶段", examples=['中职'])
     school_system: str = Field(None, description="学制", examples=['fsdfdsfsdxxx'])
     monitor: str = Field(None, description="班长", examples=['fsdfdsfsdxxx'])

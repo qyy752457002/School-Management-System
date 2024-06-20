@@ -8,6 +8,8 @@ from sqlalchemy.orm import aliased
 from models.classes import Classes
 from models.grade import Grade
 from models.school import School
+from models.students import Student
+from models.students_base_info import StudentBaseInfo
 from models.teachers import Teacher
 from models.teachers_info import TeacherInfo
 
@@ -93,6 +95,7 @@ class ClassesDAO(DAOBase):
     async def query_classes_with_page(self, borough, block, school_id, grade_id, class_name,
                                       page_request: PageRequest) -> Paging:
         teacher_alias = aliased(Teacher, name='teacher_alias')
+        teacherinfo_alias = aliased(TeacherInfo, name='teacherinfo_alias')
         query = (select( School.block, School.borough,School.school_name,Classes.id, Classes.class_name,
                         Classes.class_number, Classes.year_established,
                          # Classes.teacher_id_card,
@@ -104,6 +107,7 @@ class ClassesDAO(DAOBase):
                         Classes.att_class_type, Classes.grade_no, Classes.grade_id, Classes.is_deleted,
                         Classes.school_id,
                         Classes.teacher_id,
+                        Classes.monitor_id,
                         Classes.care_teacher_id,
                          Grade.grade_type,
                          Classes.created_at, Classes.updated_at,
@@ -117,15 +121,28 @@ class ClassesDAO(DAOBase):
                          func.coalesce(Teacher.teacher_id_type, '').label('teacher_card_type'),
                          func.coalesce(Teacher.mobile, '').label('teacher_phone'),
                          func.coalesce(TeacherInfo.teacher_number, '').label('teacher_job_number'),
-                         #
-                         # func.coalesce(teacher_alias.teacher_id_number, '').label('care_teacher_id_card'),
+                         func.coalesce(Student.student_name, '').label('monitor'),
+                         func.coalesce(StudentBaseInfo.student_number, '').label('monitor_student_number'),
+
+                         func.coalesce(teacher_alias.teacher_id_number, '').label('care_teacher_id_card'),
+                         func.coalesce(teacher_alias.teacher_id_type, '').label('care_teacher_card_type'),
+                         func.coalesce(teacher_alias.mobile, '').label('care_teacher_phone'),
+                         func.coalesce(teacherinfo_alias.teacher_number, '').label('care_teacher_job_number'),
+                         func.coalesce(teacher_alias.teacher_name, '').label('care_teacher_name'),
                          # func.coalesce(teacher_alias.teacher_name, '').label('care_teacher_name'),
+
+
 
                         ).select_from(Classes).join(School, School.id == Classes.school_id)
                  .join(Grade, Grade.id == Classes.grade_id)
-                 .join(Teacher, Teacher.teacher_id == Classes.teacher_id)
-                 .join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id)
-                 .join(teacher_alias, teacher_alias.teacher_id == Classes.care_teacher_id)
+                 .join(Teacher, Teacher.teacher_id == Classes.teacher_id,isouter=True)
+                 .join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,isouter=True)
+                 .join(teacher_alias, teacher_alias.teacher_id == Classes.care_teacher_id,isouter=True)
+                 .join(teacherinfo_alias, teacher_alias.teacher_id == teacherinfo_alias.teacher_id,isouter=True)
+
+                 .join(Student, Student.student_id == Classes.monitor_id,isouter=True)
+                 .join(StudentBaseInfo, Student.student_id == StudentBaseInfo.student_id,isouter=True)
+
                                     .where(Classes.is_deleted == False)
                  .order_by(Classes.id.desc()))
 
