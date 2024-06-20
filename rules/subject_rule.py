@@ -3,13 +3,14 @@ from typing import List
 
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
-from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
 from business_exceptions.subject import SubjectAlreadyExistError, SubjectNotFoundError
 # from business_exceptions.subject import CourseNotFoundError, CourseAlreadyExistError
 from daos.subject_dao import SubjectDAO
 from models.subject import Subject
+from rules.course_rule import CourseRule
 from views.models.subject import Subject  as SubjectModel
 from views.models.extend_params import ExtendParams
 
@@ -94,6 +95,20 @@ class SubjectRule(object):
                                                                                 )
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, SubjectModel)
+        # 处理name
+        course_rule = get_injector(CourseRule)
+        courses =await course_rule.get_course_all( {'school_id':0} )
+        coursemap = {course.course_no: course.course_name for course in courses}
+        # print(grade_enums,999)
+
+        for item in paging_result.items:
+            if item.course_no in coursemap:
+
+                item.course_name = coursemap[item.course_no]
+            else:
+                item.course_name =  ''
+
+
         return paging_result
 
 
