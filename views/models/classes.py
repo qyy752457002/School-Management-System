@@ -93,3 +93,5 @@ class ClassesSearchRes(BaseModel):
     care_teacher_job_number: str = Field(None, description="班主任工号", examples=['fsdfdsfsdxxx'])
     care_teacher_id: int|None = Field(None, description="保育员id", examples=['1'])
     monitor_id: int|None = Field(None, description="班长的学生id", examples=['1'])
+    session_id: int|None = Field(None, description="", examples=['1'])
+#     created /school/v1/classes/page session_id teacher_id class_name  create_at class_type class_number

@@ -98,10 +98,9 @@ class ClassesDAO(DAOBase):
         teacherinfo_alias = aliased(TeacherInfo, name='teacherinfo_alias')
         query = (select( School.block, School.borough,School.school_name,Classes.id, Classes.class_name,
                         Classes.class_number, Classes.year_established,
-                         # Classes.teacher_id_card,
-                        # Classes.teacher_name,
+                         Classes.session_id,
+                        Classes.created_at,
                          Classes.education_stage, Classes.school_system,
-                         # Classes.monitor,
                         Classes.class_type, Classes.is_bilingual_class, Classes.major_for_vocational,
                         Classes.bilingual_teaching_mode, Classes.ethnic_language, Classes.is_att_class,
                         Classes.att_class_type, Classes.grade_no, Classes.grade_id, Classes.is_deleted,
