@@ -1,4 +1,5 @@
 import datetime
+import json
 from typing import List
 
 
@@ -6,10 +7,11 @@ from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task import Task
 from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
+from starlette.requests import Request
 
 from rules.class_division_records_rule import ClassDivisionRecordsRule
 from rules.operation_record import OperationRecordRule
-from views.common.common_view import compare_modify_fields
+from views.common.common_view import compare_modify_fields, get_client_ip
 from views.models.operation_record import OperationRecord, OperationModule, OperationTargetType, OperationType
 from views.models.students import NewStudents, NewStudentsQuery, NewStudentsQueryRe, StudentsKeyinfo, StudentsBaseInfo, \
     StudentsFamilyInfo, NewStudentTask
@@ -72,31 +74,33 @@ class NewsStudentsView(BaseView):
         res = await self.students_rule.get_students_by_id(student_id)
         return res
 
-    async def put_newstudentkeyinfo(self, new_students_key_info: StudentsKeyinfo):
+    async def put_newstudentkeyinfo(self, new_students_key_info: StudentsKeyinfo,request:Request):
         """"
         新生编辑关键信息
         """
-        print(new_students_key_info)
-        res = await self.students_rule.update_students(new_students_key_info)
-
 
         origin = await self.students_rule.get_students_by_id(new_students_key_info.student_id)
         log_con = compare_modify_fields(new_students_key_info, origin)
 
+        print(new_students_key_info)
+        res = await self.students_rule.update_students(new_students_key_info)
+
+
+
         # log_con=''
+        json_string = json.dumps(log_con, ensure_ascii=False)
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(new_students_key_info.student_id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.PLANNING_SCHOOL.value,
-
+            module=OperationModule.KEYINFO.value,
+            target=OperationTargetType.STUDENT.value,
             action_type=OperationType.MODIFY.value,
-            ip='127.0.0.1',
-            change_data=str(log_con)[0:1000],
+            ip= get_client_ip(request),
+            change_data=json_string,
             change_field='关键信息',
             change_item='关键信息',
             timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason='修改基本信息',
+            action_reason='修改关键信息',
             doc_upload='',
             status='1',
             account='', ))
