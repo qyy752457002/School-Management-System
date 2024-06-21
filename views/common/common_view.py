@@ -16,12 +16,14 @@ def compare_modify_fields( planning_school,orm_model):
     :return:
     """
     changeitems = dict()
+    # 使用视图模型
     for key, value in planning_school.__dict__.items():
         if value:
             if key in orm_model.__dict__ and orm_model.__dict__[key] != value:
                 print(key,value,orm_model.__dict__[key])
                 # changeitems.append(key)
-                changeitems[key] = [ orm_model.__dict__[key],value ]
+                key_cn = planning_school.model_fields[key].title
+                changeitems[key_cn] ={"before": orm_model.__dict__[key],"after":value }
                 # pass
     print(changeitems)
     #

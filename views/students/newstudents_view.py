@@ -1,4 +1,5 @@
 import datetime
+import json
 from typing import List
 
 
@@ -77,14 +78,17 @@ class NewsStudentsView(BaseView):
         """"
         新生编辑关键信息
         """
-        print(new_students_key_info)
-        res = await self.students_rule.update_students(new_students_key_info)
-
 
         origin = await self.students_rule.get_students_by_id(new_students_key_info.student_id)
         log_con = compare_modify_fields(new_students_key_info, origin)
 
+        print(new_students_key_info)
+        res = await self.students_rule.update_students(new_students_key_info)
+
+
+
         # log_con=''
+        json_string = json.dumps(log_con, ensure_ascii=False)
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(new_students_key_info.student_id),
             operator='admin',
@@ -92,7 +96,7 @@ class NewsStudentsView(BaseView):
             target=OperationTargetType.STUDENT.value,
             action_type=OperationType.MODIFY.value,
             ip= get_client_ip(request),
-            change_data=str(log_con)[0:1000],
+            change_data=json_string,
             change_field='关键信息',
             change_item='关键信息',
             timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
