@@ -1,3 +1,4 @@
+import copy
 import json
 
 from mini_framework.async_task.app.app_factory import app
@@ -126,8 +127,36 @@ class CurrentStudentsView(BaseView):
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
         # print(new_students_key_info)
         # 新增转学数据到库
+        # 转出
+        student_edu_info_out= copy.deepcopy(student_edu_info)
+        # 读取当前在校信息 TODO 修改方法 确保学校等信息这里都有 
+        res_student = await self.students_rule.get_students_by_id(student_edu_info.student_id)
+        if res_student:
+            student_edu_info_out.school_id = res_student.sch
+            student_edu_info_out.grade_id = res_student.sch
+            student_edu_info_out.class_id = res_student.sch
+            student_edu_info_out.school_name = res_student.sch
+            student_edu_info_out.grade_name = res_student.sch
+            student_edu_info_out.classes = res_student.sch
+            student_edu_info_out.district_id = res_student.sch
+            student_edu_info_out.area_id = res_student.sch
+            student_edu_info_out.major_id = res_student.sch
+            # student_edu_info_out.major_name = res_student.sch
+
+
+        student_edu_info_out.status = AuditAction.NEEDAUDIT.value
+        # student_edu_info_out.student_id = res_student.student_id
+
+        res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
+                                                                              TransactionDirection.OUT.value)
+        # 转入信息
+        # student_edu_info_in= student_edu_info
+        student_edu_info.relation_id = res_out.id
+
         student_edu_info.status = AuditAction.NEEDAUDIT.value
         audit_info = res = await self.student_transaction_rule.add_student_transaction(student_edu_info)
+
+
         # 流乘记录  发起 审批流程的服务请求
         student_trans_flow = StudentTransactionFlow(apply_id=audit_info.id,
                                                     stage=AuditFlowStatus.FLOWBEGIN.value,
