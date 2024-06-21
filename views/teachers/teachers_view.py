@@ -29,12 +29,12 @@ class TeachersView(BaseView):
     # 编辑新教职工登记信息
     async def put_teacher(self, teachers: Teachers):
         print(teachers)
+        user_id = "asdfasdf"
         teacher_id = teachers.teacher_id
         changes = []
         old_fields = await self.teacher_rule.get_teachers_by_id(teacher_id)
         old_dic = old_fields.dict()
-
-        new_fields = await self.teacher_rule.update_teachers(teachers)
+        new_fields = await self.teacher_rule.update_teachers(teachers, user_id)
         new_dic = new_fields.dict()
 
         # todo 这个地方需要优化
@@ -136,8 +136,4 @@ class TeachersView(BaseView):
         await self.teacher_info_rule.rejected(teacher_base_id)
         return teacher_base_id
 
-    async def patch_teacher_active(self,
-                                   teacher_id: int = Query(..., title="教师编号", description="教师编号",
-                                                           example=123), ):
-        await self.teacher_rule.teacher_active(teacher_id)
-        return teacher_id
+

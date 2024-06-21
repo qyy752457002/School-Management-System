@@ -14,22 +14,25 @@ from enum import Enum
 
 class ApprovalStatus(str, Enum):
     """
-    未审批：submitted
+    未审批：pending
+    审批中：progressing
     已撤回：revoked
     已通过：approved
     已拒绝：rejected
     """
-    SUBMITTED = "submitted"
-    REVOKE = "revoked"
+    PENDING = "pending"
+    PROGRESSING = "progressing"
+    REVOKED = "revoked"
     APPROVED = "approved"
     REJECTED = "rejected"
-
     @classmethod
     def to_list(cls):
         return [status.value for status in cls]
 class EmploymentStatus(str, Enum):
     """
     正常在职：active
+    已提交：submitted
+    未提交：unsubmitted
     调出中：transfer_out
     借出中：borrowed_out
     调入中：transfer_in
@@ -44,6 +47,8 @@ class EmploymentStatus(str, Enum):
     其他：other
     """
     ACTIVE = "active"
+    SUBMITTED = "submitted"
+    UNSUBMITTED = "unsubmitted"
     TRANSFER_OUT = "transfer_out"
     BORROWED_OUT = "borrowed_out"
     TRANSFER_IN = "transfer_in"

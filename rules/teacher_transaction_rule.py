@@ -9,6 +9,8 @@ from views.models.teacher_transaction import TeacherTransactionModel, TeacherTra
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from business_exceptions.teacher_transction import TransactionApprovalError
 from rules.work_flow_instance_rule import WorkFlowNodeInstanceRule
+from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
+
 from mini_framework.utils.http import HTTPRequest
 from urllib.parse import urlencode
 from views.common.common_view import workflow_service_config
@@ -19,6 +21,7 @@ class TeacherTransactionRule(object):
     teacher_transaction_dao: TeacherTransactionDAO
     teachers_dao: TeachersDao
     work_flow_instance_rule: WorkFlowNodeInstanceRule
+    teacher_work_flow_rule: TeacherWorkFlowRule
 
     async def get_teacher_transaction_by_teacher_transaction_id(self, teacher_transaction_id):
         teacher_transaction_db = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
@@ -95,40 +98,7 @@ class TeacherTransactionRule(object):
         paging_result = PaginatedResponse.from_paging(teacher_transaction_db, TeacherTransactionApproval)
         return paging_result
 
-    async def add_teacher_transaction_work_flow(self, process_code: str, teacher_id: int, applicant_name: str):
-        httpreq = HTTPRequest()
-        url = workflow_service_config.workflow_config.get("url")
-        params = {"process_code": process_code, "teacher_id": teacher_id, "applicant_name": applicant_name}
-        api_name = '/api/school/v1/teacher-workflow/work-flow-instance-initiate'
-        url += api_name
-        headerdict = {
-            "accept": "application/json",
-            # "Authorization": "{{bear}}",
-            "Content-Type": "application/json"
-        }
-        url += ('?' + urlencode(params))
-        result = await httpreq.post_json(url, params, headerdict)
-        work_flow_instance = result[0]
-        next_node_instance = result[1]
-        return work_flow_instance, next_node_instance
 
-    async def process_teacher_transaction_work_flow(self, node_instance_id: int, parameters: dict):
-        httpreq = HTTPRequest()
-        url = workflow_service_config.workflow_config.get("url")
-        params = {"node_instance_id": node_instance_id}
-        data = parameters
-        # data = {"parameters": parameters}
-        api_name = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
-        url += api_name
-        headerdict = {
-            "accept": "application/json",
-            # "Authorization": "{{bear}}",
-            "Content-Type": "application/json"
-        }
-        url += ('?' + urlencode(params))
-        next_node_instance = await httpreq.post_json(url, data, headerdict)
-        print(next_node_instance)
-        return next_node_instance
 
     async def submitted(self, teacher_transaction_id):
         teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
@@ -164,3 +134,11 @@ class TeacherTransactionRule(object):
 
     async def get_process_id(self, teacher_transaction: TeacherTransactionModel, process_code: str):
         pass
+
+    async def teacher_active(self, teachers_id):
+        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
+        if not teachers:
+            raise TeacherNotFoundError()
+        if teachers.teacher_sub_status != "active":
+            teachers.teacher_sub_status = "active"
+        return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")

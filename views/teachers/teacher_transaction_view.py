@@ -242,6 +242,12 @@ class TeacherTransactionView(BaseView):
         res = await self.teacher_transaction_rule.revoked(teacher_transaction_id)
         return res
 
+    async def patch_teacher_active(self,
+                                   teacher_id: int = Query(..., title="教师编号", description="教师编号",
+                                                           example=123), ):
+        await self.teacher_transaction_rule.teacher_active(teacher_id)
+        return teacher_id
+
 
 # 借动相关
 class TeacherBorrowView(BaseView):

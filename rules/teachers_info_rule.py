@@ -13,6 +13,12 @@ from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoun
 from daos.teachers_dao import TeachersDao
 from views.models.organization import OrganizationMembers
 from rules.organization_memebers_rule import OrganizationMembersRule
+from models.teacher_key_info_approval import TeacherKeyInfoApproval
+from models.teacher_entry_approval import TeacherEntryApproval
+from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
+from daos.teacher_entry_dao import TeacherEntryApprovalDao
+from models.teacher_change_log import TeacherChangeLog
+from daos.teacher_change_dao import TeacherChangeLogDAO
 
 
 @dataclass_inject
@@ -20,6 +26,9 @@ class TeachersInfoRule(object):
     teachers_info_dao: TeachersInfoDao
     teachers_dao: TeachersDao
     organization_members_rule: OrganizationMembersRule
+    teacher_work_flow_rule: TeacherWorkFlowRule
+    teacher_entry_approval_dao: TeacherEntryApprovalDao
+    teacher_change_log: TeacherChangeLogDAO
 
     # 查询单个教职工基本信息
     async def get_teachers_info_by_teacher_id(self, teachers_id):
@@ -65,7 +74,7 @@ class TeachersInfoRule(object):
         teachers_info = orm_model_to_view_model(teachers_inf_db, TeachersInfoModel, exclude=[""])
         return teachers_info
 
-    async def add_teachers_info_valid(self, teachers_info: TeacherInfoSubmit):
+    async def add_teachers_info_valid(self, teachers_info: TeacherInfoSubmit, user_id):
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
         if not exits_teacher:
             raise TeacherNotFoundError()
@@ -74,6 +83,18 @@ class TeachersInfoRule(object):
             raise TeacherInfoExitError()
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
+        params = {"process_code": "t_entry", "teacher_id": teachers_inf_db.teacher_id, "applicant_name": user_id}
+        work_flow_instance, next_node_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(params)
+        teacher_entry_approval = TeacherEntryApproval(teacher_id=teachers_inf_db.teacher_id,
+                                                      teacher_name=teachers_inf_db.teacher_name,
+                                                      approval_status="submitted",
+                                                      process_instance_id=work_flow_instance.process_instance_id)
+        await self.teacher_entry_approval_dao.add_teacher_entry_approval(teacher_entry_approval)
+        teacher_change_log = TeacherChangeLog(teacher_id=teachers_inf_db.teacher_id, change_module="new_entry",
+                                              change_detail="转在职", log_status="pending",
+                                              process_instance_id=work_flow_instance.process_instance_id)
+        await self.teacher_change_log.add_teacher_change(teacher_change_log)
+
         teachers_info = orm_model_to_view_model(teachers_inf_db, TeachersInfoModel, exclude=[""])
         organization = OrganizationMembers()
         organization.id = None
@@ -128,8 +149,6 @@ class TeachersInfoRule(object):
         paging = await self.teachers_info_dao.query_current_teacher_with_page(query_model, page_request)
         paging_result = PaginatedResponse.from_paging(paging, CurrentTeacherQueryRe)
         return paging_result
-
-
 
     async def submitting(self, teachers_base_id):
         teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_base_id)

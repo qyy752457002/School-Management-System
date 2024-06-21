@@ -24,6 +24,14 @@ from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.storage.view_model import FileStorageModel
 from mini_framework.utils.logging import logger
+from daos.teacher_entry_dao import TeacherEntryApprovalDao
+from models.teacher_entry_approval import TeacherEntryApproval
+from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
+from daos.teacher_key_info_approval_dao import TeacherKeyInfoApprovalDao
+from models.teacher_key_info_approval import TeacherKeyInfoApproval
+from models.teacher_change_log import TeacherChangeLog
+from daos.teacher_change_dao import TeacherChangeLogDAO
+from rules.teacher_change_rule import TeacherChangeRule
 
 import os
 
@@ -35,6 +43,11 @@ class TeachersRule(object):
     file_storage_dao: FileStorageDAO
     task_dao: TaskDAO
     teachers_info_rule: TeachersInfoRule
+    teacher_entry_approval_dao: TeacherEntryApprovalDao
+    teacher_work_flow_rule: TeacherWorkFlowRule
+    teacher_key_info_approval_dao: TeacherKeyInfoApprovalDao
+    teacher_change_log: TeacherChangeLogDAO
+    teacher_change_detail: TeacherChangeRule
 
     async def get_teachers_by_id(self, teachers_id):
         teacher_db = await self.teachers_dao.get_teachers_by_id(teachers_id)
@@ -55,7 +68,7 @@ class TeachersRule(object):
         teachers = orm_model_to_view_model(teacher_db, TeachersModel, exclude=["hash_password"])
         return teachers
 
-    async def add_teachers(self, teachers: TeachersCreatModel):
+    async def add_teachers(self, teachers: TeachersCreatModel, user_id):
         teacher_id_number = teachers.teacher_id_number
         teacher_id_type = teachers.teacher_id_type
         teacher_name = teachers.teacher_name
@@ -70,10 +83,15 @@ class TeachersRule(object):
             if not idstatus:
                 raise IdCardError()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
+        teacher_entry_log = TeacherChangeLog(teacher_id=teachers_db.teacher_id, change_module="new_entry",
+                                             change_detail="入职登记", log_status="",
+                                             )
+        await self.teacher_change_log.add_teacher_change(teacher_entry_log)
+
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
         return teachers
 
-    async def add_transfer_teachers(self, teachers: TeacherAddModel):
+    async def add_transfer_teachers(self, teachers: TeacherAddModel, user_id):
         """
         系统外调入系统内时使用，增加老师
         """
@@ -83,26 +101,70 @@ class TeachersRule(object):
             if not idstatus:
                 raise IdCardError()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
+        teacher_entry_log = TeacherChangeLog(teacher_id=teachers_db.teacher_id, change_module="new_entry",
+                                             change_detail="入职登记", log_status="",
+                                             )
+        await self.teacher_change_log.add_teacher_change(teacher_entry_log)
+        params = {"process_code": "t_entry", "teacher_id": teachers_db.teacher_id, "applicant_name": user_id}
+        work_flow_instance, next_node_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(params)
+        teacher_entry_approval = TeacherEntryApproval(teacher_id=teachers_db.teacher_id,
+                                                      teacher_name=teachers_db.teacher_name,
+                                                      approval_status="submitted",
+                                                      process_instance_id=work_flow_instance.process_instance_id)
+        await self.teacher_entry_approval_dao.add_teacher_entry_approval(teacher_entry_approval)
+        teacher_change_log = TeacherChangeLog(teacher_id=teachers_db.teacher_id, change_module="new_entry",
+                                              change_detail="转在职", log_status="pending",
+                                              process_instance_id=work_flow_instance.process_instance_id)
+        await self.teacher_change_log.add_teacher_change(teacher_change_log)
         teachers = orm_model_to_view_model(teachers_db, TeacherAddReModel, exclude=[""])
         return teachers
 
-    async def update_teachers(self, teachers):
+    async def update_teachers(self, teachers, user_id):
         exists_teachers = await self.teachers_dao.get_teachers_by_id(teachers.teacher_id)
         if not exists_teachers:
             raise TeacherNotFoundError()
+
         need_update_list = []
         for key, value in teachers.dict().items():
             if value:
                 need_update_list.append(key)
         teachers = await self.teachers_dao.update_teachers(teachers, *need_update_list)
+        teachers_main_status = teachers.teacher_main_status
+        if teachers_main_status == "employed":
+            params = {"process_code": "t_keyinfo", "teacher_id": teachers.teacher_id, "applicant_name": user_id}
+            work_flow_instance, next_node_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(params)
+            teacher_key_info_approval = TeacherKeyInfoApproval(teacher_id=teachers.teacher_id,
+                                                               teacher_name=teachers.teacher_name,
+                                                               process_instance_id=work_flow_instance.process_instance_id)
+            await self.teacher_key_info_approval_dao.add_teacher_key_info_approval(teacher_key_info_approval)
+            teacher_change_log = TeacherChangeLog(teacher_id=teachers.teacher_id, change_module="key_info_change",
+                                                  change_detail="详情", log_status="pending",
+                                                  process_instance_id=work_flow_instance.process_instance_id)
+            teacher_change_log_db = await self.teacher_change_log.add_teacher_change(teacher_change_log)
+            teacher_change_id = teacher_change_log_db.teacher_change_id
+            await self.teacher_change_detail.teacher_change_detail(exists_teachers, teachers, teacher_change_id,
+                                                                   "key_info_change")
+        else:
+            teacher_change_log = TeacherChangeLog(teacher_id=teachers.teacher_id, change_module="key_info_change",
+                                                  change_detail="详情", log_status="pending",
+                                                  )
+            teacher_change_log_db = await self.teacher_change_log.add_teacher_change(teacher_change_log)
+            teacher_change_id = teacher_change_log_db.teacher_change_id
+            await self.teacher_change_detail.teacher_change_detail(exists_teachers, teachers, teacher_change_id,
+                                                                   "key_info_change")
         return teachers
 
-    async def delete_teachers(self, teachers_id):
+    async def delete_teachers(self, teachers_id, user_id):
         exists_teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
         if not exists_teachers:
             raise TeacherNotFoundError()
         teachers_db = await self.teachers_dao.delete_teachers(exists_teachers)
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
+        teacher_entry_log = TeacherChangeLog(teacher_id=teachers_db.teacher_id, change_module="new_entry",
+                                             change_detail="删除", log_status="",
+                                             )
+        await self.teacher_change_log.add_teacher_change(teacher_entry_log)
+
         return teachers
 
     async def get_all_teachers(self):
@@ -115,58 +177,69 @@ class TeachersRule(object):
         return teachers_count
 
     async def submitting(self, teachers_id):
-        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
+        teachers = await self.teacher_entry_approval_dao.get_teacher_entry_by_teacher_id(teachers_id)
         if not teachers:
             raise TeacherNotFoundError()
-        teachers.teacher_approval_status = "submitting"
-        return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
+        teachers.approval_status = "submitting"
+        return await self.teacher_entry_approval_dao.update_teachers(teachers, "approval_status")
 
     async def submitted(self, teachers_id):
-        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
+        teachers = await self.teacher_entry_approval_dao.get_teacher_entry_by_teacher_id(teachers_id)
         if not teachers:
             raise TeacherNotFoundError()
-        teachers.teacher_approval_status = "submitted"
-        return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
+        teachers.approval_status = "submitted"
+        return await self.teacher_entry_approval_dao.update_teachers(teachers, "approval_status")
 
-    async def approved(self, teachers_id):
-        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
+    async def approved(self, teachers_id, process_instance_id, user_id):
+        teachers = await self.teacher_entry_approval_dao.get_teacher_entry_by_teacher_id(teachers_id)
         if not teachers:
             raise TeacherNotFoundError()
-        teachers.teacher_approval_status = "approved"
-        return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
-
-    async def rejected(self, teachers_id):
-        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
-        if not teachers:
-            raise TeacherNotFoundError()
-        teachers.teacher_approval_status = "rejected"
-        return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
-
-    async def revoked(self, teachers_id):
-        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
-        if not teachers:
-            raise TeacherNotFoundError()
-        teachers.teacher_approval_status = "revoked"
-        return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
-
-    async def recall(self, teachers_id):
-        # todo 这个撤回的逻辑有问题，因为只有在流程结束时，老师的状态才会改，如果已经通过下一级审批，当前的操作者就无法撤回了。
-        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
-        if not teachers:
-            raise TeacherNotFoundError()
-        if teachers.teacher_approval_status == "submitted":
-            teachers.teacher_approval_status = "submitting"
+        # todo 处理工作流
+        user_id = user_id
+        parameters = {"user_id": user_id, "action": "approved"}
+        current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
+        node_instance_id = current_node.get("node_instance_id")
+        node_instance = await self.teacher_work_flow_rule.process_transaction_work_flow(node_instance_id, parameters)
+        if node_instance == "approved":
+            teachers.approval_status = "approved"
+            await self.teacher_entry_approval_dao.update_teachers(teachers, "approval_status")
+            teachers_db = await self.teachers_dao.get_teachers_by_id(teachers_id)
+            teachers_db.teacher_main_status = "employed"
+            await self.teachers_dao.update_teachers(teachers_db, "teacher_main_status")
         else:
-            raise Exception("只有待审核的教师信息才能撤回")
-        return await self.teachers_dao.update_teachers(teachers, "teacher_approval_status")
+            teachers.approval_status = "progressing"
+            await self.teacher_entry_approval_dao.update_teachers(teachers, "approval_status")
 
-    async def teacher_active(self, teachers_id):
-        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
+    async def rejected(self, teachers_id, process_instance_id, user_id):
+        teachers = await self.teacher_entry_approval_dao.get_teacher_entry_by_teacher_id(teachers_id)
         if not teachers:
             raise TeacherNotFoundError()
-        if teachers.teacher_sub_status != "active":
-            teachers.teacher_sub_status = "active"
-        return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
+        user_id = user_id
+        parameters = {"user_id": user_id, "action": "rejected"}
+        current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
+        node_instance_id = current_node.get("node_instance_id")
+        node_instance = await self.teacher_work_flow_rule.process_transaction_work_flow(node_instance_id,
+                                                                                        parameters)
+        if node_instance == "rejected":
+            teachers.approval_status = "rejected"
+            await self.teacher_entry_approval_dao.update_teachers(teachers, "approval_status")
+        else:
+            teachers.approval_status = "progressing"
+            await self.teacher_entry_approval_dao.update_teachers(teachers, "approval_status")
+
+    async def revoked(self, teachers_id, process_instance_id, user_id):
+        teachers = await self.teacher_entry_approval_dao.get_teacher_entry_by_teacher_id(teachers_id)
+        if not teachers:
+            raise TeacherNotFoundError()
+        user_id = user_id
+        parameters = {"user_id": user_id, "action": "revoke"}
+        current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
+        node_instance_id = current_node.get("node_instance_id")
+        node_instance = await self.teacher_work_flow_rule.process_transaction_work_flow(node_instance_id,
+                                                                                        parameters)
+
+        teachers.approval_status = "revoked"
+        return await self.teacher_entry_approval_dao.update_teachers(teachers, "approval_status")
 
     # 导入导出相关
     async def import_teachers(self, task: Task):
@@ -232,8 +305,9 @@ class TeachersRule(object):
                 result_dict = teacher_data.copy()
                 result_dict["failed_msg"] = "成功"
                 result = TeacherCreateResultModel(**result_dict)
+                user_id = "asdfasdf"
                 try:
-                    await self.add_teachers(teacher_model)
+                    await self.add_teachers(teacher_model, user_id)
 
                 except Exception as ex:
                     result.failed_msg = str(ex)

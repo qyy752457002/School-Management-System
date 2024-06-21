@@ -30,14 +30,16 @@ class NewTeachersView(BaseView):
     # 新增教职工登记信息
     async def post_newteacher(self, teachers: TeachersCreatModel):
         print(teachers)
-        res = await self.teacher_rule.add_teachers(teachers)
+        user_id = "asdfasdf"
+        res = await self.teacher_rule.add_teachers(teachers, user_id)
         return res
 
     async def delete_newteacher(self, teacher_id: int = Query(..., title="教师编号", description="教师编号")):
         """
         删除教师信息
         """
-        await self.teacher_rule.delete_teachers(teacher_id)
+        user_id = "asdfasdf"
+        await self.teacher_rule.delete_teachers(teacher_id, user_id)
         return str(teacher_id)
 
     # 查询单个教职工登记信息
@@ -48,7 +50,9 @@ class NewTeachersView(BaseView):
     # 编辑新教职工登记信息
     async def put_newteacher(self, teachers: Teachers):
         print(teachers)
-        res = await self.teacher_rule.update_teachers(teachers)
+        user_id = "asdfasdf"
+
+        res = await self.teacher_rule.update_teachers(teachers, user_id)
         return res
 
     # 分页查询
@@ -83,7 +87,8 @@ class NewTeachersView(BaseView):
         if teacher_info.teacher_base_id > 0:
             res = await self.teacher_info_rule.update_teachers_info(teacher_info)
         else:
-            res = await self.teacher_info_rule.add_teachers_info_valid(teacher_info)
+            user_id = "asdfasdf"
+            res = await self.teacher_info_rule.add_teachers_info_valid(teacher_info, user_id)
         return res
 
     async def put_newteacherinforesave(self, teacher_info: CurrentTeacherInfoSaveModel):
@@ -113,21 +118,30 @@ class NewTeachersView(BaseView):
         return teacher_id
 
     async def patch_approved(self,
-                             teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
-        await self.teacher_rule.approved(teacher_id)
+                             teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
+                             process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
+                                                              example=123)):
+        user_id = "asdfasdf"
+        await self.teacher_rule.approved(teacher_id, process_instance_id, user_id)
         return teacher_id
 
     async def patch_rejected(self,
-                             teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
-        await self.teacher_rule.rejected(teacher_id)
+                             teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
+                             process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
+                                                              example=123)):
+        user_id = "asdfasdf"
+        await self.teacher_rule.rejected(teacher_id, process_instance_id, user_id)
         return teacher_id
 
-    async def patch_recall(self,
-                           teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
+    async def patch_revoked(self,
+                            teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
+                            process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
+                                                             example=123)):
         """
         撤回
         """
-        await self.teacher_rule.recall(teacher_id)
+        user_id = "asdfasdf"
+        await self.teacher_rule.recall(teacher_id, process_instance_id, user_id)
         return teacher_id
 
     async def patch_info_submitting(self,
