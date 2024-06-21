@@ -2,18 +2,22 @@
 import json
 from urllib.parse import urlencode
 
+from distribute_transaction_lib.transaction import TransactionNode
+
 from distribute_transaction_lib import DistributedTransactionCore
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
-from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 
 from daos.student_transaction_flow_dao import StudentTransactionFlowDAO
 from models.student_transaction import AuditAction
 from models.student_transaction_flow import StudentTransactionFlow
+from rules.student_transaction import StudentTransactionRule
+from rules.students_rule import StudentsRule
 from views.common.common_view import workflow_service_config
 from views.models.student_transaction import StudentTransactionFlow as StudentTransactionFlowModel, StudentEduInfo
 from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE
@@ -154,13 +158,27 @@ class StudentTransactionFlowRule(object):
         return response
     # 处理流程审批 的 操作
     async def exe_student_transaction(self,student_transaction:StudentEduInfo, student_transaction_flow: StudentTransactionFlowModel):
+        # 如果存在出 读取出的信息
+        if student_transaction.relation_id:
+            stu_rule= get_injector(StudentTransactionRule)
+            student_transaction_out = await stu_rule.get_student_transaction_by_id(student_transaction.relation_id)
+
         # todo  分布式  A校修改学生 出  B校修改学生入
         transfer_data =[
             {'url': 'A_school', 'prepare_api_name': 'prepare','precommit_api_name': 'updatemidelstatus_transferin','commit_api_name': 'ultracommit_transferin', 'data': ''},
             {'url': 'B_school', 'api_name': 'xx', 'data': ''},
             {'url': 'A_district', 'api_name': 'xx', 'data': ''}]
+        # todo 3个业务接口的地址的定义  和业务流程编码 有关
+        flow_data=[
+            TransactionNode(transaction_name='a校转入',prepare_url='22',precommit_url='dd',commit_url='cc',transaction_code= student_transaction.school_id),
+            TransactionNode(transaction_name='b校转出',prepare_url='22',precommit_url='dd',commit_url='cc',transaction_code= student_transaction_out.school_id),
 
-        await DistributedTransactionCore().execute_transaction(111,transfer_data)
+
+        ]
+
+        await DistributedTransactionCore().execute_transaction(111,transfer_data,flow_data)
+
+
         # 读取 节点ID
         trans_flow =await self.query_student_transaction_flow(student_transaction_flow.apply_id,stage='apply_submit')
         json_object = json.loads(trans_flow[0].description)

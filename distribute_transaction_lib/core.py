@@ -123,10 +123,15 @@ class DistributedTransactionCore:
             if not res or res.get('status') !=  self.rollback_success_code:
                 logging.info(f"回滚失败 重试回滚 放入队列 或者提示人工干预{url}{response}")
         logging.info("Transaction rolled back.")
-    async def get_workflow_trans(self,workflow_code):
+    async def get_workflow_trans(self,workflow_code,flow_data=None):
         # 读取 流程
-        transactions =await self.transaction_rule.get_transactions_by_workflow(workflow_code, )
-        self.transaction_nodes = transactions
+        if not flow_data:
+            transactions =await self.transaction_rule.get_transactions_by_workflow(workflow_code, )
+            self.transaction_nodes = transactions
+        else:
+            self.transaction_nodes = flow_data
+
+
         unitcodes = [ ]
         # 各节点的单位code 提取
         for transaction in self.transaction_nodes:
@@ -138,12 +143,12 @@ class DistributedTransactionCore:
 
         # 获取 事务id
         self.transaction_id = self.start_transaction()
-    async def execute_transaction(self,workflow_code, data):
+    async def execute_transaction(self,workflow_code, data,flow_data=None):
         try:
             self.logger.info(f"入参 transaction.{data}")
 
             self.data = data
-            await self.get_workflow_trans(workflow_code)
+            await self.get_workflow_trans(workflow_code,flow_data)
 
             # 获取 锁
             with SafeKazooClient(   transaction_service_config.zookeeper_host_config) as zk:
