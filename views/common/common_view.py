@@ -1,3 +1,5 @@
+from datetime import date
+
 from mini_framework.design_patterns.singleton import singleton
 from daos.enum_value_dao import EnumValueDAO
 from views.common.constant import Constant
@@ -23,22 +25,15 @@ def compare_modify_fields( planning_school,orm_model):
                 print(key,value,orm_model.__dict__[key])
                 # changeitems.append(key)
                 key_cn = planning_school.model_fields[key].title
-                changeitems[key_cn] ={"before": orm_model.__dict__[key],"after":value }
+                valueold= orm_model.__dict__[key]
+                if isinstance(valueold,date):
+                    valueold=valueold.strftime('%Y-%m-%d')
+                if isinstance(value,date):
+                    value=value.strftime('%Y-%m-%d')
+                changeitems[key_cn] ={"before":  valueold,"after":value }
                 # pass
     print(changeitems)
-    #
-    # # 创建类的实例
-    # planning_school_key_info = PlanningSchoolKeyInfo()
-    # print(planning_school_key_info.__fields__)
-    #
-    # # 提取每个属性里 title 后面的值
-    # titles = {attr: planning_school_key_info.__fields__[attr].title for attr in planning_school_key_info.__fields__}
-    #
-    # print(titles)
-
     return changeitems
-
-
 
 def page_none_deal( paging):
     """

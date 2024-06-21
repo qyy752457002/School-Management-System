@@ -43,8 +43,8 @@ class StudentsRule(object):
         students_db = await self.students_dao.get_students_by_id(students_id)
         students = orm_model_to_view_model(students_db, StudentsKeyinfoDetail, exclude=[""])
         # 照片等  处理URL 72
-        if students.photo:
-            fileinfo = await self.file_storage_dao.get_file_by_id( students.photo)
+        if students.photo and students.photo.isnumeric():
+            fileinfo = await self.file_storage_dao.get_file_by_id( int(students.photo))
             if fileinfo:
                 # 获取行的数据
                 fileinfo = fileinfo._asdict()['FileStorage']
