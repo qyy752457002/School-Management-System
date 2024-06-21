@@ -7,6 +7,7 @@ from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 
 from models.student_transaction import AuditAction, TransactionDirection, AuditFlowStatus
+from rules.classes_rule import ClassesRule
 from rules.graduation_student_rule import GraduationStudentRule
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
@@ -130,19 +131,21 @@ class CurrentStudentsView(BaseView):
         # 转出
         student_edu_info_out= copy.deepcopy(student_edu_info)
         # 读取当前在校信息 TODO 修改方法 确保学校等信息这里都有 
-        res_student = await self.students_rule.get_students_by_id(student_edu_info.student_id)
+        res_student = await self.students_base_info_rule.get_students_base_info_by_student_id(student_edu_info.student_id)
         if res_student:
-            student_edu_info_out.school_id = res_student.sch
-            student_edu_info_out.grade_id = res_student.sch
-            student_edu_info_out.class_id = res_student.sch
-            student_edu_info_out.school_name = res_student.sch
-            student_edu_info_out.grade_name = res_student.sch
-            student_edu_info_out.classes = res_student.sch
-            student_edu_info_out.district_id = res_student.sch
-            student_edu_info_out.area_id = res_student.sch
-            student_edu_info_out.major_id = res_student.sch
-            # student_edu_info_out.major_name = res_student.sch
+            student_edu_info_out.school_id = res_student.school_id
+            student_edu_info_out.grade_id = res_student.grade_id
+            student_edu_info_out.class_id = res_student.class_id
+            class_rule = get_injector(ClassesRule)
+            class_info =await class_rule.get_classes_by_id(res_student.class_id)
 
+            # student_edu_info_out.school_name = res_student.sch
+            # student_edu_info_out.grade_name = res_student.sch
+            student_edu_info_out.classes = class_info.class_name
+            # student_edu_info_out.district_id = res_student.sch
+            # student_edu_info_out.area_id = res_student.sch
+            student_edu_info_out.major_id = class_info.major_for_vocational
+            # student_edu_info_out.major_name = res_student.sch
 
         student_edu_info_out.status = AuditAction.NEEDAUDIT.value
         # student_edu_info_out.student_id = res_student.student_id
