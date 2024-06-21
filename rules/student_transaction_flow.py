@@ -154,12 +154,13 @@ class StudentTransactionFlowRule(object):
         return response
     # 处理流程审批 的 操作
     async def exe_student_transaction(self,student_transaction:StudentEduInfo, student_transaction_flow: StudentTransactionFlowModel):
+        # todo  分布式  A校修改学生 出  B校修改学生入
         transfer_data =[
             {'url': 'A_school', 'prepare_api_name': 'prepare','precommit_api_name': 'updatemidelstatus_transferin','commit_api_name': 'ultracommit_transferin', 'data': ''},
             {'url': 'B_school', 'api_name': 'xx', 'data': ''},
             {'url': 'A_district', 'api_name': 'xx', 'data': ''}]
 
-        # await DistributedTransactionCore().execute_transaction(111,transfer_data)
+        await DistributedTransactionCore().execute_transaction(111,transfer_data)
         # 读取 节点ID
         trans_flow =await self.query_student_transaction_flow(student_transaction_flow.apply_id,stage='apply_submit')
         json_object = json.loads(trans_flow[0].description)
@@ -193,9 +194,10 @@ class StudentTransactionFlowRule(object):
         if student_transaction.status== AuditAction.PASS.value:
             datadict['action'] = 'approved'
         if student_transaction.status== AuditAction.REFUSE.value:
-            datadict['action'] = 'approved'
+            datadict['action'] = 'rejected'
 
         response = await httpreq.post_json(url,datadict,headerdict)
         print(response,'接口响应')
+        # 处理  更新数据  
 
         return True

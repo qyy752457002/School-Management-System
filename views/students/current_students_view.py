@@ -139,21 +139,14 @@ class CurrentStudentsView(BaseView):
             class_rule = get_injector(ClassesRule)
             class_info =await class_rule.get_classes_by_id(res_student.class_id)
 
-            # student_edu_info_out.school_name = res_student.sch
-            # student_edu_info_out.grade_name = res_student.sch
             student_edu_info_out.classes = class_info.class_name
-            # student_edu_info_out.district_id = res_student.sch
-            # student_edu_info_out.area_id = res_student.sch
             student_edu_info_out.major_id = class_info.major_for_vocational
-            # student_edu_info_out.major_name = res_student.sch
 
         student_edu_info_out.status = AuditAction.NEEDAUDIT.value
-        # student_edu_info_out.student_id = res_student.student_id
 
         res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
                                                                               TransactionDirection.OUT.value)
         # 转入信息
-        # student_edu_info_in= student_edu_info
         student_edu_info.relation_id = res_out.id
 
         student_edu_info.status = AuditAction.NEEDAUDIT.value
@@ -181,7 +174,7 @@ class CurrentStudentsView(BaseView):
             json_str = json.dumps(res3, ensure_ascii=False)
 
             # res.flow = res3
-
+        # 提交态的 审批流
         student_trans_flow = StudentTransactionFlow(apply_id=audit_info.id,
                                                     stage=AuditFlowStatus.APPLY_SUBMIT.value,
                                                     remark='',description= json_str)
