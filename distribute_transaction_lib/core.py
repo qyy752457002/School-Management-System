@@ -135,7 +135,7 @@ class DistributedTransactionCore:
         unitcodes = [ ]
         # 各节点的单位code 提取
         for transaction in self.transaction_nodes:
-            unitcodes.append(transaction .transaction_code)
+            unitcodes.append(transaction.transaction_code)
 
         # 读取单位URL
         unit_urls = await  self.transaction_rule.get_unitsystem_by_unitcode( unitcodes)

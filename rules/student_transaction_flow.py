@@ -159,16 +159,19 @@ class StudentTransactionFlowRule(object):
     # 处理流程审批 的 操作
     async def exe_student_transaction(self,student_transaction:StudentEduInfo, student_transaction_flow: StudentTransactionFlowModel):
         # 如果存在出 读取出的信息
+        student_transaction_out=None
         if student_transaction.relation_id:
             stu_rule= get_injector(StudentTransactionRule)
             student_transaction_out = await stu_rule.get_student_transaction_by_id(student_transaction.relation_id)
 
         # todo  分布式  A校修改学生 出  B校修改学生入
         transfer_data =[
+            {'data': student_transaction, 'api_name': 'xx', },
             {'url': 'A_school', 'prepare_api_name': 'prepare','precommit_api_name': 'updatemidelstatus_transferin','commit_api_name': 'ultracommit_transferin', 'data': ''},
-            {'url': 'B_school', 'api_name': 'xx', 'data': ''},
+
             {'url': 'A_district', 'api_name': 'xx', 'data': ''}]
         # todo 3个业务接口的地址的定义  和业务流程编码 有关
+        print(student_transaction,student_transaction_out,00000000)
         flow_data=[
             TransactionNode(transaction_name='a校转入',prepare_url='22',precommit_url='dd',commit_url='cc',transaction_code= student_transaction.school_id),
             TransactionNode(transaction_name='b校转出',prepare_url='22',precommit_url='dd',commit_url='cc',transaction_code= student_transaction_out.school_id),
@@ -178,6 +181,14 @@ class StudentTransactionFlowRule(object):
 
         await DistributedTransactionCore().execute_transaction(111,transfer_data,flow_data)
 
+        # await self.req_workflow_ultra(student_transaction,student_transaction_flow)
+
+
+        # 处理  更新数据
+
+
+        return True
+    async def req_workflow_ultra(self,student_transaction,student_transaction_flow):
 
         # 读取 节点ID
         trans_flow =await self.query_student_transaction_flow(student_transaction_flow.apply_id,stage='apply_submit')
@@ -216,7 +227,4 @@ class StudentTransactionFlowRule(object):
 
         response = await httpreq.post_json(url,datadict,headerdict)
         print(response,'接口响应')
-        # 处理  更新数据
-
-
-        return True
+        pass
