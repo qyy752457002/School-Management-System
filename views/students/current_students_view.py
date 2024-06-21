@@ -125,9 +125,10 @@ class CurrentStudentsView(BaseView):
     # 在校生转入
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
         # print(new_students_key_info)
+        # 新增转学数据到库
         student_edu_info.status = AuditAction.NEEDAUDIT.value
         audit_info = res = await self.student_transaction_rule.add_student_transaction(student_edu_info)
-        # 流乘记录 todo 发起 审批流程的服务请求
+        # 流乘记录  发起 审批流程的服务请求
         student_trans_flow = StudentTransactionFlow(apply_id=audit_info.id,
                                                     stage=AuditFlowStatus.FLOWBEGIN.value,
                                                     remark='')
@@ -154,7 +155,6 @@ class CurrentStudentsView(BaseView):
                                                     remark='',description= json_str)
         res2 = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
 
-
         return res
 
     # 在校生转入   发起审批
@@ -162,6 +162,8 @@ class CurrentStudentsView(BaseView):
                                      audit_info: StudentTransactionAudit
 
                                      ):
+        # todo 校验必须是转出校的老师才能审批
+
         # 审批通过 操作 或者拒绝
         student_transaciton = StudentTransaction(id=audit_info.transferin_audit_id,
                                               status=audit_info.transferin_audit_action.value, )
@@ -198,6 +200,7 @@ class CurrentStudentsView(BaseView):
                                                     # stage=audit_info.transferin_audit_action.value,
                                                     remark= '用户撤回')
         res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+        # todo 审批流取消
 
         # print(new_students_key_info)
         return res
