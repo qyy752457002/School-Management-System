@@ -148,12 +148,13 @@ class StudentTransactionFlowRule(object):
         url+=  ('?' +urlencode(datadict))
 
         print('参数', url, datadict,headerdict)
+        response= None
 
-
-        response = await httpreq.post_json(url,datadict,headerdict)
-        print(response)
-
-
+        try:
+            response = await httpreq.post_json(url,datadict,headerdict)
+            print(response)
+        except Exception as e:
+            print(e)
 
         return response
     # 处理流程审批 的 操作
@@ -171,7 +172,7 @@ class StudentTransactionFlowRule(object):
 
             {'url': 'A_district', 'api_name': 'xx', 'data': ''}]
         # todo 3个业务接口的地址的定义  和业务流程编码 有关
-        print(student_transaction,student_transaction_out,00000000)
+        print(222222222222,student_transaction,student_transaction_out,)
         flow_data=[
             TransactionNode(transaction_name='a校转入',prepare_url='22',precommit_url='dd',commit_url='cc',transaction_code= student_transaction.school_id),
             TransactionNode(transaction_name='b校转出',prepare_url='22',precommit_url='dd',commit_url='cc',transaction_code= student_transaction_out.school_id),

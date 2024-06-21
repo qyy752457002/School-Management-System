@@ -63,7 +63,9 @@ class DistributedTransactionCore:
             logging.info(f"API 成功 succeeded: {url}")
             return response
         except Exception as e:
-            logging.error(f"API 失败 请检查: {e}",url,data)
+            logging.error(f"API 失败 请检查: {e}",)
+            logging.error(f"API 失败 请检查url:   {url}  ",)
+            logging.error(f"API 失败 请检查data:   {data}",)
             return dict()
 
     async def prepare_transaction(self, data):
@@ -78,6 +80,9 @@ class DistributedTransactionCore:
                 # continue
             # 检查 各单位 具有基础url
             url = f"{getattr(value,self.baseurl_key_name)}{getattr(value,self.prepare_key_name)}"
+            va = self.api_urls[value.transaction_code]
+            baseurl = va.unit_url
+            url= baseurl+url
 
             response = await self.safe_api_call(url,  self.data)
             # 检查是否 有状态  且是 成功的状态码
@@ -138,7 +143,7 @@ class DistributedTransactionCore:
             unitcodes.append(transaction.transaction_code)
 
         # 读取单位URL
-        unit_urls = await  self.transaction_rule.get_unitsystem_by_unitcode( unitcodes)
+        unit_urls = await  self.transaction_rule.get_unitsystem_by_unitcode( unitcodes,return_keys='school_id')
         self.api_urls = unit_urls
 
         # 获取 事务id

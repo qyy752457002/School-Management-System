@@ -64,9 +64,9 @@ class TransactionRule(object):
 
         return await self.transaction_dao.add_transaction_progress(transaction_progress)
 
-    async def get_unitsystem_by_unitcode(self, unit_codes ):
+    async def get_unitsystem_by_unitcode(self, unit_codes,return_keys=None ):
         #   根据单位的编号 读取各个单位的URL 返回
-        return await self.unit_system_dao.get_unit_system_by_unitcodes(unit_codes)
+        return await self.unit_system_dao.get_unit_system_by_unitcodes(unit_codes,return_keys)
         pass
 
 

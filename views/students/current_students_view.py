@@ -152,9 +152,11 @@ class CurrentStudentsView(BaseView):
                                                                               TransactionDirection.OUT.value)
         # 转入信息
         student_edu_info.relation_id = res_out.id
+        # print('debug-----222222222222',res_out)
+        # print('debug-----3333333333333',student_edu_info)
 
         student_edu_info.status = AuditAction.NEEDAUDIT.value
-        audit_info = res = await self.student_transaction_rule.add_student_transaction(student_edu_info)
+        audit_info = res = await self.student_transaction_rule.add_student_transaction(student_edu_info, TransactionDirection.IN.value,res_out.id )
 
 
         # 流乘记录  发起 审批流程的服务请求
@@ -168,7 +170,7 @@ class CurrentStudentsView(BaseView):
         transferin_id =  0
 
         json_str=''
-        if len(res3)>0 :
+        if res3 and  len(res3)>0 :
 
             print(res3[0])
             transferin_id = res3[0]['process_instance_id']
