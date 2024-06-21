@@ -239,7 +239,5 @@ class StudentTransactionRule(object):
 
                 await self.students_dao.update_students(stu,*need_update_list)
 
-
-
         # student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
         return student_edu_info

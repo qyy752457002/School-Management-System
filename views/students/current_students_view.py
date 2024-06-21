@@ -6,6 +6,7 @@ from mini_framework.async_task.task import Task
 from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 
+from business_exceptions.student import StudentExistsThisSchoolError
 from models.student_transaction import AuditAction, TransactionDirection, AuditFlowStatus
 from rules.classes_rule import ClassesRule
 from rules.graduation_student_rule import GraduationStudentRule
@@ -141,6 +142,9 @@ class CurrentStudentsView(BaseView):
 
             student_edu_info_out.classes = class_info.class_name
             student_edu_info_out.major_id = class_info.major_for_vocational
+            if student_edu_info_out.school_id== student_edu_info.school_id:
+                raise StudentExistsThisSchoolError()
+                pass
 
         student_edu_info_out.status = AuditAction.NEEDAUDIT.value
 
