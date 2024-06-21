@@ -16,3 +16,7 @@ class StudentFamilyInfoExistsError(MiniHTTPException):
 class StudentSessionNotFoundError(MiniHTTPException):
     def __init__(self):
         super().__init__(404, "STUDENT_SESSION_NOT_FOUND", "Student session not found.", "未找到开启的届别,请先开启届别")
+
+class StudentExistsThisSchoolError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "STUDENT_EXISTS_IN_THIS_SCHOOL", "Student already exists this school.", "学生已经存在于当前学校")
