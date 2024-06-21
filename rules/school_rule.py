@@ -282,10 +282,38 @@ class SchoolRule(object):
 
 
 
-    async def query_schools(self,planning_school_name,extend_params:ExtendParams|None):
-
+    async def query_schools(self,school_name,extend_params:ExtendParams|None,school_id=None,block=None,borough=None):
+        # block,borough
         session = await db_connection_manager.get_async_session("default", True)
-        query = select(School).where(School.school_name.like(f'%{planning_school_name}%') )
+        query = select(School)
+        if school_name:
+            if ',' in school_name:
+                school_name = school_name.split(',')
+                if isinstance(school_name, list):
+                    query = query.where(School.school_name.in_(school_name))
+            else:
+                query = query.where(School.school_name.like(f'%{school_name}%') )
+        if school_id:
+            if ',' in school_id:
+                school_id = school_id.split(',')
+                if isinstance(school_id, list):
+                    query = query.where(School.id.in_(school_id))
+            else:
+                query = query.where(School.id==school_id  )
+        if block:
+            if ',' in block:
+                block = block.split(',')
+                if isinstance(block, list):
+                    query = query.where(School.block.in_(block))
+            else:
+                query = query.where(School.block.like(f'%{block}%') )
+        if borough:
+            if ',' in borough:
+                borough = borough.split(',')
+                if isinstance(borough, list):
+                    query = query.where(School.borough.in_(borough))
+            else:
+                query = query.where(School.borough.like(f'%{borough}%') )
         # print(extend_params,3333333333)
         if extend_params:
             if extend_params.school_id:

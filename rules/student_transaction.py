@@ -33,7 +33,7 @@ class StudentTransactionRule(object):
     grade_dao: GradeDAO
     school_dao: SchoolDAO
 
-    async def get_student_transaction_by_id(self, student_transaction_id):
+    async def get_student_transaction_by_id(self, student_transaction_id)->StudentTransactionModel:
         student_transaction_db = await self.student_transaction_dao.get_studenttransaction_by_id(student_transaction_id)
         # 可选 , exclude=[""]
         print(vars(student_transaction_db))
