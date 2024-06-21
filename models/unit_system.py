@@ -28,6 +28,7 @@ class UnitSystem(BaseDBModel):
         :return:
         """
         return [
-            UnitSystem(id=1, school_id=1, institution_id=0, unit_url="xxxx", remark="",created_at=datetime.now),
-            UnitSystem(id=2, school_id=2, institution_id=0, unit_url="xxbbxx", remark="",created_at=datetime.now),
-            ]
+            UnitSystem(id=1, school_id=1, institution_id=0, unit_url="xxxx", remark="",created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            UnitSystem(id=2, school_id=2, institution_id=0, unit_url="xccc.cxx", remark="",created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            UnitSystem(id=3, school_id=3, institution_id=0, unit_url="ss.cc", remark="",created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+        ]

@@ -21,6 +21,7 @@ class ExtendParams(BaseModel):
     county_name: int = Field(None, title="", description="区名称",examples=['19'])
     # 市  有市ID
     city: str = Field(None, title="", description="城市 市端这里是沈阳的编码",examples=[''])
+    user_name: str = Field(None, title="", description="",examples=[''])
 
 
 
