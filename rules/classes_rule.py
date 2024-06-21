@@ -9,7 +9,7 @@ from rules.enum_value_rule import EnumValueRule
 from rules.teachers_rule import TeachersRule
 from views.models.classes import Classes as ClassesModel
 from views.models.classes import ClassesSearchRes
-from views.models.system import DISTRICT_ENUM_KEY, GRADE_ENUM_KEY
+from views.models.system import DISTRICT_ENUM_KEY, GRADE_ENUM_KEY, MAJOR_LV3_ENUM_KEY
 
 
 @dataclass_inject
@@ -39,17 +39,15 @@ class ClassesRule(object):
             if not tea:
                 raise Exception(f"保育员信息{classes.care_teacher_id}不存在")
             pass
+        # 如果存在专业 校验专业是否符合枚举
+        if classes.major_for_vocational:
+            enum_value_rule = get_injector(EnumValueRule)
+            check_major = await  enum_value_rule.check_enum_values(MAJOR_LV3_ENUM_KEY, classes.major_for_vocational)
+            if not check_major:
+                raise Exception(f"专业信息{classes.major_for_vocational}不存在,请选择正确的专业")
 
         classes_db = view_model_to_orm_model(classes, Classes, exclude=["id"],other_mapper={
-            # "teacher_phone": "teacher_phone",
-            # "teacher_job_number": "",
-            # "teacher_card_type": "",
-            # "teacher_id_card": "",
-            # "care_teacher_phone": "",
-            # "care_teacher_job_number": "",
-            # "care_teacher_card_type": "",
-            # "care_teacher_id_card": "",
-            # "care_teacher_name": "",
+
         })
 
         classes_db = await self.classes_dao.add_classes(classes_db)

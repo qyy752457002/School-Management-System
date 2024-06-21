@@ -34,7 +34,7 @@ class GradeRule(object):
             raise GradeAlreadyExistError()
         # 校验 枚举值
         enum_value_rule = get_injector(EnumValueRule)
-        await enum_value_rule.check_enum_values(GRADE_ENUM_KEY,grade.grade_type)
+        # await enum_value_rule.check_enum_values(GRADE_ENUM_KEY,grade.grade_type)
 
         grade_db = view_model_to_orm_model(grade, Grade,    exclude=["id"])
         grade_db.created_at =   datetime.now()

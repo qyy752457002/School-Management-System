@@ -1,24 +1,8 @@
-import datetime
-import logging
-
 from mini_framework.design_patterns.singleton import singleton
-from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
-from mini_framework.web.views import BaseView
-
-from daos import enum_value_dao
 from daos.enum_value_dao import EnumValueDAO
 from views.common.constant import Constant
 from views.models.extend_params import ExtendParams
-from views.models.grades import Grades
 
-from fastapi import Query, Depends, Body
-from sqlalchemy import select
-from mini_framework.design_patterns.depend_inject import get_injector
-from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
-from mini_framework.web.views import BaseView
-from models.grade import Grade
-from rules.grade_rule import GradeRule
-from views.models.grades import Grades
 from id_validator import validator
 
 from views.models.system import UnitType
@@ -31,7 +15,6 @@ def compare_modify_fields( planning_school,orm_model):
     :param orm_model:
     :return:
     """
-    # print(1111111,planning_school,222222222,orm_model,33333333)
     changeitems = dict()
     for key, value in planning_school.__dict__.items():
         if value:
@@ -100,6 +83,12 @@ async def get_extend_params(request):
 
     return obj
 
+def get_client_ip(request):
+    client_ip = request.headers.get("X-Forwarded-For", request.client.host)
+    if client_ip and ',' in client_ip:
+        client_ip = client_ip.split(',')[0].strip()
+
+    return client_ip
 
 @singleton
 class WorkflowServiceConfig:

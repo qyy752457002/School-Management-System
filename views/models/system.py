@@ -4,6 +4,7 @@ from typing import Final
 from pydantic import BaseModel, Field
 # 系统常量 定义在这里
 GRADE_ENUM_KEY:Final = 'grade'
+MAJOR_LV3_ENUM_KEY:Final = 'major_lv3'
 DISTRICT_ENUM_KEY:Final = 'country'
 STUDENT_TRANSFER_WORKFLOW_CODE:Final = 's_transfer_in_inner'
 
