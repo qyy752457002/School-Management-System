@@ -41,6 +41,7 @@ class UnitSystem(BaseModel):
 
 # 事务节点  模型
 class TransactionNode(BaseModel):
+    transaction_name: str
     transaction_code: str
     prepare_url: str
     base_url: str= Field(None, title="", description="",examples=['1'])

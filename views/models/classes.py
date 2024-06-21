@@ -41,7 +41,7 @@ class Classes(BaseModel):
     monitor_student_number: str = Field(None, description="班长学号", examples=['S11000236001'])
     class_type: str = Field(None, description="中小学班级类型", examples=['小学教学点班'])
     is_bilingual_class: str|bool = Field(None, description="是否少数民族双语教学班", examples=[True])
-    major_for_vocational: str = Field(None, description="中职班级专业", examples=['fsdfdsfsdxxx'])
+    major_for_vocational: str|None = Field(None, description="中职班级专业", examples=['770301'])
     bilingual_teaching_mode: str = Field(None, description="双语教学模式", examples=['fsdfdsfsdxxx'])
     ethnic_language: str = Field(None, description="少数民族语言", examples=['fsdfdsfsdxxx'])
     is_att_class: str|bool = Field(None, description="是否附设班", examples=[True])

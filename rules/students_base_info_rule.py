@@ -25,7 +25,7 @@ class StudentsBaseInfoRule(object):
     school_dao: SchoolDAO
     school_commu_dao: SchoolCommunicationDAO
 
-    async def get_students_base_info_by_student_id(self, student_id):
+    async def get_students_base_info_by_student_id(self, student_id)->StudentsBaseInfo:
         """
         获取单个学生信息
         """

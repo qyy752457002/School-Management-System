@@ -153,7 +153,7 @@ class EnumValueRule(object):
             lst.append(row.enum_value)
         if enum_value not  in lst:
             # raise EnumValueNotMatchError()
-            return True
+            return False
 
         else:
             return True

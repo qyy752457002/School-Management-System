@@ -1,24 +1,10 @@
-import datetime
-import logging
+from datetime import date
 
 from mini_framework.design_patterns.singleton import singleton
-from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
-from mini_framework.web.views import BaseView
-
-from daos import enum_value_dao
 from daos.enum_value_dao import EnumValueDAO
 from views.common.constant import Constant
 from views.models.extend_params import ExtendParams
-from views.models.grades import Grades
 
-from fastapi import Query, Depends, Body
-from sqlalchemy import select
-from mini_framework.design_patterns.depend_inject import get_injector
-from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
-from mini_framework.web.views import BaseView
-from models.grade import Grade
-from rules.grade_rule import GradeRule
-from views.models.grades import Grades
 from id_validator import validator
 
 from views.models.system import UnitType
@@ -31,29 +17,23 @@ def compare_modify_fields( planning_school,orm_model):
     :param orm_model:
     :return:
     """
-    # print(1111111,planning_school,222222222,orm_model,33333333)
     changeitems = dict()
+    # 使用视图模型
     for key, value in planning_school.__dict__.items():
         if value:
             if key in orm_model.__dict__ and orm_model.__dict__[key] != value:
                 print(key,value,orm_model.__dict__[key])
                 # changeitems.append(key)
-                changeitems[key] = [ orm_model.__dict__[key],value ]
+                key_cn = planning_school.model_fields[key].title
+                valueold= orm_model.__dict__[key]
+                if isinstance(valueold,date):
+                    valueold=valueold.strftime('%Y-%m-%d')
+                if isinstance(value,date):
+                    value=value.strftime('%Y-%m-%d')
+                changeitems[key_cn] ={"before":  valueold,"after":value }
                 # pass
     print(changeitems)
-    #
-    # # 创建类的实例
-    # planning_school_key_info = PlanningSchoolKeyInfo()
-    # print(planning_school_key_info.__fields__)
-    #
-    # # 提取每个属性里 title 后面的值
-    # titles = {attr: planning_school_key_info.__fields__[attr].title for attr in planning_school_key_info.__fields__}
-    #
-    # print(titles)
-
     return changeitems
-
-
 
 def page_none_deal( paging):
     """
@@ -100,6 +80,12 @@ async def get_extend_params(request):
 
     return obj
 
+def get_client_ip(request):
+    client_ip = request.headers.get("X-Forwarded-For", request.client.host)
+    if client_ip and ',' in client_ip:
+        client_ip = client_ip.split(',')[0].strip()
+
+    return client_ip
 
 @singleton
 class WorkflowServiceConfig:

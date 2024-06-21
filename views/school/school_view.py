@@ -361,18 +361,21 @@ class SchoolView(BaseView):
             account='', ))
 
         return res2
-    # 学校搜索 模糊搜索
+    # 学校搜索 模糊搜索 TODO 增加 区域ID  学校ID 支持多个传入
     async def get_search(self,
                          request: Request  ,
 
                          school_name: str = Query("", title="学校名称", description="1-20字符", ),
+                         school_id: str = Query("", title="多个逗号分割", description="", ),
+                         block: str = Query("", title="地域管辖区", description="", ),
+                         borough: str = Query("", title="行政管辖区", description="", ),
 
                          page_request=Depends(PageRequest),
 
     ):
         items = []
         # 学校 区 只能看自己的范围内的数据
-        paging_result = await self.school_rule.query_schools(school_name,await get_extend_params(request))
+        paging_result = await self.school_rule.query_schools(school_name,await get_extend_params(request),school_id,block,borough,)
         return paging_result
     # 学校开设审核
     async def patch_open_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
