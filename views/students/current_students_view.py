@@ -137,7 +137,7 @@ class CurrentStudentsView(BaseView):
         # 新增转学数据到库
         # 转出
         student_edu_info_out= copy.deepcopy(student_edu_info)
-        # 读取当前在校信息 TODO 修改方法 确保学校等信息这里都有 
+        # 读取当前在校信息  确保学校等信息这里都有
         res_student = await self.students_base_info_rule.get_students_base_info_by_student_id(student_edu_info.student_id)
         if res_student:
             student_edu_info_out.school_id = res_student.school_id
@@ -159,11 +159,9 @@ class CurrentStudentsView(BaseView):
         # 转入信息
         student_edu_info.relation_id = res_out.id
         # print('debug-----222222222222',res_out)
-        # print('debug-----3333333333333',student_edu_info)
 
         student_edu_info.status = AuditAction.NEEDAUDIT.value
         audit_info = res = await self.student_transaction_rule.add_student_transaction(student_edu_info, TransactionDirection.IN.value,res_out.id )
-
 
         # 流乘记录  发起 审批流程的服务请求
         student_trans_flow = StudentTransactionFlow(apply_id=audit_info.id,
