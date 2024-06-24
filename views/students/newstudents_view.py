@@ -281,11 +281,29 @@ class NewsStudentsFamilyInfoView(BaseView):
 
         return res
 
-    async def put_newstudentfamilyinfo(self, new_students_family_info: StudentsUpdateFamilyInfo):
+    async def put_newstudentfamilyinfo(self, new_students_family_info: StudentsUpdateFamilyInfo,request: Request):
         """
-        新生编辑家庭信息 todo 变更日志
+        新生编辑家庭信息  变更日志
         """
+        origin = await self.students_family_info_rule.get_students_family_info_by_id(new_students_family_info.student_family_info_id)
+        log_con = compare_modify_fields(new_students_family_info, origin)
         res = await self.students_family_info_rule.update_students_family_info(new_students_family_info)
+        json_string = json.dumps(log_con, ensure_ascii=False)
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(new_students_family_info.student_id),
+            operator='admin',
+            module=OperationModule.FAMILYINFO.value,
+            target=OperationTargetType.STUDENT.value,
+            action_type=OperationType.MODIFY.value,
+            ip= get_client_ip(request),
+            change_data=json_string,
+            change_field=OperationModule.FAMILYINFO.value,
+            change_item=OperationModule.FAMILYINFO.value,
+            timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason=OperationType.MODIFY.value+OperationModule.FAMILYINFO.value,
+            doc_upload='',
+            status='1',
+            account='', ))
         return res
 
     async def delete_newstudentfamilyinfo(self,
