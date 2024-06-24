@@ -40,6 +40,7 @@ class OperationModule(str, Enum):
     CREATE_SCHOOL = "开园"
     KEYINFO  = "关键信息"
     BASEINFO  = "基础信息"
+    FAMILYINFO  = "家庭成员信息"
     @classmethod
     def to_list(cls):
         return [cls.CREATE_SCHOOL, cls.KEYINFO, cls.BASEINFO,  ]

@@ -1,4 +1,5 @@
 import copy
+import datetime
 import json
 
 from fastapi.params import Body
@@ -12,9 +13,12 @@ from business_exceptions.student import StudentExistsThisSchoolError
 from models.student_transaction import AuditAction, TransactionDirection, AuditFlowStatus
 from rules.classes_rule import ClassesRule
 from rules.graduation_student_rule import GraduationStudentRule
+from rules.operation_record import OperationRecordRule
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
 from rules.students_key_info_change_rule import StudentsKeyInfoChangeRule
+from views.common.common_view import compare_modify_fields, get_client_ip
+from views.models.operation_record import OperationRecord, OperationModule, OperationTargetType, OperationType
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
     StudentEduInfo, StudentTransactionAudit, StudentEduInfoOut
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, \
@@ -133,7 +137,7 @@ class CurrentStudentsView(BaseView):
         # 新增转学数据到库
         # 转出
         student_edu_info_out= copy.deepcopy(student_edu_info)
-        # 读取当前在校信息 TODO 修改方法 确保学校等信息这里都有 
+        # 读取当前在校信息  确保学校等信息这里都有
         res_student = await self.students_base_info_rule.get_students_base_info_by_student_id(student_edu_info.student_id)
         if res_student:
             student_edu_info_out.school_id = res_student.school_id
@@ -155,11 +159,9 @@ class CurrentStudentsView(BaseView):
         # 转入信息
         student_edu_info.relation_id = res_out.id
         # print('debug-----222222222222',res_out)
-        # print('debug-----3333333333333',student_edu_info)
 
         student_edu_info.status = AuditAction.NEEDAUDIT.value
         audit_info = res = await self.student_transaction_rule.add_student_transaction(student_edu_info, TransactionDirection.IN.value,res_out.id )
-
 
         # 流乘记录  发起 审批流程的服务请求
         student_trans_flow = StudentTransactionFlow(apply_id=audit_info.id,
@@ -407,11 +409,10 @@ class CurrentStudentsView(BaseView):
         print('发生任务成功')
         return task
 
-
-
 class CurrentStudentsBaseInfoView(BaseView):
     def __init__(self):
         super().__init__()
+        self.operation_record_rule = get_injector(OperationRecordRule)
         self.students_rule = get_injector(StudentsRule)
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
         self.student_session_rule = get_injector(StudentSessionRule)
@@ -424,11 +425,32 @@ class CurrentStudentsBaseInfoView(BaseView):
         res = await self.students_base_info_rule.get_students_base_info_by_student_id(student_id)
         return res
 
-    async def put_studentbaseinfo(self, new_students_base_info: StudentsBaseInfo):
+    async def put_studentbaseinfo(self, new_students_base_info: StudentsBaseInfo,request: Request):
         """
         在校生 编辑基本信息
         """
+
+        origin = await self.students_base_info_rule.get_students_base_info_by_student_id(new_students_base_info.student_id)
+        log_con = compare_modify_fields(new_students_base_info, origin)
+
         res = await self.students_base_info_rule.update_students_base_info(new_students_base_info)
+
+        json_string = json.dumps(log_con, ensure_ascii=False)
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(new_students_base_info.student_id),
+            operator='admin',
+            module=OperationModule.BASEINFO.value,
+            target=OperationTargetType.STUDENT.value,
+            action_type=OperationType.MODIFY.value,
+            ip= get_client_ip(request),
+            change_data=json_string,
+            change_field=OperationModule.BASEINFO.value,
+            change_item=OperationModule.BASEINFO.value,
+            timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason=OperationType.MODIFY.value+OperationModule.BASEINFO.value,
+            doc_upload='',
+            status='1',
+            account='', ))
         return res
 
     async def delete_studentbaseinfo(self, student_id: str = Query(..., title="学生编号", description="学生编号", )):
@@ -445,12 +467,32 @@ class CurrentStudentsFamilyView(BaseView):
         self.students_rule = get_injector(StudentsRule)
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
         self.students_family_info_rule = get_injector(StudentsFamilyInfoRule)
+        self.operation_record_rule = get_injector(OperationRecordRule)
 
-    async def put_studentfamilyinfo(self, new_students_family_info: StudentsUpdateFamilyInfo):
+    async def put_studentfamilyinfo(self, new_students_family_info: StudentsUpdateFamilyInfo,request: Request):
         """
         新生编辑家庭信息
         """
+        origin = await self.students_family_info_rule.get_students_family_info_by_id(new_students_family_info.student_family_info_id)
+        log_con = compare_modify_fields(new_students_family_info, origin)
+
         res = await self.students_family_info_rule.update_students_family_info(new_students_family_info)
+        json_string = json.dumps(log_con, ensure_ascii=False)
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(new_students_family_info.student_id),
+            operator='admin',
+            module=OperationModule.FAMILYINFO.value,
+            target=OperationTargetType.STUDENT.value,
+            action_type=OperationType.MODIFY.value,
+            ip= get_client_ip(request),
+            change_data=json_string,
+            change_field=OperationModule.FAMILYINFO.value,
+            change_item=OperationModule.FAMILYINFO.value,
+            timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason=OperationType.MODIFY.value+OperationModule.FAMILYINFO.value,
+            doc_upload='',
+            status='1',
+            account='', ))
         return res
 
     async def delete_studentfamilyinfo(self,
