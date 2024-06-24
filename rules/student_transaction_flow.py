@@ -166,15 +166,20 @@ class StudentTransactionFlowRule(object):
             student_transaction_out = await stu_rule.get_student_transaction_by_id(student_transaction.relation_id)
 
         # todo  分布式  A校修改学生 出  B校修改学生入
-        transfer_data =[
-            {'data': student_transaction.id , 'api_name': 'xx', },
-            {'url': 'A_school', 'prepare_api_name': 'prepare','precommit_api_name': 'updatemidelstatus_transferin','commit_api_name': 'ultracommit_transferin', 'data': ''},
-        ]
+        transfer_data =             {'id': student_transaction.id , 'api_name': 'xx', }
+
+
         # todo 3个业务接口的地址的定义  和业务流程编码 有关
         print(222222222222,student_transaction,student_transaction_out,)
         flow_data=[
-            TransactionNode(transaction_name='a校转入',prepare_url='/api/school/v1/current-student/student-transaction-prepare',precommit_url='dd',commit_url='cc',transaction_code= student_transaction.school_id),
-            TransactionNode(transaction_name='b校转出',prepare_url='/api/school/v1/current-student/student-transaction-prepare',precommit_url='dd',commit_url='cc',transaction_code= student_transaction_out.school_id),
+            TransactionNode(transaction_name='a校转入',prepare_url='/api/school/v1/public/current-student/student-transaction-prepare',precommit_url='/api/school/v1/public/current-student/student-transaction-precommit',commit_url='/api/school/v1/public/current-student/student-transaction-commit',
+            rollback_url='/api/school/v1/public/current-student/student-transaction-rollback',
+                            transaction_code= student_transaction.school_id),
+
+            TransactionNode(transaction_name='b校转出',
+                            prepare_url='/api/school/v1/public/current-student/student-transaction-prepare',precommit_url='/api/school/v1/public/current-student/student-transaction-precommit',commit_url='/api/school/v1/public/current-student/student-transaction-commit',
+                            rollback_url='/api/school/v1/public/current-student/student-transaction-rollback',
+                            transaction_code= student_transaction_out.school_id),
 
 
         ]

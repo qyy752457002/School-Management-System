@@ -101,6 +101,7 @@
       "home_url": "https://localhost/api/school/docs",
       "no_login_urls": [
         "/api/school/openapi.json",
+        "/api/school/v1/public",
         "/api/school/docs"
       ]
     }

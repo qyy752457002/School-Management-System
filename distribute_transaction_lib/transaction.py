@@ -47,3 +47,4 @@ class TransactionNode(BaseModel):
     base_url: str= Field('', title="", description="",examples=['1'])
     precommit_url: str
     commit_url : str
+    rollback_url : str

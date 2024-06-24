@@ -407,17 +407,6 @@ class CurrentStudentsView(BaseView):
         print('发生任务成功')
         return task
 
-    async def post_student_transaction_prepare(self,
-                                               request:Request,
-
-        session_name: str = Body("", title="", description="", ),
-
-                                               ):
-        """
-        转学事务 准备 接口 检查数据返回状态
-        """
-        res = request.json()
-        return {"status": "prepared","data":res}
 
 
 class CurrentStudentsBaseInfoView(BaseView):
