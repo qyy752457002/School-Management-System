@@ -19,6 +19,11 @@ from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from daos.teacher_entry_dao import TeacherEntryApprovalDao
 from models.teacher_change_log import TeacherChangeLog
 from daos.teacher_change_dao import TeacherChangeLogDAO
+from models.teacher_approval_log import TeacherApprovalLog
+from daos.teacher_approval_log_dao import TeacherApprovalLogDao
+from rules.teacher_change_rule import TeacherChangeRule
+from daos.teacher_key_info_approval_dao import TeacherKeyInfoApprovalDao
+from datetime import datetime
 
 
 @dataclass_inject
@@ -27,8 +32,10 @@ class TeachersInfoRule(object):
     teachers_dao: TeachersDao
     organization_members_rule: OrganizationMembersRule
     teacher_work_flow_rule: TeacherWorkFlowRule
-    teacher_entry_approval_dao: TeacherEntryApprovalDao
     teacher_change_log: TeacherChangeLogDAO
+    teacher_approval_log: TeacherApprovalLogDao
+    teacher_change_detail: TeacherChangeRule
+    teacher_key_info_approval_dao: TeacherKeyInfoApprovalDao
 
     # 查询单个教职工基本信息
     async def get_teachers_info_by_teacher_id(self, teachers_id):
@@ -74,7 +81,7 @@ class TeachersInfoRule(object):
         teachers_info = orm_model_to_view_model(teachers_inf_db, TeachersInfoModel, exclude=[""])
         return teachers_info
 
-    async def add_teachers_info_valid(self, teachers_info: TeacherInfoSubmit, user_id):
+    async def add_teachers_info_valid(self, teachers_info: TeacherInfoSubmit):
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
         if not exits_teacher:
             raise TeacherNotFoundError()
@@ -83,18 +90,6 @@ class TeachersInfoRule(object):
             raise TeacherInfoExitError()
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
-        params = {"process_code": "t_entry", "teacher_id": teachers_inf_db.teacher_id, "applicant_name": user_id}
-        work_flow_instance, next_node_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(params)
-        teacher_entry_approval = TeacherEntryApproval(teacher_id=teachers_inf_db.teacher_id,
-                                                      teacher_name=teachers_inf_db.teacher_name,
-                                                      approval_status="submitted",
-                                                      process_instance_id=work_flow_instance.process_instance_id)
-        await self.teacher_entry_approval_dao.add_teacher_entry_approval(teacher_entry_approval)
-        teacher_change_log = TeacherChangeLog(teacher_id=teachers_inf_db.teacher_id, change_module="new_entry",
-                                              change_detail="转在职", log_status="pending",
-                                              process_instance_id=work_flow_instance.process_instance_id)
-        await self.teacher_change_log.add_teacher_change(teacher_change_log)
-
         teachers_info = orm_model_to_view_model(teachers_inf_db, TeachersInfoModel, exclude=[""])
         organization = OrganizationMembers()
         organization.id = None
@@ -107,7 +102,27 @@ class TeachersInfoRule(object):
         return teachers_info
 
     async def update_teachers_info(self, teachers_info):
-        print(teachers_info.teacher_id)
+        exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
+        if not exits_teacher:
+            raise TeacherNotFoundError()
+        exists_teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_info.teacher_base_id)
+        if not exists_teachers_info:
+            raise TeacherInfoNotFoundError()
+        need_update_list = []
+        for key, value in teachers_info.dict().items():
+            if value:
+                need_update_list.append(key)
+        teachers_info = await self.teachers_info_dao.update_teachers_info(teachers_info, *need_update_list)
+        organization = OrganizationMembers()
+        organization.id = None
+        organization.org_id = teachers_info.org_id
+        organization.teacher_id = teachers_info.teacher_id
+        organization.member_type = None
+        organization.identity = None
+        await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
+        return teachers_info
+
+    async def update_teachers_info_save(self, teachers_info):
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
         if not exits_teacher:
             raise TeacherNotFoundError()

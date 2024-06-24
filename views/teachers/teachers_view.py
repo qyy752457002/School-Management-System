@@ -67,14 +67,16 @@ class TeachersView(BaseView):
         """
         保存不经过验证
         """
-        res = await self.teacher_info_rule.update_teachers_info(teacher_info)
+
+        res = await self.teacher_info_rule.update_teachers_info_save(teacher_info)
         return res
 
     async def put_teacherinfo(self, teacher_info: TeacherInfo):
         """
         提交教职工基本信息
         """
-        res = await self.teacher_info_rule.update_teachers_info(teacher_info)
+        user_id = "asdfasdf"
+        res = await self.teacher_info_rule.update_teachers_info(teacher_info, user_id)
         return res
 
     # 删除教职工基本信息

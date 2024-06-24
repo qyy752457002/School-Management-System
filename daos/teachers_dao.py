@@ -25,9 +25,6 @@ class TeachersDao(DAOBase):
         query = update(Teacher).where(Teacher.teacher_id == teachers.teacher_id).values(**update_contents)
         return await self.update(session, query, teachers, update_contents, is_commit=is_commit)
 
-
-
-
     # 获取单个教师信息
     async def get_teachers_by_id(self, teachers_id):
         session = await self.slave_db()
@@ -126,7 +123,6 @@ class TeachersDao(DAOBase):
             pass
         if query_model.approval_name:
             pass
-
 
     async def query_teacher_approval_with_page(self, query_model: TeacherApprovalQuery,
                                                page_request: PageRequest) -> Paging:

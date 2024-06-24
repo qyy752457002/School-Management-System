@@ -72,7 +72,7 @@ class NewTeachersView(BaseView):
         """
         exits = await self.teacher_info_rule.get_teachers_info_by_teacher_id_exit(teacher_info.teacher_id)
         if exits:
-            res = await self.teacher_info_rule.update_teachers_info(teacher_info)
+            res = await self.teacher_info_rule.update_teachers_info_save(teacher_info)
         else:
             res = await self.teacher_info_rule.add_teachers_info(teacher_info)
         return res
@@ -87,13 +87,12 @@ class NewTeachersView(BaseView):
         if teacher_info.teacher_base_id > 0:
             res = await self.teacher_info_rule.update_teachers_info(teacher_info)
         else:
-            user_id = "asdfasdf"
-            res = await self.teacher_info_rule.add_teachers_info_valid(teacher_info, user_id)
+            res = await self.teacher_info_rule.add_teachers_info_valid(teacher_info)
         return res
 
     async def put_newteacherinforesave(self, teacher_info: CurrentTeacherInfoSaveModel):
 
-        res = await self.teacher_info_rule.update_teachers_info(teacher_info)
+        res = await self.teacher_info_rule.update_teachers_info_save(teacher_info)
         return res
 
     # 编辑教职工基本信息
@@ -107,15 +106,15 @@ class NewTeachersView(BaseView):
     #     res = await self.teacher_info_rule.delete_teachers_info(teacher_id)
     #     return res
 
-    async def patch_submitting(self,
-                               teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
-        await self.teacher_rule.submitting(teacher_id)
-        return teacher_id
-
-    async def patch_submitted(self,
-                              teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
-        await self.teacher_rule.submitted(teacher_id)
-        return teacher_id
+    # async def patch_submitting(self,
+    #                            teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
+    #     await self.teacher_rule.submitting(teacher_id)
+    #     return teacher_id
+    #
+    # async def patch_submitted(self,
+    #                           teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
+    #     await self.teacher_rule.submitted(teacher_id)
+    #     return teacher_id
 
     async def patch_approved(self,
                              teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
@@ -141,7 +140,7 @@ class NewTeachersView(BaseView):
         撤回
         """
         user_id = "asdfasdf"
-        await self.teacher_rule.recall(teacher_id, process_instance_id, user_id)
+        await self.teacher_rule.entry_revoked(teacher_id, process_instance_id, user_id)
         return teacher_id
 
     async def patch_info_submitting(self,

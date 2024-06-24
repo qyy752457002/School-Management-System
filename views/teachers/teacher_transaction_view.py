@@ -44,10 +44,12 @@ class TransferDetailsView(BaseView):
         """
         if not transfer_inner:  # 如果是系统外转系统内
             if add_teacher != None:
-                await self.teacher_rule.add_teachers(add_teacher)
+                user_id = "asdfasdf"
+                await self.teacher_rule.add_teachers(add_teacher, user_id)
             else:
                 raise Exception("请填写老师信息")
-        res = await self.transfer_details_rule.add_transfer_in_details(transfer_details)
+        user_id = "asdfasdf"
+        res = await self.transfer_details_rule.add_transfer_in_details(transfer_details, user_id, transfer_inner)
         return res
 
     async def post_transfer_out_details(self, transfer_details: TransferDetailsModel):

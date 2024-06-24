@@ -3,7 +3,7 @@ from datetime import date, datetime
 from pydantic import BaseModel, Field, model_validator, ValidationError, field_validator
 from fastapi import Query
 from typing import Optional
-from models.teachers import TeacherApprovalAtatus
+
 from models.public_enum import Gender
 from business_exceptions.teacher import EthnicityNoneError, PoliticalStatusNoneError
 from mini_framework.storage.view_model import FileStorageModel

@@ -9,7 +9,8 @@ from mini_framework.web.std_models.page import PageRequest
 from models.school import School
 from models.teachers_info import TeacherInfo
 from models.teachers import Teacher
-from views.models.teachers import CurrentTeacherQuery, NewTeacher,TeacherApprovalQuery
+from views.models.teachers import CurrentTeacherQuery, NewTeacher, TeacherApprovalQuery
+from models.teacher_entry_approval import TeacherEntryApproval
 
 
 class TeachersInfoDao(DAOBase):
@@ -74,11 +75,13 @@ class TeachersInfoDao(DAOBase):
                        func.coalesce(TeacherInfo.enter_school_time, None).label('enter_school_time'),
                        Teacher.teacher_name, Teacher.teacher_id_number,
                        Teacher.teacher_gender,
-                       Teacher.teacher_employer, Teacher.teacher_main_status,
+                       Teacher.teacher_employer, Teacher.teacher_main_status, Teacher.teacher_sub_status,
+                       TeacherEntryApproval.approval_status,
                        School.school_name,
                        ).outerjoin(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
                                    ).outerjoin(School, Teacher.teacher_employer == School.id,
                                                ).where(Teacher.teacher_main_status == "unemployed")
+
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
         if query_model.teacher_id_number:
@@ -121,7 +124,6 @@ class TeachersInfoDao(DAOBase):
         用人形式：employment_form
         进本校时间：enter_school_time
         """
-        # todo 这个地方还应该加上审核状态通过的条件
         query = select(Teacher.teacher_id, TeacherInfo.teacher_base_id, Teacher.teacher_name, Teacher.teacher_id_number,
                        Teacher.teacher_gender,
                        Teacher.teacher_employer, TeacherInfo.highest_education,
@@ -167,8 +169,3 @@ class TeachersInfoDao(DAOBase):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(TeacherInfo))
         return result.scalar()
-
-
-
-
-

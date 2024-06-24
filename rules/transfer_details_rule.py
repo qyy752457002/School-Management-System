@@ -5,15 +5,20 @@ from daos.transfer_details_dao import TransferDetailsDAO
 from daos.teachers_dao import TeachersDao
 from models.transfer_details import TransferDetails
 from views.models.teacher_transaction import TransferDetailsModel
-from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTransactionQueryRe,\
+from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTransactionQueryRe, \
     TransferDetailsReModel, TransferDetailsGetModel, TeacherTransferQueryModel, TeacherTransferQueryReModel
 from business_exceptions.teacher import TeacherNotFoundError
+from models.teacher_change_log import TeacherChangeLog
+from daos.teacher_change_dao import TeacherChangeLogDAO
+from rules.teacher_change_rule import TeacherChangeRule
 
 
 @dataclass_inject
 class TransferDetailsRule(object):
     transfer_details_dao: TransferDetailsDAO
     teachers_dao: TeachersDao
+    teacher_change_log: TeacherChangeLogDAO
+    teacher_change_detail: TeacherChangeRule
 
     async def get_transfer_details_by_transfer_details_id(self, transfer_details_id):
         transfer_details_db = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
@@ -21,13 +26,23 @@ class TransferDetailsRule(object):
         transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsModel)
         return transfer_details
 
-    async def add_transfer_in_details(self, transfer_details: TransferDetailsModel):
+    async def add_transfer_in_details(self, transfer_details: TransferDetailsModel, user_id, transfer_inner):
         """
         调入
         """
         # todo 需要增加获取调入流程实例id
+        teacher_id = transfer_details.teacher_id
+        if transfer_inner:
+            teacher_change_log = TeacherChangeLog(apply_name=user_id, teacher_id=teacher_id,
+                                                  change_module="transfer_in",
+                                                  change_detail="调动", log_status="/",
+                                                  )
+            # 写到这里了！
+            await self.teacher_change_log.add_teacher_change(teacher_change_log)
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
+
+
         transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
         return transfer_details
 
@@ -74,7 +89,6 @@ class TransferDetailsRule(object):
         for item in transfer_details_db:
             transfer_details.append(orm_model_to_view_model(item, TransferDetailsGetModel))
         return transfer_details
-
 
     async def query_teacher_transfer(self, teacher_transaction: TeacherTransactionQuery):
         """
@@ -128,8 +142,7 @@ class TransferDetailsRule(object):
     #     transfer_details.approval_status = "submitted"
     #     return await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
 
-
-    #调动管理审批相关
+    # 调动管理审批相关
     async def approved(self, transfer_details_id):
         transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
             transfer_details_id)
