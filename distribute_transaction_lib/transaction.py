@@ -42,8 +42,9 @@ class UnitSystem(BaseModel):
 # 事务节点  模型
 class TransactionNode(BaseModel):
     transaction_name: str
-    transaction_code: str
+    transaction_code: str|int
     prepare_url: str
-    base_url: str= Field(None, title="", description="",examples=['1'])
+    base_url: str= Field('', title="", description="",examples=['1'])
     precommit_url: str
     commit_url : str
+    rollback_url : str

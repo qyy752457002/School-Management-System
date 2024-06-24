@@ -148,12 +148,13 @@ class StudentTransactionFlowRule(object):
         url+=  ('?' +urlencode(datadict))
 
         print('参数', url, datadict,headerdict)
+        response= None
 
-
-        response = await httpreq.post_json(url,datadict,headerdict)
-        print(response)
-
-
+        try:
+            response = await httpreq.post_json(url,datadict,headerdict)
+            print(response)
+        except Exception as e:
+            print(e)
 
         return response
     # 处理流程审批 的 操作
@@ -165,29 +166,32 @@ class StudentTransactionFlowRule(object):
             student_transaction_out = await stu_rule.get_student_transaction_by_id(student_transaction.relation_id)
 
         # todo  分布式  A校修改学生 出  B校修改学生入
-        transfer_data =[
-            {'data': student_transaction, 'api_name': 'xx', },
-            {'url': 'A_school', 'prepare_api_name': 'prepare','precommit_api_name': 'updatemidelstatus_transferin','commit_api_name': 'ultracommit_transferin', 'data': ''},
+        transfer_data =             {'id': student_transaction.id , 'api_name': 'xx', }
 
-            {'url': 'A_district', 'api_name': 'xx', 'data': ''}]
+
         # todo 3个业务接口的地址的定义  和业务流程编码 有关
-        print(student_transaction,student_transaction_out,00000000)
+        print(222222222222,student_transaction,student_transaction_out,)
         flow_data=[
-            TransactionNode(transaction_name='a校转入',prepare_url='22',precommit_url='dd',commit_url='cc',transaction_code= student_transaction.school_id),
-            TransactionNode(transaction_name='b校转出',prepare_url='22',precommit_url='dd',commit_url='cc',transaction_code= student_transaction_out.school_id),
+            TransactionNode(transaction_name='a校转入',prepare_url='/api/school/v1/public/current-student/student-transaction-prepare',precommit_url='/api/school/v1/public/current-student/student-transaction-precommit',commit_url='/api/school/v1/public/current-student/student-transaction-commit',
+            rollback_url='/api/school/v1/public/current-student/student-transaction-rollback',
+                            transaction_code= student_transaction.school_id),
+
+            TransactionNode(transaction_name='b校转出',
+                            prepare_url='/api/school/v1/public/current-student/student-transaction-prepare',precommit_url='/api/school/v1/public/current-student/student-transaction-precommit',commit_url='/api/school/v1/public/current-student/student-transaction-commit',
+                            rollback_url='/api/school/v1/public/current-student/student-transaction-rollback',
+                            transaction_code= student_transaction_out.school_id),
 
 
         ]
 
-        await DistributedTransactionCore().execute_transaction(111,transfer_data,flow_data)
+        res_trans= await DistributedTransactionCore().execute_transaction(111,transfer_data,flow_data)
+        if res_trans:
+            print('事务执行成功')
+            # 处理  更新数据
 
-        # await self.req_workflow_ultra(student_transaction,student_transaction_flow)
-
-
-        # 处理  更新数据
-
-
-        return True
+            res_flow = await self.req_workflow_ultra(student_transaction,student_transaction_flow)
+            return True
+        return False
     async def req_workflow_ultra(self,student_transaction,student_transaction_flow):
 
         # 读取 节点ID
