@@ -1,10 +1,12 @@
 import copy
 import json
 
+from fastapi.params import Body
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task import Task
 from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
+from starlette.requests import Request
 
 from business_exceptions.student import StudentExistsThisSchoolError
 from models.student_transaction import AuditAction, TransactionDirection, AuditFlowStatus
@@ -404,6 +406,18 @@ class CurrentStudentsView(BaseView):
         task = await app.task_topic.send(task)
         print('发生任务成功')
         return task
+
+    async def post_student_transaction_prepare(self,
+                                               request:Request,
+
+        session_name: str = Body("", title="", description="", ),
+
+                                               ):
+        """
+        转学事务 准备 接口 检查数据返回状态
+        """
+        res = request.json()
+        return {"status": "prepared","data":res}
 
 
 class CurrentStudentsBaseInfoView(BaseView):
