@@ -34,7 +34,7 @@ class DistributedTransactionCore:
         self.prepare_key_name =  'prepare_url'
         self.precommit_key_name =  'precommit_url'
         self.commit_key_name =  'commit_url'
-        self.rollback_key_name =  'rollbacked'
+        self.rollback_key_name =  'rollback_url'
         # 各阶段的成功状态码
         self.prepare_success_code =  'prepared'
         self.precommit_success_code =  'precommited'
@@ -68,7 +68,7 @@ class DistributedTransactionCore:
             return response
         except Exception as e:
             logging.error(f"API 失败 异常: {e}",)
-            traceback.print_exc()
+            # traceback.print_exc()
             logging.error(f"API 失败 请检查url:   {url}  ",)
             logging.error(f"API 失败 请检查data:   {data}",)
             return dict()
@@ -89,7 +89,7 @@ class DistributedTransactionCore:
             baseurl = va.unit_url
             url= baseurl+url
 
-            logging.debug(f"预装备 ")
+            logging.debug(f"预装备 {value}")
 
             response = await self.safe_api_call(url,  self.data)
             # 检查是否 有状态  且是 成功的状态码
@@ -104,43 +104,79 @@ class DistributedTransactionCore:
     # 以下方法类似地进行优化，主要是使用 self.safe_api_call 和改善错误处理...
     # pre_commit_transaction, commit_transaction, rollback_transaction 方法省略...
     async def pre_commit_transaction(self,prepare_responses):
-        for system, response in prepare_responses.items():
+        for value in self.transaction_nodes:
+
             # 要求必须返回 pre_commit_url
-            url = f"{response.get(self.baseurl_key_name)}{response.get(self.precommit_key_name)}"
-            logging.debug(f"预提交 ")
 
+            url = f"{getattr(value,self.baseurl_key_name)}{getattr(value,self.precommit_key_name)}"
+            va = self.api_urls[value.transaction_code]
+            baseurl = va.unit_url
+            url= baseurl+url
+            #
+            # url = f"{value.get(self.baseurl_key_name)}{response.get(self.precommit_key_name)}"
+            logging.debug(f"预提交 {url}")
 
-            if not await self.safe_api_call(url, response):
+            response = await self.safe_api_call(url,  self.data)
+            # 检查是否 有状态  且是 成功的状态码
+            if response and response["status"] == self.precommit_success_code:
+                # response["baseurl"] = self.api_urls[value['url']]
+                prepare_responses [  'url'] = response
+            else:
                 await self.rollback_transaction(prepare_responses)
                 return False
+
         return True
 
     async def commit_transaction(self,prepare_responses):
         # 要求必须返回 commit_url
-        for system, response in prepare_responses.items():
-            url = f"{response.get(self.baseurl_key_name)}{response.get( self.commit_key_name)}"
-            logging.debug(f"提交 ")
+        for value in self.transaction_nodes:
 
-            if not await self.safe_api_call(url, response):
+            # for system, response in prepare_responses.items():
+            #     url = f"{response.get(self.baseurl_key_name)}{response.get( self.commit_key_name)}"
+
+            url = f"{getattr(value,self.baseurl_key_name)}{getattr(value,self.commit_key_name)}"
+            va = self.api_urls[value.transaction_code]
+            baseurl = va.unit_url
+            url= baseurl+url
+            logging.debug(f"提交{url} ")
+
+            response = await self.safe_api_call(url,  self.data)
+            # 检查是否 有状态  且是 成功的状态码
+            if response and response["status"] == self.commit_success_code:
+                # response["baseurl"] = self.api_urls[value['url']]
+                prepare_responses [  'url'] = response
+            else:
                 await self.rollback_transaction(prepare_responses)
                 return False
+
         logging.info("Transaction committed successfully.")
         return True
 
     async def rollback_transaction(self,prepare_responses):
         if not hasattr(prepare_responses, 'items'):
             return True
-        for system, response in prepare_responses.items():
-            # 读取各个的 基础URL 和 rollback_url
-            url = f"{response.get(self.baseurl_key_name)}{response.get( self.rollback_key_name)}"
-            logging.debug(f"回滚 ")
+        for value in self.transaction_nodes:
 
-            res =await self.safe_api_call(url, response)
+            # for system, response in prepare_responses.items():
+            # 读取各个的 基础URL 和 rollback_url
+
+            url = f"{getattr(value,self.baseurl_key_name)}{getattr(value,self.rollback_key_name)}"
+            va = self.api_urls[value.transaction_code]
+            baseurl = va.unit_url
+            url= baseurl+url
+            # logging.debug(f"提交{url} ")
+            logging.debug(f"回滚{url} ")
+
+            res = await self.safe_api_call(url,  self.data)
+
+            # url = f"{response.get(self.baseurl_key_name)}{response.get( self.rollback_key_name)}"
+
+            # res =await self.safe_api_call(url, response)
             # todo  重试回滚 放入队列 或者提示人工干预
             # 回滚接口要求必须返回 status 为 rollbacked
 
             if not res or res.get('status') !=  self.rollback_success_code:
-                logging.info(f"回滚失败 重试回滚 放入队列 或者提示人工干预{url}{response}")
+                logging.info(f"回滚失败 重试回滚 放入队列 或者提示人工干预{url}")
         logging.info("Transaction rolled back.")
     async def get_workflow_trans(self,workflow_code,flow_data=None):
         # 读取 流程

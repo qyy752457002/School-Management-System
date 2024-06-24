@@ -68,7 +68,7 @@ class CurrentStudentsView(BaseView):
         转学事务 提交 接口
         """
         res = request.headers.get("data")
-        return {"status": "commited","data":res}
+        return {"status": "commited2","data":res}
 
     async def post_student_transaction_rollback(self,
                                               request:Request,
