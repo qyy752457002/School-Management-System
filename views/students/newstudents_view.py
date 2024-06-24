@@ -85,8 +85,6 @@ class NewsStudentsView(BaseView):
         print(new_students_key_info)
         res = await self.students_rule.update_students(new_students_key_info)
 
-
-
         # log_con=''
         json_string = json.dumps(log_con, ensure_ascii=False)
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
@@ -157,6 +155,8 @@ class NewsStudentsInfoView(BaseView):
         self.students_rule = get_injector(StudentsRule)
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
         self.class_division_records_rule = get_injector(ClassDivisionRecordsRule)
+        self.operation_record_rule = get_injector(OperationRecordRule)
+
 
     async def get_newstudentbaseinfo(self, student_id: str = Query(..., title="学生ID", description="学生ID",
                                                                    example="1")):
@@ -173,11 +173,32 @@ class NewsStudentsInfoView(BaseView):
         res = await self.students_base_info_rule.add_students_base_info(new_students_base_info)
         return res
 
-    async def put_newstudentbaseinfo(self, new_students_base_info: NewBaseInfoUpdate):
+    async def put_newstudentbaseinfo(self, new_students_base_info: NewBaseInfoUpdate,request:Request):
         """
         新生编辑基本信息
         """
+
+        origin = await self.students_base_info_rule.get_students_base_info_by_student_id(new_students_base_info.student_id)
+        log_con = compare_modify_fields(new_students_base_info, origin)
+
         res = await self.students_base_info_rule.update_students_base_info(new_students_base_info)
+
+        json_string = json.dumps(log_con, ensure_ascii=False)
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_target_id=str(new_students_base_info.student_id),
+            operator='admin',
+            module=OperationModule.BASEINFO.value,
+            target=OperationTargetType.STUDENT.value,
+            action_type=OperationType.MODIFY.value,
+            ip= get_client_ip(request),
+            change_data=json_string,
+            change_field=OperationModule.BASEINFO.value,
+            change_item=OperationModule.BASEINFO.value,
+            timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            action_reason=OperationType.MODIFY.value+OperationModule.BASEINFO.value,
+            doc_upload='',
+            status='1',
+            account='', ))
         return res
 
 
@@ -248,6 +269,8 @@ class NewsStudentsFamilyInfoView(BaseView):
         super().__init__()
         self.students_rule = get_injector(StudentsRule)
         self.students_family_info_rule=get_injector(StudentsFamilyInfoRule)
+        self.operation_record_rule = get_injector(OperationRecordRule)
+
 
 
     async def post_newstudentfamilyinfo(self, new_students_family_info: StudentsFamilyInfoCreate):
@@ -260,7 +283,7 @@ class NewsStudentsFamilyInfoView(BaseView):
 
     async def put_newstudentfamilyinfo(self, new_students_family_info: StudentsUpdateFamilyInfo):
         """
-        新生编辑家庭信息
+        新生编辑家庭信息 todo 变更日志
         """
         res = await self.students_family_info_rule.update_students_family_info(new_students_family_info)
         return res
