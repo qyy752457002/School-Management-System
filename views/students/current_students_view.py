@@ -236,6 +236,8 @@ class CurrentStudentsView(BaseView):
                                                     remark= '用户撤回')
         res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
         # todo 审批流取消
+        res2 = await self.student_transaction_flow_rule.req_workflow_cancel(student_transaciton,student_trans_flow)
+
 
         # print(new_students_key_info)
         return res

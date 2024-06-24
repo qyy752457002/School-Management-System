@@ -166,11 +166,11 @@ class StudentTransactionFlowRule(object):
             student_transaction_out = await stu_rule.get_student_transaction_by_id(student_transaction.relation_id)
 
         # todo  分布式  A校修改学生 出  B校修改学生入
-        transfer_data =             {'id': student_transaction.id , 'api_name': 'xx', }
+        transfer_data =            student_transaction.__dict__
 
 
         # todo 3个业务接口的地址的定义  和业务流程编码 有关
-        print(222222222222,student_transaction,student_transaction_out,)
+        # print(222222222222,student_transaction,student_transaction_out,)
         flow_data=[
             TransactionNode(transaction_name='a校转入',prepare_url='/api/school/v1/public/current-student/student-transaction-prepare',precommit_url='/api/school/v1/public/current-student/student-transaction-precommit',commit_url='/api/school/v1/public/current-student/student-transaction-commit',
             rollback_url='/api/school/v1/public/current-student/student-transaction-rollback',
@@ -199,6 +199,45 @@ class StudentTransactionFlowRule(object):
         json_object = json.loads(trans_flow[0].description)
 
 
+
+        # 发起审批流的 处理
+        student_transaction_flow.id=0
+        httpreq= HTTPRequest()
+        url= workflow_service_config.workflow_config.get("url")
+        data= student_transaction_flow
+        datadict = dict()
+        # datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
+        # 节点实例id
+        datadict['node_instance_id'] =  json_object[1]['node_instance_id']
+
+        # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
+        apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
+        url=url+apiname
+        headerdict = {
+            "accept": "application/json",
+            # "Authorization": "{{bear}}",
+            "Content-Type": "application/json"
+        }
+        # 如果是query 需要拼接参数
+        url+=  ('?' +urlencode(datadict))
+
+        print('参数', url, datadict,headerdict)
+        # 字典参数
+        datadict ={"user_id":"11","action":"approved"}
+        if student_transaction.status== AuditAction.PASS.value:
+            datadict['action'] = 'approved'
+        if student_transaction.status== AuditAction.REFUSE.value:
+            datadict['action'] = 'rejected'
+
+        response = await httpreq.post_json(url,datadict,headerdict)
+        print(response,'接口响应')
+        pass
+
+    async def req_workflow_cancel(self,student_transaction,student_transaction_flow):
+
+        # 读取 节点ID
+        trans_flow =await self.query_student_transaction_flow(student_transaction_flow.apply_id,stage='apply_submit')
+        json_object = json.loads(trans_flow[0].description)
 
         # 发起审批流的 处理
         student_transaction_flow.id=0
