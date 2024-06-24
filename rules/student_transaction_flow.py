@@ -184,15 +184,14 @@ class StudentTransactionFlowRule(object):
 
         ]
 
-        await DistributedTransactionCore().execute_transaction(111,transfer_data,flow_data)
+        res_trans= await DistributedTransactionCore().execute_transaction(111,transfer_data,flow_data)
+        if res_trans:
+            print('事务执行成功')
+            # 处理  更新数据
 
-        # await self.req_workflow_ultra(student_transaction,student_transaction_flow)
-
-
-        # 处理  更新数据
-
-
-        return True
+            res_flow = await self.req_workflow_ultra(student_transaction,student_transaction_flow)
+            return True
+        return False
     async def req_workflow_ultra(self,student_transaction,student_transaction_flow):
 
         # 读取 节点ID

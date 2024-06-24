@@ -238,6 +238,7 @@ class DistributedTransactionCore:
                                 logging.info("Transaction committed successfully.")
                                 self.monitor.handle_success_event()
                                 self.statistics.handle_success_event()
+                                return True
 
 
                         except Exception as e:
@@ -264,6 +265,8 @@ class DistributedTransactionCore:
         except Exception as e:
             self.logger.exception('事务异常',e)
             traceback.print_exc()
+
+        return False
 
 
 
