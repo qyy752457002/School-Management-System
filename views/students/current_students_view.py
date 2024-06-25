@@ -136,7 +136,8 @@ class CurrentStudentsView(BaseView):
         # print(new_students_key_info)
 
         # 调用审批流 创建
-        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info)
+        stuinfo= await self.students_rule.get_students_by_id(student_edu_info.student_id)
+        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info,stuinfo)
         transferin_id =  0
 
         json_str=''

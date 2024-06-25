@@ -20,6 +20,7 @@ from rules.student_transaction import StudentTransactionRule
 from rules.students_rule import StudentsRule
 from views.common.common_view import workflow_service_config
 from views.models.student_transaction import StudentTransactionFlow as StudentTransactionFlowModel, StudentEduInfo
+from views.models.students import StudentsKeyinfoDetail
 from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE
 
 
@@ -127,7 +128,7 @@ class StudentTransactionFlowRule(object):
             lst.append(planning_school)
         return lst
     # 向工作流中心发送申请
-    async def add_student_transaction_work_flow(self, student_transaction_flow: StudentTransactionFlowModel):
+    async def add_student_transaction_work_flow(self, student_transaction_flow: StudentEduInfo,stuinfo: StudentsKeyinfoDetail):
         student_transaction_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
@@ -136,8 +137,14 @@ class StudentTransactionFlowRule(object):
         datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         datadict['teacher_id'] =  0
         datadict['applicant_name'] =  'tester'
+        datadict['student_name'] = stuinfo.student_name
+        datadict['student_gender'] = stuinfo.student_gender
+        datadict['edu_number'] =   student_transaction_flow.edu_number
+        datadict['school_name'] =   student_transaction_flow.school_name
+        datadict['apply_user'] =  'tester'
+        datadict['jason_data'] =  json.dumps(student_transaction_flow.__dict__, ensure_ascii=False)
         # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
-        apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate'
+        apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
         url=url+apiname
         headerdict = {
             "accept": "application/json",
@@ -145,7 +152,7 @@ class StudentTransactionFlowRule(object):
             "Content-Type": "application/json"
         }
         # 如果是query 需要拼接参数
-        url+=  ('?' +urlencode(datadict))
+        # url+=  ('?' +urlencode(datadict))
 
         print('参数', url, datadict,headerdict)
         response= None
