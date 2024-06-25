@@ -200,6 +200,30 @@
         "description": "",
         "executor_cls_model": "views.tasks.planning_school_task.PlanningSchoolExecutor",
         "payload_cls_model": "views.models.planning_school.PlanningSchoolTask"
+      },
+      "student_export": {
+        "topic": "student_export",
+        "name": "学生导出",
+        "consumer_group_id": "service",
+        "description": "学生导出",
+        "executor_cls_model": "views.tasks.new_student_task.NewStudentExportExecutor",
+        "payload_cls_model": "views.models.students.NewStudentsQuery"
+      },
+      "teacher_import": {
+        "topic": "teacher_import",
+        "name": "教师导入",
+        "consumer_group_id": "service",
+        "description": "教师导入",
+        "executor_cls_model": "views.tasks.new_teacher_task.TeacherImportExecutor",
+        "payload_cls_model": "views.models.teachers.TeacherFileStorageModel"
+      },
+      "teacher_export": {
+        "topic": "teacher_export",
+        "name": "教师导出",
+        "consumer_group_id": "service",
+        "description": "教师导出",
+        "executor_cls_model": "views.tasks.new_teacher_task.TeacherExportExecutor",
+        "payload_cls_model": "views.models.teachers.CurrentTeacherQuery"
       }
     }
   }
