@@ -1,9 +1,11 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import datetime
 from datetime import date
+from urllib.parse import urlencode
 
 from fastapi import Query
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
+from mini_framework.utils.http import HTTPRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -18,9 +20,11 @@ from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.student_transaction import StudentTransaction, TransactionDirection
 from models.students import StudentApprovalAtatus
+from views.common.common_view import workflow_service_config
 from views.models.student_transaction import StudentEduInfo as StudentTransactionModel, StudentEduInfo, \
     StudentEduInfoOut, StudentTransactionStatus
 from views.models.students import StudentsBaseInfo
+from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE
 
 
 @dataclass_inject
@@ -172,6 +176,64 @@ class StudentTransactionRule(object):
         return await self.student_transaction_dao.get_studenttransaction_count()
 
     async def query_student_transaction_with_page(self, page_request: PageRequest, audit_status,
+                                                  student_name,
+                                                  student_gender,
+                                                  school_id,
+                                                  apply_user,
+                                                  edu_no):
+        # 获取分页数据 转发到 工作流的接口
+        kdict = dict()
+        httpreq= HTTPRequest()
+        url= workflow_service_config.workflow_config.get("url")
+        datadict=dict()
+        datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
+        datadict['page'] =  page_request.page
+        datadict['per_page'] =  page_request.per_page
+        # datadict['applicant_name'] =  'tester'
+        # datadict['student_name'] = stuinfo.student_name
+        # datadict['student_gender'] = stuinfo.student_gender
+        # datadict['edu_number'] =   student_transaction_flow.edu_number
+        # datadict['school_name'] =   student_transaction_flow.school_name
+        datadict['apply_user'] =  'tester'
+        # datadict['jason_data'] =  json.dumps(student_transaction_flow.__dict__, ensure_ascii=False)
+
+        if audit_status:
+            datadict["process_status"] = audit_status.value
+        if student_name:
+            datadict["student_name"] = student_name
+        if student_gender:
+            datadict["student_gender"] = student_gender
+        if school_id:
+            datadict["school_id"] = school_id
+        if apply_user:
+            datadict["applicant_name"] = apply_user
+        if edu_no:
+            datadict["edu_number"] = edu_no
+        # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
+        apiname = '/api/school/v1/teacher-workflow/work-flow-instance'
+        url=url+apiname
+        headerdict = {
+            "accept": "application/json",
+            # "Authorization": "{{bear}}",
+            "Content-Type": "application/json"
+        }
+        # 如果是query 需要拼接参数
+        url+=  ('?' +urlencode(datadict))
+
+        print('参数', url, datadict,headerdict)
+        response= None
+
+        try:
+            response = await httpreq.get_json(url,headerdict)
+            # print(response)
+        except Exception as e:
+            print(e)
+
+        return response
+
+        # print(3333333333333333,paging_result)
+
+    async def query_student_transaction_with_page_biz(self, page_request: PageRequest, audit_status,
                                                   student_name,
                                                   student_gender,
                                                   school_id,
