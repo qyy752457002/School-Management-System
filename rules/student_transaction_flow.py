@@ -20,7 +20,7 @@ from rules.student_transaction import StudentTransactionRule
 from rules.students_rule import StudentsRule
 from views.common.common_view import workflow_service_config
 from views.models.student_transaction import StudentTransactionFlow as StudentTransactionFlowModel, StudentEduInfo, \
-    StudentTransactionAudit
+    StudentTransactionAudit, StudentTransaction
 from views.models.students import StudentsKeyinfoDetail
 from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE
 
@@ -230,6 +230,18 @@ class StudentTransactionFlowRule(object):
 
         response = await httpreq.post_json(url,datadict,headerdict)
         print(response,'接口响应')
+        if audit_info.transferin_audit_action== AuditAction.PASS.value:
+            # 成功则写入数据
+            transrule = get_injector(StudentTransactionRule)
+            # await transrule.deal_student_transaction(student_edu_info)
+
+            student_transaciton = StudentTransaction(id=audit_info.transferin_audit_id,
+                                                     status=audit_info.transferin_audit_action.value, )
+            res2 = await transrule.student_transaction_rule.deal_student_transaction(student_transaciton)
+
+            pass
+
+
         return response
         pass
 

@@ -1,6 +1,6 @@
 -i https://mirror.f123.pub/repository/pypi/simple
 
-lfun-mini-framework==0.0.69
+lfun-mini-framework==0.0.70
 
 id-validator==1.0.20
 setuptools~=68.2.0

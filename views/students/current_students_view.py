@@ -163,9 +163,6 @@ class CurrentStudentsView(BaseView):
         # todo 校验必须是转出校的老师才能审批  调用推进
 
         # 审批通过 操作 或者拒绝
-        # student_transaciton = StudentTransaction(id=audit_info.transferin_audit_id,
-        #                                       status=audit_info.transferin_audit_action.value, )
-        # res2 = await self.student_transaction_rule.deal_student_transaction(student_transaciton)
 
         # 流乘记录 初审  转出校/转如校的老师 都会调用审批流    todo 假设终态  则调用事务和审批流
         # student_trans_flow = StudentTransactionFlow(apply_id=audit_info.transferin_audit_id,
