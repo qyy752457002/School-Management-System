@@ -6,6 +6,7 @@ from views.system.operation_record_view import OperationRecordView
 from views.system.storage_view import StorageView
 from views.system.sub_system_view import SubSystemView
 from views.system.system_view import SystemView
+from views.system.task_view import TaskView
 
 
 def routers():
@@ -16,6 +17,7 @@ def routers():
     router.include_api_view_class(SystemView, "/v1/system", description="系统模块")
 
     router.include_api_view_class(EnumValueView, "/v1/enums", description="枚举值列表")
+    router.include_api_view_class(TaskView, "/v1/task", description="任务列表")
 
     router.include_api_view_class(StorageView, "/v1/storage", description="文件上传下载接口",
                                   response_cls=FileStorageResponseModel)
