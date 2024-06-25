@@ -5,6 +5,7 @@ from views.teachers.router import routers as teachers_router
 from views.system.router import routers as systemrouters
 
 from views.students.router import routers as studentrouters
+from views.public.router import routers as publicrouters
 
 
 def init_router():
@@ -15,3 +16,4 @@ def init_router():
     root_router.include_router(teachers_router())
     root_router.include_router(systemrouters())
     root_router.include_router(studentrouters())
+    root_router.include_router(publicrouters())

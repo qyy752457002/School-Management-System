@@ -10,21 +10,21 @@ from id_validator import validator
 from views.models.system import UnitType
 
 
-def compare_modify_fields( planning_school,orm_model):
+def compare_modify_fields( view_model,orm_model):
     """
     比较两个对象  返回需要更新的字段
-    :param planning_school:
+    :param view_model:
     :param orm_model:
     :return:
     """
     changeitems = dict()
     # 使用视图模型
-    for key, value in planning_school.__dict__.items():
+    for key, value in view_model.__dict__.items():
         if value:
             if key in orm_model.__dict__ and orm_model.__dict__[key] != value:
                 print(key,value,orm_model.__dict__[key])
                 # changeitems.append(key)
-                key_cn = planning_school.model_fields[key].title
+                key_cn = view_model.model_fields[key].title
                 valueold= orm_model.__dict__[key]
                 if isinstance(valueold,date):
                     valueold=valueold.strftime('%Y-%m-%d')

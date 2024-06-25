@@ -114,7 +114,11 @@ class SystemRule(object):
         #     读取二级菜单
         paging2 = await self.permission_menu_dao.query_permission_menu_with_args( unit_type, edu_type, system_type, role_id,ids)
         print(paging2,res.keys())
+        ids_3  = [ ]
+
         for item in paging2:
+            ids_3.append(item['id'])
+
             if int(item['parent_id']) in res.keys():
 
                 system = orm_model_to_view_model(item, PermissionMenuModel,other_mapper={
@@ -126,6 +130,20 @@ class SystemRule(object):
                 res[int(item['parent_id'])].children.append(system)
 
         # print(list(paging))
+        paging2 = await self.permission_menu_dao.query_permission_menu_with_args( unit_type, edu_type, system_type, role_id,ids_3)
+        for _,pm in res.items():
+            for item in pm.children:
+                print(item.id ,item.children )
+                for value in paging2:
+                    if int(value['parent_id'])== item.id :
+
+                        system = orm_model_to_view_model(value, PermissionMenuModel,other_mapper={
+                            "menu_name": "power_name",
+                            "menu_path": "power_url",
+                            "menu_code": "power_code",
+                            "menu_type": "power_type",
+                        })
+                        item.children.append(system)
 
         # print(dict(paging))
         return res,title

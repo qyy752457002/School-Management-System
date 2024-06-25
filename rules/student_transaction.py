@@ -1,9 +1,11 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import datetime
 from datetime import date
+from urllib.parse import urlencode
 
 from fastapi import Query
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
+from mini_framework.utils.http import HTTPRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -18,10 +20,12 @@ from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.student_transaction import StudentTransaction, TransactionDirection
 from models.students import StudentApprovalAtatus
+from views.common.common_view import workflow_service_config
 from views.models.student_transaction import StudentEduInfo as StudentTransactionModel, StudentEduInfo, \
     StudentEduInfoOut, StudentTransactionStatus
 from views.models.students import StudentsBaseInfo
-
+from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE
+from views.models.student_transaction import StudentTransaction as StudentTransactionVM
 
 @dataclass_inject
 class StudentTransactionRule(object):
@@ -177,6 +181,51 @@ class StudentTransactionRule(object):
                                                   school_id,
                                                   apply_user,
                                                   edu_no):
+        # 获取分页数据 转发到 工作流的接口
+        httpreq= HTTPRequest()
+        url= workflow_service_config.workflow_config.get("url")
+        datadict=dict()
+        datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
+        datadict['page'] =  page_request.page
+        datadict['per_page'] =  page_request.per_page
+
+        if audit_status:
+            # todo 有待转换为工作流的map  他的状态和这里的状态需要转换
+            # datadict["process_status"] = audit_status.value
+            pass
+        if student_name:
+            datadict["student_name"] = student_name
+        if student_gender:
+            datadict["student_gender"] = student_gender
+        if school_id:
+            datadict["school_id"] = school_id
+        if apply_user:
+            datadict["applicant_name"] = apply_user
+        if edu_no:
+            datadict["edu_number"] = edu_no
+        apiname = '/api/school/v1/teacher-workflow/work-flow-instance'
+        url=url+apiname
+        headerdict = {
+            "accept": "application/json",
+            "Content-Type": "application/json"
+        }
+        # 如果是query 需要拼接参数
+        url+=  ('?' +urlencode(datadict))
+        print('参数', url, datadict,headerdict)
+        response= None
+        try:
+            response = await httpreq.get_json(url,headerdict)
+            # print(response)
+        except Exception as e:
+            print(e)
+        return response
+
+    async def query_student_transaction_with_page_biz(self, page_request: PageRequest, audit_status,
+                                                  student_name,
+                                                  student_gender,
+                                                  school_id,
+                                                  apply_user,
+                                                  edu_no):
         # 获取分页数据
         kdict = dict()
         if audit_status:
@@ -213,7 +262,7 @@ class StudentTransactionRule(object):
         return lst
 
 
-    async def deal_student_transaction(self, student_edu_info):
+    async def deal_student_transaction_biz(self, student_edu_info):
         # todo  转入  需要设置到当前学校  转出 则该状态
         res = await self.update_student_transaction(student_edu_info)
         # print(res )
@@ -226,18 +275,41 @@ class StudentTransactionRule(object):
                 relationinfo = await self.get_student_transaction_by_id(tinfo.relation_id, )
                 pass
             if tinfo.direction == TransactionDirection.IN.value:
-                # 入信息
+                # 入信息 todo 这个提取到 入的学校的方法里 预提交方法里
                 students_base_info = StudentsBaseInfo(student_id=tinfo.student_id,school_id=tinfo.school_id,grade_id=tinfo.grade_id,class_id=tinfo.class_id)
+                #学生的状态为 已经 入学 新的班级和学校ID
+
                 need_update_list = ['school_id','grade_id','class_id']
 
                 print(need_update_list,students_base_info)
                 await self.students_baseinfo_dao.update_students_base_info(students_base_info,*need_update_list)
-                #学生的状态为 已经 入学
+                #学生 审核态 改为已审核
                 stu = await self.students_dao.get_students_by_id ( tinfo.student_id)
                 stu.approval_status = StudentApprovalAtatus.ASSIGNMENT.value
                 need_update_list = ['approval_status']
 
                 await self.students_dao.update_students(stu,*need_update_list)
+
+        # student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
+        return student_edu_info
+
+    async def deal_student_transaction(self, student_edu_info:StudentTransactionVM):
+        # todo  转入  需要设置到当前学校  转出 则该状态
+        tinfo=await self.get_student_transaction_by_id(student_edu_info.id)
+        # 入信息 todo 这个提取到 入的学校的方法里 预提交方法里
+        students_base_info = StudentsBaseInfo(student_id=tinfo.student_id,school_id=tinfo.school_id,grade_id=tinfo.grade_id,class_id=tinfo.class_id)
+        #学生的状态为 已经 入学 新的班级和学校ID
+
+        need_update_list = ['school_id','grade_id','class_id']
+
+        print(need_update_list,students_base_info)
+        await self.students_baseinfo_dao.update_students_base_info(students_base_info,*need_update_list)
+        #学生 审核态 改为已审核
+        stu = await self.students_dao.get_students_by_id ( tinfo.student_id)
+        stu.approval_status = StudentApprovalAtatus.ASSIGNMENT.value
+        need_update_list = ['approval_status']
+
+        await self.students_dao.update_students(stu,*need_update_list)
 
         # student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
         return student_edu_info
