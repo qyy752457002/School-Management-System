@@ -5,7 +5,7 @@ from rules.education_year_rule import EducationYearRule
 from rules.sub_system_rule import SubSystemRule
 from rules.system_rule import SystemRule
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo
-from views.models.school import School
+from views.models.school import School, SchoolKeyAddInfo
 # from fastapi import Field
 from fastapi import Query, Depends
 from pydantic import BaseModel, Field
@@ -18,6 +18,7 @@ from views.models.sub_system import SubSystem
 class SystemView(BaseView):
     def __init__(self):
         super().__init__()
+        self.system_config_rule = None
         self.system_rule = get_injector(SystemRule)
         self.education_year_rule = get_injector(EducationYearRule)
 
@@ -75,5 +76,11 @@ class SystemView(BaseView):
 
         res = await self.education_year_rule.get_education_year_all( school_type, city, district,  )
         # res,title  = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
+
+        return res
+    # 系统配置的新增接口 
+    async def post_system_config(self, system_config: SchoolKeyAddInfo):
+        res = await self.system_config_rule.add_system_config(system_config)
+        print(res)
 
         return res
