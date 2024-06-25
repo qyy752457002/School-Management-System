@@ -133,24 +133,10 @@ class StudentTransactionFlowRule(object):
         url= workflow_service_config.workflow_config.get("url")
         datadict=dict()
         datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
-        datadict['page'] =  page_request.page
-        datadict['per_page'] =  page_request.per_page
+        datadict['process_instance_id'] = apply_id
+        # datadict['per_page'] =  page_request.per_page
 
-        if audit_status:
-            # todo 有待转换为工作流的map  他的状态和这里的状态需要转换
-            # datadict["process_status"] = audit_status.value
-            pass
-        if student_name:
-            datadict["student_name"] = student_name
-        if student_gender:
-            datadict["student_gender"] = student_gender
-        if school_id:
-            datadict["school_id"] = school_id
-        if apply_user:
-            datadict["applicant_name"] = apply_user
-        if edu_no:
-            datadict["edu_number"] = edu_no
-        apiname = '/api/school/v1/teacher-workflow/work-flow-instance'
+        apiname = '/api/school/v1/teacher-workflow/work-flow-node-log'
         url=url+apiname
         headerdict = {
             "accept": "application/json",
@@ -167,7 +153,6 @@ class StudentTransactionFlowRule(object):
             print(e)
         return response
 
-        return lst
     # 向工作流中心发送申请
     async def add_student_transaction_work_flow(self, student_transaction_flow: StudentEduInfo,stuinfo: StudentsKeyinfoDetail):
         student_transaction_flow.id=0
