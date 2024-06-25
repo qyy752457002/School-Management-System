@@ -112,7 +112,7 @@ class StudentTransactionFlowRule(object):
         paging_result = PaginatedResponse.from_paging(paging, StudentTransactionFlowModel)
         return paging_result
 
-    async def query_student_transaction_flow(self, apply_id,stage=None):
+    async def query_student_transaction_flowbiz(self, apply_id,stage=None):
 
         session = await db_connection_manager.get_async_session("default", True)
         query = select(StudentTransactionFlow).where(StudentTransactionFlow.apply_id == apply_id  )
@@ -126,6 +126,47 @@ class StudentTransactionFlowRule(object):
             planning_school = orm_model_to_view_model(row, StudentTransactionFlowModel)
 
             lst.append(planning_school)
+        return lst
+
+    async def query_student_transaction_flow(self, apply_id,stage=None):
+        httpreq= HTTPRequest()
+        url= workflow_service_config.workflow_config.get("url")
+        datadict=dict()
+        datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
+        datadict['page'] =  page_request.page
+        datadict['per_page'] =  page_request.per_page
+
+        if audit_status:
+            # todo 有待转换为工作流的map  他的状态和这里的状态需要转换
+            # datadict["process_status"] = audit_status.value
+            pass
+        if student_name:
+            datadict["student_name"] = student_name
+        if student_gender:
+            datadict["student_gender"] = student_gender
+        if school_id:
+            datadict["school_id"] = school_id
+        if apply_user:
+            datadict["applicant_name"] = apply_user
+        if edu_no:
+            datadict["edu_number"] = edu_no
+        apiname = '/api/school/v1/teacher-workflow/work-flow-instance'
+        url=url+apiname
+        headerdict = {
+            "accept": "application/json",
+            "Content-Type": "application/json"
+        }
+        # 如果是query 需要拼接参数
+        url+=  ('?' +urlencode(datadict))
+        print('参数', url, datadict,headerdict)
+        response= None
+        try:
+            response = await httpreq.get_json(url,headerdict)
+            # print(response)
+        except Exception as e:
+            print(e)
+        return response
+
         return lst
     # 向工作流中心发送申请
     async def add_student_transaction_work_flow(self, student_transaction_flow: StudentEduInfo,stuinfo: StudentsKeyinfoDetail):

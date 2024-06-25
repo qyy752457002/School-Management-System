@@ -182,20 +182,12 @@ class StudentTransactionRule(object):
                                                   apply_user,
                                                   edu_no):
         # 获取分页数据 转发到 工作流的接口
-        kdict = dict()
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
         datadict=dict()
         datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         datadict['page'] =  page_request.page
         datadict['per_page'] =  page_request.per_page
-        # datadict['applicant_name'] =  'tester'
-        # datadict['student_name'] = stuinfo.student_name
-        # datadict['student_gender'] = stuinfo.student_gender
-        # datadict['edu_number'] =   student_transaction_flow.edu_number
-        # datadict['school_name'] =   student_transaction_flow.school_name
-        # datadict['apply_user'] =  'tester'
-        # datadict['jason_data'] =  json.dumps(student_transaction_flow.__dict__, ensure_ascii=False)
 
         if audit_status:
             # todo 有待转换为工作流的map  他的状态和这里的状态需要转换
@@ -211,29 +203,22 @@ class StudentTransactionRule(object):
             datadict["applicant_name"] = apply_user
         if edu_no:
             datadict["edu_number"] = edu_no
-        # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance'
         url=url+apiname
         headerdict = {
             "accept": "application/json",
-            # "Authorization": "{{bear}}",
             "Content-Type": "application/json"
         }
         # 如果是query 需要拼接参数
         url+=  ('?' +urlencode(datadict))
-
         print('参数', url, datadict,headerdict)
         response= None
-
         try:
             response = await httpreq.get_json(url,headerdict)
             # print(response)
         except Exception as e:
             print(e)
-
         return response
-
-        # print(3333333333333333,paging_result)
 
     async def query_student_transaction_with_page_biz(self, page_request: PageRequest, audit_status,
                                                   student_name,

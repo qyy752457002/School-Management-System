@@ -112,7 +112,7 @@ class CurrentStudentsView(BaseView):
 
                                                                                                 )
         return paging_result
-
+    # 转学申请详情
     async def get_student_transaction_info(self,
 
                                            apply_id: int = Query(..., description=" ", example='1'),
@@ -205,9 +205,9 @@ class CurrentStudentsView(BaseView):
         # print(new_students_key_info)
         return res
 
-    # 在校生转入    详情
+    # 在校生转入    详情 就是工作流程的审核记录 各个阶段
     async def get_transferin_audit(self,
-                                   apply_id: int = Query(..., description=" ", example='1'),
+                                   apply_id: int = Query(..., description=" 列表接口返回的process_instance_id", example='1'),
 
                                    ):
         res = await self.student_transaction_flow_rule.query_student_transaction_flow(apply_id)
