@@ -194,11 +194,13 @@ class StudentTransactionRule(object):
         # datadict['student_gender'] = stuinfo.student_gender
         # datadict['edu_number'] =   student_transaction_flow.edu_number
         # datadict['school_name'] =   student_transaction_flow.school_name
-        datadict['apply_user'] =  'tester'
+        # datadict['apply_user'] =  'tester'
         # datadict['jason_data'] =  json.dumps(student_transaction_flow.__dict__, ensure_ascii=False)
 
         if audit_status:
-            datadict["process_status"] = audit_status.value
+            # todo 有待转换为工作流的map  他的状态和这里的状态需要转换
+            # datadict["process_status"] = audit_status.value
+            pass
         if student_name:
             datadict["student_name"] = student_name
         if student_gender:
