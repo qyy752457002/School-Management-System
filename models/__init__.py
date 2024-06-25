@@ -79,5 +79,6 @@ from . import work_flow_node_depend_strategy
 from . import work_flow_instance
 from . import work_flow_node_instance
 from . import unit_system
+from . import system_config
 
 metadata = BaseDBModel.metadata

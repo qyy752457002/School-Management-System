@@ -112,7 +112,7 @@ class CurrentStudentsView(BaseView):
 
                                                                                                 )
         return paging_result
-
+    # 转学申请详情
     async def get_student_transaction_info(self,
 
                                            apply_id: int = Query(..., description=" ", example='1'),
@@ -136,7 +136,8 @@ class CurrentStudentsView(BaseView):
         # print(new_students_key_info)
 
         # 调用审批流 创建
-        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info)
+        stuinfo= await self.students_rule.get_students_by_id(student_edu_info.student_id)
+        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info,stuinfo)
         transferin_id =  0
 
         json_str=''
@@ -159,25 +160,25 @@ class CurrentStudentsView(BaseView):
                                      audit_info: StudentTransactionAudit
 
                                      ):
-        # todo 校验必须是转出校的老师才能审批
+        # todo 校验必须是转出校的老师才能审批  调用推进
 
         # 审批通过 操作 或者拒绝
-        student_transaciton = StudentTransaction(id=audit_info.transferin_audit_id,
-                                              status=audit_info.transferin_audit_action.value, )
-        res2 = await self.student_transaction_rule.deal_student_transaction(student_transaciton)
+        # student_transaciton = StudentTransaction(id=audit_info.transferin_audit_id,
+        #                                       status=audit_info.transferin_audit_action.value, )
+        # res2 = await self.student_transaction_rule.deal_student_transaction(student_transaciton)
 
         # 流乘记录 初审  转出校/转如校的老师 都会调用审批流    todo 假设终态  则调用事务和审批流
-        student_trans_flow = StudentTransactionFlow(apply_id=audit_info.transferin_audit_id,
-                                                    status=audit_info.transferin_audit_action.value,
-                                                    stage=audit_info.transferin_audit_action.value,
-                                                    remark=audit_info.remark)
-        res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+        # student_trans_flow = StudentTransactionFlow(apply_id=audit_info.transferin_audit_id,
+        #                                             status=audit_info.transferin_audit_action.value,
+        #                                             stage=audit_info.transferin_audit_action.value,
+        #                                             remark=audit_info.remark)
+        # res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
         # 读取转学信息
-        student_transaction=await self.student_transaction_rule.get_student_transaction_by_id(audit_info.transferin_audit_id)
-        resultra = await self.student_transaction_flow_rule.exe_student_transaction(student_transaction,student_trans_flow)
+        # student_transaction=await self.student_transaction_rule.get_student_transaction_by_id(audit_info.transferin_audit_id)
+        resultra = await self.student_transaction_flow_rule.exe_student_transaction(audit_info,)
 
         # print(new_students_key_info)
-        return res
+        return resultra
     # 转学异动 撤回
     async def patch_transaction_cancel(self,
                                        transferin_id: int = Query(..., description="转入申请id", example='2')
@@ -187,26 +188,19 @@ class CurrentStudentsView(BaseView):
                                      ):
         # todo 校验是否本人或者老师
 
-        student_transaciton = StudentTransaction(id=transferin_id,
-                                              status=StudentTransactionStatus.CANCEL.value, )
-        res2 = await self.student_transaction_rule.update_student_transaction(student_transaciton)
-
         # 流乘记录
-        student_trans_flow = StudentTransactionFlow(apply_id=transferin_id,
-                                                    status=StudentTransactionStatus.CANCEL.value,
-                                                    # stage=audit_info.transferin_audit_action.value,
-                                                    remark= '用户撤回')
-        res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
         # todo 审批流取消
-        res2 = await self.student_transaction_flow_rule.req_workflow_cancel(student_transaciton,student_trans_flow)
+        res2 = await self.student_transaction_flow_rule.req_workflow_cancel(transferin_id,)
 
+        if res2 is None:
+            return {}
 
         # print(new_students_key_info)
-        return res
+        return res2
 
-    # 在校生转入    详情
+    # 在校生转入    详情 就是工作流程的审核记录 各个阶段
     async def get_transferin_audit(self,
-                                   apply_id: int = Query(..., description=" ", example='1'),
+                                   apply_id: int = Query(..., description=" 列表接口返回的process_instance_id", example='1'),
 
                                    ):
         res = await self.student_transaction_flow_rule.query_student_transaction_flow(apply_id)
