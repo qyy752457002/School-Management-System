@@ -134,63 +134,25 @@ class CurrentStudentsView(BaseView):
     # 在校生转入
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
         # print(new_students_key_info)
-        # 新增转学数据到库
-        # 转出
-        student_edu_info_out= copy.deepcopy(student_edu_info)
-        # 读取当前在校信息  确保学校等信息这里都有
-        res_student = await self.students_base_info_rule.get_students_base_info_by_student_id(student_edu_info.student_id)
-        if res_student:
-            student_edu_info_out.school_id = res_student.school_id
-            student_edu_info_out.grade_id = res_student.grade_id
-            student_edu_info_out.class_id = res_student.class_id
-            class_rule = get_injector(ClassesRule)
-            class_info =await class_rule.get_classes_by_id(res_student.class_id)
-
-            student_edu_info_out.classes = class_info.class_name
-            student_edu_info_out.major_id = class_info.major_for_vocational
-            if student_edu_info_out.school_id== student_edu_info.school_id:
-                raise StudentExistsThisSchoolError()
-                pass
-
-        student_edu_info_out.status = AuditAction.NEEDAUDIT.value
-
-        res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
-                                                                              TransactionDirection.OUT.value)
-        # 转入信息
-        student_edu_info.relation_id = res_out.id
-        # print('debug-----222222222222',res_out)
-
-        student_edu_info.status = AuditAction.NEEDAUDIT.value
-        audit_info = res = await self.student_transaction_rule.add_student_transaction(student_edu_info, TransactionDirection.IN.value,res_out.id )
-
-        # 流乘记录  发起 审批流程的服务请求
-        student_trans_flow = StudentTransactionFlow(apply_id=audit_info.id,
-                                                    stage=AuditFlowStatus.FLOWBEGIN.value,
-                                                    remark='')
-        res2 = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
 
         # 调用审批流 创建
-        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_trans_flow)
+        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info)
         transferin_id =  0
 
         json_str=''
         if res3 and  len(res3)>0 :
 
             print(res3[0])
-            transferin_id = res3[0]['process_instance_id']
-            student_transaciton = StudentTransaction(id=audit_info.id,
-                                                  process_instance_id=transferin_id,)
-            res4 = await self.student_transaction_rule.update_student_transaction(student_transaciton)
-            json_str = json.dumps(res3, ensure_ascii=False)
+            # transferin_id = res3[0]['process_instance_id']
+            # student_transaciton = StudentTransaction(id=audit_info.id,
+            #                                       process_instance_id=transferin_id,)
+            # res4 = await self.student_transaction_rule.update_student_transaction(student_transaciton)
+            # json_str = json.dumps(res3, ensure_ascii=False)
 
             # res.flow = res3
-        # 提交态的 审批流
-        student_trans_flow = StudentTransactionFlow(apply_id=audit_info.id,
-                                                    stage=AuditFlowStatus.APPLY_SUBMIT.value,
-                                                    remark='',description= json_str)
-        res2 = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
 
-        return res
+
+        return res3
 
     # 在校生转入   发起审批
     async def patch_transferin_audit(self,
