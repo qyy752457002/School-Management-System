@@ -10,7 +10,9 @@ from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from business_exceptions.teacher_transction import TransactionApprovalError
 from rules.work_flow_instance_rule import WorkFlowNodeInstanceRule
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
-
+from rules.enum_value_rule import EnumValueRule
+from daos.enum_value_dao import EnumValueDAO
+from models.enum_value import EnumValue
 from mini_framework.utils.http import HTTPRequest
 from urllib.parse import urlencode
 from views.common.common_view import workflow_service_config
@@ -22,6 +24,7 @@ class TeacherTransactionRule(object):
     teachers_dao: TeachersDao
     work_flow_instance_rule: WorkFlowNodeInstanceRule
     teacher_work_flow_rule: TeacherWorkFlowRule
+    enum_value_dao: EnumValueDAO
 
     async def get_teacher_transaction_by_teacher_transaction_id(self, teacher_transaction_id):
         teacher_transaction_db = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(

@@ -7,7 +7,7 @@ from views.common.common_view import page_none_deal
 from views.models.teachers import TeacherInfo as TeachersInfoModel
 from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel, TeacherInfoSubmit, \
     CurrentTeacherQuery, CurrentTeacherQueryRe, CurrentTeacherInfoSaveModel, NewTeacherInfoSaveModel, \
-    TeacherInfoCreateModel, TeacherApprovalQuery, TeacherApprovalQueryRe
+    TeacherInfoCreateModel, TeacherApprovalQuery, TeacherApprovalQueryRe, NewTeacherApprovalCreate
 from sqlalchemy import select, func, update
 from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError
 from daos.teachers_dao import TeachersDao
@@ -23,6 +23,7 @@ from models.teacher_approval_log import TeacherApprovalLog
 from daos.teacher_approval_log_dao import TeacherApprovalLogDao
 from rules.teacher_change_rule import TeacherChangeRule
 from daos.teacher_key_info_approval_dao import TeacherKeyInfoApprovalDao
+from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from datetime import datetime
 
 
@@ -36,6 +37,7 @@ class TeachersInfoRule(object):
     teacher_approval_log: TeacherApprovalLogDao
     teacher_change_detail: TeacherChangeRule
     teacher_key_info_approval_dao: TeacherKeyInfoApprovalDao
+    teacher_work_flow_rule: TeacherWorkFlowRule
 
     # 查询单个教职工基本信息
     async def get_teachers_info_by_teacher_id(self, teachers_id):
@@ -56,13 +58,18 @@ class TeachersInfoRule(object):
         teachers_info = orm_model_to_view_model(teachers_info_db, TeachersInfoModel, exclude=[""])
         return teachers_info
 
-    async def add_teachers_info(self, teachers_info: TeacherInfoSaveModel):
+    async def add_teachers_info(self, teachers_info: TeacherInfoSaveModel, user_id):
         exits_teacher_base = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teachers_info.teacher_id)
         if exits_teacher_base:
             raise TeacherInfoExitError()
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
+        teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info)
+        teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
+                                                         exclude=[""])
+        params = {"process_code": "teacher_entry", "applicant_name": user_id}
+        await self.teacher_work_flow_rule.add_teacher_work_flow(NewTeacherApprovalCreate, params)
         organization = OrganizationMembers()
         organization.id = None
         organization.org_id = teachers_info.org_id

@@ -20,7 +20,7 @@ class EnumValueDAO(DAOBase):
             query = query.where(EnumValue.enum_name == enum_name)
         if parent_id:
             query = query.where(EnumValue.parent_id == parent_id)
-        result = await session.execute( query)
+        result = await session.execute(query)
         return result.scalar_one_or_none()
 
     async def get_enum_value_by_enum_value_name(self, enum_value_name,parent_id=None):
@@ -30,6 +30,13 @@ class EnumValueDAO(DAOBase):
             query = query.where(EnumValue.parent_id == parent_id)
         result = await session.execute(query)
         return result.first()
+
+    async def get_enum_description_by_enum_value_name(self, enum_value):
+        session = await self.slave_db()
+        query = select(EnumValue).where(EnumValue.enum_value == enum_value)
+        result = await session.execute(query)
+        return result.first()
+
 
     async def add_enum_value(self, enum_value):
         session = await self.master_db()

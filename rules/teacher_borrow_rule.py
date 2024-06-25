@@ -127,21 +127,21 @@ class TeacherBorrowRule(object):
     #     teacher_borrow.approval_status = "submitted"
     #     return await self.teacher_borrow_dao.update_teacher_borrow(teacher_borrow, "approval_status")
 
-    async def approved(self, teacher_borrow_id):
+    async def borrow_approved(self, teacher_borrow_id):
         teacher_borrow = await self.teacher_borrow_dao.get_teacher_borrow_by_teacher_borrow_id(teacher_borrow_id)
         if not teacher_borrow:
             raise Exception(f"编号为的{teacher_borrow_id}teacher_borrow不存在")
         teacher_borrow.approval_status = "approved"
         return await self.teacher_borrow_dao.update_teacher_borrow(teacher_borrow, "approval_status")
 
-    async def rejected(self, teacher_borrow_id):
+    async def borrow_rejected(self, teacher_borrow_id):
         teacher_borrow = await self.teacher_borrow_dao.get_teacher_borrow_by_teacher_borrow_id(teacher_borrow_id)
         if not teacher_borrow:
             raise Exception(f"编号为的{teacher_borrow_id}teacher_borrow不存在")
         teacher_borrow.approval_status = "rejected"
         return await self.teacher_borrow_dao.update_teacher_borrow(teacher_borrow, "approval_status")
 
-    async def revoked(self, teacher_borrow_id):
+    async def borrow_revoked(self, teacher_borrow_id):
         teacher_borrow = await self.teacher_borrow_dao.get_teacher_borrow_by_teacher_borrow_id(teacher_borrow_id)
         if not teacher_borrow:
             raise Exception(f"编号为的{teacher_borrow_id}teacher_borrow不存在")

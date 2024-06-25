@@ -37,7 +37,7 @@ class TeacherBorrow(BaseDBModel):
     __table_args__ = {'comment': 'teacher_borrow信息表'}
 
     teacher_borrow_id: Mapped[int] = mapped_column(primary_key=True, comment="teacher_borrowID")
-    original_unit: Mapped[str] = mapped_column(String(64), nullable=True, comment="原单位")
+    original_unit_id: Mapped[int] = mapped_column(nullable=True, comment="原单位")
     original_position: Mapped[str] = mapped_column(String(64), nullable=True, comment="原岗位")
     original_district_province_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="原行政属地省")
     original_district_city_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="原行政属地市")
@@ -46,7 +46,7 @@ class TeacherBorrow(BaseDBModel):
     original_region_city_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="原管辖区域市")
     original_region_area_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="原管辖区域区")
 
-    transfer_in_date: Mapped[date] = mapped_column(Date, nullable=True, comment="借入日期")
+    borrow_in_date: Mapped[date] = mapped_column(Date, nullable=True, comment="借入日期")
     current_unit_id: Mapped[int] = mapped_column(nullable=True, comment="现单位")
     current_position: Mapped[str] = mapped_column(String(64), nullable=True, comment="现岗位")
     current_district_province_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="现行政属地省")
@@ -55,8 +55,8 @@ class TeacherBorrow(BaseDBModel):
     current_region_province_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="现管辖区域省")
     current_region_city_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="现管辖区域市")
     current_region_area_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="现管辖区域区")
-    transfer_out_date: Mapped[date] = mapped_column(Date, nullable=True, comment="借出日期")
-    transfer_reason: Mapped[str] = mapped_column(String(64), nullable=True, comment="借动原因")
+    borrow_out_date: Mapped[date] = mapped_column(Date, nullable=True, comment="借出日期")
+    borrow_reason: Mapped[str] = mapped_column(String(64), nullable=True, comment="借动原因")
     remark: Mapped[str] = mapped_column(String(64), nullable=True, comment="备注")
     operator_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="操作人")
     teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")

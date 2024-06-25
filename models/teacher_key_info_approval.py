@@ -14,7 +14,7 @@ class TeacherKeyInfoApproval(BaseDBModel):
     操作时间
     审批状态
     """
-    __tablename__ = 'lfun_teacher_entry_approval'
+    __tablename__ = 'lfun_teacher_key_info_approval'
     __table_args__ = {'comment': '教师关键信息修改审批表'}
 
     teacher_key_info_approval_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, comment="审批主键id")

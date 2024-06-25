@@ -1,7 +1,8 @@
-from sqlalchemy import String, Date,DateTime
+from sqlalchemy import String, Date, DateTime
 from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
 from datetime import date, datetime
+
 
 class TeacherChangeLog(BaseDBModel):
     """
@@ -22,7 +23,7 @@ class TeacherChangeLog(BaseDBModel):
     __table_args__ = {'comment': 'teacher_change_log信息表'}
 
     teacher_change_id: Mapped[int] = mapped_column(primary_key=True, comment="teacher_changeID")
-    teacher_id: Mapped[str] = mapped_column(String(64), nullable=False, comment="教师ID")
+    teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")
     change_module: Mapped[str] = mapped_column(String(64), nullable=False, comment="变更模块")
     change_detail: Mapped[str] = mapped_column(String(64), nullable=False, comment="变更详情")
     log_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="审核状态")
@@ -31,8 +32,3 @@ class TeacherChangeLog(BaseDBModel):
     # apply_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, comment="申请时间")
     # approval_time: Mapped[datetime] = mapped_column(DateTime, nullable=True, comment="审核时间")
     process_instance_id: Mapped[int] = mapped_column(nullable=True, comment="流程ID")
-
-
-
-
-    

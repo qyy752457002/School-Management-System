@@ -7,10 +7,11 @@ class Gender(str, Enum):
     """
     MALE = "male"
     FEMALE = "female"
+    NULL = ""
 
     @classmethod
     def to_list(cls):
-        return [cls.FEMALE, cls.MALE]
+        return [cls.FEMALE, cls.MALE, cls.NULL]
 
 
 class YesOrNo(str, Enum):

@@ -1,6 +1,7 @@
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from mini_framework.databases.queries.pages import Pagination, Paging
 from daos.transfer_details_dao import TransferDetailsDAO
 from daos.teachers_dao import TeachersDao
 from models.transfer_details import TransferDetails
@@ -11,6 +12,9 @@ from business_exceptions.teacher import TeacherNotFoundError
 from models.teacher_change_log import TeacherChangeLog
 from daos.teacher_change_dao import TeacherChangeLogDAO
 from rules.teacher_change_rule import TeacherChangeRule
+from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
+from daos.enum_value_dao import EnumValueDAO
+from rules.enum_value_rule import EnumValueRule
 
 
 @dataclass_inject
@@ -19,6 +23,9 @@ class TransferDetailsRule(object):
     teachers_dao: TeachersDao
     teacher_change_log: TeacherChangeLogDAO
     teacher_change_detail: TeacherChangeRule
+    teacher_work_flow_rule: TeacherWorkFlowRule
+    enum_value_dao: EnumValueDAO
+    enum_value_rule: EnumValueRule
 
     async def get_transfer_details_by_transfer_details_id(self, transfer_details_id):
         transfer_details_db = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
@@ -38,10 +45,10 @@ class TransferDetailsRule(object):
                                                   change_detail="调动", log_status="/",
                                                   )
             # 写到这里了！
+            # todo 变更日志没写
             await self.teacher_change_log.add_teacher_change(teacher_change_log)
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
-
 
         transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
         return transfer_details
@@ -51,6 +58,7 @@ class TransferDetailsRule(object):
         调出
         """
         # todo 需要增加获取调出流程实例id
+        # todo 变更日志没写
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
         transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
@@ -106,13 +114,61 @@ class TransferDetailsRule(object):
     # 调动管理分页查询相关
     async def query_transfer_out_with_page(self, type, query_model: TeacherTransferQueryModel,
                                            page_request: PageRequest):
+        params = {"original_district_area_id": "original_district_area_name",
+                  "original_district_city_id": "original_district_city_name",
+                  "original_district_province_id": "original_region_province_name",
+                  "original_region_area_id": "current_district_area_name",
+                  "original_region_city_id": "original_region_city_name",
+                  "original_region_province_id": "original_region_province_name",
+                  "current_district_area_id": "current_district_area_name",
+                  "current_district_city_id": "current_district_city_name",
+                  "current_district_province_id": "current_region_province_name",
+                  "current_region_area_id": "current_district_area_name",
+                  "current_region_city_id": "current_region_city_name",
+                  "current_region_province_id": "current_region_province_name",
+                  }
         if type == "launch":
             teacher_transaction_db = await self.transfer_details_dao.query_transfer_out_launch_with_page(query_model,
                                                                                                          page_request)
+            teacher_transaction_page = await self.query_deal(teacher_transaction_db)
+            paging_result = PaginatedResponse.from_paging(teacher_transaction_page, TeacherTransferQueryReModel,
+                                                          other_mapper=params)
+
+            # for item in teacher_transaction_db.items:
+            #     original_district_area_id = item.original_district_area_id
+            #     current_district_area_id = item.current_district_area_id
+            #     original_region_area_id = item.original_region_area_id
+            #     current_region_area_id = item.current_region_area_id
+            #
+            #     original_district_province_name, original_district_city_name, original_district_area_name = self.enum_value_rule.get_district_name(
+            #         original_district_area_id)
+            #     item.original_region_province_id = original_district_province_name
+            #     item.original_district_city_id = original_district_city_name
+            #     item.original_district_area_id = original_district_area_name
+            #
+            #     current_district_province_name, current_district_city_name, current_district_area_name = self.enum_value_rule.get_district_name(
+            #         current_district_area_id)
+            #     item.current_region_province_id = current_district_province_name
+            #     item.current_district_city_id = current_district_city_name
+            #     item.current_district_area_id = current_district_area_name
+            #
+            #     original_region_province_name, original_region_city_name, original_region_area_name = self.enum_value_rule.get_district_name(
+            #         original_region_area_id)
+            #     item.original_region_province_id = original_region_province_name
+            #     item.original_region_city_id = original_region_city_name
+            #     item.original_region_area_id = original_region_area_name
+            #
+            #     current_region_province_name, current_region_city_name, current_region_area_name = self.enum_value_rule.get_district_name(
+            #         current_region_area_id)
+            #     item.current_region_province_id = current_region_province_name
+            #     item.current_region_city_id = current_region_city_name
+            #     item.current_region_area_id = current_region_area_name
         elif type == "approval":
             teacher_transaction_db = await self.transfer_details_dao.query_transfer_out_approval_with_page(query_model,
                                                                                                            page_request)
-        paging_result = PaginatedResponse.from_paging(teacher_transaction_db, TeacherTransferQueryReModel)
+            teacher_transaction_page = await self.query_deal(teacher_transaction_db)
+            paging_result = PaginatedResponse.from_paging(teacher_transaction_page, TeacherTransferQueryReModel,
+                                                          other_mapper=params)
         return paging_result
 
     async def query_transfer_in_with_page(self, type, query_model: TeacherTransferQueryModel,
@@ -125,6 +181,38 @@ class TransferDetailsRule(object):
                                                                                                           page_request)
         paging_result = PaginatedResponse.from_paging(teacher_transaction_db, TeacherTransferQueryReModel)
         return paging_result
+
+    async def query_deal(self, page: Paging):
+        for item in page.items:
+            original_district_area_id = item.original_district_area_id
+            current_district_area_id = item.current_district_area_id
+            original_region_area_id = item.original_region_area_id
+            current_region_area_id = item.current_region_area_id
+
+            original_district_province_name, original_district_city_name, original_district_area_name = self.enum_value_rule.get_district_name(
+                original_district_area_id)
+            item.original_region_province_id = original_district_province_name
+            item.original_district_city_id = original_district_city_name
+            item.original_district_area_id = original_district_area_name
+
+            current_district_province_name, current_district_city_name, current_district_area_name = self.enum_value_rule.get_district_name(
+                current_district_area_id)
+            item.current_region_province_id = current_district_province_name
+            item.current_district_city_id = current_district_city_name
+            item.current_district_area_id = current_district_area_name
+
+            original_region_province_name, original_region_city_name, original_region_area_name = self.enum_value_rule.get_district_name(
+                original_region_area_id)
+            item.original_region_province_id = original_region_province_name
+            item.original_region_city_id = original_region_city_name
+            item.original_region_area_id = original_region_area_name
+
+            current_region_province_name, current_region_city_name, current_region_area_name = self.enum_value_rule.get_district_name(
+                current_region_area_id)
+            item.current_region_province_id = current_region_province_name
+            item.current_region_city_id = current_region_city_name
+            item.current_region_area_id = current_region_area_name
+        return page
 
     # async def submitting(self, transfer_details_id):
     #     transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
@@ -143,26 +231,57 @@ class TransferDetailsRule(object):
     #     return await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
 
     # 调动管理审批相关
-    async def approved(self, transfer_details_id):
+    async def transfer_approved(self, transfer_details_id, process_instance_id, user_id, reason):
         transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
             transfer_details_id)
         if not transfer_details:
             raise Exception(f"编号为{transfer_details_id}的transfer_details不存在")
-        transfer_details.approval_status = "approved"
-        return await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
+        teacher_id = transfer_details.teacher_id
+        transfer_details_transfer_type = transfer_details.transfer_type
+        user_id = user_id
+        parameters = {"user_id": user_id, "action": "approved", "description": reason}
+        current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
+        node_instance_id = current_node.get("node_instance_id")
+        node_instance = await self.teacher_work_flow_rule.process_transaction_work_flow(node_instance_id, parameters)
+        if node_instance == "approved":
+            transfer_details.approval_status = "approved"
+            await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
+            teachers_db = await self.teachers_dao.get_teachers_by_id(teacher_id)
+            teachers_db.teacher_sub_status = transfer_details_transfer_type
+            await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status")
+        else:
+            transfer_details.approval_status = "processing"
+            await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
+        # todo 审批日志没写
 
-    async def rejected(self, transfer_details_id):
+    async def transfer_rejected(self, transfer_details_id, process_instance_id, user_id, reason):
         transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
             transfer_details_id)
         if not transfer_details:
             raise Exception(f"编号为{transfer_details_id}的transfer_details不存在")
-        transfer_details.approval_status = "rejected"
-        return await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
+        user_id = user_id
+        parameters = {"user_id": user_id, "action": "rejected", "description": reason}
+        current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
+        node_instance_id = current_node.get("node_instance_id")
+        node_instance = await self.teacher_work_flow_rule.process_transaction_work_flow(node_instance_id,
+                                                                                        parameters)
+        if node_instance == "rejected":
+            transfer_details.approval_status = "rejected"
+            await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
+        # todo 审批日志没写
 
-    async def revoked(self, transfer_details_id):
+    async def transfer_revoked(self, transfer_details_id, process_instance_id, user_id, reason):
         transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
             transfer_details_id)
         if not transfer_details:
             raise Exception(f"编号为{transfer_details_id}的transfer_details不存在")
-        transfer_details.approval_status = "revoked"
-        return await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
+        user_id = user_id
+        parameters = {"user_id": user_id, "action": "revoke", "description": reason}
+        current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
+        node_instance_id = current_node.get("node_instance_id")
+        node_instance = await self.teacher_work_flow_rule.process_transaction_work_flow(node_instance_id,
+                                                                                        parameters)
+        if node_instance == "revoked":
+            transfer_details.approval_status = "revoked"
+            await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
+        # todo 审批日志没写

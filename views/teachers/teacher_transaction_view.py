@@ -1,7 +1,7 @@
 from mini_framework.web.views import BaseView
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
-from fastapi import Query, Depends
+from fastapi import Query, Depends, Body
 
 from views.models.teacher_transaction import TransferDetailsModel, TransferDetailsReModel
 from rules.transfer_details_rule import TransferDetailsRule
@@ -139,20 +139,44 @@ class TransferDetailsView(BaseView):
 
     async def patch_transfer_approved(self,
                                       transfer_details_id: int = Query(None, title="transfer_detailsID",
-                                                                       description="transfer_detailsID", example=1234)):
-        res = await self.transfer_details_rule.approved(transfer_details_id)
+                                                                       description="transfer_detailsID", example=1234),
+                                      process_instance_id: int = Query(..., title="流程实例id",
+                                                                       description="流程实例id",
+                                                                       example=123),
+                                      reason: str = Query("", title="reason",
+                                                          description="审核理由")):
+
+        user_id = "sadklfh"
+        reason = reason
+        res = await self.transfer_details_rule.transfer_approved(transfer_details_id, process_instance_id, user_id,
+                                                                 reason)
         return res
 
     async def patch_transfer_rejected(self,
                                       transfer_details_id: int = Query(None, title="transfer_detailsID",
-                                                                       description="transfer_detailsID", example=1234)):
-        res = await self.transfer_details_rule.rejected(transfer_details_id)
+                                                                       description="transfer_detailsID", example=1234),
+                                      process_instance_id: int = Query(..., title="流程实例id",
+                                                                       description="流程实例id",
+                                                                       example=123),
+                                      reason: str = Query("", title="reason",
+                                                          description="审核理由")):
+        user_id = "sadklfh"
+        reason = reason
+        res = await self.transfer_details_rule.transfer_rejected(transfer_details_id, process_instance_id, user_id,
+                                                                 reason)
         return res
 
     async def patch_transfer_revoked(self,
                                      transfer_details_id: int = Query(None, title="transfer_detailsID",
-                                                                      description="transfer_detailsID", example=1234)):
-        res = await self.transfer_details_rule.revoked(transfer_details_id)
+                                                                      description="transfer_detailsID", example=1234),
+                                     process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
+                                                                      example=123),
+                                     reason: str = Query("", title="reason",
+                                                         description="审核理由")):
+        user_id = "sadklfh"
+        reason = reason
+        res = await self.transfer_details_rule.transfer_revoked(transfer_details_id, process_instance_id, user_id,
+                                                                reason)
         return res
 
 
@@ -367,15 +391,15 @@ class TeacherBorrowView(BaseView):
 
     async def patch_borrow_approved(self, teacher_borrow_id: int = Query(None, title="teacher_borrowID",
                                                                          description="teacher_borrowID", example=1234)):
-        res = await self.teacher_borrow_rule.approved(teacher_borrow_id)
+        res = await self.teacher_borrow_rule.borrow_approved(teacher_borrow_id)
         return res
 
     async def patch_borrow_rejected(self, teacher_borrow_id: int = Query(None, title="teacher_borrowID",
                                                                          description="teacher_borrowID", example=1234)):
-        res = await self.teacher_borrow_rule.rejected(teacher_borrow_id)
+        res = await self.teacher_borrow_rule.borrow_rejected(teacher_borrow_id)
         return res
 
     async def patch_borrow_revoked(self, teacher_borrow_id: int = Query(None, title="teacher_borrowID",
                                                                         description="teacher_borrowID", example=1234)):
-        res = await self.teacher_borrow_rule.revoked(teacher_borrow_id)
+        res = await self.teacher_borrow_rule.borrow_revoked(teacher_borrow_id)
         return res
