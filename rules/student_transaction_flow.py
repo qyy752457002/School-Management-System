@@ -19,7 +19,8 @@ from models.student_transaction_flow import StudentTransactionFlow
 from rules.student_transaction import StudentTransactionRule
 from rules.students_rule import StudentsRule
 from views.common.common_view import workflow_service_config
-from views.models.student_transaction import StudentTransactionFlow as StudentTransactionFlowModel, StudentEduInfo
+from views.models.student_transaction import StudentTransactionFlow as StudentTransactionFlowModel, StudentEduInfo, \
+    StudentTransactionAudit
 from views.models.students import StudentsKeyinfoDetail
 from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE
 
@@ -191,64 +192,29 @@ class StudentTransactionFlowRule(object):
 
         return response
     # 处理流程审批 的 操作
-    async def exe_student_transaction(self,student_transaction:StudentEduInfo, student_transaction_flow: StudentTransactionFlowModel):
+    async def exe_student_transaction(self,audit_info):
         # 如果存在出 读取出的信息
-        student_transaction_out=None
-        if student_transaction.relation_id:
-            stu_rule= get_injector(StudentTransactionRule)
-            student_transaction_out = await stu_rule.get_student_transaction_by_id(student_transaction.relation_id)
-
-        # todo  分布式  A校修改学生 出  B校修改学生入
-        transfer_data =            student_transaction.__dict__
-
-
-        # todo 3个业务接口的地址的定义  和业务流程编码 有关
-        # print(222222222222,student_transaction,student_transaction_out,)
-        flow_data=[
-            TransactionNode(transaction_name='a校转入',prepare_url='/api/school/v1/public/current-student/student-transaction-prepare',precommit_url='/api/school/v1/public/current-student/student-transaction-precommit',commit_url='/api/school/v1/public/current-student/student-transaction-commit',
-            rollback_url='/api/school/v1/public/current-student/student-transaction-rollback',
-                            transaction_code= student_transaction.school_id),
-
-            TransactionNode(transaction_name='b校转出',
-                            prepare_url='/api/school/v1/public/current-student/student-transaction-prepare',precommit_url='/api/school/v1/public/current-student/student-transaction-precommit',commit_url='/api/school/v1/public/current-student/student-transaction-commit',
-                            rollback_url='/api/school/v1/public/current-student/student-transaction-rollback',
-                            transaction_code= student_transaction_out.school_id),
-
-
-        ]
-
-        res_trans= await DistributedTransactionCore().execute_transaction(111,transfer_data,flow_data)
-        if res_trans:
-            print('事务执行成功')
             # 处理  更新数据
 
-            res_flow = await self.req_workflow_ultra(student_transaction,student_transaction_flow)
-            return True
-        return False
-    async def req_workflow_ultra(self,student_transaction,student_transaction_flow):
-
-        # 读取 节点ID
-        trans_flow =await self.query_student_transaction_flow(student_transaction_flow.apply_id,stage='apply_submit')
-        json_object = json.loads(trans_flow[0].description)
-
-
+        res_flow = await self.req_workflow_ultra(audit_info)
+        return res_flow
+    async def req_workflow_ultra(self,audit_info:StudentTransactionAudit,):
 
         # 发起审批流的 处理
-        student_transaction_flow.id=0
+        # student_transaction_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
-        data= student_transaction_flow
+        # data= student_transaction_flow
         datadict = dict()
         # datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         # 节点实例id
-        datadict['node_instance_id'] =  json_object[1]['node_instance_id']
+        datadict['node_instance_id'] =  audit_info.transferin_audit_id
 
         # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
         url=url+apiname
         headerdict = {
             "accept": "application/json",
-            # "Authorization": "{{bear}}",
             "Content-Type": "application/json"
         }
         # 如果是query 需要拼接参数
@@ -257,13 +223,14 @@ class StudentTransactionFlowRule(object):
         print('参数', url, datadict,headerdict)
         # 字典参数
         datadict ={"user_id":"11","action":"approved"}
-        if student_transaction.status== AuditAction.PASS.value:
+        if audit_info.transferin_audit_action== AuditAction.PASS.value:
             datadict['action'] = 'approved'
-        if student_transaction.status== AuditAction.REFUSE.value:
+        if audit_info.transferin_audit_action== AuditAction.REFUSE.value:
             datadict['action'] = 'rejected'
 
         response = await httpreq.post_json(url,datadict,headerdict)
         print(response,'接口响应')
+        return response
         pass
 
     async def req_workflow_cancel(self,transferin_id,):
@@ -290,4 +257,5 @@ class StudentTransactionFlowRule(object):
 
         response = await httpreq.post_json(url,datadict,headerdict)
         print(response,'接口响应')
+        return response
         pass
