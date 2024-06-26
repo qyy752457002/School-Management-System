@@ -229,7 +229,6 @@ class TeachersRule(object):
             await self.teachers_dao.update_teachers(teachers_db, "teacher_main_status")
             await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status")
 
-
     async def entry_rejected(self, teachers_id, process_instance_id, user_id):
         teacher_entry_approval = await self.teacher_entry_approval_dao.get_teacher_entry_by_teacher_id(teachers_id)
         if not teacher_entry_approval:
@@ -275,7 +274,7 @@ class TeachersRule(object):
             local_file_path = "c.xlsx"
             reader = ExcelReader()
             reader.set_data(local_file_path)
-            # reader.register_model("Sheet1", CombinedModel)
+            reader.register_model("Sheet1", CombinedModel)
             logger.info("Test开始注册模型")
             reader.register_model("Sheet1", TeachersCreatModel)
             # reader.register_model("Sheet1", TeacherInfoCreateModel)
@@ -436,19 +435,18 @@ class TeachersRule(object):
         return task_result
 
     async def query_teacher_approval_with_page(self, type, query_model: TeacherApprovalQuery,
-                                               page_request: PageRequest):
+                                               page_request: PageRequest, user_id):
         if type == "launch":
-            paging = await self.teachers_dao.query_teacher_launch_with_page(query_model, page_request)
-            total_items = paging.total
-            pagination = Pagination(page_request.page, page_request.per_page, total_items)
-            page_items = paging.items
-            for item in page_items:
-                teacher_id = item.teacher_id
-                # todo 需要能通过某种机制查到审批相关的内容
+            params = {"applicant_name": user_id, "process_code": "t_entry", "teacher_sub_status": "submitted"}
+            paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
+                                                                                          TeacherApprovalQueryRe,
+                                                                                          params)
         elif type == "approval":
-            paging = await self.teachers_dao.query_teacher_approval_with_page(query_model, page_request)
-        paging_result = PaginatedResponse.from_paging(paging, TeacherApprovalQueryRe)
-        return paging_result
+            params = {"applicant_name": user_id, "process_code": "t_entry", "teacher_sub_status": "submitted"}
+            paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
+                                                                                          TeacherApprovalQueryRe,
+                                                                                          params)
+        return paging
 
     async def get_teacher_approval_by_teacher_id(self, teacher_id):
         teacher_approval_db = await self.teachers_info_dao.get_teacher_approval(teacher_id)

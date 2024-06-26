@@ -65,11 +65,11 @@ class TeachersInfoRule(object):
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
-        teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info)
+        teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
         teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
                                                          exclude=[""])
-        params = {"process_code": "teacher_entry", "applicant_name": user_id}
-        await self.teacher_work_flow_rule.add_teacher_work_flow(NewTeacherApprovalCreate, params)
+        params = {"process_code": "t_entry", "applicant_name": user_id}
+        await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
         organization = OrganizationMembers()
         organization.id = None
         organization.org_id = teachers_info.org_id
@@ -108,7 +108,7 @@ class TeachersInfoRule(object):
             await self.organization_members_rule.add_organization_members(organization)
         return teachers_info
 
-    async def update_teachers_info(self, teachers_info):
+    async def update_teachers_info(self, teachers_info, user_id):
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
         if not exits_teacher:
             raise TeacherNotFoundError()
@@ -120,6 +120,14 @@ class TeachersInfoRule(object):
             if value:
                 need_update_list.append(key)
         teachers_info = await self.teachers_info_dao.update_teachers_info(teachers_info, *need_update_list)
+
+        teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
+
+        teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
+                                                         exclude=[""])
+        params = {"process_code": "t_entry", "applicant_name": user_id}
+        await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
+
         organization = OrganizationMembers()
         organization.id = None
         organization.org_id = teachers_info.org_id
@@ -129,7 +137,7 @@ class TeachersInfoRule(object):
         await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
         return teachers_info
 
-    async def update_teachers_info_save(self, teachers_info):
+    async def update_teachers_info_save(self, teachers_info, user_id):
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
         if not exits_teacher:
             raise TeacherNotFoundError()
@@ -141,6 +149,12 @@ class TeachersInfoRule(object):
             if value:
                 need_update_list.append(key)
         teachers_info = await self.teachers_info_dao.update_teachers_info(teachers_info, *need_update_list)
+
+        teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
+        teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
+                                                         exclude=[""])
+        params = {"process_code": "t_entry", "applicant_name": user_id}
+        await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
         organization = OrganizationMembers()
         organization.id = None
         organization.org_id = teachers_info.org_id
@@ -159,11 +173,11 @@ class TeachersInfoRule(object):
         teachers_info = orm_model_to_view_model(teachers_info_db, TeachersInfoModel, exclude=[""])
         return teachers_info
 
-    async def query_teacher_with_page(self, query_model: NewTeacher, page_request: PageRequest):
-        print(query_model)
-        paging = await self.teachers_info_dao.query_teacher_with_page(query_model, page_request)
-        paging_result = PaginatedResponse.from_paging(paging, NewTeacherRe)
-        return paging_result
+    async def query_teacher_with_page(self, query_model: NewTeacher, page_request: PageRequest, user_id):
+        params = {"applicant_name": user_id, "process_code": "t_entry", }
+        paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
+                                                                                      NewTeacherRe, params)
+        return paging
 
     async def query_current_teacher_with_page(self, query_model: CurrentTeacherQuery, page_request: PageRequest):
         # todo 需要加一个返回一个能否变动的状态

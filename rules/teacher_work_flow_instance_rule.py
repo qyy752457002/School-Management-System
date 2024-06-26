@@ -99,6 +99,21 @@ class TeacherWorkFlowRule(object):
         result = await httpreq.get_json(url, headerdict)
         return result
 
+    async def delete_teacher_save_work_flow_instance(self, teacher_id: int):
+        httpreq = HTTPRequest()
+        url = workflow_service_config.workflow_config.get("url")
+        params = {"teacher_id": teacher_id}
+        api_name = '/api/school/v1/teacher-workflow/teacher-save-work-flow-instance'
+        url += api_name
+        headerdict = {
+            "accept": "application/json",
+            # "Authorization": "{{bear}}",
+            "Content-Type": "application/json"
+        }
+        url += ('?' + urlencode(params))
+        result = await httpreq.delete(url, headerdict)
+        return result
+
     async def query_work_flow_instance_with_page(self, page_request: PageRequest, query_model: Type[BaseModel],
                                                  query_re_model: Type[BaseModel], params: dict):
         httpreq = HTTPRequest()
@@ -120,7 +135,8 @@ class TeacherWorkFlowRule(object):
         result = await httpreq.get(url, headerdict)
         result = JsonUtils.json_str_to_dict(result)
         page_result = PaginatedResponse(**result)
-        print(page_result)
+        print(f'结果是{page_result}')
+        print(type(page_result))
         page_response = await self.create_page_response_from_workflow(query_re_model, page_result)
         return page_response
 
