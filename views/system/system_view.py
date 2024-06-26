@@ -82,3 +82,11 @@ class SystemView(BaseView):
         res  = await self.system_config_rule.get_system_config_by_id(config_id)
 
         return res
+
+
+    async def put_system_config(self,
+                                system_config: SystemConfig
+
+                          ):
+        res = await self.system_config_rule.update_system_config(system_config)
+        return res

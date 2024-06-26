@@ -29,7 +29,7 @@ class SystemConfigRule(object):
         system_config = orm_model_to_view_model(system_config_db, SystemConfigModel, exclude=["created_at", 'updated_at'])
         return system_config
 
-    async def update_system_config(self, system_config, ctype=1):
+    async def update_system_config(self, system_config, ):
         exists_system_config = await self.system_config_dao.get_system_config_by_id(system_config.id)
         if not exists_system_config:
             raise Exception(f"系统{system_config.id}不存在")
