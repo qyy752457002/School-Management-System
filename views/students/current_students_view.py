@@ -18,7 +18,7 @@ from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
 from rules.students_key_info_change_rule import StudentsKeyInfoChangeRule
 from views.common.common_view import compare_modify_fields, get_client_ip
-from views.models.operation_record import OperationRecord, OperationModule, OperationTargetType, OperationType
+from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
     StudentEduInfo, StudentTransactionAudit, StudentEduInfoOut
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, \
@@ -394,15 +394,15 @@ class CurrentStudentsBaseInfoView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(new_students_base_info.student_id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.STUDENT.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.STUDENT.value,
             action_type=OperationType.MODIFY.value,
             ip= get_client_ip(request),
             change_data=json_string,
-            change_field=OperationModule.BASEINFO.value,
-            change_item=OperationModule.BASEINFO.value,
+            change_field=ChangeModule.BASEINFO.value,
+            change_item=ChangeModule.BASEINFO.value,
             timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason=OperationType.MODIFY.value+OperationModule.BASEINFO.value,
+            action_reason=OperationType.MODIFY.value+ChangeModule.BASEINFO.value,
             doc_upload='',
             status='1',
             account='', ))
@@ -436,15 +436,15 @@ class CurrentStudentsFamilyView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(new_students_family_info.student_id),
             operator='admin',
-            module=OperationModule.FAMILYINFO.value,
-            target=OperationTargetType.STUDENT.value,
+            module=ChangeModule.FAMILYINFO.value,
+            target=OperationType.STUDENT.value,
             action_type=OperationType.MODIFY.value,
             ip= get_client_ip(request),
             change_data=json_string,
-            change_field=OperationModule.FAMILYINFO.value,
-            change_item=OperationModule.FAMILYINFO.value,
+            change_field=ChangeModule.FAMILYINFO.value,
+            change_item=ChangeModule.FAMILYINFO.value,
             timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason=OperationType.MODIFY.value+OperationModule.FAMILYINFO.value,
+            action_reason=OperationType.MODIFY.value+ChangeModule.FAMILYINFO.value,
             doc_upload='',
             status='1',
             account='', ))

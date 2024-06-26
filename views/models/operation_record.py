@@ -65,6 +65,7 @@ class ChangeModule(str, Enum):
 
 
 class OperationRecord(BaseModel):
+
     action_target_id: int = Field(..., title="操作对象ID", description="操作对象ID", examples=[''])
     target: OperationTarget = Field(..., description=" 操作对象", examples=[''])
     action_type: str = Field(..., title="操作类型", description="操作类型", examples=[''])

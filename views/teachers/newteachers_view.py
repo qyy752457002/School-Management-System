@@ -53,7 +53,6 @@ class NewTeachersView(BaseView):
     async def put_newteacher(self, teachers: Teachers):
         print(teachers)
         user_id = "asdfasdf"
-
         res = await self.teacher_rule.update_teachers(teachers, user_id)
         return res
 
@@ -121,7 +120,7 @@ class NewTeachersView(BaseView):
     #     await self.teacher_rule.submitted(teacher_id)
     #     return teacher_id
 
-    async def patch_approved(self,
+    async def patch_entry_approved(self,
                              teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
                              process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
                                                               example=123),
@@ -131,7 +130,7 @@ class NewTeachersView(BaseView):
         await self.teacher_rule.entry_approved(teacher_id, process_instance_id, user_id, reason)
         return teacher_id
 
-    async def patch_rejected(self,
+    async def patch_entry_rejected(self,
                              teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
                              process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
                                                               example=123), reason: str = Query("", title="reason",
@@ -141,7 +140,7 @@ class NewTeachersView(BaseView):
         await self.teacher_rule.entry_rejected(teacher_id, process_instance_id, user_id, reason)
         return teacher_id
 
-    async def patch_revoked(self,
+    async def patch_entry_revoked(self,
                             teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
                             process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
                                                              example=123),
@@ -156,19 +155,19 @@ class NewTeachersView(BaseView):
         await self.teacher_rule.entry_revoked(teacher_id, process_instance_id, user_id, reason)
         return teacher_id
 
-    async def patch_info_submitting(self,
-                                    teacher_base_id: int = Query(..., title="教师基本信息编号",
-                                                                 description="教师基本信息编号",
-                                                                 example=123)):
-        await self.teacher_info_rule.submitting(teacher_base_id)
-        return teacher_base_id
+    # async def patch_info_submitting(self,
+    #                                 teacher_base_id: int = Query(..., title="教师基本信息编号",
+    #                                                              description="教师基本信息编号",
+    #                                                              example=123)):
+    #     await self.teacher_info_rule.submitting(teacher_base_id)
+    #     return teacher_base_id
 
-    async def patch_info_submitted(self,
-                                   teacher_base_id: int = Query(..., title="教师基本信息编号",
-                                                                description="教师基本信息编号",
-                                                                example=123)):
-        await self.teacher_info_rule.submitted(teacher_base_id)
-        return teacher_base_id
+    # async def patch_info_submitted(self,
+    #                                teacher_base_id: int = Query(..., title="教师基本信息编号",
+    #                                                             description="教师基本信息编号",
+    #                                                             example=123)):
+    #     await self.teacher_info_rule.submitted(teacher_base_id)
+    #     return teacher_base_id
 
     async def patch_info_approved(self,
                                   teacher_base_id: int = Query(..., title="教师基本信息编号",
@@ -214,7 +213,6 @@ class NewTeachersView(BaseView):
         user_id = "asdfasdf"
         paging_result = await self.teacher_rule.query_teacher_approval_with_page(type, teacher_approval_query,
                                                                                  page_request, user_id)
-
         return paging_result
 
     async def page_new_teacher_approval(self, teacher_approval_query=Depends(TeacherApprovalQuery),
@@ -228,6 +226,8 @@ class NewTeachersView(BaseView):
                                                                                  page_request, user_id)
         return paging_result
 
+# 下面都是测试工作流的
+
     # async def get_work_flow_node_log(self, process_instance_id: int = Query(..., title="流程实例id",
     #                                                                         description="流程实例id")):
     #     res = await self.teacher_work_flow_instance_rule.get_teacher_work_flow_log_by(process_instance_id)
@@ -237,7 +237,7 @@ class NewTeachersView(BaseView):
     #                                                                                     description="流程实例id")):
     #     res = await self.teacher_work_flow_instance_rule.get_teacher_work_flow_current_node(process_instance_id)
     #     return res
-
+    #
     # async def post_teacher_work_flow(self, teachers: TeachersCreatModel):
     #     parameters = {"process_code": "t_transfer_out", "applicant_name": "张三"}
     #     res = await self.teacher_work_flow_instance_rule.add_teacher_work_flow(teachers, parameters)
@@ -256,3 +256,9 @@ class NewTeachersView(BaseView):
     #                                                                                description="教师id")):
     #     res = await self.teacher_work_flow_instance_rule.delete_teacher_save_work_flow_instance(teacher_id)
     #     return res
+    #
+    # async def post_process_work_flow_node_instance(self, node_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
+    #                                                           example=123), reason: str = Query("", title="reason",
+    #                                                                                             description="审核理由")):
+    #     parameters = {"user_id": "1243ewrwe", "action": "approved", "description": reason}
+    #     res=await self.teacher_work_flow_instance_rule.process_transaction_work_flow(node_instance_id, parameters)

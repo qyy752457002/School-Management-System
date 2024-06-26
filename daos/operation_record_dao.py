@@ -56,6 +56,8 @@ class OperationRecordDAO(DAOBase):
         paging = await self.query_page(query, page_request)
         return paging
 
+
+
     async def update_operation_record(self, operation_record, *args, is_commit=True):
         session = await self.master_db()
         update_contents = get_update_contents(operation_record, *args)

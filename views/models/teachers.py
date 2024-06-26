@@ -7,6 +7,7 @@ from typing import Optional
 from models.public_enum import Gender
 from business_exceptions.teacher import EthnicityNoneError, PoliticalStatusNoneError
 from mini_framework.storage.view_model import FileStorageModel
+from views.models.operation_record import ChangeModule
 
 from enum import Enum
 
@@ -1052,3 +1053,13 @@ class RetireTeacherQueryRe(CurrentTeacherQueryRe):
     """
 
     unemploy_time: Optional[date] = Query(None, title="非在职时间", description="", example="2010-01-01")
+
+
+class TeacherChangeLogQueryModel(BaseModel):
+    """
+    id:
+    change
+    """
+    id: Optional[int] = Query(None, title="id", description="id", example=1)
+    change_module: ChangeModule = Field(..., description=" 变更模块", examples=[''])
+    status: str = Field(..., description=" 状态", examples=[''])

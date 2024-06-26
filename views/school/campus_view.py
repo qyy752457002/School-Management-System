@@ -18,7 +18,7 @@ from views.models.campus_communications import CampusCommunications
 from rules.campus_communication_rule import CampusCommunicationRule
 from views.models.campus_eduinfo import CampusEduInfo
 from rules.campus_eduinfo_rule import CampusEduinfoRule
-from views.models.operation_record import OperationRecord, OperationModule, OperationTargetType, OperationType
+from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
 
 
@@ -65,8 +65,8 @@ class CampusView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(campus_keyinfo.id),
             operator='admin',
-            module=OperationModule.KEYINFO.value,
-            target=OperationTargetType.CAMPUS.value,
+            module=ChangeModule.KEYINFO.value,
+            target=OperationType.CAMPUS.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
@@ -90,8 +90,8 @@ class CampusView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(campus_id),
             operator='admin',
-            module=OperationModule.KEYINFO.value,
-            target=OperationTargetType.CAMPUS.value,
+            module=ChangeModule.KEYINFO.value,
+            target=OperationType.CAMPUS.value,
 
             action_type=OperationType.DELETE.value,
             ip='127.0.0.1',
@@ -116,8 +116,8 @@ class CampusView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(campus_baseinfo.id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.CAMPUS.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.CAMPUS.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
@@ -173,8 +173,8 @@ class CampusView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(campus_id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.CAMPUS.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.CAMPUS.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
@@ -198,8 +198,8 @@ class CampusView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(campus_id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.CAMPUS.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.CAMPUS.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
@@ -240,8 +240,8 @@ class CampusView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(campus_id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.CAMPUS.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.CAMPUS.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
@@ -286,8 +286,8 @@ class CampusView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(campus_id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.PLANNING_SCHOOL.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.PLANNING_SCHOOL.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',

@@ -68,28 +68,29 @@ class OperationRecordRule(object):
     async def get_operation_record_count(self):
         return await self.operation_record_dao.get_operation_record_count()
 
-    async def query_operation_record_with_page(self, page_request: PageRequest, operation_target_type, action_target_id,
-                                               operater_account,
-                                               operater_id, operation_module, operation_type):
+    async def query_operation_record_with_page(self, page_request: PageRequest, target, action_target_id,
+                                               operator_name,
+                                               operator_id, change_module, action_type):
         # 获取分页数据
         kdict = dict()
-        if operation_target_type:
-            kdict["target"] = operation_target_type.value
+        if target:
+            kdict["target"] = target.value
         if action_target_id:
             kdict["action_target_id"] = action_target_id
-        if operater_account:
-            kdict["operator"] = operater_account
-        if operater_id:
-            kdict["created_uid"] = operater_id
-        if operation_module:
-            kdict["module"] = operation_module.value
-        if operation_type:
-            kdict["action_type"] = operation_type.value
+        if operator_name:
+            kdict["operator"] = operator_name
+        if operator_id:
+            kdict["created_uid"] = operator_id
+        if change_module:
+            kdict["module"] = change_module.value
+        if action_type:
+            kdict["action_type"] = action_type.value
 
         paging = await self.operation_record_dao.query_operation_record_with_page(page_request, **kdict)
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, OperationRecordModel)
         return paging_result
+
 
     async def update_operation_record_status(self, operation_record_id, status):
         exists_operation_record = await self.operation_record_dao.get_operation_record_by_id(operation_record_id)
