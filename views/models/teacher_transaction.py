@@ -47,6 +47,8 @@ class EmploymentStatus(str, Enum):
     落聘：unemployed
     死亡：deceased
     其他：other
+    离休：retire_honor
+    退休：retire
     """
     ACTIVE = "active"
     SUBMITTED = "submitted"
@@ -63,6 +65,8 @@ class EmploymentStatus(str, Enum):
     UNEMPLOYED = "unemployed"
     DECEASED = "deceased"
     OTHER = "other"
+    RETIRE = "retire"
+    RETIRE_HONOR = "retire_honor"
 
     @classmethod
     def to_list(cls):
@@ -80,6 +84,8 @@ class TransactionType(str, Enum):
     落聘：unemployed
     死亡：deceased
     其他：other
+    离休：retire_honor
+    退休：retire
     """
     INTERNAL = "internal"
     SICK_LEAVE = "sick_leave"
@@ -90,6 +96,8 @@ class TransactionType(str, Enum):
     UNEMPLOYED = "unemployed"
     DECEASED = "deceased"
     OTHER = "other"
+    RETIRE = "retire"
+    RETIRE_HONOR = "retire_honor"
 
     @classmethod
     def to_list(cls):

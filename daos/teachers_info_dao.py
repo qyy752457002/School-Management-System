@@ -9,7 +9,7 @@ from mini_framework.web.std_models.page import PageRequest
 from models.school import School
 from models.teachers_info import TeacherInfo
 from models.teachers import Teacher
-from views.models.teachers import CurrentTeacherQuery, NewTeacher, TeacherApprovalQuery
+from views.models.teachers import CurrentTeacherQuery, NewTeacher, TeacherApprovalQuery, TeacherMainStatus
 from models.teacher_entry_approval import TeacherEntryApproval
 from views.models.teachers import CurrentTeacherQuery, NewTeacher, RetireTeacherQuery
 
@@ -196,6 +196,7 @@ class TeachersInfoDao(DAOBase):
                        TeacherInfo.enter_school_time).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
                                                            ).join(School, Teacher.teacher_employer == School.id,
                                                                   )
+        query = query.where(Teacher.teacher_main_status == TeacherMainStatus.RETIRED.value)
 
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
