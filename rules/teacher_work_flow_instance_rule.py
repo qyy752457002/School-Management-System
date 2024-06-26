@@ -49,7 +49,7 @@ class TeacherWorkFlowRule(object):
 
         work_flow_instance = result[0]
         next_node_instance = result[1]
-        return work_flow_instance, next_node_instance
+        return work_flow_instance
 
     async def process_transaction_work_flow(self, node_instance_id: int, parameters: dict):
         httpreq = HTTPRequest()

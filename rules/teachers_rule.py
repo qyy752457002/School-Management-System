@@ -88,6 +88,12 @@ class TeachersRule(object):
             if not idstatus:
                 raise IdCardError()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
+        teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_db.teacher_id)
+        teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
+                                                         exclude=[""])
+        params = {"process_code": "t_entry", "applicant_name": user_id}
+        await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(teachers_db.teacher_id)
+        work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
         # teacher_entry_log = TeacherChangeLog(apply_name=user_id, teacher_id=teachers_db.teacher_id,
         #                                      change_module="new_entry",
         #                                      change_detail="入职登记", log_status="/",
