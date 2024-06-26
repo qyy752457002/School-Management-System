@@ -34,11 +34,12 @@ class SystemConfigDAO(DAOBase):
 		session = await self.slave_db()
 		result = await session.execute(select(SystemConfig).where(SystemConfig.config_name == id))
 		return result.scalar_one_or_none()
-	async def query_system_config_with_page(self,  page_request: PageRequest,config_name):
+	async def query_system_config_with_page(self,  page_request: PageRequest,config_name,school_id):
 		query = select(SystemConfig).where(SystemConfig.is_deleted == False)
 		if config_name:
 			query = query.where(SystemConfig.config_name == config_name)
-		
+		if school_id:
+			query = query.where(SystemConfig.school_id == school_id)
 		### �˴���д��ѯ����
 		
 		paging = await self.query_page(query, page_request)

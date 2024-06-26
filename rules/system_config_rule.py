@@ -56,8 +56,8 @@ class SystemConfigRule(object):
     async def get_system_config_count(self):
         return await self.system_config_dao.get_system_config_count()
 
-    async def query_system_config_with_page(self,config_name, page_request: PageRequest,   ):
-        paging = await self.system_config_dao.query_system_config_with_page(page_request, config_name )
+    async def query_system_config_with_page(self,config_name, school_id,page_request: PageRequest,   ):
+        paging = await self.system_config_dao.query_system_config_with_page(page_request, config_name,school_id )
         # 字段映射的示例写法   , {"hash_password": "password"} SystemConfigSearchRes
         # print(paging)
         paging_result = PaginatedResponse.from_paging(paging, SystemConfigModel,other_mapper={

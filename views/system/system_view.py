@@ -15,7 +15,6 @@ from mini_framework.web.std_models.page import PaginatedResponse
 from views.models.sub_system import SubSystem
 from views.models.system import SystemConfig
 
-
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
 class SystemView(BaseView):
     def __init__(self):
@@ -39,13 +38,11 @@ class SystemView(BaseView):
             # title='学校版'
             unit_type=''
             edu_type=''
-
         res ,title= await self.system_rule.query_system_with_kwargs( role_id, unit_type, edu_type, system_type )
         # res,title  = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
         return {'app_name':title,
                 'menu':list(res.values())
                 }
-
 
     async def get_education_year(self,
                         # page_request=Depends(PageRequest),
@@ -59,24 +56,29 @@ class SystemView(BaseView):
         # print(page_request)
         items = []
         title=''
-
-
         res = await self.education_year_rule.get_education_year_all( school_type, city, district,  )
         # res,title  = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
-
         return res
     # 系统配置的新增接口 
     async def post_system_config(self, system_config: SystemConfig):
         res = await self.system_config_rule.add_system_config(system_config)
         print(res)
-
         return res
     async def page_system_config(self,
                         page_request=Depends(PageRequest),
                                  config_name :str= Query(None, title="", description="",min_length=1,max_length=50,example=''),
+                                 school_id: int = Query(0, description="学校id", example='1'),
+
                         ):
         print(page_request)
         items = []
         title=''
-        res= await self.system_config_rule.query_system_config_with_page( config_name,page_request  )
+        res= await self.system_config_rule.query_system_config_with_page( config_name,school_id,page_request  )
         return  res
+
+    async def get_system_config_detail(self,
+                  config_id: int = Query(0, description="", example='1'),
+                  ):
+        res  = await self.system_config_rule.get_system_config_by_id(config_id)
+
+        return res
