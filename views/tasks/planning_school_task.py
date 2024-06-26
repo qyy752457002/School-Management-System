@@ -56,7 +56,7 @@ class PlanningSchoolExecutor(TaskExecutor):
 
                 # 保存通信信息
                 res_comm = await self.planning_school_communication_rule.add_planning_school_communication(resc,
-                                                                                                           convertmodel=False)
+                                                                                                           convertmodel=True)
                 print(res_comm, '模型2 res')
 
                 print('插入数据res',res)
