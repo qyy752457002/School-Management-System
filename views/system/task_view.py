@@ -23,12 +23,12 @@ class TaskView(BaseView):
 
     async def page(self,
                    page_request=Depends(PageRequest),
-                   enum_name:str= Query(..., title="", description="枚举类型的名称 多个逗号隔开",min_length=1,max_length=100,example='province'),
-                   parent_code:str= Query('', title="", description="父级的code",min_length=1,max_length=20,example='130000'),
-
+                   task_start_time:str= Query(None, title="", description=" ",min_length=1,max_length=100,example='2020-10-10'),
+                   task_id:str= Query('', title="", description="任务编号",min_length=1,max_length=50,example='2zAkahKMTUmkJTAGirG3en'),
+                   user_id: int = Query(0, description="", example='1'),
                    ):
         # print(page_request)
         items = []
 
-        res = await self.task_rule.query_enum_value_with_page(page_request ,enum_name,parent_code )
+        res = await self.task_rule.query_task_with_page(page_request ,task_start_time,task_id,user_id )
         return res

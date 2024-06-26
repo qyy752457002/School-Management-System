@@ -1,3 +1,5 @@
+from mini_framework.async_task.task import Task
+from mini_framework.web.std_models.page import PageRequest
 from sqlalchemy import select
 
 from mini_framework.async_task.data_access.models import TaskInfo, TaskProgress, TaskResult
@@ -57,3 +59,18 @@ class TaskDAO(DAOBase):
         session = await self.slave_db()
         result = await session.execute(select(TaskInfo).filter(TaskInfo.task_id == task_id))
         return result.scalar()
+
+    async def query_task_with_page(self,  page_request: PageRequest,task_start_time,task_id,user_id):
+        query = select(TaskInfo)
+        if task_start_time:
+            query = query.where(TaskInfo.created_at >= task_start_time)
+        if task_id:
+            query = query.where(TaskInfo.task_id == task_id)
+        if user_id:
+            if isinstance(user_id, int):
+                user_id = str(user_id)
+            query = query.where(TaskInfo.operator == user_id)
+        ### �˴���д��ѯ����
+
+        paging = await self.query_page(query, page_request)
+        return paging
