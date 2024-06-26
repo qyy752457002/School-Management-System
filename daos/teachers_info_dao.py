@@ -9,7 +9,7 @@ from mini_framework.web.std_models.page import PageRequest
 from models.school import School
 from models.teachers_info import TeacherInfo
 from models.teachers import Teacher
-from views.models.teachers import CurrentTeacherQuery, NewTeacher
+from views.models.teachers import CurrentTeacherQuery, NewTeacher, RetireTeacherQuery
 
 
 class TeachersInfoDao(DAOBase):
@@ -168,4 +168,44 @@ class TeachersInfoDao(DAOBase):
         result = await session.execute(select(func.count()).select_from(TeacherInfo))
         return result.scalar()
 
+
+    async def query_retire_teacher_with_page(self, query_model: RetireTeacherQuery,
+                                              page_request: PageRequest) -> Paging:
+        """
+
+        """
+        # todo 这个地方还应该加上审核状态通过的条件
+        query = select(Teacher.teacher_id, TeacherInfo.teacher_base_id, Teacher.teacher_name, Teacher.teacher_id_number,
+                       Teacher.teacher_gender,
+                       Teacher.teacher_employer, TeacherInfo.highest_education,
+                       TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
+                       School.school_name,
+                       TeacherInfo.enter_school_time).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
+                                                           ).join(School, Teacher.teacher_employer == School.id,
+                                                                  )
+
+        if query_model.teacher_name:
+            query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
+        if query_model.teacher_id_number:
+            query = query.where(Teacher.teacher_id_number == query_model.teacher_id_number)
+        if query_model.teacher_gender:
+            query = query.where(Teacher.teacher_gender == query_model.teacher_gender)
+        if query_model.teacher_employer:
+            if query_model.teacher_employer != 0:
+                query = query.where(Teacher.teacher_employer == query_model.teacher_employer)
+            else:
+                pass
+        if query_model.highest_education:
+            query = query.where(TeacherInfo.highest_education == query_model.highest_education)
+        if query_model.political_status:
+            query = query.where(TeacherInfo.political_status == query_model.political_status)
+        if query_model.in_post:
+            query = query.where(TeacherInfo.in_post == query_model.in_post)
+        if query_model.employment_form:
+            query = query.where(TeacherInfo.employment_form == query_model.employment_form)
+        if query_model.enter_school_time:
+            query = query.where(TeacherInfo.enter_school_time == query_model.enter_school_time)
+        query = query.order_by(Teacher.teacher_id.desc())
+        paging = await self.query_page(query, page_request)
+        return paging
 

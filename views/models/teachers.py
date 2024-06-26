@@ -1020,3 +1020,24 @@ class NewTeacherTask(BaseModel):
     file_name: str = Field('', title="", description="", examples=[' '])
     bucket: str = Field('', title="", description="", examples=[' '])
     scene: str = Field("teacher_import", title="场景", description="", examples=[' '])
+
+class RetireTeacherQuery(BaseModel):
+    """
+    """
+    teacher_name: str = Query("", title="姓名", description="姓名", example="张三")
+    teacher_id_number: str = Query("", title="身份证号", description="身份证号", example="123456789012345678")
+    teacher_gender: Optional[Gender] = Query(None, title="性别", description="性别", example="男")
+    teacher_employer: Optional[int] = Query(None, title="任职单位", description="任职单位", example="xx学校")
+    highest_education: str = Query("", title="最高学历", description="最高学历", example="本科")
+    political_status: str = Query("", title="政治面貌", description="政治面貌", example="群众")
+    in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
+    enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
+    unemploy_start_time: Optional[date] = Query(None, title="非在职时间起始", description="", example="2010-01-01")
+    unemploy_end_time: Optional[date] = Query(None, title="非在职时间截止", description="", example="2010-01-01")
+
+class RetireTeacherQueryRe(CurrentTeacherQueryRe):
+    """
+
+    """
+
+    unemploy_time: Optional[date] = Query(None, title="非在职时间", description="", example="2010-01-01")
