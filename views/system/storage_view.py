@@ -1,3 +1,4 @@
+from fastapi.params import Query
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
@@ -21,7 +22,27 @@ class StorageView(BaseView):
 #     解析 文件和桶  返回 数据结构
     async def get_file_data_preview(self, filename: str, bucket,sence=''):
         res = await self._storage_rule.get_file_data(filename, bucket,sence)
-        print(res)
-        return {"data":res}
+        print('解析的结构',res )
+        # 存在ID的tuple 过滤掉
+        data = [ ]
+        for i,value  in  enumerate(res):
+            if isinstance(value.id, (Query,tuple)):
+                value.id = 0
+                # value.model_fields['id'] = 0
+                pass
+
+            changeitems = dict()
+            # 使用视图模型
+            for key, v in value.model_fields:
+                # changeitems.append(key)
+                key_cn = v.model_fields[key].title
+                changeitems[key_cn] = value.key
+            data.append(changeitems)
+
+
+
+
+        print(data)
+        return {"data":data}
 
 
