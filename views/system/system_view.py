@@ -3,6 +3,7 @@ from mini_framework.web.views import BaseView
 
 from rules.education_year_rule import EducationYearRule
 from rules.sub_system_rule import SubSystemRule
+from rules.system_config_rule import SystemConfigRule
 from rules.system_rule import SystemRule
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo
 from views.models.school import School, SchoolKeyAddInfo
@@ -12,13 +13,14 @@ from pydantic import BaseModel, Field
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
 from views.models.sub_system import SubSystem
+from views.models.system import SystemConfig
 
 
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
 class SystemView(BaseView):
     def __init__(self):
         super().__init__()
-        self.system_config_rule = None
+        self.system_config_rule = get_injector(SystemConfigRule)
         self.system_rule = get_injector(SystemRule)
         self.education_year_rule = get_injector(EducationYearRule)
 
@@ -47,18 +49,7 @@ class SystemView(BaseView):
                 'menu':list(res.values())
 
                 }
-        # res = SubSystem(system_name='学校版',
-        #                 system_no='02',
-        #                 system_url='www.fsdfsd.cc',
-        #                 system_icon='www.dd.cc/343.jpg',
-        #                 system_description='学校版的教育登录')
-        #
-        # for i in range(0, 1):
-        #     items.append(res)
-        # print(items)
-        #
-        # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10,
-        #                          per_page=page_request.per_page, total=100, items=items)
+
 
     async def get_education_year(self,
                         # page_request=Depends(PageRequest),
@@ -79,7 +70,7 @@ class SystemView(BaseView):
 
         return res
     # 系统配置的新增接口 
-    async def post_system_config(self, system_config: SchoolKeyAddInfo):
+    async def post_system_config(self, system_config: SystemConfig):
         res = await self.system_config_rule.add_system_config(system_config)
         print(res)
 
