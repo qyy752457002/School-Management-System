@@ -7,27 +7,6 @@ from datetime import date
 from enum import Enum
 
 
-class TeacherApprovalAtatus(str, Enum):
-    """
-    待提交
-    待审核
-    已通过
-    已拒绝
-    已撤回
-    """
-    SUBMITTING = "submitting"
-    SUBMITTED = "submitted"
-    APPROVED = "approved"
-    REJECTED = "rejected"
-    REVOKED = "revoked"
-
-    @classmethod
-    def to_list(cls):
-        return [cls.SUBMITTING, cls.SUBMITTED, cls.APPROVED, cls.REJECTED, cls.REVOKED]
-
-
-# class Gender(str, Enum):
-
 
 class Teacher(BaseDBModel):
     """
@@ -60,11 +39,8 @@ class Teacher(BaseDBModel):
     teacher_main_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="主状态",
                                                      default="unemployed")
     teacher_sub_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="子状态",
-                                                    default="normal")
-    teacher_approval_status: Mapped[str] = mapped_column(String(64), default="submitting", nullable=False,
-                                                         comment="审批状态",
-                                                         )
+                                                    default="submitted")
     identity: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份", default='')
     mobile: Mapped[str] = mapped_column(String(64), nullable=True, default="", comment="手机号")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
-    mobile: Mapped[str] = mapped_column(String(64), nullable=True, comment="手机号", default='')
+

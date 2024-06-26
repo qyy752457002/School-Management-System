@@ -46,3 +46,16 @@ class WorkFlowNodeDependStrategyDAO(DAOBase):
             WorkFlowNodeDependStrategy.depend_code == depend_code)
         result = await session.execute(query)
         return result.scalars().all
+
+    async def get_depend_code_by_node_code(self, current_node_code):
+        session = await self.slave_db()
+        query = select(WorkFlowNodeDepend).where(WorkFlowNodeDepend.source_node == current_node_code)
+        result = await session.execute(query)
+        return result.scalars().all()
+
+    async def get_is_revoke_by_depend_code(self, depend_code):
+        session = await self.slave_db()
+        query = select(WorkFlowNodeDependStrategy).where(WorkFlowNodeDependStrategy.depend_code == depend_code,
+                                                         WorkFlowNodeDependStrategy.parameter_value == "revoke")
+        result = await session.execute(query)
+        return result.scalar_one_or_none()

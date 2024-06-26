@@ -1,7 +1,7 @@
 from mini_framework.web.views import BaseView
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
-from fastapi import Query, Depends
+from fastapi import Query, Depends, Body
 
 from views.models.teacher_transaction import TransferDetailsModel, TransferDetailsReModel
 from rules.transfer_details_rule import TransferDetailsRule
@@ -44,10 +44,12 @@ class TransferDetailsView(BaseView):
         """
         if not transfer_inner:  # 如果是系统外转系统内
             if add_teacher != None:
-                await self.teacher_rule.add_teachers(add_teacher)
+                user_id = "asdfasdf"
+                await self.teacher_rule.add_teachers(add_teacher, user_id)
             else:
                 raise Exception("请填写老师信息")
-        res = await self.transfer_details_rule.add_transfer_in_details(transfer_details)
+        user_id = "asdfasdf"
+        res = await self.transfer_details_rule.add_transfer_in_details(transfer_details, user_id, transfer_inner)
         return res
 
     async def post_transfer_out_details(self, transfer_details: TransferDetailsModel):
@@ -137,20 +139,44 @@ class TransferDetailsView(BaseView):
 
     async def patch_transfer_approved(self,
                                       transfer_details_id: int = Query(None, title="transfer_detailsID",
-                                                                       description="transfer_detailsID", example=1234)):
-        res = await self.transfer_details_rule.approved(transfer_details_id)
+                                                                       description="transfer_detailsID", example=1234),
+                                      process_instance_id: int = Query(..., title="流程实例id",
+                                                                       description="流程实例id",
+                                                                       example=123),
+                                      reason: str = Query("", title="reason",
+                                                          description="审核理由")):
+
+        user_id = "sadklfh"
+        reason = reason
+        res = await self.transfer_details_rule.transfer_approved(transfer_details_id, process_instance_id, user_id,
+                                                                 reason)
         return res
 
     async def patch_transfer_rejected(self,
                                       transfer_details_id: int = Query(None, title="transfer_detailsID",
-                                                                       description="transfer_detailsID", example=1234)):
-        res = await self.transfer_details_rule.rejected(transfer_details_id)
+                                                                       description="transfer_detailsID", example=1234),
+                                      process_instance_id: int = Query(..., title="流程实例id",
+                                                                       description="流程实例id",
+                                                                       example=123),
+                                      reason: str = Query("", title="reason",
+                                                          description="审核理由")):
+        user_id = "sadklfh"
+        reason = reason
+        res = await self.transfer_details_rule.transfer_rejected(transfer_details_id, process_instance_id, user_id,
+                                                                 reason)
         return res
 
     async def patch_transfer_revoked(self,
                                      transfer_details_id: int = Query(None, title="transfer_detailsID",
-                                                                      description="transfer_detailsID", example=1234)):
-        res = await self.transfer_details_rule.revoked(transfer_details_id)
+                                                                      description="transfer_detailsID", example=1234),
+                                     process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
+                                                                      example=123),
+                                     reason: str = Query("", title="reason",
+                                                         description="审核理由")):
+        user_id = "sadklfh"
+        reason = reason
+        res = await self.transfer_details_rule.transfer_revoked(transfer_details_id, process_instance_id, user_id,
+                                                                reason)
         return res
 
 
@@ -169,6 +195,20 @@ class TeacherTransactionView(BaseView):
         # 异动审批中查询单个教师单个异动信息
         res = await self.teacher_transaction_rule.get_teacher_transaction_by_teacher_transaction_id(
             teacher_transaction_id)
+        return res
+
+    async def post_teacher_transaction_work_flow(self, process_code: str = Query("skdgfaj", title="process_code")):
+        process_code = "t_transfer_out"
+        teacher_id = 1
+        applicant_name = "567"
+        res = await self.teacher_transaction_rule.add_teacher_transaction_work_flow(process_code, teacher_id,
+                                                                                    applicant_name)
+        return res
+
+    async def post_process_teacher_transaction_work_flow(self,
+                                                         node_instance_id: int = Query(1, title="node_instance_id")):
+        parameters = {"user_id": "sadklfh", "action": "approved"}
+        res = await self.teacher_transaction_rule.process_teacher_transaction_work_flow(node_instance_id, parameters)
         return res
 
     async def post_teacher_transaction(self, teacher_transaction: TeacherTransactionModel):
@@ -227,6 +267,12 @@ class TeacherTransactionView(BaseView):
                                                                                   example=1234)):
         res = await self.teacher_transaction_rule.revoked(teacher_transaction_id)
         return res
+
+    async def patch_teacher_active(self,
+                                   teacher_id: int = Query(..., title="教师编号", description="教师编号",
+                                                           example=123), ):
+        await self.teacher_transaction_rule.teacher_active(teacher_id)
+        return teacher_id
 
 
 # 借动相关
@@ -345,15 +391,15 @@ class TeacherBorrowView(BaseView):
 
     async def patch_borrow_approved(self, teacher_borrow_id: int = Query(None, title="teacher_borrowID",
                                                                          description="teacher_borrowID", example=1234)):
-        res = await self.teacher_borrow_rule.approved(teacher_borrow_id)
+        res = await self.teacher_borrow_rule.borrow_approved(teacher_borrow_id)
         return res
 
     async def patch_borrow_rejected(self, teacher_borrow_id: int = Query(None, title="teacher_borrowID",
                                                                          description="teacher_borrowID", example=1234)):
-        res = await self.teacher_borrow_rule.rejected(teacher_borrow_id)
+        res = await self.teacher_borrow_rule.borrow_rejected(teacher_borrow_id)
         return res
 
     async def patch_borrow_revoked(self, teacher_borrow_id: int = Query(None, title="teacher_borrowID",
                                                                         description="teacher_borrowID", example=1234)):
-        res = await self.teacher_borrow_rule.revoked(teacher_borrow_id)
+        res = await self.teacher_borrow_rule.borrow_revoked(teacher_borrow_id)
         return res

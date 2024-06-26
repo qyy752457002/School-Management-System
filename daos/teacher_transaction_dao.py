@@ -130,5 +130,3 @@ class TeacherTransactionDAO(DAOBase):
             TeacherTransaction.teacher_id == teacher_id)
         result = await session.execute(query)
         return result.scalars().all()
-
-

@@ -3,10 +3,28 @@ from datetime import date, datetime
 from pydantic import BaseModel, Field, model_validator, ValidationError, field_validator
 from fastapi import Query
 from typing import Optional
-from models.teachers import TeacherApprovalAtatus
+
 from models.public_enum import Gender
 from business_exceptions.teacher import EthnicityNoneError, PoliticalStatusNoneError
 from mini_framework.storage.view_model import FileStorageModel
+
+from enum import Enum
+
+
+class TeacherMainStatus(str, Enum):
+    """
+    未入职：unemployed
+    在职：employed
+    离退休：retired
+    """
+    UNEMPLOYED = "unemployed"
+    EMPLOYED = "employed"
+    RETIRED = "retired"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.UNEMPLOYED, cls.EMPLOYED, cls.RETIRED]
+
 
 class Teachers(BaseModel):
     """
@@ -27,8 +45,7 @@ class Teachers(BaseModel):
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
     teacher_employer: int = Field(0, title="任职单位", description="任职单位")
     teacher_avatar: str = Field("", title="头像", description="头像")
-    mobile: str|None = Field("", title="手机号", description="手机号")
-
+    mobile: str | None = Field("", title="手机号", description="手机号")
 
 
 class TeachersCreatModel(BaseModel):
@@ -157,7 +174,7 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="部门")
-    org_id:  Optional[int] = Field(None, title="组织ID", description="组织ID")
+    org_id: Optional[int] = Field(None, title="组织ID", description="组织ID")
 
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
@@ -168,15 +185,17 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
                 raise PoliticalStatusNoneError()
         return self
 
+
 class TeacherInfoCreateResultModel(TeacherInfoCreateModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
 
 class CombinedModel(TeachersCreatModel, TeacherInfoCreateModel):
     pass
 
+
 class TeacherFileStorageModel(FileStorageModel):
     pass
-
 
 
 class TeacherInfo(BaseModel):  # 基本信息
@@ -280,7 +299,7 @@ class TeacherInfo(BaseModel):  # 基本信息
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="部门")
-    org_id:  Optional[int] = Field(None, title="组织ID", description="组织ID")
+    org_id: Optional[int] = Field(None, title="组织ID", description="组织ID")
 
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
@@ -505,7 +524,7 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="部门")
-    org_id:  Optional[int] = Field(None, title="组织ID", description="组织ID")
+    org_id: Optional[int] = Field(None, title="组织ID", description="组织ID")
 
 
 class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
@@ -612,7 +631,7 @@ class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="部门")
-    org_id:  Optional[int] = Field(None, title="组织ID", description="组织ID")
+    org_id: Optional[int] = Field(None, title="组织ID", description="组织ID")
 
 
 class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
@@ -719,7 +738,7 @@ class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field("", title="部门", description="部门", example="部门")
-    org_id:  Optional[int] = Field(None, title="组织ID", description="组织ID")
+    org_id: Optional[int] = Field(None, title="组织ID", description="组织ID")
 
 
 class TeacherInfoSubmit(BaseModel):  # 基本信息
@@ -853,15 +872,18 @@ class NewTeacher(BaseModel):
     # teacher_id: int = Field(..., title="教师ID", description="教师ID")
     teacher_name: Optional[str] = Query("", title="姓名", description="姓名", example="张三")
     teacher_id_number: Optional[str] = Query("", title="身份证号", description="身份证号", example="123456789012345678")
-    teacher_gender: Optional[Gender] = Query(None, title="性别", description="性别", example="男")
+    teacher_gender: Optional[Gender] = Query("", title="性别", description="性别", example="男")
     teacher_employer: Optional[int] = Query(None, title="任职单位", description="任职单位", example="xx学校")
     highest_education: Optional[str] = Query("", title="最高学历", description="最高学历", example="本科")
     political_status: Optional[str] = Query("", title="政治面貌", description="政治面貌", example="群众")
     in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
     employment_form: Optional[str] = Query("", title="用人形式", description="用人形式", example="合同")
-    enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
+    enter_school_time_s: Optional[date] = Query(None, title="进本校开始时间", description="进本校开始时间",
+                                                example="2010-01-01")
+    enter_school_time_e: Optional[date] = Query(None, title="进本校结束时间", description="进本校结束时间",
+                                                example="2010-01-01")
     teacher_main_status: Optional[str] = Query(None, title="主要状态", description="主要状态", example="unemployed")
-    teacher_approval_status: Optional[str] = Query(None, title="审核状态", description="审核状态", example="submitting")
+    approval_status: Optional[str] = Query(None, title="审核状态", description="审核状态", example="submitting")
 
 
 class NewTeacherRe(BaseModel):
@@ -875,10 +897,30 @@ class NewTeacherRe(BaseModel):
     political_status: Optional[str] = Field("", title="政治面貌", description="政治面貌", example="群众")
     employment_form: Optional[str] = Field("", title="用人形式", description="用人形式", example="合同")
     enter_school_time: Optional[date] = Field(None, title="进本校时间", description="进本校时间", example="2010-01-01")
-    teacher_main_status: Optional[str] = Query("", title="主要状态", description="主要状态", example="unemployed")
-    in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
+    teacher_main_status: Optional[str] = Field("", title="主要状态", description="主要状态", example="unemployed")
+    teacher_sub_status: Optional[str] = Field("", title="次要状态", description="次要状态", example="unemployed")
+    in_post: Optional[bool] = Field(None, title="是否在编", description="是否在编", example="yes")
     school_name: str = Field("", title="", description="", example="")
-    teacher_approval_status: str = Query("submitting", title="审核状态", description="审核状态", example="submitting")
+    approval_status: str = Field("submitting", title="审核状态", description="审核状态", example="submitting")
+    process_instance_id: int = Field(..., title="流程实例ID", description="流程实例ID", example="123456789012345678")
+
+
+class NewTeacherApprovalCreate(BaseModel):
+    teacher_base_id: Optional[int] = Field(None, title="教师ID", description="教师ID")
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_name: Optional[str] = Query("", title="姓名", description="姓名", example="张三")
+    teacher_id_number: Optional[str] = Query("", title="身份证号", description="身份证号", example="123456789012345678")
+    teacher_id_type: str = Field("", title="证件类型", description="证件类型")
+    teacher_gender: Optional[Gender] = Query(None, title="性别", description="性别", example="男")
+    teacher_employer: Optional[int] = Query(None, title="任职单位", description="任职单位", example="xx学校")
+    highest_education: Optional[str] = Query("", title="最高学历", description="最高学历", example="本科")
+    political_status: Optional[str] = Query("", title="政治面貌", description="政治面貌", example="群众")
+    in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
+    school_name: Optional[str] = Query("", title="", description="", example="")
+    employment_form: Optional[str] = Query("", title="用人形式", description="用人形式", example="合同")
+    enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
+    teacher_main_status: Optional[str] = Query(None, title="主要状态", description="主要状态", example="unemployed")
+    teacher_sub_status: Optional[str] = Query(None, title="次要状态", description="次要状态", example="unsubmitted")
 
 
 class CurrentTeacherQuery(BaseModel):
@@ -898,13 +940,16 @@ class CurrentTeacherQuery(BaseModel):
     # teacher_id: int = Field(..., title="教师ID", description="教师ID")
     teacher_name: str = Query("", title="姓名", description="姓名", example="张三")
     teacher_id_number: str = Query("", title="身份证号", description="身份证号", example="123456789012345678")
-    teacher_gender: Optional[Gender] = Query(None, title="性别", description="性别", example="男")
+    teacher_gender: Optional[Gender] = Query("", title="性别", description="性别", example="男")
     teacher_employer: Optional[int] = Query(None, title="任职单位", description="任职单位", example="xx学校")
     highest_education: str = Query("", title="最高学历", description="最高学历", example="本科")
     political_status: str = Query("", title="政治面貌", description="政治面貌", example="群众")
     in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
     employment_form: str = Query("", title="用人形式", description="用人形式", example="合同")
-    enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
+    enter_school_time_s: Optional[date] = Query(None, title="进本校开始时间", description="进本校开始时间",
+                                                example="2010-01-01")
+    enter_school_time_e: Optional[date] = Query(None, title="进本校结束时间", description="进本校结束时间",
+                                                example="2010-01-01")
 
 
 class CurrentTeacherQueryRe(BaseModel):
@@ -941,14 +986,14 @@ class TeacherApprovalQuery(BaseModel):
     教师姓名：teacher_name
     所属机构：teacher_employer
     教师性别：teacher_gender
-    申请人：operator_name
+    申请人：applicant_name
     审核人：approval_name
     身份证号：teacher_id_number
     """
     teacher_name: Optional[str] = Query("", title="姓名", description="姓名", example="张三")
     teacher_employer: Optional[int] = Query(None, title="任职单位", description="任职单位", example="xx学校")
     teacher_gender: Optional[Gender] = Query(None, title="性别", description="性别", example="男")
-    operator_name: Optional[str] = Query("", title="申请人", description="申请人", example="张三")
+    applicant_name: Optional[str] = Query("", title="申请人", description="申请人", example="张三")
     approval_name: Optional[str] = Query("", title="审核人", description="审核人", example="张三")
     teacher_id_number: Optional[str] = Query("", title="身份证号", description="身份证号", example="123456789012345678")
 
@@ -962,56 +1007,22 @@ class TeacherApprovalQueryRe(BaseModel):
     身份证号：teacher_id_number
     用人形式：employment_form
     教师id：teacher_id
-    申请人：operator_name
+    申请人：applicant_name
     审批人：approval_name
     申请时间：apply_time
     """
     teacher_name: str = Field("", title="姓名", description="姓名", example="张三")
     teacher_gender: Gender = Field("male", title="性别", description="性别", example="男")
-    school_name: str = Query("", title="任职单位名称", description="任职单位名称", example="xx小学")
-    teacher_id_number: str = Field("", title="身份证号", description="身份证号", example="123456789012345678")
-    employment_form: str = Field("", title="用人形式", description="用人形式", example="合同")
+    school_name: Optional[str] = Query("", title="任职单位名称", description="任职单位名称", example="xx小学")
+    teacher_id_number: Optional[str] = Field("", title="身份证号", description="身份证号", example="123456789012345678")
+    employment_form: Optional[str] = Field("", title="用人形式", description="用人形式", example="合同")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    operator_name: str = Field("", title="申请人", description="申请人", example="张三")
-    approval_name: str = Field("", title="审核人", description="审核人", example="张三")
-    operation_time: Optional[date] = Field(None, title="申请时间", description="申请时间")
-    approval_time: Optional[date] = Field(None, title="审批时间", description="审批时间")
+    applicant_name: Optional[str] = Field("", title="申请人", description="申请人", example="张三")
+    approval_name: Optional[str] = Field("", title="审核人", description="审核人", example="张三")
+    start_time: Optional[datetime] = Field(None, title="申请时间", description="申请时间")
+    approval_time: Optional[datetime] = Field(None, title="审批时间", description="审批时间")
     approval_status: str = Field("pending", title="审批状态", description="审批状态")
     process_instance_id: int = Field(0, title="流程实例id", description="流程实例id")
-
-
-class TeacherLaunch(TeacherApprovalQueryRe):
-    """
-    发起审核
-    审核状态：approval_status
-    审批时间：approval_time
-    审批人：approval_name
-    """
-    approval_status: str = Field("submitting", title="审批状态", description="审批状态")
-    approval_time: datetime = Field(..., title="审批时间", description="审批时间", example="2021-10-10 10:10:10")
-
-
-class TeacherSubmitted(TeacherApprovalQueryRe):
-    """
-    已提交
-    """
-    pass
-
-
-class TeacherApprovaled(TeacherApprovalQueryRe):
-    """
-    已审核
-    """
-    approval_status: str = Field("submitting", title="审批状态", description="审批状态")
-    approval_time: datetime = Field(..., title="审批时间", description="审批时间", example="2021-10-10 10:10:10")
-
-
-class TeacherAll(TeacherApprovalQueryRe):
-    """
-    已审核
-    """
-    approval_status: str = Field("submitting", title="审批状态", description="审批状态")
-    approval_time: datetime = Field(..., title="审批时间", description="审批时间", example="2021-10-10 10:10:10")
 
 
 # task相关模型

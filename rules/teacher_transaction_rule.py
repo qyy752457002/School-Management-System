@@ -8,12 +8,23 @@ from views.models.teacher_transaction import TeacherTransactionModel, TeacherTra
     TeacherTransactionQueryModel, TeacherTransactionApproval, TeacherTransactionGetModel
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from business_exceptions.teacher_transction import TransactionApprovalError
+from rules.work_flow_instance_rule import WorkFlowNodeInstanceRule
+from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
+from rules.enum_value_rule import EnumValueRule
+from daos.enum_value_dao import EnumValueDAO
+from models.enum_value import EnumValue
+from mini_framework.utils.http import HTTPRequest
+from urllib.parse import urlencode
+from views.common.common_view import workflow_service_config
 
 
 @dataclass_inject
 class TeacherTransactionRule(object):
     teacher_transaction_dao: TeacherTransactionDAO
     teachers_dao: TeachersDao
+    work_flow_instance_rule: WorkFlowNodeInstanceRule
+    teacher_work_flow_rule: TeacherWorkFlowRule
+    enum_value_dao: EnumValueDAO
 
     async def get_teacher_transaction_by_teacher_transaction_id(self, teacher_transaction_id):
         teacher_transaction_db = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
@@ -36,6 +47,18 @@ class TeacherTransactionRule(object):
         teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
         teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)
         return teacher_transaction
+
+    async def query_transaction(self, teacher_id):
+        result = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_id(
+            teacher_id)
+        is_transaction = True
+        if not result:
+            process_instance_id = result.process_instance_id
+            work_flow_instance_status = await self.work_flow_instance_rule.get_work_flow_instance_status_by_work_flow_instance_id(
+                process_instance_id)
+            if work_flow_instance_status == "pending":
+                is_transaction = False
+        return is_transaction
 
     async def delete_teacher_transaction(self, teacher_transaction_id):
         exists_teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
@@ -78,13 +101,7 @@ class TeacherTransactionRule(object):
         paging_result = PaginatedResponse.from_paging(teacher_transaction_db, TeacherTransactionApproval)
         return paging_result
 
-    # async def submitting(self, teacher_transaction_id):
-    #     teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
-    #         teacher_transaction_id)
-    #     if not teacher_transaction:
-    #         raise Exception(f"编号为{teacher_transaction_id}的teacher_transaction不存在")
-    #     teacher_transaction.approval_status = "submitting"
-    #     return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
+
 
     async def submitted(self, teacher_transaction_id):
         teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
@@ -120,3 +137,11 @@ class TeacherTransactionRule(object):
 
     async def get_process_id(self, teacher_transaction: TeacherTransactionModel, process_code: str):
         pass
+
+    async def teacher_active(self, teachers_id):
+        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
+        if not teachers:
+            raise TeacherNotFoundError()
+        if teachers.teacher_sub_status != "active":
+            teachers.teacher_sub_status = "active"
+        return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")

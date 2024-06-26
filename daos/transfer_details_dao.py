@@ -10,6 +10,7 @@ from models.teachers import Teacher
 from models.work_flow_node_instance import WorkFlowNodeInstance
 from models.work_flow_instance import WorkFlowInstance
 from models.school import School
+from models.enum_value import EnumValue
 
 
 class TransferDetailsDAO(DAOBase):
@@ -98,18 +99,18 @@ class TransferDetailsDAO(DAOBase):
             query = query.where(Teacher.teacher_id_number == query_model.teacher_id_number)
         if query_model.teacher_gender:
             query = query.where(Teacher.teacher_gender == query_model.teacher_gender)
-        if query_model.original_district:
-            query = query.where(TransferDetails.original_district == query_model.original_district)
-        if query_model.original_unit:
-            query = query.where(TransferDetails.original_unit == query_model.original_unit)
-        if query_model.current_district:
-            query = query.where(TransferDetails.current_district == query_model.current_district)
-        if query_model.current_unit:
-            query = query.where(TransferDetails.current_unit == query_model.current_unit)
-        if query_model.current_region:
-            query = query.where(TransferDetails.current_region == query_model.current_region)
-        if query_model.original_region:
-            query = query.where(TransferDetails.original_region == query_model.original_region)
+        if query_model.original_district_area_id:
+            query = query.where(TransferDetails.original_district_area_id == query_model.original_district_area_id)
+        if query_model.original_unit_id:
+            query = query.where(TransferDetails.original_unit == query_model.original_unit_id)
+        if query_model.current_district_area_id:
+            query = query.where(TransferDetails.current_district_area_id == query_model.current_district_area_id)
+        if query_model.current_unit_id:
+            query = query.where(TransferDetails.current_unit_id == query_model.current_unit_id)
+        if query_model.current_region_area_id:
+            query = query.where(TransferDetails.current_region_area_id == query_model.current_region_area_id)
+        if query_model.original_region_area_id:
+            query = query.where(TransferDetails.original_region_area_id == query_model.original_region_area_id)
         if query_model.approval_status:
             query = query.where(TransferDetails.approval_status == query_model.approval_status)
         if query_model.operation_time:
@@ -172,18 +173,18 @@ class TransferDetailsDAO(DAOBase):
             query = query.where(Teacher.teacher_id_number == query_model.teacher_id_number)
         if query_model.teacher_gender:
             query = query.where(Teacher.teacher_gender == query_model.teacher_gender)
-        if query_model.original_district:
-            query = query.where(TransferDetails.original_district == query_model.original_district)
-        if query_model.original_unit:
-            query = query.where(TransferDetails.original_unit == query_model.original_unit)
-        if query_model.current_district:
-            query = query.where(TransferDetails.current_district == query_model.current_district)
-        if query_model.current_unit:
-            query = query.where(TransferDetails.current_unit == query_model.current_unit)
-        if query_model.current_region:
-            query = query.where(TransferDetails.current_region == query_model.current_region)
-        if query_model.original_region:
-            query = query.where(TransferDetails.original_region == query_model.original_region)
+        if query_model.original_district_area_id:
+            query = query.where(TransferDetails.original_district_area_id == query_model.original_district_area_id)
+        if query_model.original_unit_id:
+            query = query.where(TransferDetails.original_unit == query_model.original_unit_id)
+        if query_model.current_district_area_id:
+            query = query.where(TransferDetails.current_district_area_id == query_model.current_district_area_id)
+        if query_model.current_unit_id:
+            query = query.where(TransferDetails.current_unit_id == query_model.current_unit_id)
+        if query_model.current_region_area_id:
+            query = query.where(TransferDetails.current_region_area_id == query_model.current_region_area_id)
+        if query_model.original_region_area_id:
+            query = query.where(TransferDetails.original_region_area_id == query_model.original_region_area_id)
         if query_model.approval_status:
             query = query.where(TransferDetails.approval_status == query_model.approval_status)
         if query_model.operation_time:

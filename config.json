@@ -128,7 +128,7 @@
   "workflow_service": {
     "name": "workflow_service",
     "description": "",
-    "url": "https://school-workflow-dev.f123.pub"
+    "url": "http://127.0.0.1:8081"
   },
   "transaction_service": {
     "retry": {
