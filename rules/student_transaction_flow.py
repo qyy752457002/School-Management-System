@@ -60,7 +60,6 @@ class StudentTransactionFlowRule(object):
         student_transaction_flow_db = view_model_to_orm_model(student_transaction_flow, StudentTransactionFlow,
                                                               exclude=["id"])
 
-
         student_transaction_flow_db = await self.student_transaction_flow_dao.add_studenttransactionflow(
             student_transaction_flow_db)
 
@@ -191,6 +190,7 @@ class StudentTransactionFlowRule(object):
             print(e)
 
         return response
+
     # 处理流程审批 的 操作
     async def exe_student_transaction(self,audit_info):
         # 如果存在出 读取出的信息
@@ -255,15 +255,15 @@ class StudentTransactionFlowRule(object):
         datadict['node_instance_id'] =  transferin_id
 
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
-        url=url+apiname
+        url = url + apiname
         headerdict = {
             "accept": "application/json",
             "Content-Type": "application/json"
         }
         # 如果是query 需要拼接参数
-        url+=  ('?' +urlencode(datadict))
+        url += ('?' + urlencode(datadict))
 
-        print('参数', url, datadict,headerdict)
+        print('参数', url, datadict, headerdict)
         # 字典参数
         datadict ={"user_id":"11","action":"rejected"}
 

@@ -29,6 +29,20 @@ class EnumValueRule(object):
         enum_value = orm_model_to_view_model(enum_value_db, EnumValueModel, exclude=[""])
         return enum_value
 
+    async def get_district_name(self, area_id):
+        city_name = ""
+        province_name = ""
+        area_db = await self.enum_value_dao.get_enum_description_by_enum_value_name(area_id)
+        area_name = area_db.description
+        area_parent_id = area_db.parent_id
+        if area_parent_id:
+            city_db = await self.enum_value_dao.get_enum_description_by_enum_value_name(area_parent_id)
+            city_name = city_db.description
+            city_parent_id = city_db.parent_id
+            if city_parent_id:
+                province_db = await self.enum_value_dao.get_enum_description_by_enum_value_name(city_parent_id)
+                province_name = province_db.description
+        return province_name, city_name, area_name
     async def add_enum_value(self, enum_value: EnumValueModel):
         exists_enum_value = await self.enum_value_dao.get_enum_value_by_enum_value_name(
             enum_value.enum_value_name)
@@ -137,12 +151,14 @@ class EnumValueRule(object):
 
         # enum_value = orm_model_to_view_model(enum_value_db, SchoolModel, exclude=[""])
         return enum_value_db
+
     # 根据键名查询 值
-    async def query_enum_values(self, enum_value_name,parent_code=None,return_keys=None):
-        return await self.enum_value_dao.get_enum_value_all({"enum_name":enum_value_name,"parent_id":parent_code},return_keys)
+    async def query_enum_values(self, enum_value_name, parent_code=None, return_keys=None):
+        return await self.enum_value_dao.get_enum_value_all({"enum_name": enum_value_name, "parent_id": parent_code},
+                                                            return_keys)
 
     # 校验 枚举值是否合法
-    async def check_enum_values(self, enum_value_key,enum_value):
+    async def check_enum_values(self, enum_value_key, enum_value):
 
         session = await db_connection_manager.get_async_session("default", True)
         result = await session.execute(select(EnumValue).where(EnumValue.enum_name.like(f'%{enum_value_key}%')))
@@ -151,13 +167,14 @@ class EnumValueRule(object):
         for row in res:
             # enum_value = orm_model_to_view_model(row, EnumValueModel)
             lst.append(row.enum_value)
-        if enum_value not  in lst:
+        if enum_value not in lst:
             # raise EnumValueNotMatchError()
             return False
 
         else:
             return True
         # return lst
+
     # 获取下一级 的 键值对
     async def get_next_level_enum_values(self, enum_value_name, enum_values: List[str]):
 

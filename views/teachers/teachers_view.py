@@ -1,4 +1,4 @@
-from views.models.teachers import NewTeacher, TeacherInfo
+from views.models.teachers import NewTeacher, TeacherInfo, RetireTeacherQuery
 from fastapi import Query, Depends
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
@@ -29,8 +29,25 @@ class TeachersView(BaseView):
     # 编辑新教职工登记信息
     async def put_teacher(self, teachers: Teachers):
         print(teachers)
-        res = await self.teacher_rule.update_teachers(teachers)
-        return res
+        user_id = "asdfasdf"
+        teacher_id = teachers.teacher_id
+        changes = []
+        old_fields = await self.teacher_rule.get_teachers_by_id(teacher_id)
+        old_dic = old_fields.dict()
+        new_fields = await self.teacher_rule.update_teachers(teachers, user_id)
+        new_dic = new_fields.dict()
+
+        # todo 这个地方需要优化
+        for field, old_value in old_dic.items():
+            new_value = new_dic.get(field)
+            if old_value != new_value:
+                changes.append({
+                    "field": field,
+                    "old_value": old_value,
+                    "new_value": new_value
+                })
+
+        return new_fields
 
     async def page(self, current_teacher=Depends(CurrentTeacherQuery), page_request=Depends(PageRequest)):
         """
@@ -50,14 +67,16 @@ class TeachersView(BaseView):
         """
         保存不经过验证
         """
-        res = await self.teacher_info_rule.update_teachers_info(teacher_info)
+
+        res = await self.teacher_info_rule.update_teachers_info_save(teacher_info)
         return res
 
     async def put_teacherinfo(self, teacher_info: TeacherInfo):
         """
         提交教职工基本信息
         """
-        res = await self.teacher_info_rule.update_teachers_info(teacher_info)
+        user_id = "asdfasdf"
+        res = await self.teacher_info_rule.update_teachers_info(teacher_info, user_id)
         return res
 
     # 删除教职工基本信息
@@ -70,6 +89,10 @@ class TeachersView(BaseView):
     async def patch_submitting(self,
                                teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
         await self.teacher_rule.submitting(teacher_id)
+        return teacher_id
+
+    async def patch_revoked(self, teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
+        await self.teacher_rule.revoked(teacher_id)
         return teacher_id
 
     async def patch_submitted(self,
@@ -88,30 +111,45 @@ class TeachersView(BaseView):
         return teacher_id
 
     async def patch_info_submitting(self,
-                                    teacher_base_id: int = Query(..., title="教师基本信息编号", description="教师基本信息编号",
+                                    teacher_base_id: int = Query(..., title="教师基本信息编号",
+                                                                 description="教师基本信息编号",
                                                                  example=123)):
         await self.teacher_info_rule.submitting(teacher_base_id)
         return teacher_base_id
 
     async def patch_info_submitted(self,
-                                   teacher_base_id: int = Query(..., title="教师基本信息编号", description="教师基本信息编号",
+                                   teacher_base_id: int = Query(..., title="教师基本信息编号",
+                                                                description="教师基本信息编号",
                                                                 example=123)):
         await self.teacher_info_rule.submitted(teacher_base_id)
         return teacher_base_id
 
     async def patch_info_approved(self,
-                                  teacher_base_id: int = Query(..., title="教师基本信息编号", description="教师基本信息编号",
+                                  teacher_base_id: int = Query(..., title="教师基本信息编号",
+                                                               description="教师基本信息编号",
                                                                example=123)):
         await self.teacher_info_rule.approved(teacher_base_id)
         return teacher_base_id
 
     async def patch_info_rejected(self,
-                                  teacher_base_id: int = Query(..., title="教师基本信息编号", description="教师基本信息编号",
+                                  teacher_base_id: int = Query(..., title="教师基本信息编号",
+                                                               description="教师基本信息编号",
                                                                example=123)):
         await self.teacher_info_rule.rejected(teacher_base_id)
         return teacher_base_id
 
-    async def patch_teacher_active(self,
-                                       teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),):
+
+    # 离退休接口
+    async def patch_teacher_retire(self,
+                                   teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
+                                   act: str = Query(..., title="", description="", example='离休'),
+
+                                   ):
         await self.teacher_rule.teacher_active(teacher_id)
         return teacher_id
+    async def page_teacher_retire(self, current_teacher=Depends(RetireTeacherQuery), page_request=Depends(PageRequest)):
+        """
+        退休老师分页查询
+        """
+        paging_result = await self.teacher_info_rule.query_retire_teacher_with_page(current_teacher, page_request)
+        return paging_result

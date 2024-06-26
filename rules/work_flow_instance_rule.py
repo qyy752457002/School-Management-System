@@ -38,8 +38,21 @@ class WorkFlowNodeInstanceRule(object):
         work_flow_instance_db = await self.work_flow_instance_dao.get_work_flow_instance_by_process_instance_id(
             process_instance_id)
         work_flow_instance_status = work_flow_instance_db.process_status
-
         return work_flow_instance_status
+
+    async def get_is_revoke_by_current_node(self, node_code):
+        """
+        这个是用来判断当前节点是否可以撤回
+        """
+        depend_code = await self.work_flow_node_depend_strategy_dao.get_depend_code_by_node_code(node_code)
+        is_revoke = False
+        for code in depend_code:
+            result = await self.work_flow_node_depend_strategy_dao.get_is_revoke_by_depend_code(code.depend_code)
+            if result:
+                is_revoke = True
+                return is_revoke
+        return is_revoke
+
 
     async def add_work_flow_instance(self, work_flow_instance: WorkFlowInstanceCreateModel):
         work_flow_instance_db = view_model_to_orm_model(work_flow_instance, WorkFlowInstance)
@@ -124,7 +137,7 @@ class WorkFlowNodeInstanceRule(object):
                     next_node_instance = await self.create_next_node_instance(node_instance, dependency.next_node)
                 if next_node_instance:  # 如果找到下一个节点，就不再继续查找
                     break
-        node_instance.action = parameters.get("action", "none")
+        node_instance.action = parameters.get("action")
         if node_instance.action != "create":
             node_instance.node_status = "completed"
         else:
@@ -134,6 +147,7 @@ class WorkFlowNodeInstanceRule(object):
         await self.work_flow_node_instance_dao.update_work_flow_node_instance(node_instance,
                                                                               "node_status", "operator_id",
                                                                               "operator_time", "action")
+        # todo 这里应该要记录一下操作日志。
         if "fail" in node_instance.node_code:
             await self.flow_rejected(node_instance.process_instance_id)
         elif "success" in node_instance.node_code:
@@ -155,7 +169,7 @@ class WorkFlowNodeInstanceRule(object):
             next_node_instance = WorkFlowNodeInstance(process_instance_id=current_node_instance.process_instance_id,
                                                       node_code=next_node_definition.next_node_code,
                                                       node_status="pending",
-                                                      operator_id=0, action="create", description="",
+                                                      action="create", description="",
                                                       created_time=datetime.now())
             next_node_instance = await self.work_flow_node_instance_dao.add_work_flow_node_instance(next_node_instance)
             return next_node_instance
