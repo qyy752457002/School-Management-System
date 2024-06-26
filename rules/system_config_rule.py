@@ -56,31 +56,15 @@ class SystemConfigRule(object):
     async def get_system_config_count(self):
         return await self.system_config_dao.get_system_config_count()
 
-    async def query_system_config_with_page(self, page_request: PageRequest,role_id,unit_type, edu_type, system_config_type,  ):
-        paging = await self.permission_menu_dao.query_permission_menu_with_page(page_request, unit_type, edu_type, system_config_type, role_id)
+    async def query_system_config_with_page(self,config_name, page_request: PageRequest,   ):
+        paging = await self.system_config_dao.query_system_config_with_page(page_request, config_name )
         # 字段映射的示例写法   , {"hash_password": "password"} SystemConfigSearchRes
         # print(paging)
-        paging_result = PaginatedResponse.from_paging(paging, PermissionMenuModel,other_mapper={
-            "menu_name": "power_name",
-            "menu_path": "power_url",
-            "menu_code": "power_code",
-            "menu_type": "power_type",
+        paging_result = PaginatedResponse.from_paging(paging, SystemConfigModel,other_mapper={
+
         })
         title= ''
-        if paging_result and hasattr(  paging_result,'items'):
-            ids = [ ]
-            for item in paging_result.items:
-                ids.append(item.id)
-                if title == '':
-                    role = await self.roles_dao.get_roles_by_id(item.id)
-                    title = role.app_name
-
-
-                # item.children= await self.query_system_config_with_kwargs(role_id,unit_type, edu_type, system_config_type,item.id)
-                # print(ids,item)
-
-
-        return paging_result,title
+        return paging_result
 
     async def query_system_config_with_kwargs(self, role_id,unit_type, edu_type, system_config_type,parent_id ='' ):
         paging = await self.permission_menu_dao.query_permission_menu_with_args( unit_type, edu_type, system_config_type, role_id,parent_id)

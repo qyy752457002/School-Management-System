@@ -28,11 +28,9 @@ class SystemView(BaseView):
                    page_request=Depends(PageRequest),
                    role_id: int = Query(None, title="", description="角色id",
                                                  example='1'),
-
                    unit_type :str= Query(None, title="单位类型 例如学校 市/区", description="",min_length=1,max_length=20,example='city'),
                    edu_type :str= Query(None, title="教育阶段类型 例如幼儿园 中小学 职高", description="",min_length=1,max_length=20,example='kg'),
                    system_type :str= Query(None, title="系统类型 例如老师 单位 学生", description="",min_length=1,max_length=20,example='unit'),
-
                    ):
         print(page_request)
         items = []
@@ -44,10 +42,8 @@ class SystemView(BaseView):
 
         res ,title= await self.system_rule.query_system_with_kwargs( role_id, unit_type, edu_type, system_type )
         # res,title  = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
-
         return {'app_name':title,
                 'menu':list(res.values())
-
                 }
 
 
@@ -75,3 +71,12 @@ class SystemView(BaseView):
         print(res)
 
         return res
+    async def page_system_config(self,
+                        page_request=Depends(PageRequest),
+                                 config_name :str= Query(None, title="", description="",min_length=1,max_length=50,example=''),
+                        ):
+        print(page_request)
+        items = []
+        title=''
+        res= await self.system_config_rule.query_system_config_with_page( config_name,page_request  )
+        return  res
