@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
 from views.models.enum_value import EnumValue
+from views.models.task import TaskActionType
 
 
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
@@ -39,3 +40,21 @@ class TaskView(BaseView):
         res  = await self.task_rule.get_task_by_id(task_id)
 
         return res
+    # todo  启动和 暂停和取消任务依赖于 框架组件 等待框架提供这个功能
+    async def patch(self,
+                    action_type:TaskActionType= Query('', title="", description="操作 启动 sart",min_length=1,max_length=50, ),
+
+                  task_id:list[str]= Query([], title="", description="任务编号 列表",  ),
+                  ):
+        if action_type==TaskActionType.START:
+            for task_id in task_id:
+                await self.task_rule.start_task(task_id)
+        if action_type==TaskActionType.STOP:
+            for task_id in task_id:
+                await self.task_rule.start_task(task_id)
+        if action_type==TaskActionType.CANCEL:
+            for task_id in task_id:
+                await self.task_rule.cancel_task(task_id)
+        # res  = await self.task_rule.get_task_by_id(task_id)
+
+        return {}

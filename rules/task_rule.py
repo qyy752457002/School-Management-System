@@ -81,7 +81,7 @@ class TaskRule(object):
 
         return await self.task_dao.add_task_progress(task_progress)
 
-    def cancel_task(self, task):
+    async def cancel_task(self, task):
         pass
 
 

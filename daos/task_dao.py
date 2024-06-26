@@ -61,7 +61,7 @@ class TaskDAO(DAOBase):
         return result.scalar()
 
     async def query_task_with_page(self,  page_request: PageRequest,task_start_time,task_id,user_id):
-        query = select(TaskInfo)
+        query = select(TaskInfo).select_from(TaskInfo).join(TaskResult, TaskInfo.task_id == TaskResult.task_id).join(TaskProgress, TaskInfo.task_id == TaskProgress.task_id)
         if task_start_time:
             query = query.where(TaskInfo.created_at >= task_start_time)
         if task_id:
@@ -71,6 +71,7 @@ class TaskDAO(DAOBase):
                 user_id = str(user_id)
             query = query.where(TaskInfo.operator == user_id)
         ### �˴���д��ѯ����
+        query = query.order_by(TaskResult.state.desc()).order_by(TaskInfo.created_at.desc())
 
         paging = await self.query_page(query, page_request)
         return paging
