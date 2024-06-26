@@ -1033,6 +1033,7 @@ class NewTeacherTask(BaseModel):
     bucket: str = Field('', title="", description="", examples=[' '])
     scene: str = Field("teacher_import", title="场景", description="", examples=[' '])
 
+
 class RetireTeacherQuery(BaseModel):
     """
     """
@@ -1046,6 +1047,7 @@ class RetireTeacherQuery(BaseModel):
     enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
     unemploy_start_time: Optional[date] = Query(None, title="非在职时间起始", description="", example="2010-01-01")
     unemploy_end_time: Optional[date] = Query(None, title="非在职时间截止", description="", example="2010-01-01")
+
 
 class RetireTeacherQueryRe(CurrentTeacherQueryRe):
     """
@@ -1061,5 +1063,5 @@ class TeacherChangeLogQueryModel(BaseModel):
     change
     """
     id: Optional[int] = Query(None, title="id", description="id", example=1)
-    change_module: ChangeModule = Field(..., description=" 变更模块", examples=[''])
-    status: str = Field(..., description=" 状态", examples=[''])
+    teacher_id: int = Query(..., title="teacher_id", description="teacher_id", example=1)
+    change_module: Optional[ChangeModule] = Query(None, description=" 变更模块", examples=[''])

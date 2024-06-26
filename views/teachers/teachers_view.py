@@ -53,7 +53,8 @@ class TeachersView(BaseView):
         """
         老师分页查询
         """
-        paging_result = await self.teacher_info_rule.query_current_teacher_with_page(current_teacher, page_request)
+        user_id = "asdfasdf"
+        paging_result = await self.teacher_info_rule.query_current_teacher_with_page(current_teacher, page_request,user_id)
         return paging_result
 
     # 获取教职工基本信息

@@ -25,6 +25,10 @@ from rules.teacher_change_rule import TeacherChangeRule
 from daos.teacher_key_info_approval_dao import TeacherKeyInfoApprovalDao
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from datetime import datetime
+from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
+from rules.operation_record import OperationRecordRule
+from daos.operation_record_dao import OperationRecordDAO
+from views.common.common_view import compare_modify_fields
 
 
 @dataclass_inject
@@ -38,6 +42,8 @@ class TeachersInfoRule(object):
     teacher_change_detail: TeacherChangeRule
     teacher_key_info_approval_dao: TeacherKeyInfoApprovalDao
     teacher_work_flow_rule: TeacherWorkFlowRule
+    operation_record_rule: OperationRecordRule
+    operation_record_dao: OperationRecordDAO
 
     # 查询单个教职工基本信息
     async def get_teachers_info_by_teacher_id(self, teachers_id):
@@ -69,6 +75,8 @@ class TeachersInfoRule(object):
         teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
                                                          exclude=[""])
         params = {"process_code": "t_entry", "applicant_name": user_id}
+        await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
+            teachers_info.teacher_id)
         await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
         organization = OrganizationMembers()
         organization.id = None
@@ -98,6 +106,7 @@ class TeachersInfoRule(object):
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, TeachersInfoModel, exclude=[""])
+
         organization = OrganizationMembers()
         organization.id = None
         organization.org_id = teachers_info.org_id
@@ -115,18 +124,53 @@ class TeachersInfoRule(object):
         exists_teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_info.teacher_base_id)
         if not exists_teachers_info:
             raise TeacherInfoNotFoundError()
+        old_teachers_info = orm_model_to_view_model(exists_teachers_info, TeachersInfoModel, exclude=[""])
+        res = compare_modify_fields(teachers_info, old_teachers_info)
         need_update_list = []
         for key, value in teachers_info.dict().items():
             if value:
                 need_update_list.append(key)
         teachers_info = await self.teachers_info_dao.update_teachers_info(teachers_info, *need_update_list)
-
         teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
-
         teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
                                                          exclude=[""])
-        params = {"process_code": "t_entry", "applicant_name": user_id}
-        await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
+        teachers_main_status = teacher_entry_approval.teacher_main_status
+        if teachers_main_status == "unemployed":
+            params = {"process_code": "t_entry", "applicant_name": user_id}
+            await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
+                teacher_entry_approval.teacher_id)
+            work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
+            teacher_entry_save_to_submit_log = OperationRecord(  # 这个是转在职的
+                action_target_id=teacher_entry_approval.teacher_id,
+                target=OperationTarget.TEACHER.value,
+                action_type=OperationType.CREATE.value,
+                ip="127.0.0.1",
+                change_data="",
+                operation_time=datetime.now(),
+                doc_upload="",
+                change_module=ChangeModule.NEW_ENTRY.value,
+                change_detail="转在职",
+                status="/",
+                operator_id=1,
+                operator_name=user_id,
+                process_instance_id=work_flow_instance["process_instance_id"])
+            await self.operation_record_rule.add_operation_record(teacher_entry_save_to_submit_log)
+        if teachers_main_status == "employed":
+            teacher_base_info_log = OperationRecord(
+                action_target_id=teacher_entry_approval.teacher_id,
+                target=OperationTarget.TEACHER.value,
+                action_type=OperationType.CREATE.value,
+                ip="127.0.0.1",
+                change_data=str(res),
+                operation_time=datetime.now(),
+                doc_upload="",
+                change_module=ChangeModule.BASIC_INFO_CHANGE.value,
+                change_detail="详情",
+                status="/",
+                operator_id=1,
+                operator_name=user_id,
+                process_instance_id=0)
+            await self.operation_record_rule.add_operation_record(teacher_base_info_log)
 
         organization = OrganizationMembers()
         organization.id = None
@@ -155,6 +199,9 @@ class TeachersInfoRule(object):
                                                          exclude=[""])
         params = {"process_code": "t_entry", "applicant_name": user_id}
         await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
+        await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
+            teacher_entry_approval.teacher_id)
+
         organization = OrganizationMembers()
         organization.id = None
         organization.org_id = teachers_info.org_id
@@ -180,8 +227,6 @@ class TeachersInfoRule(object):
         return paging
 
     async def query_current_teacher_with_page(self, query_model: CurrentTeacherQuery, page_request: PageRequest):
-        # todo 需要加一个返回一个能否变动的状态
-        print(query_model)
         paging = await self.teachers_info_dao.query_current_teacher_with_page(query_model, page_request)
         paging_result = PaginatedResponse.from_paging(paging, CurrentTeacherQueryRe)
         return paging_result
@@ -191,6 +236,7 @@ class TeachersInfoRule(object):
         paging = await self.teachers_info_dao.query_retire_teacher_with_page(query_model, page_request)
         paging_result = PaginatedResponse.from_paging(paging, RetireTeacherQueryRe)
         return paging_result
+
     async def submitting(self, teachers_base_id):
         teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_base_id)
         if not teachers_info:
