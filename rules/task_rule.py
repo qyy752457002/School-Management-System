@@ -5,7 +5,7 @@ from mini_framework.async_task.data_access.models import TaskInfo, TaskProgress,
 from mini_framework.async_task.task import Task, TaskState
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
-from mini_framework.web.toolkit.model_utilities import view_model_to_orm_model
+from mini_framework.web.toolkit.model_utilities import view_model_to_orm_model, orm_model_to_view_model
 
 from daos.task_dao import TaskDAO
 # from views.models.task import Task as TaskModel
@@ -94,3 +94,9 @@ class TaskRule(object):
         })
         title= ''
         return paging_result
+
+    async def get_task_by_id(self, task_id):
+        task_db = await self.task_dao.get_task_by_id(task_id)
+        # 可选 , exclude=[""]
+        task = orm_model_to_view_model(task_db, TaskModel)
+        return task

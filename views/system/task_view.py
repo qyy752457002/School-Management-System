@@ -32,3 +32,10 @@ class TaskView(BaseView):
 
         res = await self.task_rule.query_task_with_page(page_request ,task_start_time,task_id,user_id )
         return res
+
+    async def get(self,
+                  task_id:str= Query('', title="", description="任务编号",min_length=1,max_length=50,example='2zAkahKMTUmkJTAGirG3en'),
+                                       ):
+        res  = await self.task_rule.get_task_by_id(task_id)
+
+        return res
