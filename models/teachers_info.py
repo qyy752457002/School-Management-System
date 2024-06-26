@@ -117,7 +117,5 @@ class TeacherInfo(BaseDBModel):
     teacher_number: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="教职工号")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
     department: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="部门")
-    approval_status: Mapped[str] = mapped_column(String(255), nullable=False, comment="审批状态",
-                                                 default="submitting")
     org_id: Mapped[int] = mapped_column(INT, nullable=True, default=0, comment="机构ID")
 

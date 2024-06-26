@@ -12,7 +12,7 @@ from starlette.requests import Request
 from rules.class_division_records_rule import ClassDivisionRecordsRule
 from rules.operation_record import OperationRecordRule
 from views.common.common_view import compare_modify_fields, get_client_ip
-from views.models.operation_record import OperationRecord, OperationModule, OperationTargetType, OperationType
+from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType
 from views.models.students import NewStudents, NewStudentsQuery, NewStudentsQueryRe, StudentsKeyinfo, StudentsBaseInfo, \
     StudentsFamilyInfo, NewStudentTask
 # from fastapi import Field
@@ -90,8 +90,8 @@ class NewsStudentsView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(new_students_key_info.student_id),
             operator='admin',
-            module=OperationModule.KEYINFO.value,
-            target=OperationTargetType.STUDENT.value,
+            module=ChangeModule.KEYINFO.value,
+            target=OperationType.STUDENT.value,
             action_type=OperationType.MODIFY.value,
             ip= get_client_ip(request),
             change_data=json_string,
@@ -187,15 +187,15 @@ class NewsStudentsInfoView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(new_students_base_info.student_id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.STUDENT.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.STUDENT.value,
             action_type=OperationType.MODIFY.value,
             ip= get_client_ip(request),
             change_data=json_string,
-            change_field=OperationModule.BASEINFO.value,
-            change_item=OperationModule.BASEINFO.value,
+            change_field=ChangeModule.BASEINFO.value,
+            change_item=ChangeModule.BASEINFO.value,
             timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason=OperationType.MODIFY.value+OperationModule.BASEINFO.value,
+            action_reason=OperationType.MODIFY.value+ChangeModule.BASEINFO.value,
             doc_upload='',
             status='1',
             account='', ))
@@ -292,15 +292,15 @@ class NewsStudentsFamilyInfoView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(new_students_family_info.student_id),
             operator='admin',
-            module=OperationModule.FAMILYINFO.value,
-            target=OperationTargetType.STUDENT.value,
+            module=ChangeModule.FAMILYINFO.value,
+            target=OperationType.STUDENT.value,
             action_type=OperationType.MODIFY.value,
             ip= get_client_ip(request),
             change_data=json_string,
-            change_field=OperationModule.FAMILYINFO.value,
-            change_item=OperationModule.FAMILYINFO.value,
+            change_field=ChangeModule.FAMILYINFO.value,
+            change_item=ChangeModule.FAMILYINFO.value,
             timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason=OperationType.MODIFY.value+OperationModule.FAMILYINFO.value,
+            action_reason=OperationType.MODIFY.value+ChangeModule.FAMILYINFO.value,
             doc_upload='',
             status='1',
             account='', ))

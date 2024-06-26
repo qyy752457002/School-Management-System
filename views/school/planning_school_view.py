@@ -12,7 +12,7 @@ from starlette.requests import Request
 from business_exceptions.planning_school import PlanningSchoolValidateError, PlanningSchoolBaseInfoValidateError
 from rules.operation_record import OperationRecordRule
 from views.common.common_view import compare_modify_fields, get_extend_params
-from views.models.operation_record import OperationRecord, OperationModule, OperationTargetType, OperationType
+from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
     PlanningSchoolBaseInfoOptional, PlanningSchoolTask
@@ -116,8 +116,8 @@ class PlanningSchoolView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(planning_school.id),
             operator='admin',
-            module=OperationModule.KEYINFO.value,
-            target=OperationTargetType.PLANNING_SCHOOL.value,
+            module=ChangeModule.KEYINFO.value,
+            target=OperationType.PLANNING_SCHOOL.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
@@ -142,8 +142,8 @@ class PlanningSchoolView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(planning_school_id),
             operator='admin',
-            module=OperationModule.KEYINFO.value,
-            target=OperationTargetType.PLANNING_SCHOOL.value,
+            module=ChangeModule.KEYINFO.value,
+            target=OperationType.PLANNING_SCHOOL.value,
 
             action_type=OperationType.DELETE.value,
             ip='127.0.0.1',
@@ -170,8 +170,8 @@ class PlanningSchoolView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(planning_school_baseinfo.id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.PLANNING_SCHOOL.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.PLANNING_SCHOOL.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
@@ -247,8 +247,8 @@ class PlanningSchoolView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(planning_school_id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.PLANNING_SCHOOL.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.PLANNING_SCHOOL.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
@@ -280,8 +280,8 @@ class PlanningSchoolView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(planning_school_id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.PLANNING_SCHOOL.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.PLANNING_SCHOOL.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
@@ -343,8 +343,8 @@ class PlanningSchoolView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(planning_school_id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.PLANNING_SCHOOL.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.PLANNING_SCHOOL.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
@@ -393,8 +393,8 @@ class PlanningSchoolView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(planning_school_id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.PLANNING_SCHOOL.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.PLANNING_SCHOOL.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',

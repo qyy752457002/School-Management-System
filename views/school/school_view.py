@@ -11,7 +11,7 @@ from starlette.requests import Request
 from rules.operation_record import OperationRecordRule
 from views.common.common_view import compare_modify_fields, get_extend_params
 from views.models.extend_params import ExtendParams
-from views.models.operation_record import OperationRecord, OperationModule, OperationTargetType, OperationType
+from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
 from views.models.school_communications import SchoolCommunications
 from views.models.school_eduinfo import SchoolEduInfo
@@ -102,8 +102,8 @@ class SchoolView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(school.id),
             operator='admin',
-            module=OperationModule.KEYINFO.value,
-            target=OperationTargetType.SCHOOL.value,
+            module=ChangeModule.KEYINFO.value,
+            target=OperationType.SCHOOL.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
@@ -129,8 +129,8 @@ class SchoolView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(school_id),
             operator='admin',
-            module=OperationModule.KEYINFO.value,
-            target=OperationTargetType.SCHOOL.value,
+            module=ChangeModule.KEYINFO.value,
+            target=OperationType.SCHOOL.value,
 
             action_type=OperationType.DELETE.value,
             ip='127.0.0.1',
@@ -157,8 +157,8 @@ class SchoolView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(school_baseinfo.id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.SCHOOL.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.SCHOOL.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
@@ -218,8 +218,8 @@ class SchoolView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(school_id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.SCHOOL.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.SCHOOL.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
@@ -247,8 +247,8 @@ class SchoolView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(school_id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.SCHOOL.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.SCHOOL.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
@@ -295,8 +295,8 @@ class SchoolView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(school_id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.SCHOOL.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.SCHOOL.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',
@@ -346,8 +346,8 @@ class SchoolView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(school_id),
             operator='admin',
-            module=OperationModule.BASEINFO.value,
-            target=OperationTargetType.PLANNING_SCHOOL.value,
+            module=ChangeModule.BASEINFO.value,
+            target=OperationType.PLANNING_SCHOOL.value,
 
             action_type=OperationType.MODIFY.value,
             ip='127.0.0.1',

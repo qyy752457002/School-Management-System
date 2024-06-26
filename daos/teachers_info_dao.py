@@ -174,16 +174,17 @@ class TeachersInfoDao(DAOBase):
     async def get_teacher_approval(self, teacher_id):
         session = await self.slave_db()
         result = await session.execute(
-            select(Teacher, TeacherInfo.teacher_base_id,TeacherInfo.highest_education,
+            select(Teacher, TeacherInfo.teacher_base_id, TeacherInfo.highest_education,
                    TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
                    School.school_name,
-                   TeacherInfo.enter_school_time).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
-                                                       ).join(School, Teacher.teacher_employer == School.id,
+                   TeacherInfo.enter_school_time).join(School, Teacher.teacher_employer == School.id,
+                                                       ).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
+                                                              isouter=True,
                                                               ).where(Teacher.teacher_id == teacher_id))
         return result.scalar_one_or_none()
 
     async def query_retire_teacher_with_page(self, query_model: RetireTeacherQuery,
-                                              page_request: PageRequest) -> Paging:
+                                             page_request: PageRequest) -> Paging:
         """
 
         """
@@ -226,4 +227,3 @@ class TeachersInfoDao(DAOBase):
         query = query.order_by(Teacher.teacher_id.desc())
         paging = await self.query_page(query, page_request)
         return paging
-
