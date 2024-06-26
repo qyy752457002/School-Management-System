@@ -210,7 +210,7 @@ class TeacherTransactionView(BaseView):
         parameters = {"user_id": "sadklfh", "action": "approved"}
         res = await self.teacher_transaction_rule.process_teacher_transaction_work_flow(node_instance_id, parameters)
         return res
-
+    # 教师 异动接口
     async def post_teacher_transaction(self, teacher_transaction: TeacherTransactionModel):
         res = await self.teacher_transaction_rule.add_teacher_transaction(teacher_transaction)
         return res

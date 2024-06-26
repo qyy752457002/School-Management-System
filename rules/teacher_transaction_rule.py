@@ -37,6 +37,9 @@ class TeacherTransactionRule(object):
         添加教师异动
         """
         teacher_transaction_db = view_model_to_orm_model(teacher_transaction, TeacherTransaction)
+        if teacher_transaction.retire_number:
+            teacher_transaction_db.transaction_remark= teacher_transaction.retire_number
+            pass
         teacher_db = await self.teachers_dao.get_teachers_by_id(teacher_transaction_db.teacher_id)
         if not teacher_db:
             raise TeacherNotFoundError()
