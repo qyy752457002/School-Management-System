@@ -69,6 +69,7 @@ class TeacherInfo(BaseDBModel):
     institution_of_highest_education: Mapped[str] = mapped_column(String(255), nullable=True, default="",
                                                                   comment="获得最高学历的院校或者机构")
     special_education_start_time: Mapped[date] = mapped_column(Date, nullable=True, comment="特教开时时间")
+    unemploy_time: Mapped[date] = mapped_column(Date, nullable=True, comment="非在职时间")
     start_working_date: Mapped[date] = mapped_column(Date, nullable=True, comment="参加工作年月")
     enter_school_time: Mapped[date] = mapped_column(Date, nullable=True, comment="进本校时间")
     source_of_staff: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="教职工来源")
