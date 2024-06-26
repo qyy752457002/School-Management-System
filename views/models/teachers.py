@@ -7,6 +7,7 @@ from typing import Optional
 from models.public_enum import Gender
 from business_exceptions.teacher import EthnicityNoneError, PoliticalStatusNoneError
 from mini_framework.storage.view_model import FileStorageModel
+from views.models.operation_record import ChangeModule
 
 from enum import Enum
 
@@ -908,19 +909,19 @@ class NewTeacherRe(BaseModel):
 class NewTeacherApprovalCreate(BaseModel):
     teacher_base_id: Optional[int] = Field(None, title="教师ID", description="教师ID")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    teacher_name: Optional[str] = Query("", title="姓名", description="姓名", example="张三")
-    teacher_id_number: Optional[str] = Query("", title="身份证号", description="身份证号", example="123456789012345678")
-    teacher_id_type: str = Field("", title="证件类型", description="证件类型")
-    teacher_gender: Optional[Gender] = Query(None, title="性别", description="性别", example="男")
-    teacher_employer: Optional[int] = Query(None, title="任职单位", description="任职单位", example="xx学校")
-    highest_education: Optional[str] = Query("", title="最高学历", description="最高学历", example="本科")
-    political_status: Optional[str] = Query("", title="政治面貌", description="政治面貌", example="群众")
-    in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
-    school_name: Optional[str] = Query("", title="", description="", example="")
-    employment_form: Optional[str] = Query("", title="用人形式", description="用人形式", example="合同")
-    enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
-    teacher_main_status: Optional[str] = Query(None, title="主要状态", description="主要状态", example="unemployed")
-    teacher_sub_status: Optional[str] = Query(None, title="次要状态", description="次要状态", example="unsubmitted")
+    teacher_name: Optional[str] = Field("", title="姓名", description="姓名", example="张三")
+    teacher_id_number: Optional[str] = Field("", title="身份证号", description="身份证号", example="123456789012345678")
+    teacher_id_type: Optional[str] = Field("", title="证件类型", description="证件类型")
+    teacher_gender: Optional[Gender] = Field(None, title="性别", description="性别", example="男")
+    teacher_employer: Optional[int] = Field(None, title="任职单位", description="任职单位", example="xx学校")
+    highest_education: Optional[str] = Field("", title="最高学历", description="最高学历", example="本科")
+    political_status: Optional[str] = Field("", title="政治面貌", description="政治面貌", example="群众")
+    in_post: Optional[bool] = Field(None, title="是否在编", description="是否在编", example="yes")
+    school_name: Optional[str] = Field("", title="", description="", example="")
+    employment_form: Optional[str] = Field("", title="用人形式", description="用人形式", example="合同")
+    enter_school_time: Optional[date] = Field(None, title="进本校时间", description="进本校时间", example="2010-01-01")
+    teacher_main_status: Optional[str] = Field(None, title="主要状态", description="主要状态", example="unemployed")
+    teacher_sub_status: Optional[str] = Field(None, title="次要状态", description="次要状态", example="unsubmitted")
 
 
 class CurrentTeacherQuery(BaseModel):
@@ -1048,7 +1049,17 @@ class RetireTeacherQuery(BaseModel):
 
 class RetireTeacherQueryRe(CurrentTeacherQueryRe):
     """
-
     """
-
     unemploy_time: Optional[date] = Query(None, title="非在职时间", description="", example="2010-01-01")
+    unemploy_action_time: Optional[datetime] = Query(None, title="", description="", example="2010-01-01")
+    unemploy_number: Optional[str] = Query(None, title="", description="", example="")
+
+
+class TeacherChangeLogQueryModel(BaseModel):
+    """
+    id:
+    change
+    """
+    id: Optional[int] = Query(None, title="id", description="id", example=1)
+    change_module: ChangeModule = Field(..., description=" 变更模块", examples=[''])
+    status: str = Field(..., description=" 状态", examples=[''])

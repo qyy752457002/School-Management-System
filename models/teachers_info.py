@@ -1,9 +1,9 @@
-from sqlalchemy import String, Date, INT
+from sqlalchemy import String, Date, INT, DateTime
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
 
-from datetime import date
+from datetime import date, datetime
 
 
 class TeacherInfo(BaseDBModel):
@@ -70,6 +70,9 @@ class TeacherInfo(BaseDBModel):
                                                                   comment="获得最高学历的院校或者机构")
     special_education_start_time: Mapped[date] = mapped_column(Date, nullable=True, comment="特教开时时间")
     unemploy_time: Mapped[date] = mapped_column(Date, nullable=True, comment="非在职时间")
+    unemploy_action_time = mapped_column(DateTime,default=datetime.now, nullable=True, comment="离退休操作时间")
+    unemploy_number: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="离退休证号")
+
     start_working_date: Mapped[date] = mapped_column(Date, nullable=True, comment="参加工作年月")
     enter_school_time: Mapped[date] = mapped_column(Date, nullable=True, comment="进本校时间")
     source_of_staff: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="教职工来源")
@@ -114,7 +117,5 @@ class TeacherInfo(BaseDBModel):
     teacher_number: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="教职工号")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
     department: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="部门")
-    approval_status: Mapped[str] = mapped_column(String(255), nullable=False, comment="审批状态",
-                                                 default="submitting")
     org_id: Mapped[int] = mapped_column(INT, nullable=True, default=0, comment="机构ID")
 

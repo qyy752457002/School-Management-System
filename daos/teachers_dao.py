@@ -124,6 +124,4 @@ class TeachersDao(DAOBase):
         if query_model.approval_name:
             pass
 
-    async def query_teacher_approval_with_page(self, query_model: TeacherApprovalQuery,
-                                               page_request: PageRequest) -> Paging:
-        pass
+
