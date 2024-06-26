@@ -4,9 +4,13 @@ import shortuuid
 from mini_framework.async_task.data_access.models import TaskInfo, TaskProgress, TaskResult
 from mini_framework.async_task.task import Task, TaskState
 from mini_framework.design_patterns.depend_inject import dataclass_inject
-from mini_framework.web.toolkit.model_utilities import view_model_to_orm_model
+from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
+from mini_framework.web.toolkit.model_utilities import view_model_to_orm_model, orm_model_to_view_model
 
 from daos.task_dao import TaskDAO
+# from views.models.task import Task as TaskModel
+from mini_framework.async_task.task import Task as TaskModel
+
 
 
 @dataclass_inject
@@ -77,5 +81,22 @@ class TaskRule(object):
 
         return await self.task_dao.add_task_progress(task_progress)
 
-    def cancel_task(self, task):
+    async def cancel_task(self, task):
         pass
+
+
+    async def query_task_with_page(self, page_request: PageRequest, task_start_time,task_id,user_id,  ):
+        paging = await self.task_dao.query_task_with_page(page_request,task_start_time,task_id,user_id,  )
+        # 字段映射的示例写法   , {"hash_password": "password"} SystemConfigSearchRes
+        # print(paging)
+        paging_result = PaginatedResponse.from_paging(paging, TaskModel,other_mapper={
+
+        })
+        title= ''
+        return paging_result
+
+    async def get_task_by_id(self, task_id):
+        task_db = await self.task_dao.get_task_by_id(task_id)
+        # 可选 , exclude=[""]
+        task = orm_model_to_view_model(task_db, TaskModel)
+        return task

@@ -139,7 +139,7 @@ class TeachersView(BaseView):
         return teacher_base_id
 
 
-    # 离退休接口
+    # 离退休接口-使用 异动的接口 这里不使用
     async def patch_teacher_retire(self,
                                    teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
                                    act: str = Query(..., title="", description="", example='离休'),
