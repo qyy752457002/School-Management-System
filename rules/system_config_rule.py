@@ -20,7 +20,7 @@ class SystemConfigRule(object):
 
     async def add_system_config(self, system_config: SystemConfigModel):
         exists_system_config = await self.system_config_dao.get_system_config_by_name(
-            system_config.config_name)
+            system_config.config_name,system_config)
         if exists_system_config:
             raise Exception(f"系统{system_config.config_name}已存在")
         system_config_db = view_model_to_orm_model(system_config, SystemConfig, exclude=["id"])

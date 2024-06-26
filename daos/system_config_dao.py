@@ -4,7 +4,7 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.system_config import SystemConfig
-
+from views.models.system import SystemConfig as SystemConfigModel
 
 class SystemConfigDAO(DAOBase):
 
@@ -30,9 +30,12 @@ class SystemConfigDAO(DAOBase):
 		result = await session.execute(select(SystemConfig).where(SystemConfig.id == id))
 		return result.scalar_one_or_none()
 
-	async def get_system_config_by_name(self, id):
+	async def get_system_config_by_name(self, id,system_config:SystemConfigModel=None):
 		session = await self.slave_db()
-		result = await session.execute(select(SystemConfig).where(SystemConfig.config_name == id))
+		query= select(SystemConfig).where(SystemConfig.config_name == id)
+		if system_config.school_id:
+			query=query.where(SystemConfig.school_id == system_config.school_id)
+		result = await session.execute(query)
 		return result.scalar_one_or_none()
 	async def query_system_config_with_page(self,  page_request: PageRequest,config_name,school_id):
 		query = select(SystemConfig).where(SystemConfig.is_deleted == False)
