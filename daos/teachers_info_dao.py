@@ -203,7 +203,7 @@ class TeachersInfoDao(DAOBase):
         if query_model.teacher_id_number:
             query = query.where(Teacher.teacher_id_number == query_model.teacher_id_number)
         if query_model.teacher_gender:
-            query = query.where(Teacher.teacher_gender == query_model.teacher_gender)
+            query = query.where(Teacher.teacher_gender == query_model.teacher_gender.value)
         if query_model.teacher_employer:
             if query_model.teacher_employer != 0:
                 query = query.where(Teacher.teacher_employer == query_model.teacher_employer)
@@ -215,10 +215,14 @@ class TeachersInfoDao(DAOBase):
             query = query.where(TeacherInfo.political_status == query_model.political_status)
         if query_model.in_post:
             query = query.where(TeacherInfo.in_post == query_model.in_post)
-        if query_model.employment_form:
-            query = query.where(TeacherInfo.employment_form == query_model.employment_form)
+
         if query_model.enter_school_time:
             query = query.where(TeacherInfo.enter_school_time == query_model.enter_school_time)
+        #     非在职时间的筛选
+        if query_model.unemploy_start_time:
+            query = query.where(TeacherInfo.unemploy_time >= query_model.unemploy_start_time)
+        if query_model.unemploy_end_time:
+            query = query.where(TeacherInfo.unemploy_time <= query_model.unemploy_end_time)
         query = query.order_by(Teacher.teacher_id.desc())
         paging = await self.query_page(query, page_request)
         return paging
