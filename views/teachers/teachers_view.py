@@ -1,4 +1,4 @@
-from views.models.teachers import NewTeacher, TeacherInfo
+from views.models.teachers import NewTeacher, TeacherInfo, RetireTeacherQuery
 from fastapi import Query, Depends
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
@@ -139,3 +139,17 @@ class TeachersView(BaseView):
         return teacher_base_id
 
 
+    # 离退休接口
+    async def patch_teacher_retire(self,
+                                   teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
+                                   act: str = Query(..., title="", description="", example='离休'),
+
+                                   ):
+        await self.teacher_rule.teacher_active(teacher_id)
+        return teacher_id
+    async def page_teacher_retire(self, current_teacher=Depends(RetireTeacherQuery), page_request=Depends(PageRequest)):
+        """
+        退休老师分页查询
+        """
+        paging_result = await self.teacher_info_rule.query_retire_teacher_with_page(current_teacher, page_request)
+        return paging_result

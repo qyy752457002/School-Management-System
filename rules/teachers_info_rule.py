@@ -4,7 +4,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers_info import TeacherInfo
 from views.common.common_view import page_none_deal
-from views.models.teachers import TeacherInfo as TeachersInfoModel
+from views.models.teachers import TeacherInfo as TeachersInfoModel, RetireTeacherQuery, RetireTeacherQueryRe
 from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel, TeacherInfoSubmit, \
     CurrentTeacherQuery, CurrentTeacherQueryRe, CurrentTeacherInfoSaveModel, NewTeacherInfoSaveModel, \
     TeacherInfoCreateModel, TeacherApprovalQuery, TeacherApprovalQueryRe, NewTeacherApprovalCreate
@@ -186,6 +186,11 @@ class TeachersInfoRule(object):
         paging_result = PaginatedResponse.from_paging(paging, CurrentTeacherQueryRe)
         return paging_result
 
+    async def query_retire_teacher_with_page(self, query_model: RetireTeacherQuery, page_request: PageRequest):
+        print(query_model)
+        paging = await self.teachers_info_dao.query_retire_teacher_with_page(query_model, page_request)
+        paging_result = PaginatedResponse.from_paging(paging, RetireTeacherQueryRe)
+        return paging_result
     async def submitting(self, teachers_base_id):
         teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_base_id)
         if not teachers_info:
