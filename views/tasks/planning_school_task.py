@@ -1,3 +1,5 @@
+import traceback
+
 from mini_framework.async_task.consumers import TaskExecutor
 from mini_framework.async_task.task import Task, Context
 from mini_framework.design_patterns.depend_inject import get_injector
@@ -38,6 +40,7 @@ class PlanningSchoolExecutor(TaskExecutor):
                 print('插入数据res',res)
             logger.info(f"任务   created")
         except Exception as e:
+            traceback.print_exc()
             print(e,'异常')
             logger.error(f"任务   create failed")
 

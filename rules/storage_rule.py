@@ -9,7 +9,7 @@ from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.storage.view_model import FileStorageResponseModel, FileStorageModel
 from views.models.institutions import Institutions, InstitutionsValid
-from views.models.planning_school import PlanningSchool
+from views.models.planning_school import PlanningSchool, PlanningSchoolImport
 from views.models.school import School
 from views.models.students import NewStudents
 from views.models.teachers import TeachersCreatModel
@@ -60,7 +60,7 @@ class StorageRule(object):
         # 下载保存本地
         random_id = str(uuid.uuid4())
         # source='c.xlsx'
-        local_filepath = 'b.xlsx'
+        local_filepath = 'planning_school.xlsx'
 
         # local_filepath='temp/'+ random_id+filename
         # resp =  storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
@@ -74,7 +74,7 @@ class StorageRule(object):
             SampleModel = Institutions
             sheetname = 'Sheet1'
         if sence == 'planning_school_import':
-            SampleModel = PlanningSchool
+            SampleModel = PlanningSchoolImport
             sheetname = 'Sheet1'
         if sence == 'school_import':
             SampleModel = School

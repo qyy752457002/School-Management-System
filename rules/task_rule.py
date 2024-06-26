@@ -8,8 +8,8 @@ from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.toolkit.model_utilities import view_model_to_orm_model, orm_model_to_view_model
 
 from daos.task_dao import TaskDAO
-# from views.models.task import Task as TaskModel
-from mini_framework.async_task.task import Task as TaskModel
+from views.models.task import TaskModel
+# from mini_framework.async_task.task import Task as TaskModel
 
 
 

@@ -4,6 +4,8 @@ from typing import List, Optional
 from fastapi import Query
 from pydantic import BaseModel, Field
 
+from views.models.planning_school_communications import PlanningSchoolCommunications
+
 
 class PlanningSchoolFounderType(str, Enum):
     """
@@ -49,15 +51,11 @@ class PlanningSchool(BaseModel):
                                                           description="办学许可证号", examples=['EDU2024012569'])
     block: str = Field(..., title="地域管辖区", description="地域管辖区", examples=['铁西区'])
     borough: str = Field(..., title="行政管辖区", description=" 行政管辖区", examples=['铁西区'])
-    # planning_school_type: str = Field(..., title="规划校类型", description=" 规划校类型", examples=['中小学'])
-
     planning_school_edu_level: str|None = Field(..., title="办学类型", description="办学类型", examples=['学前教育'])
-    # planning_school_nature: str|None = Field('', title="规划校性质", description="规划校性质", examples=['学前'])
-
     planning_school_category: str|None = Field(..., title="办学类型二级", description=" 办学类型二级", examples=['小学'])
     planning_school_operation_type: str|None = Field(..., title="办学类型三级", description=" 办学类型三级", examples=['附设小学班'])
     planning_school_org_type: str = Field(..., title="规划校办别", description=" 规划校办别", examples=['民办'])
-    planning_school_level: str|None = Field(None, title="规划校星级", description=" 规划校星级", examples=['5'])
+    planning_school_level: str|int|None = Field(None, title="规划校星级", description=" 规划校星级", examples=['5'])
     status: str = Field(..., title="状态", description=" 状态", examples=['正常'])
     planning_school_code: str = Field(..., title="规划校标识码", description=" 规划校标识码", examples=['SC562369322SG'])
     kg_level: str|None = Field(None, title="星级", description="星级", examples=['5'])
@@ -86,6 +84,8 @@ class PlanningSchool(BaseModel):
     junior_middle_planning_school_system: str = Field(..., title="初中学制", description="初中学制", examples=['3'])
     junior_middle_planning_school_entry_age: str = Field(..., title="初中入学年龄", description="初中入学年龄", examples=['12'])
     senior_middle_planning_school_system: str = Field(..., title="高中学制", description="高中学制", examples=['3'])
+    province: str = Query('', title="省份", description="", examples=[''], min_length=1, max_length=30)
+    city: str = Query('', title="城市", description="", examples=[''], min_length=1, max_length=30)
 
 
 # 规划校的 基本信息模型   视图的额模型是按需提供的
@@ -209,3 +209,6 @@ class PlanningSchoolTask(BaseModel):
     file_name: str = Field('', title="",description="",examples=[' '])
     bucket: str = Field('', title="",description="",examples=[' '])
     scene: str = Field('', title="",description="",examples=[' '])
+
+class PlanningSchoolImport(PlanningSchool, PlanningSchoolCommunications):
+    pass
