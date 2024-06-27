@@ -228,10 +228,6 @@ class NewTeachersView(BaseView):
 
 # 下面都是测试工作流的
 
-    # async def get_work_flow_node_log(self, process_instance_id: int = Query(..., title="流程实例id",
-    #                                                                         description="流程实例id")):
-    #     res = await self.teacher_work_flow_instance_rule.get_teacher_work_flow_log_by(process_instance_id)
-    #     return res
     #
     # async def get_teacher_work_flow_current_node(self, process_instance_id: int = Query(..., title="流程实例id",
     #                                                                                     description="流程实例id")):
