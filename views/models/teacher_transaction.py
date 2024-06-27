@@ -157,7 +157,7 @@ class TeacherTransactionUpdateModel(BaseModel):
     transaction_remark: str = Field("", title="备注", description="备注")
     original_position: Optional[str] = Field("", title="原岗位", description="原岗位")
     current_position: Optional[str] = Field("", title="现岗位", description="现岗位")
-    position_date: Optional[date|None] = Field(None, title="任职日期", description="任职日期")
+    position_date: Optional[date]|None = Field(None, title="任职日期", description="任职日期")
     operator_name: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     transaction_time: datetime|None = Field(..., title="操作时间", description="操作时间")

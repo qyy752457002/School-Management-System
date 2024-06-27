@@ -215,8 +215,8 @@ class TeacherTransactionView(BaseView):
     # 教师 异动接口
     async def post_teacher_transaction(self, teacher_transaction: TeacherTransactionModel):
         res = await self.teacher_transaction_rule.add_teacher_transaction(teacher_transaction)
-        if isinstance(res.transaction_time,date):
-            res.transaction_time=res.transaction_time.strftime('%Y-%m-%d')
+        # if isinstance(res.transaction_time,date):
+        #     res.transaction_time=res.transaction_time.strftime('%Y-%m-%d')
         print(res)
         return res
 
