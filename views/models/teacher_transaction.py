@@ -67,7 +67,6 @@ class EmploymentStatus(str, Enum):
     OTHER = "other"
     RETIRE = "retire"
     RETIRE_HONOR = "retire_honor"
-
     @classmethod
     def to_list(cls):
         return [status.value for status in cls]

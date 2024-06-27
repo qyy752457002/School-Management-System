@@ -242,7 +242,7 @@ class TeacherInfo(BaseModel):  # 基本信息
     招聘方式：recruitment_method
     教职工号：teacher_number
     """
-    teacher_base_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_base_id: int = Field(-1, title="教师ID", description="教师ID")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     ethnicity: Optional[str] = Field(None, title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家地区", description="国家地区", example="中国")
@@ -922,6 +922,7 @@ class NewTeacherApprovalCreate(BaseModel):
     enter_school_time: Optional[date] = Field(None, title="进本校时间", description="进本校时间", example="2010-01-01")
     teacher_main_status: Optional[str] = Field(None, title="主要状态", description="主要状态", example="unemployed")
     teacher_sub_status: Optional[str] = Field(None, title="次要状态", description="次要状态", example="unsubmitted")
+    is_approval: Optional[bool] = Field(None, title="是否在审批中", description="是否在审批中")
 
 
 class CurrentTeacherQuery(BaseModel):
@@ -979,6 +980,8 @@ class CurrentTeacherQueryRe(BaseModel):
     employment_form: Optional[str] = Query("", title="用人形式", description="用人形式", example="合同")
     enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
     school_name: Optional[str] = Query("", title="", description="", example="")
+    is_approval: Optional[bool] = Field(None, title="是否在审批中", description="是否在审批中")
+
 
 
 class TeacherApprovalQuery(BaseModel):
@@ -1026,12 +1029,14 @@ class TeacherApprovalQueryRe(BaseModel):
     process_instance_id: int = Field(0, title="流程实例id", description="流程实例id")
 
 
+
 # task相关模型
 class NewTeacherTask(BaseModel):
     """{'file_name':filename,'bucket':bucket,'scene':scene},"""
     file_name: str = Field('', title="", description="", examples=[' '])
     bucket: str = Field('', title="", description="", examples=[' '])
     scene: str = Field("teacher_import", title="场景", description="", examples=[' '])
+
 
 class RetireTeacherQuery(BaseModel):
     """
@@ -1046,6 +1051,7 @@ class RetireTeacherQuery(BaseModel):
     enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
     unemploy_start_time: Optional[date] = Query(None, title="非在职时间起始", description="", example="2010-01-01")
     unemploy_end_time: Optional[date] = Query(None, title="非在职时间截止", description="", example="2010-01-01")
+
 
 class RetireTeacherQueryRe(CurrentTeacherQueryRe):
     """
@@ -1063,5 +1069,5 @@ class TeacherChangeLogQueryModel(BaseModel):
     change
     """
     id: Optional[int] = Query(None, title="id", description="id", example=1)
-    change_module: ChangeModule = Field(..., description=" 变更模块", examples=[''])
-    status: str = Field(..., description=" 状态", examples=[''])
+    teacher_id: int = Query(..., title="teacher_id", description="teacher_id", example=1)
+    change_module: Optional[ChangeModule] = Query(None, description=" 变更模块", examples=[''])

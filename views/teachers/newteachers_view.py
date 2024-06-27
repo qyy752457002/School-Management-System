@@ -12,7 +12,7 @@ from mini_framework.web.views import BaseView
 from rules.teachers_rule import TeachersRule
 from views.models.teachers import Teachers, TeacherInfo, TeachersCreatModel, CurrentTeacherInfoSaveModel, \
     TeacherInfoSaveModel, TeacherInfoSubmit, CombinedModel, TeacherFileStorageModel, CurrentTeacherQuery, \
-    TeacherApprovalQuery, NewTeacherRe
+    TeacherApprovalQuery, NewTeacherRe, TeacherChangeLogQueryModel
 from rules.teachers_info_rule import TeachersInfoRule
 from mini_framework.web.request_context import request_context_manager
 
@@ -87,21 +87,30 @@ class NewTeachersView(BaseView):
         res = await self.teacher_info_rule.get_teachers_info_by_teacher_id(teacher_id)
         return res
 
-    async def put_newteacherinfosubmit(self, teacher_info: TeacherInfoSubmit):
-        if teacher_info.teacher_base_id > 0:
-            res = await self.teacher_info_rule.update_teachers_info(teacher_info)
-        else:
-            res = await self.teacher_info_rule.add_teachers_info_valid(teacher_info)
-        return res
+    # async def put_newteacherinfosubmit(self, teacher_info: TeacherInfoSubmit):
+    #     if teacher_info.teacher_base_id > 0:
+    #         res = await self.teacher_info_rule.update_teachers_info(teacher_info)
+    #     else:
+    #         res = await self.teacher_info_rule.add_teachers_info_valid(teacher_info)
+    #     return res
 
     async def put_newteacherinforesave(self, teacher_info: CurrentTeacherInfoSaveModel):
 
         res = await self.teacher_info_rule.update_teachers_info_save(teacher_info)
         return res
 
+    async def page_teacher_operation_record_with_page(self, query_model=Depends(TeacherChangeLogQueryModel),
+                                                      page_request=Depends(PageRequest)):
+        res = await self.teacher_rule.query_teacher_operation_record_with_page(query_model, page_request)
+        return res
+
     # 编辑教职工基本信息
     async def put_newteacherinfo(self, teacher_info: TeacherInfo):
-        res = await self.teacher_info_rule.update_teachers_info(teacher_info)
+        user_id = "asdfasdf"
+        if teacher_info.teacher_base_id < 0:
+            res = await self.teacher_info_rule.add_teachers_info_valid(teacher_info, user_id)
+        else:
+            res = await self.teacher_info_rule.update_teachers_info(teacher_info, user_id)
         return res
 
     # 删除教职工基本信息
@@ -121,38 +130,36 @@ class NewTeachersView(BaseView):
     #     return teacher_id
 
     async def patch_entry_approved(self,
-                             teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
-                             process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
-                                                              example=123),
-                             reason: str = Query(None, title="审批意见", description="审批意见", example="同意")):
+                                   teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
+                                   process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
+                                                                    example=123),
+                                   reason: str = Query(None, title="审批意见", description="审批意见", example="同意")):
         user_id = "asdfasdf"
         reason = reason
         await self.teacher_rule.entry_approved(teacher_id, process_instance_id, user_id, reason)
         return teacher_id
 
     async def patch_entry_rejected(self,
-                             teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
-                             process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
-                                                              example=123), reason: str = Query("", title="reason",
-                                                                                                description="审核理由")):
+                                   teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
+                                   process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
+                                                                    example=123),
+                                   reason: str = Query("", title="reason",
+                                                       description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
         await self.teacher_rule.entry_rejected(teacher_id, process_instance_id, user_id, reason)
         return teacher_id
 
     async def patch_entry_revoked(self,
-                            teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
-                            process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
-                                                             example=123),
-                            reason: str = Query("", title="reason",
-                                                description="审核理由")
-                            ):
+                                  teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
+                                  process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
+                                                                   example=123),
+                                  ):
         """
         撤回
         """
         user_id = "asdfasdf"
-        reason = reason
-        await self.teacher_rule.entry_revoked(teacher_id, process_instance_id, user_id, reason)
+        await self.teacher_rule.entry_revoked(teacher_id, process_instance_id, user_id)
         return teacher_id
 
     # async def patch_info_submitting(self,
@@ -169,19 +176,19 @@ class NewTeachersView(BaseView):
     #     await self.teacher_info_rule.submitted(teacher_base_id)
     #     return teacher_base_id
 
-    async def patch_info_approved(self,
-                                  teacher_base_id: int = Query(..., title="教师基本信息编号",
-                                                               description="教师基本信息编号",
-                                                               example=123)):
-        await self.teacher_info_rule.approved(teacher_base_id)
-        return teacher_base_id
-
-    async def patch_info_rejected(self,
-                                  teacher_base_id: int = Query(..., title="教师基本信息编号",
-                                                               description="教师基本信息编号",
-                                                               example=123)):
-        await self.teacher_info_rule.rejected(teacher_base_id)
-        return teacher_base_id
+    # async def patch_info_approved(self,
+    #                               teacher_base_id: int = Query(..., title="教师基本信息编号",
+    #                                                            description="教师基本信息编号",
+    #                                                            example=123)):
+    #     await self.teacher_info_rule.approved(teacher_base_id)
+    #     return teacher_base_id
+    #
+    # async def patch_info_rejected(self,
+    #                               teacher_base_id: int = Query(..., title="教师基本信息编号",
+    #                                                            description="教师基本信息编号",
+    #                                                            example=123)):
+    #     await self.teacher_info_rule.rejected(teacher_base_id)
+    #     return teacher_base_id
 
     async def post_new_teacher_import(self, filestorage: TeacherFileStorageModel) -> Task:
 
@@ -226,7 +233,7 @@ class NewTeachersView(BaseView):
                                                                                  page_request, user_id)
         return paging_result
 
-# 下面都是测试工作流的
+    # 下面都是测试工作流的
 
     # async def get_work_flow_node_log(self, process_instance_id: int = Query(..., title="流程实例id",
     #                                                                         description="流程实例id")):
@@ -262,3 +269,9 @@ class NewTeachersView(BaseView):
     #                                                                                             description="审核理由")):
     #     parameters = {"user_id": "1243ewrwe", "action": "approved", "description": reason}
     #     res=await self.teacher_work_flow_instance_rule.process_transaction_work_flow(node_instance_id, parameters)
+
+    # async def patch_work_flow_status_by_params(self, process_instance_id: int = Query(..., title="流程实例id",
+    #                                                                                   description="流程实例id"),
+    #                                            ):
+    #     params = {"teacher_main_status": "unemployed", "teacher_sub_status": "unsubmitted"}
+    #     await self.teacher_work_flow_instance_rule.update_work_flow_by_param(process_instance_id, params)
