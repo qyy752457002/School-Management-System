@@ -16,6 +16,12 @@ from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from daos.enum_value_dao import EnumValueDAO
 from rules.enum_value_rule import EnumValueRule
 
+from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
+from rules.operation_record import OperationRecordRule
+from daos.operation_record_dao import OperationRecordDAO
+
+from datetime import datetime
+
 
 @dataclass_inject
 class TransferDetailsRule(object):
@@ -26,6 +32,8 @@ class TransferDetailsRule(object):
     teacher_work_flow_rule: TeacherWorkFlowRule
     enum_value_dao: EnumValueDAO
     enum_value_rule: EnumValueRule
+    operation_record_rule: OperationRecordRule
+    operation_record_dao: OperationRecordDAO
 
     async def get_transfer_details_by_transfer_details_id(self, transfer_details_id):
         transfer_details_db = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
@@ -39,14 +47,27 @@ class TransferDetailsRule(object):
         """
         # todo 需要增加获取调入流程实例id
         teacher_id = transfer_details.teacher_id
+        original_unit_id = transfer_details.original_unit_id
+        current_unit_id = transfer_details.current_unit_id
         if transfer_inner:
-            teacher_change_log = TeacherChangeLog(apply_name=user_id, teacher_id=teacher_id,
-                                                  change_module="transfer_in",
-                                                  change_detail="调动", log_status="/",
-                                                  )
-            # 写到这里了！
-            # todo 变更日志没写
-            await self.teacher_change_log.add_teacher_change(teacher_change_log)
+            params = {"process_code": "t_transfer_in_inner", "applicant_name": user_id}
+            work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(transfer_details, params)
+            teacher_entry_log = OperationRecord(
+                action_target_id=transfer_details.teacher_id,
+                target=OperationTarget.TEACHER.value,
+                action_type=OperationType.CREATE.value,
+                ip="127.0.0.1",
+                change_data="",
+                operation_time=datetime.now(),
+                doc_upload="",
+                change_module=ChangeModule.NEW_ENTRY.value,
+                change_detail=f"从{original_unit_id}调入到{current_unit_id}",
+                status="/",
+                operator_id=1,
+                operator_name=user_id,
+                process_instance_id=work_flow_instance["process_instance_id"])
+
+
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
 

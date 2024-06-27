@@ -122,7 +122,7 @@ class TeachersRule(object):
             operator_name=user_id,
             process_instance_id=work_flow_instance["process_instance_id"])
         await self.operation_record_rule.add_operation_record(teacher_entry_log)
-        return teachers
+        return teachers_work
 
 
     async def query_teacher_operation_record_with_page(self, query_model: TeacherChangeLogQueryModel,
@@ -533,13 +533,7 @@ class TeachersRule(object):
         teacher_approval = orm_model_to_view_model(teacher_approval_db, NewTeacherApprovalCreate)
         return teacher_approval
 
-    async def teacher_submitted(self, teachers_id):
-        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
-        if not teachers:
-            raise TeacherNotFoundError()
-        if teachers.teacher_sub_status != "submitted":
-            teachers.teacher_sub_status = "submitted"
-        return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
+
 
     async def teacher_progressing(self, teachers_id):
         teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
