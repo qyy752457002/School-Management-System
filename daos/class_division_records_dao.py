@@ -40,9 +40,9 @@ class ClassDivisionRecordsDAO(DAOBase):
                                                      ):
         specific_date = date(1970, 1, 1)
         query = select(
-            func.coalesce(Classes.class_name, '').label('class_name') ,
-            func.coalesce(Student.student_name, '').label('student_name') ,
-            func.coalesce(ClassDivisionRecords.class_id, 0).label('class_id') ,
+            func.coalesce(Classes.class_name, '').label('class_name'),
+            func.coalesce(Student.student_name, '').label('student_name'),
+            func.coalesce(ClassDivisionRecords.class_id, 0).label('class_id'),
             func.coalesce(Student.student_id, 0).label('student_id'),
             func.coalesce(ClassDivisionRecords.school_id, 0).label('school_id'),
             func.coalesce(ClassDivisionRecords.id, 0).label('id'),
@@ -58,17 +58,18 @@ class ClassDivisionRecordsDAO(DAOBase):
 
             Student.id_type,
 
-        ).select_from(Student).join(ClassDivisionRecords, ClassDivisionRecords.student_id == Student.student_id, isouter=True).join(Classes, ClassDivisionRecords.class_id == Classes.id, isouter=True)
+        ).select_from(Student).join(ClassDivisionRecords, ClassDivisionRecords.student_id == Student.student_id,
+                                    isouter=True).join(Classes, ClassDivisionRecords.class_id == Classes.id,
+                                                       isouter=True)
 
-        ### ´Ë´¦ÌîÐ´²éÑ¯Ìõ¼þ
+        ### ï¿½Ë´ï¿½ï¿½ï¿½Ð´ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
         # query = query.where(ClassDivisionRecords.is_deleted == False)
         query = query.where(Student.is_deleted == False)
         cond1 = ClassDivisionRecords.is_deleted == False
         cond2 = ClassDivisionRecords.id == None
         mcond = or_(cond1, cond2)
 
-        query = query.filter(    mcond)
-
+        query = query.filter(mcond)
 
         if school_id:
             query = query.where(ClassDivisionRecords.school_id == school_id)

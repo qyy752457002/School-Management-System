@@ -9,7 +9,7 @@ from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel
     CurrentTeacherQuery, CurrentTeacherQueryRe, CurrentTeacherInfoSaveModel, NewTeacherInfoSaveModel, \
     TeacherInfoCreateModel, TeacherApprovalQuery, TeacherApprovalQueryRe, NewTeacherApprovalCreate, Teachers
 from sqlalchemy import select, func, update
-from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError
+from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError,QueryError
 from daos.teachers_dao import TeachersDao
 from views.models.organization import OrganizationMembers
 from rules.organization_memebers_rule import OrganizationMembersRule
@@ -106,14 +106,11 @@ class TeachersInfoRule(object):
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, TeachersInfoModel, exclude=[""])
-        try:
-            teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
-
-            teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
-                                                             exclude=[""])
-        except Exception as e:
-            TeacherInfoExitError()
-
+        teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
+        if not teacher_entry_approval_db:
+            raise QueryError()
+        teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
+                                                         exclude=[""])
         params = {"process_code": "t_entry", "applicant_name": user_id}
         teacher_entry_approval.teacher_sub_status = "submitted"
         await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
@@ -144,6 +141,7 @@ class TeachersInfoRule(object):
         if teachers_info.org_id:
             await self.organization_members_rule.add_organization_members(organization)
         return teachers_info
+
 
     async def update_teachers_info(self, teachers_info, user_id):
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)

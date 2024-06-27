@@ -111,3 +111,7 @@ class TestValueError(MiniHTTPException):
 class ApprovalStatusError(MiniHTTPException):
     def __init__(self):
         super().__init__(404, "APPROVAL_STATUS_ERROR", "Approval status error.", "状态非pending，不可撤回")
+
+class QueryError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "QUERY_ERROR", "Query error.", "查询为空")
