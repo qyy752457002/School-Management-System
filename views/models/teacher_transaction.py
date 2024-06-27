@@ -219,6 +219,7 @@ class TeacherAddModel(BaseModel):
     teacher_id_number: str = Field(..., title="证件号码", description="证件号码")
     teacher_gender: Gender = Field(..., title="性别", description="性别")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
+    teacher_number: str = Field(..., title="教职工号", description="教职工号")
 
 
 class TeacherAddReModel(BaseModel):

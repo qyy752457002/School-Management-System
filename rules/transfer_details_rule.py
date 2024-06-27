@@ -43,7 +43,7 @@ class TransferDetailsRule(object):
         transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsModel)
         return transfer_details
 
-    async def add_transfer_in_inner_details(self, transfer_details: TransferDetailsModel, user_id, transfer_inner):
+    async def add_transfer_in_inner_details(self, transfer_details: TransferDetailsModel, user_id):
         """
         系统内调入
         """
@@ -76,6 +76,12 @@ class TransferDetailsRule(object):
             process_instance_id=work_flow_instance["process_instance_id"])
         await self.operation_record_rule.add_operation_record(teacher_entry_log)
         return transfer_details
+
+    async def add_transfer_in_outer_details(self, add_teacher, user_id):
+        pass
+
+
+
 
     async def add_transfer_out_details(self, transfer_details: TransferDetailsModel):
         """
