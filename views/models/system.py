@@ -8,6 +8,7 @@ GRADE_ENUM_KEY:Final = 'grade'
 MAJOR_LV3_ENUM_KEY:Final = 'major_lv3'
 DISTRICT_ENUM_KEY:Final = 'country'
 STUDENT_TRANSFER_WORKFLOW_CODE:Final = 's_transfer_in_inner'
+PLANNING_SCHOOL_OPEN_WORKFLOW_CODE:Final = 'p_school_open'
 
 class UnitType(str, Enum):
     """

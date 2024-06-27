@@ -216,8 +216,15 @@ class PlanningSchoolView(BaseView):
             pass
             # return validated_data
 
-        res = await self.planning_school_rule.update_planning_school_status(planning_school_id,
-                                                                            PlanningSchoolStatus.NORMAL.value, 'open')
+        # res = await self.planning_school_rule.update_planning_school_status(planning_school_id,  PlanningSchoolStatus.NORMAL.value, 'open')
+        # 请求工作流
+        res = await self.planning_school_rule.add_planning_school_work_flow(planning_school, extra_model)
+        process_instance_id=0
+        if len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+            process_instance_id= res[0]['process_instance_id']
+
+            pass
+
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
@@ -227,6 +234,7 @@ class PlanningSchoolView(BaseView):
             target=OperationTarget.PLANNING_SCHOOL.value,
             change_module=ChangeModule.CREATE_SCHOOL.value,
             change_detail="开办学校",
+            process_instance_id=process_instance_id
         ))
 
         return res

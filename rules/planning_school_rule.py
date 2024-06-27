@@ -1,3 +1,6 @@
+import json
+
+from mini_framework.utils.http import HTTPRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
@@ -8,10 +11,13 @@ from models.planning_school import PlanningSchool
 from rules import enum_value_rule
 from rules.enum_value_rule import EnumValueRule
 from rules.school_rule import SchoolRule
+from views.common.common_view import workflow_service_config
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus, \
     PlanningSchoolKeyInfo
 from views.models.planning_school import PlanningSchoolBaseInfo
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
+
+from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_OPEN_WORKFLOW_CODE
 
 
 @dataclass_inject
@@ -173,3 +179,39 @@ class PlanningSchoolRule(object):
             planning_school = orm_model_to_view_model(row, PlanningSchoolModel)
             lst.append(planning_school)
         return lst
+
+
+    # 向工作流中心发送申请
+    async def add_planning_school_work_flow(self, planning_school_flow: PlanningSchoolModel,planning_school_baseinfo: PlanningSchoolBaseInfo):
+        planning_school_flow.id=0
+        httpreq= HTTPRequest()
+        url= workflow_service_config.workflow_config.get("url")
+        data= planning_school_flow
+        datadict =  data.__dict__
+        datadict['process_code'] = PLANNING_SCHOOL_OPEN_WORKFLOW_CODE
+        datadict['teacher_id'] =  0
+        datadict['applicant_name'] =  'tester'
+        datadict['planning_school_code'] = planning_school_flow.planning_school_code
+        datadict['planning_school_name'] = planning_school_flow.planning_school_name
+        datadict['founder_type_lv3'] =   planning_school_flow.founder_type_lv3
+        datadict['block'] =   planning_school_flow.block
+        datadict['borough'] =   planning_school_flow.borough
+        datadict['planning_school_level'] =   planning_school_flow.planning_school_level
+        datadict['apply_user'] =  'tester'
+        datadict['jason_data'] =  json.dumps(planning_school_flow.__dict__, ensure_ascii=False)
+        apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
+        url=url+apiname
+        headerdict = {
+            "accept": "application/json",
+            "Content-Type": "application/json"
+        }
+        # 如果是query 需要拼接参数
+        # url+=  ('?' +urlencode(datadict))
+        print('参数', url, datadict,headerdict)
+        response= None
+        try:
+            response = await httpreq.post_json(url,datadict,headerdict)
+            print('请求工作流结果',response)
+        except Exception as e:
+            print(e)
+        return response
