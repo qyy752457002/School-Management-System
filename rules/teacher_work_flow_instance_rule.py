@@ -171,7 +171,6 @@ class TeacherWorkFlowRule(object):
         }
         url += ('?' + urlencode(params))
         result = await httpreq.get_json(url, headerdict)
-        print(f"结果是{result}")
         # result = JsonUtils.json_str_to_dict(result)
         return result
 

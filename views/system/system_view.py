@@ -98,3 +98,8 @@ class SystemView(BaseView):
                                                                             description="流程实例id")):
         res = await self.teacher_work_flow_instance_rule.get_teacher_work_flow_log_by(process_instance_id)
         return res
+    async def get_work_flow_status(self, process_instance_id: int = Query(..., title="流程实例id",
+                                                                            description="流程实例id")):
+        res = await self.teacher_work_flow_instance_rule.get_work_flow_instance_by_process_instance_id(process_instance_id)
+
+        return res.get('approval_status')
