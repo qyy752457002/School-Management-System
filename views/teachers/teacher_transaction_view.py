@@ -318,7 +318,7 @@ class TeacherBorrowView(BaseView):
         """
         借出
         """
-        res = await self.teacher_borrow_rule.add_transfer_out_details(teacher_borrow)
+        res = await self.teacher_borrow_rule.add_teacher_borrow_out(teacher_borrow)
         return res
 
     async def delete_teacher_borrow(self,
