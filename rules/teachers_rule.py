@@ -89,36 +89,42 @@ class TeachersRule(object):
                                                                     teacher_name, teacher_gender)
         if length > 0:
             raise TeacherExistsError()
-        teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
+        teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[])
         if teachers_db.teacher_id_type == 'resident_id_card':
             idstatus = check_id_number(teachers_db.teacher_id_number)
             if not idstatus:
                 raise IdCardError()
-        teachers_db = await self.teachers_dao.add_teachers(teachers_db)
-        teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
-        teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers.teacher_id)
-        teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
-                                                         exclude=[""])
-        params = {"process_code": "t_entry", "applicant_name": user_id}
-        await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
-            teacher_entry_approval.teacher_id)
-        work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
-        teacher_entry_log = OperationRecord(
-            action_target_id=teachers_db.teacher_id,
-            target=OperationTarget.TEACHER.value,
-            action_type=OperationType.CREATE.value,
-            ip="127.0.0.1",
-            change_data="",
-            operation_time=datetime.now(),
-            doc_upload="",
-            change_module=ChangeModule.NEW_ENTRY.value,
-            change_detail="入职登记",
-            status="/",
-            operator_id=1,
-            operator_name=user_id,
-            process_instance_id=work_flow_instance["process_instance_id"])
-        await self.operation_record_rule.add_operation_record(teacher_entry_log)
-        return teachers
+        try:
+            teachers_db = await self.teachers_dao.add_teachers(teachers_db)
+            teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
+        except Exception as e:
+            raise f'这里是error是{e}'
+        try:
+            teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers.teacher_id)
+            teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
+                                                             exclude=[""])
+            params = {"process_code": "t_entry", "applicant_name": user_id}
+            await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
+                teacher_entry_approval.teacher_id)
+            work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
+            teacher_entry_log = OperationRecord(
+                action_target_id=teachers_db.teacher_id,
+                target=OperationTarget.TEACHER.value,
+                action_type=OperationType.CREATE.value,
+                ip="127.0.0.1",
+                change_data="",
+                operation_time=datetime.now(),
+                doc_upload="",
+                change_module=ChangeModule.NEW_ENTRY.value,
+                change_detail="入职登记",
+                status="/",
+                operator_id=1,
+                operator_name=user_id,
+                process_instance_id=work_flow_instance["process_instance_id"])
+            await self.operation_record_rule.add_operation_record(teacher_entry_log)
+            return teachers
+        except Exception as e:
+            raise f'error是{e}'
 
     async def query_teacher_operation_record_with_page(self, query_model: TeacherChangeLogQueryModel,
                                                        page_request: PageRequest):
