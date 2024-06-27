@@ -1,5 +1,5 @@
 from views.models.teachers import NewTeacher, TeacherInfo, RetireTeacherQuery
-from fastapi import Query, Depends
+from fastapi import Query, Depends, Body
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
 
@@ -93,12 +93,12 @@ class TeachersView(BaseView):
         return str(teacher_id)
 
     async def patch_teacher_info_change_approved(self,
-                                                 teacher_id: int = Query(..., title="教师编号", description="教师编号",
+                                                 teacher_id: int = Body(..., title="教师编号", description="教师编号",
                                                                          example=123),
-                                                 process_instance_id: int = Query(..., title="流程实例id",
+                                                 process_instance_id: int = Body(..., title="流程实例id",
                                                                                   description="流程实例id",
                                                                                   example=123),
-                                                 reason: str = Query(None, title="审批意见", description="审批意见",
+                                                 reason: str = Body(None, title="审批意见", description="审批意见",
                                                                      example="同意")):
         user_id = "asdfasdf"
         reason = reason
@@ -106,12 +106,12 @@ class TeachersView(BaseView):
         return teacher_id
 
     async def patch_teacher_info_change_rejected(self,
-                                                 teacher_id: int = Query(..., title="教师编号", description="教师编号",
+                                                 teacher_id: int = Body(..., title="教师编号", description="教师编号",
                                                                          example=123),
-                                                 process_instance_id: int = Query(..., title="流程实例id",
+                                                 process_instance_id: int = Body(..., title="流程实例id",
                                                                                   description="流程实例id",
                                                                                   example=123),
-                                                 reason: str = Query("", title="reason",
+                                                 reason: str = Body("", title="reason",
                                                                      description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
@@ -119,9 +119,9 @@ class TeachersView(BaseView):
         return teacher_id
 
     async def patch_teacher_info_change_revoked(self,
-                                                teacher_id: int = Query(..., title="教师编号", description="教师编号",
+                                                teacher_id: int = Body(..., title="教师编号", description="教师编号",
                                                                         example=123),
-                                                process_instance_id: int = Query(..., title="流程实例id",
+                                                process_instance_id: int = Body(..., title="流程实例id",
                                                                                  description="流程实例id",
                                                                                  example=123),
                                                 ):

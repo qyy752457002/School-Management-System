@@ -1,8 +1,6 @@
 from datetime import datetime, date
 
 from mini_framework.web.views import BaseView
-
-from models.public_enum import YesOrNo
 from views.models.teachers import NewTeacher
 from fastapi import Query, Depends, Body
 
@@ -130,20 +128,20 @@ class NewTeachersView(BaseView):
     #     return teacher_id
 
     async def patch_entry_approved(self,
-                                   teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
-                                   process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
+                                   teacher_id: int = Body(..., title="教师编号", description="教师编号", example=123),
+                                   process_instance_id: int = Body(..., title="流程实例id", description="流程实例id",
                                                                     example=123),
-                                   reason: str = Query(None, title="审批意见", description="审批意见", example="同意")):
+                                   reason: str = Body(None, title="审批意见", description="审批意见", example="同意")):
         user_id = "asdfasdf"
         reason = reason
         await self.teacher_rule.entry_approved(teacher_id, process_instance_id, user_id, reason)
         return teacher_id
 
     async def patch_entry_rejected(self,
-                                   teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
-                                   process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
+                                   teacher_id: int = Body(..., title="教师编号", description="教师编号", example=123),
+                                   process_instance_id: int = Body(..., title="流程实例id", description="流程实例id",
                                                                     example=123),
-                                   reason: str = Query("", title="reason",
+                                   reason: str = Body("", title="reason",
                                                        description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
@@ -151,8 +149,8 @@ class NewTeachersView(BaseView):
         return teacher_id
 
     async def patch_entry_revoked(self,
-                                  teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123),
-                                  process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
+                                  teacher_id: int = Body(..., title="教师编号", description="教师编号", example=123),
+                                  process_instance_id: int = Body(..., title="流程实例id", description="流程实例id",
                                                                    example=123),
                                   ):
         """

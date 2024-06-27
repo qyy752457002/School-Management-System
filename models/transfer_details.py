@@ -14,7 +14,7 @@ class TransferType(str, Enum):
 
     @classmethod
     def to_list(cls):
-        return [cls.IN, cls.OUT,]
+        return [cls.IN, cls.OUT, ]
 
 
 class TransferDetails(BaseDBModel):
@@ -49,7 +49,7 @@ class TransferDetails(BaseDBModel):
     original_region_city_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="原管辖区域市")
     original_region_area_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="原管辖区域区")
     transfer_in_date: Mapped[date] = mapped_column(Date, nullable=True, comment="调入日期")
-    current_unit_id: Mapped[int] = mapped_column( nullable=False, comment="现单位")
+    current_unit_id: Mapped[int] = mapped_column(nullable=False, comment="现单位")
     current_position: Mapped[str] = mapped_column(String(64), nullable=True, comment="现岗位")
     current_district_province_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="现行政属地省")
     current_district_city_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="现行政属地市")
@@ -61,10 +61,8 @@ class TransferDetails(BaseDBModel):
     transfer_reason: Mapped[str] = mapped_column(String(64), nullable=True, comment="调动原因")
     remark: Mapped[str] = mapped_column(String(64), nullable=True, comment="备注")
     operator_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="操作人")
-    teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")
-    operation_time: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(),  nullable=False, comment="操作时间")
+    teacher_id: Mapped[int] = mapped_column(nullable=True, comment="教师ID")
+    operation_time: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(), nullable=False,
+                                                     comment="操作时间")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
     transfer_type: Mapped[str] = mapped_column(String(255), nullable=False, comment="调动类型")
-    approval_status: Mapped[str] = mapped_column(String(255), nullable=False, comment="审批状态",
-                                                 default="pending")
-    process_instance_id: Mapped[int] = mapped_column(nullable=False, comment="流程ID", default=0)

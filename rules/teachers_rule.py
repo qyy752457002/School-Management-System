@@ -564,3 +564,4 @@ class TeachersRule(object):
         if teachers.teacher_sub_status != "active":
             teachers.teacher_sub_status = "active"
         return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
+
