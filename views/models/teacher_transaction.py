@@ -118,13 +118,14 @@ class TeacherTransactionModel(BaseModel):
     """
     transaction_type: TransactionType = Field(..., title="异动类型", description="异动类型")
     transaction_remark: str = Field("", title="备注", description="备注")
+    retire_number: str = Field("", title="离退休证号", description="")
     original_position: Optional[str] = Field("", title="原岗位", description="原岗位")
     current_position: Optional[str] = Field("", title="现岗位", description="现岗位")
     position_date: Optional[date] = Field(None, title="任职日期", description="任职日期")
-    operator_name: str = Field(..., title="操作人", description="操作人")
+    operator_name: str = Field('', title="操作人", description="操作人")
     transaction_time: datetime = Field(datetime.now(), title="操作时间", description="操作时间")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    process_id: int = Field(..., title="流程ID", description="流程ID")
+    process_id: int = Field(0, title="流程ID", description="流程ID")
 
     @model_validator(mode='after')
     def check_transaction_type(self):
@@ -155,10 +156,10 @@ class TeacherTransactionUpdateModel(BaseModel):
     transaction_remark: str = Field("", title="备注", description="备注")
     original_position: Optional[str] = Field("", title="原岗位", description="原岗位")
     current_position: Optional[str] = Field("", title="现岗位", description="现岗位")
-    position_date: Optional[date] = Field(None, title="任职日期", description="任职日期")
+    position_date: Optional[date]|None = Field(None, title="任职日期", description="任职日期")
     operator_name: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    transaction_time: datetime = Field(..., title="操作时间", description="操作时间")
+    transaction_time: datetime|None = Field(..., title="操作时间", description="操作时间")
     process_id: int = Field(..., title="流程ID", description="流程ID")
 
 

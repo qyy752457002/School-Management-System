@@ -37,12 +37,15 @@ class TeacherTransactionRule(object):
         添加教师异动
         """
         teacher_transaction_db = view_model_to_orm_model(teacher_transaction, TeacherTransaction)
+        if teacher_transaction.retire_number:
+            teacher_transaction_db.transaction_remark= teacher_transaction.retire_number
+            pass
         teacher_db = await self.teachers_dao.get_teachers_by_id(teacher_transaction_db.teacher_id)
         if not teacher_db:
             raise TeacherNotFoundError()
         result = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_id(
             teacher_transaction_db.teacher_id)
-        if result.approval_status == "submitted":
+        if result and hasattr(result, 'approval_status') and   result.approval_status == "submitted":
             raise TransactionApprovalError()
         teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
         teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)

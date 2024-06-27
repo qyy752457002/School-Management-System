@@ -14,12 +14,13 @@ def routers():
     router.include_api_view_class(OperationRecordView, "/v1/system", description="操作日志管理")
 
     router.include_api_view_class(SubSystemView, "/v1/subsystem", description="子系统列表")
-    router.include_api_view_class(SystemView, "/v1/system", description="系统模块")
+    router.include_api_view_class(SystemView, "/v1/system", description="系统")
 
-    router.include_api_view_class(EnumValueView, "/v1/enums", description="枚举值列表")
-    router.include_api_view_class(TaskView, "/v1/task", description="任务列表")
+    router.include_api_view_class(EnumValueView, "/v1/enums", description="枚举值")
+    router.include_api_view_class(TaskView, "/v1/task", description="任务")
 
     router.include_api_view_class(StorageView, "/v1/storage", description="文件上传下载接口",
-                                  response_cls=FileStorageResponseModel)
+                                  # response_cls=FileStorageResponseModel
+                                  )
 
     return router

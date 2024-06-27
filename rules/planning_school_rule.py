@@ -30,7 +30,6 @@ class PlanningSchoolRule(object):
             return planning_school,planning_school_extra
 
         else:
-
             return planning_school
 
     async def get_planning_school_by_planning_school_name(self, planning_school_name):
@@ -57,11 +56,10 @@ class PlanningSchoolRule(object):
         else:
             planning_school.city = "210100"
 
-
         planning_school_db = await self.planning_school_dao.add_planning_school(planning_school_db)
+        print('id 111',planning_school_db.id)
         planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=["created_at",'updated_at'])
         return planning_school
-
 
     async def delete_planning_school(self, planning_school_id):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)

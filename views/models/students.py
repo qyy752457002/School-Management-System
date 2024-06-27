@@ -63,7 +63,7 @@ class NewStudentsQuery(BaseModel):
     student_gender: Optional[Gender] = Query(None, title="性别", description="性别")
     id_type: Optional[str] = Query('', title="证件类别", description="证件类别")
     id_number: Optional[str] = Query('', title="证件号码", description="证件号码")
-    school: Optional[str] = Query('', title="学校", description="学校")
+    school: Optional[str|None] = Query('', title="学校", description="学校")
     school_id: Optional[int ] = Query(0, title="", description="学校id")
     class_id: Optional[int ] = Query(0, title="", description="班级ID")
 
@@ -93,23 +93,21 @@ class NewStudentsQueryRe(BaseModel):
     student_gender: Gender|str = Field(None, title="性别", description="性别")
     id_type: str = Field(None, title="证件类别", description="证件类别")
     id_number: str = Field(None, title="证件号码", description="证件号码")
-    school: str = Field(None, title="学校", description="学校")
+    school: str |None= Field(None, title="学校", description="学校")
     county: str = Field(None, title="区县", description="区县")
     approval_status: StudentApprovalAtatus = Field(None, title="状态", description="状态")
-    block: str|None = Field(None, title="", description="")
-    borough: str |None= Field(None, title="", description="")
-    loc_area: str|None = Field(None, title="", description="")
-    loc_area_pro: str|None = Field(None, title="", description="")
-    school_name: str|None = Field(None, title="", description="")
+    block: str|None = Field(None, title="地域管辖区", description="")
+    borough: str |None= Field(None, title="行政管辖区", description="")
+    loc_area: str|None = Field(None, title="园所所在地区", description="")
+    loc_area_pro: str|None = Field(None, title="园所所在地(省级)", description="")
+    school_name: str|None = Field(None, title="学校名称", description="")
     birthday: date = Field( '', title="生日", description="生日")
     photo: str = Field('', title="照片", description="照片")
-    session: str = Field(None, title="", description="")
-    edu_number: str = Field(None, title="", description="")
-    class_name: str|None = Field(None, title="", description="")
-    enrollment_date: str|date = Field(None, title="", description="")
-    grade_name: str = Field(None, title="", description="")
-
-
+    session: str|None = Field(None, title="届别", description="")
+    edu_number: str|None = Field(None, title="学籍号", description="")
+    class_name: str|None = Field(None, title="班级名称", description="")
+    enrollment_date: str|date |None= Field(None, title="入学登记日期", description="")
+    grade_name: str|None = Field(None, title="年级名称", description="")
 
 
 class StudentsKeyinfo(BaseModel):

@@ -190,7 +190,14 @@ class TeachersInfoDao(DAOBase):
 
         """
         # todo 这个地方还应该加上审核状态通过的条件
-        query = select(Teacher.teacher_id, TeacherInfo.teacher_base_id, Teacher.teacher_name, Teacher.teacher_id_number,
+        query = select(Teacher.teacher_id,
+                       TeacherInfo.teacher_base_id,
+                       TeacherInfo.unemploy_action_time,
+                       TeacherInfo.unemploy_time,
+                       TeacherInfo.unemploy_number,
+                       Teacher.teacher_main_status,
+                       Teacher.teacher_sub_status,
+                       Teacher.teacher_name, Teacher.teacher_id_number,
                        Teacher.teacher_gender,
                        Teacher.teacher_employer, TeacherInfo.highest_education,
                        TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,

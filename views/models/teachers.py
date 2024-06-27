@@ -1055,10 +1055,12 @@ class RetireTeacherQuery(BaseModel):
 
 class RetireTeacherQueryRe(CurrentTeacherQueryRe):
     """
-
     """
-
     unemploy_time: Optional[date] = Query(None, title="非在职时间", description="", example="2010-01-01")
+    unemploy_action_time: Optional[datetime] = Query(None, title="", description="", example="2010-01-01")
+    unemploy_number: Optional[str] = Query(None, title="", description="", example="")
+    teacher_main_status: Optional[str] = Query(None, title="", description="", example="")
+    teacher_sub_status: Optional[str] = Query(None, title="", description="", example="")
 
 
 class TeacherChangeLogQueryModel(BaseModel):
