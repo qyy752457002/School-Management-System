@@ -187,17 +187,19 @@ class PlanningSchoolView(BaseView):
         print(page_request, )
         items = []
         #PlanningSchoolBaseInfoOptional
-        paging_result = await self.system_rule.query_workflow_with_page(PlanningSchoolPageSearch(block=block,
-                                                                                                 planning_school_code=planning_school_code,
-                                                                                                 planning_school_level=planning_school_level,
-                                                                                                 planning_school_name=planning_school_name,
-                                                                                                 planning_school_no=planning_school_no,
-                                                                                                 borough=borough,
-                                                                                                 status=status,
-                                                                                                 founder_type=founder_type,
-                                                                                                founder_type_lv2=founder_type_lv2,
-                                                                                                 founder_type_lv3=founder_type_lv3,
-                                                                                                 ),page_request,'',PLANNING_SCHOOL_OPEN_WORKFLOW_CODE,  )
+        req= PlanningSchoolPageSearch(block=block,
+                                      planning_school_code=planning_school_code,
+                                      planning_school_level=planning_school_level,
+                                      planning_school_name=planning_school_name,
+                                      planning_school_no=planning_school_no,
+                                      borough=borough,
+                                      status=status,
+                                      founder_type=founder_type,
+                                      founder_type_lv2=founder_type_lv2,
+                                      founder_type_lv3=founder_type_lv3,
+                                      )
+        print('入参接收',req)
+        paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',PLANNING_SCHOOL_OPEN_WORKFLOW_CODE,  )
         print('333',page_request)
         return paging_result
 

@@ -152,6 +152,8 @@ class SystemRule(object):
     # 通用型 工作流获取方法
     async def query_workflow_with_page(self, query_model, page_request: PageRequest, user_id=None,process_code=None,result_model=None):
         params = {"applicant_name": user_id, "process_code": process_code, }
+        params= {**params,**query_model.dict()}
+        print('params--',params)
         paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                       result_model, params)
         return paging

@@ -172,6 +172,7 @@ class TeacherWorkFlowRule(object):
         parameters = query_model_instance.dict()
         parameters["page"] = page_request.page
         parameters["per_page"] = page_request.per_page
+        print('拼装参数',parameters)
         query_parmas = {k: v for k, v in parameters.items() if v is not None}
         # params_data = JsonUtils.dict_to_json_str(parameters)
         api_name = '/api/school/v1/teacher-workflow/work-flow-instance'
@@ -181,6 +182,7 @@ class TeacherWorkFlowRule(object):
             "Content-Type": "application/json"
         }
         url += ('?' + urlencode(query_parmas))
+        print('发起调用',url )
         result = await httpreq.get(url, headerdict)
         result = JsonUtils.json_str_to_dict(result)
         page_result = PaginatedResponse(**result)
