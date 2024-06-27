@@ -121,25 +121,6 @@ class PlanningSchoolView(BaseView):
             change_module=ChangeModule.KEY_INFO_CHANGE.value,
             change_detail="修改基本信息",
             change_data=str(res2)[0:1000],
-
-
-            #
-            #
-            # change_field='关键信息',
-            # change_item='关键信息',
-            # timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            # action_reason='修改基本信息',
-            # account='',
-
-            # action_target_id=teachers_db.teacher_id,
-            # target=OperationTarget.TEACHER.value,
-            # action_type=OperationType.CREATE.value,
-            # change_data="",
-            # doc_upload="",
-            # change_module=ChangeModule.NEW_ENTRY.value,
-            # change_detail="入职登记",
-            # status="/",
-
         ))
 
         return res

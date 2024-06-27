@@ -49,13 +49,15 @@ class OperationRecordRule(object):
         """
         # 通用的参数可以 自动获取设置
         operation_record.operation_time = datetime.now()
-        operation_record.ip = get_client_ip(request)
-        operation_record.operator_id = 1
-        operation_record.operator_name = 'admin'
-        operation_record.process_instance_id = 0
-        operation_record.status = ''
-
-
+        if request:
+            operation_record.ip = get_client_ip(request)
+        if not operation_record.operator_id:
+            operation_record.operator_id = 1
+            operation_record.operator_name = 'admin'
+        if not operation_record.process_instance_id:
+            operation_record.process_instance_id = 0
+        if not operation_record.status:
+            operation_record.status = ''
 
         # exists_operation_record = await self.operation_record_dao.get_operation_record_by_operation_record_name(
         #     operation_record.operation_record_name)
