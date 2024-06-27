@@ -12,7 +12,7 @@ from starlette.requests import Request
 from rules.class_division_records_rule import ClassDivisionRecordsRule
 from rules.operation_record import OperationRecordRule
 from views.common.common_view import compare_modify_fields, get_client_ip
-from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType
+from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.students import NewStudents, NewStudentsQuery, NewStudentsQueryRe, StudentsKeyinfo, StudentsBaseInfo, \
     StudentsFamilyInfo, NewStudentTask
 # from fastapi import Field
@@ -88,20 +88,14 @@ class NewsStudentsView(BaseView):
         # log_con=''
         json_string = json.dumps(log_con, ensure_ascii=False)
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(new_students_key_info.student_id),
-            operator='admin',
-            module=ChangeModule.KEYINFO.value,
-            target=OperationType.STUDENT.value,
+            target=OperationTarget.STUDENT.value,
             action_type=OperationType.MODIFY.value,
-            ip= get_client_ip(request),
+            change_module=ChangeModule.KEY_INFO_CHANGE.value,
+            change_detail="修改关键信息",
+            action_target_id=str(new_students_key_info.student_id),
             change_data=json_string,
-            change_field='关键信息',
-            change_item='关键信息',
-            timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason='修改关键信息',
-            doc_upload='',
-            status='1',
-            account='', ))
+
+            ))
         return res
 
     async def delete_newstudentkeyinfo(self, student_id: str = Query(..., title="", description="学生id", )):
@@ -185,20 +179,14 @@ class NewsStudentsInfoView(BaseView):
 
         json_string = json.dumps(log_con, ensure_ascii=False)
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(new_students_base_info.student_id),
-            operator='admin',
-            module=ChangeModule.BASEINFO.value,
-            target=OperationType.STUDENT.value,
+            target=OperationTarget.STUDENT.value,
             action_type=OperationType.MODIFY.value,
-            ip= get_client_ip(request),
+            change_module=ChangeModule.BASIC_INFO_CHANGE.value,
+            change_detail="新生编辑基本信息",
+            action_target_id=str(new_students_base_info.student_id),
             change_data=json_string,
-            change_field=ChangeModule.BASEINFO.value,
-            change_item=ChangeModule.BASEINFO.value,
-            timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason=OperationType.MODIFY.value+ChangeModule.BASEINFO.value,
-            doc_upload='',
-            status='1',
-            account='', ))
+
+            ))
         return res
 
 
@@ -290,20 +278,15 @@ class NewsStudentsFamilyInfoView(BaseView):
         res = await self.students_family_info_rule.update_students_family_info(new_students_family_info)
         json_string = json.dumps(log_con, ensure_ascii=False)
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(new_students_family_info.student_id),
-            operator='admin',
-            module=ChangeModule.FAMILYINFO.value,
-            target=OperationType.STUDENT.value,
+
+            target=OperationTarget.STUDENT.value,
             action_type=OperationType.MODIFY.value,
-            ip= get_client_ip(request),
+            change_module=ChangeModule.FAMILY_INFO_CHANGE.value,
+            change_detail="新生编辑家庭信息",
+            action_target_id=str(new_students_family_info.student_id),
             change_data=json_string,
-            change_field=ChangeModule.FAMILYINFO.value,
-            change_item=ChangeModule.FAMILYINFO.value,
-            timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason=OperationType.MODIFY.value+ChangeModule.FAMILYINFO.value,
-            doc_upload='',
-            status='1',
-            account='', ))
+
+            ))
         return res
 
     async def delete_newstudentfamilyinfo(self,

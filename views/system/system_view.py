@@ -5,6 +5,7 @@ from rules.education_year_rule import EducationYearRule
 from rules.sub_system_rule import SubSystemRule
 from rules.system_config_rule import SystemConfigRule
 from rules.system_rule import SystemRule
+from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo
 from views.models.school import School, SchoolKeyAddInfo
 # from fastapi import Field
@@ -22,6 +23,8 @@ class SystemView(BaseView):
         self.system_config_rule = get_injector(SystemConfigRule)
         self.system_rule = get_injector(SystemRule)
         self.education_year_rule = get_injector(EducationYearRule)
+        self.teacher_work_flow_instance_rule = get_injector(TeacherWorkFlowRule)
+
 
     async def page_menu(self,
                    page_request=Depends(PageRequest),
@@ -89,4 +92,9 @@ class SystemView(BaseView):
 
                           ):
         res = await self.system_config_rule.update_system_config(system_config)
+        return res
+
+    async def get_work_flow_node_log(self, process_instance_id: int = Query(..., title="流程实例id",
+                                                                            description="流程实例id")):
+        res = await self.teacher_work_flow_instance_rule.get_teacher_work_flow_log_by(process_instance_id)
         return res

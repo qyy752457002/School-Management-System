@@ -34,19 +34,6 @@ class OperationRecordRule(object):
         return operation_record
 
     async def add_operation_record(self, operation_record: OperationRecordModel,request=None):
-        """
-           operation_time=datetime.now(),
-            doc_upload='',
-            status='',
-            operator_id=1,  #todo 这里由后续获取当前的用户和名字
-            operator_name='admin',
-            ip= get_client_ip(request),
-
-            process_instance_id= 0
-        :param operation_record:
-        :param request:
-        :return:
-        """
         # 通用的参数可以 自动获取设置
         operation_record.operation_time = datetime.now()
         if request:
@@ -59,10 +46,6 @@ class OperationRecordRule(object):
         if not operation_record.status:
             operation_record.status = ''
 
-        # exists_operation_record = await self.operation_record_dao.get_operation_record_by_operation_record_name(
-        #     operation_record.operation_record_name)
-        # if exists_operation_record:
-        #     raise Exception(f"枚举值{operation_record.operation_record_name}已存在")
         operation_record_db = view_model_to_orm_model(operation_record, OperationRecord, exclude=["id"])
         # operation_record_db.status =  OperationRecordStatus.DRAFT.value
         operation_record_db.created_uid = 0
