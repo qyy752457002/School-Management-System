@@ -270,8 +270,8 @@ class NewTeachersView(BaseView):
     #     parameters = {"user_id": "1243ewrwe", "action": "approved", "description": reason}
     #     res=await self.teacher_work_flow_instance_rule.process_transaction_work_flow(node_instance_id, parameters)
 
-    # async def patch_work_flow_status_by_params(self, process_instance_id: int = Query(..., title="流程实例id",
-    #                                                                                   description="流程实例id"),
-    #                                            ):
-    #     params = {"teacher_main_status": "unemployed", "teacher_sub_status": "unsubmitted"}
-    #     await self.teacher_work_flow_instance_rule.update_work_flow_by_param(process_instance_id, params)
+    async def patch_work_flow_status_by_params(self, process_instance_id: int = Query(..., title="流程实例id",
+                                                                                      description="流程实例id"),
+                                               ):
+        params = {"teacher_main_status": "unemployed", "teacher_sub_status": "unsubmitted"}
+        await self.teacher_work_flow_instance_rule.update_work_flow_by_param(process_instance_id, params)
