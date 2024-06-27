@@ -11,6 +11,7 @@ from starlette.requests import Request
 
 from business_exceptions.planning_school import PlanningSchoolValidateError, PlanningSchoolBaseInfoValidateError
 from rules.operation_record import OperationRecordRule
+from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_extend_params, get_client_ip
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
@@ -31,6 +32,7 @@ from views.models.grades import Grades
 from rules.planning_school_communication_rule import PlanningSchoolCommunicationRule
 
 from rules.planning_school_eduinfo_rule import PlanningSchoolEduinfoRule
+from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE
 
 
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
@@ -45,6 +47,7 @@ class PlanningSchoolView(BaseView):
         self.planning_school_communication_rule = get_injector(PlanningSchoolCommunicationRule)
         self.planning_school_eduinfo_rule = get_injector(PlanningSchoolEduinfoRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
+        self.system_rule = get_injector(SystemRule)
 
     #   包含3部分信息 1.基本信息 2.通讯信息 3.教育信息
     async def get(self,
@@ -163,38 +166,13 @@ class PlanningSchoolView(BaseView):
         return res
 
     async def page(self,
-                   # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
-                   block: str = Query("", title=" ", description="地域管辖区", ),
-                   planning_school_code: str = Query("", title="", description=" 园所标识码", ),
-                   planning_school_level: str = Query("", title="", description=" 学校星级", ),
-                   planning_school_name: str = Query("", title="学校名称", description="1-20字符", ),
-                   planning_school_no: str = Query("", title="学校编号", description="学校编号/园所代码", min_length=1,
-                                                   max_length=20, ),
-                   borough: str = Query("", title="  ", description=" 行政管辖区", ),
-                   status: PlanningSchoolStatus = Query("", title="", description=" 状态", examples=['正常']),
+                   page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
 
-                   founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
-                                                                         examples=['地方']),
-                   founder_type_lv2: List[str] = Query([], title="", description="举办者类型二级",
-                                                       examples=['教育部门']),
-                   founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
-                                                       examples=['县级教育部门']),
 
                    page_request=Depends(PageRequest)):
         print(page_request, )
         items = []
-        # exit(1)
-        # return page_search
-        paging_result = await self.planning_school_rule.query_planning_school_with_page(page_request,
-                                                                                        planning_school_name,
-                                                                                        planning_school_no,
-                                                                                        planning_school_code,
-                                                                                        block, planning_school_level,
-                                                                                        borough, status, founder_type,
-                                                                                        founder_type_lv2,
-                                                                                        founder_type_lv3
-
-                                                                                        )
+        paging_result = await self.system_rule.query_workflow_with_page(page_search,page_request,'',PLANNING_SCHOOL_OPEN_WORKFLOW_CODE,PlanningSchool  )
         return paging_result
 
 
@@ -383,3 +361,39 @@ class PlanningSchoolView(BaseView):
     async def patch_keyinfo_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
                                                                       min_length=1, max_length=20, example='SC2032633')):
         pass
+
+
+    async def page_planning_school_biz(self,
+                   # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
+                   block: str = Query("", title=" ", description="地域管辖区", ),
+                   planning_school_code: str = Query("", title="", description=" 园所标识码", ),
+                   planning_school_level: str = Query("", title="", description=" 学校星级", ),
+                   planning_school_name: str = Query("", title="学校名称", description="1-20字符", ),
+                   planning_school_no: str = Query("", title="学校编号", description="学校编号/园所代码", min_length=1,
+                                                   max_length=20, ),
+                   borough: str = Query("", title="  ", description=" 行政管辖区", ),
+                   status: PlanningSchoolStatus = Query("", title="", description=" 状态", examples=['正常']),
+
+                   founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
+                                                                         examples=['地方']),
+                   founder_type_lv2: List[str] = Query([], title="", description="举办者类型二级",
+                                                       examples=['教育部门']),
+                   founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
+                                                       examples=['县级教育部门']),
+
+                   page_request=Depends(PageRequest)):
+        print(page_request, )
+        items = []
+        # exit(1)
+        # return page_search
+        paging_result = await self.planning_school_rule.query_planning_school_with_page(page_request,
+                                                                                        planning_school_name,
+                                                                                        planning_school_no,
+                                                                                        planning_school_code,
+                                                                                        block, planning_school_level,
+                                                                                        borough, status, founder_type,
+                                                                                        founder_type_lv2,
+                                                                                        founder_type_lv3
+
+                                                                                        )
+        return paging_result
