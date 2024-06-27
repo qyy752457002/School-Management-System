@@ -45,7 +45,7 @@ class TeacherTransactionRule(object):
             raise TeacherNotFoundError()
         result = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_id(
             teacher_transaction_db.teacher_id)
-        if result and  result.approval_status == "submitted":
+        if result and hasattr(result, 'approval_status') and   result.approval_status == "submitted":
             raise TransactionApprovalError()
         teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
         teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)

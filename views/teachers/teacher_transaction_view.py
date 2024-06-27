@@ -1,3 +1,5 @@
+from datetime import date
+
 from mini_framework.web.views import BaseView
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
@@ -213,6 +215,9 @@ class TeacherTransactionView(BaseView):
     # 教师 异动接口
     async def post_teacher_transaction(self, teacher_transaction: TeacherTransactionModel):
         res = await self.teacher_transaction_rule.add_teacher_transaction(teacher_transaction)
+        if isinstance(res.transaction_time,date):
+            res.transaction_time=res.transaction_time.strftime('%Y-%m-%d')
+        print(res)
         return res
 
     # async def put_teacher_transaction(self, teacher_transaction: TeacherTransactionUpdateModel):
