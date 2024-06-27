@@ -96,7 +96,7 @@ class TeachersInfoRule(object):
         teachers_info = orm_model_to_view_model(teachers_inf_db, TeachersInfoModel, exclude=[""])
         return teachers_info
 
-    async def add_teachers_info_valid(self, teachers_info: TeacherInfo, user_id):
+    async def add_teachers_info_valid(self, teachers_info: TeacherInfoSubmit, user_id):
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
         if not exits_teacher:
             raise TeacherNotFoundError()
@@ -143,7 +143,7 @@ class TeachersInfoRule(object):
         return teachers_info
 
 
-    async def update_teachers_info(self, teachers_info, user_id):
+    async def update_teachers_info(self, teachers_info:TeacherInfoSubmit, user_id):
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
         if not exits_teacher:
             raise TeacherNotFoundError()
@@ -273,3 +273,5 @@ class TeachersInfoRule(object):
         if teachers.teacher_sub_status != "submitted":
             teachers.teacher_sub_status = "submitted"
         return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
+
+

@@ -785,7 +785,7 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
     招聘方式：recruitment_method
     教职工号：teacher_number
     """
-    teacher_base_id: int = Field(0, title="教师ID", description="教师ID")
+    teacher_base_id: int = Field(-1, title="教师ID", description="教师ID")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     ethnicity: Optional[str] = Field(None, title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家地区", description="国家地区", example="中国")

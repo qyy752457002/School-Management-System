@@ -103,7 +103,7 @@ class NewTeachersView(BaseView):
         return res
 
     # 编辑教职工基本信息
-    async def put_newteacherinfo(self, teacher_info: TeacherInfo):
+    async def put_newteacherinfo(self, teacher_info: TeacherInfoSubmit):
         user_id = "asdfasdf"
         if teacher_info.teacher_base_id < 0:
             res = await self.teacher_info_rule.add_teachers_info_valid(teacher_info, user_id)
