@@ -49,9 +49,11 @@ class ChangeModule(str, Enum):
     离退休：retirement
     """
     CREATE_SCHOOL = "create_school"
+    CLOSE_SCHOOL = "close_school"
     NEW_ENTRY = "new_entry"
     BASIC_INFO_CHANGE = "basic_info_change"
     KEY_INFO_CHANGE = "key_info_change"
+    FAMILY_INFO_CHANGE = "family_info_change"
     TRANSFER = "transfer"
     TRANSACTION = "transaction"
     BORROW = "borrow"
@@ -69,13 +71,13 @@ class OperationRecord(BaseModel):
     action_target_id: int = Field(..., title="操作对象ID", description="操作对象ID", examples=[''])
     target: OperationTarget = Field(..., description=" 操作对象", examples=[''])
     action_type: str = Field(..., title="操作类型", description="操作类型", examples=[''])
-    ip: str = Field(..., title=" Description", description="操作IP", examples=[''])
+    ip: str = Field('', title=" Description", description="操作IP", examples=[''])
     change_data: Optional[str] = Field("", title=" Author", description="变更前后数据", examples=[''])
     operation_time: datetime = Field(datetime.now(), description="操作时间", examples=[''])
-    doc_upload: str = Field(..., description=" 附件", examples=[''])
+    doc_upload: str = Field( '', description=" 附件", examples=[''])
     change_module: ChangeModule = Field(..., description=" 变更模块", examples=[''])
     change_detail: str = Field(..., description=" 变更详情", examples=[''])
-    status: str = Field(..., description=" 状态", examples=[''])
-    operator_name: str = Field(..., description=" 操作账号", examples=[''])
+    status: str = Field( '', description=" 状态", examples=[''])
+    operator_name: str = Field( '', description=" 操作账号", examples=[''])
     operator_id: int = Field(0, description=" 操作人", examples=[''])
     process_instance_id: Optional[int] = Field(None, description="流程ID", examples=[''])
