@@ -45,7 +45,7 @@ class TeacherTransactionRule(object):
             raise TeacherNotFoundError()
         result = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_id(
             teacher_transaction_db.teacher_id)
-        if result and hasattr(result, 'approval_status') and   result.approval_status == "submitted":
+        if result and hasattr(result, 'approval_status') and result.approval_status == "submitted":
             raise TransactionApprovalError()
         teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
         teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)
@@ -104,8 +104,6 @@ class TeacherTransactionRule(object):
         paging_result = PaginatedResponse.from_paging(teacher_transaction_db, TeacherTransactionApproval)
         return paging_result
 
-
-
     async def submitted(self, teacher_transaction_id):
         teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
             teacher_transaction_id)
@@ -146,5 +144,6 @@ class TeacherTransactionRule(object):
         if not teachers:
             raise TeacherNotFoundError()
         if teachers.teacher_sub_status != "active":
+            teachers.teacher.teacher_main_status = "employed"
             teachers.teacher_sub_status = "active"
-        return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
+        return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status", "teacher_main_status")

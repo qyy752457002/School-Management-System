@@ -67,7 +67,6 @@ class EmploymentStatus(str, Enum):
     OTHER = "other"
     RETIRE = "retire"
     RETIRE_HONOR = "retire_honor"
-
     @classmethod
     def to_list(cls):
         return [status.value for status in cls]
@@ -259,7 +258,8 @@ class TeacherTransactionQueryModel(BaseModel):
     teacher_id_type: Optional[str] = Field("", title="证件类型", description="证件类型")
     teacher_id_number: Optional[str] = Field("", title="证件号", description="证件号")
     teacher_gender: Optional[Gender] = Field(None, title="性别", description="性别")
-    transaction_time: Optional[date] = Field(None, title="申请时间", description="申请时间")
+    transaction_time_s: Optional[date] = Field(None, title="申请开始时间", description="申请开始时间")
+    transaction_time_e: Optional[date] = Field(None, title="申请结束时间", description="申请结束时间")
     transaction_type: Optional[str] = Field("", title="异动类型", description="异动类型")
     operator_name: Optional[str] = Field("", title="申请人", description="申请人")
     teacher_district: Optional[str] = Field("", title="所在区县", description="所在区县")
@@ -323,7 +323,7 @@ class TransferDetailsModel(BaseModel):
     调动类型：transfer_type
     流程id：process_instance_id
     """
-    original_unit: str = Field(..., title="原单位", description="原单位")
+    original_unit_id: Optional[int] = Field(None, title="原单位", description="原单位")
     original_position: str = Field("", title="原岗位", description="原岗位")
     original_district_province_id: Optional[int] = Field(..., title="原行政属地省", description="原行政属地省")
     original_district_city_id: Optional[int] = Field(..., title="原行政属地市", description="原行政属地市")
@@ -406,29 +406,31 @@ class TeacherTransferQueryModel(BaseModel):
     审批人：approval_name
 
     """
-    teacher_name: Optional[str] = Field("", title="姓名", description="姓名")
-    teacher_number: Optional[str] = Field("", title="教职工号", description="教职工号")
-    teacher_id_type: Optional[str] = Field("", title="证件类型", description="证件类型")
-    teacher_id_number: Optional[str] = Field("", title="证件号", description="证件号")
-    teacher_gender: Optional[Gender] = Field(None, title="性别", description="性别")
-    original_district_province_id: Optional[int] = Field(None, title="原行政属地省", description="原行政属地省")
-    original_district_city_id: Optional[int] = Field(None, title="原行政属地市", description="原行政属地市")
-    original_district_area_id: Optional[int] = Field(None, title="原行政属地区", description="原行政属地区")
-    original_region_province_id: Optional[int] = Field(None, title="原管辖区域省", description="原管辖区域省")
-    original_region_city_id: Optional[int] = Field(None, title="原管辖区域市", description="原管辖区域市")
-    original_region_area_id: Optional[int] = Field(None, title="原管辖区域区", description="原管辖区域区")
-    original_unit_id: Optional[int] = Field(None, title="原单位", description="原单位")
-    current_district_province_id: Optional[int] = Field(None, title="现行政属地省", description="现行政属地省")
-    current_district_city_id: Optional[int] = Field(None, title="现行政属地市", description="现行政属地市")
-    current_district_area_id: Optional[int] = Field(None, title="现行政属地区", description="现行政属地区")
-    current_region_province_id: Optional[int] = Field(None, title="现管辖区域省", description="现管辖区域省")
-    current_region_city_id: Optional[int] = Field(None, title="现管辖区域市", description="现管辖区域市")
-    current_region_area_id: Optional[int] = Field(None, title="现管辖区域区", description="现管辖区域区")
-    current_unit_id: Optional[int] = Field(None, title="现单位id", description="现单位id")
-    approval_status: Optional[str] = Field("", title="审批状态", description="审批状态")
-    operation_time: Optional[date] = Field(None, title="申请时间", description="申请时间")
-    approval_time: Optional[date] = Field(None, title="审批时间", description="审批时间")
-    approval_name: Optional[str] = Field("", title="审批人", description="审批人")
+    teacher_name: Optional[str] = Query("", title="姓名", description="姓名")
+    teacher_number: Optional[str] = Query("", title="教职工号", description="教职工号")
+    teacher_id_type: Optional[str] = Query("", title="证件类型", description="证件类型")
+    teacher_id_number: Optional[str] = Query("", title="证件号", description="证件号")
+    teacher_gender: Optional[Gender] = Query(None, title="性别", description="性别")
+    original_district_province_id: Optional[int] = Query(None, title="原行政属地省", description="原行政属地省")
+    original_district_city_id: Optional[int] = Query(None, title="原行政属地市", description="原行政属地市")
+    original_district_area_id: Optional[int] = Query(None, title="原行政属地区", description="原行政属地区")
+    original_region_province_id: Optional[int] = Query(None, title="原管辖区域省", description="原管辖区域省")
+    original_region_city_id: Optional[int] = Query(None, title="原管辖区域市", description="原管辖区域市")
+    original_region_area_id: Optional[int] = Query(None, title="原管辖区域区", description="原管辖区域区")
+    original_unit_id: Optional[int] = Query(None, title="原单位", description="原单位")
+    current_district_province_id: Optional[int] = Query(None, title="现行政属地省", description="现行政属地省")
+    current_district_city_id: Optional[int] = Query(None, title="现行政属地市", description="现行政属地市")
+    current_district_area_id: Optional[int] = Query(None, title="现行政属地区", description="现行政属地区")
+    current_region_province_id: Optional[int] = Query(None, title="现管辖区域省", description="现管辖区域省")
+    current_region_city_id: Optional[int] = Query(None, title="现管辖区域市", description="现管辖区域市")
+    current_region_area_id: Optional[int] = Query(None, title="现管辖区域区", description="现管辖区域区")
+    current_unit_id: Optional[int] = Query(None, title="现单位id", description="现单位id")
+    approval_status: Optional[str] = Query("", title="审批状态", description="审批状态")
+    operation_time_s: Optional[date] = Query(None, title="申请开始时间", description="申请开始时间")
+    operation_time_e: Optional[date] = Query(None, title="申请结束时间", description="申请结束时间")
+    approval_time_s: Optional[date] = Query(None, title="审批开始时间", description="审批开始时间")
+    approval_time_e: Optional[date] = Query(None, title="审批结束时间", description="审批结束时间")
+    approval_name: Optional[str] = Query("", title="审批人", description="审批人")
 
 
 class TeacherTransferQueryReModel(BaseModel):
@@ -583,21 +585,23 @@ class TeacherBorrowQueryModel(BaseModel):
     审批人：approval_name
 
     """
-    teacher_name: Optional[str] = Field("", title="姓名", description="姓名")
-    teacher_number: Optional[str] = Field("", title="教职工号", description="教职工号")
-    teacher_id_type: Optional[str] = Field("", title="证件类型", description="证件类型")
-    teacher_id_number: Optional[str] = Field("", title="证件号", description="证件号")
-    teacher_gender: Optional[Gender] = Field(None, title="性别", description="性别")
-    original_region: Optional[str] = Field("", title="原地域管辖区域", description="原地域管辖区域")
-    original_district: Optional[str] = Field("", title="原行政属地", description="原行政属地")
-    original_unit: Optional[str] = Field("", title="原单位", description="原单位")
-    current_district: Optional[str] = Field("", title="现行政属地", description="现行政属地")
-    current_region: Optional[str] = Field("", title="现地域管辖区域", description="现地域管辖区域")
-    current_unit_id: Optional[int] = Field("", title="现单位", description="现单位")
-    approval_status: Optional[str] = Field("", title="审批状态", description="审批状态")
-    operation_time: Optional[date] = Field(None, title="申请时间", description="申请时间")
-    approval_time: Optional[date] = Field(None, title="审批时间", description="审批时间")
-    approval_name: Optional[str] = Field("", title="审批人", description="审批人")
+    teacher_name: Optional[str] = Query("", title="姓名", description="姓名")
+    teacher_number: Optional[str] = Query("", title="教职工号", description="教职工号")
+    teacher_id_type: Optional[str] = Query("", title="证件类型", description="证件类型")
+    teacher_id_number: Optional[str] = Query("", title="证件号", description="证件号")
+    teacher_gender: Optional[Gender] = Query(None, title="性别", description="性别")
+    original_region: Optional[str] = Query("", title="原地域管辖区域", description="原地域管辖区域")
+    original_district: Optional[str] = Query("", title="原行政属地", description="原行政属地")
+    original_unit: Optional[str] = Query("", title="原单位", description="原单位")
+    current_district: Optional[str] = Query("", title="现行政属地", description="现行政属地")
+    current_region: Optional[str] = Query("", title="现地域管辖区域", description="现地域管辖区域")
+    current_unit_id: Optional[int] = Query("", title="现单位", description="现单位")
+    approval_status: Optional[str] = Query("", title="审批状态", description="审批状态")
+    operation_time_s: Optional[date] = Query(None, title="申请开始时间", description="申请开始时间")
+    operation_time_e: Optional[date] = Query(None, title="申请结束时间", description="申请结束时间")
+    approval_time_s: Optional[date] = Query(None, title="审批开始时间", description="审批开始时间")
+    approval_time_e: Optional[date] = Query(None, title="审批结束时间", description="审批结束时间")
+    approval_name: Optional[str] = Query("", title="审批人", description="审批人")
 
 
 class TeacherBorrowQueryReModel(BaseModel):

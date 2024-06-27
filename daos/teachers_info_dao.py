@@ -153,8 +153,9 @@ class TeachersInfoDao(DAOBase):
             query = query.where(TeacherInfo.in_post == query_model.in_post)
         if query_model.employment_form:
             query = query.where(TeacherInfo.employment_form == query_model.employment_form)
-        if query_model.enter_school_time:
-            query = query.where(TeacherInfo.enter_school_time == query_model.enter_school_time)
+        if query_model.enter_school_time_s and query_model.enter_school_time_e:
+            query = query.where(TeacherInfo.enter_school_time.between(query_model.enter_school_time_s,
+                                                                      query_model.enter_school_time_e))
         query = query.order_by(Teacher.teacher_id.desc())
         paging = await self.query_page(query, page_request)
         return paging
