@@ -101,7 +101,7 @@ class TeachersRule(object):
                                                          exclude=[""])
         params = {"process_code": "t_entry", "applicant_name": user_id}
         await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
-            teachers.teacher_id)
+            teacher_entry_approval.teacher_id)
         work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
         teacher_entry_log = OperationRecord(
             action_target_id=teachers_db.teacher_id,
