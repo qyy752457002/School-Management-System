@@ -124,7 +124,6 @@ class TeachersRule(object):
         await self.operation_record_rule.add_operation_record(teacher_entry_log)
         return teachers_work
 
-
     async def query_teacher_operation_record_with_page(self, query_model: TeacherChangeLogQueryModel,
                                                        page_request: PageRequest):
         """
@@ -248,15 +247,16 @@ class TeachersRule(object):
         parameters = {"user_id": user_id, "action": "approved", "description": reason}
         current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
         node_instance_id = current_node.get("node_instance_id")
-        print(node_instance_id)
         node_instance = await self.teacher_work_flow_rule.process_transaction_work_flow(node_instance_id, parameters)
         if node_instance == "approved":
             teachers_db = await self.teachers_dao.get_teachers_by_id(teachers_id)
             teachers_db.teacher_main_status = "employed"
             teachers_db.teacher_sub_status = "active"
+            teachers_db.is_approval = False
             params = {"teacher_main_status": "employed", "teacher_sub_status": "active"}
             await self.teacher_work_flow_rule.update_work_flow_by_param(process_instance_id, params)
-            await self.teachers_dao.update_teachers(teachers_db, "teacher_main_status", "teacher_sub_status")
+            await self.teachers_dao.update_teachers(teachers_db, "teacher_main_status", "teacher_sub_status",
+                                                    "is_approval")
 
     async def entry_rejected(self, teachers_id, process_instance_id, user_id, reason):
         user_id = user_id
@@ -269,7 +269,9 @@ class TeachersRule(object):
             teacher = await self.teachers_dao.get_teachers_by_id(teachers_id)
             teacher.teacher_sub_status = "unsubmitted"
             teacher.teacher_main_status = "unemployed"
-            await self.teachers_dao.update_teachers(teacher, "teacher_main_status ", "teacher_sub_status")
+            teacher.is_approval = False
+            await self.teachers_dao.update_teachers(teacher, "teacher_main_status ", "teacher_sub_status",
+                                                    "is_approval")
 
     async def entry_revoked(self, teachers_id, process_instance_id, user_id):
         user_id = user_id
@@ -280,7 +282,8 @@ class TeachersRule(object):
         if node_instance == "revoked":
             teacher = await self.teachers_dao.get_teachers_by_id(teachers_id)
             teacher.teacher_sub_status = "unsubmitted"
-            await self.teachers_dao.update_teachers(teacher, "teacher_sub_status")
+            teacher.is_approval = False
+            await self.teachers_dao.update_teachers(teacher, "teacher_sub_status", "is_approval")
 
     # 关键信息审批相关
     async def teacher_info_change_approved(self, teachers_id, process_instance_id, user_id, reason):
@@ -300,9 +303,11 @@ class TeachersRule(object):
                 if value:
                     need_update_list.append(key)
             await self.teachers_dao.update_teachers(teacher, *need_update_list)
+            await self.teacher_pending(teachers_id)
             await self.teacher_active(teachers_id)
 
     async def teacher_info_change_rejected(self, teachers_id, process_instance_id, user_id, reason):
+        await self.teacher_progressing(teachers_id)
         user_id = user_id
         parameters = {"user_id": user_id, "action": "rejected", "description": reason}
         current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
@@ -310,11 +315,11 @@ class TeachersRule(object):
         node_instance = await self.teacher_work_flow_rule.process_transaction_work_flow(node_instance_id,
                                                                                         parameters)
         if node_instance == "rejected":
-            teacher = await self.teachers_dao.get_teachers_by_id(teachers_id)
-            teacher.teacher_sub_status = "active"
-            await self.teachers_dao.update_teachers(teacher, "teacher_sub_status")
+            await self.teacher_active(teachers_id)
+            await self.teacher_pending(teachers_id)
 
     async def teacher_info_change_revoked(self, teachers_id, process_instance_id, user_id):
+        await self.teacher_progressing(teachers_id)
         user_id = user_id
         parameters = {"user_id": user_id, "action": "revoke"}
         current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
@@ -322,9 +327,8 @@ class TeachersRule(object):
         node_instance = await self.teacher_work_flow_rule.process_transaction_work_flow(node_instance_id,
                                                                                         parameters)
         if node_instance == "revoked":
-            teacher = await self.teachers_dao.get_teachers_by_id(teachers_id)
-            teacher.teacher_sub_status = "active"
-            await self.teachers_dao.update_teachers(teacher, "teacher_sub_status")
+            await self.teacher_active(teachers_id)
+            await self.teacher_pending(teachers_id)
 
     # 导入导出相关
 
@@ -532,8 +536,6 @@ class TeachersRule(object):
         teacher_approval_db = await self.teachers_info_dao.get_teacher_approval(teacher_id)
         teacher_approval = orm_model_to_view_model(teacher_approval_db, NewTeacherApprovalCreate)
         return teacher_approval
-
-
 
     async def teacher_progressing(self, teachers_id):
         teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
