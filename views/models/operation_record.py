@@ -49,6 +49,7 @@ class ChangeModule(str, Enum):
     离退休：retirement
     """
     CREATE_SCHOOL = "create_school"
+    CLOSE_SCHOOL = "close_school"
     NEW_ENTRY = "new_entry"
     BASIC_INFO_CHANGE = "basic_info_change"
     KEY_INFO_CHANGE = "key_info_change"
