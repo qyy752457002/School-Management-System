@@ -40,7 +40,7 @@ class TransferDetails(BaseDBModel):
     __table_args__ = {'comment': 'transfer_details信息表'}
 
     transfer_details_id: Mapped[int] = mapped_column(primary_key=True, comment="transfer_detailsID")
-    original_unit: Mapped[str] = mapped_column(String(64), nullable=True, comment="原单位")
+    original_unit_id: Mapped[str] = mapped_column(String(64), nullable=True, comment="原单位")
     original_position: Mapped[str] = mapped_column(String(64), nullable=True, comment="原岗位")
     original_district_province_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="原行政属地省")
     original_district_city_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="原行政属地市")

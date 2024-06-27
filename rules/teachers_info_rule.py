@@ -106,9 +106,14 @@ class TeachersInfoRule(object):
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, TeachersInfoModel, exclude=[""])
-        teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
-        teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
-                                                         exclude=[""])
+        try:
+            teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
+
+            teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
+                                                             exclude=[""])
+        except Exception as e:
+            TeacherInfoExitError()
+
         params = {"process_code": "t_entry", "applicant_name": user_id}
         teacher_entry_approval.teacher_sub_status = "submitted"
         await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
@@ -263,35 +268,10 @@ class TeachersInfoRule(object):
         paging_result = PaginatedResponse.from_paging(paging, RetireTeacherQueryRe)
         return paging_result
 
-    async def submitting(self, teachers_base_id):
-        teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_base_id)
-        if not teachers_info:
-            raise TeacherInfoNotFoundError()
-        teachers_info.approval_status = "submitting"
-        return await self.teachers_info_dao.update_teachers_info(teachers_info, "approval_status")
-
-    async def submitted(self, teachers_base_id):
-        teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_base_id)
-        if not teachers_info:
-            raise TeacherInfoNotFoundError()
-        teachers_info.approval_status = "submitted"
-        return await self.teachers_info_dao.update_teachers_info(teachers_info, "approval_status")
-
-
-
-    async def teacher_pending(self, teachers_id):
+    async def teacher_submitted(self, teachers_id):
         teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
         if not teachers:
             raise TeacherNotFoundError()
-        if teachers.teacher_sub_status != "pending":
-            teachers.teacher_sub_status = "pending"
+        if teachers.teacher_sub_status != "submitted":
+            teachers.teacher_sub_status = "submitted"
         return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
-
-    async def teacher_progressing(self, teachers_id):
-        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
-        if not teachers:
-            raise TeacherNotFoundError()
-        if teachers.teacher_sub_status != "progressing":
-            teachers.teacher_sub_status = "progressing"
-        return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
-
