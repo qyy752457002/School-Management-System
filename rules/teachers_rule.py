@@ -97,8 +97,8 @@ class TeachersRule(object):
         try:
             teachers_db = await self.teachers_dao.add_teachers(teachers_db)
             teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
-        except Exception as e:
-            raise f'这里是error是{e}'
+        except:
+            raise TeacherNotFoundError()
         try:
             teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers.teacher_id)
             teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
@@ -124,7 +124,7 @@ class TeachersRule(object):
             await self.operation_record_rule.add_operation_record(teacher_entry_log)
             return teachers
         except Exception as e:
-            raise f'error是{e}'
+            raise IdCardError()
 
     async def query_teacher_operation_record_with_page(self, query_model: TeacherChangeLogQueryModel,
                                                        page_request: PageRequest):
