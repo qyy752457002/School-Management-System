@@ -118,21 +118,16 @@ class SchoolView(BaseView):
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(school_id),
-            operator='admin',
-            module=ChangeModule.KEYINFO.value,
-            target=OperationType.SCHOOL.value,
-
+            target=OperationTarget.SCHOOL.value,
             action_type=OperationType.DELETE.value,
-            ip='127.0.0.1',
+            change_module=ChangeModule.KEY_INFO_CHANGE.value,
+            change_detail="删除",
+
+            action_target_id=str(school_id),
+
             change_data=str(res)[0:1000],
-            change_field='关键信息',
-            change_item='关键信息',
-            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason='修改基本信息',
-            doc_upload='',
-            status='1',
-            account='', ))
+
+            ))
 
         return res
         # return  school_id
@@ -146,21 +141,14 @@ class SchoolView(BaseView):
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(school_baseinfo.id),
-            operator='admin',
-            module=ChangeModule.BASEINFO.value,
-            target=OperationType.SCHOOL.value,
-
+            target=OperationTarget.SCHOOL.value,
             action_type=OperationType.MODIFY.value,
-            ip='127.0.0.1',
+            change_module=ChangeModule.BASIC_INFO_CHANGE.value,
+            change_detail="修改基本信息",
+            action_target_id=str(school_baseinfo.id),
+
             change_data=str(log_con)[0:1000],
-            change_field='关键信息',
-            change_item='关键信息',
-            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason='修改基本信息',
-            doc_upload='',
-            status='1',
-            account='', ))
+            ))
 
         return res
 
@@ -207,21 +195,14 @@ class SchoolView(BaseView):
         res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.NORMAL.value, 'open')
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(school_id),
-            operator='admin',
-            module=ChangeModule.BASEINFO.value,
-            target=OperationType.SCHOOL.value,
-
+            target=OperationTarget.SCHOOL.value,
             action_type=OperationType.MODIFY.value,
-            ip='127.0.0.1',
+            change_module=ChangeModule.BASIC_INFO_CHANGE.value,
+            change_detail="开办分校",
+            action_target_id=str(school_id),
             change_data=str(school_id)[0:1000],
-            change_field='关键信息',
-            change_item='关键信息',
-            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason='修改基本信息',
-            doc_upload='',
-            status='1',
-            account='', ))
+
+            ))
 
         return res
 
@@ -236,21 +217,14 @@ class SchoolView(BaseView):
         res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.CLOSED.value)
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(school_id),
-            operator='admin',
-            module=ChangeModule.BASEINFO.value,
-            target=OperationType.SCHOOL.value,
-
+            target=OperationTarget.SCHOOL.value,
             action_type=OperationType.MODIFY.value,
-            ip='127.0.0.1',
+            change_module=ChangeModule.BASIC_INFO_CHANGE.value,
+            change_detail="关闭分校",
+            action_target_id=str(school_id),
             change_data=str(school_id)[0:1000],
-            change_field='关键信息',
-            change_item='关键信息',
-            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason='修改基本信息',
-            doc_upload='',
-            status='1',
-            account='', ))
+
+            ))
 
         return res
 
@@ -284,21 +258,14 @@ class SchoolView(BaseView):
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(school_id),
-            operator='admin',
-            module=ChangeModule.BASEINFO.value,
-            target=OperationType.SCHOOL.value,
-
+            target=OperationTarget.SCHOOL.value,
             action_type=OperationType.MODIFY.value,
-            ip='127.0.0.1',
+            change_module=ChangeModule.BASIC_INFO_CHANGE.value,
+            change_detail="暂存信息",
+            action_target_id=str(school_id),
             change_data=str(log_con)[0:1000],
-            change_field='关键信息',
-            change_item='关键信息',
-            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason='修改基本信息',
-            doc_upload='',
-            status='1',
-            account='', ))
+
+            ))
 
         return res
 
@@ -335,21 +302,14 @@ class SchoolView(BaseView):
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            target=OperationTarget.SCHOOL.value,
+            action_type=OperationType.CREATE.value,
+            change_module=ChangeModule.CREATE_SCHOOL.value,
+            change_detail="开办分校",
             action_target_id=str(school_id),
-            operator='admin',
-            module=ChangeModule.BASEINFO.value,
-            target=OperationType.PLANNING_SCHOOL.value,
-
-            action_type=OperationType.MODIFY.value,
-            ip='127.0.0.1',
             change_data=str(log_con)[0:1000],
-            change_field='关键信息',
-            change_item='关键信息',
-            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason='修改基本信息',
-            doc_upload='',
-            status='1',
-            account='', ))
+
+            ))
 
         return res2
     # 学校搜索 模糊搜索 TODO 增加 区域ID  学校ID 支持多个传入

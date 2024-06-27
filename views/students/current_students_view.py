@@ -396,9 +396,7 @@ class CurrentStudentsBaseInfoView(BaseView):
             action_type=OperationType.MODIFY.value,
             change_module=ChangeModule.BASIC_INFO_CHANGE.value,
             change_detail="修改基本信息",
-
             action_target_id=str(new_students_base_info.student_id),
-
             change_data=json_string,
 
             ))
@@ -430,20 +428,13 @@ class CurrentStudentsFamilyView(BaseView):
         res = await self.students_family_info_rule.update_students_family_info(new_students_family_info)
         json_string = json.dumps(log_con, ensure_ascii=False)
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(new_students_family_info.student_id),
-            operator='admin',
-            module=ChangeModule.FAMILYINFO.value,
-            target=OperationType.STUDENT.value,
+            target=OperationTarget.STUDENT.value,
             action_type=OperationType.MODIFY.value,
-            ip= get_client_ip(request),
+            change_module=ChangeModule.FAMILY_INFO_CHANGE.value,
+            change_detail="修改基本信息",
+            action_target_id=str(new_students_family_info.student_id),
             change_data=json_string,
-            change_field=ChangeModule.FAMILYINFO.value,
-            change_item=ChangeModule.FAMILYINFO.value,
-            timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason=OperationType.MODIFY.value+ChangeModule.FAMILYINFO.value,
-            doc_upload='',
-            status='1',
-            account='', ))
+            ))
         return res
 
     async def delete_studentfamilyinfo(self,

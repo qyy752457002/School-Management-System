@@ -53,6 +53,7 @@ class ChangeModule(str, Enum):
     NEW_ENTRY = "new_entry"
     BASIC_INFO_CHANGE = "basic_info_change"
     KEY_INFO_CHANGE = "key_info_change"
+    FAMILY_INFO_CHANGE = "family_info_change"
     TRANSFER = "transfer"
     TRANSACTION = "transaction"
     BORROW = "borrow"
