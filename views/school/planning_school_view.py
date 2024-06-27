@@ -166,13 +166,39 @@ class PlanningSchoolView(BaseView):
         return res
 
     async def page(self,
-                   page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
+                   # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
+                   block: str = Query("", title=" ", description="地域管辖区", ),
+                   planning_school_code: str = Query("", title="", description=" 园所标识码", ),
+                   planning_school_level: str = Query("", title="", description=" 学校星级", ),
+                   planning_school_name: str = Query("", title="学校名称", description="1-20字符", ),
+                   planning_school_no: str = Query("", title="学校编号", description="学校编号/园所代码", min_length=1,
+                                                   max_length=20, ),
+                   borough: str = Query("", title="  ", description=" 行政管辖区", ),
+                   status: PlanningSchoolStatus = Query(None, title="", description=" 状态", examples=['正常']),
 
+                   founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
+                                                                         examples=['地方']),
+                   founder_type_lv2: List[str] = Query([], title="", description="举办者类型二级",
+                                                       examples=['教育部门']),
+                   founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
+                                                       examples=['县级教育部门']),
 
                    page_request=Depends(PageRequest)):
         print(page_request, )
         items = []
-        paging_result = await self.system_rule.query_workflow_with_page(page_search,page_request,'',PLANNING_SCHOOL_OPEN_WORKFLOW_CODE,PlanningSchool  )
+        #PlanningSchoolBaseInfoOptional
+        paging_result = await self.system_rule.query_workflow_with_page(PlanningSchoolPageSearch(block=block,
+                                                                                                 planning_school_code=planning_school_code,
+                                                                                                 planning_school_level=planning_school_level,
+                                                                                                 planning_school_name=planning_school_name,
+                                                                                                 planning_school_no=planning_school_no,
+                                                                                                 borough=borough,
+                                                                                                 status=status,
+                                                                                                 founder_type=founder_type,
+                                                                                                founder_type_lv2=founder_type_lv2,
+                                                                                                 founder_type_lv3=founder_type_lv3,
+                                                                                                 ),page_request,'',PLANNING_SCHOOL_OPEN_WORKFLOW_CODE,  )
+        print('333',page_request)
         return paging_result
 
 

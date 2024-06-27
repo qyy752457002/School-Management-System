@@ -199,7 +199,7 @@ class PlanningSchoolPageSearch(BaseModel):
     planning_school_no: str = Query("", title="学校编号", description="学校编号/园所代码", min_length=1,
                                     max_length=20, ),
     borough: str = Query("", title="  ", description=" 行政管辖区", ),
-    status: PlanningSchoolStatus = Query("", title="", description=" 状态", examples=['正常']),
+    status: PlanningSchoolStatus|None = Query("", title="", description=" 状态", examples=['正常']),
 
     founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
                                                           examples=['地方']),

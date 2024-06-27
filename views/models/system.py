@@ -41,6 +41,34 @@ class EduType(str, Enum):
     @classmethod
     def to_list(cls):
         return [cls.KG, cls.K12, cls.VOCATIONAL]
+
+class ImportScene(str, Enum):
+    """ 导入的模版场景定义
+    planning_school: '', // 学校模版模版
+  school: '', // 分校模版
+  new_teachers: '', // 新教师模版
+  teachers_basic: '', // 教师基础信息模版
+  teachers_shortcut: '', // 教师快捷模版
+  teachers_extend: '', // 教师扩展信息模版
+  institution: '', // 行政事业单位管理模版
+  new_student: '', // 新学生模版
+  class: '', // 班级模版
+    """
+    PLANNING_SCHOOL = "planning_school"
+    SCHOOL = "school"
+    NEW_TEACHERS = "new_teachers"
+    TEACHERS_BASIC = "teachers_basic"
+    TEACHERS_SHORTCUT = "teachers_shortcut"
+    TEACHERS_EXTEND = "teachers_extend"
+    INSTITUTION = "institution"
+    NEWSTUDENT = "new_student"
+    CLASS = "class"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.PLANNING_SCHOOL, cls.SCHOOL, cls.NEW_TEACHERS, cls.TEACHERS_BASIC, cls.TEACHERS_SHORTCUT,
+                cls.TEACHERS_EXTEND, cls.INSTITUTION, cls.NEWSTUDENT, cls.CLASS
+                ]
 class SystemConfig(BaseModel):
     """
      config_name: Mapped[str] = mapped_column(String(255),  nullable=True, comment="配置项",default='')
