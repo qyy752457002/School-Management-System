@@ -61,15 +61,15 @@ class TransferDetailsView(BaseView):
         res = await self.transfer_details_rule.add_transfer_out_details(transfer_details)
         return res
 
-    async def delete_transfer_details(self,
-                                      transfer_details_id: int = Query(None, title="transfer_detailsID",
-                                                                       description="transfer_detailsID", example=1234)
-                                      ):
-        await self.transfer_details_rule.delete_transfer_details(transfer_details_id)
+    # async def delete_transfer_details(self,
+    #                                   transfer_details_id: int = Query(None, title="transfer_detailsID",
+    #                                                                    description="transfer_detailsID", example=1234)
+    #                                   ):
+    #     await self.transfer_details_rule.delete_transfer_details(transfer_details_id)
 
-    async def put_transfer_details(self, transfer_details: TransferDetailsReModel):
-        res = await self.transfer_details_rule.update_transfer_details(transfer_details)
-        return res
+    # async def put_transfer_details(self, transfer_details: TransferDetailsReModel):
+    #     res = await self.transfer_details_rule.update_transfer_details(transfer_details)
+    #     return res
 
     async def get_transfer_details_all(self, teacher_id: int = Query(None, title="transfer_ID",
                                                                      description="transfer_ID", example=1234)):
@@ -140,7 +140,7 @@ class TransferDetailsView(BaseView):
     #     return res
 
     async def patch_transfer_approved(self,
-                                      transfer_details_id: int = Query(None, title="transfer_detailsID",
+                                      teacher_id: int = Query(None, title="transfer_detailsID",
                                                                        description="transfer_detailsID", example=1234),
                                       process_instance_id: int = Query(..., title="流程实例id",
                                                                        description="流程实例id",
@@ -150,7 +150,7 @@ class TransferDetailsView(BaseView):
 
         user_id = "sadklfh"
         reason = reason
-        res = await self.transfer_details_rule.transfer_approved(transfer_details_id, process_instance_id, user_id,
+        res = await self.transfer_details_rule.transfer_approved(teacher_id, process_instance_id, user_id,
                                                                  reason)
         return res
 

@@ -51,6 +51,32 @@ class TeacherWorkFlowRule(object):
         print(work_flow_instance)
         return work_flow_instance
 
+    async def add_work_flow_by_multi_model(self, model_list: list[Type[BaseModel]], params: dict):
+        """
+        parameters = {"process_code": process_code,"applicant_name": applicant_name}
+        """
+        work_instance_instance = await self.create_work_flow_model_from_multi_model(model_list, params)
+        parameters = work_instance_instance.dict()
+        params_data = JsonUtils.dict_to_json_str(parameters)
+        httpreq = HTTPRequest()
+        url = workflow_service_config.workflow_config.get("url")
+        api_name = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
+        url += api_name
+        headerdict = {
+            "accept": "application/json",
+            # "Authorization": "{{bear}}",
+            "Content-Type": "application/json"
+        }
+        # url += ('?' + urlencode(parameters))
+
+        result = await httpreq.post(url, params_data, headerdict)
+        result = JsonUtils.json_str_to_dict(result)
+        print(f"result的结果是{result}")
+        work_flow_instance = result[0]
+        next_node_instance = result[1]
+        print(work_flow_instance)
+        return work_flow_instance
+
     async def update_teacher_work_flow(self, model: Type[BaseModel]):
         work_instance_instance = await self.update_workflow_from_model(model)
         parameters = work_instance_instance.dict()
@@ -273,3 +299,24 @@ class TeacherWorkFlowRule(object):
             items=result_items
         )
         return page_response
+
+    async def create_work_flow_model_from_multi_model(self, base_model_list: list[Type[BaseModel]],
+                                                      params: dict) -> WorkFlowInstanceCreateModel:
+        base_model = {}
+        for base_model in base_model_list:
+            base_model.update(base_model.dict())
+        workflow_fields = WorkFlowInstanceCreateModel.__fields__.keys()
+        workflow_data = {}
+        json_data = {}
+        for field, value in params.items():
+            if field in workflow_fields:
+                workflow_data[field] = value
+        for field, value in base_model.items():
+            if field in workflow_fields:
+                workflow_data[field] = value
+            else:
+                json_data[field] = value
+        workflow_data["json_data"] = json_data
+        print(workflow_data)
+        work_flow_instance = WorkFlowInstanceCreateModel(**workflow_data)
+        return work_flow_instance

@@ -323,6 +323,7 @@ class TransferDetailsModel(BaseModel):
     调动类型：transfer_type
     流程id：process_instance_id
     """
+
     original_unit_id: Optional[int] = Field(None, title="原单位", description="原单位")
     original_position: str = Field("", title="原岗位", description="原岗位")
     original_district_province_id: Optional[int] = Field(..., title="原行政属地省", description="原行政属地省")
