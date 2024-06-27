@@ -35,6 +35,7 @@ class WorkFlowInstanceCreateModel(BaseModel):
 
     process_code: str = Field(..., title="流程定义id", description="流程定义id")
     applicant_name: str = Field(..., title="申请人姓名", description="申请人姓名")
+    approval_name: Optional[str] = Field(None, title="审批人姓名", description="审批人姓名")
     start_time: datetime = Field(datetime.now(), title="开始时间", description="开始时间")
     approval_time: Optional[datetime] = Field(None, title="审批时间", description="审批时间")
     end_time: Optional[datetime] = Field(None, title="结束时间", description="结束时间")

@@ -242,7 +242,7 @@ class TeacherInfo(BaseModel):  # 基本信息
     招聘方式：recruitment_method
     教职工号：teacher_number
     """
-    teacher_base_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_base_id: int = Field(-1, title="教师ID", description="教师ID")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     ethnicity: Optional[str] = Field(None, title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家地区", description="国家地区", example="中国")
@@ -922,6 +922,7 @@ class NewTeacherApprovalCreate(BaseModel):
     enter_school_time: Optional[date] = Field(None, title="进本校时间", description="进本校时间", example="2010-01-01")
     teacher_main_status: Optional[str] = Field(None, title="主要状态", description="主要状态", example="unemployed")
     teacher_sub_status: Optional[str] = Field(None, title="次要状态", description="次要状态", example="unsubmitted")
+    is_approval: Optional[bool] = Field(None, title="是否在审批中", description="是否在审批中")
 
 
 class CurrentTeacherQuery(BaseModel):
@@ -979,6 +980,8 @@ class CurrentTeacherQueryRe(BaseModel):
     employment_form: Optional[str] = Query("", title="用人形式", description="用人形式", example="合同")
     enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
     school_name: Optional[str] = Query("", title="", description="", example="")
+    is_approval: Optional[bool] = Field(None, title="是否在审批中", description="是否在审批中")
+
 
 
 class TeacherApprovalQuery(BaseModel):
@@ -1024,6 +1027,7 @@ class TeacherApprovalQueryRe(BaseModel):
     approval_time: Optional[datetime] = Field(None, title="审批时间", description="审批时间")
     approval_status: str = Field("pending", title="审批状态", description="审批状态")
     process_instance_id: int = Field(0, title="流程实例id", description="流程实例id")
+
 
 
 # task相关模型
