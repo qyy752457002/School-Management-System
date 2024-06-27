@@ -232,6 +232,11 @@ class StudentsRule(object):
             paging_result = PaginatedResponse.from_paging(
                 paging, NewStudentsQueryRe, {"hash_password": "password"}
             )
+            # 处理每个里面的状态 1. 0
+            for item in paging_result.items:
+                item.approval_status =  item.approval_status.value
+
+
             logger.info('分页的结果',paging_result.items)
             excel_writer = ExcelWriter()
             excel_writer.add_data("Sheet1", paging_result.items)
@@ -241,6 +246,8 @@ class StudentsRule(object):
             if len(paging.items) < page_request.per_page:
                 break
             page_request.page += 1
+        #     保存文件时可能报错
+        print('临时文件路径',temp_file_path)
         file_storage =  storage_manager.put_file_to_object(
             bucket, f"{random_file_name}.xlsx", temp_file_path
         )

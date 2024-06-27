@@ -9,7 +9,6 @@ class PlanningSchoolEduInfo(BaseModel):
 
     id: int = Query(None, title="", description="", example='1'),
     planning_school_id: int = Field(None, title="", description="规划校id", examples=[1])
-
     is_ethnic_school: bool = Field(None, title="", description="是否民族校", examples=[False])
     is_att_class:  bool = Field(None, title="", description="是否附设班", examples=[False])
     att_class_type: str|bool = Field(None, title="", description="附设班类型", examples=[])

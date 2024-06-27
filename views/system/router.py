@@ -20,6 +20,7 @@ def routers():
     router.include_api_view_class(TaskView, "/v1/task", description="任务")
 
     router.include_api_view_class(StorageView, "/v1/storage", description="文件上传下载接口",
-                                  response_cls=FileStorageResponseModel)
+                                  # response_cls=FileStorageResponseModel
+                                  )
 
     return router
