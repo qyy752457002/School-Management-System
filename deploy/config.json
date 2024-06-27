@@ -130,7 +130,7 @@
   "workflow_service": {
     "name": "workflow_service",
     "description": "",
-    "url": "http://localhost:8080/workflowapi"
+    "url": "https://school-workflow-dev.f123.pub"
   },
   "transaction_service": {
     "retry": {
