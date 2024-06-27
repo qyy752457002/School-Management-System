@@ -68,13 +68,10 @@ class TeacherWorkFlowRule(object):
             "Content-Type": "application/json"
         }
         # url += ('?' + urlencode(parameters))
-
         result = await httpreq.post(url, params_data, headerdict)
         result = JsonUtils.json_str_to_dict(result)
-        print(f"result的结果是{result}")
         work_flow_instance = result[0]
         next_node_instance = result[1]
-        print(work_flow_instance)
         return work_flow_instance
 
     async def update_teacher_work_flow(self, model: Type[BaseModel]):

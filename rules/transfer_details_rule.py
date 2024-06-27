@@ -20,7 +20,7 @@ from views.models.operation_record import OperationRecord, OperationTarget, Chan
 from rules.operation_record import OperationRecordRule
 from daos.operation_record_dao import OperationRecordDAO
 from rules.teachers_rule import TeachersRule
-
+from views.models.teacher_transaction import TeacherAddModel
 from datetime import datetime
 
 
@@ -60,7 +60,7 @@ class TransferDetailsRule(object):
         transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
         params = {"process_code": "t_transfer_in_inner", "applicant_name": user_id}
         work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(transfer_details_work, params)
-        teacher_entry_log = OperationRecord(
+        teacher_transfer_log = OperationRecord(
             action_target_id=transfer_details_work.teacher_id,
             target=OperationTarget.TEACHER.value,
             action_type=OperationType.CREATE.value,
@@ -74,21 +74,41 @@ class TransferDetailsRule(object):
             operator_id=1,
             operator_name=user_id,
             process_instance_id=work_flow_instance["process_instance_id"])
-        await self.operation_record_rule.add_operation_record(teacher_entry_log)
+        await self.operation_record_rule.add_operation_record(teacher_transfer_log)
         return transfer_details
 
-    async def add_transfer_in_outer_details(self, add_teacher, user_id):
-        pass
-
-
-
+    async def add_transfer_in_outer_details(self, transfer_details: TransferDetailsModel, add_teacher: TeacherAddModel,
+                                            user_id):
+        teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
+        current_unit_id = transfer_details.current_unit_id
+        transfer_details.teacher_id = teachers.teacher_id
+        transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
+        transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
+        transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
+        params = {"process_code": "t_transfer_in_outer", "applicant_name": user_id}
+        model_list = [transfer_details_work, teachers]
+        work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
+        teacher_transfer_log = OperationRecord(
+            action_target_id=transfer_details_work.teacher_id,
+            target=OperationTarget.TEACHER.value,
+            action_type=OperationType.CREATE.value,
+            ip="127.0.0.1",
+            change_data="",
+            operation_time=datetime.now(),
+            doc_upload="",
+            change_module=ChangeModule.TRANSFER.value,
+            change_detail=f"从系统外调入到{current_unit_id}",
+            status="/",
+            operator_id=1,
+            operator_name=user_id,
+            process_instance_id=work_flow_instance["process_instance_id"])
+        await self.operation_record_rule.add_operation_record(teacher_transfer_log)
 
     async def add_transfer_out_details(self, transfer_details: TransferDetailsModel):
         """
         调出
         """
-        # todo 需要增加获取调出流程实例id
-        # todo 变更日志没写
+
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
         transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)

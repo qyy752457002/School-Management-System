@@ -133,7 +133,7 @@ class TeachersRule(object):
         paging_result = PaginatedResponse.from_paging(paging, OperationRecord)
         return paging_result
 
-    async def add_transfer_teachers(self, teachers: TeacherAddModel, user_id):
+    async def add_transfer_teachers(self, teachers: TeacherAddModel):
         """
         系统外调入系统内时使用，增加老师
         """
@@ -143,13 +143,6 @@ class TeachersRule(object):
             if not idstatus:
                 raise IdCardError()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
-        teacher_entry_log = TeacherChangeLog(apply_name=user_id, teacher_id=teachers_db.teacher_id,
-                                             change_module="new_entry",
-                                             change_detail="入职登记", log_status="/",
-                                             )
-        await self.teacher_change_log.add_teacher_change(teacher_entry_log)
-        params = {"process_code": "t_entry", "teacher_id": teachers_db.teacher_id, "applicant_name": user_id}
-        work_flow_instance, next_node_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(params)
         teachers = orm_model_to_view_model(teachers_db, TeacherAddReModel, exclude=[""])
         return teachers
 
@@ -564,4 +557,3 @@ class TeachersRule(object):
         if teachers.teacher_sub_status != "active":
             teachers.teacher_sub_status = "active"
         return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
-
