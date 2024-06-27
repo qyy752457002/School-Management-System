@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
@@ -9,6 +10,7 @@ from business_exceptions.operation_record import OperationRecordNotFoundError
 # from business_exceptions.operation_record import OperationRecordNotFoundError
 from daos.operation_record_dao import OperationRecordDAO
 from models.operation_record import OperationRecord
+from views.common.common_view import get_client_ip
 from views.models.operation_record import OperationRecord as OperationRecordModel
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 
@@ -31,7 +33,30 @@ class OperationRecordRule(object):
         operation_record = orm_model_to_view_model(operation_record_db, OperationRecordModel, exclude=[""])
         return operation_record
 
-    async def add_operation_record(self, operation_record: OperationRecordModel):
+    async def add_operation_record(self, operation_record: OperationRecordModel,request=None):
+        """
+           operation_time=datetime.now(),
+            doc_upload='',
+            status='',
+            operator_id=1,  #todo 这里由后续获取当前的用户和名字
+            operator_name='admin',
+            ip= get_client_ip(request),
+
+            process_instance_id= 0
+        :param operation_record:
+        :param request:
+        :return:
+        """
+        # 通用的参数可以 自动获取设置
+        operation_record.operation_time = datetime.now()
+        operation_record.ip = get_client_ip(request)
+        operation_record.operator_id = 1
+        operation_record.operator_name = 'admin'
+        operation_record.process_instance_id = 0
+        operation_record.status = ''
+
+
+
         # exists_operation_record = await self.operation_record_dao.get_operation_record_by_operation_record_name(
         #     operation_record.operation_record_name)
         # if exists_operation_record:
