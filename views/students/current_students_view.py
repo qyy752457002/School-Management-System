@@ -18,7 +18,7 @@ from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
 from rules.students_key_info_change_rule import StudentsKeyInfoChangeRule
 from views.common.common_view import compare_modify_fields, get_client_ip
-from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType
+from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
     StudentEduInfo, StudentTransactionAudit, StudentEduInfoOut
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, \
@@ -392,20 +392,16 @@ class CurrentStudentsBaseInfoView(BaseView):
 
         json_string = json.dumps(log_con, ensure_ascii=False)
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(new_students_base_info.student_id),
-            operator='admin',
-            module=ChangeModule.BASEINFO.value,
-            target=OperationType.STUDENT.value,
+            target=OperationTarget.STUDENT.value,
             action_type=OperationType.MODIFY.value,
-            ip= get_client_ip(request),
+            change_module=ChangeModule.BASIC_INFO_CHANGE.value,
+            change_detail="修改基本信息",
+
+            action_target_id=str(new_students_base_info.student_id),
+
             change_data=json_string,
-            change_field=ChangeModule.BASEINFO.value,
-            change_item=ChangeModule.BASEINFO.value,
-            timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason=OperationType.MODIFY.value+ChangeModule.BASEINFO.value,
-            doc_upload='',
-            status='1',
-            account='', ))
+
+            ))
         return res
 
     async def delete_studentbaseinfo(self, student_id: str = Query(..., title="学生编号", description="学生编号", )):
