@@ -65,6 +65,8 @@ class PlanningSchool(BaseDBModel):
     junior_middle_planning_school_system: Mapped[str] = mapped_column(String(64), nullable=True, comment="初中学制",default='')
     junior_middle_planning_school_entry_age: Mapped[str] = mapped_column(String(64), nullable=True, comment="初中入学年龄",default='')
     senior_middle_planning_school_system: Mapped[str] = mapped_column(String(64), nullable=True, comment="高中学制",default='')
+    process_instance_id: Mapped[int] = mapped_column(nullable=True,default=0, comment="流程ID")
+
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)
     updated_uid: Mapped[int] = mapped_column( nullable=True , comment="操作人",default=0)
 
