@@ -9,6 +9,14 @@ MAJOR_LV3_ENUM_KEY:Final = 'major_lv3'
 DISTRICT_ENUM_KEY:Final = 'country'
 STUDENT_TRANSFER_WORKFLOW_CODE:Final = 's_transfer_in_inner'
 PLANNING_SCHOOL_OPEN_WORKFLOW_CODE:Final = 'p_school_open'
+PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE:Final = 'p_school_close'
+PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE:Final = 'p_school_keyinfo_change'
+SCHOOL_OPEN_WORKFLOW_CODE:Final = 's_school_open'
+SCHOOL_CLOSE_WORKFLOW_CODE:Final = 's_school_close'
+SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE:Final = 's_school_keyinfo_change'
+INSTITUTION_OPEN_WORKFLOW_CODE:Final = 'i_institution_open'
+INSTITUTION_CLOSE_WORKFLOW_CODE:Final = 'i_institution_close'
+INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE:Final = 'i_institution_keyinfo_change'
 
 class UnitType(str, Enum):
     """

@@ -255,8 +255,18 @@ class PlanningSchoolView(BaseView):
 
                           ):
         # print(planning_school)
-        res = await self.planning_school_rule.update_planning_school_status(planning_school_id,
-                                                                            PlanningSchoolStatus.CLOSED.value)
+        # res = await self.planning_school_rule.update_planning_school_status(planning_school_id,
+        #                                                                     PlanningSchoolStatus.CLOSED.value)
+        # 请求工作流
+        planning_school, extra_model = await self.planning_school_rule.get_planning_school_by_id(planning_school_id,
+                                                                                                 PlanningSchoolBaseInfo,)
+
+        res = await self.planning_school_rule.add_planning_school_close_work_flow(planning_school, extra_model,action_reason,related_license_upload)
+        process_instance_id=0
+        if len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+            process_instance_id= res[0]['process_instance_id']
+
+            pass
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(

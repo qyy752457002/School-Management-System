@@ -18,7 +18,8 @@ from views.models.planning_school import PlanningSchool as PlanningSchoolModel, 
 from views.models.planning_school import PlanningSchoolBaseInfo
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 
-from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_OPEN_WORKFLOW_CODE
+from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, \
+    PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE
 
 
 @dataclass_inject
@@ -233,3 +234,32 @@ class PlanningSchoolRule(object):
         print(response,'接口响应')
         return response
         pass
+
+
+    async def add_planning_school_close_work_flow(self, planning_school_flow: PlanningSchoolModel,planning_school_baseinfo: PlanningSchoolBaseInfo,action_reason,related_license_upload):
+        planning_school_flow.id=0
+        data= planning_school_flow
+        datadict =  data.__dict__
+        datadict['process_code'] = PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE
+        datadict['teacher_id'] =  0
+        datadict['applicant_name'] =  'tester'
+        datadict['planning_school_code'] = planning_school_flow.planning_school_code
+        datadict['planning_school_name'] = planning_school_flow.planning_school_name
+        datadict['founder_type_lv3'] =   planning_school_flow.founder_type_lv3
+        datadict['block'] =   planning_school_flow.block
+        datadict['borough'] =   planning_school_flow.borough
+        datadict['planning_school_level'] =   planning_school_flow.planning_school_level
+        datadict['apply_user'] =  'tester'
+        dicta = planning_school_flow.__dict__
+        dicta['action_reason']= action_reason
+        dicta['related_license_upload']= related_license_upload
+        datadict['jason_data'] =  json.dumps(dicta, ensure_ascii=False)
+        apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
+
+        response= None
+        try:
+            response = await send_request(apiname,datadict,'post')
+            print('请求工作流结果',response)
+        except Exception as e:
+            print(e)
+        return response
