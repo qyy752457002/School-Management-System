@@ -139,10 +139,7 @@ class CurrentStudentsView(BaseView):
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info.student_id)
         res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info,stuinfo)
         process_instance_id= node_instance_id =  0
-
-        json_str=''
         if res3 and  len(res3)>0 :
-
             print(res3[0])
             process_instance_id = res3[1]['process_instance_id']
             node_instance_id = res3[1]['node_instance_id']
@@ -244,11 +241,27 @@ class CurrentStudentsView(BaseView):
 
                                            ):
         # print(new_students_key_info)
+
+
         #  新增学生   同时写入 转出和转入 流程 在校生加 年级
         res_student = await self.students_rule.add_student_new_student_transferin(student_baseinfo)
         res_student2 = await self.students_base_info_rule.add_students_base_info(StudentsBaseInfo(student_id=res_student.student_id,edu_number=student_baseinfo.edu_number))
 
         print(res_student)
+
+
+        # 调用审批流 创建
+        student_edu_info_in.student_id= res_student.student_id
+        stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
+        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo)
+        process_instance_id= node_instance_id =  0
+        if res3 and  len(res3)>0 :
+            print(res3[0])
+            process_instance_id = res3[1]['process_instance_id']
+            node_instance_id = res3[1]['node_instance_id']
+
+
+
         # 转出
 
         student_edu_info_out.status = AuditAction.NEEDAUDIT.value
@@ -262,6 +275,7 @@ class CurrentStudentsView(BaseView):
         student_edu_info_in.status = AuditAction.NEEDAUDIT.value
         student_edu_info_in.student_id = res_student.student_id
         student_edu_info_in.relation_id = res_out.id
+        student_edu_info_in.process_instance_id = process_instance_id
         print(res_out.id, 000000)
 
         res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in,
@@ -277,6 +291,16 @@ class CurrentStudentsView(BaseView):
 
                                           ):
         # print(new_students_key_info)
+        # 调用审批流 创建
+        student_edu_info_in.student_id= student_id
+        stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
+        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo)
+        process_instance_id= node_instance_id =  0
+        if res3 and  len(res3)>0 :
+            print(res3[0])
+            process_instance_id = res3[1]['process_instance_id']
+            node_instance_id = res3[1]['node_instance_id']
+
         #      同时写入 转出和转入 流程
         res_student = await self.students_rule.get_students_by_id(student_id)
         print(res_student)
@@ -287,6 +311,7 @@ class CurrentStudentsView(BaseView):
 
         student_edu_info_out.status = AuditAction.NEEDAUDIT.value
         student_edu_info_out.student_id = res_student.student_id
+        student_edu_info_out.process_instance_id = process_instance_id
 
         res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
                                                                               TransactionDirection.OUT.value)
@@ -297,6 +322,8 @@ class CurrentStudentsView(BaseView):
         student_edu_info_in.student_id = res_student.student_id
         student_edu_info_in.relation_id = res_out.id
         # print(  res_out.id,000000)
+        student_edu_info_in.process_instance_id = process_instance_id
+
 
         res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in,
                                                                           TransactionDirection.IN.value, res_out.id)
