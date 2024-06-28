@@ -40,9 +40,11 @@ class ChangeModule(str, Enum):
     """
     操作模块
     创建学校：create_school
+    关闭学校：close_school
     入职：new_entry
     基本信息变更：basic_info_change
     关键信息变更：key_info_change
+    家庭成员信息变更：family_info_change
     调动：transfer
     变动：transaction
     借动：borrow
