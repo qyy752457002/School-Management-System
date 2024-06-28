@@ -212,7 +212,7 @@ class CurrentStudentsView(BaseView):
         # todo 校验是否本人或者老师
 
         # 流乘记录
-        # todo 审批流取消
+        #  审批流取消
         res2 = await self.student_transaction_flow_rule.req_workflow_cancel(transferin_id,)
 
         if res2 is None:

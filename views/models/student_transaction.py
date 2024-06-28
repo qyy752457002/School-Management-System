@@ -120,10 +120,6 @@ class StudentTransactionFlow(BaseModel):
 
 
 class StudentTransactionAudit(BaseModel):
-    # id:int= Query(None, title="", description="id", example='1'),
-    # in_school_id: int = Field(0, title="学校ID", description="学校ID",examples=['1'])
-    # grade_id: int = Field(0, title="年级ID", description="年级ID",examples=['1'])
-    # status: str = Field('', title="",description="状态",examples=[''])
     transferin_audit_id: int = Query(..., description="转入申请id", example='2')
     process_instance_id: int = Query(0, description="流程实例ID", example='2')
     transferin_audit_action: AuditAction = Query(..., description="审批的操作",
