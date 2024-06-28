@@ -130,9 +130,12 @@ class TeachersInfoDao(DAOBase):
                        Teacher.teacher_employer, TeacherInfo.highest_education,
                        TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
                        School.school_name,
-                       TeacherInfo.enter_school_time).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
-                                                           ).join(School, Teacher.teacher_employer == School.id,
-                                                                  ).where(Teacher.teacher_main_status == "employed")
+                       TeacherInfo.enter_school_time, Teacher.is_approval).join(TeacherInfo,
+                                                                                Teacher.teacher_id == TeacherInfo.teacher_id,
+                                                                                ).join(School,
+                                                                                       Teacher.teacher_employer == School.id,
+                                                                                       ).where(
+            Teacher.teacher_main_status == "employed")
 
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))

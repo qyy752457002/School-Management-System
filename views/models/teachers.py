@@ -255,10 +255,10 @@ class TeacherInfo(BaseModel):  # 基本信息
     highest_education: str = Field("", title="最高学历", description="最高学历", example="本科")
     institution_of_highest_education: str = Field("", title="获得最高学历的院校或者机构",
                                                   description="获得最高学历的院校或者机构", example="沈阳师范大学")
-    special_education_start_time: date = Field(..., title="特教开始时间", description="特教开始时间",
+    special_education_start_time: date|None = Field(..., title="特教开始时间", description="特教开始时间",
                                                example="2021-10-10")
-    start_working_date: date = Field(..., title="参加工作年月", description="参加工作年月", example="2010-01-01")
-    enter_school_time: date = Field(..., title="进本校时间", description="进本校时间", example="2010-01-01")
+    start_working_date: date|None = Field(..., title="参加工作年月", description="参加工作年月", example="2010-01-01")
+    enter_school_time: date|None = Field(..., title="进本校时间", description="进本校时间", example="2010-01-01")
     source_of_staff: str = Field(..., title="教职工来源", description="教职工来源", example="招聘")
     staff_category: str = Field(..., title="教职工类别", description="教职工类别", example="教师")
     in_post: bool = Field(..., title="是否在编", description="是否在编")
@@ -785,7 +785,7 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
     招聘方式：recruitment_method
     教职工号：teacher_number
     """
-    teacher_base_id: int = Field(0, title="教师ID", description="教师ID")
+    teacher_base_id: int = Field(-1, title="教师ID", description="教师ID")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     ethnicity: Optional[str] = Field(None, title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家地区", description="国家地区", example="中国")

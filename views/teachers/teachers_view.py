@@ -1,5 +1,5 @@
 from views.models.teachers import NewTeacher, TeacherInfo, RetireTeacherQuery
-from fastapi import Query, Depends
+from fastapi import Query, Depends, Body
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
 
@@ -10,7 +10,7 @@ from mini_framework.web.views import BaseView
 from rules.teachers_rule import TeachersRule
 from rules.teachers_info_rule import TeachersInfoRule
 from views.models.teachers import Teachers, TeacherInfo, CurrentTeacherQueryRe, CurrentTeacherQuery, \
-    CurrentTeacherInfoSaveModel,TeacherApprovalQuery
+    CurrentTeacherInfoSaveModel, TeacherApprovalQuery
 
 
 class TeachersView(BaseView):
@@ -28,7 +28,6 @@ class TeachersView(BaseView):
 
     # 编辑新教职工登记信息
     async def put_teacher(self, teachers: Teachers):
-
         user_id = "asdfasdf"
         new_fields = await self.teacher_rule.update_teachers(teachers, user_id)
         return new_fields
@@ -41,18 +40,18 @@ class TeachersView(BaseView):
         return paging_result
 
     async def page_teacher_info_change_launch(self, teacher_approval_query=Depends(TeacherApprovalQuery),
-                                      page_request=Depends(PageRequest)):
+                                              page_request=Depends(PageRequest)):
         """
         分页查询
         """
         type = 'launch'
         user_id = "asdfasdf"
         paging_result = await self.teacher_rule.query_teacher_info_change_approval(type, teacher_approval_query,
-                                                                                 page_request, user_id)
+                                                                                   page_request, user_id)
         return paging_result
 
     async def page_teacher_info_change_approval(self, teacher_approval_query=Depends(TeacherApprovalQuery),
-                                        page_request=Depends(PageRequest)):
+                                                page_request=Depends(PageRequest)):
         """
         分页查询
         """
@@ -60,7 +59,7 @@ class TeachersView(BaseView):
         user_id = "asdfasdf"
         paging_result = await self.teacher_rule.query_teacher_info_change_approval(type, teacher_approval_query,
 
-                                                                                 page_request, user_id)
+                                                                                   page_request, user_id)
         return paging_result
 
     # 获取教职工基本信息
@@ -74,7 +73,8 @@ class TeachersView(BaseView):
         """
         保存不经过验证
         """
-        res = await self.teacher_info_rule.update_teachers_info_save(teacher_info)
+        user_id = "asdfasdf"
+        res = await self.teacher_info_rule.update_teachers_info_save(teacher_info, user_id)
         return res
 
     async def put_teacherinfo(self, teacher_info: TeacherInfo):
@@ -93,37 +93,37 @@ class TeachersView(BaseView):
         return str(teacher_id)
 
     async def patch_teacher_info_change_approved(self,
-                                                 teacher_id: int = Query(..., title="教师编号", description="教师编号",
-                                                                         example=123),
-                                                 process_instance_id: int = Query(..., title="流程实例id",
-                                                                                  description="流程实例id",
-                                                                                  example=123),
-                                                 reason: str = Query(None, title="审批意见", description="审批意见",
-                                                                     example="同意")):
+                                                 teacher_id: int = Body(..., title="教师编号", description="教师编号",
+                                                                        example=123),
+                                                 process_instance_id: int = Body(..., title="流程实例id",
+                                                                                 description="流程实例id",
+                                                                                 example=123),
+                                                 reason: str = Body(None, title="审批意见", description="审批意见",
+                                                                    example="同意")):
         user_id = "asdfasdf"
         reason = reason
         await self.teacher_rule.teacher_info_change_approved(teacher_id, process_instance_id, user_id, reason)
         return teacher_id
 
     async def patch_teacher_info_change_rejected(self,
-                                                 teacher_id: int = Query(..., title="教师编号", description="教师编号",
-                                                                         example=123),
-                                                 process_instance_id: int = Query(..., title="流程实例id",
-                                                                                  description="流程实例id",
-                                                                                  example=123),
-                                                 reason: str = Query("", title="reason",
-                                                                     description="审核理由")):
+                                                 teacher_id: int = Body(..., title="教师编号", description="教师编号",
+                                                                        example=123),
+                                                 process_instance_id: int = Body(..., title="流程实例id",
+                                                                                 description="流程实例id",
+                                                                                 example=123),
+                                                 reason: str = Body("", title="reason",
+                                                                    description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
         await self.teacher_rule.teacher_info_change_rejected(teacher_id, process_instance_id, user_id, reason)
         return teacher_id
 
     async def patch_teacher_info_change_revoked(self,
-                                                teacher_id: int = Query(..., title="教师编号", description="教师编号",
-                                                                        example=123),
-                                                process_instance_id: int = Query(..., title="流程实例id",
-                                                                                 description="流程实例id",
-                                                                                 example=123),
+                                                teacher_id: int = Body(..., title="教师编号", description="教师编号",
+                                                                       example=123),
+                                                process_instance_id: int = Body(..., title="流程实例id",
+                                                                                description="流程实例id",
+                                                                                example=123),
                                                 ):
         user_id = "asdfasdf"
         await self.teacher_rule.teacher_info_change_revoked(teacher_id, process_instance_id, user_id)

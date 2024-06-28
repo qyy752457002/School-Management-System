@@ -67,6 +67,7 @@ class EmploymentStatus(str, Enum):
     OTHER = "other"
     RETIRE = "retire"
     RETIRE_HONOR = "retire_honor"
+
     @classmethod
     def to_list(cls):
         return [status.value for status in cls]
@@ -156,10 +157,10 @@ class TeacherTransactionUpdateModel(BaseModel):
     transaction_remark: str = Field("", title="备注", description="备注")
     original_position: Optional[str] = Field("", title="原岗位", description="原岗位")
     current_position: Optional[str] = Field("", title="现岗位", description="现岗位")
-    position_date: Optional[date]|None = Field(None, title="任职日期", description="任职日期")
+    position_date: Optional[date] | None = Field(None, title="任职日期", description="任职日期")
     operator_name: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    transaction_time: datetime|None = Field(..., title="操作时间", description="操作时间")
+    transaction_time: datetime | None = Field(..., title="操作时间", description="操作时间")
     process_id: int = Field(..., title="流程ID", description="流程ID")
 
 
@@ -219,6 +220,7 @@ class TeacherAddModel(BaseModel):
     teacher_id_number: str = Field(..., title="证件号码", description="证件号码")
     teacher_gender: Gender = Field(..., title="性别", description="性别")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
+    teacher_number: str = Field(..., title="教职工号", description="教职工号")
 
 
 class TeacherAddReModel(BaseModel):
@@ -323,6 +325,7 @@ class TransferDetailsModel(BaseModel):
     调动类型：transfer_type
     流程id：process_instance_id
     """
+
     original_unit_id: Optional[int] = Field(None, title="原单位", description="原单位")
     original_position: str = Field("", title="原岗位", description="原岗位")
     original_district_province_id: Optional[int] = Field(..., title="原行政属地省", description="原行政属地省")
@@ -331,6 +334,7 @@ class TransferDetailsModel(BaseModel):
     original_region_province_id: Optional[int] = Field(..., title="原管辖区域省", description="原管辖区域省")
     original_region_city_id: Optional[int] = Field(..., title="原管辖区域市", description="原管辖区域市")
     original_region_area_id: Optional[int] = Field(..., title="原管辖区域区", description="原管辖区域区")
+    original_unit_name: Optional[str] = Field("", title="原单位", description="原单位")
     transfer_in_date: Optional[date] = Field(None, title="调入日期", description="调入日期")
 
     current_unit_id: int = Field(..., title="现单位", description="现单位")
@@ -369,6 +373,23 @@ class TransferDetailsReModel(TransferDetailsModel):
     操作时间：operation_time
     """
     transfer_details_id: int = Field(..., title="transfer_details_id", description="transfer_details_id")
+
+
+class TransferAndBorrowExtraModel(BaseModel):
+    original_district_province_name: Optional[str] | None = Field("", title="原行政属地省", description="原行政属地省")
+    original_district_city_name: Optional[str] | None = Field("", title="原行政属地市", description="原行政属地市")
+    original_district_area_name: Optional[str] | None = Field("", title="原行政属地区", description="原行政属地区")
+    original_region_province_name: Optional[str] = Field("", title="原管辖区域省", description="原管辖区域省")
+    original_region_city_name: Optional[str] = Field("", title="原管辖区域市", description="原管辖区域市")
+    original_region_area_name: Optional[str] = Field("", title="原管辖区域区", description="原管辖区域区")
+    current_district_province_name: Optional[str] | None = Field("", title="现行政属地省", description="现行政属地省")
+    current_district_city_name: Optional[str] | None = Field("", title="现行政属地市", description="现行政属地市")
+    current_district_area_name: Optional[str] | None = Field("", title="现行政属地区", description="现行政属地区")
+    current_region_province_name: Optional[str]| None = Field("", title="现管辖区域省", description="现管辖区域省")
+    current_region_city_name: Optional[str]| None = Field("", title="现管辖区域市", description="现管辖区域市")
+    current_region_area_name: Optional[str]| None = Field("", title="现管辖区域区", description="现管辖区域区")
+    original_unit_name: Optional[str] | None = Field("", title="原单位", description="原单位")
+    current_unit_name: Optional[str] | None = Field("", title="现单位", description="现单位")
 
 
 class TransferDetailsGetModel(BaseModel):

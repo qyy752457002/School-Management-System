@@ -39,19 +39,18 @@ class TransferDetailsView(BaseView):
                                        add_teacher: Optional[TeacherAddModel] = None,
                                        transfer_inner: bool = Query(True, title="transfer_status",
                                                                     description="transfer_status",
-                                                                    example=True),
+                                                                    example=True)
                                        ):
         """
         调入
         """
+        user_id = "asdfasdf"
         if not transfer_inner:  # 如果是系统外转系统内
             if add_teacher != None:
-                user_id = "asdfasdf"
-                await self.teacher_rule.add_teachers(add_teacher, user_id)
+                await self.transfer_details_rule.add_transfer_in_outer_details(add_teacher, transfer_details, user_id)
             else:
                 raise Exception("请填写老师信息")
-        user_id = "asdfasdf"
-        res = await self.transfer_details_rule.add_transfer_in_details(transfer_details, user_id, transfer_inner)
+        res = await self.transfer_details_rule.add_transfer_in_inner_details(transfer_details, user_id)
         return res
 
     async def post_transfer_out_details(self, transfer_details: TransferDetailsModel):
@@ -61,15 +60,15 @@ class TransferDetailsView(BaseView):
         res = await self.transfer_details_rule.add_transfer_out_details(transfer_details)
         return res
 
-    async def delete_transfer_details(self,
-                                      transfer_details_id: int = Query(None, title="transfer_detailsID",
-                                                                       description="transfer_detailsID", example=1234)
-                                      ):
-        await self.transfer_details_rule.delete_transfer_details(transfer_details_id)
+    # async def delete_transfer_details(self,
+    #                                   transfer_details_id: int = Query(None, title="transfer_detailsID",
+    #                                                                    description="transfer_detailsID", example=1234)
+    #                                   ):
+    #     await self.transfer_details_rule.delete_transfer_details(transfer_details_id)
 
-    async def put_transfer_details(self, transfer_details: TransferDetailsReModel):
-        res = await self.transfer_details_rule.update_transfer_details(transfer_details)
-        return res
+    # async def put_transfer_details(self, transfer_details: TransferDetailsReModel):
+    #     res = await self.transfer_details_rule.update_transfer_details(transfer_details)
+    #     return res
 
     async def get_transfer_details_all(self, teacher_id: int = Query(None, title="transfer_ID",
                                                                      description="transfer_ID", example=1234)):
@@ -140,8 +139,8 @@ class TransferDetailsView(BaseView):
     #     return res
 
     async def patch_transfer_approved(self,
-                                      transfer_details_id: int = Query(None, title="transfer_detailsID",
-                                                                       description="transfer_detailsID", example=1234),
+                                      teacher_id: int = Query(None, title="transfer_detailsID",
+                                                              description="transfer_detailsID", example=1234),
                                       process_instance_id: int = Query(..., title="流程实例id",
                                                                        description="流程实例id",
                                                                        example=123),
@@ -150,7 +149,7 @@ class TransferDetailsView(BaseView):
 
         user_id = "sadklfh"
         reason = reason
-        res = await self.transfer_details_rule.transfer_approved(transfer_details_id, process_instance_id, user_id,
+        res = await self.transfer_details_rule.transfer_approved(teacher_id, process_instance_id, user_id,
                                                                  reason)
         return res
 
@@ -212,6 +211,7 @@ class TeacherTransactionView(BaseView):
         parameters = {"user_id": "sadklfh", "action": "approved"}
         res = await self.teacher_transaction_rule.process_teacher_transaction_work_flow(node_instance_id, parameters)
         return res
+
     # 教师 异动接口
     async def post_teacher_transaction(self, teacher_transaction: TeacherTransactionModel):
         res = await self.teacher_transaction_rule.add_teacher_transaction(teacher_transaction)
@@ -318,7 +318,7 @@ class TeacherBorrowView(BaseView):
         """
         借出
         """
-        res = await self.teacher_borrow_rule.add_transfer_out_details(teacher_borrow)
+        res = await self.teacher_borrow_rule.add_teacher_borrow_out(teacher_borrow)
         return res
 
     async def delete_teacher_borrow(self,

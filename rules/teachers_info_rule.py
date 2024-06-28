@@ -9,7 +9,7 @@ from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel
     CurrentTeacherQuery, CurrentTeacherQueryRe, CurrentTeacherInfoSaveModel, NewTeacherInfoSaveModel, \
     TeacherInfoCreateModel, TeacherApprovalQuery, TeacherApprovalQueryRe, NewTeacherApprovalCreate, Teachers
 from sqlalchemy import select, func, update
-from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError
+from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError,QueryError
 from daos.teachers_dao import TeachersDao
 from views.models.organization import OrganizationMembers
 from rules.organization_memebers_rule import OrganizationMembersRule
@@ -71,20 +71,20 @@ class TeachersInfoRule(object):
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
-        teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
-        teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
-                                                         exclude=[""])
-        params = {"process_code": "t_entry", "applicant_name": user_id}
-        await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
-            teachers_info.teacher_id)
-        await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
-        organization = OrganizationMembers()
-        organization.id = None
-        organization.org_id = teachers_info.org_id
-        organization.teacher_id = teachers_info.teacher_id
-        organization.member_type = None
-        organization.identity = None
-        await self.organization_members_rule.add_organization_members(organization)
+        # teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
+        # teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
+        #                                                  exclude=[""])
+        # params = {"process_code": "t_entry", "applicant_name": user_id}
+        # await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
+        #     teachers_info.teacher_id)
+        # await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
+        # organization = OrganizationMembers()
+        # organization.id = None
+        # organization.org_id = teachers_info.org_id
+        # organization.teacher_id = teachers_info.teacher_id
+        # organization.member_type = None
+        # organization.identity = None
+        # await self.organization_members_rule.add_organization_members(organization)
         return teachers_info
 
     async def add_teachers_info_import(self, teachers_info: TeacherInfoCreateModel):
@@ -106,14 +106,11 @@ class TeachersInfoRule(object):
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, TeachersInfoModel, exclude=[""])
-        try:
-            teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
-
-            teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
-                                                             exclude=[""])
-        except Exception as e:
-            TeacherInfoExitError()
-
+        teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
+        if not teacher_entry_approval_db:
+            raise QueryError()
+        teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
+                                                         exclude=[""])
         params = {"process_code": "t_entry", "applicant_name": user_id}
         teacher_entry_approval.teacher_sub_status = "submitted"
         await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
@@ -145,7 +142,8 @@ class TeachersInfoRule(object):
             await self.organization_members_rule.add_organization_members(organization)
         return teachers_info
 
-    async def update_teachers_info(self, teachers_info, user_id):
+
+    async def update_teachers_info(self, teachers_info:TeacherInfoSubmit, user_id):
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
         if not exits_teacher:
             raise TeacherNotFoundError()
@@ -203,13 +201,13 @@ class TeachersInfoRule(object):
                 process_instance_id=0)
             await self.operation_record_rule.add_operation_record(teacher_base_info_log)
 
-        # organization = OrganizationMembers()
-        # organization.id = None
-        # organization.org_id = teachers_info.org_id
-        # organization.teacher_id = teachers_info.teacher_id
-        # organization.member_type = None
-        # organization.identity = None
-        # await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
+        organization = OrganizationMembers()
+        organization.id = None
+        organization.org_id = teachers_info.org_id
+        organization.teacher_id = teachers_info.teacher_id
+        organization.member_type = None
+        organization.identity = None
+        await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
         return teachers_info
 
     async def update_teachers_info_save(self, teachers_info, user_id):
@@ -229,17 +227,16 @@ class TeachersInfoRule(object):
         teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
                                                          exclude=[""])
         params = {"process_code": "t_entry", "applicant_name": user_id}
-        await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
         await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
             teacher_entry_approval.teacher_id)
-
-        organization = OrganizationMembers()
-        organization.id = None
-        organization.org_id = teachers_info.org_id
-        organization.teacher_id = teachers_info.teacher_id
-        organization.member_type = None
-        organization.identity = None
-        await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
+        await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
+        # organization = OrganizationMembers()
+        # organization.id = None
+        # organization.org_id = teachers_info.org_id
+        # organization.teacher_id = teachers_info.teacher_id
+        # organization.member_type = None
+        # organization.identity = None
+        # await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
         return teachers_info
 
     # 删除单个教职工基本信息
@@ -275,3 +272,5 @@ class TeachersInfoRule(object):
         if teachers.teacher_sub_status != "submitted":
             teachers.teacher_sub_status = "submitted"
         return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
+
+
