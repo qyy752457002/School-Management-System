@@ -1,4 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+import traceback
+
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -154,6 +156,16 @@ class SystemRule(object):
         params = {"applicant_name": user_id, "process_code": process_code, }
         params= {**params,**query_model.dict()}
         print('params--',params)
-        paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
-                                                                                      result_model, params)
-        return paging
+        paging=None
+        try:
+            paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
+                                                                                          result_model, params)
+            return paging
+        except Exception as e:
+            print('异常',e,)
+            traceback.print_exc()
+            # return None
+            return e
+
+
+        # return paging

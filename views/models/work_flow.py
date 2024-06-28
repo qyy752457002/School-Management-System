@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, model_validator
 from datetime import date, datetime
 from fastapi import Query
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 
 class WorkFlowInstanceStatus(str, Enum):
@@ -154,7 +154,8 @@ class WorkFlowInstanceQueryModel(BaseModel):
     apply_user: Optional[str] = Query("",title="", description="")
     planning_school_code: Optional[str] = Query("", title="", description="")
     planning_school_name: Optional[str] = Query("", title="", description="")
-    founder_type_lv3: Optional[str|None] = Query("", title="", description="")
+    # founder_type_lv3: Optional[str|None] = Query("", title="", description="")
+    founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",)
     block: Optional[str] = Query("", title="", description="")
     borough: Optional[str] = Query("", title="", description="")
     planning_school_level: Optional[str] = Query("", title="", description="")
