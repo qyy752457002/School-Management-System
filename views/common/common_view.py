@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from mini_framework.design_patterns.singleton import singleton
 from daos.enum_value_dao import EnumValueDAO
@@ -101,3 +101,11 @@ class WorkflowServiceConfig:
 
 
 workflow_service_config = WorkflowServiceConfig()
+
+
+
+def convert_dates_to_strings(stuinfoadddict):
+    for key, value in stuinfoadddict.items():
+        if isinstance(value, (date, datetime)):
+            stuinfoadddict[key] = value.strftime("%Y-%m-%d %H:%M:%S")
+    return stuinfoadddict

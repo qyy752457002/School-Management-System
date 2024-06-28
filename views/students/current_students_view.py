@@ -253,12 +253,15 @@ class CurrentStudentsView(BaseView):
         # 调用审批流 创建
         student_edu_info_in.student_id= res_student.student_id
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
-        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo)
+        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo,res_student,res_student2)
         process_instance_id= node_instance_id =  0
         if res3 and  len(res3)>0 :
             print(res3[0])
             process_instance_id = res3[1]['process_instance_id']
             node_instance_id = res3[1]['node_instance_id']
+        else:
+            return {'调用 审批流 失败'}
+            pass
 
 
 

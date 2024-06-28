@@ -151,6 +151,7 @@ class PlanningSchoolBaseInfoOptional(BaseModel):
     sy_zones: str = Field(None, title="", description="属地管理行政部门所在地地区", examples=['铁西区'])
     historical_evolution: str = Field(None, title="", description="历史沿革", examples=['xxxxxxxxxxxxxxxxxxxx'])
     status: str = Field(None, title="", description="", examples=[''])
+    process_instance_id: int = Field(None, title="", description="", examples=[''])
 
 
 class PlanningSchoolKeyAddInfo(BaseModel):
