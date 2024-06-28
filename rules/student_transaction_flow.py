@@ -233,7 +233,7 @@ class StudentTransactionFlowRule(object):
 
             student_transaciton = StudentTransaction(id=audit_info.transferin_audit_id,
                                                      status=audit_info.transferin_audit_action.value, )
-            res2 = await transrule.student_transaction_rule.deal_student_transaction(student_transaciton)
+            res2 = await transrule.deal_student_transaction(student_transaciton)
 
             pass
 
@@ -261,7 +261,7 @@ class StudentTransactionFlowRule(object):
 
         print('参数', url, datadict, headerdict)
         # 字典参数
-        datadict ={"user_id":"11","action":"rejected"}
+        datadict ={"user_id":"11","action":"revoke"}
 
         response = await httpreq.post_json(url,datadict,headerdict)
         print(response,'接口响应')

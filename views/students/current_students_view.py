@@ -173,6 +173,10 @@ class CurrentStudentsView(BaseView):
         # 读取转学信息
         # student_transaction=await self.student_transaction_rule.get_student_transaction_by_id(audit_info.transferin_audit_id)
         resultra = await self.student_transaction_flow_rule.exe_student_transaction(audit_info,)
+        if resultra is None:
+            return {}
+        if isinstance(resultra, str):
+            return {resultra}
 
         # print(new_students_key_info)
         return resultra

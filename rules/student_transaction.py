@@ -40,7 +40,7 @@ class StudentTransactionRule(object):
     async def get_student_transaction_by_id(self, student_transaction_id)->StudentTransactionModel:
         student_transaction_db = await self.student_transaction_dao.get_studenttransaction_by_id(student_transaction_id)
         # 可选 , exclude=[""]
-        print(vars(student_transaction_db))
+        # print(vars(student_transaction_db))
         student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel,other_mapper={"student_no": "edu_number",})
 
         return student_transaction
