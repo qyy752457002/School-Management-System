@@ -8,13 +8,14 @@ from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers import Teacher
 from views.common.common_view import check_id_number
 from views.models.teachers import Teachers as TeachersModel
-from views.models.teachers import TeachersCreatModel, TeacherInfoCreateModel, TeacherCreateResultModel, CombinedModel, \
+from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherCreateResultModel, CombinedModel, \
     TeacherInfoCreateResultModel, TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
     NewTeacherApprovalCreate
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError, ApprovalStatusError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
 from rules.teachers_info_rule import TeachersInfoRule
-from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, TeacherChangeLogQueryModel
+from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, TeacherChangeLogQueryModel, \
+    CurrentTeacherInfoSaveModel
 
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
@@ -41,6 +42,7 @@ from views.models.operation_record import OperationRecord, OperationTarget, Chan
 from rules.operation_record import OperationRecordRule
 from daos.operation_record_dao import OperationRecordDAO
 from views.common.common_view import compare_modify_fields
+from models.teachers_info import TeacherInfo
 
 import os
 
@@ -97,12 +99,7 @@ class TeachersRule(object):
 
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         teachers_work = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
-        # try:
-        #     teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers.teacher_id)
-        #     teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
-        #                                                      exclude=[""])
-        # except Exception as e:
-        #     raise IdCardError()
+
         params = {"process_code": "t_entry", "applicant_name": user_id}
         await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
             teachers_work.teacher_id)
@@ -122,7 +119,12 @@ class TeachersRule(object):
             operator_name=user_id,
             process_instance_id=work_flow_instance["process_instance_id"])
         await self.operation_record_rule.add_operation_record(teacher_entry_log)
-        return teachers_work
+        teachers_info = TeacherInfoSaveModel(teacher_id=teachers_work.teacher_id)
+        teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
+        teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
+        teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
+        teacher_base_id = teachers_info.teacher_base_id
+        return teachers_work, teacher_base_id
 
     async def query_teacher_operation_record_with_page(self, query_model: TeacherChangeLogQueryModel,
                                                        page_request: PageRequest):

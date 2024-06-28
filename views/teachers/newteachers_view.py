@@ -31,8 +31,11 @@ class NewTeachersView(BaseView):
     async def post_newteacher(self, teachers: TeachersCreatModel):
         print(teachers)
         user_id = "asdfasdf"
-        res = await self.teacher_rule.add_teachers(teachers, user_id)
-        return res
+        res, teacher_base_id = await self.teacher_rule.add_teachers(teachers, user_id)
+        result = {}
+        result.update(res)
+        result.update({"teacher_base_id": teacher_base_id})
+        return result
 
     async def delete_newteacher(self, teacher_id: int = Query(..., title="教师编号", description="教师编号")):
         """
@@ -71,12 +74,8 @@ class NewTeachersView(BaseView):
         保存不经过验证
         """
         user_id = "asdfasdf"
-        exits = await self.teacher_info_rule.get_teachers_info_by_teacher_id_exit(teacher_info.teacher_id)
-        print(exits)
-        if exits:
-            res = await self.teacher_info_rule.update_teachers_info_save(teacher_info, user_id)
-        else:
-            res = await self.teacher_info_rule.add_teachers_info(teacher_info, user_id)
+        res = await self.teacher_info_rule.update_teachers_info_save(teacher_info, user_id)
+
         return res
 
     async def get_newteacherinfo(self, teacher_id: int = Query(..., title="教师名称", description="教师名称",
@@ -93,8 +92,8 @@ class NewTeachersView(BaseView):
     #     return res
 
     async def put_newteacherinforesave(self, teacher_info: CurrentTeacherInfoSaveModel):
-
-        res = await self.teacher_info_rule.update_teachers_info_save(teacher_info)
+        user_id = "asdfasdf"
+        res = await self.teacher_info_rule.update_teachers_info_save(teacher_info, user_id)
         return res
 
     async def page_teacher_operation_record_with_page(self, query_model=Depends(TeacherChangeLogQueryModel),
@@ -130,7 +129,7 @@ class NewTeachersView(BaseView):
     async def patch_entry_approved(self,
                                    teacher_id: int = Body(..., title="教师编号", description="教师编号", example=123),
                                    process_instance_id: int = Body(..., title="流程实例id", description="流程实例id",
-                                                                    example=123),
+                                                                   example=123),
                                    reason: str = Body(None, title="审批意见", description="审批意见", example="同意")):
         user_id = "asdfasdf"
         reason = reason
@@ -140,9 +139,9 @@ class NewTeachersView(BaseView):
     async def patch_entry_rejected(self,
                                    teacher_id: int = Body(..., title="教师编号", description="教师编号", example=123),
                                    process_instance_id: int = Body(..., title="流程实例id", description="流程实例id",
-                                                                    example=123),
+                                                                   example=123),
                                    reason: str = Body("", title="reason",
-                                                       description="审核理由")):
+                                                      description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
         await self.teacher_rule.entry_rejected(teacher_id, process_instance_id, user_id, reason)
@@ -151,7 +150,7 @@ class NewTeachersView(BaseView):
     async def patch_entry_revoked(self,
                                   teacher_id: int = Body(..., title="教师编号", description="教师编号", example=123),
                                   process_instance_id: int = Body(..., title="流程实例id", description="流程实例id",
-                                                                   example=123),
+                                                                  example=123),
                                   ):
         """
         撤回
@@ -263,7 +262,6 @@ class NewTeachersView(BaseView):
     #                                                                                             description="审核理由")):
     #     parameters = {"user_id": "1243ewrwe", "action": "approved", "description": reason}
     #     res=await self.teacher_work_flow_instance_rule.process_transaction_work_flow(node_instance_id, parameters)
-
 
     # async def patch_work_flow_status_by_params(self, process_instance_id: int = Query(..., title="流程实例id",
     #                                                                                   description="流程实例id"),
