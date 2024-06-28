@@ -297,9 +297,10 @@ class PlanningSchoolRule(object):
         pass
 
     async def deal_planning_school(self,process_instance_id ,action, ):
-        # todo 读取流程实例ID
+        #  读取流程实例ID
+        planning_school = await self.planning_school_dao.get_planning_school_by_process_instance_id(process_instance_id)
         if action=='open':
-            res = await self.update_planning_school_status(planning_school_id,  PlanningSchoolStatus.OPENING.value, 'open')
+            res = await self.update_planning_school_status(planning_school.id,  PlanningSchoolStatus.OPENING.value, 'open')
 
         # res = await self.update_planning_school_status(planning_school_id,  PlanningSchoolStatus.NORMAL.value, 'open')
 

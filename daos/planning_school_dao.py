@@ -14,6 +14,11 @@ class PlanningSchoolDAO(DAOBase):
         result = await session.execute(select(PlanningSchool).where(PlanningSchool.id == planning_school_id))
         return result.scalar_one_or_none()
 
+    async def get_planning_school_by_process_instance_id(self, planning_school_id):
+        session = await self.slave_db()
+        result = await session.execute(select(PlanningSchool).where(PlanningSchool.process_instance_id == planning_school_id))
+        return result.scalar()
+
     async def get_planning_school_by_planning_school_name(self, planning_school_name):
         session = await self.slave_db()
         result = await session.execute(
