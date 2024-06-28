@@ -2,6 +2,10 @@
 import json
 from urllib.parse import urlencode
 
+from fastapi.params import Query
+
+# from fastapi import Query
+
 from distribute_transaction_lib.transaction import TransactionNode
 
 from distribute_transaction_lib import DistributedTransactionCore
@@ -168,7 +172,14 @@ class StudentTransactionFlowRule(object):
         datadict['edu_number'] =   student_transaction_flow.edu_number
         datadict['school_name'] =   student_transaction_flow.school_name
         datadict['apply_user'] =  'tester'
-        datadict['jason_data'] =  json.dumps(student_transaction_flow.__dict__, ensure_ascii=False)
+        dicta = student_transaction_flow.__dict__
+        # 检查字典  如果哪个值为query 则设为none
+        for key, value in datadict.items():
+            if isinstance(value,Query) or isinstance(value,tuple):
+                dicta[key] = None
+        print('999', dicta)
+
+        datadict['jason_data'] =  json.dumps(dicta, ensure_ascii=False)
         # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
         url=url+apiname
