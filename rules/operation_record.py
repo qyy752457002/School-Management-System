@@ -80,19 +80,21 @@ class OperationRecordRule(object):
 
     async def query_operation_record_with_page(self, page_request: PageRequest, target, action_target_id,
                                                operator_name,
-                                               operator_id, change_module, action_type):
+                                               operator_id, change_module, action_type,process_instance_id):
         # 获取分页数据
         kdict = dict()
         if target:
             kdict["target"] = target.value
         if action_target_id:
             kdict["action_target_id"] = action_target_id
+        if process_instance_id:
+            kdict["process_instance_id"] = process_instance_id
         if operator_name:
-            kdict["operator"] = operator_name
+            kdict["operator_name"] = operator_name
         if operator_id:
             kdict["created_uid"] = operator_id
         if change_module:
-            kdict["module"] = change_module.value
+            kdict["change_module"] = change_module.value
         if action_type:
             kdict["action_type"] = action_type.value
 

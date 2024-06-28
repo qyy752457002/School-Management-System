@@ -1,4 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+import traceback
+
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -7,7 +9,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.permission_menu_dao import PermissionMenuDAO
 from daos.roles_dao import RolesDAO
 from models.permission_menu import PermissionMenu
-
+from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 
 from views.models.sub_system import SubSystem as SubSystemModel
 from views.models.permission_menu import PermissionMenu as PermissionMenuModel
@@ -16,6 +18,7 @@ from views.models.permission_menu import PermissionMenu as PermissionMenuModel
 class SystemRule(object):
     permission_menu_dao: PermissionMenuDAO
     roles_dao: RolesDAO
+    teacher_work_flow_rule: TeacherWorkFlowRule
 
     async def get_system_by_id(self, system_id):
         system_db = await self.system_dao.get_subsystem_by_id(system_id)
@@ -147,3 +150,22 @@ class SystemRule(object):
 
         # print(dict(paging))
         return res,title
+
+    # 通用型 工作流获取方法
+    async def query_workflow_with_page(self, query_model, page_request: PageRequest, user_id=None,process_code=None,result_model=None):
+        params = {"applicant_name": user_id, "process_code": process_code, }
+        params= {**params,**query_model.dict()}
+        print('params--',params)
+        paging=None
+        try:
+            paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
+                                                                                          result_model, params)
+            return paging
+        except Exception as e:
+            print('异常',e,)
+            traceback.print_exc()
+            # return None
+            return e
+
+
+        # return paging

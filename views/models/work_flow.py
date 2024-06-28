@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, model_validator
 from datetime import date, datetime
 from fastapi import Query
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 
 class WorkFlowInstanceStatus(str, Enum):
@@ -147,7 +147,22 @@ class WorkFlowInstanceQueryModel(BaseModel):
     borrow_out_date: Optional[date] = Query(None, title="借出日期", description="借出日期")
     transfer_out_date: Optional[date] = Query(None, title="调出日期", description="调出日期")
     json_data: Optional[str] = Query("", title="json数据", description="json数据")
-
+    student_name: Optional[str] = Query("",title="", description="")
+    school_name: Optional[str] = Query("",title="", description="")
+    student_gender: Optional[str] = Query("",title="", description="")
+    edu_number: Optional[str] = Query("",title="", description="")
+    apply_user: Optional[str] = Query("",title="", description="")
+    planning_school_code: Optional[str] = Query("", title="", description="")
+    planning_school_name: Optional[str] = Query("", title="", description="")
+    # founder_type_lv3: Optional[str|None] = Query("", title="", description="")
+    founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",)
+    block: Optional[str] = Query("", title="", description="")
+    borough: Optional[str] = Query("", title="", description="")
+    planning_school_level: Optional[str] = Query("", title="", description="")
+    school_no: Optional[str] = Query("", title="", description="")
+    school_level: Optional[str] = Query("", title="", description="")
+    social_credit_code: Optional[str] = Query("", title="", description="")
+    institution_name: Optional[str] = Query("", title="", description="")
 
 class WorkFlowInstanceQueryReModel(BaseModel):
     process_instance_id: int = Field(..., title="流程实例id", description="流程实例id")
@@ -197,3 +212,19 @@ class WorkFlowInstanceQueryReModel(BaseModel):
     borrow_out_date: Optional[date] = Field(None, title="借出日期", description="借出日期")
     transfer_out_date: Optional[date] = Field(None, title="调出日期", description="调出日期")
     json_data: Optional[str] = Field("", title="json数据", description="json数据")
+
+    student_name: Optional[str] = Field("", title="", description="")
+    school_name: Optional[str] = Field("", title="", description="")
+    student_gender: Optional[str] = Field("", title="", description="")
+    edu_number: Optional[str] = Field("", title="", description="")
+    apply_user: Optional[str] = Field("", title="", description="")
+    planning_school_code: Optional[str] = Field("", title="", description="")
+    planning_school_name: Optional[str] = Field("", title="", description="")
+    founder_type_lv3: Optional[str|None] = Field("", title="", description="")
+    block: Optional[str] = Field("", title="", description="")
+    borough: Optional[str] = Field("", title="", description="")
+    planning_school_level: Optional[str] = Field("", title="", description="")
+    school_no: Optional[str] = Field("", title="", description="")
+    school_level: Optional[str] = Field("", title="", description="")
+    social_credit_code: Optional[str] = Field("", title="", description="")
+    institution_name: Optional[str] = Field("", title="", description="")

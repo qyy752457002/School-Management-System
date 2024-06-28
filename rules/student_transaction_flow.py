@@ -174,21 +174,17 @@ class StudentTransactionFlowRule(object):
         url=url+apiname
         headerdict = {
             "accept": "application/json",
-            # "Authorization": "{{bear}}",
             "Content-Type": "application/json"
         }
         # 如果是query 需要拼接参数
         # url+=  ('?' +urlencode(datadict))
-
         print('参数', url, datadict,headerdict)
         response= None
-
         try:
             response = await httpreq.post_json(url,datadict,headerdict)
             print(response)
         except Exception as e:
             print(e)
-
         return response
 
     # 处理流程审批 的 操作
@@ -236,8 +232,12 @@ class StudentTransactionFlowRule(object):
             # await transrule.deal_student_transaction(student_edu_info)
 
             student_transaciton = StudentTransaction(id=audit_info.transferin_audit_id,
-                                                     status=audit_info.transferin_audit_action.value, )
-            res2 = await transrule.student_transaction_rule.deal_student_transaction(student_transaciton)
+                                                     status=audit_info.transferin_audit_action.value,process_instance_id=audit_info.process_instance_id, )
+            if student_transaciton.process_instance_id>0:
+
+                res2 = await transrule.deal_student_transaction(student_transaciton)
+            else:
+                print('请传流程ID前段或者工作流返回它必须 ')
 
             pass
 
@@ -265,7 +265,7 @@ class StudentTransactionFlowRule(object):
 
         print('参数', url, datadict, headerdict)
         # 字典参数
-        datadict ={"user_id":"11","action":"rejected"}
+        datadict ={"user_id":"11","action":"revoke"}
 
         response = await httpreq.post_json(url,datadict,headerdict)
         print(response,'接口响应')
