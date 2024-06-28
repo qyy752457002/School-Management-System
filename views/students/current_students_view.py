@@ -191,6 +191,8 @@ class CurrentStudentsView(BaseView):
 
         if res2 is None:
             return {}
+        if isinstance(res2, str):
+            return {res2}
 
         # print(new_students_key_info)
         return res2
