@@ -1,5 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import json
+import traceback
 from urllib.parse import urlencode
 
 from fastapi.params import Query
@@ -23,7 +24,7 @@ from models.student_transaction import AuditAction
 from models.student_transaction_flow import StudentTransactionFlow
 from rules.student_transaction import StudentTransactionRule
 from rules.students_rule import StudentsRule
-from views.common.common_view import workflow_service_config
+from views.common.common_view import workflow_service_config, convert_dates_to_strings
 from views.models.student_transaction import StudentTransactionFlow as StudentTransactionFlowModel, StudentEduInfo, \
     StudentTransactionAudit, StudentTransaction
 from views.models.students import StudentsKeyinfoDetail
@@ -173,8 +174,13 @@ class StudentTransactionFlowRule(object):
         datadict['edu_number'] =   student_transaction_flow.edu_number
         datadict['school_name'] =   student_transaction_flow.school_name
         datadict['apply_user'] =  'tester'
-        datadict['student_info'] =  stuinfoadd.__dict__
-        datadict['student_base_info'] =  stubaseinfo.__dict__
+        stuinfoadddict =  stuinfo.__dict__
+        # stuinfoadddictstr= JsonUtils.dict_to_json_str(stuinfoadddict)
+        datadict['student_info'] =  convert_dates_to_strings(stuinfoadddict)
+        print(111,stuinfoadddict,datadict['student_info'] )
+
+        # datadict['student_info'] =  JsonUtils.json_str_to_dict(JsonUtils.dict_to_json_str(stuinfoadd.__dict__))
+        datadict['student_base_info'] = convert_dates_to_strings(stubaseinfo.__dict__)
         dicta = student_transaction_flow.__dict__
         # 检查字典  如果哪个值为query 则设为none birthday registration_date enrollment_date
         for key, value in dicta.items():
@@ -196,14 +202,19 @@ class StudentTransactionFlowRule(object):
         }
         # 如果是query 需要拼接参数
         # url+=  ('?' +urlencode(datadict))
+        # datadict =  JsonUtils.dict_to_json_str(datadict)
+
         print('参数', url, datadict,headerdict)
         response= None
         try:
             response = await httpreq.post_json(url,datadict,headerdict)
-            print(response)
+            print('api结果',response)
+            return response
         except Exception as e:
-            print(e)
-        return response
+            print('api异常',e)
+            traceback.print_exc()
+            return None
+
 
     # 处理流程审批 的 操作
     async def exe_student_transaction(self,audit_info):

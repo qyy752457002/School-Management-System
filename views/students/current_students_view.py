@@ -259,6 +259,9 @@ class CurrentStudentsView(BaseView):
             print(res3[0])
             process_instance_id = res3[1]['process_instance_id']
             node_instance_id = res3[1]['node_instance_id']
+        else:
+            return {'调用 审批流 失败'}
+            pass
 
 
 
