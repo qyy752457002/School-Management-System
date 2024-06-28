@@ -206,7 +206,8 @@ class StudentTransactionRule(object):
         if student_gender:
             datadict["student_gender"] = student_gender
         if school_id:
-            datadict["school_id"] = school_id
+            school_info=await self.school_dao.get_school_by_id(school_id)
+            datadict["school_name"] = school_info.school_name
         if apply_user:
             datadict["applicant_name"] = apply_user
         if edu_no:
