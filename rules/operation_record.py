@@ -88,11 +88,11 @@ class OperationRecordRule(object):
         if action_target_id:
             kdict["action_target_id"] = action_target_id
         if operator_name:
-            kdict["operator"] = operator_name
+            kdict["operator_name"] = operator_name
         if operator_id:
             kdict["created_uid"] = operator_id
         if change_module:
-            kdict["module"] = change_module.value
+            kdict["change_module"] = change_module.value
         if action_type:
             kdict["action_type"] = action_type.value
 
