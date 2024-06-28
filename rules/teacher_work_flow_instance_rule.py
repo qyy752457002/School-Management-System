@@ -140,6 +140,21 @@ class TeacherWorkFlowRule(object):
         result = await httpreq.get_json(url, headerdict)
         return result
 
+    async def get_work_flow_define(self, process_instance_id):
+        httpreq = HTTPRequest()
+        url = workflow_service_config.workflow_config.get("url")
+        params = {"process_instance_id": process_instance_id}
+        api_name = '/api/school/v1/teacher-workflow/work-flow-define'
+        url += api_name
+        headerdict = {
+            "accept": "application/json",
+            # "Authorization": "{{bear}}",
+            "Content-Type": "application/json"
+        }
+        url += ('?' + urlencode(params))
+        result = await httpreq.get_json(url, headerdict)
+        return result
+
     async def get_teacher_work_flow_current_node(self, process_instance_id):
         httpreq = HTTPRequest()
         url = workflow_service_config.workflow_config.get("url")
@@ -227,6 +242,7 @@ class TeacherWorkFlowRule(object):
                 workflow_data[field] = value
             else:
                 json_data[field] = value
+        json_data = JsonUtils.dict_to_json_str(json_data)
         workflow_data["json_data"] = json_data
         print(workflow_data)
         work_flow_instance = WorkFlowInstanceCreateModel(**workflow_data)
@@ -243,6 +259,7 @@ class TeacherWorkFlowRule(object):
                 workflow_data[field] = value
             else:
                 json_data[field] = value
+        json_data = JsonUtils.dict_to_json_str(json_data)
         workflow_data["json_data"] = json_data
         print(workflow_data)
         work_flow_instance = WorkFlowInstanceModel(**workflow_data)
@@ -273,6 +290,7 @@ class TeacherWorkFlowRule(object):
                 workflow_data[field] = value
             else:
                 json_data[field] = value
+        json_data = JsonUtils.dict_to_json_str(json_data)
         workflow_data["json_data"] = json_data
         print(workflow_data)
         work_flow_instance = WorkFlowInstanceQueryModel(**workflow_data)
@@ -317,6 +335,7 @@ class TeacherWorkFlowRule(object):
                 workflow_data[field] = value
             else:
                 json_data[field] = value
+        json_data = JsonUtils.dict_to_json_str(json_data)
         workflow_data["json_data"] = json_data
         print(workflow_data)
         work_flow_instance = WorkFlowInstanceCreateModel(**workflow_data)
