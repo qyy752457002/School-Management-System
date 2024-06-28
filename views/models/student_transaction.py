@@ -88,7 +88,9 @@ class StudentEduInfoOut(BaseModel):
     apply_time: str = Query('', title="", description="", examples=["申请时间"])
     student_gender: str|None = Query('', title="", description="", examples=[""])
     student_name: str|None = Query('', title="", description="", examples=[""])
-    edu_number: str|None = Query("", description="国家学籍号码", min_length=1, max_length=30, examples=["DF23321312"]),
+    edu_number: str|None = Query("", description="国家学籍号码", min_length=1, max_length=30, examples=["DF23321312"])
+    process_instance_id: int = Field(0, title="", description="", examples=['1'])
+
 
 class StudentTransaction(BaseModel):
     id: int = Query(None, title="", description="id", example='1'),

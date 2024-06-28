@@ -34,8 +34,8 @@ class StudentTransactionDAO(DAOBase):
 
 	async def get_studenttransaction_by_process_instance_id(self, id):
 		session = await self.slave_db()
-		result = await session.execute(select(StudentTransaction).where(StudentTransaction.process_instance_id == id))
-		return result.scalar_one_or_none()
+		result = await session.execute(select(StudentTransaction).where(StudentTransaction.process_instance_id == id).order_by(StudentTransaction.id.desc()))
+		return result.scalar()
 
 	async def query_studenttransaction_with_page(self, page_request: PageRequest, **kwargs,):
 		query = select(

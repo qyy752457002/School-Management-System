@@ -281,7 +281,7 @@ class CurrentStudentsView(BaseView):
         res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in,
                                                                           TransactionDirection.IN.value, res_out.id)
 
-        return res
+        return res,res3
 
     # 在校生 系统内转出
     async def patch_transferout_tooutside(self,
@@ -311,7 +311,7 @@ class CurrentStudentsView(BaseView):
 
         student_edu_info_out.status = AuditAction.NEEDAUDIT.value
         student_edu_info_out.student_id = res_student.student_id
-        student_edu_info_out.process_instance_id = process_instance_id
+        # student_edu_info_out.process_instance_id = process_instance_id
 
         res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
                                                                               TransactionDirection.OUT.value)
@@ -327,7 +327,7 @@ class CurrentStudentsView(BaseView):
 
         res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in,
                                                                           TransactionDirection.IN.value, res_out.id)
-        return res
+        return res,res3
 
 
     # 在校生 发起毕业    todo  支持传入部门学生ID或者  / all年级毕业  批量另起
