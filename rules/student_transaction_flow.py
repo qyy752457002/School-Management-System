@@ -166,6 +166,7 @@ class StudentTransactionFlowRule(object):
         url= workflow_service_config.workflow_config.get("url")
         data= student_transaction_flow
         datadict =  data.__dict__
+        dict2= dict()
         datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         datadict['teacher_id'] =  0
         datadict['applicant_name'] =  'tester'
@@ -174,30 +175,22 @@ class StudentTransactionFlowRule(object):
         datadict['edu_number'] =   student_transaction_flow.edu_number
         datadict['school_name'] =   student_transaction_flow.school_name
         datadict['apply_user'] =  'tester'
-        stuinfoadddict =  stuinfoadd.__dict__
-        # stuinfoadddictstr= JsonUtils.dict_to_json_str(stuinfoadddict)
-        datadict['student_info'] =  convert_dates_to_strings(stuinfoadddict)
-        print(111,stuinfoadddict,datadict['student_info'] )
 
-        # datadict['student_info'] =  JsonUtils.json_str_to_dict(JsonUtils.dict_to_json_str(stuinfoadd.__dict__))
-        # datadict['student_base_info'] = convert_dates_to_strings(stubaseinfo.__dict__)
-        datadict['original_dict'] = original_dict_map_view_orm
-        dicta = student_transaction_flow.__dict__
+
+        stuinfoadddict =  stuinfoadd.__dict__
+        dict2['student_info'] =  convert_dates_to_strings(stuinfoadddict)
+
+        dict2['original_dict'] = JsonUtils.json_str_to_dict(original_dict_map_view_orm)
         # 检查字典  如果哪个值为query 则设为none birthday registration_date enrollment_date
-        for key, value in dicta.items():
+        for key, value in datadict.items():
             if isinstance(value,Query) or isinstance(value,tuple):
-                dicta[key] = None
-        print('999', dicta)
-        # jsonutils.print_dict(datadict)
-        datadict= {**datadict,**dicta}
-        jsonstr = JsonUtils.dict_to_json_str(datadict)
+                datadict[key] = None
+        jsonstr = JsonUtils.dict_to_json_str( dict2)
         print('总字典str', datadict)
 
-        # datadict['jason_data'] =  json.dumps(dicta, ensure_ascii=False)
         datadict['json_data'] =  jsonstr
         print('总字典', datadict)
 
-        # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
         url=url+apiname
         headerdict = {
@@ -206,7 +199,6 @@ class StudentTransactionFlowRule(object):
         }
         # 如果是query 需要拼接参数
         # url+=  ('?' +urlencode(datadict))
-        # datadict =  JsonUtils.dict_to_json_str(datadict)
 
         print('参数', url, datadict,headerdict)
         response= None

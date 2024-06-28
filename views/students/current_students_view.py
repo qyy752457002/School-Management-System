@@ -244,19 +244,22 @@ class CurrentStudentsView(BaseView):
                                            ):
         # print(new_students_key_info)
 
-
         #  新增学生   同时写入 转出和转入 流程 在校生加 年级
         res_student = await self.students_rule.add_student_new_student_transferin(student_baseinfo)
         res_student2 = await self.students_base_info_rule.add_students_base_info(StudentsBaseInfo(student_id=res_student.student_id,edu_number=student_baseinfo.edu_number))
 
         print(res_student)
 
-
         # 调用审批流 创建
+
         student_edu_info_in.student_id= res_student.student_id
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
-        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo,res_student,res_student2,{'student_transaction_in': student_edu_info_in, 'student_transaction_out': student_edu_info_out,
-                                                                                                                                                'student_info': student_baseinfo, })
+
+        origin_data = {'student_transaction_in': student_edu_info_in.__dict__, 'student_transaction_out': student_edu_info_out.__dict__,
+                       'student_info': student_baseinfo.__dict__, }
+        origin_datastr= JsonUtils.dict_to_json_str(origin_data)
+
+        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo,res_student,res_student2,origin_datastr)
         process_instance_id= node_instance_id =  0
         if res3 and  len(res3)>0 :
             print(res3[0])
@@ -265,8 +268,6 @@ class CurrentStudentsView(BaseView):
         else:
             return {'调用 审批流 失败'}
             pass
-
-
 
         # 转出
 
