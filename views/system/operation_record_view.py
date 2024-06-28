@@ -27,6 +27,7 @@ class OperationRecordView(BaseView):
                    operater_account: str = Query(None, title="", description="操作账号", example='admin', min_length=1,
                                                  max_length=25),
                    operater_id: int = Query(None, title="", description="操作人ID", example='1', ),
+                   process_instance_id: int = Query(None, title="", description="process_instance_id", example='1', ),
                    operation_module: ChangeModule = Query(None, title="", description="操作模块",  min_length=1, max_length=40,example='key_info_change'),
                    operation_type: OperationType = Query(None, title="", description="操作类型", example='创建',
                                                          min_length=1, max_length=25),
@@ -36,6 +37,6 @@ class OperationRecordView(BaseView):
         res = await self.operation_record_rule.query_operation_record_with_page(page_request, operation_target_type,
                                                                                 action_target_id, operater_account,
                                                                                 operater_id, operation_module,
-                                                                                operation_type
+                                                                                operation_type,process_instance_id
                                                                                 )
         return res
