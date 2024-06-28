@@ -3,6 +3,7 @@ import json
 from urllib.parse import urlencode
 
 from fastapi.params import Query
+from mini_framework.utils.json import JsonUtils
 
 # from fastapi import Query
 
@@ -158,7 +159,7 @@ class StudentTransactionFlowRule(object):
         return response
 
     # 向工作流中心发送申请
-    async def add_student_transaction_work_flow(self, student_transaction_flow: StudentEduInfo,stuinfo: StudentsKeyinfoDetail):
+    async def add_student_transaction_work_flow(self, student_transaction_flow: StudentEduInfo,stuinfo: StudentsKeyinfoDetail,stuinfoadd,stubaseinfo):
         student_transaction_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
@@ -172,14 +173,20 @@ class StudentTransactionFlowRule(object):
         datadict['edu_number'] =   student_transaction_flow.edu_number
         datadict['school_name'] =   student_transaction_flow.school_name
         datadict['apply_user'] =  'tester'
+        datadict['student_info'] =  stuinfoadd.__dict__
+        datadict['student_base_info'] =  stubaseinfo.__dict__
         dicta = student_transaction_flow.__dict__
-        # 检查字典  如果哪个值为query 则设为none
-        for key, value in datadict.items():
+        # 检查字典  如果哪个值为query 则设为none birthday registration_date enrollment_date
+        for key, value in dicta.items():
             if isinstance(value,Query) or isinstance(value,tuple):
                 dicta[key] = None
         print('999', dicta)
+        # jsonutils.print_dict(datadict)
+        datadict= {**datadict,**dicta}
+        print('总字典', datadict)
 
-        datadict['jason_data'] =  json.dumps(dicta, ensure_ascii=False)
+        # datadict['jason_data'] =  json.dumps(dicta, ensure_ascii=False)
+        datadict['jason_data'] =  JsonUtils.dict_to_json_str(datadict)
         # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
         url=url+apiname
