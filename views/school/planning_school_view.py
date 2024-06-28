@@ -16,7 +16,7 @@ from views.common.common_view import compare_modify_fields, get_extend_params, g
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
-    PlanningSchoolBaseInfoOptional, PlanningSchoolTask
+    PlanningSchoolBaseInfoOptional, PlanningSchoolTask, PlanningSchoolTransactionAudit
 from views.models.planning_school_communications import PlanningSchoolCommunications
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
 from views.models.school import School
@@ -32,6 +32,7 @@ from views.models.grades import Grades
 from rules.planning_school_communication_rule import PlanningSchoolCommunicationRule
 
 from rules.planning_school_eduinfo_rule import PlanningSchoolEduinfoRule
+from views.models.student_transaction import StudentTransactionAudit
 from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE
 
 
@@ -388,8 +389,21 @@ class PlanningSchoolView(BaseView):
         paging_result = await self.planning_school_rule.query_planning_schools(planning_school_name)
         return paging_result
     # 学校开设审核
-    async def patch_open_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
-                                                               min_length=1, max_length=20, example='SC2032633')):
+    async def patch_open_audit(self,
+                               audit_info: PlanningSchoolTransactionAudit
+
+                               ):
+        resultra = await self.planning_school_rule.req_workflow_audit(audit_info,'open')
+        if resultra is None:
+            return {}
+        if isinstance(resultra, str):
+            return {resultra}
+
+        # print(new_students_key_info)
+        return resultra
+
+
+
         pass
     # 学校关闭审核
     async def patch_close_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",

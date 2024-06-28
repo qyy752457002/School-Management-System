@@ -4,6 +4,7 @@ from typing import List, Optional
 from fastapi import Query
 from pydantic import BaseModel, Field
 
+from models.student_transaction import AuditAction
 from views.models.planning_school_communications import PlanningSchoolCommunications
 
 
@@ -215,3 +216,11 @@ class PlanningSchoolTask(BaseModel):
 
 class PlanningSchoolImport(PlanningSchool, PlanningSchoolCommunications):
     pass
+
+class PlanningSchoolTransactionAudit(BaseModel):
+    node_id: int = Query(..., description="节点ID", example='2')
+    process_instance_id: int = Query(0, description="流程实例ID", example='2')
+    transaction_audit_action: AuditAction = Query(..., description="审批的操作",
+                                                 example='pass')
+    remark: str = Query("", description="审批的备注", min_length=0, max_length=200,
+                        example='同意 无误')
