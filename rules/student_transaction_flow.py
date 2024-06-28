@@ -174,21 +174,17 @@ class StudentTransactionFlowRule(object):
         url=url+apiname
         headerdict = {
             "accept": "application/json",
-            # "Authorization": "{{bear}}",
             "Content-Type": "application/json"
         }
         # 如果是query 需要拼接参数
         # url+=  ('?' +urlencode(datadict))
-
         print('参数', url, datadict,headerdict)
         response= None
-
         try:
             response = await httpreq.post_json(url,datadict,headerdict)
             print(response)
         except Exception as e:
             print(e)
-
         return response
 
     # 处理流程审批 的 操作
