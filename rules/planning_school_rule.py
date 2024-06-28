@@ -201,7 +201,7 @@ class PlanningSchoolRule(object):
         datadict['borough'] =   planning_school_flow.borough
         datadict['planning_school_level'] =   planning_school_flow.planning_school_level
         datadict['apply_user'] =  'tester'
-        datadict['jason_data'] =  json.dumps(planning_school_flow.__dict__, ensure_ascii=False)
+        datadict['json_data'] =  json.dumps(planning_school_flow.__dict__, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
         url=url+apiname
         headerdict = {
@@ -254,7 +254,7 @@ class PlanningSchoolRule(object):
         dicta = planning_school_flow.__dict__
         dicta['action_reason']= action_reason
         dicta['related_license_upload']= related_license_upload
-        datadict['jason_data'] =  json.dumps(dicta, ensure_ascii=False)
+        datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
 
         response= None
