@@ -5,6 +5,7 @@ import json
 from fastapi.params import Body
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task import Task
+from mini_framework.utils.json import JsonUtils
 from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
@@ -17,6 +18,7 @@ from rules.operation_record import OperationRecordRule
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
 from rules.students_key_info_change_rule import StudentsKeyInfoChangeRule
+from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_client_ip
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
@@ -37,6 +39,7 @@ from views.models.students import StudentSession, StudentsUpdateFamilyInfo
 class CurrentStudentsView(BaseView):
     def __init__(self):
         super().__init__()
+        self.system_rule = get_injector(SystemRule)
         self.students_rule = get_injector(StudentsRule)
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
         self.student_session_rule = get_injector(StudentSessionRule)
@@ -119,17 +122,16 @@ class CurrentStudentsView(BaseView):
 
                                            ):
         relationinfo = tinfo = ''
-        tinfo = await self.student_transaction_rule.get_student_transaction_by_id(apply_id)
+        # 转发去 工作流获取详细
+        result = await self.system_rule.get_work_flow_instance_by_process_instance_id(
+            apply_id)
 
-        if isinstance(tinfo, object) and hasattr(tinfo, 'relation_id') and tinfo.relation_id:
-            relationinfo = await self.student_transaction_rule.get_student_transaction_by_id(tinfo.relation_id, )
-            pass
+        json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
+        if 'original_dict' in json_data.keys() and  json_data['original_dict']:
+            result={**json_data['original_dict'],**result.__dict__}
 
-        stubaseinfo = await self.students_rule.get_students_by_id(tinfo.student_id)
-        # stubaseinfo=''
 
-        return {'student_transaction_in': tinfo, 'student_transaction_out': relationinfo,
-                'student_info': stubaseinfo, }
+        return result
 
     # 在校生转入
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
@@ -253,7 +255,8 @@ class CurrentStudentsView(BaseView):
         # 调用审批流 创建
         student_edu_info_in.student_id= res_student.student_id
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
-        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo,res_student,res_student2)
+        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo,res_student,res_student2,{'student_transaction_in': student_edu_info_in, 'student_transaction_out': student_edu_info_out,
+                                                                                                                                                'student_info': student_baseinfo, })
         process_instance_id= node_instance_id =  0
         if res3 and  len(res3)>0 :
             print(res3[0])
@@ -424,6 +427,24 @@ class CurrentStudentsView(BaseView):
         task = await app.task_topic.send(task)
         print('发生任务成功')
         return task
+    # 转学申请详情
+    async def get_student_transaction_info_biz(self,
+
+                                           apply_id: int = Query(..., description=" ", example='1'),
+
+                                           ):
+        relationinfo = tinfo = ''
+        tinfo = await self.student_transaction_rule.get_student_transaction_by_id(apply_id)
+
+        if isinstance(tinfo, object) and hasattr(tinfo, 'relation_id') and tinfo.relation_id:
+            relationinfo = await self.student_transaction_rule.get_student_transaction_by_id(tinfo.relation_id, )
+            pass
+
+        stubaseinfo = await self.students_rule.get_students_by_id(tinfo.student_id)
+        # stubaseinfo=''
+
+        return {'student_transaction_in': tinfo, 'student_transaction_out': relationinfo,
+                'student_info': stubaseinfo, }
 
 class CurrentStudentsBaseInfoView(BaseView):
     def __init__(self):

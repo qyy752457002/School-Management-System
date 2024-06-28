@@ -1,6 +1,8 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import traceback
+from urllib.parse import urlencode
 
+from mini_framework.utils.http import HTTPRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -10,6 +12,7 @@ from daos.permission_menu_dao import PermissionMenuDAO
 from daos.roles_dao import RolesDAO
 from models.permission_menu import PermissionMenu
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
+from views.common.common_view import workflow_service_config
 
 from views.models.sub_system import SubSystem as SubSystemModel
 from views.models.permission_menu import PermissionMenu as PermissionMenuModel
@@ -169,3 +172,19 @@ class SystemRule(object):
 
 
         # return paging
+
+    async def get_work_flow_instance_by_process_instance_id(self, process_instance_id: int):
+        httpreq = HTTPRequest()
+        url = workflow_service_config.workflow_config.get("url")
+        params = {"process_instance_id": process_instance_id}
+        api_name = '/api/school/v1/teacher-workflow/work-flow-instance-by-process-instance-id'
+        url += api_name
+        headerdict = {
+            "accept": "application/json",
+            # "Authorization": "{{bear}}",
+            "Content-Type": "application/json"
+        }
+        url += ('?' + urlencode(params))
+        result = await httpreq.get_json(url, headerdict)
+        # result = JsonUtils.json_str_to_dict(result)
+        return result

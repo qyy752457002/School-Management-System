@@ -160,7 +160,7 @@ class StudentTransactionFlowRule(object):
         return response
 
     # 向工作流中心发送申请
-    async def add_student_transaction_work_flow(self, student_transaction_flow: StudentEduInfo,stuinfo: StudentsKeyinfoDetail,stuinfoadd,stubaseinfo):
+    async def add_student_transaction_work_flow(self, student_transaction_flow: StudentEduInfo,stuinfo: StudentsKeyinfoDetail,stuinfoadd,stubaseinfo,original_dict_map_view_orm):
         student_transaction_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
@@ -174,13 +174,14 @@ class StudentTransactionFlowRule(object):
         datadict['edu_number'] =   student_transaction_flow.edu_number
         datadict['school_name'] =   student_transaction_flow.school_name
         datadict['apply_user'] =  'tester'
-        stuinfoadddict =  stuinfo.__dict__
+        stuinfoadddict =  stuinfoadd.__dict__
         # stuinfoadddictstr= JsonUtils.dict_to_json_str(stuinfoadddict)
         datadict['student_info'] =  convert_dates_to_strings(stuinfoadddict)
         print(111,stuinfoadddict,datadict['student_info'] )
 
         # datadict['student_info'] =  JsonUtils.json_str_to_dict(JsonUtils.dict_to_json_str(stuinfoadd.__dict__))
-        datadict['student_base_info'] = convert_dates_to_strings(stubaseinfo.__dict__)
+        # datadict['student_base_info'] = convert_dates_to_strings(stubaseinfo.__dict__)
+        datadict['original_dict'] = original_dict_map_view_orm
         dicta = student_transaction_flow.__dict__
         # 检查字典  如果哪个值为query 则设为none birthday registration_date enrollment_date
         for key, value in dicta.items():
