@@ -189,10 +189,13 @@ class StudentTransactionFlowRule(object):
         print('999', dicta)
         # jsonutils.print_dict(datadict)
         datadict= {**datadict,**dicta}
-        print('总字典', datadict)
+        jsonstr = JsonUtils.dict_to_json_str(datadict)
+        print('总字典str', datadict)
 
         # datadict['jason_data'] =  json.dumps(dicta, ensure_ascii=False)
-        datadict['jason_data'] =  JsonUtils.dict_to_json_str(datadict)
+        datadict['json_data'] =  jsonstr
+        print('总字典', datadict)
+
         # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
         url=url+apiname
