@@ -7,7 +7,8 @@ from daos.teachers_dao import TeachersDao
 from models.transfer_details import TransferDetails
 from views.models.teacher_transaction import TransferDetailsModel
 from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTransactionQueryRe, \
-    TransferDetailsReModel, TransferDetailsGetModel, TeacherTransferQueryModel, TeacherTransferQueryReModel
+    TransferDetailsReModel, TransferDetailsGetModel, TeacherTransferQueryModel, TeacherTransferQueryReModel, \
+    TransferAndBorrowExtraModel
 from business_exceptions.teacher import TeacherNotFoundError, ApprovalStatusError
 from models.teacher_change_log import TeacherChangeLog
 from daos.teacher_change_dao import TeacherChangeLogDAO
@@ -15,13 +16,14 @@ from rules.teacher_change_rule import TeacherChangeRule
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from daos.enum_value_dao import EnumValueDAO
 from rules.enum_value_rule import EnumValueRule
-
+from pydantic import BaseModel, Field
 from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
 from rules.operation_record import OperationRecordRule
 from daos.operation_record_dao import OperationRecordDAO
 from rules.teachers_rule import TeachersRule
 from views.models.teacher_transaction import TeacherAddModel
 from datetime import datetime
+from typing import Type
 
 
 @dataclass_inject
@@ -58,6 +60,9 @@ class TransferDetailsRule(object):
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
         transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
+        original_district_province_name, original_district_city_name, original_district_area_name = self.enum_value_rule.get_district_name(
+            transfer_details_work.original_district_area_id)
+
         params = {"process_code": "t_transfer_in_inner", "applicant_name": user_id}
         work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(transfer_details_work, params)
         teacher_transfer_log = OperationRecord(
@@ -264,7 +269,20 @@ class TransferDetailsRule(object):
             item.current_region_area_id = current_region_area_name
         return page
 
-    # 调动管理审批相关
+    async def get_transfer_and_borrow_extra(self, original_district_area_id=None,
+                                            current_district_area_id=None, original_unit_id=None,
+                                            current_unit_id=None) -> TransferAndBorrowExtraModel:
+        if original_district_area_id:
+            original_district_area_name = original_district_area_id
+        fields = TransferAndBorrowExtraModel.__fields__.keys()
+
+        transfer_and_borrow_extra = TransferAndBorrowExtraModel()
+        # transfer_and_borrow_extra.transfer_details = await self.transfer_details_dao.get_all_transfer_details(
+        #     teacher_id)
+        return
+
+        # 调动管理审批相关
+
     async def transfer_approved(self, teacher_id, process_instance_id, user_id, reason):
         user_id = user_id
         await self.teachers_rule.teacher_progressing(teacher_id)
@@ -278,9 +296,9 @@ class TransferDetailsRule(object):
             teacher = await self.teacher_work_flow_rule.create_model_from_workflow(result, TransferDetailsReModel)
             teachers_db = await self.teachers_dao.get_teachers_by_id(teacher_id)
             await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status")
-        else:
-            transfer_details.approval_status = "processing"
-            await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
+        # else:
+        #     transfer_details.approval_status = "processing"
+        #     await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
         # todo 审批日志没写
 
     async def transfer_rejected(self, transfer_details_id, process_instance_id, user_id, reason):

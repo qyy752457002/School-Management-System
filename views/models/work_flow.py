@@ -79,7 +79,7 @@ class WorkFlowInstanceCreateModel(BaseModel):
     current_region_area_id: Optional[int] = Field(None, title="现管辖区域区", description="现管辖区域区")
     borrow_out_date: Optional[date] = Field(None, title="借出日期", description="借出日期")
     transfer_out_date: Optional[date] = Field(None, title="调出日期", description="调出日期")
-    jason_data: Optional[str] = Field("None", title="json数据", description="json数据")
+    json_data: Optional[str] = Field("", title="json数据", description="json数据")
     student_name: Optional[str] = Field("", title="", description="")
     school_name: Optional[str] = Field("", title="", description="")
     student_gender: Optional[str] = Field("", title="", description="")
@@ -146,7 +146,7 @@ class WorkFlowInstanceQueryModel(BaseModel):
     current_region_area_id: Optional[int] = Query(None, title="现管辖区域区", description="现管辖区域区")
     borrow_out_date: Optional[date] = Query(None, title="借出日期", description="借出日期")
     transfer_out_date: Optional[date] = Query(None, title="调出日期", description="调出日期")
-    jason_data: Optional[str] = Query("", title="json数据", description="json数据")
+    json_data: Optional[str] = Query("", title="json数据", description="json数据")
 
 
 class WorkFlowInstanceQueryReModel(BaseModel):
@@ -196,4 +196,4 @@ class WorkFlowInstanceQueryReModel(BaseModel):
     current_region_area_id: Optional[int] = Field(None, title="现管辖区域区", description="现管辖区域区")
     borrow_out_date: Optional[date] = Field(None, title="借出日期", description="借出日期")
     transfer_out_date: Optional[date] = Field(None, title="调出日期", description="调出日期")
-    jason_data: Optional[str] = Field("", title="json数据", description="json数据")
+    json_data: Optional[str] = Field("", title="json数据", description="json数据")
