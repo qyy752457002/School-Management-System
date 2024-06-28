@@ -123,6 +123,7 @@ class StudentTransactionAudit(BaseModel):
     # grade_id: int = Field(0, title="年级ID", description="年级ID",examples=['1'])
     # status: str = Field('', title="",description="状态",examples=[''])
     transferin_audit_id: int = Query(..., description="转入申请id", example='2')
+    process_instance_id: int = Query(0, description="流程实例ID", example='2')
     transferin_audit_action: AuditAction = Query(..., description="审批的操作",
                                                  example='pass')
     remark: str = Query("", description="审批的备注", min_length=0, max_length=200,

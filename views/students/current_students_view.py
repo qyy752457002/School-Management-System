@@ -138,19 +138,44 @@ class CurrentStudentsView(BaseView):
         # 调用审批流 创建
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info.student_id)
         res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info,stuinfo)
-        transferin_id =  0
+        process_instance_id= node_instance_id =  0
 
         json_str=''
         if res3 and  len(res3)>0 :
 
             print(res3[0])
-            # transferin_id = res3[0]['process_instance_id']
-            # student_transaciton = StudentTransaction(id=audit_info.id,
-            #                                       process_instance_id=transferin_id,)
-            # res4 = await self.student_transaction_rule.update_student_transaction(student_transaciton)
-            # json_str = json.dumps(res3, ensure_ascii=False)
+            process_instance_id = res3[1]['process_instance_id']
+            node_instance_id = res3[1]['node_instance_id']
 
-            # res.flow = res3
+        # 新增转学数据到库 用于接收流程ID后处理数据变更 后期可以采用工作流的分布式传参到另外一个接口来实现变更代替这里
+        # 转出
+        student_edu_info_out= copy.deepcopy(student_edu_info)
+        # 读取当前在校信息  确保学校等信息这里都有
+        res_student = await self.students_base_info_rule.get_students_base_info_by_student_id(student_edu_info.student_id)
+        if res_student:
+            student_edu_info_out.school_id = res_student.school_id
+            student_edu_info_out.grade_id = res_student.grade_id
+            student_edu_info_out.class_id = res_student.class_id
+            class_rule = get_injector(ClassesRule)
+            class_info =await class_rule.get_classes_by_id(res_student.class_id)
+
+            student_edu_info_out.classes = class_info.class_name
+            student_edu_info_out.major_id = class_info.major_for_vocational
+            if student_edu_info_out.school_id== student_edu_info.school_id:
+                raise StudentExistsThisSchoolError()
+                pass
+
+        student_edu_info_out.status = AuditAction.NEEDAUDIT.value
+
+        res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
+                                                                              TransactionDirection.OUT.value)
+        # 转入信息
+        student_edu_info.relation_id = res_out.id
+        student_edu_info.process_instance_id =  process_instance_id
+        # print('debug-----222222222222',res_out)
+
+        student_edu_info.status = AuditAction.NEEDAUDIT.value
+        audit_info = res = await self.student_transaction_rule.add_student_transaction(student_edu_info, TransactionDirection.IN.value,res_out.id )
 
 
         return res3

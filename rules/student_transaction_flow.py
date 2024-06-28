@@ -232,8 +232,12 @@ class StudentTransactionFlowRule(object):
             # await transrule.deal_student_transaction(student_edu_info)
 
             student_transaciton = StudentTransaction(id=audit_info.transferin_audit_id,
-                                                     status=audit_info.transferin_audit_action.value, )
-            res2 = await transrule.deal_student_transaction(student_transaciton)
+                                                     status=audit_info.transferin_audit_action.value,process_instance_id=audit_info.process_instance_id, )
+            if student_transaciton.process_instance_id>0:
+
+                res2 = await transrule.deal_student_transaction(student_transaciton)
+            else:
+                print('请传流程ID前段或者工作流返回它必须 ')
 
             pass
 

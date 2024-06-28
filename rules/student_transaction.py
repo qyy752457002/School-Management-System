@@ -37,6 +37,14 @@ class StudentTransactionRule(object):
     grade_dao: GradeDAO
     school_dao: SchoolDAO
 
+    async def get_student_transaction_by_process_instance_id(self, student_transaction_id)->StudentTransactionModel:
+        student_transaction_db = await self.student_transaction_dao.get_studenttransaction_by_process_instance_id(student_transaction_id)
+        # 可选 , exclude=[""]
+        # print(vars(student_transaction_db))
+        student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel,other_mapper={"student_no": "edu_number",})
+
+        return student_transaction
+
     async def get_student_transaction_by_id(self, student_transaction_id)->StudentTransactionModel:
         student_transaction_db = await self.student_transaction_dao.get_studenttransaction_by_id(student_transaction_id)
         # 可选 , exclude=[""]
@@ -295,7 +303,7 @@ class StudentTransactionRule(object):
 
     async def deal_student_transaction(self, student_edu_info:StudentTransactionVM):
         # todo  转入  需要设置到当前学校  转出 则该状态
-        tinfo=await self.get_student_transaction_by_id(student_edu_info.id)
+        tinfo=await self.get_student_transaction_by_process_instance_id(student_edu_info.process_instance_id)
         # 入信息 todo 这个提取到 入的学校的方法里 预提交方法里
         students_base_info = StudentsBaseInfo(student_id=tinfo.student_id,school_id=tinfo.school_id,grade_id=tinfo.grade_id,class_id=tinfo.class_id)
         #学生的状态为 已经 入学 新的班级和学校ID

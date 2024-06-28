@@ -32,6 +32,11 @@ class StudentTransactionDAO(DAOBase):
 		result = await session.execute(select(StudentTransaction).where(StudentTransaction.id == id))
 		return result.scalar_one_or_none()
 
+	async def get_studenttransaction_by_process_instance_id(self, id):
+		session = await self.slave_db()
+		result = await session.execute(select(StudentTransaction).where(StudentTransaction.process_instance_id == id))
+		return result.scalar_one_or_none()
+
 	async def query_studenttransaction_with_page(self, page_request: PageRequest, **kwargs,):
 		query = select(
 		StudentTransaction.id, StudentTransaction.school_name, StudentTransaction.grade_name, StudentTransaction.classes, StudentTransaction.transfer_time, StudentTransaction.transfer_reason, StudentTransaction.doc_upload, StudentTransaction.student_id, StudentTransaction.student_no,
