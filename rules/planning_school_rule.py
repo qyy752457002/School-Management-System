@@ -9,6 +9,7 @@ from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from daos.planning_school_dao import PlanningSchoolDAO
 from models.planning_school import PlanningSchool
 from rules import enum_value_rule
+from rules.common.common_rule import send_request
 from rules.enum_value_rule import EnumValueRule
 from rules.school_rule import SchoolRule
 from views.common.common_view import workflow_service_config
@@ -215,3 +216,20 @@ class PlanningSchoolRule(object):
         except Exception as e:
             print(e)
         return response
+
+    async def req_workflow_cancel(self,transferin_id,):
+
+        # 发起审批流的 处理
+        datadict = dict()
+        # 节点实例id
+        datadict['node_instance_id'] =  transferin_id
+
+        apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
+        # 字典参数
+        datadict ={"user_id":"11","action":"revoke"}
+
+        response= await send_request(apiname,datadict,'post')
+
+        print(response,'接口响应')
+        return response
+        pass

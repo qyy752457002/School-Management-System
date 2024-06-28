@@ -389,6 +389,29 @@ class PlanningSchoolView(BaseView):
     async def patch_keyinfo_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
                                                                       min_length=1, max_length=20, example='SC2032633')):
         pass
+    # 规划校的开办关闭修改的 取消接口
+    async def patch_open_cancel(self, node_id: str = Query(..., title="流程对应的节点ID", description="",
+                                                                     min_length=1, max_length=20, example='SC2032633')):
+
+        #  审批流取消
+        res2 = await self.planning_school_rule.req_workflow_cancel(node_id,)
+
+        if res2 is None:
+            return {}
+        if isinstance(res2, str):
+            return {res2}
+
+        # print(new_students_key_info)
+        return res2
+        pass
+    # 学校关闭
+    async def patch_close_cancel(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
+                                                                      min_length=1, max_length=20, example='SC2032633')):
+        pass
+    # 学校关键信息变更
+    async def patch_keyinfo_cancel(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
+                                                                        min_length=1, max_length=20, example='SC2032633')):
+        pass
 
 
     async def page_planning_school_biz(self,
