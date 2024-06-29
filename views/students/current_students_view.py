@@ -240,26 +240,21 @@ class CurrentStudentsView(BaseView):
                                            student_baseinfo: NewStudentTransferIn,
                                            student_edu_info_in: StudentEduInfo,
                                            student_edu_info_out: StudentEduInfoOut,
-
                                            ):
         # print(new_students_key_info)
-
         #  新增学生   同时写入 转出和转入 流程 在校生加 年级
         res_student_add = await self.students_rule.add_student_new_student_transferin(student_baseinfo)
         res_student_baseinfo = await self.students_base_info_rule.add_students_base_info(StudentsBaseInfo(student_id=res_student_add.student_id,edu_number=student_baseinfo.edu_number))
 
         print(res_student_add)
-
         # 调用审批流 创建
-
         student_edu_info_in.student_id= res_student_add.student_id
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
 
-        origin_data = {'student_transaction_in': student_edu_info_in.__dict__, 'student_transaction_out': student_edu_info_out.__dict__,
+        origin_data = {'student_transaction_in':  '', 'student_transaction_out': student_edu_info_out.__dict__,
                        'student_info': student_baseinfo.__dict__, }
-        origin_datastr= JsonUtils.dict_to_json_str(origin_data)
-
-        res_workflow = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo,res_student_add,res_student_baseinfo,origin_datastr)
+        # origin_datastr= JsonUtils.dict_to_json_str(origin_data)
+        res_workflow = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo,res_student_add,res_student_baseinfo,origin_data)
         process_instance_id= node_instance_id =  0
         if res_workflow and  len(res_workflow)>0 :
             print(res_workflow[0])
@@ -268,25 +263,19 @@ class CurrentStudentsView(BaseView):
         else:
             return {'调用 审批流 失败'}
             pass
-
         # 转出
-
         student_edu_info_out.status = AuditAction.NEEDAUDIT.value
         student_edu_info_out.student_id = res_student_add.student_id
-
-        res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
-                                                                              TransactionDirection.OUT.value)
+        res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,  TransactionDirection.OUT.value)
 
         # 转入
-
         student_edu_info_in.status = AuditAction.NEEDAUDIT.value
         student_edu_info_in.student_id = res_student_add.student_id
         student_edu_info_in.relation_id = res_out.id
         student_edu_info_in.process_instance_id = process_instance_id
-        print(res_out.id, 000000)
+        # print(res_out.id, 000000)
 
-        res_student_transaction = await self.student_transaction_rule.add_student_transaction(student_edu_info_in,
-                                                                          TransactionDirection.IN.value, res_out.id)
+        res_student_transaction = await self.student_transaction_rule.add_student_transaction(student_edu_info_in, TransactionDirection.IN.value, res_out.id)
 
         return res_student_transaction,res_workflow
 

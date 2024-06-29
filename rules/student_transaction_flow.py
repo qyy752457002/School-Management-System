@@ -176,9 +176,10 @@ class StudentTransactionFlowRule(object):
         datadict['school_name'] =   student_transaction_flow.school_name
         datadict['apply_user'] =  'tester'
 
-
         stuinfoadddict =  stuinfoadd.__dict__
         dict2['student_info'] =  convert_dates_to_strings(stuinfoadddict)
+
+        original_dict_map_view_orm['student_transaction_in'] = student_transaction_flow.__dict__
 
         dict2['original_dict'] = JsonUtils.json_str_to_dict(original_dict_map_view_orm)
         # 检查字典  如果哪个值为query 则设为none birthday registration_date enrollment_date
@@ -186,7 +187,7 @@ class StudentTransactionFlowRule(object):
             if isinstance(value,Query) or isinstance(value,tuple):
                 datadict[key] = None
         jsonstr = JsonUtils.dict_to_json_str( dict2)
-        print('总字典str', datadict)
+        # print('总字典str', datadict)
 
         datadict['json_data'] =  jsonstr
         print('总字典', datadict)
@@ -197,8 +198,6 @@ class StudentTransactionFlowRule(object):
             "accept": "application/json",
             "Content-Type": "application/json"
         }
-        # 如果是query 需要拼接参数
-        # url+=  ('?' +urlencode(datadict))
 
         print('参数', url, datadict,headerdict)
         response= None
@@ -210,7 +209,6 @@ class StudentTransactionFlowRule(object):
             print('api异常',e)
             traceback.print_exc()
             return None
-
 
     # 处理流程审批 的 操作
     async def exe_student_transaction(self,audit_info):
