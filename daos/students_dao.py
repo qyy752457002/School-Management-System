@@ -43,7 +43,7 @@ class StudentsDao(DAOBase):
         for key, value in kwargs.items():
             query = query.where(getattr(Student, key) == value)
         result = await session.execute(query)
-        return result.scalar_one_or_none()
+        return result.scalar()
 
     async def delete_students(self, students: Student):
         """

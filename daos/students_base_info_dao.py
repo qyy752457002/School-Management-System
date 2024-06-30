@@ -237,4 +237,4 @@ class StudentsBaseInfoDao(DAOBase):
         for key, value in kwargs.items():
             query = query.where(getattr(StudentBaseInfo, key) == value)
         result = await session.execute(query)
-        return result.scalar_one_or_none()
+        return result.scalar()
