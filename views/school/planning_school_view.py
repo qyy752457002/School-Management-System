@@ -11,6 +11,7 @@ from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
 from business_exceptions.planning_school import PlanningSchoolValidateError, PlanningSchoolBaseInfoValidateError
+from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
 from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_extend_params, get_client_ip
@@ -243,7 +244,7 @@ class PlanningSchoolView(BaseView):
         process_instance_id=0
         if len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
-            pl = PlanningSchoolBaseInfoOptional(id=planning_school_id, process_instance_id=process_instance_id)
+            pl = PlanningSchoolBaseInfoOptional(id=planning_school_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
             res = await self.planning_school_rule.update_planning_school_byargs(pl  )
 
