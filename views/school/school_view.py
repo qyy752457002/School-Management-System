@@ -14,11 +14,11 @@ from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_extend_params
 from views.models.extend_params import ExtendParams
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
-from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
+from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch
 from views.models.school_communications import SchoolCommunications
 from views.models.school_eduinfo import SchoolEduInfo
 from views.models.school import School, SchoolBaseInfo, SchoolKeyInfo, SchoolKeyAddInfo, SchoolBaseInfoOptional, \
-    SchoolTask
+    SchoolTask, SchoolPageSearch
 
 from fastapi import Query, Depends
 from pydantic import BaseModel, Field
@@ -382,3 +382,54 @@ class SchoolView(BaseView):
 
 
         return result
+
+    # 分校的审批流列表
+    async def page_school_audit(self,
+                                block: str = Query("", title=" ", description="地域管辖区", ),
+                                school_code: str = Query("", title="", description=" 园所标识码", ),
+                                school_level: str = Query("", title="", description=" 学校星级", ),
+                                borough: str = Query("", title="  ", description=" 行政管辖区", ),
+                                status: PlanningSchoolStatus = Query("", title="", description=" 状态", examples=['正常']),
+
+                                founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
+                                                                                      examples=['地方']),
+                                founder_type_lv2: List[str] = Query([], title="", description="举办者类型二级",
+                                                                    examples=['教育部门']),
+                                founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
+                                                                    examples=['县级教育部门']),
+
+                                school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1, max_length=20,
+                                                       example='SC2032633'),
+                                school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
+                                                         example='XX小学'),
+                                planning_school_id: int = Query(None, description="规划校ID", example='1'),
+                                province: str = Query("", title="", description="省份代码", ),
+                                city: str = Query("", title="", description="城市", ),
+
+                                         # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
+                                         process_code: str = Query("", title="流程代码", description="例如p_school_open", ),
+                                         planning_school_code: str = Query("", title="", description=" 园所标识码", ),
+                                         page_request=Depends(PageRequest)):
+        items = []
+        #PlanningSchoolBaseInfoOptional
+        req= SchoolPageSearch(block=block,
+                                      planning_school_code=planning_school_code,
+                                      borough=borough,
+                                      status=status,
+                                      founder_type=founder_type,
+                                      founder_type_lv2=founder_type_lv2,
+                                      founder_type_lv3=founder_type_lv3,
+                                      school_no=school_no,
+                                      school_name=school_name,
+                                      planning_school_id=planning_school_id,
+                                      province=province,
+                                      city=city,
+                                      school_code=school_code,
+                                      school_level=school_level,
+
+
+                                      )
+        print('入参接收',req)
+        paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,  )
+        print('333',page_request)
+        return paging_result
