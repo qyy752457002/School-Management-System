@@ -160,7 +160,7 @@ class StudentTransactionFlowRule(object):
         return response
 
     # 向工作流中心发送申请
-    async def add_student_transaction_work_flow(self, student_transaction_flow: StudentEduInfo,stuinfo: StudentsKeyinfoDetail,stuinfoadd,stubaseinfo,original_dict_map_view_orm):
+    async def add_student_transaction_work_flow(self, student_transaction_flow: StudentEduInfo,stuinfo: StudentsKeyinfoDetail,stuinfoadd=None,stubaseinfo=None,original_dict_map_view_orm=None):
         student_transaction_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
@@ -181,7 +181,7 @@ class StudentTransactionFlowRule(object):
 
         original_dict_map_view_orm['student_transaction_in'] = student_transaction_flow.__dict__
 
-        dict2['original_dict'] = JsonUtils.json_str_to_dict(original_dict_map_view_orm)
+        dict2['original_dict'] = original_dict_map_view_orm
         # 检查字典  如果哪个值为query 则设为none birthday registration_date enrollment_date
         for key, value in datadict.items():
             if isinstance(value,Query) or isinstance(value,tuple):

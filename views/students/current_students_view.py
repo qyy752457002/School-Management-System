@@ -128,7 +128,7 @@ class CurrentStudentsView(BaseView):
 
         json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
         if 'original_dict' in json_data.keys() and  json_data['original_dict']:
-            result={**json_data['original_dict'],**result.__dict__}
+            result={**json_data['original_dict'],**result}
 
 
         return result
