@@ -32,17 +32,23 @@ class EnumValueRule(object):
     async def get_district_name(self, area_id):
         city_name = ""
         province_name = ""
-        area_db = await self.enum_value_dao.get_enum_description_by_enum_value_name(area_id)
-        area_name = area_db.description
-        area_parent_id = area_db.parent_id
-        if area_parent_id:
-            city_db = await self.enum_value_dao.get_enum_description_by_enum_value_name(area_parent_id)
-            city_name = city_db.description
-            city_parent_id = city_db.parent_id
-            if city_parent_id:
-                province_db = await self.enum_value_dao.get_enum_description_by_enum_value_name(city_parent_id)
-                province_name = province_db.description
+        area_name = ""
+        area_id = str(area_id)
+        area_db = await self.enum_value_dao.get_enum_description_by_enum_value_name(area_id, is_area=True)
+        if area_db:
+            area_name = area_db.description
+            area_parent_id = str(area_db.parent_id)
+            if area_parent_id:
+                city_db = await self.enum_value_dao.get_enum_description_by_enum_value_name(area_parent_id,
+                                                                                            is_city=True)
+                city_name = city_db.description
+                city_parent_id = str(city_db.parent_id)
+                if city_parent_id:
+                    province_db = await self.enum_value_dao.get_enum_description_by_enum_value_name(city_parent_id,
+                                                                                                    is_pro=True)
+                    province_name = province_db.description
         return province_name, city_name, area_name
+
     async def add_enum_value(self, enum_value: EnumValueModel):
         exists_enum_value = await self.enum_value_dao.get_enum_value_by_enum_value_name(
             enum_value.enum_value_name)

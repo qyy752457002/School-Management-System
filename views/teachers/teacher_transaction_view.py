@@ -44,6 +44,7 @@ class TransferDetailsView(BaseView):
         """
         调入
         """
+
         user_id = "asdfasdf"
         if not transfer_inner:  # 如果是系统外转系统内
             if add_teacher != None:
@@ -58,7 +59,8 @@ class TransferDetailsView(BaseView):
         调出
         """
         user_id = "asdfasdf"
-        res = await self.transfer_details_rule.add_transfer_out_details(transfer_details, user_id)
+        school_id = 1
+        res = await self.transfer_details_rule.add_transfer_out_details(transfer_details, user_id, school_id)
         return res
 
     # async def delete_transfer_details(self,
