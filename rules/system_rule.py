@@ -170,7 +170,6 @@ class SystemRule(object):
             # return None
             return e
 
-
         # return paging
 
     async def get_work_flow_instance_by_process_instance_id(self, process_instance_id: int):

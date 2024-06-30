@@ -1,5 +1,9 @@
+from typing import List
+
 from fastapi import Query
 from pydantic import BaseModel, Field
+
+from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
 
 
 class School(BaseModel):
@@ -117,6 +121,7 @@ class SchoolBaseInfoOptional(BaseModel):
     social_credit_code: str = Field('', title="", description="统一社会信用代码",examples=['XH423423876867'])
     school_closure_date: str = Field('', title="", description="学校关闭日期",examples=[''])
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
+    process_instance_id:int= Query(0, title="", description="", example='1')
 
 
 # 学校的 基本信息模型   视图的额模型是按需提供的
@@ -183,3 +188,29 @@ class SchoolTask(BaseModel):
     file_name: str = Field('', title="",description="",examples=[' '])
     bucket: str = Field('', title="",description="",examples=[' '])
     scene: str = Field('', title="",description="",examples=[' '])
+
+class SchoolPageSearch(BaseModel):
+    # process_code: str = Query("", title=" ", description="", ),
+    block: str = Query("", title=" ", description="地域管辖区", ),
+    school_code: str = Query("", title=" ", description="", ),
+    school_level: str = Query("", title=" ", description="", ),
+    planning_school_code: str = Query("", title="", description=" 园所标识码", ),
+    planning_school_level: str = Query("", title="", description=" 学校星级", ),
+    planning_school_name: str = Query("", title="学校名称", description="1-20字符", ),
+    planning_school_no: str = Query("", title="学校编号", description="学校编号/园所代码", min_length=1,
+                                    max_length=20, ),
+    borough: str = Query("", title="  ", description=" 行政管辖区", ),
+    status: PlanningSchoolStatus|None = Query("", title="", description=" 状态", examples=['正常']),
+
+    founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
+                                                          examples=['地方']),
+    founder_type_lv2: List[str] = Query([], title="", description="举办者类型二级",
+                                        examples=['教育部门']),
+    founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
+                                        examples=['县级教育部门']),
+    school_no: str = Query("", title=" ", description="", ),
+    school_name: str = Query("", title=" ", description="", ),
+    province: str = Query("", title=" ", description="", ),
+    city: str = Query("", title=" ", description="", ),
+    planning_school_id: int = Query(0, title=" ", description="", ),
+

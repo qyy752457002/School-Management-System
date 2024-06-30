@@ -4,19 +4,22 @@ from typing import List
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task import Task
 from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.utils.json import JsonUtils
 from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
 from rules.operation_record import OperationRecordRule
+from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_extend_params
 from views.models.extend_params import ExtendParams
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
-from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
+from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, \
+    PlanningSchoolTransactionAudit
 from views.models.school_communications import SchoolCommunications
 from views.models.school_eduinfo import SchoolEduInfo
 from views.models.school import School, SchoolBaseInfo, SchoolKeyInfo, SchoolKeyAddInfo, SchoolBaseInfoOptional, \
-    SchoolTask
+    SchoolTask, SchoolPageSearch
 
 from fastapi import Query, Depends
 from pydantic import BaseModel, Field
@@ -36,6 +39,8 @@ class SchoolView(BaseView):
         self.school_eduinfo_rule = get_injector(SchoolEduinfoRule)
         self.school_communication_rule = get_injector(SchoolCommunicationRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
+        self.system_rule = get_injector(SystemRule)
+
 
     async def get(self,
                   school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1, max_length=20,
@@ -192,7 +197,20 @@ class SchoolView(BaseView):
     async def patch_open(self, school_id: str = Query(..., title="学校编号", description="学校id/园所id", min_length=1,
                                                       max_length=20, example='SC2032633')):
         # print(school)
-        res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.NORMAL.value, 'open')
+        # res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.NORMAL.value, 'open')
+        # 请求工作流
+        school = await self.school_rule.get_school_by_id(school_id,)
+
+        res = await self.school_rule.add_school_work_flow(school)
+        process_instance_id=0
+        if len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+            process_instance_id= res[0]['process_instance_id']
+            pl = SchoolBaseInfoOptional(id=school_id, process_instance_id=process_instance_id)
+
+            res = await self.school_rule.update_school_byargs(pl  )
+
+            pass
+
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             target=OperationTarget.SCHOOL.value,
@@ -200,7 +218,8 @@ class SchoolView(BaseView):
             change_module=ChangeModule.BASIC_INFO_CHANGE.value,
             change_detail="开办分校",
             action_target_id=str(school_id),
-            change_data=str(school_id)[0:1000],
+            # change_data=str(school_id)[0:1000],
+            process_instance_id=process_instance_id
 
             ))
 
@@ -214,7 +233,19 @@ class SchoolView(BaseView):
                           related_license_upload: List[str] = Query(None, description="相关证照上传", min_length=1,
                                                                     max_length=60, example=''),
                           ):
-        res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.CLOSED.value)
+        # res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.CLOSED.value)
+        # 请求工作流
+
+        school = await self.school_rule.get_school_by_id(school_id,)
+
+        res = await self.school_rule.add_school_close_work_flow(school, action_reason,related_license_upload)
+        process_instance_id=0
+
+        if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+            process_instance_id= res[0]['process_instance_id']
+
+            pass
+
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             target=OperationTarget.SCHOOL.value,
@@ -222,7 +253,8 @@ class SchoolView(BaseView):
             change_module=ChangeModule.BASIC_INFO_CHANGE.value,
             change_detail="关闭分校",
             action_target_id=str(school_id),
-            change_data=str(school_id)[0:1000],
+            # change_data=str(school_id)[0:1000],
+            process_instance_id=process_instance_id
 
             ))
 
@@ -307,7 +339,7 @@ class SchoolView(BaseView):
             change_module=ChangeModule.CREATE_SCHOOL.value,
             change_detail="开办分校",
             action_target_id=str(school_id),
-            change_data=str(log_con)[0:1000],
+            # change_data=str(log_con)[0:1000],
 
             ))
 
@@ -329,8 +361,19 @@ class SchoolView(BaseView):
         paging_result = await self.school_rule.query_schools(school_name,await get_extend_params(request),school_id,block,borough,)
         return paging_result
     # 学校开设审核
-    async def patch_open_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
-                                                                     min_length=1, max_length=20, example='SC2032633')):
+    async def patch_open_audit(self,
+                               audit_info: PlanningSchoolTransactionAudit
+
+                               ):
+        print('前端入参',audit_info)
+        resultra = await self.school_rule.req_workflow_audit(audit_info,'open')
+        if resultra is None:
+            return {}
+        if isinstance(resultra, str):
+            return {resultra}
+
+        # print(new_students_key_info)
+        return resultra
         pass
     # 学校关闭审核
     async def patch_close_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
@@ -358,3 +401,74 @@ class SchoolView(BaseView):
         task = await app.task_topic.send(task)
         print('发生任务成功')
         return task
+
+    #工作流申请详情
+    async def get_school_workflow_info(self,
+
+                                                apply_id: int = Query(..., description="流程ID", example='1'),
+
+                                                ):
+        relationinfo = tinfo = ''
+        # 转发去 工作流获取详细
+        result = await self.system_rule.get_work_flow_instance_by_process_instance_id(
+            apply_id)
+        if not result.get('json_data'):
+            return {'工作流数据异常 无法解析'}
+
+        json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
+        if 'original_dict' in json_data.keys() and  json_data['original_dict']:
+            result={**json_data['original_dict'],**result}
+
+
+        return result
+
+    # 分校的审批流列表
+    async def page_school_audit(self,
+                                block: str = Query("", title=" ", description="地域管辖区", ),
+                                school_code: str = Query("", title="", description=" 园所标识码", ),
+                                school_level: str = Query("", title="", description=" 学校星级", ),
+                                borough: str = Query("", title="  ", description=" 行政管辖区", ),
+                                status: PlanningSchoolStatus = Query("", title="", description=" 状态", examples=['正常']),
+
+                                founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
+                                                                                      examples=['地方']),
+                                founder_type_lv2: List[str] = Query([], title="", description="举办者类型二级",
+                                                                    examples=['教育部门']),
+                                founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
+                                                                    examples=['县级教育部门']),
+
+                                school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1, max_length=20,
+                                                       example='SC2032633'),
+                                school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
+                                                         example='XX小学'),
+                                planning_school_id: int = Query(None, description="规划校ID", example='1'),
+                                province: str = Query("", title="", description="省份代码", ),
+                                city: str = Query("", title="", description="城市", ),
+
+                                         # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
+                                         process_code: str = Query("", title="流程代码", description="例如p_school_open", ),
+                                         planning_school_code: str = Query("", title="", description=" 园所标识码", ),
+                                         page_request=Depends(PageRequest)):
+        items = []
+        #PlanningSchoolBaseInfoOptional
+        req= SchoolPageSearch(block=block,
+                                      planning_school_code=planning_school_code,
+                                      borough=borough,
+                                      status=status,
+                                      founder_type=founder_type,
+                                      founder_type_lv2=founder_type_lv2,
+                                      founder_type_lv3=founder_type_lv3,
+                                      school_no=school_no,
+                                      school_name=school_name,
+                                      planning_school_id=planning_school_id,
+                                      province=province,
+                                      city=city,
+                                      school_code=school_code,
+                                      school_level=school_level,
+
+
+                                      )
+        print('入参接收',req)
+        paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,  )
+        print('333',page_request)
+        return paging_result

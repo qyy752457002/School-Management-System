@@ -10,6 +10,12 @@ from models.school import School
 
 class SchoolDAO(DAOBase):
 
+
+    async def get_school_by_process_instance_id(self, process_instance_id):
+        session = await self.slave_db()
+        result = await session.execute(select(School).where(School.process_instance_id == process_instance_id))
+        return result.scalar()
+
     async def get_school_by_id(self, school_id):
         session = await self.slave_db()
         result = await session.execute(select(School).where(School.id == school_id))
