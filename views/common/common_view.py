@@ -25,7 +25,13 @@ def compare_modify_fields( view_model,orm_model):
             if key in orm_model.__dict__ and orm_model.__dict__[key] != value:
                 print(key,value,orm_model.__dict__[key])
                 # changeitems.append(key)
-                key_cn = view_model.model_fields[key].title
+                key_cn=''
+                if key in view_model.model_fields.keys():
+                    key_cn = view_model.model_fields[key].title
+                elif key in orm_model.model_fields.keys():
+                    key_cn = orm_model.model_fields[key].title
+
+
                 valueold= orm_model.__dict__[key]
                 if isinstance(valueold,date):
                     valueold=valueold.strftime('%Y-%m-%d')

@@ -49,6 +49,7 @@ class ChangeModule(str, Enum):
     变动：transaction
     借动：borrow
     离退休：retirement
+    转学：student_transaction
     """
     CREATE_SCHOOL = "create_school"
     CLOSE_SCHOOL = "close_school"
@@ -60,6 +61,7 @@ class ChangeModule(str, Enum):
     TRANSACTION = "transaction"
     BORROW = "borrow"
     RETIREMENT = "retirement"
+    STUDENT_TRANSACTION = "student_transaction"
 
     @classmethod
     def to_list(cls):

@@ -39,6 +39,7 @@ from views.models.students import StudentSession, StudentsUpdateFamilyInfo
 class CurrentStudentsView(BaseView):
     def __init__(self):
         super().__init__()
+        self.operation_record_rule = get_injector(OperationRecordRule)
         self.system_rule = get_injector(SystemRule)
         self.students_rule = get_injector(StudentsRule)
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
@@ -288,6 +289,22 @@ class CurrentStudentsView(BaseView):
         # print(res_out.id, 000000)
 
         res_student_transaction = await self.student_transaction_rule.add_student_transaction(student_edu_info_in, TransactionDirection.IN.value, res_out.id)
+
+        # 转学日志
+
+        origin =  student_edu_info_out
+        log_con = compare_modify_fields(student_edu_info_in, origin)
+
+        json_string = json.dumps(log_con, ensure_ascii=False)
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            target=OperationTarget.STUDENT.value,
+            action_type=OperationType.MODIFY.value,
+            change_module=ChangeModule.STUDENT_TRANSACTION.value,
+            change_detail="转学",
+            action_target_id=str(res_student_add.student_id),
+            change_data=json_string,
+
+        ))
 
         return res_student_transaction,res_workflow
 
