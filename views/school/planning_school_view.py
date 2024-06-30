@@ -61,13 +61,23 @@ class PlanningSchoolView(BaseView):
                   planning_school_id: int = Query(..., description="学校id|根据学校查规划校", example='1'),
 
                   ):
+        planning_school= ''
+        planning_school_communication= ''
+        planning_school_eduinfo= ''
+        extra_model= ''
+        try:
 
-        planning_school, extra_model = await self.planning_school_rule.get_planning_school_by_id(planning_school_id,
-                                                                                                 PlanningSchoolKeyInfo)
-        planning_school_communication = await self.planning_school_communication_rule.get_planning_school_communication_by_planning_shcool_id(
-            planning_school_id)
-        planning_school_eduinfo = await self.planning_school_eduinfo_rule.get_planning_school_eduinfo_by_planning_school_id(
-            planning_school_id)
+            planning_school, extra_model = await self.planning_school_rule.get_planning_school_by_id(planning_school_id,
+                                                                                                     PlanningSchoolKeyInfo)
+            planning_school_communication = await self.planning_school_communication_rule.get_planning_school_communication_by_planning_shcool_id(
+                planning_school_id)
+            planning_school_eduinfo = await self.planning_school_eduinfo_rule.get_planning_school_eduinfo_by_planning_school_id(
+                planning_school_id)
+            pass
+        except PlanningSchoolValidateError as e:
+            print(e)
+
+
 
         return {'planning_school': planning_school, 'planning_school_communication': planning_school_communication,
                 'planning_school_eduinfo': planning_school_eduinfo, 'planning_school_keyinfo': extra_model}
