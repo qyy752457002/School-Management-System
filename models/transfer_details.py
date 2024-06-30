@@ -40,7 +40,8 @@ class TransferDetails(BaseDBModel):
     __table_args__ = {'comment': 'transfer_details信息表'}
 
     transfer_details_id: Mapped[int] = mapped_column(primary_key=True, comment="transfer_detailsID")
-    original_unit_id: Mapped[str] = mapped_column(String(64), nullable=True, comment="原单位")
+    original_unit_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="原单位")
+    original_unit_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="原单位名称")
     original_position: Mapped[str] = mapped_column(String(64), nullable=True, comment="原岗位")
     original_district_province_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="原行政属地省")
     original_district_city_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="原行政属地市")
@@ -50,6 +51,7 @@ class TransferDetails(BaseDBModel):
     original_region_area_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="原管辖区域区")
     transfer_in_date: Mapped[date] = mapped_column(Date, nullable=True, comment="调入日期")
     current_unit_id: Mapped[int] = mapped_column(nullable=False, comment="现单位")
+    current_unit_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="现单位名称")
     current_position: Mapped[str] = mapped_column(String(64), nullable=True, comment="现岗位")
     current_district_province_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="现行政属地省")
     current_district_city_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="现行政属地市")
@@ -60,7 +62,6 @@ class TransferDetails(BaseDBModel):
     transfer_out_date: Mapped[date] = mapped_column(Date, nullable=True, comment="调出日期")
     transfer_reason: Mapped[str] = mapped_column(String(64), nullable=True, comment="调动原因")
     remark: Mapped[str] = mapped_column(String(64), nullable=True, comment="备注")
-    operator_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="操作人")
     teacher_id: Mapped[int] = mapped_column(nullable=True, comment="教师ID")
     operation_time: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(), nullable=False,
                                                      comment="操作时间")

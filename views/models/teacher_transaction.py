@@ -315,7 +315,6 @@ class TransferDetailsModel(BaseModel):
 
     transfer_reason: str = Field("", title="调动原因", description="调动原因")
     remark: str = Field("", title="备注", description="备注")
-    operator: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     operation_time: datetime = Field(..., title="操作时间", description="操作时间")
     transfer_type: TransferType = Field("transfer_in", title="调动类型", description="调入或者调出")
