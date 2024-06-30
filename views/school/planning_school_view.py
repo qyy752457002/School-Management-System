@@ -238,6 +238,7 @@ class PlanningSchoolView(BaseView):
 
         # res = await self.planning_school_rule.update_planning_school_status(planning_school_id,  PlanningSchoolStatus.NORMAL.value, 'open')
         # 请求工作流
+        planning_school.id = planning_school_id
         res = await self.planning_school_rule.add_planning_school_work_flow(planning_school, extra_model)
         process_instance_id=0
         if len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:

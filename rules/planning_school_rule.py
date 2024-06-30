@@ -188,7 +188,7 @@ class PlanningSchoolRule(object):
 
     # 向工作流中心发送申请
     async def add_planning_school_work_flow(self, planning_school_flow: PlanningSchoolModel,planning_school_baseinfo: PlanningSchoolBaseInfo):
-        planning_school_flow.id=0
+        # planning_school_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
         data= planning_school_flow
@@ -203,7 +203,9 @@ class PlanningSchoolRule(object):
         datadict['borough'] =   planning_school_flow.borough
         datadict['planning_school_level'] =   planning_school_flow.planning_school_level
         datadict['apply_user'] =  'tester'
-        datadict['json_data'] =  json.dumps(planning_school_flow.__dict__, ensure_ascii=False)
+        mapa = planning_school_flow.__dict__
+        mapa['planning_school_id'] = planning_school_flow.id
+        datadict['json_data'] =  json.dumps(mapa, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
         url=url+apiname
         headerdict = {
@@ -245,7 +247,7 @@ class PlanningSchoolRule(object):
 
 
     async def add_planning_school_close_work_flow(self, planning_school_flow: PlanningSchoolModel,planning_school_baseinfo: PlanningSchoolBaseInfo,action_reason,related_license_upload):
-        planning_school_flow.id=0
+        # planning_school_flow.id=0
         data= planning_school_flow
         datadict =  data.__dict__
         datadict['process_code'] = PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE
@@ -261,6 +263,10 @@ class PlanningSchoolRule(object):
         dicta = planning_school_flow.__dict__
         dicta['action_reason']= action_reason
         dicta['related_license_upload']= related_license_upload
+
+        dicta['planning_school_id'] = planning_school_flow.id
+
+
         datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
 
