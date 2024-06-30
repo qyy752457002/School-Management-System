@@ -217,7 +217,7 @@ class SchoolView(BaseView):
             change_module=ChangeModule.BASIC_INFO_CHANGE.value,
             change_detail="开办分校",
             action_target_id=str(school_id),
-            change_data=str(school_id)[0:1000],
+            # change_data=str(school_id)[0:1000],
             process_instance_id=process_instance_id
 
             ))
@@ -232,7 +232,19 @@ class SchoolView(BaseView):
                           related_license_upload: List[str] = Query(None, description="相关证照上传", min_length=1,
                                                                     max_length=60, example=''),
                           ):
-        res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.CLOSED.value)
+        # res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.CLOSED.value)
+        # 请求工作流
+
+        school = await self.school_rule.get_school_by_id(school_id,)
+
+        res = await self.school_rule.add_school_close_work_flow(school, action_reason,related_license_upload)
+        process_instance_id=0
+
+        if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+            process_instance_id= res[0]['process_instance_id']
+
+            pass
+
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             target=OperationTarget.SCHOOL.value,
@@ -240,7 +252,8 @@ class SchoolView(BaseView):
             change_module=ChangeModule.BASIC_INFO_CHANGE.value,
             change_detail="关闭分校",
             action_target_id=str(school_id),
-            change_data=str(school_id)[0:1000],
+            # change_data=str(school_id)[0:1000],
+            process_instance_id=process_instance_id
 
             ))
 
@@ -325,7 +338,7 @@ class SchoolView(BaseView):
             change_module=ChangeModule.CREATE_SCHOOL.value,
             change_detail="开办分校",
             action_target_id=str(school_id),
-            change_data=str(log_con)[0:1000],
+            # change_data=str(log_con)[0:1000],
 
             ))
 

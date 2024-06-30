@@ -17,6 +17,7 @@ from daos.planning_school_dao import PlanningSchoolDAO
 from daos.school_dao import SchoolDAO
 from models.planning_school import PlanningSchool
 from models.school import School
+from rules.common.common_rule import send_request
 from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import workflow_service_config
 from views.models.extend_params import ExtendParams
@@ -26,7 +27,8 @@ from views.models.school import School as SchoolModel, SchoolKeyAddInfo
 
 from views.models.school import SchoolBaseInfo
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus
-from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, SCHOOL_OPEN_WORKFLOW_CODE
+from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, SCHOOL_OPEN_WORKFLOW_CODE, \
+    PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, SCHOOL_CLOSE_WORKFLOW_CODE
 
 
 @dataclass_inject
@@ -383,6 +385,37 @@ class SchoolRule(object):
         response= None
         try:
             response = await httpreq.post_json(url,datadict,headerdict)
+            print('请求工作流结果',response)
+        except Exception as e:
+            print(e)
+        return response
+
+
+    async def add_school_close_work_flow(self, school_flow: PlanningSchoolModel,action_reason,related_license_upload):
+        school_flow.id=0
+        data= school_flow
+        datadict =  data.__dict__
+        datadict['process_code'] = SCHOOL_CLOSE_WORKFLOW_CODE
+        datadict['teacher_id'] =  0
+        datadict['applicant_name'] =  'tester'
+        datadict['school_code'] = school_flow.school_code
+        datadict['school_name'] = school_flow.school_name
+        datadict['founder_type_lv3'] =   school_flow.founder_type_lv3
+        datadict['block'] =   school_flow.block
+        datadict['borough'] =   school_flow.borough
+        datadict['school_level'] =   school_flow.school_level
+        datadict['school_no'] =   school_flow.school_no
+
+        datadict['apply_user'] =  'tester'
+        dicta = school_flow.__dict__
+        dicta['action_reason']= action_reason
+        dicta['related_license_upload']= related_license_upload
+        datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
+        apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
+
+        response= None
+        try:
+            response = await send_request(apiname,datadict,'post')
             print('请求工作流结果',response)
         except Exception as e:
             print(e)
