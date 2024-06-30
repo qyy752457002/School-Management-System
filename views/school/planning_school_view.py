@@ -445,8 +445,8 @@ class PlanningSchoolView(BaseView):
 
                                 process_instance_id: int = Query(0, title="流程ID", description="流程ID",
                               example= 25),
-                                node_id: str = Query(0, title="流程对应的节点ID", description="",
-                                                                     min_length=1, max_length=20, example='SC2032633')
+                                node_id: int  = Query(0, title="流程对应的节点ID", description="",
+                                                                      example='22')
 
     ):
 
@@ -462,12 +462,41 @@ class PlanningSchoolView(BaseView):
         return res2
         pass
     # 学校关闭
-    async def patch_close_cancel(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
-                                                                      min_length=1, max_length=20, example='SC2032633')):
+    async def patch_close_cancel(self,
+                                 process_instance_id: int = Query(0, title="流程ID", description="流程ID",
+                                                                  example= 25),
+                                 node_id: int  = Query(0, title="流程对应的节点ID", description="",
+                                                       example='22')
+                                 ):
+
+        #  审批流取消
+        res2 = await self.planning_school_rule.req_workflow_cancel(node_id,process_instance_id)
+
+        if res2 is None:
+            return {}
+        if isinstance(res2, str):
+            return {res2}
+
+        # print(new_students_key_info)
+        return res2
         pass
     # 学校关键信息变更
-    async def patch_keyinfo_cancel(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
-                                                                        min_length=1, max_length=20, example='SC2032633')):
+    async def patch_keyinfo_cancel(self,
+                                   process_instance_id: int = Query(0, title="流程ID", description="流程ID",
+                                                                    example= 25),
+                                   node_id: int  = Query(0, title="流程对应的节点ID", description="",
+                                                         example='22')
+                                   ):
+        #  审批流取消
+        res2 = await self.planning_school_rule.req_workflow_cancel(node_id,process_instance_id)
+
+        if res2 is None:
+            return {}
+        if isinstance(res2, str):
+            return {res2}
+
+        # print(new_students_key_info)
+        return res2
         pass
 
     # 原始的获取规划校分页接口 再用
