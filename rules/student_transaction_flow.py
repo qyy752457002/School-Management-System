@@ -172,7 +172,7 @@ class StudentTransactionFlowRule(object):
         :param original_dict_map_view_orm:含转出 转入对象和 学生提交的信息的 map
         :return:
         """
-        student_transaction_flow.id=0
+        # student_transaction_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
         data= student_transaction_flow
@@ -188,16 +188,17 @@ class StudentTransactionFlowRule(object):
         datadict['apply_user'] =  'tester'
 
         stuinfoadddict =  stuinfoadd.__dict__
-        dict2['student_info'] =  convert_dates_to_strings(stuinfoadddict)
 
-        original_dict_map_view_orm['student_transaction_in'] = student_transaction_flow.__dict__
+        # original_dict_map_view_orm['student_transaction_in'] = student_transaction_flow.__dict__
+        dict2['student_info'] = original_dict_map_view_orm['student_info']
 
         dict2['original_dict'] = original_dict_map_view_orm
         # 检查字典  如果哪个值为query 则设为none birthday registration_date enrollment_date
         for key, value in datadict.items():
             if isinstance(value,Query) or isinstance(value,tuple):
                 datadict[key] = None
-        jsonstr = JsonUtils.dict_to_json_str( dict2)
+        # jsonstr = JsonUtils.dict_to_json_str( dict2)
+        jsonstr = json.dumps( dict2)
         # print('总字典str', datadict)
 
         datadict['json_data'] =  jsonstr

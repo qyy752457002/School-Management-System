@@ -146,7 +146,8 @@ class StudentsRule(object):
             }
             exist = await self.students_baseinfo_dao.get_students_base_info_by_param(**kdict)
             if exist:
-                raise EduNumberError()
+                # raise EduNumberError()
+                pass
 
         students_db = view_model_to_orm_model(students, Student, exclude=["student_id"])
         students_db.student_gender = students.student_gender
@@ -165,7 +166,9 @@ class StudentsRule(object):
 
             if exist:
                 # print(exist)
-                raise StudentExistsError()
+                # raise StudentExistsError()
+                pass
+
 
         # print(students_db)
         students_db = await self.students_dao.add_students(students_db)

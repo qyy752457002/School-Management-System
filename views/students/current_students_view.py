@@ -19,7 +19,7 @@ from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
 from rules.students_key_info_change_rule import StudentsKeyInfoChangeRule
 from rules.system_rule import SystemRule
-from views.common.common_view import compare_modify_fields, get_client_ip
+from views.common.common_view import compare_modify_fields, get_client_ip, convert_dates_to_strings
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
     StudentEduInfo, StudentTransactionAudit, StudentEduInfoOut
@@ -255,8 +255,17 @@ class CurrentStudentsView(BaseView):
         student_edu_info_in.student_id= res_student_add.student_id
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
 
-        origin_data = {'student_transaction_in':  '', 'student_transaction_out': student_edu_info_out.__dict__, 'student_info': student_baseinfo.__dict__, }
-        # origin_datastr= JsonUtils.dict_to_json_str(origin_data)
+        origin_data = {'student_transaction_in':  '', 'student_transaction_out':convert_dates_to_strings( student_edu_info_out.__dict__), 'student_info':convert_dates_to_strings( res_student_add.__dict__), }
+        # origin_datastr= JsonUtils.dict_to_json_str(origin_data) student_info
+        origin_data['student_transaction_in'] = convert_dates_to_strings(student_edu_info_in.__dict__)
+
+
+        # dict2['student_info'] =  convert_dates_to_strings(stuinfoadddict)
+
+
+
+
+
         res_workflow = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo,res_student_add,res_student_baseinfo,origin_data)
         process_instance_id= node_instance_id =  0
         if res_workflow and  len(res_workflow)>0 :

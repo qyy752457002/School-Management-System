@@ -1,5 +1,6 @@
 from datetime import date, datetime
 
+from fastapi.params import Query
 from mini_framework.design_patterns.singleton import singleton
 from daos.enum_value_dao import EnumValueDAO
 from views.common.constant import Constant
@@ -108,4 +109,6 @@ def convert_dates_to_strings(stuinfoadddict):
     for key, value in stuinfoadddict.items():
         if isinstance(value, (date, datetime)):
             stuinfoadddict[key] = value.strftime("%Y-%m-%d %H:%M:%S")
+        if isinstance(value,Query) or isinstance(value,tuple):
+            stuinfoadddict[key] = None
     return stuinfoadddict
