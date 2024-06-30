@@ -5,9 +5,9 @@ from daos.teacher_transaction_dao import TeacherTransactionDAO
 from daos.teachers_dao import TeachersDao
 from models.teacher_transaction import TeacherTransaction
 from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
-    TeacherTransactionQueryModel, TeacherTransactionApproval, TeacherTransactionGetModel
+    TeacherTransactionQueryModel, TeacherTransactionGetModel
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
-from business_exceptions.teacher_transction import TransactionApprovalError
+from business_exceptions.teacher_transction import TransactionError
 from rules.work_flow_instance_rule import WorkFlowNodeInstanceRule
 from mini_framework.utils.http import HTTPRequest
 from urllib.parse import urlencode
@@ -45,7 +45,6 @@ class TeacherWorkFlowRule(object):
 
         result = await httpreq.post(url, params_data, headerdict)
         result = JsonUtils.json_str_to_dict(result)
-        print(f"result的结果是{result}")
         work_flow_instance = result[0]
         next_node_instance = result[1]
         print(work_flow_instance)
@@ -141,6 +140,9 @@ class TeacherWorkFlowRule(object):
         return result
 
     async def get_work_flow_define(self, process_instance_id):
+        """
+        获取整个审批有哪些节点
+        """
         httpreq = HTTPRequest()
         url = workflow_service_config.workflow_config.get("url")
         params = {"process_instance_id": process_instance_id}
@@ -209,8 +211,9 @@ class TeacherWorkFlowRule(object):
         parameters = query_model_instance.dict()
         parameters["page"] = page_request.page
         parameters["per_page"] = page_request.per_page
-        print('拼装参数',parameters)
-        query_parmas = {k: v for k, v in parameters.items() if v is not None}
+        print('拼装参数', parameters)
+        query_parmas = {k: v for k, v in parameters.items() if v is not None and v != ''}
+        print('查询参数', query_parmas)
         # params_data = JsonUtils.dict_to_json_str(parameters)
         api_name = '/api/school/v1/teacher-workflow/work-flow-instance'
         url += api_name
@@ -219,7 +222,7 @@ class TeacherWorkFlowRule(object):
             "Content-Type": "application/json"
         }
         url += ('?' + urlencode(query_parmas))
-        print('发起调用',url )
+        print('发起调用', url)
         result = await httpreq.get(url, headerdict)
         result = JsonUtils.json_str_to_dict(result)
         page_result = PaginatedResponse(**result)
@@ -227,6 +230,26 @@ class TeacherWorkFlowRule(object):
         print(type(page_result))
         page_response = await self.create_page_response_from_workflow(query_re_model, page_result)
         return page_response
+    async def get_work_flow_instance_by_query_model(self, query_model: Type[BaseModel],query_re_model: Type[BaseModel]):
+        httpreq = HTTPRequest()
+        url = workflow_service_config.workflow_config.get("url")
+        query_model_instance = query_model.dict()
+        parameters = query_model_instance
+        api_name = '/api/school/v1/teacher-workflow/work-flow-instance-by-query-model'
+        url += api_name
+        headerdict = {
+            "accept": "application/json",
+            "Content-Type": "application/json"
+        }
+        url += ('?' + urlencode(parameters))
+        result = await httpreq.get_json(url, headerdict)
+        result = JsonUtils.json_str_to_dict(result)
+        result_list=[]
+        if result:
+            for item in result:
+                item = await self.create_model_from_workflow(item, query_re_model)
+                result_list.append(item)
+        return result_list
 
     async def create_workflow_from_model(self, base_model: Type[BaseModel],
                                          params: dict) -> WorkFlowInstanceCreateModel:
@@ -268,6 +291,8 @@ class TeacherWorkFlowRule(object):
     async def create_model_from_workflow(self, work_flow_instance: dict, model: Type[BaseModel]):
         model_fields = model.__fields__.keys()
         model_data = {}
+        if work_flow_instance["json_data"] != "":
+            work_flow_instance["json_data"] = JsonUtils.json_str_to_dict(work_flow_instance["json_data"])
         for field in model_fields:
             if field in work_flow_instance.keys():
                 model_data[field] = work_flow_instance[field]
@@ -322,8 +347,8 @@ class TeacherWorkFlowRule(object):
     async def create_work_flow_model_from_multi_model(self, base_model_list: list[Type[BaseModel]],
                                                       params: dict) -> WorkFlowInstanceCreateModel:
         base_model = {}
-        for base_model in base_model_list:
-            base_model.update(base_model.dict())
+        for item in base_model_list:
+            base_model.update(item.dict())
         workflow_fields = WorkFlowInstanceCreateModel.__fields__.keys()
         workflow_data = {}
         json_data = {}

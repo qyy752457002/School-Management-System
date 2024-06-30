@@ -133,8 +133,7 @@ class NewTeachersView(BaseView):
                                    reason: str = Body(None, title="审批意见", description="审批意见", example="同意")):
         user_id = "asdfasdf"
         reason = reason
-        await self.teacher_rule.entry_approved(teacher_id, process_instance_id, user_id, reason)
-        return teacher_id
+        return await self.teacher_rule.entry_approved(teacher_id, process_instance_id, user_id, reason)
 
     async def patch_entry_rejected(self,
                                    teacher_id: int = Body(..., title="教师编号", description="教师编号", example=123),
@@ -144,8 +143,8 @@ class NewTeachersView(BaseView):
                                                       description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
-        await self.teacher_rule.entry_rejected(teacher_id, process_instance_id, user_id, reason)
-        return teacher_id
+
+        return await self.teacher_rule.entry_rejected(teacher_id, process_instance_id, user_id, reason)
 
     async def patch_entry_revoked(self,
                                   teacher_id: int = Body(..., title="教师编号", description="教师编号", example=123),
@@ -156,8 +155,7 @@ class NewTeachersView(BaseView):
         撤回
         """
         user_id = "asdfasdf"
-        await self.teacher_rule.entry_revoked(teacher_id, process_instance_id, user_id)
-        return teacher_id
+        return await self.teacher_rule.entry_revoked(teacher_id, process_instance_id, user_id)
 
     # async def patch_info_submitting(self,
     #                                 teacher_base_id: int = Query(..., title="教师基本信息编号",

@@ -21,8 +21,9 @@ from views.models.operation_record import OperationRecord, OperationTarget, Chan
 from rules.operation_record import OperationRecordRule
 from daos.operation_record_dao import OperationRecordDAO
 from rules.teachers_rule import TeachersRule
-from views.models.teacher_transaction import TeacherAddModel
+from views.models.teacher_transaction import TeacherAddModel, WorkflowQueryModel
 from datetime import datetime
+from daos.school_dao import SchoolDAO
 from typing import Type
 
 
@@ -38,6 +39,7 @@ class TransferDetailsRule(object):
     operation_record_rule: OperationRecordRule
     operation_record_dao: OperationRecordDAO
     teachers_rule: TeachersRule
+    school_dao: SchoolDAO
 
     async def get_transfer_details_by_transfer_details_id(self, transfer_details_id):
         transfer_details_db = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
@@ -49,49 +51,25 @@ class TransferDetailsRule(object):
         """
         系统内调入
         """
-        original_unit_id = transfer_details.original_unit_id
-        current_unit_id = transfer_details.current_unit_id
         exists_teachers = await self.teachers_dao.get_teachers_by_id(transfer_details.teacher_id)
         if not exists_teachers:
             raise TeacherNotFoundError()
         is_approval = exists_teachers.is_approval
+        await self.teachers_rule.teacher_submitted(transfer_details.teacher_id)
         if is_approval:
             raise ApprovalStatusError()
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
         transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
-        original_district_province_name, original_district_city_name, original_district_area_name = self.enum_value_rule.get_district_name(
-            transfer_details_work.original_district_area_id)
-
+        transfer_and_borrow_extra_model = await self.get_transfer_and_borrow_extra(
+            original_district_area_id=transfer_details_work.original_district_area_id,
+            current_district_area_id=transfer_details_work.current_district_area_id,
+            original_unit_id=transfer_details_work.original_unit_id,
+            current_unit_id=transfer_details_work.current_unit_id)
+        original_unit_name = transfer_and_borrow_extra_model.original_unit_name
+        current_unit_name = transfer_and_borrow_extra_model.current_unit_name
+        model_list = [exists_teachers, transfer_details_work, transfer_and_borrow_extra_model]
         params = {"process_code": "t_transfer_in_inner", "applicant_name": user_id}
-        work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(transfer_details_work, params)
-        teacher_transfer_log = OperationRecord(
-            action_target_id=transfer_details_work.teacher_id,
-            target=OperationTarget.TEACHER.value,
-            action_type=OperationType.CREATE.value,
-            ip="127.0.0.1",
-            change_data="",
-            operation_time=datetime.now(),
-            doc_upload="",
-            change_module=ChangeModule.TRANSFER.value,
-            change_detail=f"从{original_unit_id}调入到{current_unit_id}",
-            status="/",
-            operator_id=1,
-            operator_name=user_id,
-            process_instance_id=work_flow_instance["process_instance_id"])
-        await self.operation_record_rule.add_operation_record(teacher_transfer_log)
-        return transfer_details
-
-    async def add_transfer_in_outer_details(self, transfer_details: TransferDetailsModel, add_teacher: TeacherAddModel,
-                                            user_id):
-        teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
-        current_unit_id = transfer_details.current_unit_id
-        transfer_details.teacher_id = teachers.teacher_id
-        transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
-        transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
-        transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
-        params = {"process_code": "t_transfer_in_outer", "applicant_name": user_id}
-        model_list = [transfer_details_work, teachers]
         work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
         teacher_transfer_log = OperationRecord(
             action_target_id=transfer_details_work.teacher_id,
@@ -102,21 +80,76 @@ class TransferDetailsRule(object):
             operation_time=datetime.now(),
             doc_upload="",
             change_module=ChangeModule.TRANSFER.value,
-            change_detail=f"从系统外调入到{current_unit_id}",
+            change_detail=f"从{original_unit_name}调入到{current_unit_name}",
+            status="/",
+            operator_id=1,
+            operator_name=user_id,
+            process_instance_id=work_flow_instance["process_instance_id"])
+        await self.operation_record_rule.add_operation_record(teacher_transfer_log)
+        return transfer_details
+
+    async def add_transfer_in_outer_details(self, transfer_details: TransferDetailsModel, add_teacher: TeacherAddModel,
+                                            user_id):
+        teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
+        transfer_details.teacher_id = teachers.teacher_id
+        transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
+        transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
+        transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
+        transfer_and_borrow_extra_model = await self.get_transfer_and_borrow_extra(
+            original_district_area_id=transfer_details_work.original_district_area_id,
+            current_district_area_id=transfer_details_work.current_district_area_id,
+            current_unit_id=transfer_details.current_unit_id)
+        original_unit_name = transfer_details_work.original_unit_name
+        current_unit_name = transfer_and_borrow_extra_model.current_unit_name
+        params = {"process_code": "t_transfer_in_outer", "applicant_name": user_id}
+        model_list = [transfer_details_work, teachers, transfer_and_borrow_extra_model]
+        work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
+        teacher_transfer_log = OperationRecord(
+            action_target_id=transfer_details_work.teacher_id,
+            target=OperationTarget.TEACHER.value,
+            action_type=OperationType.CREATE.value,
+            ip="127.0.0.1",
+            change_data="",
+            operation_time=datetime.now(),
+            doc_upload="",
+            change_module=ChangeModule.TRANSFER.value,
+            change_detail=f"从{original_unit_name}调入到{current_unit_name}",
             status="/",
             operator_id=1,
             operator_name=user_id,
             process_instance_id=work_flow_instance["process_instance_id"])
         await self.operation_record_rule.add_operation_record(teacher_transfer_log)
 
-    async def add_transfer_out_details(self, transfer_details: TransferDetailsModel):
-        """
-        调出
-        """
-
+    async def add_transfer_out_details(self, transfer_details: TransferDetailsModel,
+                                       user_id):
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
-        transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
+        transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
+
+        transfer_and_borrow_extra_model = await self.get_transfer_and_borrow_extra(
+            original_district_area_id=transfer_details_work.original_district_area_id,
+            current_district_area_id=transfer_details_work.current_district_area_id,
+            original_unit_id=transfer_details.original_unit_id)
+        original_unit_name = transfer_details_work.original_unit_name
+        current_unit_name = transfer_and_borrow_extra_model.current_unit_name
+        params = {"process_code": "t_transfer_in_outer", "applicant_name": user_id}
+        model_list = [transfer_details_work, transfer_and_borrow_extra_model]
+        work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
+        teacher_transfer_log = OperationRecord(
+            action_target_id=transfer_details_work.teacher_id,
+            target=OperationTarget.TEACHER.value,
+            action_type=OperationType.CREATE.value,
+            ip="127.0.0.1",
+            change_data="",
+            operation_time=datetime.now(),
+            doc_upload="",
+            change_module=ChangeModule.TRANSFER.value,
+            change_detail=f"从{original_unit_name}调入到{current_unit_name}",
+            status="/",
+            operator_id=1,
+            operator_name=user_id,
+            process_instance_id=work_flow_instance["process_instance_id"])
+        await self.operation_record_rule.add_operation_record(teacher_transfer_log)
         return transfer_details
 
     async def delete_transfer_details(self, transfer_details_id):
@@ -147,10 +180,9 @@ class TransferDetailsRule(object):
         exit_teacher = await self.teachers_dao.get_teachers_by_id(teacher_id)
         if not exit_teacher:
             raise TeacherNotFoundError()
-        transfer_details_db = await self.transfer_details_dao.get_all_transfer_details(teacher_id)
-        transfer_details = []
-        for item in transfer_details_db:
-            transfer_details.append(orm_model_to_view_model(item, TransferDetailsGetModel))
+        query_model = WorkflowQueryModel(teacher_id=teacher_id, process_code="transfer"),
+        transfer_details = await self.teacher_work_flow_rule.get_work_flow_instance_by_query_model(query_model,
+                                                                                                   TransferDetailsGetModel)
         return transfer_details
 
     async def query_teacher_transfer(self, teacher_transaction: TeacherTransactionQuery):
@@ -168,122 +200,83 @@ class TransferDetailsRule(object):
 
     # 调动管理分页查询相关
     async def query_transfer_out_with_page(self, type, query_model: TeacherTransferQueryModel,
-                                           page_request: PageRequest):
-        params = {"original_district_area_id": "original_district_area_name",
-                  "original_district_city_id": "original_district_city_name",
-                  "original_district_province_id": "original_region_province_name",
-                  "original_region_area_id": "current_district_area_name",
-                  "original_region_city_id": "original_region_city_name",
-                  "original_region_province_id": "original_region_province_name",
-                  "current_district_area_id": "current_district_area_name",
-                  "current_district_city_id": "current_district_city_name",
-                  "current_district_province_id": "current_region_province_name",
-                  "current_region_area_id": "current_district_area_name",
-                  "current_region_city_id": "current_region_city_name",
-                  "current_region_province_id": "current_region_province_name",
-                  }
+                                           page_request: PageRequest, user_id):
         if type == "launch":
-            teacher_transaction_db = await self.transfer_details_dao.query_transfer_out_launch_with_page(query_model,
-                                                                                                         page_request)
-            teacher_transaction_page = await self.query_deal(teacher_transaction_db)
-            paging_result = PaginatedResponse.from_paging(teacher_transaction_page, TeacherTransferQueryReModel,
-                                                          other_mapper=params)
-
-            # for item in teacher_transaction_db.items:
-            #     original_district_area_id = item.original_district_area_id
-            #     current_district_area_id = item.current_district_area_id
-            #     original_region_area_id = item.original_region_area_id
-            #     current_region_area_id = item.current_region_area_id
-            #
-            #     original_district_province_name, original_district_city_name, original_district_area_name = self.enum_value_rule.get_district_name(
-            #         original_district_area_id)
-            #     item.original_region_province_id = original_district_province_name
-            #     item.original_district_city_id = original_district_city_name
-            #     item.original_district_area_id = original_district_area_name
-            #
-            #     current_district_province_name, current_district_city_name, current_district_area_name = self.enum_value_rule.get_district_name(
-            #         current_district_area_id)
-            #     item.current_region_province_id = current_district_province_name
-            #     item.current_district_city_id = current_district_city_name
-            #     item.current_district_area_id = current_district_area_name
-            #
-            #     original_region_province_name, original_region_city_name, original_region_area_name = self.enum_value_rule.get_district_name(
-            #         original_region_area_id)
-            #     item.original_region_province_id = original_region_province_name
-            #     item.original_region_city_id = original_region_city_name
-            #     item.original_region_area_id = original_region_area_name
-            #
-            #     current_region_province_name, current_region_city_name, current_region_area_name = self.enum_value_rule.get_district_name(
-            #         current_region_area_id)
-            #     item.current_region_province_id = current_region_province_name
-            #     item.current_region_city_id = current_region_city_name
-            #     item.current_region_area_id = current_region_area_name
+            params = {"applicant_name": user_id, "process_code": "t_transfer_out", "teacher_sub_status": "submitted"}
         elif type == "approval":
-            teacher_transaction_db = await self.transfer_details_dao.query_transfer_out_approval_with_page(query_model,
-                                                                                                           page_request)
-            teacher_transaction_page = await self.query_deal(teacher_transaction_db)
-            paging_result = PaginatedResponse.from_paging(teacher_transaction_page, TeacherTransferQueryReModel,
-                                                          other_mapper=params)
-        return paging_result
+            params = {"applicant_name": user_id, "process_code": "t_transfer_out", "teacher_sub_status": "submitted"}
+        result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
+                                                                                      query_model,
+                                                                                      TeacherTransferQueryReModel,
+                                                                                      params)
+        return result
 
     async def query_transfer_in_with_page(self, type, query_model: TeacherTransferQueryModel,
-                                          page_request: PageRequest):
+                                          page_request: PageRequest, user_id):
+        result_list = []
         if type == "launch":
-            teacher_transaction_db = await self.transfer_details_dao.query_transfer_in_launch_with_page(query_model,
-                                                                                                        page_request)
+            params_inner = {"applicant_name": user_id, "process_code": "t_transfer_in_inner",
+                            "teacher_sub_status": "submitted"}
+            result_inner = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
+                                                                                                query_model,
+                                                                                                TeacherTransferQueryReModel,
+                                                                                                params_inner)
+            params_outer = {"applicant_name": user_id, "process_code": "t_transfer_in_outer",
+                            "teacher_sub_status": "submitted"}
+            result_outer = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
+                                                                                                query_model,
+                                                                                                TeacherTransferQueryReModel,
+                                                                                                params_outer)
+
+
         elif type == "approval":
-            teacher_transaction_db = await self.transfer_details_dao.query_transfer_in_approval_with_page(query_model,
-                                                                                                          page_request)
-        paging_result = PaginatedResponse.from_paging(teacher_transaction_db, TeacherTransferQueryReModel)
-        return paging_result
-
-    async def query_deal(self, page: Paging):
-        for item in page.items:
-            original_district_area_id = item.original_district_area_id
-            current_district_area_id = item.current_district_area_id
-            original_region_area_id = item.original_region_area_id
-            current_region_area_id = item.current_region_area_id
-
-            original_district_province_name, original_district_city_name, original_district_area_name = self.enum_value_rule.get_district_name(
-                original_district_area_id)
-            item.original_region_province_id = original_district_province_name
-            item.original_district_city_id = original_district_city_name
-            item.original_district_area_id = original_district_area_name
-
-            current_district_province_name, current_district_city_name, current_district_area_name = self.enum_value_rule.get_district_name(
-                current_district_area_id)
-            item.current_region_province_id = current_district_province_name
-            item.current_district_city_id = current_district_city_name
-            item.current_district_area_id = current_district_area_name
-
-            original_region_province_name, original_region_city_name, original_region_area_name = self.enum_value_rule.get_district_name(
-                original_region_area_id)
-            item.original_region_province_id = original_region_province_name
-            item.original_region_city_id = original_region_city_name
-            item.original_region_area_id = original_region_area_name
-
-            current_region_province_name, current_region_city_name, current_region_area_name = self.enum_value_rule.get_district_name(
-                current_region_area_id)
-            item.current_region_province_id = current_region_province_name
-            item.current_region_city_id = current_region_city_name
-            item.current_region_area_id = current_region_area_name
-        return page
+            params_inner = {"applicant_name": user_id, "process_code": "t_transfer_in_inner",
+                            "teacher_sub_status": "submitted"}
+            result_inner = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
+                                                                                                query_model,
+                                                                                                TeacherTransferQueryReModel,
+                                                                                                params_inner)
+            params_outer = {"applicant_name": user_id, "process_code": "t_transfer_in_outer",
+                            "teacher_sub_status": "submitted"}
+            result_outer = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
+                                                                                                query_model,
+                                                                                                TeacherTransferQueryReModel,
+                                                                                                params_outer)
+        result_list.append(result_inner)
+        result_list.append(result_outer)
+        return result_list
 
     async def get_transfer_and_borrow_extra(self, original_district_area_id=None,
                                             current_district_area_id=None, original_unit_id=None,
                                             current_unit_id=None) -> TransferAndBorrowExtraModel:
+        original_district_province_name = original_district_city_name = original_district_area_name = ""
+        current_district_province_name = current_district_city_name = current_district_area_name = ""
+        original_unit_name = current_unit_name = ""
         if original_district_area_id:
-            original_district_area_name = original_district_area_id
-        fields = TransferAndBorrowExtraModel.__fields__.keys()
-
-        transfer_and_borrow_extra = TransferAndBorrowExtraModel()
-        # transfer_and_borrow_extra.transfer_details = await self.transfer_details_dao.get_all_transfer_details(
-        #     teacher_id)
-        return
+            original_district_province_name, original_district_city_name, original_district_area_name = self.enum_value_rule.get_district_name(
+                original_district_area_id)
+        if current_district_area_id:
+            current_district_province_name, current_district_city_name, current_district_area_name = self.enum_value_rule.get_district_name(
+                current_district_area_id)
+        if original_unit_id:
+            school = await self.school_dao.get_school_by_id(original_unit_id)
+            original_unit_name = school.school_name
+        if current_unit_id:
+            school = await self.school_dao.get_school_by_id(current_unit_id)
+            current_unit_name = school.school_name
+        return TransferAndBorrowExtraModel(original_district_province_name=original_district_province_name,
+                                           original_district_city_name=original_district_city_name,
+                                           original_district_area_name=original_district_area_name,
+                                           current_district_province_name=current_district_province_name,
+                                           current_district_city_name=current_district_city_name,
+                                           current_district_area_name=current_district_area_name,
+                                           original_unit_name=original_unit_name,
+                                           current_unit_name=current_unit_name)
 
         # 调动管理审批相关
 
     async def transfer_approved(self, teacher_id, process_instance_id, user_id, reason):
+        # todo 调动完成后，当地校的老师需要修改状态为调出或调入，同时本校的记录应该删除，另一个学校的应该copy，该老师信息并且有调入记录。
         user_id = user_id
         await self.teachers_rule.teacher_progressing(teacher_id)
         parameters = {"user_id": user_id, "action": "approved", "description": reason}
@@ -293,35 +286,54 @@ class TransferDetailsRule(object):
         if node_instance == "approved":
             result = await self.teacher_work_flow_rule.get_work_flow_instance_by_process_instance_id(
                 process_instance_id)
-            teacher = await self.teacher_work_flow_rule.create_model_from_workflow(result, TransferDetailsReModel)
+            process_code = result.get("process_code")
             teachers_db = await self.teachers_dao.get_teachers_by_id(teacher_id)
-            await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status")
-        # else:
-        #     transfer_details.approval_status = "processing"
-        #     await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
-        # todo 审批日志没写
+            if process_code == "t_transfer_out":
+                """需要删除本校老师"""
+                # todo 需要发给两个学校消息
+                teachers_db.teacher_sub_status = "transfer_out"
+                await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status")
+            elif process_code == "t_transfer_in_inner":
+                """需要先修改本校老师状态，包括is_deleted和teacher_sub_status，然后再添加新的老师，以及增加老师的调入记录"""
+                teachers_db.teacher_sub_status = "transfer_in"
+                await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status")
+            elif process_code == "t_transfer_in_outer":
+                """增加老师再添加新老师"""
+                teachers_db.teacher_sub_status = "transfer_in"
+                teacher = await self.teacher_work_flow_rule.create_model_from_workflow(result, TeacherAddModel)
+                need_update_list = []
+                for key, value in teacher.dict().items():
+                    if value:
+                        need_update_list.append(key)
+                await self.teachers_dao.update_teachers(teachers_db, *need_update_list)
+            await self.teachers_rule.teacher_pending(teachers_db.teachers_id)
+            await self.teachers_rule.teacher_active(teachers_db.teacher_id)
 
+            # teacher = await self.teacher_work_flow_rule.create_model_from_workflow(result, TransferDetailsReModel)
+            return "该老师调动审批已通过"
     async def transfer_rejected(self, transfer_details_id, process_instance_id, user_id, reason):
         transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
             transfer_details_id)
         if not transfer_details:
             raise Exception(f"编号为{transfer_details_id}的transfer_details不存在")
         user_id = user_id
+        await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
         parameters = {"user_id": user_id, "action": "rejected", "description": reason}
         current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
         node_instance_id = current_node.get("node_instance_id")
         node_instance = await self.teacher_work_flow_rule.process_transaction_work_flow(node_instance_id,
-                                                                                        parameters)
+                                                                                   parameters)
         if node_instance == "rejected":
-            transfer_details.approval_status = "rejected"
-            await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
-        # todo 审批日志没写
+            await self.teachers_rule.teacher_active(transfer_details.teachers_id)
+            await self.teachers_rule.teacher_pending(transfer_details.teachers_id)
+            return "该老师调动审批已拒绝"
 
     async def transfer_revoked(self, transfer_details_id, process_instance_id, user_id, reason):
         transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
             transfer_details_id)
         if not transfer_details:
             raise Exception(f"编号为{transfer_details_id}的transfer_details不存在")
+        await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
         user_id = user_id
         parameters = {"user_id": user_id, "action": "revoke", "description": reason}
         current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
@@ -329,6 +341,6 @@ class TransferDetailsRule(object):
         node_instance = await self.teacher_work_flow_rule.process_transaction_work_flow(node_instance_id,
                                                                                         parameters)
         if node_instance == "revoked":
-            transfer_details.approval_status = "revoked"
-            await self.transfer_details_dao.update_transfer_details(transfer_details, "approval_status")
-        # todo 审批日志没写
+            await self.teachers_rule.teacher_active(transfer_details.teachers_id)
+            await self.teachers_rule.teacher_pending(transfer_details.teachers_id)
+            return "该老师调动审批已撤回"

@@ -19,7 +19,7 @@ class TeachersDao(DAOBase):
         await session.refresh(teachers)
         return teachers
 
-    async def update_teachers(self, teachers: Teacher, *args, is_commit: bool = True):
+    async def update_teachers(self, teachers, *args, is_commit: bool = True):
         session = await self.master_db()
         update_contents = get_update_contents(teachers, *args)
         query = update(Teacher).where(Teacher.teacher_id == teachers.teacher_id).values(**update_contents)
