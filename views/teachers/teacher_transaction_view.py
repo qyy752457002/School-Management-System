@@ -57,7 +57,8 @@ class TransferDetailsView(BaseView):
         """
         调出
         """
-        res = await self.transfer_details_rule.add_transfer_out_details(transfer_details)
+        user_id = "asdfasdf"
+        res = await self.transfer_details_rule.add_transfer_out_details(transfer_details, user_id)
         return res
 
     # async def delete_transfer_details(self,

@@ -102,8 +102,8 @@ class TeachersView(BaseView):
                                                                     example="同意")):
         user_id = "asdfasdf"
         reason = reason
-        await self.teacher_rule.teacher_info_change_approved(teacher_id, process_instance_id, user_id, reason)
-        return teacher_id
+
+        return await self.teacher_rule.teacher_info_change_approved(teacher_id, process_instance_id, user_id, reason)
 
     async def patch_teacher_info_change_rejected(self,
                                                  teacher_id: int = Body(..., title="教师编号", description="教师编号",
@@ -115,8 +115,8 @@ class TeachersView(BaseView):
                                                                     description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
-        await self.teacher_rule.teacher_info_change_rejected(teacher_id, process_instance_id, user_id, reason)
-        return teacher_id
+
+        return await self.teacher_rule.teacher_info_change_rejected(teacher_id, process_instance_id, user_id, reason)
 
     async def patch_teacher_info_change_revoked(self,
                                                 teacher_id: int = Body(..., title="教师编号", description="教师编号",

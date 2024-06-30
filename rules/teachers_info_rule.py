@@ -201,13 +201,13 @@ class TeachersInfoRule(object):
                 process_instance_id=0)
             await self.operation_record_rule.add_operation_record(teacher_base_info_log)
 
-        organization = OrganizationMembers()
-        organization.id = None
-        organization.org_id = teachers_info.org_id
-        organization.teacher_id = teachers_info.teacher_id
-        organization.member_type = None
-        organization.identity = None
-        await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
+        # organization = OrganizationMembers()
+        # organization.id = None
+        # organization.org_id = teachers_info.org_id
+        # organization.teacher_id = teachers_info.teacher_id
+        # organization.member_type = None
+        # organization.identity = None
+        # await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
         return teachers_info
 
     async def update_teachers_info_save(self, teachers_info, user_id):
