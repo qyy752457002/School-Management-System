@@ -166,7 +166,7 @@ class PlanningSchoolView(BaseView):
 
         return res
 
-    async def page(self,
+    async def page_planning_school_audit(self,
                    # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
                    block: str = Query("", title=" ", description="地域管辖区", ),
                    planning_school_code: str = Query("", title="", description=" 园所标识码", ),
@@ -441,7 +441,7 @@ class PlanningSchoolView(BaseView):
         pass
 
     # 原始的获取规划校分页接口 再用
-    async def page_planning_school_biz(self,
+    async def page(self,
                    # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
                    block: str = Query("", title=" ", description="地域管辖区", ),
                    planning_school_code: str = Query("", title="", description=" 园所标识码", ),
