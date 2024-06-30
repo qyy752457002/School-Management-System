@@ -24,6 +24,7 @@ from models.student_transaction import AuditAction
 from models.student_transaction_flow import StudentTransactionFlow
 from rules.student_transaction import StudentTransactionRule
 from rules.students_rule import StudentsRule
+from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, convert_dates_to_strings
 from views.models.student_transaction import StudentTransactionFlow as StudentTransactionFlowModel, StudentEduInfo, \
     StudentTransactionAudit, StudentTransaction
@@ -34,6 +35,7 @@ from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE
 @dataclass_inject
 class StudentTransactionFlowRule(object):
     student_transaction_flow_dao: StudentTransactionFlowDAO
+    system_rule:SystemRule
 
     async def get_student_transaction_flow_by_id(self, student_transaction_flow_id):
         student_transaction_flow_db = await self.student_transaction_flow_dao.get_studenttransactionflow_by_id(
@@ -235,7 +237,15 @@ class StudentTransactionFlowRule(object):
         # data= student_transaction_flow
         datadict = dict()
         # datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
-        # 节点实例id
+        # 节点实例id todo
+        if audit_info.process_instance_id>0:
+            node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  audit_info.process_instance_id)
+            audit_info.transferin_audit_id=node_id['node_instance_id']
+        elif audit_info.transferin_audit_id>0:
+            node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  audit_info.transferin_audit_id)
+            audit_info.transferin_audit_id=node_id['node_instance_id']
+
+
         datadict['node_instance_id'] =  audit_info.transferin_audit_id
 
         # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
@@ -284,7 +294,12 @@ class StudentTransactionFlowRule(object):
         url= workflow_service_config.workflow_config.get("url")
         datadict = dict()
         # 节点实例id todo 示例换节点
-        datadict['node_instance_id'] =  transferin_id
+        node_id=0
+        if transferin_id>0:
+            node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  transferin_id)
+            node_id=node_id['node_instance_id']
+
+        datadict['node_instance_id'] =  node_id
 
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
         url = url + apiname
