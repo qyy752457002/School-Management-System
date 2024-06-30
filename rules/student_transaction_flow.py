@@ -198,6 +198,7 @@ class StudentTransactionFlowRule(object):
             if isinstance(value,Query) or isinstance(value,tuple):
                 datadict[key] = None
         # jsonstr = JsonUtils.dict_to_json_str( dict2)
+        print(888,dict2)
         jsonstr = json.dumps( dict2)
         # print('总字典str', datadict)
 
