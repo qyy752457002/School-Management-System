@@ -5,9 +5,9 @@ from daos.teacher_transaction_dao import TeacherTransactionDAO
 from daos.teachers_dao import TeachersDao
 from models.teacher_transaction import TeacherTransaction
 from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
-    TeacherTransactionQueryModel, TeacherTransactionApproval, TeacherTransactionGetModel
+    TeacherTransactionQueryModel, TeacherTransactionGetModel
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
-from business_exceptions.teacher_transction import TransactionApprovalError
+from business_exceptions.teacher_transction import TransactionError
 from rules.work_flow_instance_rule import WorkFlowNodeInstanceRule
 from mini_framework.utils.http import HTTPRequest
 from urllib.parse import urlencode
@@ -230,6 +230,26 @@ class TeacherWorkFlowRule(object):
         print(type(page_result))
         page_response = await self.create_page_response_from_workflow(query_re_model, page_result)
         return page_response
+    async def get_work_flow_instance_by_query_model(self, query_model: Type[BaseModel],query_re_model: Type[BaseModel]):
+        httpreq = HTTPRequest()
+        url = workflow_service_config.workflow_config.get("url")
+        query_model_instance = query_model.dict()
+        parameters = query_model_instance
+        api_name = '/api/school/v1/teacher-workflow/work-flow-instance-by-query-model'
+        url += api_name
+        headerdict = {
+            "accept": "application/json",
+            "Content-Type": "application/json"
+        }
+        url += ('?' + urlencode(parameters))
+        result = await httpreq.get_json(url, headerdict)
+        result = JsonUtils.json_str_to_dict(result)
+        result_list=[]
+        if result:
+            for item in result:
+                item = await self.create_model_from_workflow(item, query_re_model)
+                result_list.append(item)
+        return result_list
 
     async def create_workflow_from_model(self, base_model: Type[BaseModel],
                                          params: dict) -> WorkFlowInstanceCreateModel:

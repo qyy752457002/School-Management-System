@@ -149,6 +149,7 @@ class TeachersRule(object):
             if not idstatus:
                 raise IdCardError()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
+        # todo 老师需要修改状态
         teachers = orm_model_to_view_model(teachers_db, TeacherAddReModel, exclude=[""])
         return teachers
 
