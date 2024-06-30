@@ -5,6 +5,7 @@ from typing import List
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task import Task
 from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.utils.json import JsonUtils
 from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
@@ -165,7 +166,7 @@ class PlanningSchoolView(BaseView):
               ))
 
         return res
-
+    # 规划校的审批流列表
     async def page_planning_school_audit(self,
                    # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
                    process_code: str = Query("", title="流程代码", description="例如p_school_open", ),
@@ -534,3 +535,21 @@ class PlanningSchoolView(BaseView):
 
                                                                                         )
         return paging_result
+
+    #工作流申请详情
+    async def get_planning_school_workflow_info(self,
+
+                                           apply_id: int = Query(..., description="流程ID", example='1'),
+
+                                           ):
+        relationinfo = tinfo = ''
+        # 转发去 工作流获取详细
+        result = await self.system_rule.get_work_flow_instance_by_process_instance_id(
+            apply_id)
+
+        json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
+        if 'original_dict' in json_data.keys() and  json_data['original_dict']:
+            result={**json_data['original_dict'],**result}
+
+
+        return result

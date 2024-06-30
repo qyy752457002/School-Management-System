@@ -13,6 +13,7 @@ from rules import enum_value_rule
 from rules.common.common_rule import send_request
 from rules.enum_value_rule import EnumValueRule
 from rules.school_rule import SchoolRule
+from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus, \
     PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit
