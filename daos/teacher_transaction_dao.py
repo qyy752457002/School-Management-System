@@ -74,10 +74,16 @@ class TeacherTransactionDAO(DAOBase):
         查询条件
         """
 
-        query = select(TeacherTransaction, Teacher.teacher_name, Teacher.teacher_id_type, Teacher.teacher_gender,
+        query = select(TeacherTransaction.teacher_id, TeacherTransaction.transaction_type,
+                       TeacherTransaction.transaction_time, TeacherTransaction.transaction_id,
+                       TeacherTransaction.transaction_remark,
+                       TeacherTransaction.transaction_type, Teacher.teacher_name, Teacher.teacher_id_type,
+                       Teacher.teacher_gender,
                        Teacher.teacher_id_number,
                        TeacherInfo.teacher_number).join(Teacher, Teacher.teacher_id == TeacherTransaction.teacher_id,
-                                                        isouter=True)
+                                                        ).join(TeacherInfo,
+                                                               TeacherInfo.teacher_id == TeacherTransaction.teacher_id,
+                                                               isouter=True)
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
         if query_model.teacher_number:
@@ -96,6 +102,7 @@ class TeacherTransactionDAO(DAOBase):
         query = query.order_by(TeacherTransaction.transaction_time.desc())
         paging = await self.query_page(query, page_request)
         return paging
+
     async def get_all_transfer(self, teacher_id):
         session = await self.slave_db()
         query = select(TeacherTransaction).where(

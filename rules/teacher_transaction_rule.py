@@ -138,6 +138,7 @@ class TeacherTransactionRule(object):
         return teacher_transaction
 
     async def query_transaction_with_page(self, query_model: TeacherTransactionQueryModel, page_request: PageRequest):
+
         teacher_transaction_db = await self.teacher_transaction_dao.query_transaction_with_page(query_model,
                                                                                                 page_request)
         paging_result = PaginatedResponse.from_paging(teacher_transaction_db, TeacherTransactionQueryReModel)
@@ -180,6 +181,6 @@ class TeacherTransactionRule(object):
         if not teachers:
             raise TeacherNotFoundError()
         if teachers.teacher_sub_status != "active":
-            teachers.teacher.teacher_main_status = "employed"
+            teachers.teacher_main_status = "employed"
             teachers.teacher_sub_status = "active"
         return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status", "teacher_main_status")
