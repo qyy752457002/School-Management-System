@@ -193,7 +193,7 @@ class CurrentStudentsView(BaseView):
             change_module=ChangeModule.STUDENT_TRANSACTION.value,
             change_detail="转学",
             action_target_id=str(student_edu_info.student_id),
-            change_data=json_string,
+            # change_data=json_string,
             process_instance_id= process_instance_id
         ))
 
@@ -317,7 +317,7 @@ class CurrentStudentsView(BaseView):
             change_module=ChangeModule.STUDENT_TRANSACTION.value,
             change_detail="转学",
             action_target_id=str(res_student_add.student_id),
-            change_data=json_string,
+            # change_data=json_string,
             process_instance_id= process_instance_id
 
         ))
@@ -384,7 +384,7 @@ class CurrentStudentsView(BaseView):
             change_module=ChangeModule.STUDENT_TRANSACTION.value,
             change_detail="转学",
             action_target_id=str(student_id),
-            change_data=json_string,
+            # change_data=json_string,
             process_instance_id= process_instance_id
         ))
         return res,res3
