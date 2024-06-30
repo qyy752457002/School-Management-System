@@ -270,7 +270,8 @@ class PlanningSchoolView(BaseView):
 
         res = await self.planning_school_rule.add_planning_school_close_work_flow(planning_school, extra_model,action_reason,related_license_upload)
         process_instance_id=0
-        if len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+
+        if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
 
             pass

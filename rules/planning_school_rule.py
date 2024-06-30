@@ -136,7 +136,7 @@ class PlanningSchoolRule(object):
             exists_planning_school.status= PlanningSchoolStatus.CLOSED.value
         else:
             # exists_planning_school.status= PlanningSchoolStatus.OPENING.value
-            raise Exception(f"规划校当前状态不支持您的操作")
+            raise Exception(f"规划校当前状态不支持您的操作{exists_planning_school.status}")
 
         need_update_list = []
         need_update_list.append('status')

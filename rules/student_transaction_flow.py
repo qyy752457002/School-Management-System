@@ -283,7 +283,7 @@ class StudentTransactionFlowRule(object):
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
         datadict = dict()
-        # 节点实例id
+        # 节点实例id todo 示例换节点
         datadict['node_instance_id'] =  transferin_id
 
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
