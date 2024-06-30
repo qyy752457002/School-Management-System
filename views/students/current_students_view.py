@@ -5,6 +5,7 @@ import json
 from fastapi.params import Body
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task import Task
+from mini_framework.utils.json import JsonUtils
 from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
@@ -17,6 +18,7 @@ from rules.operation_record import OperationRecordRule
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
 from rules.students_key_info_change_rule import StudentsKeyInfoChangeRule
+from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_client_ip
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
@@ -37,6 +39,7 @@ from views.models.students import StudentSession, StudentsUpdateFamilyInfo
 class CurrentStudentsView(BaseView):
     def __init__(self):
         super().__init__()
+        self.system_rule = get_injector(SystemRule)
         self.students_rule = get_injector(StudentsRule)
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
         self.student_session_rule = get_injector(StudentSessionRule)
@@ -119,17 +122,16 @@ class CurrentStudentsView(BaseView):
 
                                            ):
         relationinfo = tinfo = ''
-        tinfo = await self.student_transaction_rule.get_student_transaction_by_id(apply_id)
+        # 转发去 工作流获取详细
+        result = await self.system_rule.get_work_flow_instance_by_process_instance_id(
+            apply_id)
 
-        if isinstance(tinfo, object) and hasattr(tinfo, 'relation_id') and tinfo.relation_id:
-            relationinfo = await self.student_transaction_rule.get_student_transaction_by_id(tinfo.relation_id, )
-            pass
+        json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
+        if 'original_dict' in json_data.keys() and  json_data['original_dict']:
+            result={**json_data['original_dict'],**result}
 
-        stubaseinfo = await self.students_rule.get_students_by_id(tinfo.student_id)
-        # stubaseinfo=''
 
-        return {'student_transaction_in': tinfo, 'student_transaction_out': relationinfo,
-                'student_info': stubaseinfo, }
+        return result
 
     # 在校生转入
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
@@ -137,7 +139,9 @@ class CurrentStudentsView(BaseView):
 
         # 调用审批流 创建
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info.student_id)
-        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info,stuinfo)
+        origin_data = {'student_transaction_in':  student_edu_info.__dict__, 'student_transaction_out': student_edu_info.__dict__, 'student_info': stuinfo.__dict__, }
+
+        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info,stuinfo,stuinfo,None, origin_data)
         process_instance_id= node_instance_id =  0
         if res3 and  len(res3)>0 :
             print(res3[0])
@@ -212,7 +216,7 @@ class CurrentStudentsView(BaseView):
         # todo 校验是否本人或者老师
 
         # 流乘记录
-        # todo 审批流取消
+        #  审批流取消
         res2 = await self.student_transaction_flow_rule.req_workflow_cancel(transferin_id,)
 
         if res2 is None:
@@ -238,50 +242,43 @@ class CurrentStudentsView(BaseView):
                                            student_baseinfo: NewStudentTransferIn,
                                            student_edu_info_in: StudentEduInfo,
                                            student_edu_info_out: StudentEduInfoOut,
-
                                            ):
         # print(new_students_key_info)
-
-
         #  新增学生   同时写入 转出和转入 流程 在校生加 年级
-        res_student = await self.students_rule.add_student_new_student_transferin(student_baseinfo)
-        res_student2 = await self.students_base_info_rule.add_students_base_info(StudentsBaseInfo(student_id=res_student.student_id,edu_number=student_baseinfo.edu_number))
+        res_student_add = await self.students_rule.add_student_new_student_transferin(student_baseinfo)
+        res_student_baseinfo = await self.students_base_info_rule.add_students_base_info(StudentsBaseInfo(student_id=res_student_add.student_id,edu_number=student_baseinfo.edu_number))
 
-        print(res_student)
-
-
+        print(res_student_add)
         # 调用审批流 创建
-        student_edu_info_in.student_id= res_student.student_id
+        student_edu_info_in.student_id= res_student_add.student_id
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
-        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo)
+
+        origin_data = {'student_transaction_in':  '', 'student_transaction_out': student_edu_info_out.__dict__, 'student_info': student_baseinfo.__dict__, }
+        # origin_datastr= JsonUtils.dict_to_json_str(origin_data)
+        res_workflow = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo,res_student_add,res_student_baseinfo,origin_data)
         process_instance_id= node_instance_id =  0
-        if res3 and  len(res3)>0 :
-            print(res3[0])
-            process_instance_id = res3[1]['process_instance_id']
-            node_instance_id = res3[1]['node_instance_id']
-
-
-
+        if res_workflow and  len(res_workflow)>0 :
+            print(res_workflow[0])
+            process_instance_id = res_workflow[1]['process_instance_id']
+            node_instance_id = res_workflow[1]['node_instance_id']
+        else:
+            return {'调用 审批流 失败'}
+            pass
         # 转出
-
         student_edu_info_out.status = AuditAction.NEEDAUDIT.value
-        student_edu_info_out.student_id = res_student.student_id
-
-        res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
-                                                                              TransactionDirection.OUT.value)
+        student_edu_info_out.student_id = res_student_add.student_id
+        res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,  TransactionDirection.OUT.value)
 
         # 转入
-
         student_edu_info_in.status = AuditAction.NEEDAUDIT.value
-        student_edu_info_in.student_id = res_student.student_id
+        student_edu_info_in.student_id = res_student_add.student_id
         student_edu_info_in.relation_id = res_out.id
         student_edu_info_in.process_instance_id = process_instance_id
-        print(res_out.id, 000000)
+        # print(res_out.id, 000000)
 
-        res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in,
-                                                                          TransactionDirection.IN.value, res_out.id)
+        res_student_transaction = await self.student_transaction_rule.add_student_transaction(student_edu_info_in, TransactionDirection.IN.value, res_out.id)
 
-        return res,res3
+        return res_student_transaction,res_workflow
 
     # 在校生 系统内转出
     async def patch_transferout_tooutside(self,
@@ -294,7 +291,10 @@ class CurrentStudentsView(BaseView):
         # 调用审批流 创建
         student_edu_info_in.student_id= student_id
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
-        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo)
+
+        origin_data = {'student_transaction_in':  student_edu_info_in.__dict__, 'student_transaction_out': student_edu_info_in.__dict__, 'student_info': student_edu_info_in.__dict__, }
+
+        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo,student_edu_info_in,None,origin_data)
         process_instance_id= node_instance_id =  0
         if res3 and  len(res3)>0 :
             print(res3[0])
@@ -421,6 +421,24 @@ class CurrentStudentsView(BaseView):
         task = await app.task_topic.send(task)
         print('发生任务成功')
         return task
+    # 转学申请详情
+    async def get_student_transaction_info_biz(self,
+
+                                           apply_id: int = Query(..., description=" ", example='1'),
+
+                                           ):
+        relationinfo = tinfo = ''
+        tinfo = await self.student_transaction_rule.get_student_transaction_by_id(apply_id)
+
+        if isinstance(tinfo, object) and hasattr(tinfo, 'relation_id') and tinfo.relation_id:
+            relationinfo = await self.student_transaction_rule.get_student_transaction_by_id(tinfo.relation_id, )
+            pass
+
+        stubaseinfo = await self.students_rule.get_students_by_id(tinfo.student_id)
+        # stubaseinfo=''
+
+        return {'student_transaction_in': tinfo, 'student_transaction_out': relationinfo,
+                'student_info': stubaseinfo, }
 
 class CurrentStudentsBaseInfoView(BaseView):
     def __init__(self):

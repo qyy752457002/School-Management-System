@@ -16,7 +16,7 @@ from views.common.common_view import compare_modify_fields, get_extend_params, g
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
-    PlanningSchoolBaseInfoOptional, PlanningSchoolTask
+    PlanningSchoolBaseInfoOptional, PlanningSchoolTask, PlanningSchoolTransactionAudit
 from views.models.planning_school_communications import PlanningSchoolCommunications
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
 from views.models.school import School
@@ -32,6 +32,7 @@ from views.models.grades import Grades
 from rules.planning_school_communication_rule import PlanningSchoolCommunicationRule
 
 from rules.planning_school_eduinfo_rule import PlanningSchoolEduinfoRule
+from views.models.student_transaction import StudentTransactionAudit
 from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE
 
 
@@ -165,7 +166,7 @@ class PlanningSchoolView(BaseView):
 
         return res
 
-    async def page(self,
+    async def page_planning_school_audit(self,
                    # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
                    block: str = Query("", title=" ", description="地域管辖区", ),
                    planning_school_code: str = Query("", title="", description=" 园所标识码", ),
@@ -228,6 +229,9 @@ class PlanningSchoolView(BaseView):
         process_instance_id=0
         if len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
+            pl = PlanningSchoolBaseInfoOptional(id=planning_school_id, process_instance_id=process_instance_id)
+
+            res = await self.planning_school_rule.update_planning_school_byargs(pl  )
 
             pass
 
@@ -255,8 +259,18 @@ class PlanningSchoolView(BaseView):
 
                           ):
         # print(planning_school)
-        res = await self.planning_school_rule.update_planning_school_status(planning_school_id,
-                                                                            PlanningSchoolStatus.CLOSED.value)
+        # res = await self.planning_school_rule.update_planning_school_status(planning_school_id,
+        #                                                                     PlanningSchoolStatus.CLOSED.value)
+        # 请求工作流
+        planning_school, extra_model = await self.planning_school_rule.get_planning_school_by_id(planning_school_id,
+                                                                                                 PlanningSchoolBaseInfo,)
+
+        res = await self.planning_school_rule.add_planning_school_close_work_flow(planning_school, extra_model,action_reason,related_license_upload)
+        process_instance_id=0
+        if len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+            process_instance_id= res[0]['process_instance_id']
+
+            pass
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
@@ -378,8 +392,21 @@ class PlanningSchoolView(BaseView):
         paging_result = await self.planning_school_rule.query_planning_schools(planning_school_name)
         return paging_result
     # 学校开设审核
-    async def patch_open_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
-                                                               min_length=1, max_length=20, example='SC2032633')):
+    async def patch_open_audit(self,
+                               audit_info: PlanningSchoolTransactionAudit
+
+                               ):
+        resultra = await self.planning_school_rule.req_workflow_audit(audit_info,'open')
+        if resultra is None:
+            return {}
+        if isinstance(resultra, str):
+            return {resultra}
+
+        # print(new_students_key_info)
+        return resultra
+
+
+
         pass
     # 学校关闭审核
     async def patch_close_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
@@ -389,9 +416,32 @@ class PlanningSchoolView(BaseView):
     async def patch_keyinfo_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
                                                                       min_length=1, max_length=20, example='SC2032633')):
         pass
+    # 规划校的开办关闭修改的 取消接口
+    async def patch_open_cancel(self, node_id: str = Query(..., title="流程对应的节点ID", description="",
+                                                                     min_length=1, max_length=20, example='SC2032633')):
 
+        #  审批流取消
+        res2 = await self.planning_school_rule.req_workflow_cancel(node_id,)
 
-    async def page_planning_school_biz(self,
+        if res2 is None:
+            return {}
+        if isinstance(res2, str):
+            return {res2}
+
+        # print(new_students_key_info)
+        return res2
+        pass
+    # 学校关闭
+    async def patch_close_cancel(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
+                                                                      min_length=1, max_length=20, example='SC2032633')):
+        pass
+    # 学校关键信息变更
+    async def patch_keyinfo_cancel(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
+                                                                        min_length=1, max_length=20, example='SC2032633')):
+        pass
+
+    # 原始的获取规划校分页接口 再用
+    async def page(self,
                    # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
                    block: str = Query("", title=" ", description="地域管辖区", ),
                    planning_school_code: str = Query("", title="", description=" 园所标识码", ),

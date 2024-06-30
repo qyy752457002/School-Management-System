@@ -8,16 +8,19 @@ from sqlalchemy import select
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from daos.planning_school_dao import PlanningSchoolDAO
 from models.planning_school import PlanningSchool
+from models.student_transaction import AuditAction
 from rules import enum_value_rule
+from rules.common.common_rule import send_request
 from rules.enum_value_rule import EnumValueRule
 from rules.school_rule import SchoolRule
 from views.common.common_view import workflow_service_config
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus, \
-    PlanningSchoolKeyInfo
+    PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit
 from views.models.planning_school import PlanningSchoolBaseInfo
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 
-from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_OPEN_WORKFLOW_CODE
+from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, \
+    PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE
 
 
 @dataclass_inject
@@ -198,7 +201,7 @@ class PlanningSchoolRule(object):
         datadict['borough'] =   planning_school_flow.borough
         datadict['planning_school_level'] =   planning_school_flow.planning_school_level
         datadict['apply_user'] =  'tester'
-        datadict['jason_data'] =  json.dumps(planning_school_flow.__dict__, ensure_ascii=False)
+        datadict['json_data'] =  json.dumps(planning_school_flow.__dict__, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
         url=url+apiname
         headerdict = {
@@ -215,3 +218,90 @@ class PlanningSchoolRule(object):
         except Exception as e:
             print(e)
         return response
+
+    async def req_workflow_cancel(self,transferin_id,):
+
+        # 发起审批流的 处理
+        datadict = dict()
+        # 节点实例id
+        datadict['node_instance_id'] =  transferin_id
+
+        apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
+        # 字典参数
+        datadict ={"user_id":"11","action":"revoke"}
+
+        response= await send_request(apiname,datadict,'post')
+
+        print(response,'接口响应')
+        return response
+        pass
+
+
+    async def add_planning_school_close_work_flow(self, planning_school_flow: PlanningSchoolModel,planning_school_baseinfo: PlanningSchoolBaseInfo,action_reason,related_license_upload):
+        planning_school_flow.id=0
+        data= planning_school_flow
+        datadict =  data.__dict__
+        datadict['process_code'] = PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE
+        datadict['teacher_id'] =  0
+        datadict['applicant_name'] =  'tester'
+        datadict['planning_school_code'] = planning_school_flow.planning_school_code
+        datadict['planning_school_name'] = planning_school_flow.planning_school_name
+        datadict['founder_type_lv3'] =   planning_school_flow.founder_type_lv3
+        datadict['block'] =   planning_school_flow.block
+        datadict['borough'] =   planning_school_flow.borough
+        datadict['planning_school_level'] =   planning_school_flow.planning_school_level
+        datadict['apply_user'] =  'tester'
+        dicta = planning_school_flow.__dict__
+        dicta['action_reason']= action_reason
+        dicta['related_license_upload']= related_license_upload
+        datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
+        apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
+
+        response= None
+        try:
+            response = await send_request(apiname,datadict,'post')
+            print('请求工作流结果',response)
+        except Exception as e:
+            print(e)
+        return response
+
+    async def req_workflow_audit(self,audit_info:PlanningSchoolTransactionAudit,action):
+
+        # 发起审批流的 处理
+
+        datadict = dict()
+        # 节点实例id
+        datadict['node_instance_id'] =  audit_info.transferin_audit_id
+
+        apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
+
+        # 如果是query 需要拼接参数
+
+        # 字典参数
+        datadict ={"user_id":"11","action":"approved"}
+        if audit_info.transferin_audit_action== AuditAction.PASS.value:
+            datadict['action'] = 'approved'
+        if audit_info.transferin_audit_action== AuditAction.REFUSE.value:
+            datadict['action'] = 'rejected'
+
+        response = await send_request(apiname,datadict,'post')
+        print(response,'接口响应')
+        if audit_info.transaction_audit_action== AuditAction.PASS.value:
+            # 成功则写入数据
+            # transrule = get_injector(StudentTransactionRule)
+            # await transrule.deal_student_transaction(student_edu_info)
+            res2 = await self.deal_planning_school(audit_info.process_instance_id, action)
+
+
+        return response
+        pass
+
+    async def deal_planning_school(self,process_instance_id ,action, ):
+        #  读取流程实例ID
+        planning_school = await self.planning_school_dao.get_planning_school_by_process_instance_id(process_instance_id)
+        if action=='open':
+            res = await self.update_planning_school_status(planning_school.id,  PlanningSchoolStatus.OPENING.value, 'open')
+
+        # res = await self.update_planning_school_status(planning_school_id,  PlanningSchoolStatus.NORMAL.value, 'open')
+
+        pass

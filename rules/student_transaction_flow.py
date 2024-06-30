@@ -1,6 +1,12 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import json
+import traceback
 from urllib.parse import urlencode
+
+from fastapi.params import Query
+from mini_framework.utils.json import JsonUtils
+
+# from fastapi import Query
 
 from distribute_transaction_lib.transaction import TransactionNode
 
@@ -18,7 +24,7 @@ from models.student_transaction import AuditAction
 from models.student_transaction_flow import StudentTransactionFlow
 from rules.student_transaction import StudentTransactionRule
 from rules.students_rule import StudentsRule
-from views.common.common_view import workflow_service_config
+from views.common.common_view import workflow_service_config, convert_dates_to_strings
 from views.models.student_transaction import StudentTransactionFlow as StudentTransactionFlowModel, StudentEduInfo, \
     StudentTransactionAudit, StudentTransaction
 from views.models.students import StudentsKeyinfoDetail
@@ -154,12 +160,22 @@ class StudentTransactionFlowRule(object):
         return response
 
     # 向工作流中心发送申请
-    async def add_student_transaction_work_flow(self, student_transaction_flow: StudentEduInfo,stuinfo: StudentsKeyinfoDetail):
+    async def add_student_transaction_work_flow(self, student_transaction_flow: StudentEduInfo,stuinfo: StudentsKeyinfoDetail,stuinfoadd=None,stubaseinfo=None,original_dict_map_view_orm=None):
+        """
+
+        :param student_transaction_flow: 新增时提交的学生 信息
+        :param stuinfo:学校表信息
+        :param stuinfoadd:插入后得到的学生信息 含ID
+        :param stubaseinfo:
+        :param original_dict_map_view_orm:含转出 转入对象和 学生提交的信息的 map
+        :return:
+        """
         student_transaction_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
         data= student_transaction_flow
         datadict =  data.__dict__
+        dict2= dict()
         datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         datadict['teacher_id'] =  0
         datadict['applicant_name'] =  'tester'
@@ -168,24 +184,40 @@ class StudentTransactionFlowRule(object):
         datadict['edu_number'] =   student_transaction_flow.edu_number
         datadict['school_name'] =   student_transaction_flow.school_name
         datadict['apply_user'] =  'tester'
-        datadict['jason_data'] =  json.dumps(student_transaction_flow.__dict__, ensure_ascii=False)
-        # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
+
+        stuinfoadddict =  stuinfoadd.__dict__
+        dict2['student_info'] =  convert_dates_to_strings(stuinfoadddict)
+
+        original_dict_map_view_orm['student_transaction_in'] = student_transaction_flow.__dict__
+
+        dict2['original_dict'] = original_dict_map_view_orm
+        # 检查字典  如果哪个值为query 则设为none birthday registration_date enrollment_date
+        for key, value in datadict.items():
+            if isinstance(value,Query) or isinstance(value,tuple):
+                datadict[key] = None
+        jsonstr = JsonUtils.dict_to_json_str( dict2)
+        # print('总字典str', datadict)
+
+        datadict['json_data'] =  jsonstr
+        print('总字典', datadict)
+
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
         url=url+apiname
         headerdict = {
             "accept": "application/json",
             "Content-Type": "application/json"
         }
-        # 如果是query 需要拼接参数
-        # url+=  ('?' +urlencode(datadict))
+
         print('参数', url, datadict,headerdict)
         response= None
         try:
             response = await httpreq.post_json(url,datadict,headerdict)
-            print(response)
+            print('api结果',response)
+            return response
         except Exception as e:
-            print(e)
-        return response
+            print('api异常',e)
+            traceback.print_exc()
+            return None
 
     # 处理流程审批 的 操作
     async def exe_student_transaction(self,audit_info):
