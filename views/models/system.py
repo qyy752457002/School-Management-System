@@ -18,6 +18,25 @@ INSTITUTION_OPEN_WORKFLOW_CODE:Final = 'i_institution_open'
 INSTITUTION_CLOSE_WORKFLOW_CODE:Final = 'i_institution_close'
 INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE:Final = 'i_institution_keyinfo_change'
 
+
+class ProcessCodeType(str, Enum):
+    """
+    """
+
+    @classmethod
+    def to_list(cls):
+        return [
+            PLANNING_SCHOOL_OPEN_WORKFLOW_CODE,
+            PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE,
+            PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE,
+            SCHOOL_OPEN_WORKFLOW_CODE,
+            SCHOOL_CLOSE_WORKFLOW_CODE,
+            SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE,
+            INSTITUTION_OPEN_WORKFLOW_CODE,
+            INSTITUTION_CLOSE_WORKFLOW_CODE,
+            INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE,
+                 ]
+
 class UnitType(str, Enum):
     """
     """

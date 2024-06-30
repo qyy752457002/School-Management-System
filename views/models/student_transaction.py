@@ -50,7 +50,7 @@ class StudentEduInfo(BaseModel):
     grade_name: str = Query('', title="", description="年级", examples=["2年级"])
     class_id: str|int = Query(..., title="", description="班级id", examples=["125"])
     classes: str = Query('', title="", description="班级", examples=["二2班"])
-    major_id: str|int = Query(..., title="", description="专业", examples=["农业"])
+    major_id: str|int = Query(0, title="", description="专业", examples=["农业"])
     transfer_time: str = Query("", description="转学时间", min_length=1, max_length=20, examples=["2020-10-10"]),
     transfer_reason: str = Query("", description="转学原因", min_length=1, max_length=20, examples=["家庭搬迁..."]),
     status: str = Query('', description="", min_length=1, max_length=20, examples=["..."]),
@@ -77,7 +77,7 @@ class StudentEduInfoOut(BaseModel):
     grade_name: str = Query(..., title="", description="年级", examples=["2年级"])
     class_id: str = Query('', title="", description="班级id", examples=["125"])
     classes: str = Query(..., title="", description="班级", examples=["二2班"])
-    major_id: str = Query(..., title="", description="专业", examples=["农业"])
+    major_id: str = Query(0, title="", description="专业", examples=["农业"])
     transfer_time: str = Query("", description="转学时间", min_length=1, max_length=20, examples=["2020-10-10"]),
     transfer_reason: str = Query("", description="转学原因", min_length=1, max_length=20, examples=["家庭搬迁..."]),
     status: str = Query('', description="", min_length=1, max_length=20, examples=["..."]),
@@ -120,7 +120,7 @@ class StudentTransactionFlow(BaseModel):
 
 
 class StudentTransactionAudit(BaseModel):
-    transferin_audit_id: int = Query(..., description="转入申请id", example='2')
+    transferin_audit_id: int = Query(0, description="转入申请id", example='2')
     process_instance_id: int = Query(0, description="流程实例ID", example='2')
     transferin_audit_action: AuditAction = Query(..., description="审批的操作",
                                                  example='pass')

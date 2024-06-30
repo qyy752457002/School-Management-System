@@ -13,6 +13,7 @@ from rules import enum_value_rule
 from rules.common.common_rule import send_request
 from rules.enum_value_rule import EnumValueRule
 from rules.school_rule import SchoolRule
+from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus, \
     PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit
@@ -26,6 +27,7 @@ from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_
 @dataclass_inject
 class PlanningSchoolRule(object):
     planning_school_dao: PlanningSchoolDAO
+    system_rule: SystemRule
 
     async def get_planning_school_by_id(self, planning_school_id,extra_model=None):
         planning_school_db = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
@@ -121,20 +123,20 @@ class PlanningSchoolRule(object):
         return paging_result
 
 
-    async def update_planning_school_status(self, planning_school_id, status,action=None):
+    async def update_planning_school_status(self, planning_school_id, target_status,action=None):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
-        # 判断运来的状态 进行后续的更新
-        if status== PlanningSchoolStatus.NORMAL.value and exists_planning_school.status== PlanningSchoolStatus.OPENING.value:
+        # 判断原来的状态+要更改的状态 进行后续的更新
+        if target_status== PlanningSchoolStatus.NORMAL.value and exists_planning_school.status== PlanningSchoolStatus.OPENING.value:
             # 开办 自动创建一条学校信息
             exists_planning_school.status= PlanningSchoolStatus.NORMAL.value
-        elif status== PlanningSchoolStatus.CLOSED.value and exists_planning_school.status== PlanningSchoolStatus.NORMAL.value:
+        elif target_status== PlanningSchoolStatus.CLOSED.value and exists_planning_school.status== PlanningSchoolStatus.NORMAL.value:
             # 关闭
             exists_planning_school.status= PlanningSchoolStatus.CLOSED.value
         else:
             # exists_planning_school.status= PlanningSchoolStatus.OPENING.value
-            raise Exception(f"规划校当前状态不支持您的操作")
+            raise Exception(f"规划校当前状态不支持您的操作{exists_planning_school.status}")
 
         need_update_list = []
         need_update_list.append('status')
@@ -219,18 +221,23 @@ class PlanningSchoolRule(object):
             print(e)
         return response
 
-    async def req_workflow_cancel(self,transferin_id,):
+    async def req_workflow_cancel(self,node_id,process_instance_id=None):
 
         # 发起审批流的 处理
         datadict = dict()
-        # 节点实例id
-        datadict['node_instance_id'] =  transferin_id
+        # 节点实例id todo  自动获取
+        if process_instance_id>0:
+            node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  process_instance_id)
+            node_id=node_id['node_instance_id']
+
+        datadict['node_instance_id'] =  node_id
 
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
         # 字典参数
-        datadict ={"user_id":"11","action":"revoke"}
+        # datadict ={"user_id":"11","action":"revoke"}
+        datadict ={"user_id":"11","action":"approved",**datadict}
 
-        response= await send_request(apiname,datadict,'post')
+        response= await send_request(apiname,datadict,'post',True)
 
         print(response,'接口响应')
         return response
@@ -270,21 +277,29 @@ class PlanningSchoolRule(object):
         # 发起审批流的 处理
 
         datadict = dict()
+        if audit_info.process_instance_id>0:
+            node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  audit_info.process_instance_id)
+            audit_info.node_id=node_id['node_instance_id']
+
+
         # 节点实例id
-        datadict['node_instance_id'] =  audit_info.transferin_audit_id
+        datadict['node_instance_id'] =  audit_info.node_id
 
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
+        # from urllib.parse import urlencode
+        # apiname += ('?' + urlencode(datadict))
+
 
         # 如果是query 需要拼接参数
 
         # 字典参数
-        datadict ={"user_id":"11","action":"approved"}
-        if audit_info.transferin_audit_action== AuditAction.PASS.value:
+        datadict ={"user_id":"11","action":"approved",**datadict}
+        if audit_info.transaction_audit_action== AuditAction.PASS.value:
             datadict['action'] = 'approved'
-        if audit_info.transferin_audit_action== AuditAction.REFUSE.value:
+        if audit_info.transaction_audit_action== AuditAction.REFUSE.value:
             datadict['action'] = 'rejected'
 
-        response = await send_request(apiname,datadict,'post')
+        response = await send_request(apiname,datadict,'post',True)
         print(response,'接口响应')
         if audit_info.transaction_audit_action== AuditAction.PASS.value:
             # 成功则写入数据
@@ -299,8 +314,17 @@ class PlanningSchoolRule(object):
     async def deal_planning_school(self,process_instance_id ,action, ):
         #  读取流程实例ID
         planning_school = await self.planning_school_dao.get_planning_school_by_process_instance_id(process_instance_id)
+        if not planning_school:
+            print('未查到规划信息',process_instance_id)
+            return
         if action=='open':
-            res = await self.update_planning_school_status(planning_school.id,  PlanningSchoolStatus.OPENING.value, 'open')
+            res = await self.update_planning_school_status(planning_school.id,  PlanningSchoolStatus.NORMAL.value, 'open')
+        if action=='close':
+            res = await self.update_planning_school_status(planning_school.id,  PlanningSchoolStatus.CLOSED.value, 'close')
+        if action=='keyinfo_change':
+            # todo 把基本信息变更 改进去
+            # res = await self.update_planning_school_status(planning_school.id,  PlanningSchoolStatus.CLOSED.value, 'close')
+            pass
 
         # res = await self.update_planning_school_status(planning_school_id,  PlanningSchoolStatus.NORMAL.value, 'open')
 
