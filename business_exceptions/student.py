@@ -22,4 +22,4 @@ class StudentExistsThisSchoolError(MiniHTTPException):
         super().__init__(404, "STUDENT_EXISTS_IN_THIS_SCHOOL", "Student already exists this school.", "学生已经存在于当前学校")
 class StudentTransactionExistsError(MiniHTTPException):
     def __init__(self):
-        super().__init__(404, "STUDENT_EXISTS_IN_THIS_SCHOOL", "Student already exists this school.", "学生已经存在于当前学校")
+        super().__init__(404, "STUDENT_TRANSACTION_EXISTS", "Student Transaction already exists .", "学生已经存在未处理完成的变动,请勿先处理后再提交")

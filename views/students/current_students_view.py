@@ -10,7 +10,7 @@ from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
-from business_exceptions.student import StudentExistsThisSchoolError
+from business_exceptions.student import StudentExistsThisSchoolError, StudentTransactionExistsError
 from models.student_transaction import AuditAction, TransactionDirection, AuditFlowStatus
 from rules.classes_rule import ClassesRule
 from rules.graduation_student_rule import GraduationStudentRule
@@ -140,7 +140,9 @@ class CurrentStudentsView(BaseView):
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
         # print(new_students_key_info)
         # 检测 重复发起
-        is_lock = await self.student_transaction_rule.check_student_transaction_lock(student_edu_info)
+        is_lock = await self.student_transaction_rule.exist_undealed_student_transaction(student_edu_info.student_id)
+        if is_lock:
+            raise StudentTransactionExistsError()
 
 
 
@@ -275,11 +277,19 @@ class CurrentStudentsView(BaseView):
                                            student_edu_info_out: StudentEduInfoOut,
                                            ):
         # print(new_students_key_info)
+
         #  新增学生   同时写入 转出和转入 流程 在校生加 年级
         res_student_add = await self.students_rule.add_student_new_student_transferin(student_baseinfo)
         res_student_baseinfo = await self.students_base_info_rule.add_students_base_info(StudentsBaseInfo(student_id=res_student_add.student_id,edu_number=student_baseinfo.edu_number))
 
         print(res_student_add)
+
+        # 检测 重复发起
+        is_lock = await self.student_transaction_rule.exist_undealed_student_transaction(res_student_add.student_id)
+        if is_lock:
+            raise StudentTransactionExistsError()
+
+
         # 调用审批流 创建
         student_edu_info_in.student_id= res_student_add.student_id
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
@@ -338,7 +348,10 @@ class CurrentStudentsView(BaseView):
 
                                           ):
         # print(new_students_key_info)
-
+        # 检测 重复发起
+        is_lock = await self.student_transaction_rule.exist_undealed_student_transaction(student_id)
+        if is_lock:
+            raise StudentTransactionExistsError()
 
         #      同时写入 转出和转入 流程
         res_student = await self.students_rule.get_students_by_id(student_id)
