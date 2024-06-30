@@ -10,7 +10,7 @@ from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
-from business_exceptions.student import StudentExistsThisSchoolError
+from business_exceptions.student import StudentExistsThisSchoolError, StudentTransactionExistsError
 from models.student_transaction import AuditAction, TransactionDirection, AuditFlowStatus
 from rules.classes_rule import ClassesRule
 from rules.graduation_student_rule import GraduationStudentRule
@@ -139,6 +139,10 @@ class CurrentStudentsView(BaseView):
     # 在校生转入
     async def patch_transferin(self, student_edu_info: StudentEduInfo):
         # print(new_students_key_info)
+        # 检测 重复发起
+        is_lock = await self.student_transaction_rule.exist_undealed_student_transaction(student_edu_info.student_id)
+        if is_lock:
+            raise StudentTransactionExistsError()
 
 
 
@@ -247,6 +251,9 @@ class CurrentStudentsView(BaseView):
         # 流乘记录
         #  审批流取消
         res2 = await self.student_transaction_flow_rule.req_workflow_cancel(transferin_id,)
+        await self.student_transaction_flow_rule.set_transaction_end(transferin_id,AuditAction.CANCEL)
+
+
 
         if res2 is None:
             return {}
@@ -273,11 +280,19 @@ class CurrentStudentsView(BaseView):
                                            student_edu_info_out: StudentEduInfoOut,
                                            ):
         # print(new_students_key_info)
+
         #  新增学生   同时写入 转出和转入 流程 在校生加 年级
         res_student_add = await self.students_rule.add_student_new_student_transferin(student_baseinfo)
         res_student_baseinfo = await self.students_base_info_rule.add_students_base_info(StudentsBaseInfo(student_id=res_student_add.student_id,edu_number=student_baseinfo.edu_number))
 
         print(res_student_add)
+
+        # 检测 重复发起
+        is_lock = await self.student_transaction_rule.exist_undealed_student_transaction(res_student_add.student_id)
+        if is_lock:
+            raise StudentTransactionExistsError()
+
+
         # 调用审批流 创建
         student_edu_info_in.student_id= res_student_add.student_id
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
@@ -336,18 +351,10 @@ class CurrentStudentsView(BaseView):
 
                                           ):
         # print(new_students_key_info)
-        # 调用审批流 创建
-        student_edu_info_in.student_id= student_id
-        stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
-
-        origin_data = {'student_transaction_in': convert_dates_to_strings(student_edu_info_in.__dict__), 'student_transaction_out': convert_dates_to_strings(student_edu_info_in.__dict__), 'student_info':convert_dates_to_strings(student_edu_info_in.__dict__) , }
-
-        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo,student_edu_info_in,None,origin_data)
-        process_instance_id= node_instance_id =  0
-        if res3 and  len(res3)>0 :
-            print(res3[0])
-            process_instance_id = res3[1]['process_instance_id']
-            node_instance_id = res3[1]['node_instance_id']
+        # 检测 重复发起
+        is_lock = await self.student_transaction_rule.exist_undealed_student_transaction(student_id)
+        if is_lock:
+            raise StudentTransactionExistsError()
 
         #      同时写入 转出和转入 流程
         res_student = await self.students_rule.get_students_by_id(student_id)
@@ -364,6 +371,20 @@ class CurrentStudentsView(BaseView):
         res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
                                                                               TransactionDirection.OUT.value)
 
+        # 调用审批流 创建
+        student_edu_info_in.student_id= student_id
+        stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
+
+        origin_data = {'student_transaction_in': convert_dates_to_strings(student_edu_info_in.__dict__), 'student_transaction_out': convert_dates_to_strings(student_edu_info_out.__dict__), 'student_info':convert_dates_to_strings(res_student.__dict__) , }
+
+        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo,student_edu_info_in,None,origin_data)
+        process_instance_id= node_instance_id =  0
+        if res3 and  len(res3)>0 :
+            print(res3[0])
+            process_instance_id = res3[1]['process_instance_id']
+            node_instance_id = res3[1]['node_instance_id']
+
+
         # 转入
 
         student_edu_info_in.status = AuditAction.NEEDAUDIT.value
@@ -375,6 +396,10 @@ class CurrentStudentsView(BaseView):
 
         res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in,
                                                                           TransactionDirection.IN.value, res_out.id)
+
+
+
+
 
         # 转学日志
 

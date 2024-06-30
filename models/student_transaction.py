@@ -27,10 +27,11 @@ class AuditAction(str, Enum):
 
     PASS = "pass"
     REFUSE = "refuse"
+    CANCEL = "canel"
 
     @classmethod
     def to_list(cls):
-        return [cls.NEEDAUDIT,cls.PASS, cls.REFUSE]
+        return [cls.NEEDAUDIT,cls.PASS, cls.REFUSE, cls.CANCEL]
 
 class AuditFlowStatus(str, Enum):
     """
