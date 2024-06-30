@@ -4,11 +4,13 @@ from typing import List
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task import Task
 from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.utils.json import JsonUtils
 from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
 from rules.operation_record import OperationRecordRule
+from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_extend_params
 from views.models.extend_params import ExtendParams
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
@@ -36,6 +38,8 @@ class SchoolView(BaseView):
         self.school_eduinfo_rule = get_injector(SchoolEduinfoRule)
         self.school_communication_rule = get_injector(SchoolCommunicationRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
+        self.system_rule = get_injector(SystemRule)
+
 
     async def get(self,
                   school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1, max_length=20,
@@ -358,3 +362,23 @@ class SchoolView(BaseView):
         task = await app.task_topic.send(task)
         print('发生任务成功')
         return task
+
+    #工作流申请详情
+    async def get_school_workflow_info(self,
+
+                                                apply_id: int = Query(..., description="流程ID", example='1'),
+
+                                                ):
+        relationinfo = tinfo = ''
+        # 转发去 工作流获取详细
+        result = await self.system_rule.get_work_flow_instance_by_process_instance_id(
+            apply_id)
+        if not result.get('json_data'):
+            return {'工作流数据异常 无法解析'}
+
+        json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
+        if 'original_dict' in json_data.keys() and  json_data['original_dict']:
+            result={**json_data['original_dict'],**result}
+
+
+        return result
