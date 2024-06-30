@@ -33,7 +33,7 @@ from rules.planning_school_communication_rule import PlanningSchoolCommunication
 
 from rules.planning_school_eduinfo_rule import PlanningSchoolEduinfoRule
 from views.models.student_transaction import StudentTransactionAudit
-from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE
+from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, ProcessCodeType
 
 
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
@@ -168,6 +168,7 @@ class PlanningSchoolView(BaseView):
 
     async def page_planning_school_audit(self,
                    # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
+                   process_code: str = Query("", title="流程代码", description="例如p_school_open", ),
                    block: str = Query("", title=" ", description="地域管辖区", ),
                    planning_school_code: str = Query("", title="", description=" 园所标识码", ),
                    planning_school_level: str = Query("", title="", description=" 学校星级", ),
@@ -185,7 +186,7 @@ class PlanningSchoolView(BaseView):
                                                        examples=['县级教育部门']),
 
                    page_request=Depends(PageRequest)):
-        print(page_request, )
+        print(page_request, vars(ProcessCodeType))
         items = []
         #PlanningSchoolBaseInfoOptional
         req= PlanningSchoolPageSearch(block=block,
@@ -198,9 +199,10 @@ class PlanningSchoolView(BaseView):
                                       founder_type=founder_type,
                                       founder_type_lv2=founder_type_lv2,
                                       founder_type_lv3=founder_type_lv3,
+                                      # process_code=process_code,
                                       )
         print('入参接收',req)
-        paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',PLANNING_SCHOOL_OPEN_WORKFLOW_CODE,  )
+        paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,  )
         print('333',page_request)
         return paging_result
 
