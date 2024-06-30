@@ -35,7 +35,7 @@ class StudentTransactionStatus(str, Enum):
 
 
 class StudentEduInfo(BaseModel):
-    student_id: int = Query(..., description="学生id", min_length=1, max_length=20, examples=["1"], example="1"),
+    student_id: int = Query(..., description="学生id",title='学生id', min_length=1, max_length=20, examples=["1"], example="1"),
     province_id: str = Query('', description="省份", min_length=1, max_length=20, examples=["13000"], example="13000"),
     city_id: str = Query('', description="市", min_length=1, max_length=20, examples=["142323"]),
     area_id: str = Query('', description="区", min_length=1, max_length=20, examples=["1522000"]),
