@@ -282,7 +282,7 @@ class PlanningSchoolRule(object):
 
         # 发起审批流的 处理
 
-        datadict = dict()
+        datadict = audit_info.__dict__
         if audit_info.process_instance_id>0:
             node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  audit_info.process_instance_id)
             audit_info.node_id=node_id['node_instance_id']
