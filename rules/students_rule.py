@@ -281,9 +281,12 @@ class StudentsRule(object):
 
         """
         if student_edu_info.school_id:
-            # students_id = student_edu_info.student_id
             school_info = await self.school_dao.get_school_by_id(student_edu_info.school_id)
             if  school_info:
                 student_edu_info.school_name = school_info.school_name
+        if student_edu_info.student_id:
+            school_info = await self.students_baseinfo_dao.get_students_base_info_by_student_id(student_edu_info.student_id)
+            if  school_info:
+                student_edu_info.edu_number = school_info.edu_number
 
         return student_edu_info
