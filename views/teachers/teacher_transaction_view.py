@@ -44,6 +44,7 @@ class TransferDetailsView(BaseView):
         """
         调入
         """
+
         user_id = "asdfasdf"
         if not transfer_inner:  # 如果是系统外转系统内
             if add_teacher != None:
@@ -57,7 +58,9 @@ class TransferDetailsView(BaseView):
         """
         调出
         """
-        res = await self.transfer_details_rule.add_transfer_out_details(transfer_details)
+        user_id = "asdfasdf"
+        school_id = 1
+        res = await self.transfer_details_rule.add_transfer_out_details(transfer_details, user_id, school_id)
         return res
 
     # async def delete_transfer_details(self,
@@ -91,8 +94,9 @@ class TransferDetailsView(BaseView):
         我发起的调出
         """
         type = "launch"
+        user_id = "sadklfh"
         paging_result = await self.transfer_details_rule.query_transfer_out_with_page(type, transfer_details,
-                                                                                      page_request)
+                                                                                      page_request, user_id)
         return paging_result
 
     async def page_transfer_out_approval(self, transfer_details=Depends(TeacherTransferQueryModel),
@@ -101,8 +105,9 @@ class TransferDetailsView(BaseView):
         我审批的调出
         """
         type = "approval"
+        user_id = "sadklfh"
         paging_result = await self.transfer_details_rule.query_transfer_out_with_page(type, transfer_details,
-                                                                                      page_request)
+                                                                                      page_request, user_id)
         return paging_result
 
     async def page_transfer_in_launch(self, transfer_details=Depends(TeacherTransferQueryModel),
@@ -110,9 +115,10 @@ class TransferDetailsView(BaseView):
         """
         我发起的调入
         """
+        user_id = "sadklfh"
         type = "launch"
         paging_result = await self.transfer_details_rule.query_transfer_in_with_page(type, transfer_details,
-                                                                                     page_request)
+                                                                                     page_request, user_id)
         return paging_result
 
     async def page_transfer_in_approval(self, transfer_details=Depends(TeacherTransferQueryModel),
@@ -121,8 +127,9 @@ class TransferDetailsView(BaseView):
         我审批的调入
         """
         type = "approval"
+        user_id = "sadklfh"
         paging_result = await self.transfer_details_rule.query_transfer_in_with_page(type, transfer_details,
-                                                                                     page_request)
+                                                                                     page_request, user_id)
         return paging_result
 
     # 调动审批
@@ -198,26 +205,11 @@ class TeacherTransactionView(BaseView):
             teacher_transaction_id)
         return res
 
-    async def post_teacher_transaction_work_flow(self, process_code: str = Query("skdgfaj", title="process_code")):
-        process_code = "t_transfer_out"
-        teacher_id = 1
-        applicant_name = "567"
-        res = await self.teacher_transaction_rule.add_teacher_transaction_work_flow(process_code, teacher_id,
-                                                                                    applicant_name)
-        return res
-
-    async def post_process_teacher_transaction_work_flow(self,
-                                                         node_instance_id: int = Query(1, title="node_instance_id")):
-        parameters = {"user_id": "sadklfh", "action": "approved"}
-        res = await self.teacher_transaction_rule.process_teacher_transaction_work_flow(node_instance_id, parameters)
-        return res
 
     # 教师 异动接口
     async def post_teacher_transaction(self, teacher_transaction: TeacherTransactionModel):
-        res = await self.teacher_transaction_rule.add_teacher_transaction(teacher_transaction)
-        # if isinstance(res.transaction_time,date):
-        #     res.transaction_time=res.transaction_time.strftime('%Y-%m-%d')
-        print(res)
+        user_id = "sadklfh"
+        res = await self.teacher_transaction_rule.add_teacher_transaction_except_retire(teacher_transaction, user_id)
         return res
 
     # async def put_teacher_transaction(self, teacher_transaction: TeacherTransactionUpdateModel):
@@ -232,7 +224,7 @@ class TeacherTransactionView(BaseView):
         """
         return await self.teacher_transaction_rule.get_all_teacher_transaction(teacher_id)
 
-    async def page_transaction_launch(self, teacher_transaction=Depends(TeacherTransactionQueryModel),
+    async def page_transaction(self, teacher_transaction=Depends(TeacherTransactionQueryModel),
                                       page_request=Depends(PageRequest)):
         """
         分页查询
@@ -249,29 +241,25 @@ class TeacherTransactionView(BaseView):
     #     res = await self.teacher_transaction_rule.submitting(teacher_transaction_id)
     #     return res
 
-    async def patch_transaction_submitted(self, teacher_transaction_id: int = Query(None, title="teacher_transactionID",
-                                                                                    description="teacher_transactionID",
-                                                                                    example=1234)):
-        res = await self.teacher_transaction_rule.submitted(teacher_transaction_id)
-        return res
+    # async def patch_transaction_submitted(self, teacher_transaction_id: int = Query(None, title="teacher_transactionID",
+    #                                                                                 description="teacher_transactionID",
+    #                                                                                 example=1234)):
+    #     res = await self.teacher_transaction_rule.submitted(teacher_transaction_id)
+    #     return res
+    #
+    # async def patch_transaction_approved(self, teacher_transaction_id: int = Query(None, title="teacher_transactionID",
+    #                                                                                description="teacher_transactionID",
+    #                                                                                example=1234)):
+    #     res = await self.teacher_transaction_rule.approved(teacher_transaction_id)
+    #     return res
+    #
+    # async def patch_transaction_rejected(self, teacher_transaction_id: int = Query(None, title="teacher_transactionID",
+    #                                                                                description="teacher_transactionID",
+    #                                                                                example=1234)):
+    #     res = await self.teacher_transaction_rule.rejected(teacher_transaction_id)
+    #     return res
 
-    async def patch_transaction_approved(self, teacher_transaction_id: int = Query(None, title="teacher_transactionID",
-                                                                                   description="teacher_transactionID",
-                                                                                   example=1234)):
-        res = await self.teacher_transaction_rule.approved(teacher_transaction_id)
-        return res
 
-    async def patch_transaction_rejected(self, teacher_transaction_id: int = Query(None, title="teacher_transactionID",
-                                                                                   description="teacher_transactionID",
-                                                                                   example=1234)):
-        res = await self.teacher_transaction_rule.rejected(teacher_transaction_id)
-        return res
-
-    async def patch_transaction_revoked(self, teacher_transaction_id: int = Query(None, title="teacher_transactionID",
-                                                                                  description="teacher_transactionID",
-                                                                                  example=1234)):
-        res = await self.teacher_transaction_rule.revoked(teacher_transaction_id)
-        return res
 
     async def patch_teacher_active(self,
                                    teacher_id: int = Query(..., title="教师编号", description="教师编号",

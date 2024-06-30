@@ -29,9 +29,4 @@ class TeacherTransaction(BaseDBModel):
     position_date: Mapped[date] = mapped_column(Date, nullable=True, comment="任职日期")
     transaction_time: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(), nullable=False,
                                                        comment="操作时间")
-    operator_name: Mapped[str] = mapped_column(String(255), nullable=False, comment="操作人", default='')
-    operator_id: Mapped[int] = mapped_column(nullable=False, comment="操作人ID", default=0)
-    approval_status: Mapped[str] = mapped_column(String(255), nullable=False, comment="审批状态",
-                                                 default="pending")
-    process_instance_id: Mapped[int] = mapped_column(nullable=False, comment="流程ID", default=0)
     is_deleted: Mapped[bool] = mapped_column(nullable=False, comment="删除态", default=False)

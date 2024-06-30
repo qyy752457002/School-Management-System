@@ -13,7 +13,7 @@ class EnumValueDAO(DAOBase):
         result = await session.execute(select(EnumValue).where(EnumValue.id == enum_value_id))
         return result.scalar_one_or_none()
 
-    async def get_enum_value_by_value(self, enum_value,enum_name=None,parent_id=None):
+    async def get_enum_value_by_value(self, enum_value, enum_name=None, parent_id=None):
         session = await self.slave_db()
         query = select(EnumValue).where(EnumValue.enum_value == enum_value)
         if enum_name:
@@ -23,7 +23,7 @@ class EnumValueDAO(DAOBase):
         result = await session.execute(query)
         return result.scalar_one_or_none()
 
-    async def get_enum_value_by_enum_value_name(self, enum_value_name,parent_id=None):
+    async def get_enum_value_by_enum_value_name(self, enum_value_name, parent_id=None):
         session = await self.slave_db()
         query = select(EnumValue).where(EnumValue.enum_name == enum_value_name)
         if parent_id:
@@ -31,12 +31,17 @@ class EnumValueDAO(DAOBase):
         result = await session.execute(query)
         return result.first()
 
-    async def get_enum_description_by_enum_value_name(self, enum_value):
+    async def get_enum_description_by_enum_value_name(self, enum_value, is_pro=False, is_city=False, is_area=False):
         session = await self.slave_db()
         query = select(EnumValue).where(EnumValue.enum_value == enum_value)
+        if is_pro:
+            query = query.where(EnumValue.enum_name == "province")
+        elif is_city:
+            query = query.where(EnumValue.enum_name == "city")
+        elif is_area:
+            query = query.where(EnumValue.enum_name == "country")
         result = await session.execute(query)
-        return result.first()
-
+        return result.scalar_one_or_none()
 
     async def add_enum_value(self, enum_value):
         session = await self.master_db()
@@ -92,8 +97,9 @@ class EnumValueDAO(DAOBase):
 
         paging = await self.query_page(query, page_request)
         return paging
+
     # 返回多条
-    async def get_enum_value_all(self, filterdict,return_keys=None):
+    async def get_enum_value_all(self, filterdict, return_keys=None):
         session = await self.slave_db()
         temodel = select(EnumValue)
         if filterdict:
@@ -102,7 +108,7 @@ class EnumValueDAO(DAOBase):
             # result = await session.execute(select(EnumValue).where(getattr(EnumValue, key) == value))
             # return result.scalars().all()
         result = await session.execute(temodel)
-        res =result.scalars().all()
+        res = result.scalars().all()
         # 如果定义了返回的key 则返回字典 以key作为字典键
         if return_keys:
             dic = {}

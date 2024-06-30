@@ -74,13 +74,16 @@ class TeacherTransactionDAO(DAOBase):
         查询条件
         """
 
-        query = select(TeacherTransaction, Teacher.teacher_name, Teacher.teacher_id_type, Teacher.teacher_gender,
-                       Teacher.teacher_id_number, Teacher.teacher_employer, School.school_name, School.block,
+        query = select(TeacherTransaction.teacher_id, TeacherTransaction.transaction_type,
+                       TeacherTransaction.transaction_time, TeacherTransaction.transaction_id,
+                       TeacherTransaction.transaction_remark,
+                       TeacherTransaction.transaction_type, Teacher.teacher_name, Teacher.teacher_id_type,
+                       Teacher.teacher_gender,
+                       Teacher.teacher_id_number,
                        TeacherInfo.teacher_number).join(Teacher, Teacher.teacher_id == TeacherTransaction.teacher_id,
-                                                        isouter=True).join(
-            TeacherInfo, TeacherInfo.teacher_id == TeacherTransaction.teacher_id, isouter=True).join(School,
-                                                                                                     School.id == Teacher.teacher_employer,
-                                                                                                     isouter=True)
+                                                        ).join(TeacherInfo,
+                                                               TeacherInfo.teacher_id == TeacherTransaction.teacher_id,
+                                                               isouter=True)
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
         if query_model.teacher_number:
@@ -91,42 +94,18 @@ class TeacherTransactionDAO(DAOBase):
             query = query.where(Teacher.teacher_id_number == query_model.teacher_id_number)
         if query_model.teacher_gender:
             query = query.where(Teacher.teacher_gender == query_model.teacher_gender)
-        if query_model.teacher_employer:
-            if query_model.teacher_employer != 0:
-                query = query.where(Teacher.teacher_employer == query_model.teacher_employer)
-            else:
-                pass
         if query_model.transaction_type:
             query = query.where(TeacherTransaction.transaction_type == query_model.transaction_type)
-        if query_model.teacher_district:
-            query = query.where(School.block == query_model.teacher_district)
-        # if query_model.operator_name:
-        #     query = query.where(TeacherTransaction.operator_name.like(f"%{query_model.operator_name}%"))
-        if query_model.transaction_time:
-            query = query.where(func.date(TeacherTransaction.transaction_time) == query_model.transaction_time)
-        # if query_model.approval_name:
-        #     query = query.where(TeacherTransaction.approval_name.like(f"%{query_model.approval_name}%"))
+        if query_model.transaction_time_s and query_model.transaction_time_e:
+            query = query.where(TeacherTransaction.transaction_time.between(query_model.transaction_time_s,
+                                                                            query_model.transaction_time_e))
         query = query.order_by(TeacherTransaction.transaction_time.desc())
         paging = await self.query_page(query, page_request)
         return paging
 
     async def get_all_transfer(self, teacher_id):
         session = await self.slave_db()
-        subquery = (select(func.max(WorkFlowNodeInstance.operation_time).label("approval_time"),
-                           WorkFlowNodeInstance.node_status.label("node_status"),
-                           WorkFlowNodeInstance.process_instance_id.label("process_instance_id"),
-                           WorkFlowNodeInstance.operator_name.label("approval_name"),
-                           WorkFlowNodeInstance.node_code.label("node_code")).group_by(
-            WorkFlowNodeInstance.process_instance_id)).alias("subquery")
-
-        query = (select(TeacherTransaction, subquery.c.approval_time, subquery.c.node_status, subquery.c.approval_name,
-                        subquery.c.node_code, ).join(
-            Teacher, TeacherTransaction.teacher_id == Teacher.teacher_id)).join(WorkFlowNodeInstance,
-                                                                                WorkFlowNodeInstance.process_instance_id == TeacherTransaction.process_instance_id,
-                                                                                isouter=True).join(subquery,
-                                                                                                   subquery.c.process_instance_id == WorkFlowNodeInstance.process_instance_id,
-                                                                                                   isouter=True)
-        query = query.where(
+        query = select(TeacherTransaction).where(
             TeacherTransaction.teacher_id == teacher_id)
         result = await session.execute(query)
         return result.scalars().all()

@@ -13,6 +13,6 @@ class PositionDateError(MiniHTTPException):
         super().__init__(404, "POSITION_DATE_ERROR", "Position date error.", "任职时间必填")
 
 
-class TransactionApprovalError(MiniHTTPException):
+class TransactionError(MiniHTTPException):
     def __init__(self):
-        super().__init__(404, "TRANSACTION_APPROVAL_ERROR", "Transaction approval error.", "已存在未审批的异动记录")
+        super().__init__(404, "TRANSACTION_APPROVAL_ERROR", "Transaction  error.", "该老师未在职，不可发起变动")
