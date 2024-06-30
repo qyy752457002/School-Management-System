@@ -124,7 +124,7 @@ class TransferDetailsRule(object):
                                        user_id):
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
-        transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
+        transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel,exclude=["process_instance_id"])
 
         transfer_and_borrow_extra_model = await self.get_transfer_and_borrow_extra(
             original_district_area_id=transfer_details_work.original_district_area_id,
