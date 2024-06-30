@@ -303,9 +303,9 @@ class StudentTransactionRule(object):
         return student_edu_info
 
     async def deal_student_transaction(self, student_edu_info:StudentTransactionVM):
-        # todo  转入  需要设置到当前学校  转出 则该状态
+        #   转入  需要设置到当前学校  转出 则该状态
         tinfo=await self.get_student_transaction_by_process_instance_id(student_edu_info.process_instance_id)
-        # 入信息 todo 这个提取到 入的学校的方法里 预提交方法里
+        # 入信息  这个提取到 入的学校的方法里 预提交方法里
         students_base_info = StudentsBaseInfo(student_id=tinfo.student_id,school_id=tinfo.school_id,grade_id=tinfo.grade_id,class_id=tinfo.class_id)
         #学生的状态为 已经 入学 新的班级和学校ID
 

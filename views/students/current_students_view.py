@@ -251,6 +251,9 @@ class CurrentStudentsView(BaseView):
         # 流乘记录
         #  审批流取消
         res2 = await self.student_transaction_flow_rule.req_workflow_cancel(transferin_id,)
+        await self.student_transaction_flow_rule.set_transaction_end(transferin_id,AuditAction.CANCEL)
+
+
 
         if res2 is None:
             return {}

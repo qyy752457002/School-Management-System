@@ -36,6 +36,7 @@ from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE
 class StudentTransactionFlowRule(object):
     student_transaction_flow_dao: StudentTransactionFlowDAO
     system_rule:SystemRule
+    student_transaction_rule:StudentTransactionRule
 
     async def get_student_transaction_flow_by_id(self, student_transaction_flow_id):
         student_transaction_flow_db = await self.student_transaction_flow_dao.get_studenttransactionflow_by_id(
@@ -273,7 +274,6 @@ class StudentTransactionFlowRule(object):
         if audit_info.transferin_audit_action== AuditAction.PASS.value:
             # 成功则写入数据
             transrule = get_injector(StudentTransactionRule)
-            # await transrule.deal_student_transaction(student_edu_info)
 
             student_transaciton = StudentTransaction(id=audit_info.transferin_audit_id,
                                                      status=audit_info.transferin_audit_action.value,process_instance_id=audit_info.process_instance_id, )
@@ -284,6 +284,7 @@ class StudentTransactionFlowRule(object):
                 print('请传流程ID前段或者工作流返回它必须 ')
 
             pass
+        await self.set_transaction_end(audit_info.process_instance_id,audit_info.transferin_audit_action)
 
 
         return response
@@ -318,5 +319,16 @@ class StudentTransactionFlowRule(object):
 
         response = await httpreq.post_json(url,datadict,headerdict)
         print(response,'接口响应')
+
         return response
+        pass
+
+
+    async def set_transaction_end(self,process_instance_id,status):
+        tinfo=await self.student_transaction_rule.get_student_transaction_by_process_instance_id(process_instance_id)
+        if tinfo:
+            tinfo.status=status.value
+            await self.student_transaction_rule.update_student_transaction(tinfo)
+
+
         pass
