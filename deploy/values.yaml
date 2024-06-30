@@ -3,11 +3,16 @@ app:
   name: schooloms       # 应用的名称
   replicas: 4               # 副本数量，定义了应用的副本数
   stage: dev                # 部署阶段，例如开发(dev)、生产(prod)
-  image: docker-hub.f123.pub/lfun/meta-schema  # 应用使用的镜像
+  image: docker-hub.f123.pub/lfun/school-oms  # 应用使用的镜像
   tag: dev-min-v0.0.4  # 镜像版本
   appEnv:                   # 应用环境变量
     FOO: bar                # 环境变量键值对
     BAZ: qux
+
+backends:                 # 应用使用的服务
+  - name: school-oms-task
+    image: docker-hub.f123.pub/lfun/school-oms-task  # 服务使用的镜像
+    replicas: 2           # 服务的副本数
 
 ports:                 # 应用内部使用的端口号
   - name: svc
