@@ -121,6 +121,7 @@ class SchoolBaseInfoOptional(BaseModel):
     social_credit_code: str = Field('', title="", description="统一社会信用代码",examples=['XH423423876867'])
     school_closure_date: str = Field('', title="", description="学校关闭日期",examples=[''])
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
+    process_instance_id:int= Query(0, title="", description="", example='1')
 
 
 # 学校的 基本信息模型   视图的额模型是按需提供的

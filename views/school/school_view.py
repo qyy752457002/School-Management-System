@@ -196,7 +196,20 @@ class SchoolView(BaseView):
     async def patch_open(self, school_id: str = Query(..., title="学校编号", description="学校id/园所id", min_length=1,
                                                       max_length=20, example='SC2032633')):
         # print(school)
-        res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.NORMAL.value, 'open')
+        # res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.NORMAL.value, 'open')
+        # 请求工作流
+        school = await self.school_rule.get_school_by_id(school_id,)
+
+        res = await self.school_rule.add_school_work_flow(school)
+        process_instance_id=0
+        if len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+            process_instance_id= res[0]['process_instance_id']
+            pl = SchoolBaseInfoOptional(id=school_id, process_instance_id=process_instance_id)
+
+            res = await self.school_rule.update_school_byargs(pl  )
+
+            pass
+
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             target=OperationTarget.SCHOOL.value,
@@ -205,6 +218,7 @@ class SchoolView(BaseView):
             change_detail="开办分校",
             action_target_id=str(school_id),
             change_data=str(school_id)[0:1000],
+            process_instance_id=process_instance_id
 
             ))
 
