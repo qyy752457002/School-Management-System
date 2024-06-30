@@ -160,12 +160,22 @@ class StudentTransactionFlowRule(object):
         return response
 
     # 向工作流中心发送申请
-    async def add_student_transaction_work_flow(self, student_transaction_flow: StudentEduInfo,stuinfo: StudentsKeyinfoDetail,stuinfoadd,stubaseinfo):
+    async def add_student_transaction_work_flow(self, student_transaction_flow: StudentEduInfo,stuinfo: StudentsKeyinfoDetail,stuinfoadd=None,stubaseinfo=None,original_dict_map_view_orm=None):
+        """
+
+        :param student_transaction_flow: 新增时提交的学生 信息
+        :param stuinfo:学校表信息
+        :param stuinfoadd:插入后得到的学生信息 含ID
+        :param stubaseinfo:
+        :param original_dict_map_view_orm:含转出 转入对象和 学生提交的信息的 map
+        :return:
+        """
         student_transaction_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
         data= student_transaction_flow
         datadict =  data.__dict__
+        dict2= dict()
         datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         datadict['teacher_id'] =  0
         datadict['applicant_name'] =  'tester'
@@ -174,38 +184,29 @@ class StudentTransactionFlowRule(object):
         datadict['edu_number'] =   student_transaction_flow.edu_number
         datadict['school_name'] =   student_transaction_flow.school_name
         datadict['apply_user'] =  'tester'
-        stuinfoadddict =  stuinfo.__dict__
-        # stuinfoadddictstr= JsonUtils.dict_to_json_str(stuinfoadddict)
-        datadict['student_info'] =  convert_dates_to_strings(stuinfoadddict)
-        print(111,stuinfoadddict,datadict['student_info'] )
 
-        # datadict['student_info'] =  JsonUtils.json_str_to_dict(JsonUtils.dict_to_json_str(stuinfoadd.__dict__))
-        datadict['student_base_info'] = convert_dates_to_strings(stubaseinfo.__dict__)
-        dicta = student_transaction_flow.__dict__
+        stuinfoadddict =  stuinfoadd.__dict__
+        dict2['student_info'] =  convert_dates_to_strings(stuinfoadddict)
+
+        original_dict_map_view_orm['student_transaction_in'] = student_transaction_flow.__dict__
+
+        dict2['original_dict'] = original_dict_map_view_orm
         # 检查字典  如果哪个值为query 则设为none birthday registration_date enrollment_date
-        for key, value in dicta.items():
+        for key, value in datadict.items():
             if isinstance(value,Query) or isinstance(value,tuple):
-                dicta[key] = None
-        print('999', dicta)
-        # jsonutils.print_dict(datadict)
-        datadict= {**datadict,**dicta}
-        jsonstr = JsonUtils.dict_to_json_str(datadict)
-        print('总字典str', datadict)
+                datadict[key] = None
+        jsonstr = JsonUtils.dict_to_json_str( dict2)
+        # print('总字典str', datadict)
 
-        # datadict['jason_data'] =  json.dumps(dicta, ensure_ascii=False)
         datadict['json_data'] =  jsonstr
         print('总字典', datadict)
 
-        # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
         url=url+apiname
         headerdict = {
             "accept": "application/json",
             "Content-Type": "application/json"
         }
-        # 如果是query 需要拼接参数
-        # url+=  ('?' +urlencode(datadict))
-        # datadict =  JsonUtils.dict_to_json_str(datadict)
 
         print('参数', url, datadict,headerdict)
         response= None
@@ -217,7 +218,6 @@ class StudentTransactionFlowRule(object):
             print('api异常',e)
             traceback.print_exc()
             return None
-
 
     # 处理流程审批 的 操作
     async def exe_student_transaction(self,audit_info):
