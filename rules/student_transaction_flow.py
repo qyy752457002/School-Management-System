@@ -161,6 +161,15 @@ class StudentTransactionFlowRule(object):
 
     # 向工作流中心发送申请
     async def add_student_transaction_work_flow(self, student_transaction_flow: StudentEduInfo,stuinfo: StudentsKeyinfoDetail,stuinfoadd=None,stubaseinfo=None,original_dict_map_view_orm=None):
+        """
+
+        :param student_transaction_flow: 新增时提交的学生 信息
+        :param stuinfo:学校表信息
+        :param stuinfoadd:插入后得到的学生信息 含ID
+        :param stubaseinfo:
+        :param original_dict_map_view_orm:含转出 转入对象和 学生提交的信息的 map
+        :return:
+        """
         student_transaction_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")

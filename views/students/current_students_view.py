@@ -139,7 +139,9 @@ class CurrentStudentsView(BaseView):
 
         # 调用审批流 创建
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info.student_id)
-        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info,stuinfo)
+        origin_data = {'student_transaction_in':  student_edu_info.__dict__, 'student_transaction_out': student_edu_info.__dict__, 'student_info': stuinfo.__dict__, }
+
+        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info,stuinfo,stuinfo,None, origin_data)
         process_instance_id= node_instance_id =  0
         if res3 and  len(res3)>0 :
             print(res3[0])
@@ -251,8 +253,7 @@ class CurrentStudentsView(BaseView):
         student_edu_info_in.student_id= res_student_add.student_id
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
 
-        origin_data = {'student_transaction_in':  '', 'student_transaction_out': student_edu_info_out.__dict__,
-                       'student_info': student_baseinfo.__dict__, }
+        origin_data = {'student_transaction_in':  '', 'student_transaction_out': student_edu_info_out.__dict__, 'student_info': student_baseinfo.__dict__, }
         # origin_datastr= JsonUtils.dict_to_json_str(origin_data)
         res_workflow = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo,res_student_add,res_student_baseinfo,origin_data)
         process_instance_id= node_instance_id =  0
@@ -290,7 +291,10 @@ class CurrentStudentsView(BaseView):
         # 调用审批流 创建
         student_edu_info_in.student_id= student_id
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
-        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo)
+
+        origin_data = {'student_transaction_in':  student_edu_info_in.__dict__, 'student_transaction_out': student_edu_info_in.__dict__, 'student_info': student_edu_info_in.__dict__, }
+
+        res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo,student_edu_info_in,None,origin_data)
         process_instance_id= node_instance_id =  0
         if res3 and  len(res3)>0 :
             print(res3[0])
