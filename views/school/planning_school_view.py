@@ -558,6 +558,8 @@ class PlanningSchoolView(BaseView):
         # 转发去 工作流获取详细
         result = await self.system_rule.get_work_flow_instance_by_process_instance_id(
             apply_id)
+        if not result.get('json_data'):
+            return {'工作流数据异常 无法解析'}
 
         json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
         if 'original_dict' in json_data.keys() and  json_data['original_dict']:
