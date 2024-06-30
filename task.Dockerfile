@@ -8,4 +8,4 @@ WORKDIR /app
 RUN python3 main.py db-init upgrade
 ENV DEBUG=True
 EXPOSE 8080/tcp
-CMD ["python3", "mail.py", "task"]
+CMD ["python3", "main.py", "task"]
