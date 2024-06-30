@@ -282,6 +282,7 @@ class PlanningSchoolView(BaseView):
             change_detail="关闭学校",
             action_target_id=str(planning_school_id),
             change_data=str(planning_school_id)[0:1000],
+            process_instance_id=process_instance_id
            ))
 
         return res
@@ -411,19 +412,46 @@ class PlanningSchoolView(BaseView):
 
         pass
     # 学校关闭审核
-    async def patch_close_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
-                                                                     min_length=1, max_length=20, example='SC2032633')):
+    async def patch_close_audit(self,
+                                audit_info: PlanningSchoolTransactionAudit
+
+                                ):
+        resultra = await self.planning_school_rule.req_workflow_audit(audit_info,'close')
+        if resultra is None:
+            return {}
+        if isinstance(resultra, str):
+            return {resultra}
+
+        # print(new_students_key_info)
+        return resultra
         pass
     # 学校关键信息变更审核
-    async def patch_keyinfo_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
-                                                                      min_length=1, max_length=20, example='SC2032633')):
+    async def patch_keyinfo_audit(self,
+                                  audit_info: PlanningSchoolTransactionAudit
+
+
+                                  ):
+        resultra = await self.planning_school_rule.req_workflow_audit(audit_info,'keyinfo_change')
+        if resultra is None:
+            return {}
+        if isinstance(resultra, str):
+            return {resultra}
+
+        # print(new_students_key_info)
+        return resultra
         pass
     # 规划校的开办关闭修改的 取消接口
-    async def patch_open_cancel(self, node_id: str = Query(..., title="流程对应的节点ID", description="",
-                                                                     min_length=1, max_length=20, example='SC2032633')):
+    async def patch_open_cancel(self,
+
+                                process_instance_id: str = Query(0, title="流程对应的节点ID", description="",
+                             min_length=1, max_length=20, example='SC2032633'),
+                                node_id: str = Query(0, title="流程对应的节点ID", description="",
+                                                                     min_length=1, max_length=20, example='SC2032633')
+
+    ):
 
         #  审批流取消
-        res2 = await self.planning_school_rule.req_workflow_cancel(node_id,)
+        res2 = await self.planning_school_rule.req_workflow_cancel(node_id,process_instance_id)
 
         if res2 is None:
             return {}

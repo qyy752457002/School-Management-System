@@ -121,15 +121,15 @@ class PlanningSchoolRule(object):
         return paging_result
 
 
-    async def update_planning_school_status(self, planning_school_id, status,action=None):
+    async def update_planning_school_status(self, planning_school_id, target_status,action=None):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
-        # 判断运来的状态 进行后续的更新
-        if status== PlanningSchoolStatus.NORMAL.value and exists_planning_school.status== PlanningSchoolStatus.OPENING.value:
+        # 判断原来的状态+要更改的状态 进行后续的更新
+        if target_status== PlanningSchoolStatus.NORMAL.value and exists_planning_school.status== PlanningSchoolStatus.OPENING.value:
             # 开办 自动创建一条学校信息
             exists_planning_school.status= PlanningSchoolStatus.NORMAL.value
-        elif status== PlanningSchoolStatus.CLOSED.value and exists_planning_school.status== PlanningSchoolStatus.NORMAL.value:
+        elif target_status== PlanningSchoolStatus.CLOSED.value and exists_planning_school.status== PlanningSchoolStatus.NORMAL.value:
             # 关闭
             exists_planning_school.status= PlanningSchoolStatus.CLOSED.value
         else:
@@ -219,11 +219,11 @@ class PlanningSchoolRule(object):
             print(e)
         return response
 
-    async def req_workflow_cancel(self,transferin_id,):
+    async def req_workflow_cancel(self,transferin_id,process_instance_id=None):
 
         # 发起审批流的 处理
         datadict = dict()
-        # 节点实例id
+        # 节点实例id todo  自动获取
         datadict['node_instance_id'] =  transferin_id
 
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
@@ -279,9 +279,9 @@ class PlanningSchoolRule(object):
 
         # 字典参数
         datadict ={"user_id":"11","action":"approved"}
-        if audit_info.transferin_audit_action== AuditAction.PASS.value:
+        if audit_info.transaction_audit_action== AuditAction.PASS.value:
             datadict['action'] = 'approved'
-        if audit_info.transferin_audit_action== AuditAction.REFUSE.value:
+        if audit_info.transaction_audit_action== AuditAction.REFUSE.value:
             datadict['action'] = 'rejected'
 
         response = await send_request(apiname,datadict,'post')
@@ -300,7 +300,13 @@ class PlanningSchoolRule(object):
         #  读取流程实例ID
         planning_school = await self.planning_school_dao.get_planning_school_by_process_instance_id(process_instance_id)
         if action=='open':
-            res = await self.update_planning_school_status(planning_school.id,  PlanningSchoolStatus.OPENING.value, 'open')
+            res = await self.update_planning_school_status(planning_school.id,  PlanningSchoolStatus.NORMAL.value, 'open')
+        if action=='close':
+            res = await self.update_planning_school_status(planning_school.id,  PlanningSchoolStatus.CLOSED.value, 'close')
+        if action=='keyinfo_change':
+            # todo 把基本信息变更 改进去
+            # res = await self.update_planning_school_status(planning_school.id,  PlanningSchoolStatus.CLOSED.value, 'close')
+            pass
 
         # res = await self.update_planning_school_status(planning_school_id,  PlanningSchoolStatus.NORMAL.value, 'open')
 
