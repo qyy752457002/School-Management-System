@@ -563,8 +563,11 @@ class PlanningSchoolView(BaseView):
             return {'工作流数据异常 无法解析'}
 
         json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
+        print(json_data)
+        result={ **result,**json_data}
+
         if 'original_dict' in json_data.keys() and  json_data['original_dict']:
-            result={**json_data['original_dict'],**result}
+            result={**json_data['original_dict'],**result,**json_data}
 
 
         return result
