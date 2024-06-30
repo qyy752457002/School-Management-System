@@ -14,7 +14,8 @@ from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_extend_params
 from views.models.extend_params import ExtendParams
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
-from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch
+from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, \
+    PlanningSchoolTransactionAudit
 from views.models.school_communications import SchoolCommunications
 from views.models.school_eduinfo import SchoolEduInfo
 from views.models.school import School, SchoolBaseInfo, SchoolKeyInfo, SchoolKeyAddInfo, SchoolBaseInfoOptional, \
@@ -360,8 +361,19 @@ class SchoolView(BaseView):
         paging_result = await self.school_rule.query_schools(school_name,await get_extend_params(request),school_id,block,borough,)
         return paging_result
     # 学校开设审核
-    async def patch_open_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
-                                                                     min_length=1, max_length=20, example='SC2032633')):
+    async def patch_open_audit(self,
+                               audit_info: PlanningSchoolTransactionAudit
+
+                               ):
+        print('前端入参',audit_info)
+        resultra = await self.school_rule.req_workflow_audit(audit_info,'open')
+        if resultra is None:
+            return {}
+        if isinstance(resultra, str):
+            return {resultra}
+
+        # print(new_students_key_info)
+        return resultra
         pass
     # 学校关闭审核
     async def patch_close_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",

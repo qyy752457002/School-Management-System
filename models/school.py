@@ -53,6 +53,8 @@ class School(BaseDBModel):
     junior_middle_school_system: Mapped[str] = mapped_column(String(10), nullable=True,default='', comment="初中学制")
     junior_middle_school_entry_age: Mapped[str] = mapped_column(String(10), nullable=True,default='', comment="初中入学年龄")
     senior_middle_school_system: Mapped[str] = mapped_column(String(10), nullable=True,default='', comment="高中学制")
+    process_instance_id: Mapped[int] = mapped_column(nullable=True,default=0, comment="流程ID")
+
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)
     updated_uid: Mapped[int] = mapped_column( nullable=True , comment="操作人",default=0)
     created_at = mapped_column(DateTime, default=datetime.now, nullable=False, comment="创建时间")
