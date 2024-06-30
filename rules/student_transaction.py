@@ -322,3 +322,24 @@ class StudentTransactionRule(object):
 
         # student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
         return student_edu_info
+
+    async def check_student_transaction_lock(self, student_edu_info:StudentTransactionVM):
+        # todo  转入  需要设置到当前学校  转出 则该状态
+        tinfo=await self.get_student_transaction_by_process_instance_id(student_edu_info.process_instance_id)
+        # 入信息 todo 这个提取到 入的学校的方法里 预提交方法里
+        students_base_info = StudentsBaseInfo(student_id=tinfo.student_id,school_id=tinfo.school_id,grade_id=tinfo.grade_id,class_id=tinfo.class_id)
+        #学生的状态为 已经 入学 新的班级和学校ID
+
+        need_update_list = ['school_id','grade_id','class_id']
+
+        print(need_update_list,students_base_info)
+        await self.students_baseinfo_dao.update_students_base_info(students_base_info,*need_update_list)
+        #学生 审核态 改为已审核
+        stu = await self.students_dao.get_students_by_id ( tinfo.student_id)
+        stu.approval_status = StudentApprovalAtatus.ASSIGNMENT.value
+        need_update_list = ['approval_status']
+
+        await self.students_dao.update_students(stu,*need_update_list)
+
+        # student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""])
+        return student_edu_info
