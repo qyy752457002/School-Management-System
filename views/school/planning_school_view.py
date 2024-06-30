@@ -443,8 +443,8 @@ class PlanningSchoolView(BaseView):
     # 规划校的开办关闭修改的 取消接口
     async def patch_open_cancel(self,
 
-                                process_instance_id: str = Query(0, title="流程对应的节点ID", description="",
-                             min_length=1, max_length=20, example='SC2032633'),
+                                process_instance_id: int = Query(0, title="流程ID", description="流程ID",
+                              example= 25),
                                 node_id: str = Query(0, title="流程对应的节点ID", description="",
                                                                      min_length=1, max_length=20, example='SC2032633')
 

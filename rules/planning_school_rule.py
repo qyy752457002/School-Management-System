@@ -26,6 +26,7 @@ from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_
 @dataclass_inject
 class PlanningSchoolRule(object):
     planning_school_dao: PlanningSchoolDAO
+    system_rule: SystemRule
 
     async def get_planning_school_by_id(self, planning_school_id,extra_model=None):
         planning_school_db = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
@@ -219,12 +220,15 @@ class PlanningSchoolRule(object):
             print(e)
         return response
 
-    async def req_workflow_cancel(self,transferin_id,process_instance_id=None):
+    async def req_workflow_cancel(self,node_id,process_instance_id=None):
 
         # 发起审批流的 处理
         datadict = dict()
         # 节点实例id todo  自动获取
-        datadict['node_instance_id'] =  transferin_id
+        if process_instance_id>0:
+            node_id= self.system_rule.get_work_flow_current_node_by_process_instance_id(  process_instance_id)
+
+        datadict['node_instance_id'] =  node_id
 
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
         # 字典参数
@@ -270,8 +274,11 @@ class PlanningSchoolRule(object):
         # 发起审批流的 处理
 
         datadict = dict()
+        if audit_info.process_instance_id>0:
+            audit_info.node_id= self.system_rule.get_work_flow_current_node_by_process_instance_id(  audit_info.process_instance_id)
+
         # 节点实例id
-        datadict['node_instance_id'] =  audit_info.transferin_audit_id
+        datadict['node_instance_id'] =  audit_info.node_id
 
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
 

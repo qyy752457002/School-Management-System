@@ -220,7 +220,7 @@ class PlanningSchoolImport(PlanningSchool, PlanningSchoolCommunications):
     pass
 
 class PlanningSchoolTransactionAudit(BaseModel):
-    node_id: int = Query(..., description="节点ID", example='2')
+    node_id: int = Query(0, description="节点ID", example='2')
     process_instance_id: int = Query(0, description="流程实例ID", example='2')
     transaction_audit_action: AuditAction = Query(..., description="审批的操作",
                                                  example='pass')
