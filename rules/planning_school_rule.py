@@ -227,15 +227,17 @@ class PlanningSchoolRule(object):
         datadict = dict()
         # 节点实例id todo  自动获取
         if process_instance_id>0:
-            node_id= self.system_rule.get_work_flow_current_node_by_process_instance_id(  process_instance_id)
+            node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  process_instance_id)
+            node_id=node_id['node_instance_id']
 
         datadict['node_instance_id'] =  node_id
 
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
         # 字典参数
-        datadict ={"user_id":"11","action":"revoke"}
+        # datadict ={"user_id":"11","action":"revoke"}
+        datadict ={"user_id":"11","action":"approved",**datadict}
 
-        response= await send_request(apiname,datadict,'post')
+        response= await send_request(apiname,datadict,'post',True)
 
         print(response,'接口响应')
         return response
@@ -276,23 +278,28 @@ class PlanningSchoolRule(object):
 
         datadict = dict()
         if audit_info.process_instance_id>0:
-            audit_info.node_id= self.system_rule.get_work_flow_current_node_by_process_instance_id(  audit_info.process_instance_id)
+            node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  audit_info.process_instance_id)
+            audit_info.node_id=node_id['node_instance_id']
+
 
         # 节点实例id
         datadict['node_instance_id'] =  audit_info.node_id
 
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
+        # from urllib.parse import urlencode
+        # apiname += ('?' + urlencode(datadict))
+
 
         # 如果是query 需要拼接参数
 
         # 字典参数
-        datadict ={"user_id":"11","action":"approved"}
+        datadict ={"user_id":"11","action":"approved",**datadict}
         if audit_info.transaction_audit_action== AuditAction.PASS.value:
             datadict['action'] = 'approved'
         if audit_info.transaction_audit_action== AuditAction.REFUSE.value:
             datadict['action'] = 'rejected'
 
-        response = await send_request(apiname,datadict,'post')
+        response = await send_request(apiname,datadict,'post',True)
         print(response,'接口响应')
         if audit_info.transaction_audit_action== AuditAction.PASS.value:
             # 成功则写入数据
@@ -307,6 +314,9 @@ class PlanningSchoolRule(object):
     async def deal_planning_school(self,process_instance_id ,action, ):
         #  读取流程实例ID
         planning_school = await self.planning_school_dao.get_planning_school_by_process_instance_id(process_instance_id)
+        if not planning_school:
+            print('未查到规划信息',process_instance_id)
+            return
         if action=='open':
             res = await self.update_planning_school_status(planning_school.id,  PlanningSchoolStatus.NORMAL.value, 'open')
         if action=='close':

@@ -400,6 +400,7 @@ class PlanningSchoolView(BaseView):
                                audit_info: PlanningSchoolTransactionAudit
 
                                ):
+        print('前端入参',audit_info)
         resultra = await self.planning_school_rule.req_workflow_audit(audit_info,'open')
         if resultra is None:
             return {}
