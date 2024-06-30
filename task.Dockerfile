@@ -5,7 +5,7 @@ RUN mkdir -p /etc/lfun
 COPY deploy/config.json /etc/lfun/config.json
 COPY . /app
 WORKDIR /app
-RUN python3 main.py db-init upgrade
+# RUN python3 main.py db-init upgrade
 ENV DEBUG=True
 EXPOSE 8080/tcp
 CMD ["python3", "main.py", "task"]
