@@ -282,7 +282,7 @@ class PlanningSchoolRule(object):
 
         # 发起审批流的 处理
 
-        datadict = dict()
+        datadict = audit_info.__dict__
         if audit_info.process_instance_id>0:
             node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  audit_info.process_instance_id)
             audit_info.node_id=node_id['node_instance_id']
@@ -313,6 +313,8 @@ class PlanningSchoolRule(object):
             # await transrule.deal_student_transaction(student_edu_info)
             res2 = await self.deal_planning_school(audit_info.process_instance_id, action)
 
+        await self.set_transaction_end(audit_info.process_instance_id, audit_info.transaction_audit_action)
+
 
         return response
         pass
@@ -333,5 +335,14 @@ class PlanningSchoolRule(object):
             pass
 
         # res = await self.update_planning_school_status(planning_school_id,  PlanningSchoolStatus.NORMAL.value, 'open')
+
+        pass
+
+    async def set_transaction_end(self,process_instance_id,status):
+        tinfo=await self.planning_school_dao.get_planning_school_by_process_instance_id(process_instance_id)
+        if tinfo:
+            tinfo.workflow_status=status.value
+            await self.update_planning_school_byargs(tinfo)
+
 
         pass

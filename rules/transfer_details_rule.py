@@ -121,16 +121,22 @@ class TransferDetailsRule(object):
         await self.operation_record_rule.add_operation_record(teacher_transfer_log)
 
     async def add_transfer_out_details(self, transfer_details: TransferDetailsModel,
-                                       user_id):
+                                       user_id, school_id):
+        transfer_details.original_unit_id = school_id
+        school = await self.school_dao.get_school_by_id(school_id)
+        transfer_details.original_unit_name = school.school_name
+        # todo 这里先将学校区写死了，后续需要修改
+        transfer_details.original_district_area_id = 210106
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
-        transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel,exclude=["process_instance_id"])
-
+        transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel,
+                                                        exclude=["process_instance_id", "original_unit_name",
+                                                                 "current_unit_name"])
         transfer_and_borrow_extra_model = await self.get_transfer_and_borrow_extra(
             original_district_area_id=transfer_details_work.original_district_area_id,
             current_district_area_id=transfer_details_work.current_district_area_id,
             original_unit_id=transfer_details.original_unit_id)
-        original_unit_name = transfer_details_work.original_unit_name
+        transfer_and_borrow_extra_model.current_unit_name = transfer_details.current_unit_name
         current_unit_name = transfer_and_borrow_extra_model.current_unit_name
         params = {"process_code": "t_transfer_in_outer", "applicant_name": user_id}
         model_list = [transfer_details_work, transfer_and_borrow_extra_model]
@@ -144,7 +150,7 @@ class TransferDetailsRule(object):
             operation_time=datetime.now(),
             doc_upload="",
             change_module=ChangeModule.TRANSFER.value,
-            change_detail=f"从{original_unit_name}调入到{current_unit_name}",
+            change_detail=f"从{transfer_and_borrow_extra_model.original_unit_name}调入到{current_unit_name}",
             status="/",
             operator_id=1,
             operator_name=user_id,
@@ -253,10 +259,10 @@ class TransferDetailsRule(object):
         current_district_province_name = current_district_city_name = current_district_area_name = ""
         original_unit_name = current_unit_name = ""
         if original_district_area_id:
-            original_district_province_name, original_district_city_name, original_district_area_name = self.enum_value_rule.get_district_name(
+            original_district_province_name, original_district_city_name, original_district_area_name = await self.enum_value_rule.get_district_name(
                 original_district_area_id)
         if current_district_area_id:
-            current_district_province_name, current_district_city_name, current_district_area_name = self.enum_value_rule.get_district_name(
+            current_district_province_name, current_district_city_name, current_district_area_name = await self.enum_value_rule.get_district_name(
                 current_district_area_id)
         if original_unit_id:
             school = await self.school_dao.get_school_by_id(original_unit_id)
@@ -311,6 +317,7 @@ class TransferDetailsRule(object):
 
             # teacher = await self.teacher_work_flow_rule.create_model_from_workflow(result, TransferDetailsReModel)
             return "该老师调动审批已通过"
+
     async def transfer_rejected(self, transfer_details_id, process_instance_id, user_id, reason):
         transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
             transfer_details_id)
@@ -322,7 +329,7 @@ class TransferDetailsRule(object):
         current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
         node_instance_id = current_node.get("node_instance_id")
         node_instance = await self.teacher_work_flow_rule.process_transaction_work_flow(node_instance_id,
-                                                                                   parameters)
+                                                                                        parameters)
         if node_instance == "rejected":
             await self.teachers_rule.teacher_active(transfer_details.teachers_id)
             await self.teachers_rule.teacher_pending(transfer_details.teachers_id)

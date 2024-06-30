@@ -87,7 +87,7 @@ class PlanningSchool(BaseModel):
     senior_middle_planning_school_system: str = Field(..., title="高中学制", description="高中学制", examples=['3'])
     province: str|None= Field('', title="省份", description="", examples=[''], max_length=30)
     city: str|None = Field('', title="城市", description="", examples=[''],  max_length=30)
-
+    workflow_status: str = Field(None, title="", description="", examples=[''])
 
 # 规划校的 基本信息模型   视图的额模型是按需提供的
 class PlanningSchoolBaseInfo(BaseModel):
@@ -151,6 +151,7 @@ class PlanningSchoolBaseInfoOptional(BaseModel):
     sy_zones: str = Field(None, title="", description="属地管理行政部门所在地地区", examples=['铁西区'])
     historical_evolution: str = Field(None, title="", description="历史沿革", examples=['xxxxxxxxxxxxxxxxxxxx'])
     status: str = Field(None, title="", description="", examples=[''])
+    workflow_status: str = Field(None, title="", description="", examples=[''])
     process_instance_id: int = Field(None, title="", description="", examples=[''])
 
 
