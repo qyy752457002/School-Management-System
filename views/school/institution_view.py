@@ -316,7 +316,7 @@ class InstitutionView(BaseView):
 
     # 分校的审批流列表
     async def page_institution_audit(self,
-                                     social_credit_code: str = Field( '',   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656']),
+                                     social_credit_code: str = Query( '',   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656']),
                                      institution_name: str = Query(None, description="机构名称",
                                                                    example='XX小学'),
                                      school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),

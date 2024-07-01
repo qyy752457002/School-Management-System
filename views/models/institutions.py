@@ -71,7 +71,7 @@ class InstitutionOptional(BaseModel):
     adm_leader_position: str = Field("",   title='行政负责人职务',  description=" 行政负责人职务",examples=['FSDFSD'])
     department_unit_number: str = Field("",   title='属地管理行政部门单位号',  description=" 属地管理行政部门单位号",examples=['DFG454353454'])
     sy_zones: str = Field("",   title='属地管理行政部门所在地地区',  description=" 属地管理行政部门所在地地区",examples=['铁西区'])
-    social_credit_code: str = Field("",   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656'])
+    social_credit_code: str|None = Field("",   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656'])
     postal_code: str = Field("",   title='邮政编码',  description=" 邮政编码",examples=['4587236'])
     detailed_address: str = Field("",   title='详细地址',  description=" 详细地址",examples=['FSDFSDFSDF234E23'])
     related_license_upload: str = Field("",   title='相关证照上传',  description=" 相关证照上传",examples=[''])

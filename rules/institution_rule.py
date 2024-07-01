@@ -15,7 +15,8 @@ from models.student_transaction import AuditAction
 from rules.common.common_rule import send_request
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config
-from views.models.institutions import Institutions as InstitutionModel, Institutions, InstitutionKeyInfo
+from views.models.institutions import Institutions as InstitutionModel, Institutions, InstitutionKeyInfo, \
+    InstitutionOptional
 from views.models.planning_school import PlanningSchoolTransactionAudit, PlanningSchoolStatus
 from views.models.system import SCHOOL_OPEN_WORKFLOW_CODE, INSTITUTION_OPEN_WORKFLOW_CODE, SCHOOL_CLOSE_WORKFLOW_CODE, \
     INSTITUTION_CLOSE_WORKFLOW_CODE, SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE
@@ -47,7 +48,7 @@ class InstitutionRule(object):
 
         institution_db = await self.institution_dao.add_institution(institution_db)
         print(institution_db,'插入suc')
-        institution = orm_model_to_view_model(institution_db, InstitutionModel, exclude=[""])
+        institution = orm_model_to_view_model(institution_db, InstitutionOptional, exclude=[""])
         return institution
 
     async def update_institution(self, institution,ctype=1):
