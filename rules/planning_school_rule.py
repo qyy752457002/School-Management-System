@@ -1,6 +1,7 @@
 import json
 
 from mini_framework.utils.http import HTTPRequest
+from mini_framework.utils.json import JsonUtils
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
@@ -337,7 +338,21 @@ class PlanningSchoolRule(object):
             res = await self.update_planning_school_status(planning_school.id,  PlanningSchoolStatus.CLOSED.value, 'close')
         if action=='keyinfo_change':
             # todo 把基本信息变更 改进去
-            # res = await self.update_planning_school_status(planning_school.id,  PlanningSchoolStatus.CLOSED.value, 'close')
+            # 读取流程的原始信息  更新到数据库
+
+            result = await self.system_rule.get_work_flow_instance_by_process_instance_id(
+                process_instance_id)
+            if not result.get('json_data'):
+                # return {'工作流数据异常 无法解析'}
+                pass
+
+
+            json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
+            print(json_data)
+            planning_school_orm = PlanningSchool(**json_data)
+            planning_school_orm.id= None
+
+            res = await self.update_planning_school_byargs(planning_school.id,  planning_school_orm)
             pass
 
         # res = await self.update_planning_school_status(planning_school_id,  PlanningSchoolStatus.NORMAL.value, 'open')
@@ -353,7 +368,7 @@ class PlanningSchoolRule(object):
 
         pass
 
-    async def add_planning_school_keyinfo_change_work_flow(self, planning_school_flow: PlanningSchoolModel,):
+    async def add_planning_school_keyinfo_change_work_flow(self, planning_school_flow: PlanningSchoolKeyInfo,):
         # planning_school_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
@@ -362,12 +377,17 @@ class PlanningSchoolRule(object):
         datadict['process_code'] = PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE
         datadict['teacher_id'] =  0
         datadict['applicant_name'] =  'tester'
-        datadict['planning_school_code'] = planning_school_flow.planning_school_code
+        datadict['planning_school_no'] = planning_school_flow.planning_school_no
+
         datadict['planning_school_name'] = planning_school_flow.planning_school_name
-        datadict['founder_type_lv3'] =   planning_school_flow.founder_type_lv3
+        datadict['planning_school_edu_level'] =   planning_school_flow.planning_school_edu_level
         datadict['block'] =   planning_school_flow.block
         datadict['borough'] =   planning_school_flow.borough
         datadict['planning_school_level'] =   planning_school_flow.planning_school_level
+        datadict['planning_school_category'] =   planning_school_flow.planning_school_category
+        datadict['planning_school_operation_type'] =   planning_school_flow.planning_school_operation_type
+        datadict['planning_school_org_type'] =   planning_school_flow.planning_school_org_type
+
         datadict['apply_user'] =  'tester'
         mapa = planning_school_flow.__dict__
         mapa['planning_school_id'] = planning_school_flow.id
