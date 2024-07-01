@@ -15,6 +15,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.async_task.data_access.task_dao import TaskDAO
 
 from business_exceptions.common import IdCardError, EnrollNumberError, EduNumberError
+from daos.school_dao import SchoolDAO
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.students import Student
@@ -27,9 +28,12 @@ from business_exceptions.student import StudentNotFoundError, StudentExistsError
 
 from mini_framework.utils.logging import logger
 
+
+
 @dataclass_inject
 class StudentsRule(object):
     students_dao: StudentsDao
+    school_dao: SchoolDAO
     students_baseinfo_dao: StudentsBaseInfoDao
     file_storage_dao: FileStorageDAO
     # students_base_info_dao: StudentsBaseInfoDao
@@ -146,7 +150,8 @@ class StudentsRule(object):
             }
             exist = await self.students_baseinfo_dao.get_students_base_info_by_param(**kdict)
             if exist:
-                raise EduNumberError()
+                # raise EduNumberError()
+                pass
 
         students_db = view_model_to_orm_model(students, Student, exclude=["student_id"])
         students_db.student_gender = students.student_gender
@@ -165,7 +170,9 @@ class StudentsRule(object):
 
             if exist:
                 # print(exist)
-                raise StudentExistsError()
+                # raise StudentExistsError()
+                pass
+
 
         # print(students_db)
         students_db = await self.students_dao.add_students(students_db)
@@ -265,3 +272,21 @@ class StudentsRule(object):
 
         await self.task_dao.add_task_result(task_result)
         return task_result
+
+
+
+    async def complete_info_students_by_id(self, student_edu_info):
+        """
+        学校ID 填充获取学校名称等
+
+        """
+        if student_edu_info.school_id:
+            school_info = await self.school_dao.get_school_by_id(student_edu_info.school_id)
+            if  school_info:
+                student_edu_info.school_name = school_info.school_name
+        if student_edu_info.student_id:
+            school_info = await self.students_baseinfo_dao.get_students_base_info_by_student_id(student_edu_info.student_id)
+            if  school_info:
+                student_edu_info.edu_number = school_info.edu_number
+
+        return student_edu_info

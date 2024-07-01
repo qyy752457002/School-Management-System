@@ -25,7 +25,7 @@ from views.models.school import School as SchoolModel
 
 
 
-async def send_request(apiname,datadict,method='get'):
+async def send_request(apiname,datadict,method='get',is_need_query_param=False):
 
     # 发起审批流的 处理
     httpreq= HTTPRequest()
@@ -37,7 +37,7 @@ async def send_request(apiname,datadict,method='get'):
         "Content-Type": "application/json"
     }
     # 如果是query 需要拼接参数
-    if method == 'get':
+    if method == 'get' or is_need_query_param:
         from urllib.parse import urlencode
         url += ('?' + urlencode(datadict))
 

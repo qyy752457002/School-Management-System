@@ -24,6 +24,7 @@ from models.student_transaction import AuditAction
 from models.student_transaction_flow import StudentTransactionFlow
 from rules.student_transaction import StudentTransactionRule
 from rules.students_rule import StudentsRule
+from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, convert_dates_to_strings
 from views.models.student_transaction import StudentTransactionFlow as StudentTransactionFlowModel, StudentEduInfo, \
     StudentTransactionAudit, StudentTransaction
@@ -34,6 +35,8 @@ from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE
 @dataclass_inject
 class StudentTransactionFlowRule(object):
     student_transaction_flow_dao: StudentTransactionFlowDAO
+    system_rule:SystemRule
+    student_transaction_rule:StudentTransactionRule
 
     async def get_student_transaction_flow_by_id(self, student_transaction_flow_id):
         student_transaction_flow_db = await self.student_transaction_flow_dao.get_studenttransactionflow_by_id(
@@ -170,7 +173,7 @@ class StudentTransactionFlowRule(object):
         :param original_dict_map_view_orm:含转出 转入对象和 学生提交的信息的 map
         :return:
         """
-        student_transaction_flow.id=0
+        # student_transaction_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
         data= student_transaction_flow
@@ -186,16 +189,18 @@ class StudentTransactionFlowRule(object):
         datadict['apply_user'] =  'tester'
 
         stuinfoadddict =  stuinfoadd.__dict__
-        dict2['student_info'] =  convert_dates_to_strings(stuinfoadddict)
 
-        original_dict_map_view_orm['student_transaction_in'] = student_transaction_flow.__dict__
+        # original_dict_map_view_orm['student_transaction_in'] = student_transaction_flow.__dict__
+        dict2['student_info'] = original_dict_map_view_orm['student_info']
 
         dict2['original_dict'] = original_dict_map_view_orm
         # 检查字典  如果哪个值为query 则设为none birthday registration_date enrollment_date
         for key, value in datadict.items():
             if isinstance(value,Query) or isinstance(value,tuple):
                 datadict[key] = None
-        jsonstr = JsonUtils.dict_to_json_str( dict2)
+        # jsonstr = JsonUtils.dict_to_json_str( dict2)
+        print(888,dict2)
+        jsonstr = json.dumps( dict2)
         # print('总字典str', datadict)
 
         datadict['json_data'] =  jsonstr
@@ -235,7 +240,15 @@ class StudentTransactionFlowRule(object):
         # data= student_transaction_flow
         datadict = dict()
         # datadict['process_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
-        # 节点实例id
+        # 节点实例id todo
+        if audit_info.process_instance_id>0:
+            node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  audit_info.process_instance_id)
+            audit_info.transferin_audit_id=node_id['node_instance_id']
+        elif audit_info.transferin_audit_id>0:
+            node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  audit_info.transferin_audit_id)
+            audit_info.transferin_audit_id=node_id['node_instance_id']
+
+
         datadict['node_instance_id'] =  audit_info.transferin_audit_id
 
         # datadict['workflow_code'] = STUDENT_TRANSFER_WORKFLOW_CODE
@@ -261,7 +274,6 @@ class StudentTransactionFlowRule(object):
         if audit_info.transferin_audit_action== AuditAction.PASS.value:
             # 成功则写入数据
             transrule = get_injector(StudentTransactionRule)
-            # await transrule.deal_student_transaction(student_edu_info)
 
             student_transaciton = StudentTransaction(id=audit_info.transferin_audit_id,
                                                      status=audit_info.transferin_audit_action.value,process_instance_id=audit_info.process_instance_id, )
@@ -272,6 +284,7 @@ class StudentTransactionFlowRule(object):
                 print('请传流程ID前段或者工作流返回它必须 ')
 
             pass
+        await self.set_transaction_end(audit_info.process_instance_id,audit_info.transferin_audit_action)
 
 
         return response
@@ -283,8 +296,13 @@ class StudentTransactionFlowRule(object):
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
         datadict = dict()
-        # 节点实例id
-        datadict['node_instance_id'] =  transferin_id
+        # 节点实例id todo 示例换节点
+        node_id=0
+        if transferin_id>0:
+            node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  transferin_id)
+            node_id=node_id['node_instance_id']
+
+        datadict['node_instance_id'] =  node_id
 
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
         url = url + apiname
@@ -301,5 +319,16 @@ class StudentTransactionFlowRule(object):
 
         response = await httpreq.post_json(url,datadict,headerdict)
         print(response,'接口响应')
+
         return response
+        pass
+
+
+    async def set_transaction_end(self,process_instance_id,status):
+        tinfo=await self.student_transaction_rule.get_student_transaction_by_process_instance_id(process_instance_id)
+        if tinfo:
+            tinfo.status=status.value
+            await self.student_transaction_rule.update_student_transaction(tinfo)
+
+
         pass

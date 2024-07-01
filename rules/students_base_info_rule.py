@@ -136,3 +136,6 @@ class StudentsBaseInfoRule(object):
         """
         count = await self.students_base_info_dao.get_student_base_info_count()
         return count
+
+
+

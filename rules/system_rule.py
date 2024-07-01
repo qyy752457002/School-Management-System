@@ -170,7 +170,6 @@ class SystemRule(object):
             # return None
             return e
 
-
         # return paging
 
     async def get_work_flow_instance_by_process_instance_id(self, process_instance_id: int):
@@ -187,4 +186,21 @@ class SystemRule(object):
         url += ('?' + urlencode(params))
         result = await httpreq.get_json(url, headerdict)
         # result = JsonUtils.json_str_to_dict(result)
+        return result
+
+
+
+    async def get_work_flow_current_node_by_process_instance_id(self, process_instance_id):
+        httpreq = HTTPRequest()
+        url = workflow_service_config.workflow_config.get("url")
+        params = {"process_instance_id": process_instance_id}
+        api_name = '/api/school/v1/teacher-workflow/current-node-by-process-instance-id'
+        url += api_name
+        headerdict = {
+            "accept": "application/json",
+            # "Authorization": "{{bear}}",
+            "Content-Type": "application/json"
+        }
+        url += ('?' + urlencode(params))
+        result = await httpreq.get_json(url, headerdict)
         return result

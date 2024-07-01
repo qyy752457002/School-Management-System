@@ -1,5 +1,6 @@
 from datetime import date, datetime
 
+from fastapi.params import Query
 from mini_framework.design_patterns.singleton import singleton
 from daos.enum_value_dao import EnumValueDAO
 from views.common.constant import Constant
@@ -19,13 +20,22 @@ def compare_modify_fields( view_model,orm_model):
     """
     changeitems = dict()
     # 使用视图模型
-    for key, value in view_model.__dict__.items():
+    vd = view_model.__dict__
+    od = orm_model.__dict__
+    vd = convert_dates_to_strings(vd)
+    od = convert_dates_to_strings(od)
+    for key, value in vd.items():
         if value:
-            if key in orm_model.__dict__ and orm_model.__dict__[key] != value:
-                print(key,value,orm_model.__dict__[key])
+            if key in od  and od[key] != value:
+                print(key,value,od[key])
                 # changeitems.append(key)
-                key_cn = view_model.model_fields[key].title
-                valueold= orm_model.__dict__[key]
+                key_cn=''
+                if key in view_model.model_fields.keys():
+                    key_cn = view_model.model_fields[key].title
+                elif key in orm_model.model_fields.keys():
+                    key_cn = orm_model.model_fields[key].title
+
+                valueold= od[key]
                 if isinstance(valueold,date):
                     valueold=valueold.strftime('%Y-%m-%d')
                 if isinstance(value,date):
@@ -108,4 +118,6 @@ def convert_dates_to_strings(stuinfoadddict):
     for key, value in stuinfoadddict.items():
         if isinstance(value, (date, datetime)):
             stuinfoadddict[key] = value.strftime("%Y-%m-%d %H:%M:%S")
+        if isinstance(value,Query) or isinstance(value,tuple):
+            stuinfoadddict[key] = None
     return stuinfoadddict

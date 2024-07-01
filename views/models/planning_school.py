@@ -85,9 +85,9 @@ class PlanningSchool(BaseModel):
     junior_middle_planning_school_system: str = Field(..., title="初中学制", description="初中学制", examples=['3'])
     junior_middle_planning_school_entry_age: str = Field(..., title="初中入学年龄", description="初中入学年龄", examples=['12'])
     senior_middle_planning_school_system: str = Field(..., title="高中学制", description="高中学制", examples=['3'])
-    province: str = Query('', title="省份", description="", examples=[''], min_length=1, max_length=30)
-    city: str = Query('', title="城市", description="", examples=[''], min_length=1, max_length=30)
-
+    province: str|None= Field('', title="省份", description="", examples=[''], max_length=30)
+    city: str|None = Field('', title="城市", description="", examples=[''],  max_length=30)
+    workflow_status: str |None= Field(None, title="", description="", examples=[''])
 
 # 规划校的 基本信息模型   视图的额模型是按需提供的
 class PlanningSchoolBaseInfo(BaseModel):
@@ -151,6 +151,7 @@ class PlanningSchoolBaseInfoOptional(BaseModel):
     sy_zones: str = Field(None, title="", description="属地管理行政部门所在地地区", examples=['铁西区'])
     historical_evolution: str = Field(None, title="", description="历史沿革", examples=['xxxxxxxxxxxxxxxxxxxx'])
     status: str = Field(None, title="", description="", examples=[''])
+    workflow_status: str|None = Field(None, title="", description="", examples=[''])
     process_instance_id: int = Field(None, title="", description="", examples=[''])
 
 
@@ -166,8 +167,8 @@ class PlanningSchoolKeyAddInfo(BaseModel):
     borough: str = Query(..., title=" Author Email", description=" 行政管辖区", examples=['铁西区'], min_length=1,
                          max_length=30)
     block: str = Query(..., title=" Author", description="地域管辖区", examples=['铁西区'], min_length=1, max_length=30)
-    province: str = Query('', title=" ", description="", examples=[''], min_length=1, max_length=30)
-    city: str = Query('', title=" ", description="", examples=[''], min_length=1, max_length=30)
+    province: str|None = Query('', title=" ", description="", examples=[''],  max_length=30)
+    city: str |None= Query('', title=" ", description="", examples=[''],   max_length=30)
 
     # planning_school_type: str = Query(..., title="", description=" 规划校类型", examples=['中小学'])
     planning_school_edu_level: str|None = Query(..., title="", description="办学类型/规划校性质", examples=['学前教育'])
@@ -194,6 +195,7 @@ class PlanningSchoolKeyInfo(BaseModel):
 
 
 class PlanningSchoolPageSearch(BaseModel):
+    # process_code: str = Query("", title=" ", description="", ),
     block: str = Query("", title=" ", description="地域管辖区", ),
     planning_school_code: str = Query("", title="", description=" 园所标识码", ),
     planning_school_level: str = Query("", title="", description=" 学校星级", ),
@@ -219,7 +221,7 @@ class PlanningSchoolImport(PlanningSchool, PlanningSchoolCommunications):
     pass
 
 class PlanningSchoolTransactionAudit(BaseModel):
-    node_id: int = Query(..., description="节点ID", example='2')
+    node_id: int = Query(0, description="节点ID", example='2')
     process_instance_id: int = Query(0, description="流程实例ID", example='2')
     transaction_audit_action: AuditAction = Query(..., description="审批的操作",
                                                  example='pass')
