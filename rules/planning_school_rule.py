@@ -407,8 +407,9 @@ class PlanningSchoolRule(object):
             print(e)
         return response
 
-    async def is_can_add_workflow(self, student_id):
+    async def is_can_not_add_workflow(self, student_id):
         tinfo=await self.get_planning_school_by_id(student_id)
+        print('当前信息',tinfo)
         if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
-            return False
-        return True
+            return  True
+        return False

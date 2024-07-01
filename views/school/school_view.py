@@ -98,7 +98,7 @@ class SchoolView(BaseView):
 
                           ):
         # 检测 是否允许修改
-        is_draft = await self.school_rule.is_can_add_workflow(school.id)
+        is_draft = await self.school_rule.is_can_not_add_workflow(school.id)
         if is_draft:
             raise SchoolStatusError()
         origin = await self.school_rule.get_school_by_id(school.id)
@@ -219,7 +219,7 @@ class SchoolView(BaseView):
         # print(school)
         # res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.NORMAL.value, 'open')
         # 检测 是否允许修改
-        is_draft = await self.school_rule.is_can_add_workflow(school_id)
+        is_draft = await self.school_rule.is_can_not_add_workflow(school_id)
         if is_draft:
             raise SchoolStatusError()
 
@@ -260,7 +260,7 @@ class SchoolView(BaseView):
                           ):
         # res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.CLOSED.value)
         # 检测 是否允许修改
-        is_draft = await self.school_rule.is_can_add_workflow(school_id)
+        is_draft = await self.school_rule.is_can_not_add_workflow(school_id)
         if is_draft:
             raise SchoolStatusError()
         # 请求工作流

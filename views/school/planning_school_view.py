@@ -123,7 +123,7 @@ class PlanningSchoolView(BaseView):
 
                           ):
         # 检测 是否允许修改
-        is_draft = await self.planning_school_rule.is_can_add_workflow(planning_school.id)
+        is_draft = await self.planning_school_rule.is_can_not_add_workflow(planning_school.id)
         if is_draft:
             raise PlanningSchoolStatusError()
 
@@ -244,7 +244,7 @@ class PlanningSchoolView(BaseView):
                                                                min_length=1, max_length=20, example='SC2032633')):
         # print(planning_school)
         # 检测 是否允许修改
-        is_draft = await self.planning_school_rule.is_can_add_workflow(planning_school_id)
+        is_draft = await self.planning_school_rule.is_can_not_add_workflow(planning_school_id)
         if is_draft:
             raise PlanningSchoolStatusError()
 
@@ -300,7 +300,7 @@ class PlanningSchoolView(BaseView):
 
                           ):
         # 检测 是否允许修改
-        is_draft = await self.planning_school_rule.is_can_add_workflow(planning_school_id)
+        is_draft = await self.planning_school_rule.is_can_not_add_workflow(planning_school_id)
         if is_draft:
             raise PlanningSchoolStatusError()
         # print(planning_school)
