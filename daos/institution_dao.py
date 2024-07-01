@@ -1,6 +1,6 @@
 from sqlalchemy import select, func, update
 
-from mini_framework.databases.entities.dao_base import DAOBase
+from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
@@ -9,6 +9,11 @@ from models.institution import Institution
 
 class InstitutionDAO(DAOBase):
 
+
+    async def get_institution_by_process_instance_id(self, process_instance_id):
+        session = await self.slave_db()
+        result = await session.execute(select(Institution).where(Institution.process_instance_id == process_instance_id))
+        return result.scalar()
     async def get_institution_by_id(self, institution_id):
         session = await self.slave_db()
         result = await session.execute(select(Institution).where(Institution.id == institution_id))
@@ -91,3 +96,9 @@ class InstitutionDAO(DAOBase):
         paging = await self.query_page(query, page_request)
         return paging
 
+
+    async def update_institution_byargs(self, school: Institution, *args, is_commit: bool = True):
+        session =await self.master_db()
+        update_contents = get_update_contents(school, *args)
+        query = update(Institution).where(Institution.id == school.id).values(**update_contents)
+        return await self.update(session, query, school, update_contents, is_commit=is_commit)

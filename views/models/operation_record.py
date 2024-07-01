@@ -12,6 +12,7 @@ class OperationTarget(str, Enum):
     """
     PLANNING_SCHOOL = "planning_school"
     SCHOOL = "school"
+    INSTITUTION = "institution"
     CAMPUS = "campus"
 
     TEACHER = "teacher"
@@ -19,7 +20,7 @@ class OperationTarget(str, Enum):
 
     @classmethod
     def to_list(cls):
-        return [cls.PLANNING_SCHOOL, cls.SCHOOL, cls.CAMPUS, cls.TEACHER, cls.STUDENT]
+        return [cls.PLANNING_SCHOOL, cls.SCHOOL, cls.CAMPUS, cls.TEACHER, cls.STUDENT,cls.INSTITUTION]
 
 
 class OperationType(str, Enum):

@@ -52,6 +52,7 @@ class School(BaseModel):
     junior_middle_school_system: str = Field(..., title="", description="初中学制",examples=['3'])
     junior_middle_school_entry_age: str = Field(..., title="", description="初中入学年龄",examples=['12'])
     senior_middle_school_system: str = Field(..., title="", description="高中学制",examples=['3'])
+    workflow_status: str |None= Field(None, title="", description="", examples=[''])
 
     class Config:
         schema_extra = {

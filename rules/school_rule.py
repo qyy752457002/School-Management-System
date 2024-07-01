@@ -364,7 +364,7 @@ class SchoolRule(object):
 
     # 向工作流中心发送申请
     async def add_school_work_flow(self, school_flow: SchoolModel,):
-        school_flow.id=0
+        # school_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
         data= school_flow
@@ -380,7 +380,10 @@ class SchoolRule(object):
         datadict['school_level'] =   school_flow.school_level
         datadict['school_no'] =   school_flow.school_no
         datadict['apply_user'] =  'tester'
-        datadict['json_data'] =  json.dumps(school_flow.__dict__, ensure_ascii=False)
+        dicta = school_flow.__dict__
+        dicta['school_id'] = school_flow.id
+
+        datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
         url=url+apiname
         headerdict = {
