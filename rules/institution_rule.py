@@ -45,8 +45,6 @@ class InstitutionRule(object):
         institution_db.updated_at = datetime.now()
         institution_db.created_at = datetime.now()
 
-
-
         institution_db = await self.institution_dao.add_institution(institution_db)
         print(institution_db,'插入suc')
         institution = orm_model_to_view_model(institution_db, InstitutionModel, exclude=[""])

@@ -228,7 +228,7 @@ class SchoolView(BaseView):
 
         res = await self.school_rule.add_school_work_flow(school)
         process_instance_id=0
-        if len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+        if res and len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
             pl = SchoolBaseInfoOptional(id=school_id, process_instance_id=process_instance_id)
 

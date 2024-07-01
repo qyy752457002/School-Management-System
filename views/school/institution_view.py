@@ -19,7 +19,7 @@ from pydantic import BaseModel, Field
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
 from views.models.institutions import Institutions, InstitutionTask, InstitutionOptional, InstitutionKeyInfo, \
-    InstitutionPageSearch
+    InstitutionPageSearch, InstitutionsAdd
 from rules.institution_rule import InstitutionRule
 from mini_framework.web.request_context import request_context_manager
 
@@ -32,6 +32,15 @@ class InstitutionView(BaseView):
         self.institution_rule = get_injector(InstitutionRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
         self.system_rule = get_injector(SystemRule)
+
+
+    async def post(self, school: InstitutionsAdd):
+        res = await self.institution_rule.add_institution(school)
+        print(res)
+
+
+        return res
+        # return  school
 
 
 
@@ -307,10 +316,17 @@ class InstitutionView(BaseView):
 
     # 分校的审批流列表
     async def page_institution_audit(self,
+                                     social_credit_code: str = Field( '',   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656']),
+                                     institution_name: str = Query(None, description="机构名称",
+                                                                   example='XX小学'),
+                                     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),
+
                                 block: str = Query("", title=" ", description="地域管辖区", ),
+                                     borough: str = Query("", title="  ", description=" 行政管辖区", ),
+
+
                                 institution_code: str = Query("", title="", description=" 园所标识码", ),
                                 institution_level: str = Query("", title="", description=" 学校星级", ),
-                                borough: str = Query("", title="  ", description=" 行政管辖区", ),
                                 status: PlanningSchoolStatus = Query(None, title="", description=" 状态", examples=['正常']),
 
                                 founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
@@ -322,8 +338,7 @@ class InstitutionView(BaseView):
 
                                 institution_no: str|None = Query(None, title="学校编号", description="学校编号",
                                                             example='SC2032633'),
-                                institution_name: str = Query(None, description="学校名称",
-                                                         example='XX小学'),
+
                                 planning_institution_id: int = Query(None, description="规划校ID", example='1'),
                                 province: str = Query("", title="", description="省份代码", ),
                                 city: str = Query("", title="", description="城市", ),
@@ -349,6 +364,8 @@ class InstitutionView(BaseView):
                               city=city,
                               institution_code=institution_code,
                               institution_level=institution_level,
+                                   social_credit_code=social_credit_code,
+                                   school_org_type=school_org_type,
 
 
                               )
