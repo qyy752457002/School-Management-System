@@ -17,7 +17,7 @@ from views.models.work_flow import WorkFlowInstanceCreateModel, WorkFlowInstance
     WorkFlowInstanceQueryReModel
 from mini_framework.utils.json import JsonUtils
 from mini_framework.databases.queries.pages import Paging
-
+from datetime import date, datetime
 from views.models.teachers import TeachersCreatModel
 from typing import Type
 
@@ -242,7 +242,7 @@ class TeacherWorkFlowRule(object):
         }
         url += ('?' + urlencode(parameters))
         result = await httpreq.get_json(url, headerdict)
-        result = JsonUtils.json_str_to_dict(result)
+        # result = JsonUtils.json_str_to_dict(result)
         result_list=[]
         if result:
             for item in result:
@@ -292,6 +292,10 @@ class TeacherWorkFlowRule(object):
         model_data = {}
         if work_flow_instance["json_data"] != "":
             work_flow_instance["json_data"] = JsonUtils.json_str_to_dict(work_flow_instance["json_data"])
+        for key, value in work_flow_instance.items():
+            if isinstance(value, (date, datetime)):
+                work_flow_instance[key] = value.strftime("%Y-%m-%d %H:%M:%S")
+
         for field in model_fields:
             if field in work_flow_instance.keys():
                 model_data[field] = work_flow_instance[field]

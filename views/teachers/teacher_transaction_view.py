@@ -52,8 +52,9 @@ class TransferDetailsView(BaseView):
                 await self.transfer_details_rule.add_transfer_in_outer_details(add_teacher, transfer_details, user_id)
             else:
                 raise Exception("请填写老师信息")
-        res = await self.transfer_details_rule.add_transfer_in_inner_details(transfer_details, user_id)
-        return res
+        else:
+             await self.transfer_details_rule.add_transfer_in_inner_details(transfer_details, user_id)
+        return
 
     async def post_transfer_out_details(self, transfer_details: TransferDetailsModel):
         """
@@ -88,7 +89,7 @@ class TransferDetailsView(BaseView):
                                                                                   user_id)
         return paging_result
 
-    async def get_teacher_transfer(self, teacher_transaction: TeacherTransactionQuery):
+    async def get_teacher_transfer(self, teacher_transaction=Depends(TeacherTransactionQuery) ):
         """
         查询系统内有没有此人
         """
@@ -169,8 +170,8 @@ class TransferDetailsView(BaseView):
         return res
 
     async def patch_transfer_rejected(self,
-                                      transfer_details_id: int = Query(None, title="transfer_detailsID",
-                                                                       description="transfer_detailsID", example=1234),
+                                      teacher_id: int = Query(None, title="教师id",
+                                                                       description="教师id", example=1234),
                                       process_instance_id: int = Query(..., title="流程实例id",
                                                                        description="流程实例id",
                                                                        example=123),
@@ -178,20 +179,20 @@ class TransferDetailsView(BaseView):
                                                           description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
-        res = await self.transfer_details_rule.transfer_rejected(transfer_details_id, process_instance_id, user_id,
+        res = await self.transfer_details_rule.transfer_rejected(teacher_id, process_instance_id, user_id,
                                                                  reason)
         return res
 
     async def patch_transfer_revoked(self,
-                                     transfer_details_id: int = Query(None, title="transfer_detailsID",
-                                                                      description="transfer_detailsID", example=1234),
+                                     teacher_id: int = Query(None, title="教师id",
+                                                                      description="教师id", example=1234),
                                      process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
                                                                       example=123),
                                      reason: str = Query("", title="reason",
                                                          description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
-        res = await self.transfer_details_rule.transfer_revoked(transfer_details_id, process_instance_id, user_id,
+        res = await self.transfer_details_rule.transfer_revoked(teacher_id, process_instance_id, user_id,
                                                                 reason)
         return res
 
