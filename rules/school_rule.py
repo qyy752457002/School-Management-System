@@ -203,11 +203,12 @@ class SchoolRule(object):
             pass
 
         need_update_list = []
-        for key, value in school.dict().items():
+        for key, value in school.__dict__.items():
+            if key.startswith('_'):
+                continue
             if value:
                 need_update_list.append(key)
-
-
+            
 
         school_db = await self.school_dao.update_school_byargs(school, *need_update_list)
 
@@ -525,3 +526,40 @@ class SchoolRule(object):
         except Exception as e:
             print(e)
         return response
+
+    async def req_workflow_cancel(self,node_id,process_instance_id=None):
+
+        # 发起审批流的 处理
+        datadict = dict()
+        # 节点实例id    自动获取
+        if process_instance_id>0:
+            node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  process_instance_id)
+            node_id=node_id['node_instance_id']
+
+        datadict['node_instance_id'] =  node_id
+
+        apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
+        # 字典参数
+        # datadict ={"user_id":"11","action":"revoke"}
+        datadict ={"user_id":"11","action":"revoke",**datadict}
+
+        response= await send_request(apiname,datadict,'post',True)
+
+        print(response,'接口响应')
+        # 终态的处理
+
+        await self.set_transaction_end(process_instance_id, AuditAction.CANCEL)
+
+
+        return response
+        pass
+
+
+    async def set_transaction_end(self,process_instance_id,status):
+        tinfo=await self.school_dao.get_school_by_process_instance_id(process_instance_id)
+        if tinfo:
+            tinfo.workflow_status=status.value
+            await self.update_school_byargs(tinfo)
+
+
+        pass

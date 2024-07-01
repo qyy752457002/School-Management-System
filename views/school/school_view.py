@@ -514,3 +514,61 @@ class SchoolView(BaseView):
         paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,  )
         print('333',page_request)
         return paging_result
+
+    async def patch_open_cancel(self,
+
+                                process_instance_id: int = Query(0, title="流程ID", description="流程ID",
+                                                                 example= 25),
+                                node_id: int  = Query(0, title="流程对应的节点ID", description="",
+                                                      example='22')
+
+                                ):
+
+        #  审批流取消
+        res2 = await self.school_rule.req_workflow_cancel(node_id,process_instance_id)
+
+        if res2 is None:
+            return {}
+        if isinstance(res2, str):
+            return {res2}
+
+        # print(new_students_key_info)
+        return res2
+        pass
+        # 学校关闭
+    async def patch_close_cancel(self,
+                                 process_instance_id: int = Query(0, title="流程ID", description="流程ID",
+                                                                  example= 25),
+                                 node_id: int  = Query(0, title="流程对应的节点ID", description="",
+                                                       example='22')
+                                 ):
+
+        #  审批流取消
+        res2 = await self.school_rule.req_workflow_cancel(node_id,process_instance_id)
+
+        if res2 is None:
+            return {}
+        if isinstance(res2, str):
+            return {res2}
+
+        # print(new_students_key_info)
+        return res2
+        pass
+        # 学校关键信息变更
+    async def patch_keyinfo_cancel(self,
+                                   process_instance_id: int = Query(0, title="流程ID", description="流程ID",
+                                                                    example= 25),
+                                   node_id: int  = Query(0, title="流程对应的节点ID", description="",
+                                                         example='22')
+                                   ):
+        #  审批流取消
+        res2 = await self.school_rule.req_workflow_cancel(node_id,process_instance_id)
+
+        if res2 is None:
+            return {}
+        if isinstance(res2, str):
+            return {res2}
+
+        # print(new_students_key_info)
+        return res2
+        pass
