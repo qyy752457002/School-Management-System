@@ -227,7 +227,6 @@ class TeacherWorkFlowRule(object):
         result = JsonUtils.json_str_to_dict(result)
         page_result = PaginatedResponse(**result)
         print(f'结果是{page_result}')
-        print(type(page_result))
         page_response = await self.create_page_response_from_workflow(query_re_model, page_result)
         return page_response
     async def get_work_flow_instance_by_query_model(self, query_model: Type[BaseModel],query_re_model: Type[BaseModel]):
@@ -331,7 +330,7 @@ class TeacherWorkFlowRule(object):
                 inst = item
                 pass
             else:
-                inst = orm_model_to_view_model(item, target_model, other_mapper)
+                inst = await self.create_model_from_workflow(item, target_model)
             result_items.append(inst)
         page_response = PaginatedResponse(
             has_next=page_response.has_next,
