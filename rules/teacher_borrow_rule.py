@@ -44,7 +44,7 @@ class TeacherBorrowRule(object):
         teacher_borrow = orm_model_to_view_model(teacher_borrow_db, TeacherBorrowReModel)
         return teacher_borrow
 
-    async def add_teacher_borrow_in(self, teacher_borrow: TeacherBorrowReModel):
+    async def add_teacher_borrow_in_inner(self, teacher_borrow: TeacherBorrowReModel, user_id):
         """
         借入
         """
