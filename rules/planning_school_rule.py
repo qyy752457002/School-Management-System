@@ -17,7 +17,7 @@ from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus, \
-    PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit
+    PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit, PlanningSchoolBaseInfoOptional
 from views.models.planning_school import PlanningSchoolBaseInfo
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 
@@ -162,7 +162,9 @@ class PlanningSchoolRule(object):
         else:
             pass
         need_update_list = []
-        for key, value in planning_school.dict().items():
+        for key, value in planning_school.__dict__.items():
+            if key.startswith('_'):
+                continue
             if value:
                 need_update_list.append(key)
 
@@ -349,10 +351,19 @@ class PlanningSchoolRule(object):
 
             json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
             print(json_data)
-            planning_school_orm = PlanningSchool(**json_data)
-            planning_school_orm.id= None
+            needdel= []
+            # planning_school_op = PlanningSchoolBaseInfoOptional()
+            #
+            # for key,value in json_data.items():
+            #     if not hasattr(planning_school_op,key):
+            #         needdel.append(key)
+            # for key in needdel:
+            #     json_data.pop(key)
 
-            res = await self.update_planning_school_byargs(planning_school.id,  planning_school_orm)
+            planning_school_orm = PlanningSchoolKeyInfo(**json_data)
+            planning_school_orm.id= planning_school.id
+
+            res = await self.update_planning_school_byargs(  planning_school_orm)
             pass
 
         # res = await self.update_planning_school_status(planning_school_id,  PlanningSchoolStatus.NORMAL.value, 'open')
