@@ -5,7 +5,7 @@ from mini_framework.databases.queries.pages import Pagination, Paging
 from daos.transfer_details_dao import TransferDetailsDAO
 from daos.teachers_dao import TeachersDao
 from models.transfer_details import TransferDetails
-from views.models.teacher_transaction import TransferDetailsModel
+from views.models.teacher_transaction import TransferDetailsModel,TransferType
 from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTransactionQueryRe, \
     TransferDetailsReModel, TransferDetailsGetModel, TeacherTransferQueryModel, TeacherTransferQueryReModel, \
     TransferAndBorrowExtraModel
@@ -21,6 +21,8 @@ from views.models.operation_record import OperationRecord, OperationTarget, Chan
 from rules.operation_record import OperationRecordRule
 from daos.operation_record_dao import OperationRecordDAO
 from rules.teachers_rule import TeachersRule
+from views.models.teachers import TeachersCreatModel, TeacherRe
+
 from views.models.teacher_transaction import TeacherAddModel, WorkflowQueryModel
 from datetime import datetime
 from daos.school_dao import SchoolDAO
@@ -88,7 +90,8 @@ class TransferDetailsRule(object):
         await self.operation_record_rule.add_operation_record(teacher_transfer_log)
         return transfer_details
 
-    async def add_transfer_in_outer_details(self, transfer_details: TransferDetailsModel, add_teacher: TeacherAddModel,
+    async def add_transfer_in_outer_details(self, transfer_details: TransferDetailsModel,
+                                            add_teacher: TeachersCreatModel,
                                             user_id):
         teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
         transfer_details.teacher_id = teachers.teacher_id
@@ -127,6 +130,7 @@ class TransferDetailsRule(object):
         transfer_details.original_unit_name = school.school_name
         # todo 这里先将学校区写死了，后续需要修改
         transfer_details.original_district_area_id = 210106
+        transfer_details.transfer_type=TransferType.OUT.value
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
         transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel,
@@ -138,9 +142,14 @@ class TransferDetailsRule(object):
             original_unit_id=transfer_details.original_unit_id)
         transfer_and_borrow_extra_model.current_unit_name = transfer_details.current_unit_name
         current_unit_name = transfer_and_borrow_extra_model.current_unit_name
-        params = {"process_code": "t_transfer_in_outer", "applicant_name": user_id}
-        model_list = [transfer_details_work, transfer_and_borrow_extra_model]
+        params = {"process_code": "t_transfer_out", "applicant_name": user_id}
+        teachers_db = await self.teachers_dao.get_teachers_by_id(transfer_details.teacher_id)
+        teachers = orm_model_to_view_model(teachers_db, TeacherRe)
+        model_list = [transfer_details_work, transfer_and_borrow_extra_model, teachers]
         work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
+        # update_params = {"teacher_sub_status": "active", "teacher_main_status": "employed"}
+        # await self.teacher_work_flow_rule.update_work_flow_by_param(work_flow_instance["process_instance_id"],
+        #                                                             update_params)
         teacher_transfer_log = OperationRecord(
             action_target_id=transfer_details_work.teacher_id,
             target=OperationTarget.TEACHER.value,
@@ -204,13 +213,23 @@ class TransferDetailsRule(object):
             transfer_inner = False
             return teacher_transaction_db, transfer_inner
 
+    async def query_transfer_with_page(self, query_model: TeacherTransferQueryModel,
+                                       page_request: PageRequest, user_id):
+        # todo 这里是调入调出都要查询
+        params = {"applicant_name": user_id, "process_code": "t_transfer"}
+        result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
+                                                                                      query_model,
+                                                                                      TeacherTransferQueryReModel,
+                                                                                      params)
+        return result
+
     # 调动管理分页查询相关
     async def query_transfer_out_with_page(self, type, query_model: TeacherTransferQueryModel,
                                            page_request: PageRequest, user_id):
         if type == "launch":
-            params = {"applicant_name": user_id, "process_code": "t_transfer_out", "teacher_sub_status": "submitted"}
+            params = {"applicant_name": user_id, "process_code": "t_transfer_out", }
         elif type == "approval":
-            params = {"applicant_name": user_id, "process_code": "t_transfer_out", "teacher_sub_status": "submitted"}
+            params = {"applicant_name": user_id, "process_code": "t_transfer_out", }
         result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
                                                                                       query_model,
                                                                                       TeacherTransferQueryReModel,
@@ -219,38 +238,23 @@ class TransferDetailsRule(object):
 
     async def query_transfer_in_with_page(self, type, query_model: TeacherTransferQueryModel,
                                           page_request: PageRequest, user_id):
-        result_list = []
+        result = []
         if type == "launch":
-            params_inner = {"applicant_name": user_id, "process_code": "t_transfer_in_inner",
-                            "teacher_sub_status": "submitted"}
-            result_inner = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
-                                                                                                query_model,
-                                                                                                TeacherTransferQueryReModel,
-                                                                                                params_inner)
-            params_outer = {"applicant_name": user_id, "process_code": "t_transfer_in_outer",
-                            "teacher_sub_status": "submitted"}
-            result_outer = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
-                                                                                                query_model,
-                                                                                                TeacherTransferQueryReModel,
-                                                                                                params_outer)
-
+            params = {"applicant_name": user_id, "transfer_type": "transfer_in",
+                      "teacher_sub_status": "submitted"}
+            result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
+                                                                                          query_model,
+                                                                                          TeacherTransferQueryReModel,
+                                                                                          params)
 
         elif type == "approval":
-            params_inner = {"applicant_name": user_id, "process_code": "t_transfer_in_inner",
-                            "teacher_sub_status": "submitted"}
-            result_inner = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
-                                                                                                query_model,
-                                                                                                TeacherTransferQueryReModel,
-                                                                                                params_inner)
-            params_outer = {"applicant_name": user_id, "process_code": "t_transfer_in_outer",
-                            "teacher_sub_status": "submitted"}
-            result_outer = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
-                                                                                                query_model,
-                                                                                                TeacherTransferQueryReModel,
-                                                                                                params_outer)
-        result_list.append(result_inner)
-        result_list.append(result_outer)
-        return result_list
+            params = {"applicant_name": user_id, "transfer_type": "transfer_in",
+                      }
+            result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
+                                                                                          query_model,
+                                                                                          TeacherTransferQueryReModel,
+                                                                                          params)
+        return result
 
     async def get_transfer_and_borrow_extra(self, original_district_area_id=None,
                                             current_district_area_id=None, original_unit_id=None,
@@ -314,8 +318,6 @@ class TransferDetailsRule(object):
                 await self.teachers_dao.update_teachers(teachers_db, *need_update_list)
             await self.teachers_rule.teacher_pending(teachers_db.teachers_id)
             await self.teachers_rule.teacher_active(teachers_db.teacher_id)
-
-            # teacher = await self.teacher_work_flow_rule.create_model_from_workflow(result, TransferDetailsReModel)
             return "该老师调动审批已通过"
 
     async def transfer_rejected(self, transfer_details_id, process_instance_id, user_id, reason):

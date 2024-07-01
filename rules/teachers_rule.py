@@ -15,7 +15,7 @@ from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
 from rules.teachers_info_rule import TeachersInfoRule
 from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, TeacherChangeLogQueryModel, \
-    CurrentTeacherInfoSaveModel
+    CurrentTeacherInfoSaveModel,TeacherRe
 
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
@@ -139,7 +139,7 @@ class TeachersRule(object):
         paging_result = PaginatedResponse.from_paging(paging, OperationRecord)
         return paging_result
 
-    async def add_transfer_teachers(self, teachers: TeacherAddModel):
+    async def add_transfer_teachers(self, teachers: TeachersCreatModel):
         """
         系统外调入系统内时使用，增加老师
         """
@@ -150,7 +150,7 @@ class TeachersRule(object):
                 raise IdCardError()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         # todo 老师需要修改状态
-        teachers = orm_model_to_view_model(teachers_db, TeacherAddReModel, exclude=[""])
+        teachers = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
         return teachers
 
     async def update_teachers(self, teachers, user_id):

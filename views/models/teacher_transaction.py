@@ -124,7 +124,6 @@ class TeacherTransactionModel(BaseModel):
     transaction_time: Optional[datetime] | None = Field(datetime.now(), title="操作时间", description="操作时间")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
 
-    @model_validator(mode='after')
     def check_transaction_type(self):
         if self.transaction_type == "internal":
             """
@@ -211,8 +210,8 @@ class TeacherAddModel(BaseModel):
     teacher_id_type: str = Field(..., title="证件类型", description="证件类型")
     teacher_id_number: str = Field(..., title="证件号码", description="证件号码")
     teacher_gender: Gender = Field(..., title="性别", description="性别")
-    teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_number: str = Field(..., title="教职工号", description="教职工号")
+    teacher_date_of_birth: date|None = Field(..., title="出生日期", description="出生日期")
+
 
 
 class TeacherAddReModel(BaseModel):
