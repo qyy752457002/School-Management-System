@@ -5,7 +5,7 @@ from mini_framework.databases.queries.pages import Pagination, Paging
 from daos.transfer_details_dao import TransferDetailsDAO
 from daos.teachers_dao import TeachersDao
 from models.transfer_details import TransferDetails
-from views.models.teacher_transaction import TransferDetailsModel,TransferType
+from views.models.teacher_transaction import TransferDetailsModel, TransferType
 from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTransactionQueryRe, \
     TransferDetailsReModel, TransferDetailsGetModel, TeacherTransferQueryModel, TeacherTransferQueryReModel, \
     TransferAndBorrowExtraModel
@@ -57,7 +57,6 @@ class TransferDetailsRule(object):
         if not exists_teachers:
             raise TeacherNotFoundError()
         is_approval = exists_teachers.is_approval
-        await self.teachers_rule.teacher_submitted(transfer_details.teacher_id)
         if is_approval:
             raise ApprovalStatusError()
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
@@ -70,9 +69,11 @@ class TransferDetailsRule(object):
             current_unit_id=transfer_details_work.current_unit_id)
         original_unit_name = transfer_and_borrow_extra_model.original_unit_name
         current_unit_name = transfer_and_borrow_extra_model.current_unit_name
-        model_list = [exists_teachers, transfer_details_work, transfer_and_borrow_extra_model]
+        teachers = orm_model_to_view_model(exists_teachers, TeacherRe)
+        model_list = [teachers, transfer_details_work, transfer_and_borrow_extra_model]
         params = {"process_code": "t_transfer_in_inner", "applicant_name": user_id}
         work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
+        await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
         teacher_transfer_log = OperationRecord(
             action_target_id=transfer_details_work.teacher_id,
             target=OperationTarget.TEACHER.value,
@@ -90,8 +91,8 @@ class TransferDetailsRule(object):
         await self.operation_record_rule.add_operation_record(teacher_transfer_log)
         return transfer_details
 
-    async def add_transfer_in_outer_details(self, transfer_details: TransferDetailsModel,
-                                            add_teacher: TeachersCreatModel,
+    async def add_transfer_in_outer_details(self, add_teacher: TeachersCreatModel,
+                                            transfer_details: TransferDetailsModel,
                                             user_id):
         teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
         transfer_details.teacher_id = teachers.teacher_id
@@ -107,6 +108,7 @@ class TransferDetailsRule(object):
         params = {"process_code": "t_transfer_in_outer", "applicant_name": user_id}
         model_list = [transfer_details_work, teachers, transfer_and_borrow_extra_model]
         work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
+        await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
         teacher_transfer_log = OperationRecord(
             action_target_id=transfer_details_work.teacher_id,
             target=OperationTarget.TEACHER.value,
@@ -130,7 +132,7 @@ class TransferDetailsRule(object):
         transfer_details.original_unit_name = school.school_name
         # todo 这里先将学校区写死了，后续需要修改
         transfer_details.original_district_area_id = 210106
-        transfer_details.transfer_type=TransferType.OUT.value
+        transfer_details.transfer_type = TransferType.OUT.value
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
         transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel,
@@ -147,6 +149,7 @@ class TransferDetailsRule(object):
         teachers = orm_model_to_view_model(teachers_db, TeacherRe)
         model_list = [transfer_details_work, transfer_and_borrow_extra_model, teachers]
         work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
+        await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
         # update_params = {"teacher_sub_status": "active", "teacher_main_status": "employed"}
         # await self.teacher_work_flow_rule.update_work_flow_by_param(work_flow_instance["process_instance_id"],
         #                                                             update_params)
@@ -195,7 +198,7 @@ class TransferDetailsRule(object):
         exit_teacher = await self.teachers_dao.get_teachers_by_id(teacher_id)
         if not exit_teacher:
             raise TeacherNotFoundError()
-        query_model = WorkflowQueryModel(teacher_id=teacher_id, process_code="transfer"),
+        query_model = WorkflowQueryModel(teacher_id=teacher_id, process_code="transfer")
         transfer_details = await self.teacher_work_flow_rule.get_work_flow_instance_by_query_model(query_model,
                                                                                                    TransferDetailsGetModel)
         return transfer_details
@@ -288,7 +291,6 @@ class TransferDetailsRule(object):
     async def transfer_approved(self, teacher_id, process_instance_id, user_id, reason):
         # todo 调动完成后，当地校的老师需要修改状态为调出或调入，同时本校的记录应该删除，另一个学校的应该copy，该老师信息并且有调入记录。
         user_id = user_id
-        await self.teachers_rule.teacher_progressing(teacher_id)
         parameters = {"user_id": user_id, "action": "approved", "description": reason}
         current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
         node_instance_id = current_node.get("node_instance_id")
@@ -300,49 +302,49 @@ class TransferDetailsRule(object):
             teachers_db = await self.teachers_dao.get_teachers_by_id(teacher_id)
             if process_code == "t_transfer_out":
                 """需要删除本校老师"""
-                # todo 需要发给两个学校消息
+
+                # 原本学校需要做的事情
+                # 更新状态
                 teachers_db.teacher_sub_status = "transfer_out"
                 await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status")
+                await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
+                await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
+                # 删除本校老师
+                await self.teachers_dao.delete_teachers(teachers_db)
             elif process_code == "t_transfer_in_inner":
                 """需要先修改本校老师状态，包括is_deleted和teacher_sub_status，然后再添加新的老师，以及增加老师的调入记录"""
                 teachers_db.teacher_sub_status = "transfer_in"
                 await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status")
+                await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
             elif process_code == "t_transfer_in_outer":
                 """增加老师再添加新老师"""
                 teachers_db.teacher_sub_status = "transfer_in"
-                teacher = await self.teacher_work_flow_rule.create_model_from_workflow(result, TeacherAddModel)
+                teacher = await self.teacher_work_flow_rule.create_model_from_workflow(result, TeacherRe)
                 need_update_list = []
                 for key, value in teacher.dict().items():
                     if value:
                         need_update_list.append(key)
                 await self.teachers_dao.update_teachers(teachers_db, *need_update_list)
-            await self.teachers_rule.teacher_pending(teachers_db.teachers_id)
-            await self.teachers_rule.teacher_active(teachers_db.teacher_id)
+                await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
+                await self.teachers_rule.teacher_active(teachers_db.teacher_id)
             return "该老师调动审批已通过"
 
-    async def transfer_rejected(self, transfer_details_id, process_instance_id, user_id, reason):
-        transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
-            transfer_details_id)
-        if not transfer_details:
-            raise Exception(f"编号为{transfer_details_id}的transfer_details不存在")
+    async def transfer_rejected(self, teacher_id, process_instance_id, user_id, reason):
         user_id = user_id
-        await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
+        await self.teachers_rule.teacher_progressing(teacher_id)
         parameters = {"user_id": user_id, "action": "rejected", "description": reason}
         current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
         node_instance_id = current_node.get("node_instance_id")
         node_instance = await self.teacher_work_flow_rule.process_transaction_work_flow(node_instance_id,
                                                                                         parameters)
         if node_instance == "rejected":
-            await self.teachers_rule.teacher_active(transfer_details.teachers_id)
-            await self.teachers_rule.teacher_pending(transfer_details.teachers_id)
+            await self.teachers_rule.teacher_active(teacher_id)
+            await self.teachers_rule.teacher_pending(teacher_id)
             return "该老师调动审批已拒绝"
 
-    async def transfer_revoked(self, transfer_details_id, process_instance_id, user_id, reason):
-        transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
-            transfer_details_id)
-        if not transfer_details:
-            raise Exception(f"编号为{transfer_details_id}的transfer_details不存在")
-        await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
+    async def transfer_revoked(self, teacher_id, process_instance_id, user_id, reason):
+
+        await self.teachers_rule.teacher_progressing(teacher_id)
         user_id = user_id
         parameters = {"user_id": user_id, "action": "revoke", "description": reason}
         current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
@@ -350,6 +352,6 @@ class TransferDetailsRule(object):
         node_instance = await self.teacher_work_flow_rule.process_transaction_work_flow(node_instance_id,
                                                                                         parameters)
         if node_instance == "revoked":
-            await self.teachers_rule.teacher_active(transfer_details.teachers_id)
-            await self.teachers_rule.teacher_pending(transfer_details.teachers_id)
+            await self.teachers_rule.teacher_active(teacher_id)
+            await self.teachers_rule.teacher_pending(teacher_id)
             return "该老师调动审批已撤回"

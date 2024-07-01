@@ -63,6 +63,7 @@ class TeachersDao(DAOBase):
         query = select(Teacher).where(Teacher.teacher_name == teacher_transaction.teacher_name,
                                       Teacher.teacher_id_type == teacher_transaction.teacher_id_type,
                                       Teacher.teacher_id_number == teacher_transaction.teacher_id_number,
+                                      Teacher.is_deleted == False
                                       )
         result = await session.execute(query)
         return result.scalar_one_or_none()
@@ -123,5 +124,3 @@ class TeachersDao(DAOBase):
             pass
         if query_model.approval_name:
             pass
-
-
