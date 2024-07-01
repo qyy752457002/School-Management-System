@@ -109,7 +109,7 @@ class TeachersRule(object):
         await self.teacher_progressing(teachers_work.teacher_id)
 
         teacher_entry_log = OperationRecord(
-            action_target_id=teachers_db.teacher_id,
+            action_target_id=teachers_work.teacher_id,
             target=OperationTarget.TEACHER.value,
             action_type=OperationType.CREATE.value,
             ip="127.0.0.1",
@@ -152,8 +152,8 @@ class TeachersRule(object):
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
 
         # 更新老师状态
-        teachers_db2 = await self.teachers_dao.get_teachers_by_id(teachers_db.teachers_id)
-        teachers_ = orm_model_to_view_model(teachers_db2, TeachersModel, exclude=["hash_password"])
+        teachers_db2 = await self.teachers_dao.get_teachers_by_id(teachers_db.teacher_id)
+        teachers_ = orm_model_to_view_model(teachers_db2, TeacherRe, exclude=["hash_password"])
         if not teachers_:
             raise TeacherNotFoundError()
         teachers_.teacher_sub_status = "submitted"
@@ -161,7 +161,7 @@ class TeachersRule(object):
         await self.teachers_dao.update_teachers(teachers_, "teacher_sub_status", "teacher_main_status")
 
         # 获取老师信息
-        teachers_db3 = await self.teachers_dao.get_teachers_by_id(teachers_.teachers_id)
+        teachers_db3 = await self.teachers_dao.get_teachers_by_id(teachers_.teacher_id)
         teachers = orm_model_to_view_model(teachers_db3, TeacherRe, exclude=[""])
         return teachers
 
@@ -219,7 +219,7 @@ class TeachersRule(object):
         teachers_db = await self.teachers_dao.delete_teachers(exists_teachers)
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
         teacher_entry_log = OperationRecord(
-            action_target_id=teachers_db.teacher_id,
+            action_target_id=teachers.teacher_id,
             target=OperationTarget.TEACHER.value,
             action_type=OperationType.DELETE.value,
             ip="127.0.0.1",

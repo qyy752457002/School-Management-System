@@ -38,6 +38,7 @@ class TeacherBorrow(BaseDBModel):
 
     teacher_borrow_id: Mapped[int] = mapped_column(primary_key=True, comment="teacher_borrowID")
     original_unit_id: Mapped[int] = mapped_column(nullable=True, comment="原单位")
+    original_unit_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="原单位名称")
     original_position: Mapped[str] = mapped_column(String(64), nullable=True, comment="原岗位")
     original_district_province_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="原行政属地省")
     original_district_city_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="原行政属地市")
@@ -49,21 +50,20 @@ class TeacherBorrow(BaseDBModel):
     borrow_in_date: Mapped[date] = mapped_column(Date, nullable=True, comment="借入日期")
     current_unit_id: Mapped[int] = mapped_column(nullable=True, comment="现单位")
     current_position: Mapped[str] = mapped_column(String(64), nullable=True, comment="现岗位")
+    current_unit_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="现单位名称")
     current_district_province_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="现行政属地省")
     current_district_city_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="现行政属地市")
     current_district_area_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="现行政属地区")
     current_region_province_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="现管辖区域省")
     current_region_city_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="现管辖区域市")
     current_region_area_id: Mapped[int] = mapped_column(String(64), nullable=True, comment="现管辖区域区")
+
     borrow_out_date: Mapped[date] = mapped_column(Date, nullable=True, comment="借出日期")
     borrow_reason: Mapped[str] = mapped_column(String(64), nullable=True, comment="借动原因")
     remark: Mapped[str] = mapped_column(String(64), nullable=True, comment="备注")
-    operator_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="操作人")
     teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")
-    operation_time: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(), nullable=False,
-                                                     comment="操作时间")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
     borrow_type: Mapped[str] = mapped_column(String(255), nullable=False, comment="借动类型")
-    approval_status: Mapped[str] = mapped_column(String(255), nullable=False, comment="审批状态",
-                                                 default="submitting")
-    process_instance_id: Mapped[int] = mapped_column(nullable=False, comment="流程ID", default=0)
+
+
+
