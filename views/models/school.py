@@ -56,44 +56,6 @@ class School(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "school_name": "xx学校",
-                "school_no": "EDU202403256",
-                "school_operation_license_number": "A school management system",
-                "block": "Lfun technical",
-                "borough": "cloud@lfun.cn",
-                "school_edu_level":"Copyright © 2024 Lfun technical",
-                "school_category": "Copyright © 2024 Lfun technical",
-                "school_operation_type": "Copyright © 2024 Lfun technical",
-                "school_org_type": "Copyright © 2024 Lfun technical",
-                "school_level": "Copyright © 2024 Lfun technical",
-                "status": "Copyright © 2024 Lfun technical",
-                "school_code": "Copyright © 2024 Lfun technical",
-                "kg_level": "Copyright © 2024 Lfun technical",
-                "created_uid": "Copyright © 2024 Lfun technical",
-                "updated_uid": "Copyright © 2024 Lfun technical",
-                "created_at": "Copyright © 2024 Lfun technical",
-                "updated_at": "Copyright © 2024 Lfun technical",
-                "deleted": "Copyright © 2024 Lfun technical",
-                "school_short_name": "Copyright © 2024 Lfun technical",
-                "school_en_name": "Copyright © 2024 Lfun technical",
-                "create_school_date": "Copyright © 2024 Lfun technical",
-                "social_credit_code": "Copyright © 2024 Lfun technical",
-                "founder_type": "Copyright © 2024 Lfun technical",
-                "founder_name": "Copyright © 2024 Lfun technical",
-                "founder_code": "Copyright © 2024 Lfun technical",
-                "urban_rural_nature": "Copyright © 2024 Lfun technical",
-                "school_org_form": "Copyright © 2024 Lfun technical",
-                "school_closure_date": "Copyright © 2024 Lfun technical",
-                "department_unit_number": "Copyright © 2024 Lfun technical",
-                "sy_zones": "Copyright © 2024 Lfun technical",
-                "historical_evolution": "Copyright © 2024 Lfun technical",
-                "sy_zones_pro": "Copyright © 2024 Lfun technical",
-                "primary_school_system": "Copyright © 2024 Lfun technical",
-                "primary_school_entry_age": "Copyright © 2024 Lfun technical",
-                "junior_middle_school_system": "Copyright © 2024 Lfun technical",
-                "junior_middle_school_entry_age": "Copyright © 2024 Lfun technical",
-                "senior_middle_school_system": "Copyright © 2024 Lfun technical"
-
             }
         }
 
@@ -122,6 +84,7 @@ class SchoolBaseInfoOptional(BaseModel):
     school_closure_date: str = Field('', title="", description="学校关闭日期",examples=[''])
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
     process_instance_id:int= Query(0, title="", description="", example='1')
+    workflow_status: str |None= Field(None, title="", description="", examples=[''])
 
 
 # 学校的 基本信息模型   视图的额模型是按需提供的

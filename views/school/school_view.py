@@ -9,6 +9,7 @@ from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
+from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
 from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_extend_params
@@ -100,7 +101,18 @@ class SchoolView(BaseView):
         res2 = compare_modify_fields(school, origin)
         # print(  res2)
 
-        res = await self.school_rule.update_school(school)
+        # res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
+        #  工作流
+        # planning_school.id = planning_school_id
+        res = await self.school_rule.add_school_keyinfo_change_work_flow(school,)
+        process_instance_id=0
+        if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+            process_instance_id= res[0]['process_instance_id']
+            pl = SchoolBaseInfoOptional(id=school.id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
+
+            res = await self.school_rule.update_school_byargs(pl  )
+
+            pass
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
@@ -110,7 +122,8 @@ class SchoolView(BaseView):
             change_detail="修改关键信息",
             action_target_id=str(school.id),
             change_data=str(res2)[0:1000],
-            ))
+            process_instance_id=process_instance_id
+        ))
 
         return res
         # return  {school_no,borough,block }
@@ -243,6 +256,9 @@ class SchoolView(BaseView):
 
         if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
+            pl = SchoolBaseInfoOptional(id=school_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
+
+            res = await self.school_rule.update_planning_school_byargs(pl  )
 
             pass
 
@@ -376,12 +392,34 @@ class SchoolView(BaseView):
         return resultra
         pass
     # 学校关闭审核
-    async def patch_close_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
-                                                                      min_length=1, max_length=20, example='SC2032633')):
+    async def patch_close_audit(self,
+                                audit_info: PlanningSchoolTransactionAudit
+
+                                ):
+        print('前端入参',audit_info)
+        resultra = await self.school_rule.req_workflow_audit(audit_info,'close')
+        if resultra is None:
+            return {}
+        if isinstance(resultra, str):
+            return {resultra}
+
+        # print(new_students_key_info)
+        return resultra
         pass
     # 学校关键信息变更审核
-    async def patch_keyinfo_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
-                                                                        min_length=1, max_length=20, example='SC2032633')):
+    async def patch_keyinfo_audit(self,
+                                  audit_info: PlanningSchoolTransactionAudit
+
+                                  ):
+        print('前端入参',audit_info)
+        resultra = await self.school_rule.req_workflow_audit(audit_info,'keyinfo_change')
+        if resultra is None:
+            return {}
+        if isinstance(resultra, str):
+            return {resultra}
+
+        # print(new_students_key_info)
+        return resultra
         pass
 
 
