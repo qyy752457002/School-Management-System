@@ -9,6 +9,7 @@ from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
+from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
 from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_extend_params
@@ -100,7 +101,18 @@ class SchoolView(BaseView):
         res2 = compare_modify_fields(school, origin)
         # print(  res2)
 
-        res = await self.school_rule.update_school(school)
+        # res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
+        #  工作流
+        # planning_school.id = planning_school_id
+        res = await self.school_rule.add_school_keyinfo_change_work_flow(school,)
+        process_instance_id=0
+        if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+            process_instance_id= res[0]['process_instance_id']
+            pl = SchoolBaseInfoOptional(id=school.id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
+
+            res = await self.school_rule.update_school_byargs(pl  )
+
+            pass
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
@@ -110,7 +122,8 @@ class SchoolView(BaseView):
             change_detail="修改关键信息",
             action_target_id=str(school.id),
             change_data=str(res2)[0:1000],
-            ))
+            process_instance_id=process_instance_id
+        ))
 
         return res
         # return  {school_no,borough,block }
@@ -243,6 +256,9 @@ class SchoolView(BaseView):
 
         if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
+            pl = SchoolBaseInfoOptional(id=school_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
+
+            res = await self.school_rule.update_planning_school_byargs(pl  )
 
             pass
 
@@ -376,12 +392,34 @@ class SchoolView(BaseView):
         return resultra
         pass
     # 学校关闭审核
-    async def patch_close_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
-                                                                      min_length=1, max_length=20, example='SC2032633')):
+    async def patch_close_audit(self,
+                                audit_info: PlanningSchoolTransactionAudit
+
+                                ):
+        print('前端入参',audit_info)
+        resultra = await self.school_rule.req_workflow_audit(audit_info,'close')
+        if resultra is None:
+            return {}
+        if isinstance(resultra, str):
+            return {resultra}
+
+        # print(new_students_key_info)
+        return resultra
         pass
     # 学校关键信息变更审核
-    async def patch_keyinfo_audit(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
-                                                                        min_length=1, max_length=20, example='SC2032633')):
+    async def patch_keyinfo_audit(self,
+                                  audit_info: PlanningSchoolTransactionAudit
+
+                                  ):
+        print('前端入参',audit_info)
+        resultra = await self.school_rule.req_workflow_audit(audit_info,'keyinfo_change')
+        if resultra is None:
+            return {}
+        if isinstance(resultra, str):
+            return {resultra}
+
+        # print(new_students_key_info)
+        return resultra
         pass
 
 
@@ -428,7 +466,7 @@ class SchoolView(BaseView):
                                 school_code: str = Query("", title="", description=" 园所标识码", ),
                                 school_level: str = Query("", title="", description=" 学校星级", ),
                                 borough: str = Query("", title="  ", description=" 行政管辖区", ),
-                                status: PlanningSchoolStatus = Query("", title="", description=" 状态", examples=['正常']),
+                                status: PlanningSchoolStatus = Query(None, title="", description=" 状态", examples=['正常']),
 
                                 founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
                                                                                       examples=['地方']),
@@ -437,9 +475,9 @@ class SchoolView(BaseView):
                                 founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
                                                                     examples=['县级教育部门']),
 
-                                school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1, max_length=20,
+                                school_no: str|None = Query(None, title="学校编号", description="学校编号",
                                                        example='SC2032633'),
-                                school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
+                                school_name: str = Query(None, description="学校名称",
                                                          example='XX小学'),
                                 planning_school_id: int = Query(None, description="规划校ID", example='1'),
                                 province: str = Query("", title="", description="省份代码", ),
@@ -451,6 +489,7 @@ class SchoolView(BaseView):
                                          page_request=Depends(PageRequest)):
         items = []
         #PlanningSchoolBaseInfoOptional
+        print('入参接收',page_request,status)
         req= SchoolPageSearch(block=block,
                                       planning_school_code=planning_school_code,
                                       borough=borough,
@@ -468,7 +507,7 @@ class SchoolView(BaseView):
 
 
                                       )
-        print('入参接收',req)
+        print('入参接收2',req)
         paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,  )
         print('333',page_request)
         return paging_result

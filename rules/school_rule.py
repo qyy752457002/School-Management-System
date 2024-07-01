@@ -24,13 +24,14 @@ from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config
 from views.models.extend_params import ExtendParams
 # from rules.planning_school_rule import PlanningSchoolRule
-from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolTransactionAudit
-from views.models.school import School as SchoolModel, SchoolKeyAddInfo
+from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolTransactionAudit, PlanningSchoolKeyInfo
+from views.models.school import School as SchoolModel, SchoolKeyAddInfo, SchoolKeyInfo
 
 from views.models.school import SchoolBaseInfo
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus
 from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, SCHOOL_OPEN_WORKFLOW_CODE, \
-    PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, SCHOOL_CLOSE_WORKFLOW_CODE
+    PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, SCHOOL_CLOSE_WORKFLOW_CODE, PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, \
+    SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE
 
 
 @dataclass_inject
@@ -38,9 +39,9 @@ class SchoolRule(object):
     school_dao: SchoolDAO
     p_school_dao: PlanningSchoolDAO
     enum_value_dao: EnumValueDAO
+    system_rule: SystemRule
 
-    def __init__(self):
-        self.system_rule = get_injector(SystemRule)
+
 
     async def get_school_by_id(self, school_id,extra_model=None):
         school_db = await self.school_dao.get_school_by_id(school_id)
@@ -483,3 +484,44 @@ class SchoolRule(object):
         # res = await self.update_school_status(school_id,  PlanningSchoolStatus.NORMAL.value, 'open')
 
         pass
+
+    async def add_school_keyinfo_change_work_flow(self, school_flow: SchoolKeyInfo,):
+        # school_flow.id=0
+        httpreq= HTTPRequest()
+        url= workflow_service_config.workflow_config.get("url")
+        data= school_flow
+        datadict =  data.__dict__
+        datadict['process_code'] = SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE
+        datadict['teacher_id'] =  0
+        datadict['applicant_name'] =  'tester'
+        datadict['school_no'] = school_flow.school_no
+
+        datadict['school_name'] = school_flow.school_name
+        datadict['school_edu_level'] =   school_flow.school_edu_level
+        datadict['block'] =   school_flow.block
+        datadict['borough'] =   school_flow.borough
+        datadict['school_level'] =   school_flow.school_level
+        datadict['school_category'] =   school_flow.school_category
+        datadict['school_operation_type'] =   school_flow.school_operation_type
+        datadict['school_org_type'] =   school_flow.school_org_type
+
+        datadict['apply_user'] =  'tester'
+        mapa = school_flow.__dict__
+        mapa['school_id'] = school_flow.id
+        datadict['json_data'] =  json.dumps(mapa, ensure_ascii=False)
+        apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
+        url=url+apiname
+        headerdict = {
+            "accept": "application/json",
+            "Content-Type": "application/json"
+        }
+        # 如果是query 需要拼接参数
+        # url+=  ('?' +urlencode(datadict))
+        print('参数', url, datadict,headerdict)
+        response= None
+        try:
+            response = await httpreq.post_json(url,datadict,headerdict)
+            print('请求工作流结果',response)
+        except Exception as e:
+            print(e)
+        return response

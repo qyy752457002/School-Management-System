@@ -32,7 +32,7 @@ class OperationRecordView(BaseView):
                    operation_type: OperationType = Query(None, title="", description="操作类型", example='创建',
                                                          min_length=1, max_length=25),
                    ):
-        print(page_request)
+        print('入参',page_request)
         items = []
         res = await self.operation_record_rule.query_operation_record_with_page(page_request, operation_target_type,
                                                                                 action_target_id, operater_account,
