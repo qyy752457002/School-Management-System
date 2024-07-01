@@ -342,7 +342,7 @@ class InstitutionRule(object):
     async def update_institution_status(self, institution_id, status,action=None):
         exists_school = await self.institution_dao.get_institution_by_id(institution_id)
         if not exists_school:
-            raise Exception(f"学校{institution_id}不存在")
+            raise Exception(f"事业行政单位{institution_id}不存在")
         # 判断运来的状态 进行后续的更新
         if status== PlanningSchoolStatus.NORMAL.value and exists_school.status== PlanningSchoolStatus.OPENING.value:
             # 开办
@@ -352,7 +352,7 @@ class InstitutionRule(object):
             exists_school.status= PlanningSchoolStatus.CLOSED.value
         else:
             # exists_school.status= PlanningSchoolStatus.OPENING.value
-            raise Exception(f"学校当前状态不支持您的操作")
+            raise Exception(f"事业行政单位当前状态不支持您的操作")
 
         need_update_list = []
         need_update_list.append('status')
@@ -369,7 +369,7 @@ class InstitutionRule(object):
     async def update_institution_byargs(self, school,):
         exists_school = await self.institution_dao.get_institution_by_id(school.id)
         if not exists_school:
-            raise Exception(f"学校{school.id}不存在")
+            raise Exception(f"事业行政单位{school.id}不存在")
         if exists_school.status== PlanningSchoolStatus.DRAFT.value:
             exists_school.status= PlanningSchoolStatus.OPENING.value
             school.status= PlanningSchoolStatus.OPENING.value

@@ -12,14 +12,14 @@ from views.common.common_view import compare_modify_fields
 from views.models.operation_record import OperationTarget, OperationType, ChangeModule, OperationRecord
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolTransactionAudit, \
     PlanningSchoolStatus, PlanningSchoolFounderType
-from views.models.school import School, SchoolKeyInfo, SchoolPageSearch
+from views.models.school import School, SchoolKeyInfo, SchoolPageSearch, SchoolBaseInfo
 # from fastapi import Field
 from fastapi import Query, Depends, Body
 from pydantic import BaseModel, Field
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
 from views.models.institutions import Institutions, InstitutionTask, InstitutionOptional, InstitutionKeyInfo, \
-    InstitutionPageSearch, InstitutionsAdd
+    InstitutionPageSearch, InstitutionsAdd, InstitutionBaseInfo
 from rules.institution_rule import InstitutionRule
 from mini_framework.web.request_context import request_context_manager
 
@@ -56,6 +56,26 @@ class InstitutionView(BaseView):
         print(page_request)
         items=[]
         res = await self.institution_rule.query_institution_with_page(page_request,)
+        return res
+    # 修改 变更 基本信息
+    async def patch_baseinfo(self, institution_baseinfo: InstitutionBaseInfo):
+        origin = await self.institution_rule.get_institution_by_id(institution_baseinfo.id)
+        log_con = compare_modify_fields(institution_baseinfo, origin)
+
+        res = await self.institution_rule.update_institution_byargs(institution_baseinfo, 2)
+
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            target=OperationTarget.INSTITUTION.value,
+            action_type=OperationType.MODIFY.value,
+            change_module=ChangeModule.BASIC_INFO_CHANGE.value,
+            change_detail="修改基本信息",
+            action_target_id=str(institution_baseinfo.id),
+
+            change_data= JsonUtils.dict_to_json_str(log_con),
+
+        ))
+
         return res
 
     async def post_institution_import_example(self, account: Institutions = Body(..., description="")) -> Task:
@@ -319,7 +339,7 @@ class InstitutionView(BaseView):
                                      social_credit_code: str = Query( '',   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656']),
                                      institution_name: str = Query(None, description="机构名称",
                                                                    example='XX小学'),
-                                     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),
+                                     institution_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),
 
                                 block: str = Query("", title=" ", description="地域管辖区", ),
                                      borough: str = Query("", title="  ", description=" 行政管辖区", ),
@@ -365,7 +385,7 @@ class InstitutionView(BaseView):
                               institution_code=institution_code,
                               institution_level=institution_level,
                                    social_credit_code=social_credit_code,
-                                   school_org_type=school_org_type,
+                                   institution_org_type=institution_org_type,
 
 
                               )
