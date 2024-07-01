@@ -3,6 +3,7 @@ import json
 
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.utils.http import HTTPRequest
+from mini_framework.utils.json import JsonUtils
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 import hashlib
 
@@ -203,11 +204,12 @@ class SchoolRule(object):
             pass
 
         need_update_list = []
-        for key, value in school.dict().items():
+        for key, value in school.__dict__.items():
+            if key.startswith('_'):
+                continue
             if value:
                 need_update_list.append(key)
-
-
+            
 
         school_db = await self.school_dao.update_school_byargs(school, *need_update_list)
 
@@ -267,7 +269,7 @@ class SchoolRule(object):
         return paging_result
 
 
-    async def update_school_status(self, school_id, status,):
+    async def update_school_status(self, school_id, status,action=None):
         exists_school = await self.school_dao.get_school_by_id(school_id)
         if not exists_school:
             raise Exception(f"学校{school_id}不存在")
@@ -398,7 +400,7 @@ class SchoolRule(object):
 
 
     async def add_school_close_work_flow(self, school_flow: PlanningSchoolModel,action_reason,related_license_upload):
-        school_flow.id=0
+        # school_flow.id=0
         data= school_flow
         datadict =  data.__dict__
         datadict['process_code'] = SCHOOL_CLOSE_WORKFLOW_CODE
@@ -416,6 +418,8 @@ class SchoolRule(object):
         dicta = school_flow.__dict__
         dicta['action_reason']= action_reason
         dicta['related_license_upload']= related_license_upload
+        dicta['school_id'] = school_flow.id
+
         datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
 
@@ -461,6 +465,10 @@ class SchoolRule(object):
             # transrule = get_injector(StudentTransactionRule)
             # await transrule.deal_student_transaction(student_edu_info)
             res2 = await self.deal_school(audit_info.process_instance_id, action)
+        # 终态的处理
+
+        await self.set_transaction_end(audit_info.process_instance_id, audit_info.transaction_audit_action)
+
 
 
         return response
@@ -479,6 +487,18 @@ class SchoolRule(object):
         if action=='keyinfo_change':
             # todo 把基本信息变更 改进去
             # res = await self.update_school_status(school.id,  PlanningSchoolStatus.CLOSED.value, 'close')
+            # 读取流程的原始信息  更新到数据库
+            result = await self.system_rule.get_work_flow_instance_by_process_instance_id(
+                process_instance_id)
+            if not result.get('json_data'):
+                # return {'工作流数据异常 无法解析'}
+                pass
+            json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
+            print(json_data)
+            planning_school_orm = SchoolKeyInfo(**json_data)
+            planning_school_orm.id= school.id
+
+            res = await self.update_school_byargs(  planning_school_orm)
             pass
 
         # res = await self.update_school_status(school_id,  PlanningSchoolStatus.NORMAL.value, 'open')
@@ -525,3 +545,40 @@ class SchoolRule(object):
         except Exception as e:
             print(e)
         return response
+
+    async def req_workflow_cancel(self,node_id,process_instance_id=None):
+
+        # 发起审批流的 处理
+        datadict = dict()
+        # 节点实例id    自动获取
+        if process_instance_id>0:
+            node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  process_instance_id)
+            node_id=node_id['node_instance_id']
+
+        datadict['node_instance_id'] =  node_id
+
+        apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
+        # 字典参数
+        # datadict ={"user_id":"11","action":"revoke"}
+        datadict ={"user_id":"11","action":"revoke",**datadict}
+
+        response= await send_request(apiname,datadict,'post',True)
+
+        print(response,'接口响应')
+        # 终态的处理
+
+        await self.set_transaction_end(process_instance_id, AuditAction.CANCEL)
+
+
+        return response
+        pass
+
+
+    async def set_transaction_end(self,process_instance_id,status):
+        tinfo=await self.school_dao.get_school_by_process_instance_id(process_instance_id)
+        if tinfo:
+            tinfo.workflow_status=status.value
+            await self.update_school_byargs(tinfo)
+
+
+        pass

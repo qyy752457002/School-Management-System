@@ -121,7 +121,7 @@ class SchoolView(BaseView):
             change_module=ChangeModule.KEY_INFO_CHANGE.value,
             change_detail="修改关键信息",
             action_target_id=str(school.id),
-            change_data=str(res2)[0:1000],
+            change_data= JsonUtils.dict_to_json_str(res2),
             process_instance_id=process_instance_id
         ))
 
@@ -143,7 +143,8 @@ class SchoolView(BaseView):
 
             action_target_id=str(school_id),
 
-            change_data=str(res)[0:1000],
+            change_data= JsonUtils.dict_to_json_str(res),
+
 
             ))
 
@@ -165,7 +166,8 @@ class SchoolView(BaseView):
             change_detail="修改基本信息",
             action_target_id=str(school_baseinfo.id),
 
-            change_data=str(log_con)[0:1000],
+            change_data= JsonUtils.dict_to_json_str(log_con),
+
             ))
 
         return res
@@ -258,7 +260,7 @@ class SchoolView(BaseView):
             process_instance_id= res[0]['process_instance_id']
             pl = SchoolBaseInfoOptional(id=school_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
-            res = await self.school_rule.update_planning_school_byargs(pl  )
+            res = await self.school_rule.update_school_byargs(pl  )
 
             pass
 
@@ -311,7 +313,8 @@ class SchoolView(BaseView):
             change_module=ChangeModule.BASIC_INFO_CHANGE.value,
             change_detail="暂存信息",
             action_target_id=str(school_id),
-            change_data=str(log_con)[0:1000],
+            change_data= JsonUtils.dict_to_json_str(log_con),
+
 
             ))
 
@@ -454,6 +457,9 @@ class SchoolView(BaseView):
             return {'工作流数据异常 无法解析'}
 
         json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
+        # 移到顶层
+        result={ **result,**json_data}
+
         if 'original_dict' in json_data.keys() and  json_data['original_dict']:
             result={**json_data['original_dict'],**result}
 
@@ -511,3 +517,61 @@ class SchoolView(BaseView):
         paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,  )
         print('333',page_request)
         return paging_result
+
+    async def patch_open_cancel(self,
+
+                                process_instance_id: int = Query(0, title="流程ID", description="流程ID",
+                                                                 example= 25),
+                                node_id: int  = Query(0, title="流程对应的节点ID", description="",
+                                                      example='22')
+
+                                ):
+
+        #  审批流取消
+        res2 = await self.school_rule.req_workflow_cancel(node_id,process_instance_id)
+
+        if res2 is None:
+            return {}
+        if isinstance(res2, str):
+            return {res2}
+
+        # print(new_students_key_info)
+        return res2
+        pass
+        # 学校关闭
+    async def patch_close_cancel(self,
+                                 process_instance_id: int = Query(0, title="流程ID", description="流程ID",
+                                                                  example= 25),
+                                 node_id: int  = Query(0, title="流程对应的节点ID", description="",
+                                                       example='22')
+                                 ):
+
+        #  审批流取消
+        res2 = await self.school_rule.req_workflow_cancel(node_id,process_instance_id)
+
+        if res2 is None:
+            return {}
+        if isinstance(res2, str):
+            return {res2}
+
+        # print(new_students_key_info)
+        return res2
+        pass
+        # 学校关键信息变更
+    async def patch_keyinfo_cancel(self,
+                                   process_instance_id: int = Query(0, title="流程ID", description="流程ID",
+                                                                    example= 25),
+                                   node_id: int  = Query(0, title="流程对应的节点ID", description="",
+                                                         example='22')
+                                   ):
+        #  审批流取消
+        res2 = await self.school_rule.req_workflow_cancel(node_id,process_instance_id)
+
+        if res2 is None:
+            return {}
+        if isinstance(res2, str):
+            return {res2}
+
+        # print(new_students_key_info)
+        return res2
+        pass
