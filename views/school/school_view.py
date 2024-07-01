@@ -121,7 +121,7 @@ class SchoolView(BaseView):
             change_module=ChangeModule.KEY_INFO_CHANGE.value,
             change_detail="修改关键信息",
             action_target_id=str(school.id),
-            change_data=str(res2)[0:1000],
+            change_data= JsonUtils.dict_to_json_str(res2),
             process_instance_id=process_instance_id
         ))
 
@@ -143,7 +143,8 @@ class SchoolView(BaseView):
 
             action_target_id=str(school_id),
 
-            change_data=str(res)[0:1000],
+            change_data= JsonUtils.dict_to_json_str(res),
+
 
             ))
 
@@ -165,7 +166,8 @@ class SchoolView(BaseView):
             change_detail="修改基本信息",
             action_target_id=str(school_baseinfo.id),
 
-            change_data=str(log_con)[0:1000],
+            change_data= JsonUtils.dict_to_json_str(log_con),
+
             ))
 
         return res
@@ -311,7 +313,8 @@ class SchoolView(BaseView):
             change_module=ChangeModule.BASIC_INFO_CHANGE.value,
             change_detail="暂存信息",
             action_target_id=str(school_id),
-            change_data=str(log_con)[0:1000],
+            change_data= JsonUtils.dict_to_json_str(log_con),
+
 
             ))
 
