@@ -9,6 +9,7 @@ from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
+from business_exceptions.school import SchoolStatusError
 from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
 from rules.system_rule import SystemRule
@@ -96,6 +97,10 @@ class SchoolView(BaseView):
                           school: SchoolKeyInfo,
 
                           ):
+        # 检测 是否允许修改
+        is_draft = await self.school_rule.is_can_not_add_workflow(school.id)
+        if is_draft:
+            raise SchoolStatusError()
         origin = await self.school_rule.get_school_by_id(school.id)
 
         res2 = compare_modify_fields(school, origin)
@@ -213,6 +218,11 @@ class SchoolView(BaseView):
                                                       max_length=20, example='SC2032633')):
         # print(school)
         # res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.NORMAL.value, 'open')
+        # 检测 是否允许修改
+        is_draft = await self.school_rule.is_can_not_add_workflow(school_id)
+        if is_draft:
+            raise SchoolStatusError()
+
         # 请求工作流
         school = await self.school_rule.get_school_by_id(school_id,)
 
@@ -249,6 +259,10 @@ class SchoolView(BaseView):
                                                                     max_length=60, example=''),
                           ):
         # res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.CLOSED.value)
+        # 检测 是否允许修改
+        is_draft = await self.school_rule.is_can_not_add_workflow(school_id)
+        if is_draft:
+            raise SchoolStatusError()
         # 请求工作流
 
         school = await self.school_rule.get_school_by_id(school_id,)

@@ -274,7 +274,6 @@ class PlanningSchoolRule(object):
 
         dicta['planning_school_id'] = planning_school_flow.id
 
-
         datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
 
@@ -407,3 +406,10 @@ class PlanningSchoolRule(object):
         except Exception as e:
             print(e)
         return response
+
+    async def is_can_not_add_workflow(self, student_id):
+        tinfo=await self.get_planning_school_by_id(student_id)
+        print('当前信息',tinfo)
+        if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
+            return  True
+        return False

@@ -12,4 +12,7 @@ class PlanningSchoolValidateError(MiniHTTPException):
 class PlanningSchoolBaseInfoValidateError(BaseException ):
     def __init__(self):
         super().__init__(404, "PLANNING_SCHOOL_VALIDATE_FAILED", "PlanningSchool validae failed.", "缺乏必要参数|请检查参数")
+class PlanningSchoolStatusError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "PLANNING_SCHOOL_STATUS_ERROR", "PlanningSchool Status Error .", "规划校当前的状态不支持此操作,请检查状态")
 
