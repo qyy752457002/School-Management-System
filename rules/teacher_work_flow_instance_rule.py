@@ -310,13 +310,17 @@ class TeacherWorkFlowRule(object):
         for field, value in params.items():
             if field in workflow_fields:
                 workflow_data[field] = value
+                if isinstance(value, tuple):
+                    workflow_data[field] = None
         for field, value in base_model.items():
             if field in workflow_fields:
                 workflow_data[field] = value
+                if isinstance(value, tuple):
+                    workflow_data[field] = None
             else:
                 json_data[field] = value
-        json_data = JsonUtils.dict_to_json_str(json_data)
-        workflow_data["json_data"] = json_data
+        # json_data = JsonUtils.dict_to_json_str(json_data)
+        # workflow_data["json_data"] = json_data
         print(workflow_data)
         work_flow_instance = WorkFlowInstanceQueryModel(**workflow_data)
         return work_flow_instance

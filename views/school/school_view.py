@@ -466,7 +466,7 @@ class SchoolView(BaseView):
                                 school_code: str = Query("", title="", description=" 园所标识码", ),
                                 school_level: str = Query("", title="", description=" 学校星级", ),
                                 borough: str = Query("", title="  ", description=" 行政管辖区", ),
-                                status: PlanningSchoolStatus = Query("", title="", description=" 状态", examples=['正常']),
+                                status: PlanningSchoolStatus = Query(None, title="", description=" 状态", examples=['正常']),
 
                                 founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
                                                                                       examples=['地方']),
@@ -475,9 +475,9 @@ class SchoolView(BaseView):
                                 founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
                                                                     examples=['县级教育部门']),
 
-                                school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1, max_length=20,
+                                school_no: str|None = Query(None, title="学校编号", description="学校编号",
                                                        example='SC2032633'),
-                                school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
+                                school_name: str = Query(None, description="学校名称",
                                                          example='XX小学'),
                                 planning_school_id: int = Query(None, description="规划校ID", example='1'),
                                 province: str = Query("", title="", description="省份代码", ),
@@ -489,6 +489,7 @@ class SchoolView(BaseView):
                                          page_request=Depends(PageRequest)):
         items = []
         #PlanningSchoolBaseInfoOptional
+        print('入参接收',page_request,status)
         req= SchoolPageSearch(block=block,
                                       planning_school_code=planning_school_code,
                                       borough=borough,
@@ -506,7 +507,7 @@ class SchoolView(BaseView):
 
 
                                       )
-        print('入参接收',req)
+        print('入参接收2',req)
         paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,  )
         print('333',page_request)
         return paging_result
