@@ -16,6 +16,7 @@ from rules.teachers_rule import TeachersRule
 from rules.teacher_borrow_rule import TeacherBorrowRule
 from views.models.teacher_transaction import TeacherBorrowModel, TeacherBorrowReModel, TeacherBorrowQueryModel
 from mini_framework.web.std_models.page import PageRequest
+from views.models.teachers import TeachersCreatModel
 from typing import Optional
 
 
@@ -36,7 +37,7 @@ class TransferDetailsView(BaseView):
         return res
 
     async def post_transfer_in_details(self, transfer_details: TransferDetailsModel,
-                                       add_teacher: Optional[TeacherAddModel] = None,
+                                       add_teacher: Optional[TeachersCreatModel] = None,
                                        transfer_inner: bool = Query(True, title="transfer_status",
                                                                     description="transfer_status",
                                                                     example=True)
@@ -80,7 +81,14 @@ class TransferDetailsView(BaseView):
         """
         return await self.transfer_details_rule.get_all_transfer_details(teacher_id)
 
-    async def query_teacher_transfer(self, teacher_transaction: TeacherTransactionQuery):
+    async def page_transfer_with_page(self, transfer_details=Depends(TeacherTransferQueryModel),
+                                      page_request=Depends(PageRequest)):
+        user_id = "asdfasdf"
+        paging_result = await self.transfer_details_rule.query_transfer_with_page(transfer_details, page_request,
+                                                                                  user_id)
+        return paging_result
+
+    async def get_teacher_transfer(self, teacher_transaction: TeacherTransactionQuery):
         """
         查询系统内有没有此人
         """
@@ -94,7 +102,7 @@ class TransferDetailsView(BaseView):
         我发起的调出
         """
         type = "launch"
-        user_id = "sadklfh"
+        user_id = "asdfasdf"
         paging_result = await self.transfer_details_rule.query_transfer_out_with_page(type, transfer_details,
                                                                                       page_request, user_id)
         return paging_result
@@ -105,7 +113,7 @@ class TransferDetailsView(BaseView):
         我审批的调出
         """
         type = "approval"
-        user_id = "sadklfh"
+        user_id = "asdfasdf"
         paging_result = await self.transfer_details_rule.query_transfer_out_with_page(type, transfer_details,
                                                                                       page_request, user_id)
         return paging_result
@@ -115,7 +123,7 @@ class TransferDetailsView(BaseView):
         """
         我发起的调入
         """
-        user_id = "sadklfh"
+        user_id = "asdfasdf"
         type = "launch"
         paging_result = await self.transfer_details_rule.query_transfer_in_with_page(type, transfer_details,
                                                                                      page_request, user_id)
@@ -127,7 +135,7 @@ class TransferDetailsView(BaseView):
         我审批的调入
         """
         type = "approval"
-        user_id = "sadklfh"
+        user_id = "asdfasdf"
         paging_result = await self.transfer_details_rule.query_transfer_in_with_page(type, transfer_details,
                                                                                      page_request, user_id)
         return paging_result
@@ -154,7 +162,7 @@ class TransferDetailsView(BaseView):
                                       reason: str = Query("", title="reason",
                                                           description="审核理由")):
 
-        user_id = "sadklfh"
+        user_id = "asdfasdf"
         reason = reason
         res = await self.transfer_details_rule.transfer_approved(teacher_id, process_instance_id, user_id,
                                                                  reason)
@@ -168,7 +176,7 @@ class TransferDetailsView(BaseView):
                                                                        example=123),
                                       reason: str = Query("", title="reason",
                                                           description="审核理由")):
-        user_id = "sadklfh"
+        user_id = "asdfasdf"
         reason = reason
         res = await self.transfer_details_rule.transfer_rejected(transfer_details_id, process_instance_id, user_id,
                                                                  reason)
@@ -181,7 +189,7 @@ class TransferDetailsView(BaseView):
                                                                       example=123),
                                      reason: str = Query("", title="reason",
                                                          description="审核理由")):
-        user_id = "sadklfh"
+        user_id = "asdfasdf"
         reason = reason
         res = await self.transfer_details_rule.transfer_revoked(transfer_details_id, process_instance_id, user_id,
                                                                 reason)
@@ -205,10 +213,9 @@ class TeacherTransactionView(BaseView):
             teacher_transaction_id)
         return res
 
-
     # 教师 异动接口
     async def post_teacher_transaction(self, teacher_transaction: TeacherTransactionModel):
-        user_id = "sadklfh"
+        user_id = "asdfasdf"
         res = await self.teacher_transaction_rule.add_teacher_transaction_except_retire(teacher_transaction, user_id)
         return res
 
@@ -225,7 +232,7 @@ class TeacherTransactionView(BaseView):
         return await self.teacher_transaction_rule.get_all_teacher_transaction(teacher_id)
 
     async def page_transaction(self, teacher_transaction=Depends(TeacherTransactionQueryModel),
-                                      page_request=Depends(PageRequest)):
+                               page_request=Depends(PageRequest)):
         """
         分页查询
         """
@@ -258,8 +265,6 @@ class TeacherTransactionView(BaseView):
     #                                                                                example=1234)):
     #     res = await self.teacher_transaction_rule.rejected(teacher_transaction_id)
     #     return res
-
-
 
     async def patch_teacher_active(self,
                                    teacher_id: int = Query(..., title="教师编号", description="教师编号",

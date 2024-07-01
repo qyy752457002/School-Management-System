@@ -68,6 +68,20 @@ class TeachersCreatModel(BaseModel):
     teacher_avatar: str = Field("", title="头像", description="头像")
     mobile: str = Field("", title="手机号", description="手机号")
 
+class TeacherRe(BaseModel):
+    """
+    这个模型现在本地查然后是交给工作流的，相当于表单附赠信息
+    """
+    teacher_name: str = Field(..., title="教师名称", description="教师名称")
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_gender: Gender = Field(..., title="教师性别", description="教师性别")
+    teacher_id_type: str = Field("", title="证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="证件号", description="证件号")
+    teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
+    teacher_employer: int = Field(0, title="任职单位", description="任职单位", gt=0)
+    mobile: str = Field("", title="手机号", description="手机号")
+    teacher_main_status: str = Field(..., title="主状态", description="主状态")
+    teacher_sub_status: str = Field("", title="子状态", description="子状态")
 
 class TeacherCreateResultModel(TeachersCreatModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
@@ -923,6 +937,7 @@ class NewTeacherApprovalCreate(BaseModel):
     teacher_main_status: Optional[str] = Field(None, title="主要状态", description="主要状态", example="unemployed")
     teacher_sub_status: Optional[str] = Field(None, title="次要状态", description="次要状态", example="unsubmitted")
     is_approval: Optional[bool] = Field(None, title="是否在审批中", description="是否在审批中")
+    teacher_number: Optional[str] = Field("", title="教职工号", description="教职工号", example="123456789012345678")
 
 
 class CurrentTeacherQuery(BaseModel):
