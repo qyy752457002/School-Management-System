@@ -285,6 +285,9 @@ class PlanningSchoolView(BaseView):
 
         if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
+            pl = PlanningSchoolBaseInfoOptional(id=planning_school_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
+
+            res = await self.planning_school_rule.update_planning_school_byargs(pl  )
 
             pass
 

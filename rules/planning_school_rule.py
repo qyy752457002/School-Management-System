@@ -237,11 +237,16 @@ class PlanningSchoolRule(object):
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
         # 字典参数
         # datadict ={"user_id":"11","action":"revoke"}
-        datadict ={"user_id":"11","action":"approved",**datadict}
+        datadict ={"user_id":"11","action":"revoke",**datadict}
 
         response= await send_request(apiname,datadict,'post',True)
 
         print(response,'接口响应')
+        # 终态的处理
+
+        await self.set_transaction_end(process_instance_id, AuditAction.CANCEL)
+
+
         return response
         pass
 
@@ -312,6 +317,7 @@ class PlanningSchoolRule(object):
             # transrule = get_injector(StudentTransactionRule)
             # await transrule.deal_student_transaction(student_edu_info)
             res2 = await self.deal_planning_school(audit_info.process_instance_id, action)
+        # 终态的处理
 
         await self.set_transaction_end(audit_info.process_instance_id, audit_info.transaction_audit_action)
 
