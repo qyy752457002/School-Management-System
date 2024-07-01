@@ -39,9 +39,9 @@ class SchoolRule(object):
     school_dao: SchoolDAO
     p_school_dao: PlanningSchoolDAO
     enum_value_dao: EnumValueDAO
+    system_rule: SystemRule
 
-    def __init__(self):
-        self.system_rule = get_injector(SystemRule)
+
 
     async def get_school_by_id(self, school_id,extra_model=None):
         school_db = await self.school_dao.get_school_by_id(school_id)
