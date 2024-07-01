@@ -78,6 +78,42 @@ class InstitutionView(BaseView):
 
         return res
 
+
+
+    # 编辑的接口
+    async def put(self,
+
+                  school: InstitutionOptional,
+
+                  institution_id: int = Query(..., title="", description="学校id/园所id", example='38'),
+
+                  ):
+        # print(planning_school)
+        school.id = institution_id
+
+        # if isinstance(institution_eduinfo.att_class_type,  bool):
+        #     institution_eduinfo.att_class_type= str( institution_eduinfo.att_class_type )
+
+        origin = await self.institution_rule.get_institution_by_id(school.id)
+        log_con = compare_modify_fields(school, origin)
+
+        res = await self.institution_rule.update_institution_byargs(school)
+
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            target=OperationTarget.INSTITUTION.value,
+            action_type=OperationType.MODIFY.value,
+            change_module=ChangeModule.BASIC_INFO_CHANGE.value,
+            change_detail="暂存信息",
+            action_target_id=str(institution_id),
+            change_data= JsonUtils.dict_to_json_str(log_con),
+
+
+        ))
+
+        return res
+
+
     async def post_institution_import_example(self, account: Institutions = Body(..., description="")) -> Task:
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个键
@@ -134,7 +170,7 @@ class InstitutionView(BaseView):
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            target=OperationTarget.SCHOOL.value,
+            target=OperationTarget.INSTITUTION.value,
             action_type=OperationType.MODIFY.value,
             change_module=ChangeModule.BASIC_INFO_CHANGE.value,
             change_detail="开办分校",
@@ -176,7 +212,7 @@ class InstitutionView(BaseView):
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            target=OperationTarget.SCHOOL.value,
+            target=OperationTarget.INSTITUTION.value,
             action_type=OperationType.MODIFY.value,
             change_module=ChangeModule.BASIC_INFO_CHANGE.value,
             change_detail="关闭分校",
@@ -189,7 +225,7 @@ class InstitutionView(BaseView):
         return res
 
 
-    # # 修改 关键信息
+    # # 修改 关键信息 留给页面的 '变更按钮'
     async def put_keyinfo(self,
                           school: InstitutionKeyInfo,
 
@@ -218,7 +254,7 @@ class InstitutionView(BaseView):
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            target=OperationTarget.SCHOOL.value,
+            target=OperationTarget.INSTITUTION.value,
             action_type=OperationType.MODIFY.value,
             change_module=ChangeModule.KEY_INFO_CHANGE.value,
             change_detail="修改关键信息",
