@@ -10,10 +10,32 @@ from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTra
     TeacherBorrowReModel, TeacherBorrowGetModel, TeacherBorrowQueryModel, TeacherBorrowQueryReModel
 
 
+from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
+from rules.operation_record import OperationRecordRule
+from daos.operation_record_dao import OperationRecordDAO
+
+
+from datetime import datetime
+from daos.school_dao import SchoolDAO
+
+
+from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
+from daos.enum_value_dao import EnumValueDAO
+from rules.enum_value_rule import EnumValueRule
+
+from rules.teachers_rule import TeachersRule
+
 @dataclass_inject
 class TeacherBorrowRule(object):
     teacher_borrow_dao: TeacherBorrowDAO
     teachers_dao: TeachersDao
+    teacher_work_flow_rule: TeacherWorkFlowRule
+    enum_value_dao: EnumValueDAO
+    enum_value_rule: EnumValueRule
+    operation_record_rule: OperationRecordRule
+    operation_record_dao: OperationRecordDAO
+    teachers_rule: TeachersRule
+    school_dao: SchoolDAO
 
     async def get_teacher_borrow_by_teacher_borrow_id(self, teacher_borrow_id):
         teacher_borrow_db = await self.teacher_borrow_dao.get_teacher_borrow_by_teacher_borrow_id(teacher_borrow_id)

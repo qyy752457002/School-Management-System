@@ -109,7 +109,7 @@ class TeachersRule(object):
         await self.teacher_progressing(teachers_work.teacher_id)
 
         teacher_entry_log = OperationRecord(
-            action_target_id=teachers_db.teacher_id,
+            action_target_id=teachers_work.teacher_id,
             target=OperationTarget.TEACHER.value,
             action_type=OperationType.CREATE.value,
             ip="127.0.0.1",
@@ -219,7 +219,7 @@ class TeachersRule(object):
         teachers_db = await self.teachers_dao.delete_teachers(exists_teachers)
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
         teacher_entry_log = OperationRecord(
-            action_target_id=teachers_db.teacher_id,
+            action_target_id=teachers.teacher_id,
             target=OperationTarget.TEACHER.value,
             action_type=OperationType.DELETE.value,
             ip="127.0.0.1",

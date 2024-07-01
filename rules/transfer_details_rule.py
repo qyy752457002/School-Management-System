@@ -73,7 +73,6 @@ class TransferDetailsRule(object):
         model_list = [teachers, transfer_details_work, transfer_and_borrow_extra_model]
         params = {"process_code": "t_transfer_in_inner", "applicant_name": user_id}
         work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
-        await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
         teacher_transfer_log = OperationRecord(
             action_target_id=transfer_details_work.teacher_id,
             target=OperationTarget.TEACHER.value,
@@ -89,6 +88,7 @@ class TransferDetailsRule(object):
             operator_name=user_id,
             process_instance_id=work_flow_instance["process_instance_id"])
         await self.operation_record_rule.add_operation_record(teacher_transfer_log)
+        await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
         return transfer_details
 
     async def add_transfer_in_outer_details(self, add_teacher: TeachersCreatModel,
@@ -108,7 +108,6 @@ class TransferDetailsRule(object):
         params = {"process_code": "t_transfer_in_outer", "applicant_name": user_id}
         model_list = [transfer_details_work, teachers, transfer_and_borrow_extra_model]
         work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
-        await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
         teacher_transfer_log = OperationRecord(
             action_target_id=transfer_details_work.teacher_id,
             target=OperationTarget.TEACHER.value,
@@ -124,6 +123,7 @@ class TransferDetailsRule(object):
             operator_name=user_id,
             process_instance_id=work_flow_instance["process_instance_id"])
         await self.operation_record_rule.add_operation_record(teacher_transfer_log)
+        await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
 
     async def add_transfer_out_details(self, transfer_details: TransferDetailsModel,
                                        user_id, school_id):
@@ -149,7 +149,6 @@ class TransferDetailsRule(object):
         teachers = orm_model_to_view_model(teachers_db, TeacherRe)
         model_list = [transfer_details_work, transfer_and_borrow_extra_model, teachers]
         work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
-        await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
         # update_params = {"teacher_sub_status": "active", "teacher_main_status": "employed"}
         # await self.teacher_work_flow_rule.update_work_flow_by_param(work_flow_instance["process_instance_id"],
         #                                                             update_params)
@@ -168,6 +167,7 @@ class TransferDetailsRule(object):
             operator_name=user_id,
             process_instance_id=work_flow_instance["process_instance_id"])
         await self.operation_record_rule.add_operation_record(teacher_transfer_log)
+        await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
         return transfer_details
 
     async def delete_transfer_details(self, transfer_details_id):
@@ -307,7 +307,6 @@ class TransferDetailsRule(object):
                 # 更新状态
                 teachers_db.teacher_sub_status = "transfer_out"
                 await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status")
-                await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
                 await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
                 # 删除本校老师
                 await self.teachers_dao.delete_teachers(teachers_db)
