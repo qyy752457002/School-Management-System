@@ -127,7 +127,18 @@ class PlanningSchoolView(BaseView):
         res2 = compare_modify_fields(planning_school, origin)
         # print(  res2)
 
-        res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
+        # res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
+        #  工作流
+        # planning_school.id = planning_school_id
+        res = await self.planning_school_rule.add_planning_school_keyinfo_change_work_flow(planning_school,)
+        process_instance_id=0
+        if len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+            process_instance_id= res[0]['process_instance_id']
+            pl = PlanningSchoolBaseInfoOptional(id=planning_school.id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
+
+            res = await self.planning_school_rule.update_planning_school_byargs(pl  )
+
+            pass
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
@@ -137,6 +148,7 @@ class PlanningSchoolView(BaseView):
             change_module=ChangeModule.KEY_INFO_CHANGE.value,
             change_detail="修改基本信息",
             change_data=str(res2)[0:1000],
+            process_instance_id=process_instance_id
         ))
 
         return res

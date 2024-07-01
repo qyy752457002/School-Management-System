@@ -21,7 +21,7 @@ from views.models.planning_school import PlanningSchoolBaseInfo
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 
 from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, \
-    PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE
+    PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE
 
 
 @dataclass_inject
@@ -352,3 +352,39 @@ class PlanningSchoolRule(object):
 
 
         pass
+
+    async def add_planning_school_keyinfo_change_work_flow(self, planning_school_flow: PlanningSchoolModel,):
+        # planning_school_flow.id=0
+        httpreq= HTTPRequest()
+        url= workflow_service_config.workflow_config.get("url")
+        data= planning_school_flow
+        datadict =  data.__dict__
+        datadict['process_code'] = PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE
+        datadict['teacher_id'] =  0
+        datadict['applicant_name'] =  'tester'
+        datadict['planning_school_code'] = planning_school_flow.planning_school_code
+        datadict['planning_school_name'] = planning_school_flow.planning_school_name
+        datadict['founder_type_lv3'] =   planning_school_flow.founder_type_lv3
+        datadict['block'] =   planning_school_flow.block
+        datadict['borough'] =   planning_school_flow.borough
+        datadict['planning_school_level'] =   planning_school_flow.planning_school_level
+        datadict['apply_user'] =  'tester'
+        mapa = planning_school_flow.__dict__
+        mapa['planning_school_id'] = planning_school_flow.id
+        datadict['json_data'] =  json.dumps(mapa, ensure_ascii=False)
+        apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
+        url=url+apiname
+        headerdict = {
+            "accept": "application/json",
+            "Content-Type": "application/json"
+        }
+        # 如果是query 需要拼接参数
+        # url+=  ('?' +urlencode(datadict))
+        print('参数', url, datadict,headerdict)
+        response= None
+        try:
+            response = await httpreq.post_json(url,datadict,headerdict)
+            print('请求工作流结果',response)
+        except Exception as e:
+            print(e)
+        return response
