@@ -250,7 +250,7 @@ class InstitutionView(BaseView):
             process_instance_id= res[0]['process_instance_id']
             pl = InstitutionOptional(id=school.id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
-            res = await self.institution_rule.update_institution_byargs(pl  )
+            resu = await self.institution_rule.update_institution_byargs(pl  )
 
             pass
 

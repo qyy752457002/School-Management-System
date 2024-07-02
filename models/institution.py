@@ -34,7 +34,8 @@ class Institution(BaseDBModel):
     postal_code: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="邮政编码")
     urban_rural_nature: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城乡性质")
     status: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="状态")
-
+    block: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="地域管辖区")
+    borough: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="行政管辖区")
     fax_number: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="传真电话")
     email: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="单位电子信箱")
 

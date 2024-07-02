@@ -204,8 +204,6 @@ class InstitutionRule(object):
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
         # from urllib.parse import urlencode
         # apiname += ('?' + urlencode(datadict))
-
-
         # 如果是query 需要拼接参数
 
         # 字典参数
@@ -271,16 +269,16 @@ class InstitutionRule(object):
         datadict['process_code'] = INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE
         datadict['teacher_id'] =  0
         datadict['applicant_name'] =  'tester'
-        datadict['institution_no'] = institution_flow.institution_no
+        # datadict['institution_no'] = institution_flow.institution_no
 
         datadict['institution_name'] = institution_flow.institution_name
-        datadict['institution_edu_level'] =   institution_flow.institution_edu_level
-        datadict['block'] =   institution_flow.block
-        datadict['borough'] =   institution_flow.borough
-        datadict['institution_level'] =   institution_flow.institution_level
-        datadict['institution_category'] =   institution_flow.institution_category
-        datadict['institution_operation_type'] =   institution_flow.institution_operation_type
-        datadict['institution_org_type'] =   institution_flow.institution_org_type
+        # datadict['institution_edu_level'] =   institution_flow.institution_edu_level
+        # datadict['block'] =   institution_flow.block
+        # datadict['borough'] =   institution_flow.borough
+        # datadict['institution_level'] =   institution_flow.institution_level
+        # datadict['institution_category'] =   institution_flow.institution_category
+        # datadict['institution_operation_type'] =   institution_flow.institution_operation_type
+        # datadict['institution_org_type'] =   institution_flow.institution_org_type
 
         datadict['apply_user'] =  'tester'
         mapa = institution_flow.__dict__
