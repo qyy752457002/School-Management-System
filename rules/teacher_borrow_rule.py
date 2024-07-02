@@ -15,7 +15,7 @@ from views.models.operation_record import OperationRecord, OperationTarget, Chan
 from rules.operation_record import OperationRecordRule
 from daos.operation_record_dao import OperationRecordDAO
 
-from views.models.teachers import TeacherRe
+from views.models.teachers import TeacherRe,TeacherAdd
 from datetime import datetime
 from daos.school_dao import SchoolDAO
 
@@ -57,7 +57,7 @@ class TeacherBorrowRule(object):
         is_approval = exists_teachers.is_approval
         if is_approval:
             raise ApprovalStatusError()
-        teacher_borrow_db = view_model_to_orm_model(teacher_borrow, TeacherBorrow)
+        teacher_borrow_db = view_model_to_orm_model(teacher_borrow, TeacherBorrow, exclude=["teacher_borrow_id"])
         teacher_borrow_db = await self.teacher_borrow_dao.add_teacher_borrow(teacher_borrow_db)
         teacher_borrow_work = orm_model_to_view_model(teacher_borrow_db, TeacherBorrowReModel)
         transfer_details_rule = get_injector(TransferDetailsRule)
@@ -90,11 +90,11 @@ class TeacherBorrowRule(object):
         await self.teachers_rule.teacher_progressing(teacher_borrow_work.teacher_id)
         return teacher_borrow_work
 
-    async def add_teacher_borrow_in_outer(self, add_teacher: TeacherRe, teacher_borrow: TeacherBorrowModel,
+    async def add_teacher_borrow_in_outer(self, add_teacher: TeacherAdd, teacher_borrow: TeacherBorrowModel,
                                           user_id):
         teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
         teacher_borrow.teacher_id = teachers.teacher_id
-        teacher_borrow_db = view_model_to_orm_model(teacher_borrow, TeacherBorrow)
+        teacher_borrow_db = view_model_to_orm_model(teacher_borrow, TeacherBorrow,exclude=["teacher_borrow_id"])
         teacher_borrow_db = await self.teacher_borrow_dao.add_teacher_borrow(teacher_borrow_db)
         teacher_borrow_work = orm_model_to_view_model(teacher_borrow_db, TeacherBorrowReModel)
         transfer_details_rule = get_injector(TransferDetailsRule)
@@ -134,7 +134,7 @@ class TeacherBorrowRule(object):
         teacher_borrow.original_unit_name = school.school_name
         teacher_borrow.original_district_area_id = int(school.borough)
         teacher_borrow.borrow_type = BorrowType.OUT.value
-        teacher_borrow_db = view_model_to_orm_model(teacher_borrow, TeacherBorrow)
+        teacher_borrow_db = view_model_to_orm_model(teacher_borrow, TeacherBorrow, exclude=["teacher_borrow_id"])
         teacher_borrow_db = await self.teacher_borrow_dao.add_teacher_borrow(teacher_borrow_db)
         teacher_borrow_work = orm_model_to_view_model(teacher_borrow_db, TeacherBorrowReModel,
                                                       exclude=["original_unit_name",
@@ -291,6 +291,9 @@ class TeacherBorrowRule(object):
                 await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
             elif process_code == "t_borrow_in_inner":
                 """需要先修改本校老师状态，包括is_deleted和teacher_sub_status，然后再添加新的老师，以及增加老师的调入记录"""
+
+                update_params = {"teacher_sub_status": "borrow_in"}
+                await self.teacher_work_flow_rule.update_work_flow_by_param(process_instance_id, update_params)
                 teachers_db.teacher_sub_status = "borrow_in"
                 await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status")
                 await self.teachers_rule.teacher_pending(teachers_db.teacher_id)

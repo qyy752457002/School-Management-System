@@ -658,4 +658,5 @@ class TeacherBorrowQueryReModel(BaseModel):
     start_time: Optional[datetime] | None = Field(None, title="申请时间", description="申请时间")
     approval_time: Optional[datetime] | None = Field(None, title="审批时间", description="审批时间")
     approval_name: Optional[str] = Field("", title="审批人", description="审批人")
+    teacher_borrow_id: int = Field(0, title="teacher_borrow_id", description="teacher_borrow_id")
     process_instance_id: int = Field(0, title="流程实例id", description="流程实例id")
