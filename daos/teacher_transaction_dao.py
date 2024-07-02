@@ -86,7 +86,9 @@ class TeacherTransactionDAO(DAOBase):
                                                                isouter=True)
         cond1 = Teacher.teacher_sub_status != "active"
         cond2 = Teacher.teacher_main_status == "employed"
-        query = query.where(cond1, cond2)
+        cond3 = TeacherTransaction.is_active == False
+
+        query = query.where(cond1, cond2, cond3)
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
         if query_model.teacher_number:

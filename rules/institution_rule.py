@@ -116,7 +116,7 @@ class InstitutionRule(object):
         paging = await self.institution_dao.query_institution_with_page(institution_name, institution_id,institution_no,
                                                                                 page_request,institution_category,institution_org_type,block,borough,social_credit_code)
         # 字段映射的示例写法   , {"hash_password": "password"}
-        paging_result = PaginatedResponse.from_paging(paging, InstitutionOptional, {"create_institution_date": "create_date","web_url": "website_url",})
+        paging_result = PaginatedResponse.from_paging(paging, InstitutionOptional, {"create_institution_date": "create_date","website_url": "website_url",})
         return paging_result
 
     # 向工作流中心发送申请
@@ -394,7 +394,7 @@ class InstitutionRule(object):
 
         if isinstance(school, BaseModel):
 
-            school= view_model_to_orm_model(school, Institution,  other_mapper={"website_url": 'web_url',"create_date":'create_institution_date'})
+            school= view_model_to_orm_model(school, Institution,  other_mapper={"website_url": 'website_url',"create_date":'create_institution_date'})
         need_update_list = []
         for key, value in school.__dict__.items():
             if key.startswith('_'):
