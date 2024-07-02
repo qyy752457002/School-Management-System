@@ -31,9 +31,7 @@ action_target_id: str = Field(..., title="操作对象ID", description="操作�
     target: Mapped[str] = mapped_column(String(255), nullable=True, comment=" 操作对象", default='')
     action_type: Mapped[str] = mapped_column(String(40), nullable=True, comment="操作类型", default='')
     ip: Mapped[str] = mapped_column(String(40), nullable=True, comment=" Description", default='')
-    change_data: Mapped[str] = mapped_column(String(1024), nullable=True, comment=" Author", default='')
-    # change_field: Mapped[str] = mapped_column(String(255), nullable=True, comment="变更字段", default='')
-    # change_item: Mapped[str] = mapped_column(String(255), nullable=True, comment="变更项", default='')
+    change_data: Mapped[str] = mapped_column(String(3072), nullable=True, comment="", default='')
     operation_time: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(), nullable=False,
                                                      comment="操作时间")
     doc_upload: Mapped[str] = mapped_column(String(255), nullable=True, comment=" 附件", default='')

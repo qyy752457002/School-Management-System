@@ -26,6 +26,7 @@ from . import teacher_skill_certificates
 from . import teacher_ethic_records
 from . import educational_teaching
 
+
 from . import annual_review
 from . import domestic_training
 from . import overseas_study
@@ -56,6 +57,7 @@ from . import leader_info
 
 from . import teacher_transaction
 from . import transfer_details
+from . import teacher_borrow
 from . import class_division_records
 from . import student_transaction
 from . import student_transaction_flow

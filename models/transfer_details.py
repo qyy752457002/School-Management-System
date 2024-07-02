@@ -17,6 +17,7 @@ class TransferType(str, Enum):
         return [cls.IN, cls.OUT, ]
 
 
+
 class TransferDetails(BaseDBModel):
     """
     transfer_details：transfer_details_id
