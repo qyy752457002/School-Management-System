@@ -46,9 +46,6 @@ class TeacherTransactionRule(object):
         添加教师异动
         """
         teacher_transaction_db = view_model_to_orm_model(teacher_transaction, TeacherTransaction)
-        if teacher_transaction.retire_number:
-            teacher_transaction_db.transaction_remark = teacher_transaction.retire_number
-            pass
         teacher_db = await self.teachers_dao.get_teachers_by_id(teacher_transaction_db.teacher_id)
         if not teacher_db:
             raise TeacherNotFoundError()
@@ -119,9 +116,9 @@ class TeacherTransactionRule(object):
 
     async def update_teacher_transaction(self, teacher_transaction: TeacherTransactionUpdateModel):
         exists_teacher_transaction_info = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
-            teacher_transaction.teacher_transaction_id)
+            teacher_transaction.transaction_id)
         if not exists_teacher_transaction_info:
-            raise Exception(f"编号为{teacher_transaction.teacher_transaction_id}的teacher_transaction不存在")
+            raise Exception(f"编号为{teacher_transaction.transaction_id}的teacher_transaction不存在")
         need_update_list = []
         for key, value in teacher_transaction.dict().items():
             if value:

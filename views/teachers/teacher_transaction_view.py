@@ -10,7 +10,7 @@ from rules.transfer_details_rule import TransferDetailsRule
 
 from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
     TeacherTransactionQuery, TeacherTransferQueryModel, TeacherTransactionQueryModel
-from views.models.teacher_transaction import TeacherAddModel
+
 from rules.teacher_transaction_rule import TeacherTransactionRule
 from rules.teachers_rule import TeachersRule
 from rules.teacher_borrow_rule import TeacherBorrowRule
@@ -52,16 +52,16 @@ class TransferDetailsView(BaseView):
                 await self.transfer_details_rule.add_transfer_in_outer_details(add_teacher, transfer_details, user_id)
             else:
                 raise Exception("请填写老师信息")
-        res = await self.transfer_details_rule.add_transfer_in_inner_details(transfer_details, user_id)
-        return res
+        else:
+            await self.transfer_details_rule.add_transfer_in_inner_details(transfer_details, user_id)
+        return
 
     async def post_transfer_out_details(self, transfer_details: TransferDetailsModel):
         """
         调出
         """
         user_id = "asdfasdf"
-        school_id = 1
-        res = await self.transfer_details_rule.add_transfer_out_details(transfer_details, user_id, school_id)
+        res = await self.transfer_details_rule.add_transfer_out_details(transfer_details, user_id)
         return res
 
     # async def delete_transfer_details(self,
@@ -88,7 +88,7 @@ class TransferDetailsView(BaseView):
                                                                                   user_id)
         return paging_result
 
-    async def get_teacher_transfer(self, teacher_transaction: TeacherTransactionQuery):
+    async def get_teacher_transfer(self, teacher_transaction=Depends(TeacherTransactionQuery)):
         """
         查询系统内有没有此人
         """
@@ -169,8 +169,8 @@ class TransferDetailsView(BaseView):
         return res
 
     async def patch_transfer_rejected(self,
-                                      transfer_details_id: int = Query(None, title="transfer_detailsID",
-                                                                       description="transfer_detailsID", example=1234),
+                                      teacher_id: int = Query(None, title="教师id",
+                                                              description="教师id", example=1234),
                                       process_instance_id: int = Query(..., title="流程实例id",
                                                                        description="流程实例id",
                                                                        example=123),
@@ -178,20 +178,20 @@ class TransferDetailsView(BaseView):
                                                           description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
-        res = await self.transfer_details_rule.transfer_rejected(transfer_details_id, process_instance_id, user_id,
+        res = await self.transfer_details_rule.transfer_rejected(teacher_id, process_instance_id, user_id,
                                                                  reason)
         return res
 
     async def patch_transfer_revoked(self,
-                                     transfer_details_id: int = Query(None, title="transfer_detailsID",
-                                                                      description="transfer_detailsID", example=1234),
+                                     teacher_id: int = Query(None, title="教师id",
+                                                             description="教师id", example=1234),
                                      process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
                                                                       example=123),
                                      reason: str = Query("", title="reason",
                                                          description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
-        res = await self.transfer_details_rule.transfer_revoked(transfer_details_id, process_instance_id, user_id,
+        res = await self.transfer_details_rule.transfer_revoked(teacher_id, process_instance_id, user_id,
                                                                 reason)
         return res
 
@@ -292,37 +292,40 @@ class TeacherBorrowView(BaseView):
         return res
 
     async def post_teacher_borrow_in(self, teacher_borrow: TeacherBorrowModel,
-                                     add_teacher: Optional[TeacherAddModel] = None,
+                                     add_teacher: Optional[TeachersCreatModel] = None,
                                      teacher_borrow_inner: bool = Query(True, title="transfer_status",
                                                                         description="transfer_status",
                                                                         example=True)):
         """
         借入
         """
+        user_id = "asdfasdf"
         if not teacher_borrow_inner:
             if add_teacher != None:
-                await self.teacher_rule.add_teachers(add_teacher)
+                await self.teacher_borrow_rule.add_teacher_borrow_in_outer(add_teacher, teacher_borrow, user_id)
             else:
                 raise Exception("请填写老师信息")
-        res = await self.teacher_borrow_rule.add_transfer_in_details(teacher_borrow)
-        return res
+        else:
+            await self.teacher_borrow_rule.add_teacher_borrow_in_inner(teacher_borrow, user_id)
+        return
 
     async def post_teacher_borrow_out(self, teacher_borrow: TeacherBorrowModel):
         """
         借出
         """
-        res = await self.teacher_borrow_rule.add_teacher_borrow_out(teacher_borrow)
+        user_id = "asdfasdf"
+        res = await self.teacher_borrow_rule.add_teacher_borrow_out(teacher_borrow, user_id)
         return res
 
-    async def delete_teacher_borrow(self,
-                                    teacher_borrow_id: int = Query(None, title="teacher_borrowID",
-                                                                   description="teacher_borrowID", example=1234)
-                                    ):
-        await self.teacher_borrow_rule.delete_teacher_borrow(teacher_borrow_id)
-
-    async def put_teacher_borrow(self, teacher_borrow: TeacherBorrowReModel):
-        res = await self.teacher_borrow_rule.update_teacher_borrow(teacher_borrow)
-        return res
+    # async def delete_teacher_borrow(self,
+    #                                 teacher_borrow_id: int = Query(None, title="teacher_borrowID",
+    #                                                                description="teacher_borrowID", example=1234)
+    #                                 ):
+    #     await self.teacher_borrow_rule.delete_teacher_borrow(teacher_borrow_id)
+    #
+    # async def put_teacher_borrow(self, teacher_borrow: TeacherBorrowReModel):
+    #     res = await self.teacher_borrow_rule.update_teacher_borrow(teacher_borrow)
+    #     return res
 
     async def get_teacher_borrow_all(self, teacher_id: int = Query(None, title="teacher_borrowID",
                                                                    description="teacher_borrowID", example=1234)):
@@ -331,11 +334,20 @@ class TeacherBorrowView(BaseView):
         """
         return await self.teacher_borrow_rule.get_all_teacher_borrow(teacher_id)
 
-    async def query_teacher_borrow(self, teacher_borrow: TeacherTransactionQuery):
+    async def page_borrow_with_page(self, teacher_borrow=Depends(TeacherBorrowQueryModel),
+                                    page_request=Depends(PageRequest)):
         """
-        查询老师是否在系统内
+        分页查询
         """
-        return await self.teacher_borrow_rule.query_teacher_transfer(teacher_borrow)
+        user_id = "asdfasdf"
+        paging_result = await self.teacher_borrow_rule.query_borrow_with_page(teacher_borrow, page_request, user_id)
+        return paging_result
+
+    # async def get_teacher_borrow_in_system(self, teacher_borrow: TeacherTransactionQuery):
+    #     """
+    #     查询老师是否在系统内
+    #     """
+    #     return await self.teacher_borrow_rule.query_teacher_transfer(teacher_borrow)
 
     # 借动管理查询
     async def page_borrow_out_launch(self, teacher_borrow=Depends(TeacherBorrowQueryModel),
@@ -344,7 +356,9 @@ class TeacherBorrowView(BaseView):
        我发起的借出
         """
         type = "launch"
-        paging_result = await self.teacher_borrow_rule.query_borrow_out_with_page(type, teacher_borrow, page_request)
+        user_id = "asdfasdf"
+        paging_result = await self.teacher_borrow_rule.query_borrow_out_with_page(type, teacher_borrow, page_request,
+                                                                                  user_id)
         return paging_result
 
     async def page_borrow_out_approval(self, teacher_borrow=Depends(TeacherBorrowQueryModel),
@@ -353,7 +367,9 @@ class TeacherBorrowView(BaseView):
         我审批的借出
         """
         type = "approval"
-        paging_result = await self.teacher_borrow_rule.query_borrow_out_with_page(type, teacher_borrow, page_request)
+        user_id = "asdfasdf"
+        paging_result = await self.teacher_borrow_rule.query_borrow_out_with_page(type, teacher_borrow, page_request,
+                                                                                  user_id)
         return paging_result
 
     async def page_borrow_in_launch(self, teacher_borrow=Depends(TeacherBorrowQueryModel),
@@ -361,8 +377,10 @@ class TeacherBorrowView(BaseView):
         """
         我发起的借入
         """
+        user_id = "asdfasdf"
         type = "launch"
-        paging_result = await self.teacher_borrow_rule.query_borrow_in_with_page(type, teacher_borrow, page_request)
+        paging_result = await self.teacher_borrow_rule.query_borrow_in_with_page(type, teacher_borrow, page_request,
+                                                                                 user_id)
         return paging_result
 
     async def page_borrow_in_approval(self, teacher_borrow=Depends(TeacherBorrowQueryModel),
@@ -371,7 +389,9 @@ class TeacherBorrowView(BaseView):
         我审批的借入
         """
         type = "approval"
-        paging_result = await self.teacher_borrow_rule.query_borrow_in_with_page(type, teacher_borrow, page_request)
+        user_id = "asdfasdf"
+        paging_result = await self.teacher_borrow_rule.query_borrow_in_with_page(type, teacher_borrow, page_request,
+                                                                                 user_id)
         return paging_result
 
     # 审批相关
@@ -387,17 +407,44 @@ class TeacherBorrowView(BaseView):
     #     res = await self.teacher_borrow_rule.submitted(teacher_borrow_id)
     #     return res
 
-    async def patch_borrow_approved(self, teacher_borrow_id: int = Query(None, title="teacher_borrowID",
-                                                                         description="teacher_borrowID", example=1234)):
-        res = await self.teacher_borrow_rule.borrow_approved(teacher_borrow_id)
+    async def patch_borrow_approved(self,
+                                    teacher_id: int = Query(None, title="transfer_detailsID",
+                                                            description="transfer_detailsID", example=1234),
+                                    process_instance_id: int = Query(..., title="流程实例id",
+                                                                     description="流程实例id",
+                                                                     example=123),
+                                    reason: str = Query("", title="reason",
+                                                        description="审核理由")):
+        user_id = "asdfasdf"
+        reason = reason
+        res = await self.teacher_borrow_rule.borrow_approved(teacher_id, process_instance_id, user_id,
+                                                             reason)
         return res
 
-    async def patch_borrow_rejected(self, teacher_borrow_id: int = Query(None, title="teacher_borrowID",
-                                                                         description="teacher_borrowID", example=1234)):
-        res = await self.teacher_borrow_rule.borrow_rejected(teacher_borrow_id)
+    async def patch_borrow_rejected(self,
+                                    teacher_id: int = Query(None, title="transfer_detailsID",
+                                                            description="transfer_detailsID", example=1234),
+                                    process_instance_id: int = Query(..., title="流程实例id",
+                                                                     description="流程实例id",
+                                                                     example=123),
+                                    reason: str = Query("", title="reason",
+                                                        description="审核理由")):
+        user_id = "asdfasdf"
+        reason = reason
+        res = await self.teacher_borrow_rule.borrow_rejected(teacher_id, process_instance_id, user_id,
+                                                             reason)
         return res
 
-    async def patch_borrow_revoked(self, teacher_borrow_id: int = Query(None, title="teacher_borrowID",
-                                                                        description="teacher_borrowID", example=1234)):
-        res = await self.teacher_borrow_rule.borrow_revoked(teacher_borrow_id)
+    async def patch_borrow_revoked(self,
+                                   teacher_id: int = Query(None, title="transfer_detailsID",
+                                                           description="transfer_detailsID", example=1234),
+                                   process_instance_id: int = Query(..., title="流程实例id",
+                                                                    description="流程实例id",
+                                                                    example=123),
+                                   reason: str = Query("", title="reason",
+                                                       description="审核理由")):
+        user_id = "asdfasdf"
+        reason = reason
+        res = await self.teacher_borrow_rule.borrow_revoked(teacher_id, process_instance_id, user_id,
+                                                            reason)
         return res

@@ -68,6 +68,7 @@ class TeachersCreatModel(BaseModel):
     teacher_avatar: str = Field("", title="头像", description="头像")
     mobile: str = Field("", title="手机号", description="手机号")
 
+
 class TeacherRe(BaseModel):
     """
     这个模型现在本地查然后是交给工作流的，相当于表单附赠信息
@@ -82,6 +83,7 @@ class TeacherRe(BaseModel):
     mobile: str = Field("", title="手机号", description="手机号")
     teacher_main_status: str = Field(..., title="主状态", description="主状态")
     teacher_sub_status: str = Field("", title="子状态", description="子状态")
+
 
 class TeacherCreateResultModel(TeachersCreatModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
@@ -269,10 +271,10 @@ class TeacherInfo(BaseModel):  # 基本信息
     highest_education: str = Field("", title="最高学历", description="最高学历", example="本科")
     institution_of_highest_education: str = Field("", title="获得最高学历的院校或者机构",
                                                   description="获得最高学历的院校或者机构", example="沈阳师范大学")
-    special_education_start_time: date|None = Field(..., title="特教开始时间", description="特教开始时间",
-                                               example="2021-10-10")
-    start_working_date: date|None = Field(..., title="参加工作年月", description="参加工作年月", example="2010-01-01")
-    enter_school_time: date|None = Field(..., title="进本校时间", description="进本校时间", example="2010-01-01")
+    special_education_start_time: date | None = Field(..., title="特教开始时间", description="特教开始时间",
+                                                      example="2021-10-10")
+    start_working_date: date | None = Field(..., title="参加工作年月", description="参加工作年月", example="2010-01-01")
+    enter_school_time: date | None = Field(..., title="进本校时间", description="进本校时间", example="2010-01-01")
     source_of_staff: str = Field(..., title="教职工来源", description="教职工来源", example="招聘")
     staff_category: str = Field(..., title="教职工类别", description="教职工类别", example="教师")
     in_post: bool = Field(..., title="是否在编", description="是否在编")
@@ -998,7 +1000,6 @@ class CurrentTeacherQueryRe(BaseModel):
     is_approval: Optional[bool] = Field(None, title="是否在审批中", description="是否在审批中")
 
 
-
 class TeacherApprovalQuery(BaseModel):
     """
     新教职工审核查询模型
@@ -1042,7 +1043,6 @@ class TeacherApprovalQueryRe(BaseModel):
     approval_time: Optional[datetime] = Field(None, title="审批时间", description="审批时间")
     approval_status: str = Field("pending", title="审批状态", description="审批状态")
     process_instance_id: int = Field(0, title="流程实例id", description="流程实例id")
-
 
 
 # task相关模型

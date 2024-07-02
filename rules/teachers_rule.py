@@ -11,11 +11,11 @@ from views.models.teachers import Teachers as TeachersModel
 from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherCreateResultModel, CombinedModel, \
     TeacherInfoCreateResultModel, TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
     NewTeacherApprovalCreate
-from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError, ApprovalStatusError
+from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
 from rules.teachers_info_rule import TeachersInfoRule
 from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, TeacherChangeLogQueryModel, \
-    CurrentTeacherInfoSaveModel,TeacherRe
+    CurrentTeacherInfoSaveModel, TeacherRe
 
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
@@ -106,9 +106,10 @@ class TeachersRule(object):
         update_params = {"teacher_sub_status": "submitted"}
         await self.teacher_work_flow_rule.update_work_flow_by_param(work_flow_instance["process_instance_id"],
                                                                     update_params)
+        await self.teacher_progressing(teachers_work.teacher_id)
 
         teacher_entry_log = OperationRecord(
-            action_target_id=teachers_db.teacher_id,
+            action_target_id=teachers_work.teacher_id,
             target=OperationTarget.TEACHER.value,
             action_type=OperationType.CREATE.value,
             ip="127.0.0.1",
@@ -141,7 +142,7 @@ class TeachersRule(object):
 
     async def add_transfer_teachers(self, teachers: TeachersCreatModel):
         """
-        系统外调入系统内时使用，增加老师
+        系统外调入系统内时使用
         """
         teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
         if teachers_db.teacher_id_type == 'resident_id_card':
@@ -149,8 +150,19 @@ class TeachersRule(object):
             if not idstatus:
                 raise IdCardError()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
-        # todo 老师需要修改状态
-        teachers = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
+
+        # 更新老师状态
+        teachers_db2 = await self.teachers_dao.get_teachers_by_id(teachers_db.teacher_id)
+        teachers_ = orm_model_to_view_model(teachers_db2, TeacherRe, exclude=["hash_password"])
+        if not teachers_:
+            raise TeacherNotFoundError()
+        teachers_.teacher_sub_status = "submitted"
+        teachers_.teacher_main_status = "employed"
+        await self.teachers_dao.update_teachers(teachers_, "teacher_sub_status", "teacher_main_status")
+
+        # 获取老师信息
+        teachers_db3 = await self.teachers_dao.get_teachers_by_id(teachers_.teacher_id)
+        teachers = orm_model_to_view_model(teachers_db3, TeacherRe, exclude=[""])
         return teachers
 
     async def update_teachers(self, teachers, user_id):
@@ -170,9 +182,10 @@ class TeachersRule(object):
             #                                                  exclude=[""])
             params = {"process_code": "t_keyinfo", "teacher_id": teachers.teacher_id, "applicant_name": user_id}
             work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teachers, params)
-            update_params = {"teacher_main_status": "employed", "teacher_sub_status": "submitted"}
+            update_params = {"teacher_main_status": "employed", "teacher_sub_status": "active"}
             await self.teacher_work_flow_rule.update_work_flow_by_param(work_flow_instance["process_instance_id"],
                                                                         update_params)
+            await self.teacher_progressing(teachers.teacher_id)
             teacher_change_log = OperationRecord(
                 action_target_id=teachers.teacher_id,
                 target=OperationTarget.TEACHER.value,
@@ -187,7 +200,6 @@ class TeachersRule(object):
                 operator_id=1,
                 operator_name=user_id,
                 process_instance_id=work_flow_instance["process_instance_id"])
-            await self.teacher_pending(teachers.teacher_id)
             await self.operation_record_rule.add_operation_record(teacher_change_log)
         if teachers_main_status == "unemployed":
             teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers.teacher_id)
@@ -197,6 +209,7 @@ class TeachersRule(object):
             await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
                 teachers.teacher_id)
             await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
+
         return teachers
 
     async def delete_teachers(self, teachers_id, user_id):
@@ -206,7 +219,7 @@ class TeachersRule(object):
         teachers_db = await self.teachers_dao.delete_teachers(exists_teachers)
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
         teacher_entry_log = OperationRecord(
-            action_target_id=teachers_db.teacher_id,
+            action_target_id=teachers.teacher_id,
             target=OperationTarget.TEACHER.value,
             action_type=OperationType.DELETE.value,
             ip="127.0.0.1",
@@ -241,7 +254,6 @@ class TeachersRule(object):
 
     async def entry_approved(self, teachers_id, process_instance_id, user_id, reason):
         user_id = user_id
-        await self.teacher_progressing(teachers_id)
         parameters = {"user_id": user_id, "action": "approved", "description": reason}
         current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
         node_instance_id = current_node.get("node_instance_id")
@@ -288,7 +300,6 @@ class TeachersRule(object):
 
     # 关键信息审批相关
     async def teacher_info_change_approved(self, teachers_id, process_instance_id, user_id, reason):
-        await self.teacher_progressing(teachers_id)
         user_id = user_id
         parameters = {"user_id": user_id, "action": "approved", "description": reason}
         current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
@@ -308,7 +319,6 @@ class TeachersRule(object):
             return "该老师关键信息变更审批已通过"
 
     async def teacher_info_change_rejected(self, teachers_id, process_instance_id, user_id, reason):
-        await self.teacher_progressing(teachers_id)
         user_id = user_id
         parameters = {"user_id": user_id, "action": "rejected", "description": reason}
         current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
@@ -321,7 +331,6 @@ class TeachersRule(object):
             return "该老师关键信息变更审批已拒绝"
 
     async def teacher_info_change_revoked(self, teachers_id, process_instance_id, user_id):
-        await self.teacher_progressing(teachers_id)
         user_id = user_id
         parameters = {"user_id": user_id, "action": "revoke"}
         current_node = await self.teacher_work_flow_rule.get_teacher_work_flow_current_node(process_instance_id)
