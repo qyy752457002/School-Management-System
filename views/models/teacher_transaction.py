@@ -199,6 +199,7 @@ class TeacherTransactionQueryRe(BaseModel):
     teacher_avatar: str = Field("", title="头像", description="头像")
     mobile: str | None = Field("", title="手机号", description="手机号")
 
+
 class TeacherAddModel(BaseModel):
     """
     姓名：teacher_name
@@ -211,8 +212,7 @@ class TeacherAddModel(BaseModel):
     teacher_id_type: str = Field(..., title="证件类型", description="证件类型")
     teacher_id_number: str = Field(..., title="证件号码", description="证件号码")
     teacher_gender: Gender = Field(..., title="性别", description="性别")
-    teacher_date_of_birth: date|None = Field(..., title="出生日期", description="出生日期")
-
+    teacher_date_of_birth: date | None = Field(..., title="出生日期", description="出生日期")
 
 
 class TeacherAddReModel(BaseModel):
@@ -293,25 +293,25 @@ class TransferDetailsModel(BaseModel):
 
     original_unit_id: Optional[int] = Field(None, title="原单位", description="原单位")
     original_position: str = Field("", title="原岗位", description="原岗位")
-    original_district_province_id: Optional[int] = Field(None, title="原行政属地省", description="原行政属地省")
-    original_district_city_id: Optional[int] = Field(None, title="原行政属地市", description="原行政属地市")
-    original_district_area_id: Optional[int] = Field(None, title="原行政属地区", description="原行政属地区")
-    original_region_province_id: Optional[int] = Field(None, title="原管辖区域省", description="原管辖区域省")
-    original_region_city_id: Optional[int] = Field(None, title="原管辖区域市", description="原管辖区域市")
-    original_region_area_id: Optional[int] = Field(None, title="原管辖区域区", description="原管辖区域区")
-    original_unit_name: Optional[str] = Field("", title="原单位", description="原单位")
-    transfer_in_date: Optional[date] = Field(None, title="调入日期", description="调入日期")
+    original_district_province_id: Optional[int] | None = Field(None, title="原行政属地省", description="原行政属地省")
+    original_district_city_id: Optional[int] | None = Field(None, title="原行政属地市", description="原行政属地市")
+    original_district_area_id: Optional[int] | None = Field(None, title="原行政属地区", description="原行政属地区")
+    original_region_province_id: Optional[int] | None = Field(None, title="原管辖区域省", description="原管辖区域省")
+    original_region_city_id: Optional[int] | None = Field(None, title="原管辖区域市", description="原管辖区域市")
+    original_region_area_id: Optional[int] | None = Field(None, title="原管辖区域区", description="原管辖区域区")
+    original_unit_name: Optional[str] | None = Field("", title="原单位", description="原单位")
+    transfer_in_date: Optional[date] | None = Field(None, title="调入日期", description="调入日期")
 
     current_unit_id: Optional[int] | None = Field(None, title="现单位", description="现单位")
-    current_unit_name: Optional[str] = Field("", title="现单位", description="现单位")
-    current_position: Optional[str] = Field(..., title="现岗位", description="现岗位")
-    current_district_province_id: Optional[int] = Field(..., title="现行政属地省", description="现行政属地省")
-    current_district_city_id: Optional[int] = Field(..., title="现行政属地市", description="现行政属地市")
-    current_district_area_id: Optional[int] = Field(..., title="现行政属地区", description="现行政属地区")
-    current_region_province_id: Optional[int] = Field(..., title="现管辖区域省", description="现管辖区域省")
-    current_region_city_id: Optional[int] = Field(..., title="现管辖区域市", description="现管辖区域市")
-    current_region_area_id: Optional[int] = Field(..., title="现管辖区域区", description="现管辖区域区")
-    transfer_out_date: Optional[date] = Field(..., title="调出日期", description="调出日期")
+    current_unit_name: Optional[str] | None = Field("", title="现单位", description="现单位")
+    current_position: str = Field("", title="现岗位", description="现岗位")
+    current_district_province_id: Optional[int] | None = Field(None, title="现行政属地省", description="现行政属地省")
+    current_district_city_id: Optional[int] | None = Field(None, title="现行政属地市", description="现行政属地市")
+    current_district_area_id: Optional[int] | None = Field(None, title="现行政属地区", description="现行政属地区")
+    current_region_province_id: Optional[int] | None = Field(None, title="现管辖区域省", description="现管辖区域省")
+    current_region_city_id: Optional[int] | None = Field(None, title="现管辖区域市", description="现管辖区域市")
+    current_region_area_id: Optional[int] | None = Field(None, title="现管辖区域区", description="现管辖区域区")
+    transfer_out_date: Optional[date] | None = Field(None, title="调出日期", description="调出日期")
 
     transfer_reason: str = Field("", title="调动原因", description="调动原因")
     remark: str = Field("", title="备注", description="备注")
@@ -501,25 +501,27 @@ class TeacherBorrowModel(BaseModel):
     借动类型：borrow_type
     流程id：process_instance_id
     """
-    original_unit: str = Field(..., title="原单位", description="原单位")
+    original_unit_id: Optional[int] = Field(None, title="原单位", description="原单位")
     original_position: str = Field("", title="原岗位", description="原岗位")
-    original_district_province_id: Optional[int] = Field(..., title="原行政属地省", description="原行政属地省")
-    original_district_city_id: Optional[int] = Field(..., title="原行政属地市", description="原行政属地市")
-    original_district_area_id: Optional[int] = Field(..., title="原行政属地区", description="原行政属地区")
-    original_region_province_id: Optional[int] = Field(..., title="原管辖区域省", description="原管辖区域省")
-    original_region_city_id: Optional[int] = Field(..., title="原管辖区域市", description="原管辖区域市")
-    original_region_area_id: Optional[int] = Field(..., title="原管辖区域区", description="原管辖区域区")
+    original_district_province_id: Optional[int] | None = Field(None, title="原行政属地省", description="原行政属地省")
+    original_district_city_id: Optional[int] | None = Field(None, title="原行政属地市", description="原行政属地市")
+    original_district_area_id: Optional[int] | None = Field(None, title="原行政属地区", description="原行政属地区")
+    original_region_province_id: Optional[int] | None = Field(None, title="原管辖区域省", description="原管辖区域省")
+    original_region_city_id: Optional[int] | None = Field(None, title="原管辖区域市", description="原管辖区域市")
+    original_region_area_id: Optional[int] | None = Field(None, title="原管辖区域区", description="原管辖区域区")
+    original_unit_name: Optional[str] | None = Field("", title="原单位", description="原单位")
 
     borrow_in_date: Optional[date] = Field(None, title="借入日期", description="借入日期")
 
-    current_unit_id: int = Field(..., title="现单位", description="现单位")
-    current_position: Optional[str] = Field(..., title="现岗位", description="现岗位")
-    current_district_province_id: Optional[int] = Field(..., title="现行政属地省", description="现行政属地省")
-    current_district_city_id: Optional[int] = Field(..., title="现行政属地市", description="现行政属地市")
-    current_district_area_id: Optional[int] = Field(..., title="现行政属地区", description="现行政属地区")
-    current_region_province_id: Optional[int] = Field(..., title="现管辖区域省", description="现管辖区域省")
-    current_region_city_id: Optional[int] = Field(..., title="现管辖区域市", description="现管辖区域市")
-    current_region_area_id: Optional[int] = Field(..., title="现管辖区域区", description="现管辖区域区")
+    current_unit_id: Optional[int] | None = Field(None, title="现单位", description="现单位")
+    current_unit_name: Optional[str] | None = Field("", title="现单位", description="现单位")
+    current_position: str = Field("", title="现岗位", description="现岗位")
+    current_district_province_id: Optional[int] | None = Field(None, title="现行政属地省", description="现行政属地省")
+    current_district_city_id: Optional[int] | None = Field(None, title="现行政属地市", description="现行政属地市")
+    current_district_area_id: Optional[int] | None = Field(None, title="现行政属地区", description="现行政属地区")
+    current_region_province_id: Optional[int] | None = Field(None, title="现管辖区域省", description="现管辖区域省")
+    current_region_city_id: Optional[int] | None = Field(None, title="现管辖区域市", description="现管辖区域市")
+    current_region_area_id: Optional[int] | None = Field(None, title="现管辖区域区", description="现管辖区域区")
 
     borrow_out_date: Optional[date] = Field(..., title="借出日期", description="借出日期")
     transfer_reason: str = Field("", title="借动原因", description="借动原因")
