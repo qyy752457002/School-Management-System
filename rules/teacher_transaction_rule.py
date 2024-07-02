@@ -85,6 +85,8 @@ class TeacherTransactionRule(object):
                 operator_name=user_id,
                 process_instance_id=0)
         else:
+            teacher_db.teacher_sub_status = transaction_type
+            await self.teachers_dao.update_teachers(teacher_db, "teacher_sub_status")
             teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
             teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)
             teacher_transaction_log = OperationRecord(
@@ -173,11 +175,19 @@ class TeacherTransactionRule(object):
         teacher_transaction.approval_status = "revoked"
         return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
 
-    async def teacher_active(self, teachers_id):
+    async def transaction_teacher_active(self, teachers_id,transaction_id):
         teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
         if not teachers:
             raise TeacherNotFoundError()
         if teachers.teacher_sub_status != "active":
             teachers.teacher_main_status = "employed"
             teachers.teacher_sub_status = "active"
-        return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status", "teacher_main_status")
+        await self.teachers_dao.update_teachers(teachers, "teacher_sub_status", "teacher_main_status")
+        await self.change_is_active(transaction_id)
+        return
+
+    async def change_is_active(self, teacher_transaction_id):
+        teacher_transaction = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
+            teacher_transaction_id)
+        teacher_transaction.is_active = True
+        return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "is_active")

@@ -268,8 +268,10 @@ class TeacherTransactionView(BaseView):
 
     async def patch_teacher_active(self,
                                    teacher_id: int = Query(..., title="教师编号", description="教师编号",
-                                                           example=123), ):
-        await self.teacher_transaction_rule.teacher_active(teacher_id)
+                                                           example=123),
+                                   transaction_id: int = Query(..., title="教师变动记录编号", description="教师变动记录编号",
+                                                               example=123)):
+        await self.teacher_transaction_rule.transaction_teacher_active(teacher_id,transaction_id)
         return teacher_id
 
 
@@ -340,7 +342,8 @@ class TeacherBorrowView(BaseView):
         分页查询
         """
         user_id = "asdfasdf"
-        paging_result = await self.teacher_borrow_rule.query_teacher_borrow_with_page(teacher_borrow, page_request, user_id)
+        paging_result = await self.teacher_borrow_rule.query_teacher_borrow_with_page(teacher_borrow, page_request,
+                                                                                      user_id)
         return paging_result
 
     # async def get_teacher_borrow_in_system(self, teacher_borrow: TeacherTransactionQuery):
