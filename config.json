@@ -72,6 +72,7 @@
         "prefix": "",
         "server_key": "default"
       },
+      "snowflake": {"db": 0, "prefix": "", "server_key": "default"},
       "login_state": {
         "db": 22,
         "prefix": "",
