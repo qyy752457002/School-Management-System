@@ -153,6 +153,7 @@ class InstitutionsAdd(BaseModel):
     membership_no: str = Field(...,   title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
     block: str = Query("", title=" ", description="地域管辖区", ),
     borough: str = Query("", title="  ", description=" 行政管辖区", ),
+    status: str = Field(PlanningSchoolStatus.DRAFT,   title='状态',  description=" 状态",examples=[''])
 
 
 class InstitutionBaseInfo(BaseModel):
@@ -187,6 +188,7 @@ class InstitutionBaseInfo(BaseModel):
     related_license_upload: str = Field("",   title='相关证照上传',  description=" 相关证照上传",examples=[''])
     workflow_status: str|None = Field("",   title='',  description=" ",examples=[''])
     process_instance_id:int= Query(0, title="", description="", example='1')
+    status: str = Field( '',   title='状态',  description=" 状态",examples=[''])
 
 
 

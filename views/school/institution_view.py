@@ -58,6 +58,10 @@ class InstitutionView(BaseView):
     # 修改 变更 基本信息
     async def patch_baseinfo(self, institution_baseinfo: InstitutionBaseInfo):
         origin = await self.institution_rule.get_institution_by_id(institution_baseinfo.id)
+
+        if origin.status == PlanningSchoolStatus.DRAFT.value:
+            institution_baseinfo.status = PlanningSchoolStatus.OPENING.value
+            # raise InstitutionStatusError(f"{origin.institution_name}状态为正常，不能修改")
         log_con = compare_modify_fields(institution_baseinfo, origin)
 
         res = await self.institution_rule.update_institution_byargs(institution_baseinfo, )

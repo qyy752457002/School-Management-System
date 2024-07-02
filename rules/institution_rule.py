@@ -9,6 +9,8 @@ from mini_framework.utils.json import JsonUtils
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from pydantic import BaseModel
+
 from daos.institution_dao import InstitutionDAO
 from models.institution import Institution
 from models.student_transaction import AuditAction
@@ -385,7 +387,9 @@ class InstitutionRule(object):
         else:
             pass
 
-        school= view_model_to_orm_model(school, Institution,  other_mapper={"website_url": 'web_url',"create_date":'create_institution_date'})
+        if isinstance(school, BaseModel):
+
+            school= view_model_to_orm_model(school, Institution,  other_mapper={"website_url": 'web_url',"create_date":'create_institution_date'})
         need_update_list = []
         for key, value in school.__dict__.items():
             if key.startswith('_'):
