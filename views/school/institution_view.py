@@ -188,7 +188,7 @@ class InstitutionView(BaseView):
             target=OperationTarget.INSTITUTION.value,
             action_type=OperationType.MODIFY.value,
             change_module=ChangeModule.BASIC_INFO_CHANGE.value,
-            change_detail="开办分校",
+            change_detail="开办事业行政单位",
             action_target_id=str(institution_id),
             # change_data=str(institution_id)[0:1000],
             process_instance_id=process_instance_id
@@ -230,7 +230,7 @@ class InstitutionView(BaseView):
             target=OperationTarget.INSTITUTION.value,
             action_type=OperationType.MODIFY.value,
             change_module=ChangeModule.BASIC_INFO_CHANGE.value,
-            change_detail="关闭分校",
+            change_detail="关闭行政事业单位",
             action_target_id=str(institution_id),
             # change_data=str(institution_id)[0:1000],
             process_instance_id=process_instance_id
