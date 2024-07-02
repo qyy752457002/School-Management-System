@@ -21,6 +21,8 @@ def compare_modify_fields( view_model,orm_model):
     changeitems = dict()
     # 使用视图模型
     vd = view_model.__dict__
+    if not orm_model:
+        return changeitems
     od = orm_model.__dict__
     vd = convert_dates_to_strings(vd)
     od = convert_dates_to_strings(od)
@@ -32,8 +34,12 @@ def compare_modify_fields( view_model,orm_model):
                 key_cn=''
                 if key in view_model.model_fields.keys():
                     key_cn = view_model.model_fields[key].title
-                elif key in orm_model.model_fields.keys():
+                    if not key_cn:
+                        key_cn =view_model.model_fields[key].description
+                if not key_cn and  key in orm_model.model_fields.keys():
                     key_cn = orm_model.model_fields[key].title
+                    if not key_cn:
+                        key_cn =orm_model.model_fields[key].description
 
                 valueold= od[key]
                 if isinstance(valueold,date):
@@ -42,7 +48,7 @@ def compare_modify_fields( view_model,orm_model):
                     value=value.strftime('%Y-%m-%d')
                 changeitems[key_cn] ={"before":  valueold,"after":value }
                 # pass
-    print(changeitems)
+    print('比叫变更域',changeitems)
     return changeitems
 
 def page_none_deal( paging):

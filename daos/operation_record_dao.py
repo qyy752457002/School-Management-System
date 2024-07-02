@@ -33,7 +33,7 @@ class OperationRecordDAO(DAOBase):
 
     async def query_operation_record_with_page(self, page_request: PageRequest, **kwargs):
         query = select(OperationRecord)
-        query = query.order_by(OperationRecord.id.asc())
+        query = query.order_by(OperationRecord.id.desc())
 
         for key, value in kwargs.items():
             if key == 'student_gender':

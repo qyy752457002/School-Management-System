@@ -10,7 +10,8 @@ from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
-from business_exceptions.planning_school import PlanningSchoolValidateError, PlanningSchoolBaseInfoValidateError
+from business_exceptions.planning_school import PlanningSchoolValidateError, PlanningSchoolBaseInfoValidateError, \
+    PlanningSchoolStatusError
 from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
 from rules.system_rule import SystemRule
@@ -121,6 +122,10 @@ class PlanningSchoolView(BaseView):
                           # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
 
                           ):
+        # 检测 是否允许修改
+        is_draft = await self.planning_school_rule.is_can_not_add_workflow(planning_school.id)
+        if is_draft:
+            raise PlanningSchoolStatusError()
 
         origin = await self.planning_school_rule.get_planning_school_by_id(planning_school.id)
 
@@ -147,7 +152,7 @@ class PlanningSchoolView(BaseView):
             action_type=OperationType.MODIFY.value,
             change_module=ChangeModule.KEY_INFO_CHANGE.value,
             change_detail="修改基本信息",
-            change_data=str(res2)[0:1000],
+            change_data= JsonUtils.dict_to_json_str(res2),
             process_instance_id=process_instance_id
         ))
 
@@ -166,7 +171,9 @@ class PlanningSchoolView(BaseView):
             change_module=ChangeModule.KEY_INFO_CHANGE.value,
             change_detail="修改基本信息",
             action_target_id=str(planning_school_id),
-            change_data=str(res)[0:1000],  ))
+            # change_data=str(res)[0:1000]
+        change_data= JsonUtils.dict_to_json_str(res)
+            ,  ))
 
         return res
 
@@ -185,7 +192,8 @@ class PlanningSchoolView(BaseView):
             change_module=ChangeModule.BASIC_INFO_CHANGE.value,
             change_detail="修改基本信息",
             action_target_id=str(planning_school_baseinfo.id),
-            change_data=str(log_con)[0:1000],
+            # change_data=str(log_con)[0:1000],
+            change_data= JsonUtils.dict_to_json_str(log_con),
               ))
 
         return res
@@ -235,6 +243,11 @@ class PlanningSchoolView(BaseView):
     async def patch_open(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
                                                                min_length=1, max_length=20, example='SC2032633')):
         # print(planning_school)
+        # 检测 是否允许修改
+        is_draft = await self.planning_school_rule.is_can_not_add_workflow(planning_school_id)
+        if is_draft:
+            raise PlanningSchoolStatusError()
+
         planning_school, extra_model = await self.planning_school_rule.get_planning_school_by_id(planning_school_id,
                                                                                                  PlanningSchoolBaseInfo)
 
@@ -267,7 +280,8 @@ class PlanningSchoolView(BaseView):
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
             action_target_id=str(planning_school_id),
             action_type=OperationType.MODIFY.value,
-            change_data=str(planning_school_id)[0:1000],
+            # change_data=str(planning_school_id)[0:1000],
+            change_data= JsonUtils.dict_to_json_str(planning_school_id),
             target=OperationTarget.PLANNING_SCHOOL.value,
             change_module=ChangeModule.CREATE_SCHOOL.value,
             change_detail="开办学校",
@@ -281,10 +295,14 @@ class PlanningSchoolView(BaseView):
                                                                 min_length=1, max_length=20, example='SC2032633'),
                           action_reason: str = Query(None, description="原因", min_length=1, max_length=20,
                                                      example='家庭搬迁'),
-                          related_license_upload: List[str] = Query(None, description="相关证照上传", min_length=1,
+                          related_license_upload: str = Query(None, description="相关证照上传", min_length=1,
                                                                     max_length=60, example=''),
 
                           ):
+        # 检测 是否允许修改
+        is_draft = await self.planning_school_rule.is_can_not_add_workflow(planning_school_id)
+        if is_draft:
+            raise PlanningSchoolStatusError()
         # print(planning_school)
         # res = await self.planning_school_rule.update_planning_school_status(planning_school_id,
         #                                                                     PlanningSchoolStatus.CLOSED.value)
@@ -310,7 +328,8 @@ class PlanningSchoolView(BaseView):
             change_module=ChangeModule.CLOSE_SCHOOL.value,
             change_detail="关闭学校",
             action_target_id=str(planning_school_id),
-            change_data=str(planning_school_id)[0:1000],
+            # change_data=str(planning_school_id)[0:1000],
+            change_data= JsonUtils.dict_to_json_str(planning_school_id),
             process_instance_id=process_instance_id
            ))
 
@@ -366,7 +385,9 @@ class PlanningSchoolView(BaseView):
             change_module=ChangeModule.CREATE_SCHOOL.value,
             change_detail="暂存全部信息",
             action_target_id=str(planning_school_id),
-            change_data=str(log_con)[0:1000],
+            # change_data=str(log_con)[0:1000],
+            change_data= JsonUtils.dict_to_json_str(log_con),
+
            ))
 
         return res
@@ -408,7 +429,9 @@ class PlanningSchoolView(BaseView):
             change_module=ChangeModule.CREATE_SCHOOL.value,
             change_detail="提交全部信息 开办",
             action_target_id=str(planning_school_id),
-            change_data=str(log_con)[0:1000],
+            # change_data=str(log_con)[0:1000],
+            change_data= JsonUtils.dict_to_json_str(log_con),
+
         ))
 
         return res2

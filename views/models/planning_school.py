@@ -44,7 +44,7 @@ class PlanningSchoolStatus(str, Enum):
 
 
 class PlanningSchool(BaseModel):
-    id: int = Query(None, title="", description="规划校id", example='1'),
+    id: int = Query(None, title="规划校id", description="规划校id", example='1'),
 
     planning_school_name: str = Field(..., title="规划校名称", description="1-20字符", examples=['XX小学'])
     planning_school_no: str = Field(..., title="规划校编号", description="规划校编号/规划校代码", examples=['SC2032633'])
@@ -179,19 +179,19 @@ class PlanningSchoolKeyAddInfo(BaseModel):
 
 
 class PlanningSchoolKeyInfo(BaseModel):
-    id: int = Query(None, title="", description="规划校id", example='1'),
+    id: int = Query(None, title="规划校id", description="规划校id", example='1'),
     planning_school_name: str = Field(..., title="规划校名称", description="1-20字符", examples=['XX小学'])
     planning_school_no: str = Query(None, title="规划校编号", description="规划校编号/规划校代码", min_length=1,
                                     max_length=20, example='SC2032633'),
-    borough: str = Query(..., title=" Author Email", description=" 行政管辖区", examples=['铁西区']),
-    block: str = Query(..., title=" Author", description="地域管辖区", examples=['铁西区']),
+    borough: str = Query(..., title=" 行政管辖区", description=" 行政管辖区", examples=['铁西区']),
+    block: str = Query(..., title=" 地域管辖区", description="地域管辖区", examples=['铁西区']),
     # planning_school_type: str = Query(..., title="", description=" 规划校类型", examples=['中小学']),
-    planning_school_edu_level: str|None = Query(..., title="", description="办学类型/规划校性质", examples=['学前教育']),
-    planning_school_category: str|None = Query(..., title="", description=" 办学类型二级", examples=['小学']),
-    planning_school_operation_type: str|None = Query(..., title="", description=" 办学类型三级",
+    planning_school_edu_level: str|None = Query(..., title="办学类型", description="办学类型/规划校性质", examples=['学前教育']),
+    planning_school_category: str|None = Query(..., title="办学类型二级", description=" 办学类型二级", examples=['小学']),
+    planning_school_operation_type: str|None = Query(..., title="办学类型三级", description=" 办学类型三级",
                                                     examples=['附设小学班']),
-    planning_school_org_type: str = Query(..., title="", description=" 规划校办别", examples=['民办']),
-    planning_school_level: str|None = Query(None, title="", description=" 规划校星级", examples=['5'])
+    planning_school_org_type: str = Query(..., title="规划校办别", description=" 规划校办别", examples=['民办']),
+    planning_school_level: str|None = Query(None, title="规划校星级", description=" 规划校星级", examples=['5'])
 
 
 class PlanningSchoolPageSearch(BaseModel):

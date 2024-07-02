@@ -47,6 +47,7 @@ class OrganizationMembersRule(object):
     # todo 增加 对 部门计数的更新
     async def add_organization_members(self, organization: OrganizationMembers):
         # 去重和 新增插入  todo 有可能重复  手动处理去重
+        print("add_organization_members", organization)
         exists_organization_members = await self.organization_members_dao.get_organization_members_by_param(
              organization)
         if exists_organization_members:

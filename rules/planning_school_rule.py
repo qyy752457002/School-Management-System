@@ -274,7 +274,6 @@ class PlanningSchoolRule(object):
 
         dicta['planning_school_id'] = planning_school_flow.id
 
-
         datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
 
@@ -341,25 +340,13 @@ class PlanningSchoolRule(object):
         if action=='keyinfo_change':
             # todo 把基本信息变更 改进去
             # 读取流程的原始信息  更新到数据库
-
             result = await self.system_rule.get_work_flow_instance_by_process_instance_id(
                 process_instance_id)
             if not result.get('json_data'):
                 # return {'工作流数据异常 无法解析'}
                 pass
-
-
             json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
             print(json_data)
-            needdel= []
-            # planning_school_op = PlanningSchoolBaseInfoOptional()
-            #
-            # for key,value in json_data.items():
-            #     if not hasattr(planning_school_op,key):
-            #         needdel.append(key)
-            # for key in needdel:
-            #     json_data.pop(key)
-
             planning_school_orm = PlanningSchoolKeyInfo(**json_data)
             planning_school_orm.id= planning_school.id
 
@@ -419,3 +406,13 @@ class PlanningSchoolRule(object):
         except Exception as e:
             print(e)
         return response
+
+    async def is_can_not_add_workflow(self, student_id):
+        tinfo=await self.get_planning_school_by_id(student_id)
+        print('当前信息',tinfo)
+        if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
+            return  True
+        # 检查是否有占用
+        if tinfo and  tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
+            return True
+        return False
