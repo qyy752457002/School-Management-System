@@ -41,8 +41,9 @@ class School(BaseDBModel):
 
     founder_name: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="举办者名称")
     founder_code: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="举办者识别码")
-    local_economic_attribute: Mapped[str] = mapped_column(String(64), nullable=True, comment="所属地经济属性",default='')
-    local_nationality_attribute: Mapped[str] = mapped_column(String(64), nullable=True, comment="所在地民族属性",default='')
+    location_economic_attribute: Mapped[str] = mapped_column(String(64), nullable=True, comment="所属地经济属性",default='')
+    urban_ethnic_nature: Mapped[str] = mapped_column(String(64), nullable=True, comment="所在地民族属性",default='')
+    leg_repr_certificatenumber: Mapped[str] = mapped_column(String(64), nullable=True, comment="法人证书号",default='')
 
     urban_rural_nature: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城乡性质")
     school_org_form: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="办学组织形式")

@@ -45,8 +45,9 @@ class School(BaseModel):
     junior_middle_school_entry_age: str = Field(..., title="", description="初中入学年龄",examples=['12'])
     senior_middle_school_system: str = Field(..., title="", description="高中学制",examples=['3'])
     workflow_status: str |None= Field(None, title="", description="", examples=[''])
-    local_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
-    local_nationality_attribute: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
+    location_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
+    urban_ethnic_nature: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
+    leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
 
     class Config:
         schema_extra = {
@@ -66,8 +67,6 @@ class SchoolBaseInfoOptional(BaseModel):
     urban_rural_nature: str = Field('', title="", description="城乡性质",examples=['城镇'])
     school_edu_level: str |None= Field('', title="", description="办学类型/学校性质",examples=['学前教育'])
     school_org_form: str = Field('', title="", description="办学组织形式",examples=['教学点'])
-    # school_nature: str = Field('', title="", description="学校性质",examples=['学前'])
-
     school_category: str|None = Field('', title="", description=" 办学类型二级",examples=['小学'])
     school_operation_type: str|None = Field('', title="", description=" 办学类型三级",examples=['附设小学班'])
     department_unit_number: str = Field('', title="", description="属地管理行政部门单位号",examples=['SC562369322SG'])
@@ -80,8 +79,9 @@ class SchoolBaseInfoOptional(BaseModel):
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
     process_instance_id:int= Query(0, title="", description="", example='1')
     workflow_status: str |None= Field(None, title="", description="", examples=[''])
-    local_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
-    local_nationality_attribute: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
+    location_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
+    urban_ethnic_nature: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
+    leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
 
 
 # 学校的 基本信息模型   视图的额模型是按需提供的
@@ -108,9 +108,9 @@ class SchoolBaseInfo(BaseModel):
     social_credit_code: str = Field('', title="", description="统一社会信用代码",examples=['XH423423876867'])
     school_closure_date: str = Field('', title="", description="学校关闭日期",examples=[''])
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
-    local_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
-    local_nationality_attribute: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
-
+    location_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
+    urban_ethnic_nature: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
+    leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
 
 
 class SchoolKeyInfo(BaseModel):
