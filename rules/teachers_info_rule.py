@@ -9,7 +9,7 @@ from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel
     CurrentTeacherQuery, CurrentTeacherQueryRe, CurrentTeacherInfoSaveModel, NewTeacherInfoSaveModel, \
     TeacherInfoCreateModel, TeacherApprovalQuery, TeacherApprovalQueryRe, NewTeacherApprovalCreate, Teachers
 from sqlalchemy import select, func, update
-from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError,QueryError
+from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError, QueryError
 from daos.teachers_dao import TeachersDao
 from views.models.organization import OrganizationMembers
 from rules.organization_memebers_rule import OrganizationMembersRule
@@ -142,8 +142,7 @@ class TeachersInfoRule(object):
             await self.organization_members_rule.add_organization_members(organization)
         return teachers_info
 
-
-    async def update_teachers_info(self, teachers_info:TeacherInfoSubmit, user_id):
+    async def update_teachers_info(self, teachers_info: TeacherInfoSubmit, user_id):
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
         if not exits_teacher:
             raise TeacherNotFoundError()
@@ -158,6 +157,7 @@ class TeachersInfoRule(object):
             if value:
                 need_update_list.append(key)
         teachers_info = await self.teachers_info_dao.update_teachers_info(teachers_info, *need_update_list)
+
         teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
         teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
                                                          exclude=[""])
@@ -222,14 +222,24 @@ class TeachersInfoRule(object):
             if value:
                 need_update_list.append(key)
         teachers_info = await self.teachers_info_dao.update_teachers_info(teachers_info, *need_update_list)
+        await self.teacher_unsubmitted(teachers_info.teacher_id)
+        # if exits_teacher.teacher_main_status == "unemployed":
+        #     teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
+        #     teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
+        #                                                      exclude=[""])
+        #     params = {"process_code": "t_entry", "applicant_name": user_id}
+        #     await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
+        #         teacher_entry_approval.teacher_id)
+        #     await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
+        # if exits_teacher.teacher_main_status == "employed":
+            # teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
+            # teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
+            #                                                  exclude=[""])
+            # params = {"process_code": "t_keyinfo", "applicant_name": user_id}
+            # await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
+            #     teacher_entry_approval.teacher_id)
+            # await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
 
-        teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
-        teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
-                                                         exclude=[""])
-        params = {"process_code": "t_entry", "applicant_name": user_id}
-        await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
-            teacher_entry_approval.teacher_id)
-        await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
         # organization = OrganizationMembers()
         # organization.id = None
         # organization.org_id = teachers_info.org_id
@@ -273,4 +283,10 @@ class TeachersInfoRule(object):
             teachers.teacher_sub_status = "submitted"
         return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
 
-
+    async def teacher_unsubmitted(self, teachers_id):
+        teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
+        if not teachers:
+            raise TeacherNotFoundError()
+        if teachers.teacher_sub_status != "unsubmitted":
+            teachers.teacher_sub_status = "unsubmitted"
+        return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
