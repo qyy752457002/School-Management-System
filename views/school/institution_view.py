@@ -62,7 +62,7 @@ class InstitutionView(BaseView):
         origin = await self.institution_rule.get_institution_by_id(institution_baseinfo.id)
         log_con = compare_modify_fields(institution_baseinfo, origin)
 
-        res = await self.institution_rule.update_institution_byargs(institution_baseinfo, 2)
+        res = await self.institution_rule.update_institution_byargs(institution_baseinfo, )
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(

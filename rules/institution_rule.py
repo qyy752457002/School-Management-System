@@ -31,7 +31,7 @@ class InstitutionRule(object):
     async def get_institution_by_id(self, institution_id):
         institution_db = await self.institution_dao.get_institution_by_id(institution_id)
         # 可选 , exclude=[""]
-        institution = orm_model_to_view_model(institution_db, InstitutionModel)
+        institution = orm_model_to_view_model(institution_db, InstitutionOptional)
         return institution
 
     async def add_institution(self, institution: InstitutionModel):
@@ -376,6 +376,7 @@ class InstitutionRule(object):
         else:
             pass
 
+        school= view_model_to_orm_model(school, Institution,  other_mapper={"website_url": 'web_url',"create_date":'create_institution_date'})
         need_update_list = []
         for key, value in school.__dict__.items():
             if key.startswith('_'):
