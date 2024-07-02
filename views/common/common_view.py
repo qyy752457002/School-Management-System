@@ -21,6 +21,8 @@ def compare_modify_fields( view_model,orm_model):
     changeitems = dict()
     # 使用视图模型
     vd = view_model.__dict__
+    if not orm_model:
+        return changeitems
     od = orm_model.__dict__
     vd = convert_dates_to_strings(vd)
     od = convert_dates_to_strings(od)
