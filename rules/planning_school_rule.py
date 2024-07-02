@@ -412,4 +412,7 @@ class PlanningSchoolRule(object):
         print('当前信息',tinfo)
         if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
             return  True
+        # 检查是否有占用
+        if tinfo and  tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
+            return True
         return False
