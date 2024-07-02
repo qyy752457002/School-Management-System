@@ -79,37 +79,37 @@ class InstitutionView(BaseView):
 
 
     # 编辑的接口
-    async def put(self,
-
-                  school: InstitutionOptional,
-
-                  institution_id: int = Query(..., title="", description="学校id/园所id", example='38'),
-
-                  ):
-        # print(planning_school)
-        school.id = institution_id
-
-        # if isinstance(institution_eduinfo.att_class_type,  bool):
-        #     institution_eduinfo.att_class_type= str( institution_eduinfo.att_class_type )
-
-        origin = await self.institution_rule.get_institution_by_id(school.id)
-        log_con = compare_modify_fields(school, origin)
-
-        res = await self.institution_rule.update_institution_byargs(school)
-
-        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            target=OperationTarget.INSTITUTION.value,
-            action_type=OperationType.MODIFY.value,
-            change_module=ChangeModule.BASIC_INFO_CHANGE.value,
-            change_detail="暂存信息",
-            action_target_id=str(institution_id),
-            change_data= JsonUtils.dict_to_json_str(log_con),
-
-
-        ))
-
-        return res
+    # async def put(self,
+    #
+    #               school: InstitutionOptional,
+    #
+    #               institution_id: int = Query(..., title="", description="学校id/园所id", example='38'),
+    #
+    #               ):
+    #     # print(planning_school)
+    #     school.id = institution_id
+    #
+    #     # if isinstance(institution_eduinfo.att_class_type,  bool):
+    #     #     institution_eduinfo.att_class_type= str( institution_eduinfo.att_class_type )
+    #
+    #     origin = await self.institution_rule.get_institution_by_id(school.id)
+    #     log_con = compare_modify_fields(school, origin)
+    #
+    #     res = await self.institution_rule.update_institution_byargs(school)
+    #
+    #     #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+    #     res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+    #         target=OperationTarget.INSTITUTION.value,
+    #         action_type=OperationType.MODIFY.value,
+    #         change_module=ChangeModule.BASIC_INFO_CHANGE.value,
+    #         change_detail="暂存信息",
+    #         action_target_id=str(institution_id),
+    #         change_data= JsonUtils.dict_to_json_str(log_con),
+    #
+    #
+    #     ))
+    #
+    #     return res
 
 
     async def post_institution_import_example(self, account: Institutions = Body(..., description="")) -> Task:
@@ -144,8 +144,8 @@ class InstitutionView(BaseView):
         return task
 
     # 开办
-    async def patch_open(self, institution_id: str = Query(..., title="学校编号", description="学校id/园所id", min_length=1,
-                                                      max_length=20, example='SC2032633')):
+    async def patch_open(self, institution_id: str = Query(..., title="", description="", min_length=1,
+                                                      max_length=20, example='12')):
         # print(school)
         # res = await self.institution_rule.update_institution_status(institution_id, PlanningSchoolStatus.NORMAL.value, 'open')
         # 检测 是否允许修改
@@ -158,9 +158,9 @@ class InstitutionView(BaseView):
 
         res = await self.institution_rule.add_institution_work_flow(school)
         process_instance_id=0
-        if len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+        if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
-            pl = InstitutionOptional(id=institution_id, process_instance_id=process_instance_id)
+            pl = InstitutionOptional(id=institution_id, process_instance_id=process_instance_id,workflow_status=AuditAction.NEEDAUDIT.value)
 
             res = await self.institution_rule.update_institution_byargs(pl  )
 

@@ -114,7 +114,7 @@ class InstitutionRule(object):
 
     # 向工作流中心发送申请
     async def add_institution_work_flow(self, institution_flow: Institutions,):
-        institution_flow.id=0
+        # institution_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
         data= institution_flow
@@ -124,13 +124,18 @@ class InstitutionRule(object):
         datadict['applicant_name'] =  'tester'
         datadict['institution_code'] = institution_flow.institution_code
         datadict['institution_name'] = institution_flow.institution_name
-        # datadict['founder_type_lv3'] =   institution_flow.founder_type_lv3
-        datadict['block'] =   institution_flow.block
-        datadict['borough'] =   institution_flow.borough
-        datadict['institution_level'] =   institution_flow.institution_level
-        datadict['institution_no'] =   institution_flow.institution_no
+        datadict['social_credit_code'] =   institution_flow.social_credit_code
+        # datadict['block'] =   institution_flow.block
+        # datadict['borough'] =   institution_flow.borough
+        # datadict['institution_level'] =   institution_flow.institution_level
+        # datadict['institution_no'] =   institution_flow.institution_no
         datadict['apply_user'] =  'tester'
-        datadict['json_data'] =  json.dumps(institution_flow.__dict__, ensure_ascii=False)
+        dicta = institution_flow.__dict__
+        dicta['institution_id'] = institution_flow.id
+
+        datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
+
+        # datadict['json_data'] =  json.dumps(institution_flow.__dict__, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
         url=url+apiname
         headerdict = {
@@ -334,9 +339,13 @@ class InstitutionRule(object):
         pass
     async def is_can_not_add_workflow(self, student_id):
         tinfo=await self.get_institution_by_id(student_id)
+        # 是否需要拦截
         if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
-            return False
-        return True
+            return True
+        # 检查是否有占用
+        if tinfo and  tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
+            return True
+        return False
 
 
     async def update_institution_status(self, institution_id, status,action=None):

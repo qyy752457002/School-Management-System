@@ -9,6 +9,8 @@ from views.models.system import InstitutionType
 
 class Institutions(BaseModel):
     # todo title 等 必须和表头一样
+    id:int= Query(None, title="", description="", example='1')
+
     institution_name: str = Field(..., title='单位名称', description="单位名称",examples=['文化部'])
     institution_en_name: str = Field(...,title='单位名称英文',   description=" 单位名称英文",examples=['CEDUCUL'])
     institution_category: str = Field(..., title='单位分类',  description=" 单位分类",examples=['事业单位'])
@@ -40,6 +42,7 @@ class Institutions(BaseModel):
     status: str = Field(...,   title='状态',  description=" 状态",examples=[''])
     membership_no: str = Field(...,   title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
     membership_category: str = Field(...,   title='隶属单位类型',  description=" 隶属单位类型",examples=['行政'])
+    workflow_status: str|None = Field("",   title='',  description=" ",examples=[''])
 
 class InstitutionTask(BaseModel):
     """{'file_name':filename,'bucket':bucket,'scene':scene},"""
@@ -55,6 +58,8 @@ class InstitutionsValid(BaseModel):
 
 class InstitutionOptional(BaseModel):
     #   title 等 必须和表头一样
+    id:int= Query(None, title="", description="", example='1')
+
     institution_name: str = Field("", title='单位名称', description="单位名称",examples=['文化部'])
     institution_en_name: str = Field("",title='单位名称英文',   description=" 单位名称英文",examples=['CEDUCUL'])
     institution_category: str = Field("", title='单位分类',  description=" 单位分类",examples=['事业单位'])
@@ -86,11 +91,12 @@ class InstitutionOptional(BaseModel):
     status: str = Field("",   title='状态',  description=" 状态",examples=[''])
     membership_no: str = Field("",   title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
     membership_category: str = Field("",   title='隶属单位类型',  description=" 隶属单位类型",examples=['行政'])
+    workflow_status: str|None = Field("",   title='',  description=" ",examples=[''])
 
 
 
 class InstitutionKeyInfo(BaseModel):
-    id:int= Query(None, title="", description="学校id", example='1')
+    id:int= Query(None, title="", description="", example='1')
 
     school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633')
     planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
@@ -177,6 +183,7 @@ class InstitutionBaseInfo(BaseModel):
     urban_rural_nature: str = Field("",   title='城乡性质',  description=" 城乡性质",examples=['城镇'])
     location_economic_attribute: str = Field("",   title='所在地经济属性',  description=" 所在地经济属性",examples=['镇'])
     related_license_upload: str = Field("",   title='相关证照上传',  description=" 相关证照上传",examples=[''])
+    workflow_status: str|None = Field("",   title='',  description=" ",examples=[''])
 
 
 
