@@ -223,22 +223,22 @@ class TeachersInfoRule(object):
                 need_update_list.append(key)
         teachers_info = await self.teachers_info_dao.update_teachers_info(teachers_info, *need_update_list)
         await self.teacher_unsubmitted(teachers_info.teacher_id)
-        if exits_teacher.teacher_main_status == "unemployed":
-            teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
-            teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
-                                                             exclude=[""])
-            params = {"process_code": "t_entry", "applicant_name": user_id}
-            await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
-                teacher_entry_approval.teacher_id)
-            await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
-        if exits_teacher.teacher_main_status == "employed":
-            teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
-            teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
-                                                             exclude=[""])
-            params = {"process_code": "t_keyinfo", "applicant_name": user_id}
-            await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
-                teacher_entry_approval.teacher_id)
-            await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
+        # if exits_teacher.teacher_main_status == "unemployed":
+        #     teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
+        #     teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
+        #                                                      exclude=[""])
+        #     params = {"process_code": "t_entry", "applicant_name": user_id}
+        #     await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
+        #         teacher_entry_approval.teacher_id)
+        #     await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
+        # if exits_teacher.teacher_main_status == "employed":
+            # teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
+            # teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
+            #                                                  exclude=[""])
+            # params = {"process_code": "t_keyinfo", "applicant_name": user_id}
+            # await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
+            #     teacher_entry_approval.teacher_id)
+            # await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
 
         # organization = OrganizationMembers()
         # organization.id = None
