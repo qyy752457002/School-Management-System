@@ -116,9 +116,9 @@ class TeacherTransactionRule(object):
 
     async def update_teacher_transaction(self, teacher_transaction: TeacherTransactionUpdateModel):
         exists_teacher_transaction_info = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
-            teacher_transaction.teacher_transaction_id)
+            teacher_transaction.transaction_id)
         if not exists_teacher_transaction_info:
-            raise Exception(f"编号为{teacher_transaction.teacher_transaction_id}的teacher_transaction不存在")
+            raise Exception(f"编号为{teacher_transaction.transaction_id}的teacher_transaction不存在")
         need_update_list = []
         for key, value in teacher_transaction.dict().items():
             if value:
