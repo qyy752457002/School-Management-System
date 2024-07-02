@@ -58,6 +58,8 @@ class PlanningSchoolExecutor(TaskExecutor):
                 res_comm = await self.planning_school_communication_rule.add_planning_school_communication(resc,
                                                                                                            convertmodel=True)
                 print(res_comm, '模型2 res')
+                task.result_file =  ''
+                task.result_bucket =  ''
 
                 print('插入数据res',res)
             logger.info(f"任务   created")
@@ -69,6 +71,8 @@ class PlanningSchoolExecutor(TaskExecutor):
 
 # 导出  todo
 class PlanningSchoolExportExecutor(TaskExecutor):
-    async def execute(self, task: 'FileTask'):
+    async def execute(self, task: 'Task'):
         print("test")
         print(dict(task))
+        task.result_file =  ''
+        task.result_bucket =  ''

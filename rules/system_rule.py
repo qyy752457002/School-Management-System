@@ -1,7 +1,11 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+import pprint
 import traceback
 from urllib.parse import urlencode
 
+from mini_framework.storage.manager import storage_manager
+from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
+from mini_framework.storage.view_model import FileStorageModel
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
@@ -22,6 +26,7 @@ class SystemRule(object):
     permission_menu_dao: PermissionMenuDAO
     roles_dao: RolesDAO
     teacher_work_flow_rule: TeacherWorkFlowRule
+    file_storage_dao: FileStorageDAO
 
     async def get_system_by_id(self, system_id):
         system_db = await self.system_dao.get_subsystem_by_id(system_id)
@@ -204,3 +209,33 @@ class SystemRule(object):
         url += ('?' + urlencode(params))
         result = await httpreq.get_json(url, headerdict)
         return result
+
+    # 根据ID获取下载地址的方法
+    async def get_download_url_by_id(self, id):
+
+        url=''
+        if id and id.isnumeric():
+            fileinfo = await self.file_storage_dao.get_file_by_id( int(id))
+            if fileinfo:
+                # 获取行的数据
+                fileinfo = fileinfo._asdict()['FileStorage']
+                print(fileinfo)  # 使用 _asdict() 方法转换为字典
+                if hasattr(fileinfo, 'file_name'):
+
+                    file_storage=FileStorageModel(file_name=fileinfo.file_name,bucket_name=fileinfo.bucket_name,file_size=fileinfo.file_size, )
+                    try:
+                        url = storage_manager.query_get_object_url_with_token(file_storage)
+                    except Exception as e:
+                        print(e)
+                        if hasattr(e, 'user_message'):
+
+                            id=  e.user_message
+
+                        pass
+                    pprint.pprint(id)
+
+            else:
+                print('文件not found ')
+                pass
+
+        return url

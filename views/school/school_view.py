@@ -98,7 +98,7 @@ class SchoolView(BaseView):
 
                           ):
         # 检测 是否允许修改
-        is_draft = await self.school_rule.is_can_not_add_workflow(school.id)
+        is_draft = await self.school_rule.is_can_not_add_workflow(school.id,True)
         if is_draft:
             raise SchoolStatusError()
         origin = await self.school_rule.get_school_by_id(school.id)

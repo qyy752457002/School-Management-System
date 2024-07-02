@@ -3,12 +3,14 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 
 from rules.storage_rule import StorageRule
+from rules.system_rule import SystemRule
 
 
 class StorageView(BaseView):
     def __init__(self):
         super().__init__()
         self._storage_rule: StorageRule = get_injector(StorageRule)
+        self.system_rule = get_injector(SystemRule)
 
     async def get_school_upload_uri(self, filename: str, file_size: int):
         return await self._storage_rule.get_upload_school_info_token_uri(filename, file_size)
@@ -54,5 +56,6 @@ class StorageView(BaseView):
             data.append(changeitems)
         print(data)
         return {"data":data}
-
+    async def get_download_url(self, id: str):
+        return await self.system_rule.get_download_url_by_id(id)
 

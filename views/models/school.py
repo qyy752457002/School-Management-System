@@ -9,16 +9,12 @@ from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFou
 class School(BaseModel):
     id:int= Query(None, title="", description="学校id", example='1')
     planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
-
     school_name: str = Field(..., title="学校名称", description="学校名称",examples=['XX小学'])
     school_no: str = Field(..., title="学校编号", description="学校编号",examples=['SC2032633'])
     school_operation_license_number: str = Field(..., title=" Description", description="办学许可证号",examples=['EDU2024012569'])
     block: str = Field(..., title=" Author", description="地域管辖区",examples=['铁西区'])
     borough: str = Field(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
-    # school_type: str = Field(..., title="", description=" 学校类型",examples=['中小学'])
     school_edu_level: str|None = Field(..., title="", description="办学类型",examples=['学前教育'])
-    # school_nature: str = Field('', title="", description="学校性质",examples=['学前'])
-
     school_category: str|None = Field(..., title="", description=" 办学类型二级",examples=['小学'])
     school_operation_type: str|None = Field(..., title="", description=" 办学类型三级",examples=['附设小学班'])
     school_org_type: str = Field(..., title="", description=" 学校办别",examples=['民办'])
@@ -27,17 +23,13 @@ class School(BaseModel):
     school_code: str = Field(..., title="", description=" 园所标识码",examples=['SC562369322SG'])
     kg_level: str|None = Field(None, title="", description="星级",examples=['5'])
     created_uid: int  = Field(..., title="", description="创建人",examples=['1'])
-
     school_short_name: str = Field(..., title="", description="园所简称",examples=['MXXX'])
     school_en_name: str = Field(..., title="", description="园所英文名称",examples=['MinxingPrimarySCHOOL'])
     create_school_date: str = Field(..., title="", description="建校年月",examples=['2021-10-10 00:00:00'])
     social_credit_code: str = Field(None, title="", description="统一社会信用代码",examples=['XH423423876867'])
     founder_type: str = Field(..., title="", description="举办者类型",examples=['地方'])
     founder_type_lv2: str = Field(..., title="", description="举办者类型二级",examples=['教育部门'])
-
     founder_type_lv3: str = Field(..., title="", description="举办者类型三级",examples=['县级教育部门'])
-
-
     founder_name: str = Field(..., title="", description="举办者名称",examples=['上海教育局'])
     founder_code: str = Field(..., title="", description="举办者识别码",examples=['SC562369322SG'])
     urban_rural_nature: str = Field(..., title="", description="城乡性质",examples=['城镇'])
@@ -53,6 +45,8 @@ class School(BaseModel):
     junior_middle_school_entry_age: str = Field(..., title="", description="初中入学年龄",examples=['12'])
     senior_middle_school_system: str = Field(..., title="", description="高中学制",examples=['3'])
     workflow_status: str |None= Field(None, title="", description="", examples=[''])
+    local_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
+    local_nationality_attribute: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
 
     class Config:
         schema_extra = {
@@ -86,6 +80,8 @@ class SchoolBaseInfoOptional(BaseModel):
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
     process_instance_id:int= Query(0, title="", description="", example='1')
     workflow_status: str |None= Field(None, title="", description="", examples=[''])
+    local_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
+    local_nationality_attribute: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
 
 
 # 学校的 基本信息模型   视图的额模型是按需提供的
@@ -112,6 +108,8 @@ class SchoolBaseInfo(BaseModel):
     social_credit_code: str = Field('', title="", description="统一社会信用代码",examples=['XH423423876867'])
     school_closure_date: str = Field('', title="", description="学校关闭日期",examples=[''])
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
+    local_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
+    local_nationality_attribute: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
 
 
 

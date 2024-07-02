@@ -46,19 +46,11 @@ class SchoolRule(object):
 
     async def get_school_by_id(self, school_id,extra_model=None):
         school_db = await self.school_dao.get_school_by_id(school_id)
-        # 可选 , exclude=[""]
         if not school_db:
             return None
         if extra_model:
             school = orm_model_to_view_model(school_db, extra_model)
-
-            # planning_school_extra = orm_model_to_view_model(planning_school_db, extra_model,
-            #                                                 exclude=[""])
-            # return planning_school,planning_school_extra
-
         else:
-
-            # return planning_school
             school = orm_model_to_view_model(school_db, SchoolModel)
         return school
 
@@ -585,10 +577,11 @@ class SchoolRule(object):
 
 
         pass
-    async def is_can_not_add_workflow(self, student_id):
+    async def is_can_not_add_workflow(self, student_id,is_all_status_allow=False):
         tinfo=await self.get_school_by_id(student_id)
-        if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
-            return True
+        if not is_all_status_allow:
+            if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
+                return True
         # 检查是否有占用
         if tinfo and  tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
             return True

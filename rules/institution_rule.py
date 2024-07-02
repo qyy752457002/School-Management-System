@@ -9,6 +9,8 @@ from mini_framework.utils.json import JsonUtils
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from pydantic import BaseModel
+
 from daos.institution_dao import InstitutionDAO
 from models.institution import Institution
 from models.student_transaction import AuditAction
@@ -28,10 +30,15 @@ class InstitutionRule(object):
     system_rule: SystemRule
 
 
-    async def get_institution_by_id(self, institution_id):
+    async def get_institution_by_id(self, institution_id,extra_model=None):
         institution_db = await self.institution_dao.get_institution_by_id(institution_id)
-        # 可选 , exclude=[""]
-        institution = orm_model_to_view_model(institution_db, InstitutionOptional)
+        if not institution_db:
+            return None
+        if extra_model:
+            institution = orm_model_to_view_model(institution_db, extra_model)
+        else:
+            institution = orm_model_to_view_model(institution_db, InstitutionOptional)
+
         return institution
 
     async def add_institution(self, institution: InstitutionModel):
@@ -105,16 +112,16 @@ class InstitutionRule(object):
         return await self.institution_dao.get_institution_count()
 
     async def query_institution_with_page(self, page_request: PageRequest, institution_name=None,
-                                              institution_id=None,institution_no=None,institution_category=None, ):
+                                              institution_id=None,institution_no=None,institution_category=None, institution_org_type=None,block=None,borough=None,social_credit_code=None,  ):
         paging = await self.institution_dao.query_institution_with_page(institution_name, institution_id,institution_no,
-                                                                                page_request,institution_category)
+                                                                                page_request,institution_category,institution_org_type,block,borough,social_credit_code)
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, InstitutionOptional, {"create_institution_date": "create_date","web_url": "website_url",})
         return paging_result
 
     # 向工作流中心发送申请
     async def add_institution_work_flow(self, institution_flow: Institutions,):
-        institution_flow.id=0
+        # institution_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
         data= institution_flow
@@ -124,13 +131,18 @@ class InstitutionRule(object):
         datadict['applicant_name'] =  'tester'
         datadict['institution_code'] = institution_flow.institution_code
         datadict['institution_name'] = institution_flow.institution_name
-        # datadict['founder_type_lv3'] =   institution_flow.founder_type_lv3
-        datadict['block'] =   institution_flow.block
-        datadict['borough'] =   institution_flow.borough
-        datadict['institution_level'] =   institution_flow.institution_level
-        datadict['institution_no'] =   institution_flow.institution_no
+        datadict['social_credit_code'] =   institution_flow.social_credit_code
+        # datadict['block'] =   institution_flow.block
+        # datadict['borough'] =   institution_flow.borough
+        # datadict['institution_level'] =   institution_flow.institution_level
+        # datadict['institution_no'] =   institution_flow.institution_no
         datadict['apply_user'] =  'tester'
-        datadict['json_data'] =  json.dumps(institution_flow.__dict__, ensure_ascii=False)
+        dicta = institution_flow.__dict__
+        dicta['institution_id'] = institution_flow.id
+
+        datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
+
+        # datadict['json_data'] =  json.dumps(institution_flow.__dict__, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
         url=url+apiname
         headerdict = {
@@ -158,11 +170,11 @@ class InstitutionRule(object):
         datadict['applicant_name'] =  'tester'
         datadict['institution_code'] = institution_flow.institution_code
         datadict['institution_name'] = institution_flow.institution_name
-        datadict['founder_type_lv3'] =   institution_flow.founder_type_lv3
-        datadict['block'] =   institution_flow.block
-        datadict['borough'] =   institution_flow.borough
-        datadict['institution_level'] =   institution_flow.institution_level
-        datadict['institution_no'] =   institution_flow.institution_no
+        # datadict['founder_type_lv3'] =   institution_flow.founder_type_lv3
+        # datadict['block'] =   institution_flow.block
+        # datadict['borough'] =   institution_flow.borough
+        # datadict['institution_level'] =   institution_flow.institution_level
+        # datadict['institution_no'] =   institution_flow.institution_no
 
         datadict['apply_user'] =  'tester'
         dicta = institution_flow.__dict__
@@ -197,8 +209,6 @@ class InstitutionRule(object):
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
         # from urllib.parse import urlencode
         # apiname += ('?' + urlencode(datadict))
-
-
         # 如果是query 需要拼接参数
 
         # 字典参数
@@ -264,16 +274,16 @@ class InstitutionRule(object):
         datadict['process_code'] = INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE
         datadict['teacher_id'] =  0
         datadict['applicant_name'] =  'tester'
-        datadict['institution_no'] = institution_flow.institution_no
+        # datadict['institution_no'] = institution_flow.institution_no
 
         datadict['institution_name'] = institution_flow.institution_name
-        datadict['institution_edu_level'] =   institution_flow.institution_edu_level
-        datadict['block'] =   institution_flow.block
-        datadict['borough'] =   institution_flow.borough
-        datadict['institution_level'] =   institution_flow.institution_level
-        datadict['institution_category'] =   institution_flow.institution_category
-        datadict['institution_operation_type'] =   institution_flow.institution_operation_type
-        datadict['institution_org_type'] =   institution_flow.institution_org_type
+        # datadict['institution_edu_level'] =   institution_flow.institution_edu_level
+        # datadict['block'] =   institution_flow.block
+        # datadict['borough'] =   institution_flow.borough
+        # datadict['institution_level'] =   institution_flow.institution_level
+        # datadict['institution_category'] =   institution_flow.institution_category
+        # datadict['institution_operation_type'] =   institution_flow.institution_operation_type
+        # datadict['institution_org_type'] =   institution_flow.institution_org_type
 
         datadict['apply_user'] =  'tester'
         mapa = institution_flow.__dict__
@@ -332,11 +342,17 @@ class InstitutionRule(object):
 
 
         pass
-    async def is_can_not_add_workflow(self, student_id):
+    async def is_can_not_add_workflow(self, student_id,is_all_status_allow=False):
         tinfo=await self.get_institution_by_id(student_id)
-        if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
-            return False
-        return True
+        # 是否需要拦截
+        if not is_all_status_allow:
+            if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
+                return True
+
+        # 检查是否有占用
+        if tinfo and  tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
+            return True
+        return False
 
 
     async def update_institution_status(self, institution_id, status,action=None):
@@ -376,7 +392,9 @@ class InstitutionRule(object):
         else:
             pass
 
-        school= view_model_to_orm_model(school, Institution,  other_mapper={"website_url": 'web_url',"create_date":'create_institution_date'})
+        if isinstance(school, BaseModel):
+
+            school= view_model_to_orm_model(school, Institution,  other_mapper={"website_url": 'web_url',"create_date":'create_institution_date'})
         need_update_list = []
         for key, value in school.__dict__.items():
             if key.startswith('_'):
