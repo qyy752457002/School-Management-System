@@ -38,7 +38,8 @@ class Institutions(BaseModel):
     location_economic_attribute: str |None = Field("",   title='所在地经济属性',  description=" 所在地经济属性",examples=['镇'])
     urban_ethnic_nature: str |None = Field("",   title='所在地民族属性',  description="",examples=[''])
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
-    is_entity: str = Field(...,   title='是否实体',  description=" 是否实体",examples=['是'])
+    is_entity: bool |None = Field(None,   title='是否实体',  description=" 是否实体",examples=[''])
+
     website_url: str = Field(...,   title='网址',  description=" 网址",examples=['WWW.BDIUFD.COM'])
     status: str = Field(...,   title='状态',  description=" 状态",examples=[''])
     membership_no: str = Field(...,   title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
@@ -89,7 +90,8 @@ class InstitutionOptional(BaseModel):
     location_economic_attribute: str |None = Field("",   title='所在地经济属性',  description=" 所在地经济属性",examples=['镇'])
     urban_ethnic_nature: str |None = Field("",   title='所在地民族属性',  description="",examples=[''])
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
-    is_entity: str |None = Field("",   title='是否实体',  description=" 是否实体",examples=['是'])
+    is_entity: bool |None = Field(None,   title='是否实体',  description=" 是否实体",examples=[''])
+
     website_url: str |None = Field("",   title='网址',  description=" 网址",examples=['WWW.BDIUFD.COM'])
     status: str |None = Field("",   title='状态',  description=" 状态",examples=[''])
     membership_no: str |None = Field("",   title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
@@ -163,7 +165,7 @@ class InstitutionBaseInfo(BaseModel):
     adm_leader_name: str |None = Field("",   title='行政负责人姓名',  description=" 行政负责人姓名",examples=['GGGG'])
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
 
-    is_entity: str |None = Field("",   title='是否实体',  description=" 是否实体",examples=['是'])
+    is_entity: bool |None = Field(None,   title='是否实体',  description=" 是否实体",examples=[''])
     detailed_address: str |None = Field("",   title='详细地址',  description=" 详细地址",examples=['FSDFSDFSDF234E23'])
     contact_number: str |None = Field("",   title='联系电话',  description=" 联系电话",examples=['0232156562'])
     postal_code: str |None = Field("",   title='邮政编码',  description=" 邮政编码",examples=['4587236'])
