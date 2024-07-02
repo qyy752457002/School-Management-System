@@ -151,7 +151,7 @@ class TeachersInfoRule(object):
         if not exists_teachers_info:
             raise TeacherInfoNotFoundError()
         old_teachers_info = orm_model_to_view_model(exists_teachers_info, TeachersInfoModel, exclude=[""])
-        res = compare_modify_fields(teachers_info, old_teachers_info)
+
         need_update_list = []
         for key, value in teachers_info.dict().items():
             if value:
@@ -162,6 +162,7 @@ class TeachersInfoRule(object):
         teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
                                                          exclude=[""])
         teachers_main_status = teacher_entry_approval.teacher_main_status
+        res = compare_modify_fields(teachers_info, old_teachers_info)
         if teachers_main_status == "unemployed":
             params = {"process_code": "t_entry", "applicant_name": user_id}
             teacher_entry_approval.teacher_sub_status = "submitted"
