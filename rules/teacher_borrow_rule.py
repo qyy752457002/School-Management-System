@@ -3,13 +3,13 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teachers_dao import TeachersDao
 from daos.teacher_borrow_dao import TeacherBorrowDAO
-from models.teacher_borrow import TeacherBorrow
+from models.teacher_borrow import TeacherBorrow,BorrowType
 from mini_framework.design_patterns.depend_inject import get_injector
 from rules.transfer_details_rule import TransferDetailsRule
 
 from business_exceptions.teacher import TeacherNotFoundError, ApprovalStatusError
 from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTransactionQueryRe, TeacherBorrowModel, \
-    TeacherBorrowReModel, TeacherBorrowGetModel, TeacherBorrowQueryModel, TeacherBorrowQueryReModel, TransferType
+    TeacherBorrowReModel, TeacherBorrowGetModel, TeacherBorrowQueryModel, TeacherBorrowQueryReModel
 
 from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
 from rules.operation_record import OperationRecordRule
@@ -125,16 +125,16 @@ class TeacherBorrowRule(object):
         await self.teachers_rule.teacher_progressing(teacher_borrow.teacher_id)
         return teacher_borrow_work
 
-    async def add_teacher_borrow_out(self, teacher_borrow: TeacherBorrowModel, user_id, school_id):
+    async def add_teacher_borrow_out(self, teacher_borrow: TeacherBorrowModel, user_id):
         """
         借出
         """
-        teacher_borrow.original_unit_id = school_id
-        school = await self.school_dao.get_school_by_id(school_id)
+
+        school = await self.school_dao.get_school_by_id(teacher_borrow.original_unit_id)
         teacher_borrow.original_unit_name = school.school_name
         # todo 这里先将学校区写死了，后续需要修改
-        teacher_borrow.original_district_area_id = 210106
-        teacher_borrow.transfer_type = TransferType.OUT.value
+        teacher_borrow.original_district_area_id = int(school.borough)
+        teacher_borrow.borrow_type = BorrowType.OUT.value
         teacher_borrow_db = view_model_to_orm_model(teacher_borrow, TeacherBorrow)
         teacher_borrow_db = await self.teacher_borrow_dao.add_teacher_borrow(teacher_borrow_db)
         teacher_borrow_work = orm_model_to_view_model(teacher_borrow_db, TeacherBorrowReModel,
@@ -236,7 +236,7 @@ class TeacherBorrowRule(object):
         if type == "launch":
             params = {"applicant_name": user_id, "process_code": "t_borrow_out", }
         elif type == "approval":
-            params = {"applicant_name": user_id, "process_code": "t_transfer_out", }
+            params = {"applicant_name": user_id, "process_code": "t_borrow_out", }
         result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
                                                                                       query_model,
                                                                                       TeacherBorrowQueryReModel,
@@ -246,10 +246,10 @@ class TeacherBorrowRule(object):
     async def query_borrow_in_with_page(self, type, query_model: TeacherBorrowQueryModel,
                                         page_request: PageRequest, user_id):
         if type == "launch":
-            params = {"applicant_name": user_id, "transfer_type": "transfer_in",
+            params = {"applicant_name": user_id, "borrow_type": "borrow_in",
                       }
         elif type == "approval":
-            params = {"applicant_name": user_id, "transfer_type": "transfer_in",
+            params = {"applicant_name": user_id, "borrow_type": "borrow_in",
                       }
         result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
                                                                                       query_model,

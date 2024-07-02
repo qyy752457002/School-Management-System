@@ -126,12 +126,11 @@ class TransferDetailsRule(object):
         await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
 
     async def add_transfer_out_details(self, transfer_details: TransferDetailsModel,
-                                       user_id, school_id):
-        transfer_details.original_unit_id = school_id
-        school = await self.school_dao.get_school_by_id(school_id)
+                                       user_id):
+        school = await self.school_dao.get_school_by_id(transfer_details.original_unit_id)
         transfer_details.original_unit_name = school.school_name
         # todo 这里先将学校区写死了，后续需要修改
-        transfer_details.original_district_area_id = 210106
+        transfer_details.original_district_area_id = int(school.borough)
         transfer_details.transfer_type = TransferType.OUT.value
         transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
         transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)

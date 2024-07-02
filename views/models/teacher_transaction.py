@@ -4,6 +4,7 @@ from datetime import date, datetime
 
 from typing import Optional
 from models.transfer_details import TransferType
+from models.teacher_borrow import BorrowType
 from models.public_enum import Gender
 
 from business_exceptions.teacher_transction import OriginPositionError, CurrentPositionError, PositionDateError
@@ -510,26 +511,23 @@ class TeacherBorrowModel(BaseModel):
     original_region_city_id: Optional[int] | None = Field(None, title="原管辖区域市", description="原管辖区域市")
     original_region_area_id: Optional[int] | None = Field(None, title="原管辖区域区", description="原管辖区域区")
     original_unit_name: Optional[str] | None = Field("", title="原单位", description="原单位")
-
     borrow_in_date: Optional[date] = Field(None, title="借入日期", description="借入日期")
 
     current_unit_id: Optional[int] | None = Field(None, title="现单位", description="现单位")
     current_unit_name: Optional[str] | None = Field("", title="现单位", description="现单位")
-    current_position: str = Field("", title="现岗位", description="现岗位")
+    current_position: Optional[str] | None  = Field("", title="现岗位", description="现岗位")
     current_district_province_id: Optional[int] | None = Field(None, title="现行政属地省", description="现行政属地省")
     current_district_city_id: Optional[int] | None = Field(None, title="现行政属地市", description="现行政属地市")
     current_district_area_id: Optional[int] | None = Field(None, title="现行政属地区", description="现行政属地区")
     current_region_province_id: Optional[int] | None = Field(None, title="现管辖区域省", description="现管辖区域省")
     current_region_city_id: Optional[int] | None = Field(None, title="现管辖区域市", description="现管辖区域市")
     current_region_area_id: Optional[int] | None = Field(None, title="现管辖区域区", description="现管辖区域区")
+    borrow_out_date: Optional[date] | None = Field(None, title="借出日期", description="借出日期")
 
-    borrow_out_date: Optional[date] = Field(..., title="借出日期", description="借出日期")
     transfer_reason: str = Field("", title="借动原因", description="借动原因")
     remark: str = Field("", title="备注", description="备注")
-    operator: str = Field(..., title="操作人", description="操作人")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    start_time: datetime = Field(..., title="操作时间", description="操作时间")
-    borrow_type: TransferType = Field("borrow_in", title="借动类型", description="借入或者借出")
+    borrow_type: BorrowType = Field("borrow_in", title="借动类型", description="借入或者借出")
     process_instance_id: int = Field(0, title="流程ID", description="流程ID")
 
 

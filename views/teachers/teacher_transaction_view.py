@@ -61,8 +61,7 @@ class TransferDetailsView(BaseView):
         调出
         """
         user_id = "asdfasdf"
-        school_id = 1
-        res = await self.transfer_details_rule.add_transfer_out_details(transfer_details, user_id, school_id)
+        res = await self.transfer_details_rule.add_transfer_out_details(transfer_details, user_id)
         return res
 
     # async def delete_transfer_details(self,
@@ -315,8 +314,7 @@ class TeacherBorrowView(BaseView):
         借出
         """
         user_id = "asdfasdf"
-        school_id = 1
-        res = await self.teacher_borrow_rule.add_teacher_borrow_out(teacher_borrow, user_id, school_id)
+        res = await self.teacher_borrow_rule.add_teacher_borrow_out(teacher_borrow, user_id)
         return res
 
     # async def delete_teacher_borrow(self,
