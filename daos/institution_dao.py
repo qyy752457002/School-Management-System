@@ -71,7 +71,7 @@ class InstitutionDAO(DAOBase):
         session = await self.master_db()
         deleted_status= 1
         update_stmt = update(Institution).where(Institution.id == institution.id).values(
-            deleted= deleted_status,
+            is_deleted= deleted_status,
         )
         await session.execute(update_stmt)
         # await session.delete(institution)

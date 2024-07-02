@@ -428,3 +428,27 @@ class InstitutionView(BaseView):
 
 
         return result
+
+    # 删除
+    async def delete(self,
+                     institution_id: int = Query(..., description="|", example='1'),
+                     ):
+        # print(school_id)
+        res = await self.institution_rule.softdelete_institution(institution_id)
+
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            target=OperationTarget.INSTITUTION.value,
+            action_type=OperationType.DELETE.value,
+            change_module=ChangeModule.KEY_INFO_CHANGE.value,
+            change_detail="删除",
+
+            action_target_id=str(institution_id),
+
+            change_data= JsonUtils.dict_to_json_str({'institution_id':institution_id}),
+
+
+        ))
+
+        return res
+        # return  school_id
