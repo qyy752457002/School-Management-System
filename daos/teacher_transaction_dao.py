@@ -83,8 +83,12 @@ class TeacherTransactionDAO(DAOBase):
                        TeacherInfo.teacher_number).join(Teacher, Teacher.teacher_id == TeacherTransaction.teacher_id,
                                                         ).join(TeacherInfo,
                                                                TeacherInfo.teacher_id == TeacherTransaction.teacher_id,
-                                                               isouter=True).where(
-            Teacher.teacher_sub_status != "active" and Teacher.teacher_main_status == "employed")
+                                                               isouter=True)
+        cond1 = Teacher.teacher_sub_status != "active"
+        cond2 = Teacher.teacher_main_status == "employed"
+        cond3 = TeacherTransaction.is_active == False
+
+        query = query.where(cond1, cond2, cond3)
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
         if query_model.teacher_number:

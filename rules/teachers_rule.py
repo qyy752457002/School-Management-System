@@ -15,7 +15,7 @@ from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
 from rules.teachers_info_rule import TeachersInfoRule
 from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, TeacherChangeLogQueryModel, \
-    CurrentTeacherInfoSaveModel, TeacherRe
+    CurrentTeacherInfoSaveModel, TeacherRe, TeacherAdd
 
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
@@ -140,29 +140,20 @@ class TeachersRule(object):
         paging_result = PaginatedResponse.from_paging(paging, OperationRecord)
         return paging_result
 
-    async def add_transfer_teachers(self, teachers: TeachersCreatModel):
+    async def add_transfer_teachers(self, teachers: TeacherAdd):
         """
         系统外调入系统内时使用
         """
+        teachers.teacher_main_status = "employed"
+        teachers.teacher_sub_status = "submitted"
         teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
         if teachers_db.teacher_id_type == 'resident_id_card':
             idstatus = check_id_number(teachers_db.teacher_id_number)
             if not idstatus:
                 raise IdCardError()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
-
-        # 更新老师状态
-        teachers_db2 = await self.teachers_dao.get_teachers_by_id(teachers_db.teacher_id)
-        teachers_ = orm_model_to_view_model(teachers_db2, TeacherRe, exclude=["hash_password"])
-        if not teachers_:
-            raise TeacherNotFoundError()
-        teachers_.teacher_sub_status = "submitted"
-        teachers_.teacher_main_status = "employed"
-        await self.teachers_dao.update_teachers(teachers_, "teacher_sub_status", "teacher_main_status")
-
         # 获取老师信息
-        teachers_db3 = await self.teachers_dao.get_teachers_by_id(teachers_.teacher_id)
-        teachers = orm_model_to_view_model(teachers_db3, TeacherRe, exclude=[""])
+        teachers = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
         return teachers
 
     async def update_teachers(self, teachers, user_id):
@@ -356,7 +347,7 @@ class TeachersRule(object):
             local_file_path = "c.xlsx"
             reader = ExcelReader()
             reader.set_data(local_file_path)
-            reader.register_model("Sheet1", CombinedModel)
+            # reader.register_model("Sheet1", CombinedModel)
             logger.info("Test开始注册模型")
             reader.register_model("Sheet1", TeachersCreatModel)
             # reader.register_model("Sheet1", TeacherInfoCreateModel)
