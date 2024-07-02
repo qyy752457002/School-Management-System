@@ -21,7 +21,7 @@ from views.models.operation_record import OperationRecord, OperationTarget, Chan
 from rules.operation_record import OperationRecordRule
 from daos.operation_record_dao import OperationRecordDAO
 from rules.teachers_rule import TeachersRule
-from views.models.teachers import TeachersCreatModel, TeacherRe
+from views.models.teachers import TeacherRe, TeacherAdd
 
 from views.models.teacher_transaction import TeacherAddModel, WorkflowQueryModel
 from datetime import datetime
@@ -91,7 +91,7 @@ class TransferDetailsRule(object):
         await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
         return transfer_details
 
-    async def add_transfer_in_outer_details(self, add_teacher: TeachersCreatModel,
+    async def add_transfer_in_outer_details(self, add_teacher: TeacherAdd,
                                             transfer_details: TransferDetailsModel,
                                             user_id):
         teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
@@ -242,15 +242,14 @@ class TransferDetailsRule(object):
                                           page_request: PageRequest, user_id):
         result = []
         if type == "launch":
-            params = {"applicant_name": user_id, "transfer_type": "transfer_in",
-                      "teacher_sub_status": "submitted"}
+            params = {"applicant_name": user_id, "process_code": "t_transfer_in"}
             result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
                                                                                           query_model,
                                                                                           TeacherTransferQueryReModel,
                                                                                           params)
 
         elif type == "approval":
-            params = {"applicant_name": user_id, "transfer_type": "transfer_in",
+            params = {"applicant_name": user_id, "process_code": "t_transfer_in",
                       }
             result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
                                                                                           query_model,
@@ -316,15 +315,17 @@ class TransferDetailsRule(object):
                 await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
             elif process_code == "t_transfer_in_outer":
                 """增加老师再添加新老师"""
-                teachers_db.teacher_sub_status = "transfer_in"
-                teacher = await self.teacher_work_flow_rule.create_model_from_workflow(result, TeacherRe)
+                update_params = {"teacher_sub_status": "active"}
+                await self.teacher_work_flow_rule.update_work_flow_by_param(process_instance_id, update_params)
+                result_after = await self.teacher_work_flow_rule.get_work_flow_instance_by_process_instance_id(
+                    process_instance_id)
+                teacher = await self.teacher_work_flow_rule.create_model_from_workflow(result_after, TeacherRe)
                 need_update_list = []
                 for key, value in teacher.dict().items():
                     if value:
                         need_update_list.append(key)
                 await self.teachers_dao.update_teachers(teachers_db, *need_update_list)
                 await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
-                await self.teachers_rule.teacher_active(teachers_db.teacher_id)
             return "该老师调动审批已通过"
 
     async def transfer_rejected(self, teacher_id, process_instance_id, user_id, reason):
