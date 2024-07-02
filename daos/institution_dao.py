@@ -85,8 +85,17 @@ class InstitutionDAO(DAOBase):
         return result.scalar()
 
     async def query_institution_with_page(self, institution_name, institution_id, institution_no,
-                                              page_request: PageRequest,institution_category=None) -> Paging:
+                                              page_request: PageRequest,institution_category=None,institution_org_type=None,block=None,borough=None,social_credit_code=None) -> Paging:
         query = select(Institution)
+        if block:
+            query = query.where(Institution.block == block)
+        if borough:
+            query = query.where(Institution.borough == borough)
+        if social_credit_code:
+            query = query.where(Institution.social_credit_code == social_credit_code)
+        if institution_org_type:
+            query = query.where(Institution.institution_type == institution_org_type)
+
         if institution_category:
             query = query.where(Institution.institution_category == institution_category.value)
         if institution_name:

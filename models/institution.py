@@ -55,7 +55,7 @@ class Institution(BaseDBModel):
     web_url: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="网址")
 
     institution_category: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 单位分类")
-    institution_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="单位类型 ")
+    institution_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="单位类型 公办 民办")
     location_economic_attribute: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 所在地经济属性")
     leg_repr_certificatenumber: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 法人证书号")
     is_entity: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 是否实体")
