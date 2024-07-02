@@ -30,10 +30,15 @@ class InstitutionRule(object):
     system_rule: SystemRule
 
 
-    async def get_institution_by_id(self, institution_id):
+    async def get_institution_by_id(self, institution_id,extra_model=None):
         institution_db = await self.institution_dao.get_institution_by_id(institution_id)
-        # 可选 , exclude=[""]
-        institution = orm_model_to_view_model(institution_db, InstitutionOptional)
+        if not institution_db:
+            return None
+        if extra_model:
+            institution = orm_model_to_view_model(institution_db, extra_model)
+        else:
+            institution = orm_model_to_view_model(institution_db, InstitutionOptional)
+
         return institution
 
     async def add_institution(self, institution: InstitutionModel):
