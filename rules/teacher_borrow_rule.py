@@ -15,7 +15,7 @@ from views.models.operation_record import OperationRecord, OperationTarget, Chan
 from rules.operation_record import OperationRecordRule
 from daos.operation_record_dao import OperationRecordDAO
 
-from views.models.teachers import TeachersCreatModel, TeacherRe
+from views.models.teachers import  TeacherRe
 from datetime import datetime
 from daos.school_dao import SchoolDAO
 
@@ -88,9 +88,9 @@ class TeacherBorrowRule(object):
             process_instance_id=work_flow_instance["process_instance_id"])
         await self.operation_record_rule.add_operation_record(teacher_borrow_log)
         await self.teachers_rule.teacher_progressing(teacher_borrow_work.teacher_id)
-        return teacher_borrow
+        return teacher_borrow_work
 
-    async def add_teacher_borrow_in_outer(self, add_teacher: TeachersCreatModel, teacher_borrow: TeacherBorrowModel,
+    async def add_teacher_borrow_in_outer(self, add_teacher: TeacherRe, teacher_borrow: TeacherBorrowModel,
                                           user_id):
         teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
         teacher_borrow.teacher_id = teachers.teacher_id
@@ -132,7 +132,6 @@ class TeacherBorrowRule(object):
 
         school = await self.school_dao.get_school_by_id(teacher_borrow.original_unit_id)
         teacher_borrow.original_unit_name = school.school_name
-        # todo 这里先将学校区写死了，后续需要修改
         teacher_borrow.original_district_area_id = int(school.borough)
         teacher_borrow.borrow_type = BorrowType.OUT.value
         teacher_borrow_db = view_model_to_orm_model(teacher_borrow, TeacherBorrow)
@@ -171,7 +170,7 @@ class TeacherBorrowRule(object):
             process_instance_id=work_flow_instance["process_instance_id"])
         await self.operation_record_rule.add_operation_record(teacher_transfer_log)
         await self.teachers_rule.teacher_progressing(teacher_borrow.teacher_id)
-        return teacher_borrow
+        return teacher_borrow_work
 
     async def delete_teacher_borrow(self, teacher_borrow_id):
         exists_teacher_borrow = await self.teacher_borrow_dao.get_teacher_borrow_by_teacher_borrow_id(teacher_borrow_id)
@@ -246,10 +245,10 @@ class TeacherBorrowRule(object):
     async def query_borrow_in_with_page(self, type, query_model: TeacherBorrowQueryModel,
                                         page_request: PageRequest, user_id):
         if type == "launch":
-            params = {"applicant_name": user_id, "borrow_type": "borrow_in",
+            params = {"applicant_name": user_id, "process_code": "t_borrow_in",
                       }
         elif type == "approval":
-            params = {"applicant_name": user_id, "borrow_type": "borrow_in",
+            params = {"applicant_name": user_id, "process_code": "t_borrow_in",
                       }
         result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
                                                                                       query_model,
@@ -297,16 +296,18 @@ class TeacherBorrowRule(object):
                 await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
             elif process_code == "t_borrow_in_outer":
                 """增加老师再添加新老师"""
-                teachers_db.teacher_sub_status = "borrow_in"
-                teacher = await self.teacher_work_flow_rule.create_model_from_workflow(result, TeacherRe)
+                update_params = {"teacher_sub_status": "borrow_in"}
+                await self.teacher_work_flow_rule.update_work_flow_by_param(process_instance_id, update_params)
+                result_after = await self.teacher_work_flow_rule.get_work_flow_instance_by_process_instance_id(
+                    process_instance_id)
+                teacher = await self.teacher_work_flow_rule.create_model_from_workflow(result_after, TeacherRe)
                 need_update_list = []
                 for key, value in teacher.dict().items():
                     if value:
                         need_update_list.append(key)
                 await self.teachers_dao.update_teachers(teachers_db, *need_update_list)
                 await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
-                await self.teachers_rule.teacher_active(teachers_db.teacher_id)
-            return "该老师调动审批已通过"
+            return "该老师借动审批已通过"
 
     async def borrow_rejected(self, teacher_id, process_instance_id, user_id, reason):
         user_id = user_id
@@ -319,7 +320,7 @@ class TeacherBorrowRule(object):
         if node_instance == "rejected":
             await self.teachers_rule.teacher_active(teacher_id)
             await self.teachers_rule.teacher_pending(teacher_id)
-            return "该老师调动审批已拒绝"
+            return "该老师借动审批已拒绝"
 
     async def borrow_revoked(self, teacher_id, process_instance_id, user_id, reason):
 
@@ -333,4 +334,4 @@ class TeacherBorrowRule(object):
         if node_instance == "revoked":
             await self.teachers_rule.teacher_active(teacher_id)
             await self.teachers_rule.teacher_pending(teacher_id)
-            return "该老师调动审批已撤回"
+            return "该老师借动审批已撤回"

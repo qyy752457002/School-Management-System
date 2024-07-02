@@ -81,7 +81,20 @@ class TeacherRe(BaseModel):
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
     teacher_employer: int = Field(0, title="任职单位", description="任职单位", gt=0)
     mobile: str = Field("", title="手机号", description="手机号")
-    teacher_main_status: str = Field(..., title="主状态", description="主状态")
+    teacher_main_status: str = Field("", title="主状态", description="主状态")
+    teacher_sub_status: str = Field("", title="子状态", description="子状态")
+class TeacherAdd(BaseModel):
+    """
+    这个是借动和调动时，从系统外进系统内时，建立新老师的时候用的
+    """
+    teacher_name: str = Field(..., title="教师名称", description="教师名称")
+    teacher_gender: Gender = Field(..., title="教师性别", description="教师性别")
+    teacher_id_type: str = Field("", title="证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="证件号", description="证件号")
+    teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
+    teacher_employer: int = Field(0, title="任职单位", description="任职单位", gt=0)
+    mobile: str = Field("", title="手机号", description="手机号")
+    teacher_main_status: str = Field("", title="主状态", description="主状态")
     teacher_sub_status: str = Field("", title="子状态", description="子状态")
 
 

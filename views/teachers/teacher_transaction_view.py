@@ -16,7 +16,7 @@ from rules.teachers_rule import TeachersRule
 from rules.teacher_borrow_rule import TeacherBorrowRule
 from views.models.teacher_transaction import TeacherBorrowModel, TeacherBorrowReModel, TeacherBorrowQueryModel
 from mini_framework.web.std_models.page import PageRequest
-from views.models.teachers import TeachersCreatModel
+from views.models.teachers import TeacherAdd
 from typing import Optional
 
 
@@ -37,7 +37,7 @@ class TransferDetailsView(BaseView):
         return res
 
     async def post_transfer_in_details(self, transfer_details: TransferDetailsModel,
-                                       add_teacher: Optional[TeachersCreatModel] = None,
+                                       add_teacher: Optional[TeacherAdd] = None,
                                        transfer_inner: bool = Query(True, title="transfer_status",
                                                                     description="transfer_status",
                                                                     example=True)
@@ -292,7 +292,7 @@ class TeacherBorrowView(BaseView):
         return res
 
     async def post_teacher_borrow_in(self, teacher_borrow: TeacherBorrowModel,
-                                     add_teacher: Optional[TeachersCreatModel] = None,
+                                     add_teacher: Optional[TeacherAdd] = None,
                                      teacher_borrow_inner: bool = Query(True, title="transfer_status",
                                                                         description="transfer_status",
                                                                         example=True)):
@@ -302,12 +302,12 @@ class TeacherBorrowView(BaseView):
         user_id = "asdfasdf"
         if not teacher_borrow_inner:
             if add_teacher != None:
-                await self.teacher_borrow_rule.add_teacher_borrow_in_outer(add_teacher, teacher_borrow, user_id)
+                res = await self.teacher_borrow_rule.add_teacher_borrow_in_outer(add_teacher, teacher_borrow, user_id)
             else:
                 raise Exception("请填写老师信息")
         else:
-            await self.teacher_borrow_rule.add_teacher_borrow_in_inner(teacher_borrow, user_id)
-        return
+            res = await self.teacher_borrow_rule.add_teacher_borrow_in_inner(teacher_borrow, user_id)
+        return res
 
     async def post_teacher_borrow_out(self, teacher_borrow: TeacherBorrowModel):
         """
@@ -340,7 +340,7 @@ class TeacherBorrowView(BaseView):
         分页查询
         """
         user_id = "asdfasdf"
-        paging_result = await self.teacher_borrow_rule.query_borrow_with_page(teacher_borrow, page_request, user_id)
+        paging_result = await self.teacher_borrow_rule.query_teacher_borrow_with_page(teacher_borrow, page_request, user_id)
         return paging_result
 
     # async def get_teacher_borrow_in_system(self, teacher_borrow: TeacherTransactionQuery):

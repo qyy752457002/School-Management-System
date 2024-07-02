@@ -457,7 +457,7 @@ class TeacherTransferQueryReModel(BaseModel):
     transfer_details_id: int = Field(0, title="调动主键", description="调动主键")
     teacher_id: int = Field(0, title="教师ID", description="教师ID")
     teacher_name: str = Field("", title="姓名", description="姓名")
-    teacher_number: Optional[int] = Field("", title="教职工号", description="教职工号")
+    teacher_number: Optional[str] = Field("", title="教职工号", description="教职工号")
     teacher_id_type: Optional[str] = Field("", title="证件类型", description="证件类型")
     teacher_id_number: Optional[str] = Field("", title="证件号", description="证件号")
     teacher_gender: Optional[Gender] = Field(None, title="性别", description="性别")
@@ -636,7 +636,7 @@ class TeacherBorrowQueryReModel(BaseModel):
 
     teacher_id: int = Field(0, title="教师ID", description="教师ID")
     teacher_name: str = Field("", title="姓名", description="姓名")
-    teacher_number: Optional[int] = Field("", title="教职工号", description="教职工号")
+    teacher_number: Optional[str] = Field("", title="教职工号", description="教职工号")
     teacher_id_type: Optional[str] = Field("", title="证件类型", description="证件类型")
     teacher_id_number: Optional[str] = Field("", title="证件号", description="证件号")
     teacher_gender: Optional[Gender] = Field(None, title="性别", description="性别")
