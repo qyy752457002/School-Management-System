@@ -51,7 +51,7 @@ class Institution(BaseDBModel):
 
     long: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="所在经度")
     lat: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="所在纬度")
-    web_url: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="网址")
+    website_url: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="网址")
 
     institution_category: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 单位分类")
     institution_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="单位类型 公办 民办")
