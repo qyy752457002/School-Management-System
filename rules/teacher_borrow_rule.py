@@ -3,7 +3,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teachers_dao import TeachersDao
 from daos.teacher_borrow_dao import TeacherBorrowDAO
-from models.teacher_borrow import TeacherBorrow,BorrowType
+from models.teacher_borrow import TeacherBorrow, BorrowType
 from mini_framework.design_patterns.depend_inject import get_injector
 from rules.transfer_details_rule import TransferDetailsRule
 
@@ -15,7 +15,7 @@ from views.models.operation_record import OperationRecord, OperationTarget, Chan
 from rules.operation_record import OperationRecordRule
 from daos.operation_record_dao import OperationRecordDAO
 
-from views.models.teachers import  TeacherRe
+from views.models.teachers import TeacherRe
 from datetime import datetime
 from daos.school_dao import SchoolDAO
 
@@ -335,3 +335,15 @@ class TeacherBorrowRule(object):
             await self.teachers_rule.teacher_active(teacher_id)
             await self.teachers_rule.teacher_pending(teacher_id)
             return "该老师借动审批已撤回"
+
+    async def borrow_teacher_active(self, teacher_id, process_instance_id):
+        teacher = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        if not teacher:
+            raise TeacherNotFoundError()
+        if teacher.teacher_sub_status != "active":
+            teacher.teacher_main_status = "employed"
+            teacher.teacher_sub_status = "active"
+        await self.teachers_dao.update_teachers(teacher, "teacher_sub_status", "teacher_main_status")
+        update_params = {"teacher_sub_status": "active", "teacher_main_status": "employed"}
+        await self.teacher_work_flow_rule.update_work_flow_by_param(process_instance_id, update_params)
+        return "该老师已恢复在职"

@@ -451,3 +451,11 @@ class TeacherBorrowView(BaseView):
         res = await self.teacher_borrow_rule.borrow_revoked(teacher_id, process_instance_id, user_id,
                                                             reason)
         return res
+
+    async def patch_teacher_borrow_active(self,
+                                   teacher_id: int = Query(..., title="教师编号", description="教师编号",
+                                                           example=123),
+                                   process_instance_id: int = Query(..., title="教师变动记录编号", description="教师变动记录编号",
+                                                               example=123)):
+        await self.teacher_borrow_rule.borrow_teacher_active(teacher_id,process_instance_id)
+        return teacher_id
