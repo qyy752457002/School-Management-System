@@ -43,6 +43,7 @@ class Institutions(BaseModel):
     membership_no: str = Field(...,   title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
     membership_category: str = Field(...,   title='隶属单位类型',  description=" 隶属单位类型",examples=['行政'])
     workflow_status: str|None = Field("",   title='',  description=" ",examples=[''])
+    process_instance_id:int= Query(0, title="", description="", example='1')
 
 class InstitutionTask(BaseModel):
     """{'file_name':filename,'bucket':bucket,'scene':scene},"""
@@ -92,6 +93,7 @@ class InstitutionOptional(BaseModel):
     membership_no: str = Field("",   title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
     membership_category: str = Field("",   title='隶属单位类型',  description=" 隶属单位类型",examples=['行政'])
     workflow_status: str|None = Field("",   title='',  description=" ",examples=[''])
+    process_instance_id:int= Query(0, title="", description="", example='1')
 
 
 
@@ -184,6 +186,7 @@ class InstitutionBaseInfo(BaseModel):
     location_economic_attribute: str = Field("",   title='所在地经济属性',  description=" 所在地经济属性",examples=['镇'])
     related_license_upload: str = Field("",   title='相关证照上传',  description=" 相关证照上传",examples=[''])
     workflow_status: str|None = Field("",   title='',  description=" ",examples=[''])
+    process_instance_id:int= Query(0, title="", description="", example='1')
 
 
 
