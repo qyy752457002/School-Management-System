@@ -165,11 +165,11 @@ class InstitutionRule(object):
         datadict['applicant_name'] =  'tester'
         datadict['institution_code'] = institution_flow.institution_code
         datadict['institution_name'] = institution_flow.institution_name
-        datadict['founder_type_lv3'] =   institution_flow.founder_type_lv3
-        datadict['block'] =   institution_flow.block
-        datadict['borough'] =   institution_flow.borough
-        datadict['institution_level'] =   institution_flow.institution_level
-        datadict['institution_no'] =   institution_flow.institution_no
+        # datadict['founder_type_lv3'] =   institution_flow.founder_type_lv3
+        # datadict['block'] =   institution_flow.block
+        # datadict['borough'] =   institution_flow.borough
+        # datadict['institution_level'] =   institution_flow.institution_level
+        # datadict['institution_no'] =   institution_flow.institution_no
 
         datadict['apply_user'] =  'tester'
         dicta = institution_flow.__dict__
