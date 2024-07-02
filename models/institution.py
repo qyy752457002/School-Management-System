@@ -11,7 +11,6 @@ class Institution(BaseDBModel):
     行政事业单位表
     institution_category: str = Field(...,   description=" 单位分类",examples=['事业单位'])
     institution_type: str = Field(...,   description="单位类型 ",examples=[''])
-    location_economic_attribute: str = Field(...,   description=" 所在地经济属性",examples=['镇'])
     leg_repr_certificatenumber: str = Field(...,   description=" 法人证书号",examples=['DF1256565656'])
     is_entity: str = Field(...,   description=" 是否实体",examples=['是'])
     membership_no: str = Field(...,   description=" 隶属单位号",examples=['DFF1565165656'])
@@ -57,6 +56,7 @@ class Institution(BaseDBModel):
     institution_category: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 单位分类")
     institution_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="单位类型 公办 民办")
     location_economic_attribute: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 所在地经济属性")
+    urban_ethnic_nature: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 所在地民族属性")
     leg_repr_certificatenumber: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 法人证书号")
     is_entity: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 是否实体")
     membership_no: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 隶属单位号")

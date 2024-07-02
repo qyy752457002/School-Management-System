@@ -34,9 +34,10 @@ class Institutions(BaseModel):
     related_license_upload: str = Field(...,   title='相关证照上传',  description=" 相关证照上传",examples=[''])
     long: str = Field(...,   title='所在经度',  description=" 所在经度",examples=['201.22'])
     lat: str = Field(...,   title='所在纬度',  description=" 所在纬度",examples=['65.33'])
-    urban_rural_nature: str = Field(...,   title='城乡性质',  description=" 城乡性质",examples=['城镇'])
-    location_economic_attribute: str = Field(...,   title='所在地经济属性',  description=" 所在地经济属性",examples=['镇'])
-    leg_repr_certificatenumber: str = Field(...,   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
+    urban_rural_nature: str |None = Field("",   title='城乡性质',  description=" 城乡性质",examples=['城镇'])
+    location_economic_attribute: str |None = Field("",   title='所在地经济属性',  description=" 所在地经济属性",examples=['镇'])
+    urban_ethnic_nature: str |None = Field("",   title='所在地民族属性',  description="",examples=[''])
+    leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
     is_entity: str = Field(...,   title='是否实体',  description=" 是否实体",examples=['是'])
     website_url: str = Field(...,   title='网址',  description=" 网址",examples=['WWW.BDIUFD.COM'])
     status: str = Field(...,   title='状态',  description=" 状态",examples=[''])
@@ -86,6 +87,7 @@ class InstitutionOptional(BaseModel):
     lat: str |None = Field("",   title='所在纬度',  description=" 所在纬度",examples=['65.33'])
     urban_rural_nature: str |None = Field("",   title='城乡性质',  description=" 城乡性质",examples=['城镇'])
     location_economic_attribute: str |None = Field("",   title='所在地经济属性',  description=" 所在地经济属性",examples=['镇'])
+    urban_ethnic_nature: str |None = Field("",   title='所在地民族属性',  description="",examples=[''])
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
     is_entity: str |None = Field("",   title='是否实体',  description=" 是否实体",examples=['是'])
     website_url: str |None = Field("",   title='网址',  description=" 网址",examples=['WWW.BDIUFD.COM'])
@@ -177,6 +179,7 @@ class InstitutionBaseInfo(BaseModel):
     workflow_status: str|None = Field("",   title='',  description=" ",examples=[''])
     process_instance_id:int= Query(0, title="", description="", example='1')
     status: str |None = Field( '',   title='状态',  description=" 状态",examples=[''])
+    urban_ethnic_nature: str |None = Field("",   title='所在地民族属性',  description="",examples=[''])
 
 
 
