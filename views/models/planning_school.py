@@ -88,8 +88,9 @@ class PlanningSchool(BaseModel):
     province: str|None= Field('', title="省份", description="", examples=[''], max_length=30)
     city: str|None = Field('', title="城市", description="", examples=[''],  max_length=30)
     workflow_status: str |None= Field(None, title="", description="", examples=[''])
-    local_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
-    local_nationality_attribute: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
+    location_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
+    urban_ethnic_nature: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
+    leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
 
 # 规划校的 基本信息模型   视图的额模型是按需提供的
 class PlanningSchoolBaseInfo(BaseModel):
@@ -120,9 +121,9 @@ class PlanningSchoolBaseInfo(BaseModel):
     sy_zones: str = Query(..., title="", description="属地管理行政部门所在地地区", examples=['铁西区'])
     historical_evolution: str = Query(..., title="", description="历史沿革", examples=['xxxxxxxxxxxxxxxxxxxx'])
     status: str = Query(None, title="", description="", examples=[''])
-    local_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
-    local_nationality_attribute: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
-
+    location_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
+    urban_ethnic_nature: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
+    leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
 
 # 规划校的 基本信息模型   视图的额模型是按需提供的
 class PlanningSchoolBaseInfoOptional(BaseModel):
@@ -157,8 +158,9 @@ class PlanningSchoolBaseInfoOptional(BaseModel):
     status: str = Field(None, title="", description="", examples=[''])
     workflow_status: str|None = Field(None, title="", description="", examples=[''])
     process_instance_id: int = Field(None, title="", description="", examples=[''])
-    local_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
-    local_nationality_attribute: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
+    location_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
+    urban_ethnic_nature: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
+    leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
 
 class PlanningSchoolKeyAddInfo(BaseModel):
     id: int = Query(None, title="", description="规划校id", example='1')
