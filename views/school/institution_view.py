@@ -25,6 +25,10 @@ from mini_framework.web.request_context import request_context_manager
 
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task import Task
+
+from views.models.system import InstitutionType
+
+
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
 class InstitutionView(BaseView):
     def __init__(self):
@@ -38,24 +42,18 @@ class InstitutionView(BaseView):
         res = await self.institution_rule.add_institution(school)
         print(res)
 
-
         return res
         # return  school
 
-
-
     async def page(self,
+                   institution_category: InstitutionType = Query(None, title='单位分类',examples=['institution/administration']),
                    page_request= Depends(PageRequest),
-                   # planning_institution_no:str= Query(None, title="学校编号", description="学校编号",min_length=1,max_length=20,example='SC2032633'),
-                  # planning_institution_name:str= Query(None, description="学校名称" ,min_length=1,max_length=20,example='XX小学'),
-
-
 
 
                   ):
         print(page_request)
         items=[]
-        res = await self.institution_rule.query_institution_with_page(page_request,)
+        res = await self.institution_rule.query_institution_with_page(page_request,institution_category=institution_category)
         return res
     # 修改 变更 基本信息
     async def patch_baseinfo(self, institution_baseinfo: InstitutionBaseInfo):

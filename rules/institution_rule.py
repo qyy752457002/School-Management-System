@@ -105,11 +105,11 @@ class InstitutionRule(object):
         return await self.institution_dao.get_institution_count()
 
     async def query_institution_with_page(self, page_request: PageRequest, institution_name=None,
-                                              institution_id=None,institution_no=None ):
+                                              institution_id=None,institution_no=None,institution_category=None, ):
         paging = await self.institution_dao.query_institution_with_page(institution_name, institution_id,institution_no,
-                                                                                page_request)
+                                                                                page_request,institution_category)
         # 字段映射的示例写法   , {"hash_password": "password"}
-        paging_result = PaginatedResponse.from_paging(paging, InstitutionModel, {"create_institution_date": "create_date","web_url": "website_url",})
+        paging_result = PaginatedResponse.from_paging(paging, InstitutionOptional, {"create_institution_date": "create_date","web_url": "website_url",})
         return paging_result
 
     # 向工作流中心发送申请

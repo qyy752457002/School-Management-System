@@ -19,6 +19,14 @@ INSTITUTION_CLOSE_WORKFLOW_CODE:Final = 'i_institution_close'
 INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE:Final = 'i_institution_keyinfo_change'
 
 
+class InstitutionType(str, Enum):
+    """
+    """
+    INSTITUTION = "institution"
+    ADMINISTRATION = "administration"
+    @classmethod
+    def to_list(cls):
+        return [cls.INSTITUTION, cls.ADMINISTRATION,]
 class ProcessCodeType(str, Enum):
     """
     """

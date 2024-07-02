@@ -4,6 +4,7 @@ from fastapi.params import Query
 from pydantic import BaseModel, Field
 
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
+from views.models.system import InstitutionType
 
 
 class Institutions(BaseModel):
@@ -138,6 +139,7 @@ class InstitutionPageSearch(BaseModel):
 
 class InstitutionsAdd(BaseModel):
     #   title  实际根据title匹配
+    institution_category: InstitutionType = Field(InstitutionType.INSTITUTION, title='单位分类',  examples=['institution/administration'])
     institution_name: str = Field(..., title='单位名称',  examples=['文化部'])
     institution_code: str = Field(...,   title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
     membership_no: str = Field(...,   title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
