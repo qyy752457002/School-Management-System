@@ -246,7 +246,7 @@ class InstitutionView(BaseView):
 
                           ):
         # 检测 是否允许修改
-        is_draft = await self.institution_rule.is_can_not_add_workflow(school.id)
+        is_draft = await self.institution_rule.is_can_not_add_workflow(school.id,True)
         if is_draft:
             raise InstitutionStatusError()
         origin = await self.institution_rule.get_institution_by_id(school.id)

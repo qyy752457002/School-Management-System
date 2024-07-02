@@ -342,11 +342,13 @@ class InstitutionRule(object):
 
 
         pass
-    async def is_can_not_add_workflow(self, student_id):
+    async def is_can_not_add_workflow(self, student_id,is_all_status_allow=False):
         tinfo=await self.get_institution_by_id(student_id)
         # 是否需要拦截
-        if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
-            return True
+        if not is_all_status_allow:
+            if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
+                return True
+
         # 检查是否有占用
         if tinfo and  tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
             return True
