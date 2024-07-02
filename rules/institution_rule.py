@@ -5,6 +5,7 @@ from datetime import datetime
 import shortuuid
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.utils.json import JsonUtils
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -50,6 +51,10 @@ class InstitutionRule(object):
 
         institution_db = Institution()
         institution_db = view_model_to_orm_model(institution, Institution,    exclude=["id"])
+        generator = SnowflakeIdGenerator(1, 1)
+        id = generator.generate_id()
+        institution_db.id = id
+
         institution_db.updated_at = datetime.now()
         institution_db.created_at = datetime.now()
 
