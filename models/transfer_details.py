@@ -51,7 +51,7 @@ class TransferDetails(BaseDBModel):
     original_region_area_id: Mapped[int] = mapped_column(nullable=True, comment="原管辖区域区")
 
     transfer_in_date: Mapped[date] = mapped_column(Date, nullable=True, comment="调入日期")
-    current_unit_id: Mapped[int] = mapped_column(nullable=False, comment="现单位")
+    current_unit_id: Mapped[int] = mapped_column(nullable=True, comment="现单位")
     current_unit_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="现单位名称")
     current_position: Mapped[str] = mapped_column(String(64), nullable=True, comment="现岗位")
     current_district_province_id: Mapped[int] = mapped_column(nullable=True, comment="现行政属地省")
