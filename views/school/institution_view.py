@@ -381,51 +381,17 @@ class InstitutionView(BaseView):
 
                                 block: str = Query("", title=" ", description="地域管辖区", ),
                                      borough: str = Query("", title="  ", description=" 行政管辖区", ),
-
-
-                                institution_code: str = Query("", title="", description=" 园所标识码", ),
-                                institution_level: str = Query("", title="", description=" 学校星级", ),
-                                status: PlanningSchoolStatus = Query(None, title="", description=" 状态", examples=['正常']),
-
-                                founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
-                                                                                      examples=['地方']),
-                                founder_type_lv2: List[str] = Query([], title="", description="举办者类型二级",
-                                                                    examples=['教育部门']),
-                                founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
-                                                                    examples=['县级教育部门']),
-
-                                institution_no: str|None = Query(None, title="学校编号", description="学校编号",
-                                                            example='SC2032633'),
-
-                                planning_institution_id: int = Query(None, description="规划校ID", example='1'),
-                                province: str = Query("", title="", description="省份代码", ),
-                                city: str = Query("", title="", description="城市", ),
-
-                                # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
                                 process_code: str = Query("", title="流程代码", description="例如p_institution_open", ),
-                                planning_institution_code: str = Query("", title="", description=" 园所标识码", ),
                                 page_request=Depends(PageRequest)):
         items = []
         #PlanningSchoolBaseInfoOptional
-        print('入参接收',page_request,status)
+        print('入参接收',page_request,)
         req= InstitutionPageSearch(block=block,
-                              planning_institution_code=planning_institution_code,
                               borough=borough,
-                              status=status,
-                              founder_type=founder_type,
-                              founder_type_lv2=founder_type_lv2,
-                              founder_type_lv3=founder_type_lv3,
-                              institution_no=institution_no,
                               institution_name=institution_name,
-                              planning_institution_id=planning_institution_id,
-                              province=province,
-                              city=city,
-                              institution_code=institution_code,
-                              institution_level=institution_level,
                                    social_credit_code=social_credit_code,
                                    institution_org_type=institution_org_type,
-
-
+                                   founder_type_lv3=[]
                               )
         print('入参接收2',req)
         paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,  )
