@@ -123,7 +123,7 @@ class PlanningSchoolView(BaseView):
 
                           ):
         # 检测 是否允许修改
-        is_draft = await self.planning_school_rule.is_can_not_add_workflow(planning_school.id)
+        is_draft = await self.planning_school_rule.is_can_not_add_workflow(planning_school.id,True)
         if is_draft:
             raise PlanningSchoolStatusError()
 

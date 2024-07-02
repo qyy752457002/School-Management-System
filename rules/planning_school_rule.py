@@ -407,11 +407,12 @@ class PlanningSchoolRule(object):
             print(e)
         return response
 
-    async def is_can_not_add_workflow(self, student_id):
+    async def is_can_not_add_workflow(self, student_id,is_all_status_allow=False):
         tinfo=await self.get_planning_school_by_id(student_id)
         print('当前信息',tinfo)
-        if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
-            return  True
+        if not is_all_status_allow:
+            if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
+                return  True
         # 检查是否有占用
         if tinfo and  tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
             return True
