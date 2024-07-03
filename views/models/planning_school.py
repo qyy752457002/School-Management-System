@@ -92,6 +92,57 @@ class PlanningSchool(BaseModel):
     urban_ethnic_nature: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
 
+
+
+class PlanningSchoolOptional(BaseModel):
+    id: int|None = Query(None, title="规划校id", description="规划校id", example='1'),
+
+    planning_school_name: str|None = Field(None, title="规划校名称", description="1-20字符", examples=['XX小学'])
+    planning_school_no: str|None = Field(None, title="规划校编号", description="规划校编号/规划校代码", examples=['SC2032633'])
+    planning_school_operation_license_number: str|None = Field(None, title="办学许可证号",
+                                                          description="办学许可证号", examples=['EDU2024012569'])
+    block: str|None = Field(None, title="地域管辖区", description="地域管辖区", examples=['铁西区'])
+    borough: str|None = Field(None, title="行政管辖区", description=" 行政管辖区", examples=['铁西区'])
+    planning_school_edu_level: str|None = Field(None, title="办学类型", description="办学类型", examples=['学前教育'])
+    planning_school_category: str|None = Field(None, title="办学类型二级", description=" 办学类型二级", examples=['小学'])
+    planning_school_operation_type: str|None = Field(None, title="办学类型三级", description=" 办学类型三级", examples=['附设小学班'])
+    planning_school_org_type: str|None = Field(None, title="规划校办别", description=" 规划校办别", examples=['民办'])
+    planning_school_level: str|int|None = Field(None, title="规划校星级", description=" 规划校星级", examples=['5'])
+    status: str |None= Field(None, title="状态", description=" 状态", examples=['正常'])
+    planning_school_code: str|None = Field(None, title="规划校标识码", description=" 规划校标识码", examples=['SC562369322SG'])
+    kg_level: str|None = Field(None, title="星级", description="星级", examples=['5'])
+    created_uid: int|None = Field(None, title="创建人", description="创建人", examples=['1'])
+
+    planning_school_short_name: str|None = Field(None, title="规划校简称", description="规划校简称", examples=['MXXX'])
+    planning_school_en_name: str|None = Field(None, title="规划校英文名称", description="规划校英文名称", examples=['MinxingPrimarySCHOOL'])
+    create_planning_school_date: str |None= Field(None, title="建校年月", description="建校年月", examples=['2021-10-10 00:00:00'])
+    social_credit_code: str|None = Field(None, title="统一社会信用代码", description="统一社会信用代码", examples=['XH423423876867'])
+    founder_type: str|None = Field(None, title="举办者类型", description="举办者类型", examples=['地方'])
+    founder_type_lv2: str|None = Field(None, title="举办者类型二级", description="举办者类型二级", examples=['教育部门'])
+
+    founder_type_lv3: str|None = Field(None, title="举办者类型三级", description="举办者类型三级", examples=['县级教育部门'])
+
+    founder_name: str|None = Field(None, title="举办者名称", description="举办者名称", examples=['上海教育局'])
+    founder_code: str|None = Field(None, title="举办者识别码", description="举办者识别码", examples=['SC562369322SG'])
+    urban_rural_nature: str|None = Field(None, title="城乡性质", description="城乡性质", examples=['城镇'])
+    planning_school_org_form: str|None = Field(None, title="办学组织形式", description="办学组织形式", examples=['教学点'])
+    planning_school_closure_date: str|None = Field('', title="规划校关闭日期", description="规划校关闭日期", examples=[''])
+    department_unit_number: str|None = Field(None, title="属地管理行政部门单位号", description="属地管理行政部门单位号", examples=['SC562369322SG'])
+    sy_zones: str |None= Field(None, title="属地管理行政部门所在地地区", description="属地管理行政部门所在地地区", examples=['铁西区'])
+    historical_evolution: str |None= Field(None, title="历史沿革", description="历史沿革", examples=['xxxxxxxxxxxxxxxxxxxx'])
+    sy_zones_pro: str|None = Field(None, title="属地管理教育行政部门所在地（省级）", description="属地管理教育行政部门所在地（省级）", examples=['沈阳'])
+    primary_planning_school_system: str|None = Field(None, title="小学学制", description="小学学制", examples=['6'])
+    primary_planning_school_entry_age: str |None= Field(None, title="小学入学年龄", description="小学入学年龄", examples=['6'])
+    junior_middle_planning_school_system: str|None = Field(None, title="初中学制", description="初中学制", examples=['3'])
+    junior_middle_planning_school_entry_age: str|None = Field(None, title="初中入学年龄", description="初中入学年龄", examples=['12'])
+    senior_middle_planning_school_system: str|None = Field(None, title="高中学制", description="高中学制", examples=['3'])
+    province: str|None= Field('', title="省份", description="", examples=[''], max_length=30)
+    city: str|None = Field('', title="城市", description="", examples=[''],  max_length=30)
+    workflow_status: str |None= Field(None, title="", description="", examples=[''])
+    location_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
+    urban_ethnic_nature: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
+    leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
+
 # 规划校的 基本信息模型   视图的额模型是按需提供的
 class PlanningSchoolBaseInfo(BaseModel):
     id: int = Query(None, title="", description="规划校id", example='1'),
@@ -224,7 +275,7 @@ class PlanningSchoolTask(BaseModel):
     bucket: str = Field('', title="",description="",examples=[' '])
     scene: str = Field('', title="",description="",examples=[' '])
 
-class PlanningSchoolImport(PlanningSchool, PlanningSchoolCommunications):
+class PlanningSchoolImport(PlanningSchoolOptional, PlanningSchoolCommunications):
     pass
 
 class PlanningSchoolTransactionAudit(BaseModel):
