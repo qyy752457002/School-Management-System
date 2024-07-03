@@ -72,7 +72,7 @@ class SchoolRule(object):
         school_db.status =  PlanningSchoolStatus.DRAFT.value
         school_db.created_uid = 0
         school_db.updated_uid = 0
-        if school.planning_school_id>0 :
+        if school.planning_school_id and  school.planning_school_id>0 :
             # rule互相应用有问题  用dao
             p_exists_school_model = await self.p_school_dao.get_planning_school_by_id(  school.planning_school_id)
             if not p_exists_school_model:

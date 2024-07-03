@@ -7,6 +7,7 @@ from mini_framework.web.views import BaseView
 from business_exceptions.institution import InstitutionStatusError
 from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
+from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields
 from views.models.operation_record import OperationTarget, OperationType, ChangeModule, OperationRecord
@@ -34,6 +35,7 @@ class InstitutionView(BaseView):
     def __init__(self):
         super().__init__()
         self.institution_rule = get_injector(InstitutionRule)
+        self.school_rule = get_injector(SchoolRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
         self.system_rule = get_injector(SystemRule)
 
@@ -47,7 +49,9 @@ class InstitutionView(BaseView):
         return {'institution': school,     'institution_keyinfo': institution_keyinfo}
 
     async def post(self, school: InstitutionsAdd):
-        res = await self.institution_rule.add_institution(school)
+        # res = await self.institution_rule.add_institution(school)
+        print('school',school)
+        res = await self.school_rule.add_school(school)
         print(res)
 
         return res

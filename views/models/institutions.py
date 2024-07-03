@@ -140,12 +140,13 @@ class InstitutionPageSearch(BaseModel):
 class InstitutionsAdd(BaseModel):
     #   title  实际根据title匹配
     institution_category: InstitutionType = Field(InstitutionType.INSTITUTION, title='单位分类',  examples=['institution/administration'])
-    institution_name: str = Field(..., title='单位名称',  examples=['文化部'])
-    institution_code: str = Field(...,   title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
-    membership_no: str = Field(...,   title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
-    block: str = Query("", title=" ", description="地域管辖区", ),
-    borough: str = Query("", title="  ", description=" 行政管辖区", ),
-    status: str = Field(PlanningSchoolStatus.DRAFT,   title='状态',  description=" 状态",examples=[''])
+    school_name: str = Field(...,alias='institution_name', title='单位名称',  examples=['文化部'])
+    school_no: str = Field(..., alias='institution_code',  title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
+    membership_no: str = Field(...,     title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
+    block: str = Query("",   title=" ", description="地域管辖区", ),
+    borough: str = Query("",    title="  ", description=" 行政管辖区", ),
+    status: str = Field(PlanningSchoolStatus.DRAFT,  alias='',   title='状态',  description=" 状态",examples=[''])
+    planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
 
 
 class InstitutionBaseInfo(BaseModel):
