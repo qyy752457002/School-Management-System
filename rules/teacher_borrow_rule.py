@@ -162,7 +162,7 @@ class TeacherBorrowRule(object):
             change_data="",
             operation_time=datetime.now(),
             doc_upload="",
-            change_module=ChangeModule.TRANSFER.value,
+            change_module=ChangeModule.BORROW.value,
             change_detail=f"从{transfer_and_borrow_extra_model.original_unit_name}借入到{current_unit_name}",
             status="/",
             operator_id=1,

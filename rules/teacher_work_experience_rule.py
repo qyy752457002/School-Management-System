@@ -6,6 +6,8 @@ from daos.teachers_dao import TeachersDao
 from business_exceptions.teacher import TeacherNotFoundError, TeacherWorkExperienceNotFoundError
 from models.teacher_work_experience import TeacherWorkExperience
 from views.models.teacher_extend import TeacherWorkExperienceModel, TeacherWorkExperienceUpdateModel
+# 雪花id生成器
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 
 @dataclass_inject
@@ -28,6 +30,7 @@ class TeacherWorkExperienceRule(object):
         teacher_work_experience_db = view_model_to_orm_model(teacher_work_experience, TeacherWorkExperience)
         teacher_work_experience_db = await self.teacher_work_experience_dao.add_teacher_work_experience(
             teacher_work_experience_db)
+        teacher_work_experience_db.teacher_work_experience_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_work_experience = orm_model_to_view_model(teacher_work_experience_db, TeacherWorkExperienceModel)
         return teacher_work_experience
 
