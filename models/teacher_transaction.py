@@ -29,5 +29,5 @@ class TeacherTransaction(BaseDBModel):
     position_date: Mapped[date] = mapped_column(Date, nullable=True, comment="任职日期")
     transaction_time: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(), nullable=False,
                                                        comment="操作时间")
-    is_active: Mapped[bool] = mapped_column(nullable=False, comment="是否已经恢复在职", default=True)
+    is_active: Mapped[bool] = mapped_column(nullable=False, comment="是否已经恢复在职", default=False)
     is_deleted: Mapped[bool] = mapped_column(nullable=False, comment="删除态", default=False)

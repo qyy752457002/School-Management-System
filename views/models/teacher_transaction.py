@@ -269,6 +269,70 @@ class TeacherTransactionQueryReModel(BaseModel):
     transaction_type: str = Field(..., title="异动类型", description="异动类型")
     transaction_remark: Optional[str] = Field("", title="备注", description="备注")
     transaction_time: Optional[datetime] = Field(None, title="申请时间", description="申请时间")
+# 离退休相关模型
+class TeacherRetireQueryRe(BaseModel):
+    """
+    教师姓名：teacher_name
+    # 教师ID：teacher_id
+    身份证号：id_number
+    性别：gender
+    任职单位：employer
+    # 最高学历：highest_education
+    政治面貌：political_status
+    是否在编：in_post
+    用人形式：employment_form
+    进本校时间：enter_school_time
+    审核状态：approval_status
+    """
+    teacher_base_id: Optional[int] = Field(None, title="教师基本信息id", description="教师ID")
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_name: str = Query("", title="姓名", description="姓名", example="张三")
+    teacher_id_number: str = Query("", title="身份证号", description="身份证号", example="123456789012345678")
+    teacher_gender: str = Query("", title="性别", description="性别", example="男")
+    teacher_employer: int = Query(1, title="任职单位", description="任职单位", example="xx学校")
+    highest_education: Optional[str] = Query("", title="最高学历", description="最高学历", example="本科")
+    political_status: Optional[str] = Query("", title="政治面貌", description="政治面貌", example="群众")
+    in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
+    enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
+    retire_date: Optional[date] = Query(None, title="离退休时间", description="离退休时间", example="2020-01-01")
+    school_name: Optional[str] = Query("", title="", description="", example="")
+
+
+class TeacherRetireQuery(BaseModel):
+    """
+    """
+    teacher_name: str = Query("", title="姓名", description="姓名", example="张三")
+    teacher_id_number: str = Query("", title="身份证号", description="身份证号", example="123456789012345678")
+    teacher_gender: Optional[Gender] = Query(None, title="性别", description="性别", example="男")
+    teacher_employer: Optional[int] = Query(None, title="任职单位", description="任职单位", example="xx学校")
+    highest_education: str = Query("", title="最高学历", description="最高学历", example="本科")
+    political_status: str = Query("", title="政治面貌", description="政治面貌", example="群众")
+    in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
+    enter_school_time_s: Optional[date] = Query(None, title="进本校时间", description="进本校时间",
+                                                example="2010-01-01")
+    enter_school_time_e: Optional[date] = Query(None, title="进本校时间", description="进本校时间",
+                                                example="2010-01-01")
+    retire_date_s: Optional[date] = Query(None, title="非在职时间起始", description="", example="2010-01-01")
+    retire_date_e: Optional[date] = Query(None, title="非在职时间截止", description="", example="2010-01-01")
+
+
+class TeacherRetireCreateModel(BaseModel):
+    transaction_type: TransactionType = Field(..., title="异动类型", description="异动类型")
+    transaction_remark: str = Field("", title="备注", description="备注")
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    transaction_time: Optional[datetime] | None = Field(default=datetime.now(), title="操作时间",
+                                                        description="操作时间")
+    retire_date: Optional[date] | None = Field(None, title="离退休时间", description="离退休时间")
+
+
+class TeacherRetireUpdateModel(BaseModel):
+    teacher_retire_id: int = Field(..., title="teacher_retire_id", description="teacher_retire_id")
+    transaction_type: TransactionType = Field(..., title="异动类型", description="异动类型")
+    transaction_remark: str = Field("", title="备注", description="备注")
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    transaction_time: Optional[datetime] | None = Field(default=datetime.now(), title="操作时间",
+                                                        description="操作时间")
+    retire_date: Optional[date] | None = Field(None, title="离退休时间", description="离退休时间")
 
 
 # 调动相关模型
@@ -658,4 +722,5 @@ class TeacherBorrowQueryReModel(BaseModel):
     start_time: Optional[datetime] | None = Field(None, title="申请时间", description="申请时间")
     approval_time: Optional[datetime] | None = Field(None, title="审批时间", description="审批时间")
     approval_name: Optional[str] = Field("", title="审批人", description="审批人")
+    teacher_borrow_id: int = Field(0, title="teacher_borrow_id", description="teacher_borrow_id")
     process_instance_id: int = Field(0, title="流程实例id", description="流程实例id")
