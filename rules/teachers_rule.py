@@ -335,11 +335,11 @@ class TeachersRule(object):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("参数错误")
-            # source_file = task.payload
-            # local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
-            # storage_manager.download_file(
-            #     source_file.bucket_name, source_file.file_name, local_file_path
-            # )
+            source_file = task.payload
+            local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
+            storage_manager.download_file(
+                source_file.bucket_name, source_file.file_name, local_file_path
+            )
             local_file_path = "c.xlsx"
             reader = ExcelReader()
             reader.set_data(local_file_path)
