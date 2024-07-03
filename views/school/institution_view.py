@@ -43,7 +43,7 @@ class InstitutionView(BaseView):
     async def get(self,
                   institution_id: int = Query(..., description="|", example='1'),
                   ):
-        school = await self.school_rule.get_school_by_id(institution_id)
+        school = await self.school_rule.get_school_by_id(institution_id,extra_model=InstitutionOptional)
         institution_keyinfo = await self.school_rule.get_school_by_id(institution_id, extra_model=InstitutionKeyInfo)
 
         return {'institution': school,     'institution_keyinfo': institution_keyinfo}
@@ -70,7 +70,7 @@ class InstitutionView(BaseView):
                   ):
         print(page_request)
         items=[]
-        res = await self.institution_rule.query_institution_with_page(page_request,institution_category=institution_category,institution_name=institution_name,institution_org_type=institution_org_type,block=block,borough=borough,social_credit_code=social_credit_code)
+        res = await self.school_rule.query_school_with_page(page_request,institution_category=institution_category,school_name=institution_name,school_org_type=institution_org_type,block=block,borough=borough,social_credit_code=social_credit_code,extra_model=InstitutionOptional)
         return res
     # 修改 变更 基本信息
     async def patch_baseinfo(self, institution_baseinfo: InstitutionBaseInfo):

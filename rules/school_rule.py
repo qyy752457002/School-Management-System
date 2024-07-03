@@ -239,10 +239,10 @@ class SchoolRule(object):
     async def get_school_count(self):
         return await self.school_dao.get_school_count()
 
-    async def query_school_with_page(self, page_request: PageRequest,   school_name,school_no,school_code,
-                                     block,school_level,borough,status,founder_type,
-                                     founder_type_lv2,
-                                     founder_type_lv3,planning_school_id,province,city ):
+    async def query_school_with_page(self, page_request: PageRequest,   school_name=None,school_no=None,school_code=None,
+                                     block=None,school_level=None,borough=None,status=None,founder_type=None,
+                                     founder_type_lv2=None,
+                                     founder_type_lv3=None,planning_school_id=None,province=None,city=None ,institution_category=None,social_credit_code=None,school_org_type=None,extra_model =None):
         #  根据举办者类型  1及 -3级  处理为条件   1  2ji全部转换为 3级  最后in 3级查询
         enum_value_rule = get_injector(EnumValueRule)
         if founder_type:
@@ -254,7 +254,7 @@ class SchoolRule(object):
 
 
             # query = query.where(PlanningSchool.founder_type_lv2 == founder_type_lv2)
-        if len(founder_type_lv2)>0:
+        if founder_type_lv2 and  len(founder_type_lv2)>0:
             founder_type_lv3_res= await enum_value_rule.get_next_level_enum_values('founder_type_lv2'  ,founder_type_lv2)
             for item in founder_type_lv3_res:
                 founder_type_lv3.append(item.enum_value)
@@ -262,10 +262,15 @@ class SchoolRule(object):
         paging = await self.school_dao.query_school_with_page(page_request,  school_name,school_no,school_code,
                                                                 block,school_level,borough,status,founder_type,
                                                                 founder_type_lv2,
-                                                                founder_type_lv3,planning_school_id,province,city
+                                                                founder_type_lv3,planning_school_id,province,city,institution_category,social_credit_code,school_org_type
                                                                                 )
         # 字段映射的示例写法   , {"hash_password": "password"}
-        paging_result = PaginatedResponse.from_paging(paging, SchoolModel)
+        if extra_model:
+            # paging.data = [extra_model(**item) for item in paging.data]
+            paging_result = PaginatedResponse.from_paging(paging, extra_model)
+
+        else:
+            paging_result = PaginatedResponse.from_paging(paging, SchoolModel)
         return paging_result
 
 
@@ -296,7 +301,7 @@ class SchoolRule(object):
         return school_db
 
 
-
+    # 搜索使用
     async def query_schools(self,school_name,extend_params:ExtendParams|None,school_id=None,block=None,borough=None):
         # block,borough
         session = await db_connection_manager.get_async_session("default", True)

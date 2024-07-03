@@ -60,13 +60,13 @@ class InstitutionsValid(BaseModel):
     institution_en_name: str = Field(..., title='a',   examples=['CEDUCUL'])
 
 class InstitutionOptional(BaseModel):
-    #   title 等 必须和表头一样
+    #   title 等 必须和表头一样 todo 为了保持原样输出 必须 进行转换 2个视图模型的映射
     id:int= Query(None, title="", description="", example='1')
 
-    institution_name: str = Field("", title='单位名称', description="单位名称",examples=['文化部'])
-    institution_en_name: str = Field("",title='单位名称英文',   description=" 单位名称英文",examples=['CEDUCUL'])
-    institution_category: str = Field("", title='单位分类',  description=" 单位分类",examples=['事业单位'])
-    institution_type: str = Field("",   title='单位类型',  description="单位类型 ",examples=[''])
+    institution_name: str|None = Field("", title='单位名称', description="单位名称",examples=['文化部'])
+    institution_en_name: str |None= Field("",title='单位名称英文',   description=" 单位名称英文",examples=['CEDUCUL'])
+    institution_category: str|None = Field("", title='单位分类',  description=" 单位分类",examples=['事业单位'])
+    institution_type: str|None = Field("",   title='单位类型',  description="单位类型 ",examples=[''])
     fax_number: str |None= Field("",   title='传真电话',  description=" 传真电话",examples=['020-256526256'])
     email: str |None = Field("",   title='单位电子信箱',  description=" 单位电子信箱",examples=['fsdfds@odk.cc'])
     contact_number: str |None = Field("",   title='联系电话',  description=" 联系电话",examples=['0232156562'])
@@ -98,7 +98,6 @@ class InstitutionOptional(BaseModel):
     membership_category: str |None = Field("",   title='隶属单位类型',  description=" 隶属单位类型",examples=['行政'])
     workflow_status: str |None = Field("",   title='',  description=" ",examples=[''])
     process_instance_id:int|None= Query(0, title="", description="", example='1')
-
 
 
 class InstitutionKeyInfo(BaseModel):
