@@ -8,11 +8,10 @@ from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers import Teacher
 from views.common.common_view import check_id_number
 from views.models.teachers import Teachers as TeachersModel
-from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherCreateResultModel, CombinedModel, \
-    TeacherInfoCreateResultModel, TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
+from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherCreateResultModel, \
+    TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
     NewTeacherApprovalCreate
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
-from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
 from rules.teachers_info_rule import TeachersInfoRule
 from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, TeacherChangeLogQueryModel, \
     CurrentTeacherInfoSaveModel, TeacherRe, TeacherAdd
@@ -24,25 +23,20 @@ from mini_framework.async_task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter, ExcelReader
 from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
-from mini_framework.storage.view_model import FileStorageModel
 from mini_framework.utils.logging import logger
 from daos.teacher_entry_dao import TeacherEntryApprovalDao
-from models.teacher_entry_approval import TeacherEntryApproval
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from daos.teacher_key_info_approval_dao import TeacherKeyInfoApprovalDao
-from models.teacher_key_info_approval import TeacherKeyInfoApproval
-from models.teacher_change_log import TeacherChangeLog
 from daos.teacher_change_dao import TeacherChangeLogDAO
 from rules.teacher_change_rule import TeacherChangeRule
-from models.teacher_approval_log import TeacherApprovalLog
 from daos.teacher_approval_log_dao import TeacherApprovalLogDao
-from mini_framework.databases.queries.pages import Pagination, Paging
 
 from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
 from rules.operation_record import OperationRecordRule
 from daos.operation_record_dao import OperationRecordDAO
 from views.common.common_view import compare_modify_fields
 from models.teachers_info import TeacherInfo
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 import os
 
@@ -92,11 +86,11 @@ class TeachersRule(object):
         if length > 0:
             raise TeacherExistsError()
         teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[])
+        teachers_db.teacher_id = SnowflakeIdGenerator(1, 1).generate_id()
         if teachers_db.teacher_id_type == 'resident_id_card':
             idstatus = check_id_number(teachers_db.teacher_id_number)
             if not idstatus:
                 raise IdCardError()
-
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         teachers_work = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
         params = {"process_code": "t_entry", "applicant_name": user_id}
@@ -147,10 +141,12 @@ class TeachersRule(object):
         teachers.teacher_main_status = "employed"
         teachers.teacher_sub_status = "submitted"
         teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
+        teachers_db.teacher_id = SnowflakeIdGenerator(1, 1).generate_id()
         if teachers_db.teacher_id_type == 'resident_id_card':
             idstatus = check_id_number(teachers_db.teacher_id_number)
             if not idstatus:
                 raise IdCardError()
+
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         # 获取老师信息
         teachers = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
@@ -339,11 +335,11 @@ class TeachersRule(object):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("参数错误")
-            # source_file = task.payload
-            # local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
-            # storage_manager.download_file(
-            #     source_file.bucket_name, source_file.file_name, local_file_path
-            # )
+            source_file = task.payload
+            local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
+            storage_manager.download_file(
+                source_file.bucket_name, source_file.file_name, local_file_path
+            )
             local_file_path = "c.xlsx"
             reader = ExcelReader()
             reader.set_data(local_file_path)

@@ -1,4 +1,4 @@
-from sqlalchemy import String, Date
+from sqlalchemy import String, Date, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
 from datetime import date
@@ -21,8 +21,8 @@ class TeacherSkillCertificates(BaseDBModel):
     __tablename__ = 'lfun_teacher_skill_certificates'
     __table_args__ = {'comment': 'teacher_skill_certificates信息表'}
 
-    teacher_skill_certificates_id: Mapped[int] = mapped_column(primary_key=True, comment="teacher_skill_certificatesID")
-    teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")
+    teacher_skill_certificates_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, comment="teacher_skill_certificatesID")
+    teacher_id: Mapped[int] = mapped_column(BigInteger, nullable=False, comment="教师ID")
     language: Mapped[str] = mapped_column(String(64), nullable=True, comment="语种")
     proficiency_level: Mapped[str] = mapped_column(String(64), nullable=True, comment="掌握程度")
     other_skill_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="其他技能名称")

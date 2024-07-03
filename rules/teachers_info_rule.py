@@ -3,23 +3,15 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers_info import TeacherInfo
-from views.common.common_view import page_none_deal
 from views.models.teachers import TeacherInfo as TeachersInfoModel, RetireTeacherQuery, RetireTeacherQueryRe
 from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel, TeacherInfoSubmit, \
     CurrentTeacherQuery, CurrentTeacherQueryRe, CurrentTeacherInfoSaveModel, NewTeacherInfoSaveModel, \
-    TeacherInfoCreateModel, TeacherApprovalQuery, TeacherApprovalQueryRe, NewTeacherApprovalCreate, Teachers
-from sqlalchemy import select, func, update
+    TeacherInfoCreateModel, NewTeacherApprovalCreate
 from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError, QueryError
 from daos.teachers_dao import TeachersDao
 from views.models.organization import OrganizationMembers
 from rules.organization_memebers_rule import OrganizationMembersRule
-from models.teacher_key_info_approval import TeacherKeyInfoApproval
-from models.teacher_entry_approval import TeacherEntryApproval
-from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
-from daos.teacher_entry_dao import TeacherEntryApprovalDao
-from models.teacher_change_log import TeacherChangeLog
 from daos.teacher_change_dao import TeacherChangeLogDAO
-from models.teacher_approval_log import TeacherApprovalLog
 from daos.teacher_approval_log_dao import TeacherApprovalLogDao
 from rules.teacher_change_rule import TeacherChangeRule
 from daos.teacher_key_info_approval_dao import TeacherKeyInfoApprovalDao
@@ -29,6 +21,7 @@ from views.models.operation_record import OperationRecord, OperationTarget, Chan
 from rules.operation_record import OperationRecordRule
 from daos.operation_record_dao import OperationRecordDAO
 from views.common.common_view import compare_modify_fields
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 
 @dataclass_inject
@@ -68,7 +61,8 @@ class TeachersInfoRule(object):
         exits_teacher_base = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teachers_info.teacher_id)
         if exits_teacher_base:
             raise TeacherInfoExitError()
-        teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
+        teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo)
+        teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
         # teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
@@ -92,6 +86,7 @@ class TeachersInfoRule(object):
         if exits_teacher_base:
             raise TeacherInfoExitError()
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo)
+        teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, TeachersInfoModel, exclude=[""])
         return teachers_info
@@ -104,6 +99,7 @@ class TeachersInfoRule(object):
         if exits_teacher_base:
             raise TeacherInfoExitError()
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
+        teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, TeachersInfoModel, exclude=[""])
         teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)

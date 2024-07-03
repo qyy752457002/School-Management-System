@@ -1,4 +1,4 @@
-from sqlalchemy import String, Date
+from sqlalchemy import String, Date, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
 from datetime import date
@@ -18,8 +18,8 @@ class OverseasStudy(BaseDBModel):
     __tablename__ = 'lfun_overseas_study'
     __table_args__ = {'comment': 'overseas_study信息表'}
 
-    overseas_study_id: Mapped[int] = mapped_column(primary_key=True, comment="overseas_studyID")
-    teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")
+    overseas_study_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, comment="overseas_studyID")
+    teacher_id: Mapped[int] = mapped_column(BigInteger, nullable=False, comment="教师ID")
     start_date: Mapped[date] = mapped_column(Date, nullable=False, comment="开始日期")
     end_date: Mapped[date] = mapped_column(Date, nullable=False, comment="结束日期")
     country_region: Mapped[str] = mapped_column(String(64), nullable=False, comment="国家地区")

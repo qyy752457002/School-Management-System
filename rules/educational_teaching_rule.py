@@ -7,7 +7,7 @@ from views.models.teacher_extend import EducationalTeachingModel, EducationalTea
 from daos.teachers_dao import TeachersDao
 from business_exceptions.teacher import TeacherNotFoundError,TeacherInfoNotFoundError
 
-
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 @dataclass_inject
 class EducationalTeachingRule(object):
     educational_teaching_dao: EducationalTeachingDAO
@@ -24,6 +24,7 @@ class EducationalTeachingRule(object):
         if not exits_teacher:
             raise TeacherNotFoundError()
         educational_teaching_db = view_model_to_orm_model(educational_teaching, EducationalTeaching)
+        educational_teaching_db.educational_teaching_id = SnowflakeIdGenerator(1, 1).generate_id()
         educational_teaching_db = await self.educational_teaching_dao.add_educational_teaching(educational_teaching_db)
         educational_teaching = orm_model_to_view_model(educational_teaching_db, EducationalTeachingUpdateModel)
         return educational_teaching

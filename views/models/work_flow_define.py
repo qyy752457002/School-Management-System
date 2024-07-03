@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
-from datetime import date
 from typing import Optional
-from models.work_flow_define import ProcessType,ProcessCode,ProcessName
+from drop.work_flow_define import ProcessType
+
 
 class WorkFlowDefineModel(BaseModel):
     """

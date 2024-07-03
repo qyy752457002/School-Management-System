@@ -7,6 +7,7 @@ from views.models.teacher_extend import DomesticTrainingModel, DomesticTrainingU
 from daos.teachers_dao import TeachersDao
 from business_exceptions.teacher import TeacherNotFoundError,DomesticTrainingNotFoundError
 
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 @dataclass_inject
 class DomesticTrainingRule(object):
@@ -24,6 +25,7 @@ class DomesticTrainingRule(object):
         if not exits_teacher:
             raise TeacherNotFoundError()
         domestic_training_db = view_model_to_orm_model(domestic_training, DomesticTraining)
+        domestic_training_db.domestic_training_id = SnowflakeIdGenerator(1, 1).generate_id()
         domestic_training_db = await self.domestic_training_dao.add_domestic_training(domestic_training_db)
         domestic_training = orm_model_to_view_model(domestic_training_db, DomesticTrainingUpdateModel)
         return domestic_training

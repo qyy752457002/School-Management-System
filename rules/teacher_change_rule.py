@@ -1,9 +1,8 @@
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
-from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teacher_change_dao import TeacherChangeLogDAO
-from models.teacher_change_log import TeacherChangeLog
-from models.teacher_change_detail import TeacherChangeDetail
+from drop.teacher_change_log import TeacherChangeLog
+from drop.teacher_change_detail import TeacherChangeDetail
 from views.models.teacher_change import TeacherChangeLogModel, TeacherChangeLogReModel, TeacherChangeDetailReModel, \
     TeacherChangeDetailModel
 
