@@ -32,6 +32,7 @@ from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 
 from rules.school_communication_rule import SchoolCommunicationRule
+from views.models.system import ImportScene
 
 
 class SchoolView(BaseView):
@@ -443,14 +444,14 @@ class SchoolView(BaseView):
     # 导入   任务队列的
     async def post_school_import(self,
                                  filename: str = Query(..., description="文件名"),
-                                 bucket: str = Query(..., description="文件名"),
-                                 scene: str = Query('', description="文件名"),
+                                 # bucket: str = Query(..., description="文件名"),
+                                 # scene: str = Query('', description="文件名"),
                                  ) -> Task:
         task = Task(
             #todo sourcefile无法记录3个参数  故 暂时用3个参数来实现  需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="school_import",
             # 文件 要对应的 视图模型
-            payload=SchoolTask(file_name=filename, bucket=bucket, scene=scene),
+            payload=SchoolTask(file_name=filename, scene= ImportScene.SCHOOL.value, bucket='school_import' ),
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
