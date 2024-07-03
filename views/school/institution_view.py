@@ -102,54 +102,6 @@ class InstitutionView(BaseView):
 
         return res
 
-
-
-    # 编辑的接口
-    # async def put(self,
-    #
-    #               school: InstitutionOptional,
-    #
-    #               institution_id: int = Query(..., title="", description="学校id/园所id", example='38'),
-    #
-    #               ):
-    #     # print(planning_school)
-    #     school.id = institution_id
-    #
-    #     # if isinstance(institution_eduinfo.att_class_type,  bool):
-    #     #     institution_eduinfo.att_class_type= str( institution_eduinfo.att_class_type )
-    #
-    #     origin = await self.institution_rule.get_institution_by_id(school.id)
-    #     log_con = compare_modify_fields(school, origin)
-    #
-    #     res = await self.institution_rule.update_institution_byargs(school)
-    #
-    #     #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-    #     res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-    #         target=OperationTarget.INSTITUTION.value,
-    #         action_type=OperationType.MODIFY.value,
-    #         change_module=ChangeModule.BASIC_INFO_CHANGE.value,
-    #         change_detail="暂存信息",
-    #         action_target_id=str(institution_id),
-    #         change_data= JsonUtils.dict_to_json_str(log_con),
-    #
-    #
-    #     ))
-    #
-    #     return res
-
-
-    async def post_institution_import_example(self, account: Institutions = Body(..., description="")) -> Task:
-        task = Task(
-            # 需要 在cofnig里有配置   对应task类里也要有这个键
-            task_type="institution_import",
-            # 文件 要对应的 视图模型
-            payload=account,
-            operator=request_context_manager.current().current_login_account.account_id
-        )
-        task = await app.task_topic.send(task)
-        print('发生任务成功')
-        return task
-
     # 导入 事业单位      上传文件获取 桶底值
 
     async def post_institution_import(self,
@@ -175,20 +127,20 @@ class InstitutionView(BaseView):
         # print(school)
         # res = await self.institution_rule.update_institution_status(institution_id, PlanningSchoolStatus.NORMAL.value, 'open')
         # 检测 是否允许修改
-        is_draft = await self.institution_rule.is_can_not_add_workflow(institution_id)
+        is_draft = await self.school_rule.is_can_not_add_workflow(institution_id)
         if is_draft:
             raise InstitutionStatusError()
 
         # 请求工作流
-        school = await self.institution_rule.get_institution_by_id(institution_id,)
+        school = await self.school_rule.get_institution_by_id(institution_id,)
 
-        res = await self.institution_rule.add_institution_work_flow(school)
+        res = await self.school_rule.add_institution_work_flow(school)
         process_instance_id=0
         if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
             pl = InstitutionOptional(id=institution_id, process_instance_id=process_instance_id,workflow_status=AuditAction.NEEDAUDIT.value)
 
-            res_u = await self.institution_rule.update_institution_byargs(pl  )
+            res_u = await self.school_rule.update_institution_byargs(pl  )
 
             pass
 
@@ -216,21 +168,21 @@ class InstitutionView(BaseView):
                           ):
         # res = await self.institution_rule.update_institution_status(institution_id, PlanningSchoolStatus.CLOSED.value)
         # 检测 是否允许修改
-        is_draft = await self.institution_rule.is_can_not_add_workflow(institution_id)
+        is_draft = await self.school_rule.is_can_not_add_workflow(institution_id)
         if is_draft:
             raise InstitutionStatusError()
         # 请求工作流
 
-        school = await self.institution_rule.get_institution_by_id(institution_id,)
+        school = await self.school_rule.get_institution_by_id(institution_id,)
 
-        res = await self.institution_rule.add_institution_close_work_flow(school, action_reason,related_license_upload)
+        res = await self.school_rule.add_institution_close_work_flow(school, action_reason,related_license_upload)
         process_instance_id=0
 
         if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
             pl = InstitutionOptional(id=institution_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
-            resu = await self.institution_rule.update_institution_byargs(pl  )
+            resu = await self.school_rule.update_institution_byargs(pl  )
 
             pass
 
@@ -255,24 +207,24 @@ class InstitutionView(BaseView):
 
                           ):
         # 检测 是否允许修改
-        is_draft = await self.institution_rule.is_can_not_add_workflow(school.id,True)
+        is_draft = await self.school_rule.is_can_not_add_workflow(school.id,True)
         if is_draft:
             raise InstitutionStatusError()
-        origin = await self.institution_rule.get_institution_by_id(school.id)
+        origin = await self.school_rule.get_institution_by_id(school.id)
 
         res2 = compare_modify_fields(school, origin)
         # print(  res2)
 
-        # res = await self.planning_institution_rule.update_planning_institution_byargs(planning_school)
+        # res = await self.planning_school_rule.update_planning_institution_byargs(planning_school)
         #  工作流
         # planning_school.id = planning_institution_id
-        res = await self.institution_rule.add_institution_keyinfo_change_work_flow(school,)
+        res = await self.school_rule.add_institution_keyinfo_change_work_flow(school,)
         process_instance_id=0
         if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
             pl = InstitutionOptional(id=school.id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
-            resu = await self.institution_rule.update_institution_byargs(pl  )
+            resu = await self.school_rule.update_institution_byargs(pl  )
 
             pass
 
@@ -296,7 +248,7 @@ class InstitutionView(BaseView):
 
                                ):
         print('前端入参',audit_info)
-        resultra = await self.institution_rule.req_workflow_audit(audit_info,'open')
+        resultra = await self.school_rule.req_workflow_audit(audit_info,'open')
         if resultra is None:
             return {}
         if isinstance(resultra, str):
@@ -311,7 +263,7 @@ class InstitutionView(BaseView):
 
                                 ):
         print('前端入参',audit_info)
-        resultra = await self.institution_rule.req_workflow_audit(audit_info,'close')
+        resultra = await self.school_rule.req_workflow_audit(audit_info,'close')
         if resultra is None:
             return {}
         if isinstance(resultra, str):
@@ -326,7 +278,7 @@ class InstitutionView(BaseView):
 
                                   ):
         print('前端入参',audit_info)
-        resultra = await self.institution_rule.req_workflow_audit(audit_info,'keyinfo_change')
+        resultra = await self.school_rule.req_workflow_audit(audit_info,'keyinfo_change')
         if resultra is None:
             return {}
         if isinstance(resultra, str):
@@ -346,7 +298,7 @@ class InstitutionView(BaseView):
                                 ):
 
         #  审批流取消
-        res2 = await self.institution_rule.req_workflow_cancel(node_id,process_instance_id)
+        res2 = await self.school_rule.req_workflow_cancel(node_id,process_instance_id)
 
         if res2 is None:
             return {}
@@ -365,7 +317,7 @@ class InstitutionView(BaseView):
                                  ):
 
         #  审批流取消
-        res2 = await self.institution_rule.req_workflow_cancel(node_id,process_instance_id)
+        res2 = await self.school_rule.req_workflow_cancel(node_id,process_instance_id)
 
         if res2 is None:
             return {}
@@ -383,7 +335,7 @@ class InstitutionView(BaseView):
                                                          example='22')
                                    ):
         #  审批流取消
-        res2 = await self.institution_rule.req_workflow_cancel(node_id,process_instance_id)
+        res2 = await self.school_rule.req_workflow_cancel(node_id,process_instance_id)
 
         if res2 is None:
             return {}
@@ -446,7 +398,7 @@ class InstitutionView(BaseView):
                      institution_id: int = Query(..., description="|", example='1'),
                      ):
         # print(school_id)
-        res = await self.institution_rule.softdelete_institution(institution_id)
+        res = await self.school_rule.softdelete_institution(institution_id)
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
