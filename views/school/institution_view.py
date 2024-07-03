@@ -43,8 +43,8 @@ class InstitutionView(BaseView):
     async def get(self,
                   institution_id: int = Query(..., description="|", example='1'),
                   ):
-        school = await self.institution_rule.get_institution_by_id(institution_id)
-        institution_keyinfo = await self.institution_rule.get_institution_by_id(institution_id, extra_model=InstitutionKeyInfo)
+        school = await self.school_rule.get_school_by_id(institution_id)
+        institution_keyinfo = await self.school_rule.get_school_by_id(institution_id, extra_model=InstitutionKeyInfo)
 
         return {'institution': school,     'institution_keyinfo': institution_keyinfo}
 

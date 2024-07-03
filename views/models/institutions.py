@@ -102,9 +102,12 @@ class InstitutionOptional(BaseModel):
 
 
 class InstitutionKeyInfo(BaseModel):
+    # 如果 不一样 需要转换到orm模型的
     id:int= Query(None, title="", description="", example='1')
-    institution_name: str |None = Field(..., title='单位名称',  examples=['文化部'])
-    institution_code: str |None = Field(...,   title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
+    school_name: str = Field(...,alias='institution_name', title='单位名称',  examples=['文化部'])
+    school_no: str = Field(..., alias='institution_code',  title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
+    # institution_name: str |None = Field(..., title='单位名称',  examples=['文化部'])
+    # institution_code: str |None = Field(...,   title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
     membership_no: str |None = Field(...,   title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
     block: str |None = Query("", title=" ", description="地域管辖区", ),
     borough: str |None = Query("", title="  ", description=" 行政管辖区", ),
