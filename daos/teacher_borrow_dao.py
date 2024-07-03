@@ -4,11 +4,10 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.teacher_borrow import TeacherBorrow
-from models.teachers import Teacher
 from views.models.teacher_transaction import TeacherBorrowQueryModel
 from models.teachers_info import TeacherInfo
 from models.teachers import Teacher
-from models.work_flow_node_instance import WorkFlowNodeInstance
+from drop.work_flow_node_instance import WorkFlowNodeInstance
 from models.school import School
 
 

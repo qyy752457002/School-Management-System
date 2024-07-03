@@ -6,25 +6,19 @@ from daos.teachers_dao import TeachersDao
 from models.teacher_transaction import TeacherTransaction
 from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
     TeacherTransactionQueryModel, TeacherTransactionQueryReModel, TeacherTransactionGetModel, TransactionType
-from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
+from business_exceptions.teacher import TeacherNotFoundError
 from business_exceptions.teacher_transction import TransactionError
-from rules.work_flow_instance_rule import WorkFlowNodeInstanceRule
+from drop.work_flow_instance_rule import WorkFlowNodeInstanceRule
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
-from rules.enum_value_rule import EnumValueRule
 from daos.enum_value_dao import EnumValueDAO
-from models.enum_value import EnumValue
-from mini_framework.utils.http import HTTPRequest
-from urllib.parse import urlencode
-from views.common.common_view import workflow_service_config
 
 from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
 from rules.operation_record import OperationRecordRule
 from daos.operation_record_dao import OperationRecordDAO
-from views.common.common_view import compare_modify_fields
 
 from datetime import datetime
 
-
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 @dataclass_inject
 class TeacherTransactionRule(object):
     teacher_transaction_dao: TeacherTransactionDAO
@@ -49,6 +43,7 @@ class TeacherTransactionRule(object):
         teacher_db = await self.teachers_dao.get_teachers_by_id(teacher_transaction_db.teacher_id)
         if not teacher_db:
             raise TeacherNotFoundError()
+        teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
         teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)
         return teacher_transaction

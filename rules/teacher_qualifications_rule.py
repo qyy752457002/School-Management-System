@@ -6,7 +6,7 @@ from models.teacher_qualifications import TeacherQualifications
 from views.models.teacher_extend import TeacherQualificationsModel, TeacherQualificationsUpdateModel
 from daos.teachers_dao import TeachersDao
 from business_exceptions.teacher import TeacherNotFoundError, TeacherQualificationsNotFoundError
-
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 @dataclass_inject
 class TeacherQualificationsRule(object):
@@ -24,6 +24,7 @@ class TeacherQualificationsRule(object):
         if not exits_teacher:
             raise TeacherNotFoundError()
         teacher_qualifications_db = view_model_to_orm_model(teacher_qualifications, TeacherQualifications)
+        teacher_qualifications_db.teacher_qualifications_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_qualifications_db = await self.teacher_qualifications_dao.add_teacher_qualifications(
             teacher_qualifications_db)
         teacher_qualifications = orm_model_to_view_model(teacher_qualifications_db, TeacherQualificationsUpdateModel)

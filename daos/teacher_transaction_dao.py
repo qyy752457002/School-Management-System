@@ -7,8 +7,6 @@ from models.teacher_transaction import TeacherTransaction
 from views.models.teacher_transaction import TeacherTransactionQueryModel
 from models.teachers_info import TeacherInfo
 from models.teachers import Teacher
-from models.school import School
-from models.work_flow_node_instance import WorkFlowNodeInstance
 
 
 class TeacherTransactionDAO(DAOBase):

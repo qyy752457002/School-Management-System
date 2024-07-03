@@ -1,4 +1,4 @@
-from sqlalchemy import String, Date
+from sqlalchemy import String, Date, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
 from datetime import date
@@ -22,8 +22,8 @@ class TeacherJobAppointments(BaseDBModel):
     __tablename__ = 'lfun_teacher_job_appointments'
     __table_args__ = {'comment': 'teacher_job_appointments信息表'}
 
-    teacher_job_appointments_id: Mapped[int] = mapped_column(primary_key=True, comment="teacher_job_appointmentsID")
-    teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")
+    teacher_job_appointments_id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="teacher_job_appointmentsID")
+    teacher_id: Mapped[int] = mapped_column(BigInteger,nullable=False, comment="教师ID")
     position_category: Mapped[str] = mapped_column(String(64), nullable=False, comment="岗位类别")
     position_level: Mapped[str] = mapped_column(String(64), nullable=False, comment="岗位等级")
     school_level_position: Mapped[str] = mapped_column(String(64), nullable=False, comment="校级职务")

@@ -27,6 +27,7 @@ from rules.teachers_rule import TeachersRule
 
 from views.models.teacher_transaction import WorkflowQueryModel
 
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 @dataclass_inject
 class TeacherBorrowRule(object):
@@ -58,6 +59,7 @@ class TeacherBorrowRule(object):
         if is_approval:
             raise ApprovalStatusError()
         teacher_borrow_db = view_model_to_orm_model(teacher_borrow, TeacherBorrow, exclude=["teacher_borrow_id"])
+        teacher_borrow_db.teacher_borrow_id = SnowflakeIdGenerator(1,1).generate_id()
         teacher_borrow_db = await self.teacher_borrow_dao.add_teacher_borrow(teacher_borrow_db)
         teacher_borrow_work = orm_model_to_view_model(teacher_borrow_db, TeacherBorrowReModel)
         transfer_details_rule = get_injector(TransferDetailsRule)
@@ -95,6 +97,7 @@ class TeacherBorrowRule(object):
         teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
         teacher_borrow.teacher_id = teachers.teacher_id
         teacher_borrow_db = view_model_to_orm_model(teacher_borrow, TeacherBorrow,exclude=["teacher_borrow_id"])
+        teacher_borrow_db.teacher_borrow_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_borrow_db = await self.teacher_borrow_dao.add_teacher_borrow(teacher_borrow_db)
         teacher_borrow_work = orm_model_to_view_model(teacher_borrow_db, TeacherBorrowReModel)
         transfer_details_rule = get_injector(TransferDetailsRule)
@@ -135,6 +138,7 @@ class TeacherBorrowRule(object):
         teacher_borrow.original_district_area_id = int(school.borough)
         teacher_borrow.borrow_type = BorrowType.OUT.value
         teacher_borrow_db = view_model_to_orm_model(teacher_borrow, TeacherBorrow, exclude=["teacher_borrow_id"])
+        teacher_borrow_db.teacher_borrow_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_borrow_db = await self.teacher_borrow_dao.add_teacher_borrow(teacher_borrow_db)
         teacher_borrow_work = orm_model_to_view_model(teacher_borrow_db, TeacherBorrowReModel,
                                                       exclude=["original_unit_name",

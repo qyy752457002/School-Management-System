@@ -41,9 +41,6 @@ from . import graduation_student
 from . import course
 from . import operation_record
 from . import sub_system
-from mini_framework.storage.persistent.models import FileStorage
-from mini_framework.authentication.persistent.models import AuthAccount, JWTBlacklist
-from mini_framework.async_task.data_access.models import TaskProgress, TaskResult, TaskInfo
 
 from . import attachments
 from . import data_sync_records
@@ -72,14 +69,8 @@ from . import organization_members
 from . import course_school_nature
 
 #教师工作流定以相关
-from . import work_flow_define
-from . import work_flow_node_define
-from . import work_flow_node_depend
-from . import work_flow_node_depend_strategy
 
 #教师工作流实例相关
-from . import work_flow_instance
-from . import work_flow_node_instance
 from . import unit_system
 from . import system_config
 

@@ -1,4 +1,4 @@
-from sqlalchemy import String, Date, INT, DateTime
+from sqlalchemy import String, Date, INT, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -54,9 +54,9 @@ class TeacherInfo(BaseDBModel):
        """
     __tablename__ = 'lfun_teachers_info'
     __table_args__ = {'comment': '教师基本信息表模型'}
-    teacher_base_id: Mapped[int] = mapped_column(primary_key=True, comment="教师基本信息ID",
-                                                 autoincrement=True)  # 与教师表关联，关系为一对一
-    teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")  # 与教师表关联，关系为一对一
+    teacher_base_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, comment="教师基本信息ID",
+                                                 )  # 与教师表关联，关系为一对一
+    teacher_id: Mapped[int] = mapped_column(BigInteger, nullable=False, comment="教师ID")  # 与教师表关联，关系为一对一
     ethnicity: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="民族")
     nationality: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="国家地区")
     political_status: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="政治面貌")

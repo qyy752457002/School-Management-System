@@ -7,7 +7,7 @@ from models.teacher_learn_experience import TeacherLearnExperience
 from views.models.teacher_extend import TeacherLearnExperienceModel,TeacherLearnExperienceUpdateModel
 from business_exceptions.teacher import TeacherLearnExperienceNotFoundError,TeacherNotFoundError
 
-
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 @dataclass_inject
 class TeacherLearnExperienceRule(object):
     teacher_learn_experience_dao: TeacherLearnExperienceDAO
@@ -26,6 +26,7 @@ class TeacherLearnExperienceRule(object):
         if not exits_teacher:
             raise TeacherNotFoundError()
         teacher_learn_experience_db = view_model_to_orm_model(teacher_learn_experience, TeacherLearnExperience)
+        teacher_learn_experience_db.teacher_learn_experience_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_learn_experience_db = await self.teacher_learn_experience_dao.add_teacher_learn_experience(
             teacher_learn_experience_db)
         teacher_learn_experience = orm_model_to_view_model(teacher_learn_experience_db, TeacherLearnExperienceUpdateModel)

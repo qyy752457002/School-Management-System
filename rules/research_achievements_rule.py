@@ -7,6 +7,7 @@ from views.models.teacher_extend import ResearchAchievementsModel, ResearchAchie
     ResearchAchievementsQueryModel, ResearchAchievementsQueryReModel
 from daos.teachers_dao import TeachersDao
 from business_exceptions.teacher import TeacherNotFoundError, ResearchAchievementsNotFoundError
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 
 @dataclass_inject
@@ -25,6 +26,7 @@ class ResearchAchievementsRule(object):
         if not exits_teacher:
             raise TeacherNotFoundError()
         research_achievements_db = view_model_to_orm_model(research_achievements, ResearchAchievements)
+        research_achievements_db.research_achievements_id = SnowflakeIdGenerator(1, 1).generate_id()
         research_achievements_db = await self.research_achievements_dao.add_research_achievements(
             research_achievements_db)
         research_achievements = orm_model_to_view_model(research_achievements_db, ResearchAchievementsModel)

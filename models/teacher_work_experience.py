@@ -21,7 +21,7 @@ class TeacherWorkExperience(BaseDBModel):
 
     teacher_work_experience_id: Mapped[int] = mapped_column(BigInteger, primary_key=True,
                                                             comment="teacher_work_experienceID")
-    teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")
+    teacher_id: Mapped[int] = mapped_column(BigInteger,nullable=False, comment="教师ID")
     employment_institution_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="任职单位名称")
     start_date: Mapped[date] = mapped_column(Date, nullable=True, comment="开始时间")
     end_date: Mapped[date] = mapped_column(Date, nullable=True, comment="结束时间")
