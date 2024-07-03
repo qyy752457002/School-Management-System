@@ -26,6 +26,7 @@ from daos.school_dao import SchoolDAO
 
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
+
 @dataclass_inject
 class TransferDetailsRule(object):
     transfer_details_dao: TransferDetailsDAO
@@ -58,7 +59,7 @@ class TransferDetailsRule(object):
             if is_approval:
                 raise ApprovalStatusError()
             transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
-            transfer_details_db.transfer_details_id = SnowflakeIdGenerator(1,1).generate_id()
+            transfer_details_db.transfer_details_id = SnowflakeIdGenerator(1, 1).generate_id()
             transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
             transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
             transfer_and_borrow_extra_model = await self.get_transfer_and_borrow_extra(
@@ -135,7 +136,10 @@ class TransferDetailsRule(object):
     async def add_transfer_out_details(self, transfer_details: TransferDetailsModel,
                                        user_id):
         try:
-            school = await self.school_dao.get_school_by_id(transfer_details.original_unit_id)
+            teachers_db = await self.teachers_dao.get_teachers_by_id(transfer_details.teacher_id)
+            teachers = orm_model_to_view_model(teachers_db, TeacherRe)
+            original_unit_id = teachers.teacher_employer
+            school = await self.school_dao.get_school_by_id(original_unit_id)
             transfer_details.original_unit_name = school.school_name
             # todo 这里先将学校区写死了，后续需要修改
             transfer_details.original_district_area_id = int(school.borough)
@@ -153,8 +157,7 @@ class TransferDetailsRule(object):
             transfer_and_borrow_extra_model.current_unit_name = transfer_details.current_unit_name
             current_unit_name = transfer_and_borrow_extra_model.current_unit_name
             params = {"process_code": "t_transfer_out", "applicant_name": user_id}
-            teachers_db = await self.teachers_dao.get_teachers_by_id(transfer_details.teacher_id)
-            teachers = orm_model_to_view_model(teachers_db, TeacherRe)
+
             model_list = [transfer_details_work, transfer_and_borrow_extra_model, teachers]
             work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
             # update_params = {"teacher_sub_status": "active", "teacher_main_status": "employed"}

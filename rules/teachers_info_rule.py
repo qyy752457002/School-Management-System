@@ -3,7 +3,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers_info import TeacherInfo
-from views.models.teachers import TeacherInfo as TeachersInfoModel, RetireTeacherQuery, RetireTeacherQueryRe
+from views.models.teachers import TeacherInfo as TeachersInfoModel
 from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel, TeacherInfoSubmit, \
     CurrentTeacherQuery, CurrentTeacherQueryRe, CurrentTeacherInfoSaveModel, NewTeacherInfoSaveModel, \
     TeacherInfoCreateModel, NewTeacherApprovalCreate
@@ -266,11 +266,7 @@ class TeachersInfoRule(object):
         paging_result = PaginatedResponse.from_paging(paging, CurrentTeacherQueryRe)
         return paging_result
 
-    async def query_retire_teacher_with_page(self, query_model: RetireTeacherQuery, page_request: PageRequest):
-        print(query_model)
-        paging = await self.teachers_info_dao.query_retire_teacher_with_page(query_model, page_request)
-        paging_result = PaginatedResponse.from_paging(paging, RetireTeacherQueryRe)
-        return paging_result
+
 
     async def teacher_submitted(self, teachers_id):
         teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)

@@ -35,7 +35,7 @@ class TeacherTransactionRule(object):
         teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionModel)
         return teacher_transaction
 
-    async def add_teacher_transaction(self, teacher_transaction: TeacherTransactionModel):
+    async def add_teacher_transaction_with_retire(self, teacher_transaction: TeacherTransactionModel):
         """
         添加教师异动
         """
@@ -63,6 +63,7 @@ class TeacherTransactionRule(object):
         if transaction_type != TransactionType.INTERNAL.value:
             teacher_db.teacher_sub_status = transaction_type
             await self.teachers_dao.update_teachers(teacher_db, "teacher_sub_status")
+            teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
             teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
             teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)
             teacher_transaction_log = OperationRecord(

@@ -83,6 +83,8 @@ class TeacherRe(BaseModel):
     mobile: str = Field("", title="手机号", description="手机号")
     teacher_main_status: str = Field("", title="主状态", description="主状态")
     teacher_sub_status: str = Field("", title="子状态", description="子状态")
+
+
 class TeacherAdd(BaseModel):
     """
     这个是借动和调动时，从系统外进系统内时，建立新老师的时候用的
@@ -1066,27 +1068,15 @@ class NewTeacherTask(BaseModel):
     scene: str = Field("teacher_import", title="场景", description="", examples=[' '])
 
 
-class RetireTeacherQuery(BaseModel):
-    """
-    """
-    teacher_name: str = Query("", title="姓名", description="姓名", example="张三")
-    teacher_id_number: str = Query("", title="身份证号", description="身份证号", example="123456789012345678")
-    teacher_gender: Optional[Gender] = Query(None, title="性别", description="性别", example="男")
-    teacher_employer: Optional[int] = Query(None, title="任职单位", description="任职单位", example="xx学校")
-    highest_education: str = Query("", title="最高学历", description="最高学历", example="本科")
-    political_status: str = Query("", title="政治面貌", description="政治面貌", example="群众")
-    in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
-    enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
-    unemploy_start_time: Optional[date] = Query(None, title="非在职时间起始", description="", example="2010-01-01")
-    unemploy_end_time: Optional[date] = Query(None, title="非在职时间截止", description="", example="2010-01-01")
 
 
-class RetireTeacherQueryRe(CurrentTeacherQueryRe):
+
+class TeacherRetireQueryRe(CurrentTeacherQueryRe):
     """
     """
-    unemploy_time: Optional[date] = Query(None, title="非在职时间", description="", example="2010-01-01")
-    unemploy_action_time: Optional[datetime] = Query(None, title="", description="", example="2010-01-01")
-    unemploy_number: Optional[str] = Query(None, title="", description="", example="")
+    unemployed_time: Optional[date] = Query(None, title="非在职时间", description="", example="2010-01-01")
+    unemployed_action_time: Optional[datetime] = Query(None, title="", description="", example="2010-01-01")
+    unemployed_number: Optional[str] = Query(None, title="", description="", example="")
     teacher_main_status: Optional[str] = Query(None, title="", description="", example="")
     teacher_sub_status: Optional[str] = Query(None, title="", description="", example="")
 
