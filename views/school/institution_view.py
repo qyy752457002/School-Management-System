@@ -2,6 +2,7 @@ from typing import List
 
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.json import JsonUtils
+from mini_framework.web.toolkit.model_utilities import view_model_to_orm_model
 from mini_framework.web.views import BaseView
 
 from business_exceptions.institution import InstitutionStatusError
@@ -74,14 +75,18 @@ class InstitutionView(BaseView):
         return res
     # 修改 变更 基本信息
     async def patch_baseinfo(self, institution_baseinfo: InstitutionBaseInfo):
-        origin = await self.institution_rule.get_institution_by_id(institution_baseinfo.id)
+        # 学校转ins
+        origin = await self.school_rule.get_school_by_id(institution_baseinfo.id,extra_model=InstitutionBaseInfo)
 
         if origin.status == PlanningSchoolStatus.DRAFT.value:
             institution_baseinfo.status = PlanningSchoolStatus.OPENING.value
             # raise InstitutionStatusError(f"{origin.institution_name}状态为正常，不能修改")
         log_con = compare_modify_fields(institution_baseinfo, origin)
+        # todo 完成转换 v2m ins 转学校
+        school_db = view_model_to_orm_model(institution_baseinfo, School,    exclude=["id"])
 
-        res = await self.institution_rule.update_institution_byargs(institution_baseinfo, )
+
+        res = await self.school_rule.update_school_byargs(school_db, )
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(

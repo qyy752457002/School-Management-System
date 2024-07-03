@@ -151,7 +151,7 @@ class SchoolRule(object):
         school_db = await self.school_dao.add_school(school_db)
         school = orm_model_to_view_model(school_db, SchoolKeyAddInfo, exclude=["created_at",'updated_at'])
         return school
-
+    # 废弃 未使用
     async def update_school(self, school,ctype=1):
         exists_school = await self.school_dao.get_school_by_id(school.id)
         if not exists_school:
@@ -196,7 +196,7 @@ class SchoolRule(object):
     async def update_school_byargs(self, school,):
         exists_school = await self.school_dao.get_school_by_id(school.id)
         if not exists_school:
-            raise Exception(f"学校{school.id}不存在")
+            raise Exception(f"单位{school.id}不存在")
         if exists_school.status== PlanningSchoolStatus.DRAFT.value:
             exists_school.status= PlanningSchoolStatus.OPENING.value
             school.status= PlanningSchoolStatus.OPENING.value
@@ -220,7 +220,7 @@ class SchoolRule(object):
     async def delete_school(self, school_id):
         exists_school = await self.school_dao.get_school_by_id(school_id)
         if not exists_school:
-            raise Exception(f"学校{school_id}不存在")
+            raise Exception(f"单位{school_id}不存在")
         school_db = await self.school_dao.delete_school(exists_school)
         school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""],)
         return school
@@ -228,7 +228,7 @@ class SchoolRule(object):
     async def softdelete_school(self, school_id):
         exists_school = await self.school_dao.get_school_by_id(school_id)
         if not exists_school:
-            raise Exception(f"学校{school_id}不存在")
+            raise Exception(f"单位{school_id}不存在")
         school_db = await self.school_dao.softdelete_school(exists_school)
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""],)
         return school_db
@@ -277,7 +277,7 @@ class SchoolRule(object):
     async def update_school_status(self, school_id, status,action=None):
         exists_school = await self.school_dao.get_school_by_id(school_id)
         if not exists_school:
-            raise Exception(f"学校{school_id}不存在")
+            raise Exception(f"单位{school_id}不存在")
         # 判断运来的状态 进行后续的更新
         if status== PlanningSchoolStatus.NORMAL.value and exists_school.status== PlanningSchoolStatus.OPENING.value:
             # 开办
@@ -287,7 +287,7 @@ class SchoolRule(object):
             exists_school.status= PlanningSchoolStatus.CLOSED.value
         else:
             # exists_school.status= PlanningSchoolStatus.OPENING.value
-            raise Exception(f"学校当前状态不支持您的操作")
+            raise Exception(f"单位当前状态不支持您的操作")
 
         need_update_list = []
         need_update_list.append('status')

@@ -152,7 +152,7 @@ class InstitutionsAdd(BaseModel):
 
 
 class InstitutionBaseInfo(BaseModel):
-    #  改模型的定义 结合页面
+    #  todo 法1 别名方式   出时 要映射为ins开头的字段  todo 法2  视图映射转换方式 需要支持互转  可改  外部键不变   且 m2v时需要映射
     id:int= Query( 0, title="", description="学校id", example='1')
     institution_name: str |None = Field("", title='单位名称', description="单位名称",examples=['文化部'])
     institution_type: str |None = Field("",   title='单位类型',  description="单位类型 ",examples=[''])
