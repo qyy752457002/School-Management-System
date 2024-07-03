@@ -103,7 +103,7 @@ class TestExcelReader:
         # 执行读取操作
         self.reader.set_data(self.filename)
         result = self.reader.execute()
-        print('文件读取器',result)
+        # print('文件读取器',result)
         # os.remove(self.filename)  # 清理创建的临时文件
         if self.sheetname in result.keys():
             result = result[self.sheetname]
