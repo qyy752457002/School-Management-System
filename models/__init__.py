@@ -58,6 +58,7 @@ from . import leader_info
 from . import teacher_transaction
 from . import transfer_details
 from . import teacher_borrow
+from . import teacher_retire
 from . import class_division_records
 from . import student_transaction
 from . import student_transaction_flow
