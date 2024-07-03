@@ -8,7 +8,7 @@ from mini_framework.utils.logging import logger
 from rules.planning_school_communication_rule import PlanningSchoolCommunicationRule
 from rules.planning_school_rule import PlanningSchoolRule
 from rules.storage_rule import StorageRule
-from views.models.planning_school import PlanningSchool
+from views.models.planning_school import PlanningSchool, PlanningSchoolOptional
 from views.models.planning_school_communications import PlanningSchoolCommunications
 
 
@@ -34,10 +34,10 @@ class PlanningSchoolExecutor(TaskExecutor):
             for item in data:
 
                 if isinstance(item, dict):
-                    data_import: PlanningSchool = PlanningSchool(**item)
+                    data_import: PlanningSchoolOptional = PlanningSchoolOptional(**item)
 
-                elif isinstance(item, PlanningSchool):
-                    data_import: PlanningSchool = item
+                elif isinstance(item, PlanningSchoolOptional):
+                    data_import: PlanningSchoolOptional = item
                 else:
                     raise ValueError("Invalid payload type")
                 res = await self.planning_school_rule.add_planning_school(data_import)
