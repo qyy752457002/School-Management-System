@@ -7,6 +7,11 @@
 pip install --upgrade pip
 
 pip install "psycopg[binary,pool]"
+
+pip install id-validator
+
+pip install xlsxwriter
+
 ```
 
 ### 1.2 更新包
@@ -22,6 +27,17 @@ pip install "psycopg[binary,pool]"
 # linux/unix/macos
  pip install -r ./requirements.txt
 ```
+
+### 1.3 数据库升级
+
+在项目目录下执行如下命令
+
+python main.py db-init revision
+
+python main.py db-init upgrade
+
+todo  状态键编辑接口
+
 
 ## 2. Example Code
 
