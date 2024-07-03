@@ -76,4 +76,5 @@ class TeacherRetireRule(object):
             operator_name=user_id,
             process_instance_id=0)
         await self.operation_record_rule.add_operation_record(teacher_transaction_log)
+
         return teacher_transaction
