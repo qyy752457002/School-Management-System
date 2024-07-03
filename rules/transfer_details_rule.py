@@ -92,7 +92,7 @@ class TransferDetailsRule(object):
             await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
             return transfer_details
         except Exception as e:
-            return str(e)
+            raise e
 
     async def add_transfer_in_outer_details(self, add_teacher: TeacherAdd,
                                             transfer_details: TransferDetailsModel,
@@ -130,7 +130,7 @@ class TransferDetailsRule(object):
             await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
             return True
         except Exception as e:
-            return str(e)
+            raise e
 
     async def add_transfer_out_details(self, transfer_details: TransferDetailsModel,
                                        user_id):
@@ -178,7 +178,8 @@ class TransferDetailsRule(object):
             await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
             return True
         except Exception as e:
-            return str(e)
+            raise e
+
 
     async def delete_transfer_details(self, transfer_details_id):
         exists_transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(

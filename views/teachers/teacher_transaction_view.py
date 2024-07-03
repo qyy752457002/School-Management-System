@@ -6,7 +6,7 @@ from mini_framework.web.views import BaseView
 from fastapi import Query, Depends, Body
 
 from views.models.teacher_transaction import TeacherBorrowModel, TeacherBorrowReModel, TeacherBorrowQueryModel, \
-    TeacherRetireQuery,TransferDetailsModel,TeacherRetireCreateModel
+    TeacherRetireQuery, TransferDetailsModel, TeacherRetireCreateModel
 from rules.transfer_details_rule import TransferDetailsRule
 
 from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
@@ -40,20 +40,18 @@ class TransferDetailsView(BaseView):
 
     async def post_transfer_in_details(self, transfer_details: TransferDetailsModel,
                                        add_teacher: Optional[TeacherAdd] = None,
-                                       transfer_inner: bool = Query(True, title="transfer_status",
-                                                                    description="transfer_status",
-                                                                    example=True)
+                                       # transfer_inner: bool = Query(True, title="transfer_status",
+                                       #                              description="transfer_status",
+                                       #                              example=True)
                                        ):
         """
         调入
         """
 
         user_id = "asdfasdf"
-        if not transfer_inner:  # 如果是系统外转系统内
-            if add_teacher != None:
-                await self.transfer_details_rule.add_transfer_in_outer_details(add_teacher, transfer_details, user_id)
-            else:
-                raise Exception("请填写老师信息")
+
+        if add_teacher != None:
+            await self.transfer_details_rule.add_transfer_in_outer_details(add_teacher, transfer_details, user_id)
         else:
             await self.transfer_details_rule.add_transfer_in_inner_details(transfer_details, user_id)
         return
@@ -95,7 +93,7 @@ class TransferDetailsView(BaseView):
         查询系统内有没有此人
         """
         res, transfer_inner = await self.transfer_details_rule.query_teacher_transfer(teacher_transaction)
-        return res, transfer_inner
+        return res
 
     # 调动管理查询
     async def page_transfer_out_launch(self, transfer_details=Depends(TeacherTransferQueryModel),
@@ -156,12 +154,12 @@ class TransferDetailsView(BaseView):
     #     return res
 
     async def patch_transfer_approved(self,
-                                      teacher_id: int = Query(None, title="transfer_detailsID",
+                                      teacher_id: int = Body(None, title="transfer_detailsID",
                                                               description="transfer_detailsID", example=1234),
-                                      process_instance_id: int = Query(..., title="流程实例id",
+                                      process_instance_id: int = Body(..., title="流程实例id",
                                                                        description="流程实例id",
                                                                        example=123),
-                                      reason: str = Query("", title="reason",
+                                      reason: str = Body("", title="reason",
                                                           description="审核理由")):
 
         user_id = "asdfasdf"
@@ -171,12 +169,12 @@ class TransferDetailsView(BaseView):
         return res
 
     async def patch_transfer_rejected(self,
-                                      teacher_id: int = Query(None, title="教师id",
+                                      teacher_id: int = Body(None, title="教师id",
                                                               description="教师id", example=1234),
-                                      process_instance_id: int = Query(..., title="流程实例id",
+                                      process_instance_id: int = Body(..., title="流程实例id",
                                                                        description="流程实例id",
                                                                        example=123),
-                                      reason: str = Query("", title="reason",
+                                      reason: str = Body("", title="reason",
                                                           description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
@@ -185,11 +183,11 @@ class TransferDetailsView(BaseView):
         return res
 
     async def patch_transfer_revoked(self,
-                                     teacher_id: int = Query(None, title="教师id",
+                                     teacher_id: int = Body(None, title="教师id",
                                                              description="教师id", example=1234),
-                                     process_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
+                                     process_instance_id: int = Body(..., title="流程实例id", description="流程实例id",
                                                                       example=123),
-                                     reason: str = Query("", title="reason",
+                                     reason: str = Body("", title="reason",
                                                          description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
@@ -269,9 +267,9 @@ class TeacherTransactionView(BaseView):
     #     return res
 
     async def patch_teacher_active(self,
-                                   teacher_id: int = Query(..., title="教师编号", description="教师编号",
+                                   teacher_id: int = Body(..., title="教师编号", description="教师编号",
                                                            example=123),
-                                   transaction_id: int = Query(..., title="教师变动记录编号",
+                                   transaction_id: int = Body(..., title="教师变动记录编号",
                                                                description="教师变动记录编号",
                                                                example=123)):
         await self.teacher_transaction_rule.transaction_teacher_active(teacher_id, transaction_id)
@@ -285,7 +283,7 @@ class TeacherRetireView(BaseView):
 
         self.teacher_retire_rule = get_injector(TeacherRetireRule)
 
-    async def post_teacher_retire(self, teacher_retire:TeacherRetireCreateModel):
+    async def post_teacher_retire(self, teacher_retire: TeacherRetireCreateModel):
         """
         教师退休
         """
@@ -321,18 +319,13 @@ class TeacherBorrowView(BaseView):
 
     async def post_teacher_borrow_in(self, teacher_borrow: TeacherBorrowModel,
                                      add_teacher: Optional[TeacherAdd] = None,
-                                     teacher_borrow_inner: bool = Query(True, title="transfer_status",
-                                                                        description="transfer_status",
-                                                                        example=True)):
+                                     ):
         """
         借入
         """
         user_id = "asdfasdf"
-        if not teacher_borrow_inner:
-            if add_teacher != None:
-                res = await self.teacher_borrow_rule.add_teacher_borrow_in_outer(add_teacher, teacher_borrow, user_id)
-            else:
-                raise Exception("请填写老师信息")
+        if add_teacher != None:
+            res = await self.teacher_borrow_rule.add_teacher_borrow_in_outer(add_teacher, teacher_borrow, user_id)
         else:
             res = await self.teacher_borrow_rule.add_teacher_borrow_in_inner(teacher_borrow, user_id)
         return res
@@ -437,12 +430,12 @@ class TeacherBorrowView(BaseView):
     #     return res
 
     async def patch_borrow_approved(self,
-                                    teacher_id: int = Query(None, title="transfer_detailsID",
+                                    teacher_id: int = Body(None, title="transfer_detailsID",
                                                             description="transfer_detailsID", example=1234),
-                                    process_instance_id: int = Query(..., title="流程实例id",
+                                    process_instance_id: int = Body(..., title="流程实例id",
                                                                      description="流程实例id",
                                                                      example=123),
-                                    reason: str = Query("", title="reason",
+                                    reason: str = Body("", title="reason",
                                                         description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
@@ -451,12 +444,12 @@ class TeacherBorrowView(BaseView):
         return res
 
     async def patch_borrow_rejected(self,
-                                    teacher_id: int = Query(None, title="transfer_detailsID",
+                                    teacher_id: int = Body(None, title="transfer_detailsID",
                                                             description="transfer_detailsID", example=1234),
-                                    process_instance_id: int = Query(..., title="流程实例id",
+                                    process_instance_id: int = Body(..., title="流程实例id",
                                                                      description="流程实例id",
                                                                      example=123),
-                                    reason: str = Query("", title="reason",
+                                    reason: str = Body("", title="reason",
                                                         description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
@@ -465,12 +458,12 @@ class TeacherBorrowView(BaseView):
         return res
 
     async def patch_borrow_revoked(self,
-                                   teacher_id: int = Query(None, title="transfer_detailsID",
+                                   teacher_id: int = Body(None, title="transfer_detailsID",
                                                            description="transfer_detailsID", example=1234),
-                                   process_instance_id: int = Query(..., title="流程实例id",
+                                   process_instance_id: int = Body(..., title="流程实例id",
                                                                     description="流程实例id",
                                                                     example=123),
-                                   reason: str = Query("", title="reason",
+                                   reason: str = Body("", title="reason",
                                                        description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
@@ -479,9 +472,9 @@ class TeacherBorrowView(BaseView):
         return res
 
     async def patch_teacher_borrow_active(self,
-                                          teacher_id: int = Query(..., title="教师编号", description="教师编号",
+                                          teacher_id: int = Body(..., title="教师编号", description="教师编号",
                                                                   example=123),
-                                          process_instance_id: int = Query(..., title="教师变动记录编号",
+                                          process_instance_id: int = Body(..., title="教师变动记录编号",
                                                                            description="教师变动记录编号",
                                                                            example=123)):
         await self.teacher_borrow_rule.borrow_teacher_active(teacher_id, process_instance_id)
