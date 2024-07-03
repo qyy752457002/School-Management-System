@@ -78,7 +78,7 @@ class EduType(str, Enum):
         return [cls.KG, cls.K12, cls.VOCATIONAL]
 
 class ImportScene(str, Enum):
-    """ 导入的模版场景定义
+    """ 导入场景的模版场景定义
     planning_school: '', // 学校模版模版
   school: '', // 分校模版
   new_teachers: '', // 新教师模版
