@@ -380,7 +380,7 @@ class TransferDetailsModel(BaseModel):
 
     transfer_reason: str = Field("", title="调动原因", description="调动原因")
     remark: str = Field("", title="备注", description="备注")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_id: Optional[int]|None  = Field(None, title="教师ID", description="教师ID")
     transfer_type: TransferType = Field("transfer_in", title="调动类型", description="调入或者调出")
     process_instance_id: int = Field(0, title="流程ID", description="流程ID")
 
@@ -590,7 +590,7 @@ class TeacherBorrowModel(BaseModel):
 
     transfer_reason: str = Field("", title="借动原因", description="借动原因")
     remark: str = Field("", title="备注", description="备注")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_id: Optional[int]|None = Field(None, title="教师ID", description="教师ID")
     borrow_type: BorrowType = Field("borrow_in", title="借动类型", description="借入或者借出")
     process_instance_id: int = Field(0, title="流程ID", description="流程ID")
 
