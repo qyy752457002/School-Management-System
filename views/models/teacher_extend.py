@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator, ValidationError, field_validator
 from datetime import date
 from fastapi import Query
 from models.public_enum import YesOrNo
@@ -99,6 +99,17 @@ class TeacherWorkExperienceModel(BaseModel):
     on_duty_position: str = Field("", title="在职岗位", description="在职岗位")
     institution_nature_category: str = Field("", title="单位性质类别", description="单位性质类别")
 
+    # @model_validator(mode='after')
+    # def check_teacher_id(self):
+    #     if isinstance(self.teacher_id, str):
+    #         self.teacher_id = int(self.teacher_id)
+    #     return self
+
+    # def dict(self, **kwargs):
+    #     d = super().dict(**kwargs)
+    #     d['teacher_id'] = str(d['teacher_id'])
+    #     return d
+
 
 class TeacherWorkExperienceComModel(TeacherWorkExperienceModel):
     pass
@@ -118,14 +129,27 @@ class TeacherWorkExperienceUpdateModel(BaseModel):
     在职岗位：on_duty_position
     单位性质类别：institution_nature_category
     """
-    teacher_work_experience_id: int = Field(..., title="teacher_work_experience_id",
-                                            description="teacher_work_experience_id")
+    teacher_work_experience_id: str = Field(..., title="teacher_work_experience_id",
+                                                  description="teacher_work_experience_id")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
     start_date: date = Field(..., title="开始时间", description="开始时间")
     end_date: date = Field(..., title="结束时间", description="结束时间")
     on_duty_position: str = Field(..., title="在职岗位", description="在职岗位")
     institution_nature_category: str = Field("", title="单位性质类别", description="单位性质类别")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_teacher_id(self, data: dict):
+        if isinstance(data["teacher_work_experience_id"], int):
+            data["teacher_work_experience_id"] = str(data["teacher_work_experience_id"])
+        return data
+
+    # @model_validator(mode='after')
+    # def teacher_work_experience_id(self):
+    #     if isinstance(self.teacher_work_experience_id, str):
+    #         self.teacher_work_experience_id = int(self.teacher_work_experience_id)
+    #     return self
 
 
 # class TeacherJobAppointmentsModel(BaseModel):
@@ -517,10 +541,9 @@ class EducationalTeachingModel(BaseModel):
 class EducationalTeachingComModel(EducationalTeachingModel):
     pass
 
+
 class EducationalTeachingResultModel(EducationalTeachingModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
-
-
 
 
 class EducationalTeachingUpdateModel(BaseModel):
@@ -584,8 +607,6 @@ class DomesticTrainingResultModel(DomesticTrainingModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
-
-
 class DomesticTrainingUpdateModel(BaseModel):
     """
     domestic_training：domestic_training_id
@@ -634,7 +655,6 @@ class OverseasStudyComModel(OverseasStudyModel):
 
 class OverseasStudyResultModel(OverseasStudyModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
-
 
 
 class OverseasStudyUpdateModel(BaseModel):
@@ -709,7 +729,6 @@ class AnnualReviewComModel(AnnualReviewModel):
 
 class AnnualReviewResultModel(AnnualReviewModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
-
 
 
 class AnnualReviewUpdateModel(BaseModel):
