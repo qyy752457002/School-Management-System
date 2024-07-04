@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -13,8 +13,8 @@ class PlanningSchoolEduinfo(BaseDBModel):
     __tablename__ = 'lfun_planning_school_eduinfo'
     __table_args__ = {'comment': '规划校教学信息表'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True)
-    planning_school_id: Mapped[int] = mapped_column( nullable=True  , comment="规划校id",default=0)
+    id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="ID",autoincrement=False)
+    planning_school_id: Mapped[int] = mapped_column(BigInteger, nullable=True  , comment="规划校id",default=0)
 
     is_ethnic_school: Mapped[bool] = mapped_column(  nullable=False,default=False, comment="是否民族校")
     is_att_class: Mapped[ bool] = mapped_column( nullable=False,default=False, comment="是否附设班")

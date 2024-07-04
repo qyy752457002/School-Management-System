@@ -60,7 +60,7 @@ class PlanningSchoolView(BaseView):
                                                         max_length=20, example='SC2032633'),
                   planning_school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
                                                     example='XX小学'),
-                  planning_school_id: int = Query(..., description="学校id|根据学校查规划校", example='1'),
+                  planning_school_id: int|str = Query(..., description="学校id|根据学校查规划校", example='1'),
 
                   ):
         planning_school= ''
@@ -119,8 +119,6 @@ class PlanningSchoolView(BaseView):
     async def put_keyinfo(self,
                           planning_school: PlanningSchoolKeyInfo,
                           request: Request,
-                          # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
-
                           ):
         # 检测 是否允许修改
         is_draft = await self.planning_school_rule.is_can_not_add_workflow(planning_school.id,True)
@@ -159,7 +157,7 @@ class PlanningSchoolView(BaseView):
         return res
 
     # 删除
-    async def delete(self, planning_school_id: int = Query(..., title="", description="学校id/园所id",
+    async def delete(self, planning_school_id: int|str = Query(..., title="", description="学校id/园所id",
                                                            example='2203'), ):
         print(planning_school_id)
         res = await self.planning_school_rule.softdelete_planning_school(planning_school_id)
@@ -240,7 +238,7 @@ class PlanningSchoolView(BaseView):
 
 
     # 开办   校验合法性等  业务逻辑   开班式 校验所有的数据是否 都填写了
-    async def patch_open(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
+    async def patch_open(self, planning_school_id: str|int = Query(..., title="学校编号", description="学校id/园所id",
                                                                min_length=1, max_length=20, example='SC2032633')):
         # print(planning_school)
         # 检测 是否允许修改
@@ -398,7 +396,7 @@ class PlanningSchoolView(BaseView):
                        planning_school: PlanningSchoolBaseInfo,
                        planning_school_communication: PlanningSchoolCommunications,
                        planning_school_eduinfo: PlanningSchoolEduInfo,
-                       planning_school_id: int = Query(..., title="", description="学校id/园所id", example='38'),
+                       planning_school_id: int|str = Query(..., title="", description="学校id/园所id", example='38'),
 
                        ):
         # print(planning_school)
