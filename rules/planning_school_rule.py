@@ -38,6 +38,8 @@ class PlanningSchoolRule(object):
         # 可选 , exclude=[""]
         planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel)
         #str
+        convert_snowid_in_model(planning_school)
+
         if extra_model:
             planning_school_extra = orm_model_to_view_model(planning_school_db, extra_model,
                                                        exclude=[""])
@@ -46,7 +48,6 @@ class PlanningSchoolRule(object):
             return planning_school,planning_school_extra
 
         else:
-            convert_snowid_in_model(planning_school)
             return planning_school
 
     async def get_planning_school_by_planning_school_name(self, planning_school_name):
@@ -135,6 +136,7 @@ class PlanningSchoolRule(object):
 
 
     async def update_planning_school_status(self, planning_school_id, target_status,action=None):
+
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
@@ -183,6 +185,7 @@ class PlanningSchoolRule(object):
 
         # 更新不用转换   因为得到的对象不熟全属性
         # planning_school = orm_model_to_view_model(planning_school_db, SchoolModel, exclude=[""])
+        convert_snowid_in_model(planning_school_db)
         return planning_school_db
 
 
@@ -324,17 +327,21 @@ class PlanningSchoolRule(object):
 
         response = await send_request(apiname,datadict,'post',True)
         print(response,'接口响应')
-        if audit_info.transaction_audit_action== AuditAction.PASS.value:
-            # 成功则写入数据
-            # transrule = get_injector(StudentTransactionRule)
-            # await transrule.deal_student_transaction(student_edu_info)
-            res2 = await self.deal_planning_school(audit_info.process_instance_id, action)
-        # 终态的处理
+        try:
+            if audit_info.transaction_audit_action== AuditAction.PASS.value:
+                # 成功则写入数据
+                # transrule = get_injector(StudentTransactionRule)
+                # await transrule.deal_student_transaction(student_edu_info)
+                res2 = await self.deal_planning_school(audit_info.process_instance_id, action)
+            # 终态的处理
 
-        await self.set_transaction_end(audit_info.process_instance_id, audit_info.transaction_audit_action)
+            await self.set_transaction_end(audit_info.process_instance_id, audit_info.transaction_audit_action)
 
 
-        return response
+            return response
+        except Exception as e:
+            print(e)
+            return response
         pass
 
     async def deal_planning_school(self,process_instance_id ,action, ):

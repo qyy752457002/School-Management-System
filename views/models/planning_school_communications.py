@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 class PlanningSchoolCommunications(BaseModel):
     id:int|None= Field(None, title="", description="", example='1'),
-    planning_school_id: int |None= Field(None, title="", description="规划校id",examples=['1'])
+    planning_school_id: int|str |None= Field(None, title="", description="规划校id",examples=['1'])
     postal_code: str|None = Field(None, title="邮政编码", description="邮政编码",examples=['472566'])
     fax_number: str|None = Field(None, title="传真电话", description="传真电话",examples=['020265656'])
     email: str|None = Field(None, title="单位电子信箱", description="单位电子信箱",examples=['ddd@qq.cc'])

@@ -9,6 +9,7 @@ from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from business_exceptions.planning_school_communication import PlanningSchoolCommunicationNotFoundError
 from daos.planning_school_communication_dao import PlanningSchoolCommunicationDAO
 from models.planning_school_communication import PlanningSchoolCommunication
+from views.common.common_view import convert_snowid_in_model
 from views.models.planning_school_communications import PlanningSchoolCommunications  as PlanningSchoolCommunicationModel
 
 
@@ -41,6 +42,7 @@ class PlanningSchoolCommunicationRule(object):
             # raise PlanningSchoolCommunicationNotFoundError(f"规划校通信信息{planning_school_communication_id}不存在")
         # planning_school_communication_db = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel)
         # planning_school_communication_db = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel)
+        convert_snowid_in_model(planning_school, extra_colums=["planning_school_id"])
         return planning_school
 
 
