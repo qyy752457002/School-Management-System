@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -10,8 +10,7 @@ class LeaderInfo(BaseDBModel):
 
     """
     领导表
-规划ID
-planning_school_id
+
 领导姓名
 leader_name
 职务
@@ -35,7 +34,7 @@ institution_id
     __table_args__ = {'comment': '领导表'}
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID",autoincrement=True)
-    planning_school_id: Mapped[int] = mapped_column(  nullable=True , comment="规划ID",default=0)
+    planning_school_id: Mapped[int] = mapped_column( BigInteger, nullable=True , comment="规划ID",default=0)
     leader_name: Mapped[str] = mapped_column(String(20),  nullable=True, comment="领导姓名",default='')
     position: Mapped[str] = mapped_column(String(255),  nullable=True, comment="职务",default='')
     status: Mapped[str] = mapped_column(String(255),  nullable=True, comment="状态",default='')
