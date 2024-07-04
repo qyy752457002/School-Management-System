@@ -200,6 +200,7 @@ class PlanningSchoolRule(object):
         lst = []
         for row in res:
             planning_school = orm_model_to_view_model(row, PlanningSchoolModel)
+            convert_snowid_in_model(planning_school)
             lst.append(planning_school)
         return lst
 
