@@ -119,7 +119,7 @@ class SystemConfig(BaseModel):
     school_id: int = Field(0, title="",description="学校id",examples=['1'])
     created_uid: int = Field(0, title="",description="创建人",examples=['1'])
     updated_uid: int = Field(0, title="",description="操作人",examples=['1'])
-    id: str|None = Field('0', title="",description="id",examples=['1'])
+    id: int|str|None = Field('0', title="",description="id",examples=['1'])
     # created_at: datetime|None = Field('',  description="",examples=[''])
 
 
