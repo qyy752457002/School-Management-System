@@ -155,7 +155,7 @@ class PlanningSchoolRule(object):
         need_update_list.append('status')
 
         print(exists_planning_school.status,2222222)
-        planning_school_db = await self.planning_school_dao.update_planning_school_byargs(exists_planning_school,*need_update_list)
+        planning_school_db = await self.planning_school_dao.update_planning_school_byargs(exists_planning_school,*need_update_list,is_commit=True)
         if action=='open':
             school_rule = get_injector(SchoolRule)
 
@@ -163,7 +163,7 @@ class PlanningSchoolRule(object):
         # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
         return planning_school_db
 
-    async def update_planning_school_byargs(self, planning_school,ctype=1):
+    async def update_planning_school_byargs(self, planning_school,need_update_list=None):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school.id)
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
@@ -173,15 +173,17 @@ class PlanningSchoolRule(object):
             planning_school.status= PlanningSchoolStatus.OPENING.value
         else:
             pass
-        need_update_list = []
-        for key, value in planning_school.__dict__.items():
-            if key.startswith('_'):
-                continue
-            if value:
-                need_update_list.append(key)
-        need_update_list.remove('id')
+        if not need_update_list:
 
-        planning_school_db = await self.planning_school_dao.update_planning_school_byargs(planning_school, *need_update_list)
+            need_update_list = []
+            for key, value in planning_school.__dict__.items():
+                if key.startswith('_'):
+                    continue
+                if value:
+                    need_update_list.append(key)
+            need_update_list.remove('id')
+
+        planning_school_db = await self.planning_school_dao.update_planning_school_byargs(planning_school, *need_update_list,is_commit=True)
 
         # 更新不用转换   因为得到的对象不熟全属性
         # planning_school = orm_model_to_view_model(planning_school_db, SchoolModel, exclude=[""])
@@ -378,7 +380,7 @@ class PlanningSchoolRule(object):
         tinfo=await self.planning_school_dao.get_planning_school_by_process_instance_id(process_instance_id)
         if tinfo:
             tinfo.workflow_status=status.value
-            await self.update_planning_school_byargs(tinfo)
+            await self.update_planning_school_byargs(tinfo,['workflow_status'])
 
 
         pass
