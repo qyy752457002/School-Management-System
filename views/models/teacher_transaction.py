@@ -296,6 +296,7 @@ class TeacherRetireQueryRe(BaseModel):
     enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
     retire_date: Optional[date] = Query(None, title="离退休时间", description="离退休时间", example="2020-01-01")
     school_name: Optional[str] = Query("", title="", description="", example="")
+    retire_number: str = Field(..., title="离退休证号", description="离退休证号")
 
 
 class TeacherRetireQuery(BaseModel):
@@ -316,6 +317,7 @@ class TeacherRetireQuery(BaseModel):
     retire_date_e: Optional[date] = Query(None, title="非在职时间截止", description="", example="2010-01-01")
 
 
+
 class TeacherRetireCreateModel(BaseModel):
     transaction_type: TransactionType = Field(..., title="异动类型", description="异动类型")
     transaction_remark: str = Field("", title="备注", description="备注")
@@ -323,6 +325,7 @@ class TeacherRetireCreateModel(BaseModel):
     transaction_time: Optional[datetime] | None = Field(default=datetime.now(), title="操作时间",
                                                         description="操作时间")
     retire_date: Optional[date] | None = Field(None, title="离退休时间", description="离退休时间")
+    retire_number: str = Field(..., title="离退休证号", description="离退休证号")
 
 
 class TeacherRetireUpdateModel(BaseModel):
@@ -333,6 +336,7 @@ class TeacherRetireUpdateModel(BaseModel):
     transaction_time: Optional[datetime] | None = Field(default=datetime.now(), title="操作时间",
                                                         description="操作时间")
     retire_date: Optional[date] | None = Field(None, title="离退休时间", description="离退休时间")
+    retire_number: str = Field(..., title="离退休证号", description="离退休证号")
 
 
 # 调动相关模型
