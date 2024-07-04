@@ -152,5 +152,7 @@ class PlanningSchoolDAO(DAOBase):
         session =await self.master_db()
         update_contents = get_update_contents(planning_school, *args)
         #id unset
+        if 'id' in update_contents.keys():
+            update_contents.pop('id')
         query = update(PlanningSchool).where(PlanningSchool.id == planning_school.id).values(**update_contents)
         return await self.update(session, query, planning_school, update_contents, is_commit=is_commit)
