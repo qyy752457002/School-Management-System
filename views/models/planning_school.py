@@ -44,7 +44,7 @@ class PlanningSchoolStatus(str, Enum):
 
 
 class PlanningSchool(BaseModel):
-    id: int = Query(None, title="规划校id", description="规划校id", example='1'),
+    id: int|str = Query(None, title="规划校id", description="规划校id", example='1'),
 
     planning_school_name: str = Field(..., title="规划校名称", description="1-20字符", examples=['XX小学'])
     planning_school_no: str = Field(..., title="规划校编号", description="规划校编号/规划校代码", examples=['SC2032633'])
@@ -95,7 +95,7 @@ class PlanningSchool(BaseModel):
 
 
 class PlanningSchoolOptional(BaseModel):
-    id: int|None = Query(None, title="规划校id", description="规划校id", example='1'),
+    id: int|None|str= Query(None, title="规划校id", description="规划校id", example='1'),
 
     planning_school_name: str|None = Field(None, title="规划校名称", description="1-20字符", examples=['XX小学'])
     planning_school_no: str|None = Field(None, title="规划校编号", description="规划校编号/规划校代码", examples=['SC2032633'])
@@ -145,7 +145,7 @@ class PlanningSchoolOptional(BaseModel):
 
 # 规划校的 基本信息模型   视图的额模型是按需提供的
 class PlanningSchoolBaseInfo(BaseModel):
-    id: int = Query(None, title="", description="规划校id", example='1'),
+    id: int|str = Query(None, title="", description="规划校id", example='1'),
     planning_school_name: str = Query(..., title="规划校名称", description="1-20字符", examples=['XX小学'])
     planning_school_short_name: str = Query(..., title="", description="规划校简称", examples=['MXXX'])
     planning_school_code: str = Query(..., title="", description=" 规划校标识码", examples=['SC562369322SG'])
@@ -178,7 +178,7 @@ class PlanningSchoolBaseInfo(BaseModel):
 
 # 规划校的 基本信息模型   视图的额模型是按需提供的
 class PlanningSchoolBaseInfoOptional(BaseModel):
-    id: int = Query(None, title="", description="规划校id", example='1'),
+    id: int|str = Query(None, title="", description="规划校id", example='1'),
     planning_school_name: str = Field(None, title="规划校名称", description="1-20字符", examples=['XX小学'])
     planning_school_short_name: str = Field(None, title="", description="规划校简称", examples=['MXXX'])
     planning_school_code: str = Field(None, title="", description=" 规划校标识码", examples=['SC562369322SG'])
@@ -214,7 +214,7 @@ class PlanningSchoolBaseInfoOptional(BaseModel):
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
 
 class PlanningSchoolKeyAddInfo(BaseModel):
-    id: int = Query(None, title="", description="规划校id", example='1')
+    id: int|str = Query(None, title="", description="规划校id", example='1')
 
     planning_school_name: str = Field(..., title="规划校名称", description="规划校名称", min_length=1, max_length=30,
                                       examples=['XX小学'])
@@ -237,7 +237,7 @@ class PlanningSchoolKeyAddInfo(BaseModel):
 
 
 class PlanningSchoolKeyInfo(BaseModel):
-    id: int = Query(None, title="规划校id", description="规划校id", example='1'),
+    id: int|str = Query(None, title="规划校id", description="规划校id", example='1'),
     planning_school_name: str = Field(..., title="规划校名称", description="1-20字符", examples=['XX小学'])
     planning_school_no: str = Query(None, title="规划校编号", description="规划校编号/规划校代码", min_length=1,
                                     max_length=20, example='SC2032633'),

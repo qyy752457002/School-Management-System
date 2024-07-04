@@ -16,7 +16,7 @@ from rules.common.common_rule import send_request
 from rules.enum_value_rule import EnumValueRule
 from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
-from views.common.common_view import workflow_service_config
+from views.common.common_view import workflow_service_config, convert_snowid_to_strings, convert_snowid_in_model
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus, \
     PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit, PlanningSchoolBaseInfoOptional
 from views.models.planning_school import PlanningSchoolBaseInfo
@@ -37,12 +37,16 @@ class PlanningSchoolRule(object):
             raise PlanningSchoolNotFoundError()
         # 可选 , exclude=[""]
         planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel)
+        #str
         if extra_model:
             planning_school_extra = orm_model_to_view_model(planning_school_db, extra_model,
                                                        exclude=[""])
+            convert_snowid_in_model(planning_school_extra)
+
             return planning_school,planning_school_extra
 
         else:
+            convert_snowid_in_model(planning_school)
             return planning_school
 
     async def get_planning_school_by_planning_school_name(self, planning_school_name):
@@ -72,7 +76,9 @@ class PlanningSchoolRule(object):
 
         planning_school_db = await self.planning_school_dao.add_planning_school(planning_school_db)
         print('id 111',planning_school_db.id)
-        planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=["created_at",'updated_at'])
+        planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=["created_at",'updated_at',])
+        #str
+        convert_snowid_in_model(planning_school)
         return planning_school
 
     async def delete_planning_school(self, planning_school_id):
@@ -123,6 +129,8 @@ class PlanningSchoolRule(object):
                                                                                   founder_type_lv3 )
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, PlanningSchoolModel)
+        #str
+        convert_snowid_to_strings(paging_result)
         return paging_result
 
 
@@ -169,7 +177,7 @@ class PlanningSchoolRule(object):
                 continue
             if value:
                 need_update_list.append(key)
-
+        need_update_list.remove('id')
 
         planning_school_db = await self.planning_school_dao.update_planning_school_byargs(planning_school, *need_update_list)
 
