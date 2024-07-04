@@ -38,6 +38,8 @@ class PlanningSchoolRule(object):
         # 可选 , exclude=[""]
         planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel)
         #str
+        convert_snowid_in_model(planning_school)
+
         if extra_model:
             planning_school_extra = orm_model_to_view_model(planning_school_db, extra_model,
                                                        exclude=[""])
@@ -46,7 +48,6 @@ class PlanningSchoolRule(object):
             return planning_school,planning_school_extra
 
         else:
-            convert_snowid_in_model(planning_school)
             return planning_school
 
     async def get_planning_school_by_planning_school_name(self, planning_school_name):

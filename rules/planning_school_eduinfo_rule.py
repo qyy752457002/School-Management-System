@@ -9,6 +9,7 @@ from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from business_exceptions.planning_school_eduinfo import PlanningSchoolEduinfoNotFoundError
 from daos.planning_school_eduinfo_dao import PlanningSchoolEduinfoDAO
 from models.planning_school_eduinfo import PlanningSchoolEduinfo
+from views.common.common_view import convert_snowid_in_model
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo  as PlanningSchoolEduinfoModel
 
 
@@ -33,6 +34,7 @@ class PlanningSchoolEduinfoRule(object):
         else:
             planning_school = orm_model_to_view_model(planning_school_eduinfo_db, PlanningSchoolEduinfoModel)
 
+        convert_snowid_in_model(planning_school,extra_colums=["planning_school_id"])
 
         return planning_school
 

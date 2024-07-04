@@ -136,7 +136,7 @@ def convert_snowid_to_strings(paging_result):
     items=paging_result.items
     for item in items:
         convert_snowid_in_model(item)
-def convert_snowid_in_model(item):
+def convert_snowid_in_model(item,extra_colums=None):
     """
     将传入的 items 中每个元素的 id 属性转换为字符串类型。
 
@@ -145,3 +145,7 @@ def convert_snowid_in_model(item):
 
     if hasattr(item, 'id') and isinstance(item.id, int):
         item.id = str(item.id)
+    if extra_colums:
+        for col in extra_colums:
+            if hasattr(item, col) and isinstance(getattr(item, col), int):
+                setattr(item, col, str(getattr(item, col)))
