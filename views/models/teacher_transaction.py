@@ -284,7 +284,6 @@ class TeacherRetireQueryRe(BaseModel):
     进本校时间：enter_school_time
     审核状态：approval_status
     """
-    teacher_base_id: Optional[int] = Field(None, title="教师基本信息id", description="教师ID")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     teacher_name: str = Query("", title="姓名", description="姓名", example="张三")
     teacher_id_number: str = Query("", title="身份证号", description="身份证号", example="123456789012345678")
@@ -293,10 +292,12 @@ class TeacherRetireQueryRe(BaseModel):
     highest_education: Optional[str] = Query("", title="最高学历", description="最高学历", example="本科")
     political_status: Optional[str] = Query("", title="政治面貌", description="政治面貌", example="群众")
     in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
-    enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
+    enter_school_time: Optional[date]|None = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
     retire_date: Optional[date] = Query(None, title="离退休时间", description="离退休时间", example="2020-01-01")
     school_name: Optional[str] = Query("", title="", description="", example="")
-    retire_number: str = Field(..., title="离退休证号", description="离退休证号")
+    retire_number: str = Field('', title="离退休证号", description="离退休证号")
+    teacher_main_status: str = Field(..., title="教师状态", description="教师状态")
+    teacher_sub_status: str = Field(..., title="教师子状态", description="教师子状态")
 
 
 class TeacherRetireQuery(BaseModel):
