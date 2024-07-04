@@ -168,12 +168,12 @@ class InstitutionsAdd(BaseModel):
     # school_no:str= Query(..., title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633')
     # borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
     # block: str = Query(..., title=" Author", description="地域管辖区",examples=['铁西区'])
-    school_edu_level: str|None = Query('', title="", description="办学类型/学校性质",examples=['学前教育'])
-    school_category: str|None = Query('', title="", description=" 办学类型二级",examples=['小学'])
-    school_operation_type: str|None = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
-    school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
-    school_level: str|None = Query(None, title="", description=" 学校星级",examples=['5'])
-    school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
+    # school_edu_level: str|None = Query('', title="", description="办学类型/学校性质",examples=['学前教育'])
+    # school_category: str|None = Query('', title="", description=" 办学类型二级",examples=['小学'])
+    # school_operation_type: str|None = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
+    # school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
+    # school_level: str|None = Query(None, title="", description=" 学校星级",examples=['5'])
+    # school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
 
 
 
