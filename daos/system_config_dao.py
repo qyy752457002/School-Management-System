@@ -26,6 +26,7 @@ class SystemConfigDAO(DAOBase):
 		await session.commit()
 
 	async def get_system_config_by_id(self, id):
+		id=int(id)
 		session = await self.slave_db()
 		result = await session.execute(select(SystemConfig).where(SystemConfig.id == id))
 		return result.scalar_one_or_none()
@@ -38,7 +39,7 @@ class SystemConfigDAO(DAOBase):
 		result = await session.execute(query)
 		return result.scalar_one_or_none()
 	async def query_system_config_with_page(self,  page_request: PageRequest,config_name,school_id):
-		query = select(SystemConfig).where(SystemConfig.is_deleted == False)
+		query = select(SystemConfig).where(SystemConfig.is_deleted == False).order_by(SystemConfig.id.desc())
 		if config_name:
 			query = query.where(SystemConfig.config_name == config_name)
 		if school_id:

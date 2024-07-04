@@ -88,7 +88,7 @@ class SystemView(BaseView):
         return res
     # 系统配置详情
     async def get_system_config_detail(self,
-                                       config_id: int = Query(0, description="", example='1'),
+                                       config_id: int|str = Query( 0, description="", example='1'),
                                        ):
         res = await self.system_config_rule.get_system_config_by_id(config_id)
 
