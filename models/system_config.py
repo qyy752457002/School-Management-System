@@ -20,8 +20,8 @@ class SystemConfig(BaseDBModel):
     school_id: Mapped[int] = mapped_column(  nullable=True , comment="",default=0)
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)
     updated_uid: Mapped[int] = mapped_column( nullable=True , comment="操作人",default=0)
-    created_at = mapped_column(DateTime, default=datetime.now, nullable=False, comment="创建时间")
-    updated_at = mapped_column(DateTime, onupdate=datetime.now, default=datetime.now, nullable=False, comment="更新时间")
+    created_at = mapped_column(DateTime, default=datetime.now, nullable=True, comment="创建时间")
+    updated_at = mapped_column(DateTime, onupdate=datetime.now, default=datetime.now, nullable=True, comment="更新时间")
     is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)
     @staticmethod
     def seed():
