@@ -114,6 +114,18 @@ class InstitutionKeyInfo(BaseModel):
     status: str |None = Field(PlanningSchoolStatus.DRAFT,   title='状态',  description=" 状态",examples=[''])
     social_credit_code: str|None = Field( '',   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656']),
 
+    # school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633')
+    planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
+    # borough:str=Query('', title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
+    # block: str = Query('', title=" Author", description="地域管辖区",examples=['铁西区'])
+    # school_name: str = Query('', title="学校名称", description="园所名称",examples=['XX小学'])
+    # school_type: str = Query('', title="", description=" 学校类型",examples=['中小学'])
+    school_edu_level: str|None = Query('', title="", description="办学类型/学校性质",examples=['学前教育'])
+    school_category: str|None = Query('', title="", description=" 办学类型二级",examples=['小学'])
+    school_operation_type: str|None = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
+    school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
+    school_level: str|None = Query(None, title="", description=" 学校星级",examples=['5'])
+
 class InstitutionPageSearch(BaseModel):
     social_credit_code: str|None = Field( '',   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656']),
     block: str = Query("", title=" ", description="地域管辖区", ),
@@ -151,6 +163,19 @@ class InstitutionsAdd(BaseModel):
     status: str = Field(PlanningSchoolStatus.DRAFT,  alias='',   title='状态',  description=" 状态",examples=[''])
     planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
 
+    # school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
+    # planning_school_id: int = Field(0, title="", description="规划校id",examples=['1'])
+    # school_no:str= Query(..., title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633')
+    # borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
+    # block: str = Query(..., title=" Author", description="地域管辖区",examples=['铁西区'])
+    school_edu_level: str|None = Query('', title="", description="办学类型/学校性质",examples=['学前教育'])
+    school_category: str|None = Query('', title="", description=" 办学类型二级",examples=['小学'])
+    school_operation_type: str|None = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
+    school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
+    school_level: str|None = Query(None, title="", description=" 学校星级",examples=['5'])
+    school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
+
+
 
 class InstitutionBaseInfo(BaseModel):
     #  todo 法1 新增时别名方式   获取模型 时 要映射为ins开头的字段  todo 法2  视图映射转换方式 需要支持互转  可改  外部键不变   且 m2v时需要映射
@@ -186,6 +211,32 @@ class InstitutionBaseInfo(BaseModel):
     process_instance_id:int= Query(0, title="", description="", example='1')
     status: str |None = Field( '',   title='状态',  description=" 状态",examples=[''])
     urban_ethnic_nature: str |None = Field("",   title='所在地民族属性',  description="",examples=[''])
+
+    # 下面的待映射
+    # school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
+    school_short_name: str = Field('', title="", description="园所简称",examples=['MXXX'])
+    school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
+    create_school_date: str = Field('', title="", description="建校年月",examples=['2021-10-10 00:00:00'])
+    founder_type: str = Field('', title="", description="举办者类型",examples=['地方'])
+    founder_name: str = Field('', title="", description="举办者名称",examples=['上海教育局'])
+    # urban_rural_nature: str = Field('', title="", description="城乡性质",examples=['城镇'])
+    school_edu_level: str|None = Field('', title="", description="办学类型/学校性质",examples=['学前教育'])
+    school_org_form: str = Field('', title="", description="办学组织形式",examples=['教学点'])
+    # school_nature: str = Field('', title="", description="学校性质",examples=['学前'])
+
+    school_category: str|None = Field('', title="", description=" 办学类型二级",examples=['小学'])
+    school_operation_type: str|None = Field('', title="", description=" 办学类型三级",examples=['附设小学班'])
+    department_unit_number: str = Field('', title="", description="属地管理行政部门单位号",examples=['SC562369322SG'])
+    # sy_zones: str = Field('', title="", description="属地管理行政部门所在地地区",examples=['铁西区'])
+    historical_evolution: str = Field('', title="", description="历史沿革",examples=['xxxxxxxxxxxxxxxxxxxx'])
+    # status: str = Field(None, title="", description=" 状态",examples=[])
+    school_en_name: str = Field('', title="", description="园所英文名称",examples=['MinxingPrimarySCHOOL'])
+    # social_credit_code: str = Field('', title="", description="统一社会信用代码",examples=['XH423423876867'])
+    school_closure_date: str = Field('', title="", description="学校关闭日期",examples=[''])
+    school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
+    # location_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
+    # urban_ethnic_nature: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
+    # leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
 
 
 

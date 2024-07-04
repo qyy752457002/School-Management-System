@@ -28,6 +28,8 @@ from mini_framework.web.request_context import request_context_manager
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task import Task
 
+from views.models.school_communications import SchoolCommunications
+from views.models.school_eduinfo import SchoolEduInfo
 from views.models.system import InstitutionType
 
 
@@ -47,32 +49,107 @@ class InstitutionView(BaseView):
         school = await self.school_rule.get_school_by_id(institution_id,extra_model=InstitutionOptional)
         institution_keyinfo = await self.school_rule.get_school_by_id(institution_id, extra_model=InstitutionKeyInfo)
 
-        return {'institution': school,     'institution_keyinfo': institution_keyinfo}
+        school_eduinfo={}
+        school_communication = await self.school_communication_rule.get_school_communication_by_school_id(school_id)
+        # todo 异常可能导致orm转换时 的链接释放
+        try:
+
+            school_eduinfo = await self.school_eduinfo_rule.get_school_eduinfo_by_school_id(school_id)
+        except Exception as e:
+            print(e)
+        return {'institution': school,     'institution_keyinfo': institution_keyinfo,'school_communication': school_communication, 'school_eduinfo': school_eduinfo,}
 
     async def post(self, school: InstitutionsAdd):
         # res = await self.institution_rule.add_institution(school)
         print('school',school)
         res = await self.school_rule.add_school(school)
         print(res)
+        resc = SchoolCommunications(id=0)
+        # logging.debug(resc,'模型2', res.id, type( res.id ))
+        newid = str(res.id)
+        print(resc, '模型23', res.id, type(res.id))
+        # str( res.id).copy()
+
+        resc.school_id = int(newid)
+        print(resc, newid, '||||||||')
+
+        # 保存通信信息
+        res_comm = await self.school_communication_rule.add_school_communication(resc,
+                                                                                 convertmodel=False)
+        print(res_comm, '模型2 res')
+        #
+        resedu = SchoolEduInfo(id=0)
+        resedu.school_id = res.id
+        # 保存教育信息
+        res_edu = await self.school_eduinfo_rule.add_school_eduinfo(resedu, convertmodel=False)
+        print(res_edu)
 
         return res
         # return  school
 
-    async def page(self,
-                   institution_category: InstitutionType = Query(None, title='单位分类',examples=['institution/administration']),
-                   social_credit_code: str = Query( '',title='统一社会信用代码',description=" 统一社会信用代码",examples=['DK156512656']),
-                   institution_name: str = Query(None, description="机构名称", example='XX小学'),
-                   institution_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),
-                   block: str = Query("", title=" ", description="地域管辖区", ),
-                   borough: str = Query("", title="  ", description=" 行政管辖区", ),
-                   page_request= Depends(PageRequest),
-                  ):
-        print(page_request)
-        items=[]
-        if not institution_category:
-            institution_category = [InstitutionType.INSTITUTION,InstitutionType.ADMINISTRATION]
-        res = await self.school_rule.query_school_with_page(page_request,institution_category=institution_category,school_name=institution_name,school_org_type=institution_org_type,block=block,borough=borough,social_credit_code=social_credit_code,extra_model=InstitutionOptional)
+    # # 修改 关键信息 留给页面的 '变更按钮'
+    async def put_keyinfo(self,
+                          school: InstitutionKeyInfo,
+
+                          ):
+        # 检测 是否允许修改
+        is_draft = await self.school_rule.is_can_not_add_workflow(school.id,True)
+        if is_draft:
+            raise InstitutionStatusError()
+        origin = await self.school_rule.get_institution_by_id(school.id)
+
+        res2 = compare_modify_fields(school, origin)
+        # print(  res2)
+
+        # res = await self.planning_school_rule.update_planning_institution_byargs(planning_school)
+        #  工作流
+        # planning_school.id = planning_institution_id
+        res = await self.school_rule.add_institution_keyinfo_change_work_flow(school,)
+        process_instance_id=0
+        if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+            process_instance_id= res[0]['process_instance_id']
+            pl = InstitutionOptional(id=school.id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
+
+            resu = await self.school_rule.update_institution_byargs(pl  )
+
+            pass
+
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            target=OperationTarget.INSTITUTION.value,
+            action_type=OperationType.MODIFY.value,
+            change_module=ChangeModule.KEY_INFO_CHANGE.value,
+            change_detail="修改关键信息",
+            action_target_id=str(school.id),
+            change_data= JsonUtils.dict_to_json_str(res2),
+            process_instance_id=process_instance_id
+        ))
+
         return res
+
+    # 删除
+    async def delete(self,
+                     institution_id: int = Query(..., description="|", example='1'),
+                     ):
+        # print(school_id)
+        res = await self.school_rule.softdelete_institution(institution_id)
+
+        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            target=OperationTarget.INSTITUTION.value,
+            action_type=OperationType.DELETE.value,
+            change_module=ChangeModule.KEY_INFO_CHANGE.value,
+            change_detail="删除",
+
+            action_target_id=str(institution_id),
+
+            change_data= JsonUtils.dict_to_json_str({'institution_id':institution_id}),
+
+
+        ))
+
+        return res
+
     # 修改 变更 基本信息
     async def patch_baseinfo(self, institution_baseinfo: InstitutionBaseInfo):
         # 学校转ins
@@ -102,24 +179,42 @@ class InstitutionView(BaseView):
 
         return res
 
-    # 导入 事业单位      上传文件获取 桶底值
 
-    async def post_institution_import(self,
-                                      filename: str = Query(..., description="文件名"),
-                                      bucket: str = Query(..., description="文件名"),
-                                      scene: str = Query('', description="文件名"),
-                                      ) -> Task:
+    async def page(self,
+                   page_request= Depends(PageRequest),
+                   institution_category: InstitutionType = Query(None, title='单位分类',examples=['institution/administration']),
+                   social_credit_code: str = Query( '',title='统一社会信用代码',description=" 统一社会信用代码",examples=['DK156512656']),
+                   institution_name: str = Query(None, description="机构名称", example='XX小学'),
+                   institution_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),
+                   block: str = Query("", title=" ", description="地域管辖区", ),
+                   school_code: str = Query("", title="", description=" 园所标识码", ),
+                   school_level: str = Query("", title="", description=" 学校星级", ),
+                   borough: str = Query("", title="  ", description=" 行政管辖区", ),
+                   status: PlanningSchoolStatus = Query("", title="", description=" 状态", examples=['正常']),
 
-        task = Task(
-            # 需要 在cofnig里有配置   对应task类里也要有这个 键
-            task_type="institution_import",
-            # 文件 要对应的 视图模型
-            payload=InstitutionTask(file_name=filename, bucket=bucket, scene=scene),
-            operator=request_context_manager.current().current_login_account.account_id
-        )
-        task = await app.task_topic.send(task)
-        print('发生任务成功')
-        return task
+                   founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
+                                                                         examples=['地方']),
+                   founder_type_lv2: List[str] = Query([], title="", description="举办者类型二级",
+                                                       examples=['教育部门']),
+                   founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
+                                                       examples=['县级教育部门']),
+
+                   school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1, max_length=20,
+                                          example='SC2032633'),
+                   school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
+                                            example='XX小学'),
+                   planning_school_id: int = Query(None, description="规划校ID", example='1'),
+                   province: str = Query("", title="", description="省份代码", ),
+                   city: str = Query("", title="", description="城市", ),
+
+                   ):
+        print(page_request)
+        items=[]
+        if not institution_category:
+            institution_category = [InstitutionType.INSTITUTION,InstitutionType.ADMINISTRATION]
+        res = await self.school_rule.query_school_with_page(page_request,institution_category=institution_category,school_name=institution_name,school_org_type=institution_org_type,block=block,borough=borough,social_credit_code=social_credit_code,extra_model=InstitutionOptional)
+        return res
+
 
     # 开办
     async def patch_open(self, institution_id: str = Query(..., title="", description="", min_length=1,
@@ -201,46 +296,8 @@ class InstitutionView(BaseView):
         return res
 
 
-    # # 修改 关键信息 留给页面的 '变更按钮'
-    async def put_keyinfo(self,
-                          school: InstitutionKeyInfo,
-
-                          ):
-        # 检测 是否允许修改
-        is_draft = await self.school_rule.is_can_not_add_workflow(school.id,True)
-        if is_draft:
-            raise InstitutionStatusError()
-        origin = await self.school_rule.get_institution_by_id(school.id)
-
-        res2 = compare_modify_fields(school, origin)
-        # print(  res2)
-
-        # res = await self.planning_school_rule.update_planning_institution_byargs(planning_school)
-        #  工作流
-        # planning_school.id = planning_institution_id
-        res = await self.school_rule.add_institution_keyinfo_change_work_flow(school,)
-        process_instance_id=0
-        if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
-            process_instance_id= res[0]['process_instance_id']
-            pl = InstitutionOptional(id=school.id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
-
-            resu = await self.school_rule.update_institution_byargs(pl  )
-
-            pass
-
-        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            target=OperationTarget.INSTITUTION.value,
-            action_type=OperationType.MODIFY.value,
-            change_module=ChangeModule.KEY_INFO_CHANGE.value,
-            change_detail="修改关键信息",
-            action_target_id=str(school.id),
-            change_data= JsonUtils.dict_to_json_str(res2),
-            process_instance_id=process_instance_id
-        ))
-
-        return res
         # return  {institution_no,borough,block }
+    # 这里没有 put全部 开办和全部关闭 和 搜索
 
     # 学校开设审核
     async def patch_open_audit(self,
@@ -288,6 +345,69 @@ class InstitutionView(BaseView):
         return resultra
         pass
 
+    # 导入 事业单位      上传文件获取 桶底值
+
+    async def post_institution_import(self,
+                                      file_name: str = Body(..., description="文件名"),
+                                      # bucket: str = Query(..., description="文件名"),
+                                      # scene: str = Query('', description="文件名"),
+                                      ) -> Task:
+
+        task = Task(
+            # 需要 在cofnig里有配置   对应task类里也要有这个 键
+            task_type="institution_import",
+            # 文件 要对应的 视图模型
+            payload=InstitutionTask(file_name=file_name, bucket='', scene='institution_import'),
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
+    #工作流申请详情
+    async def get_institution_workflow_info(self,
+
+                                            apply_id: int = Query(..., description="流程ID", example='1'),
+
+                                            ):
+        relationinfo = tinfo = ''
+        # 转发去 工作流获取详细
+        result = await self.system_rule.get_work_flow_instance_by_process_instance_id(
+            apply_id)
+        if not result.get('json_data'):
+            return {'工作流数据异常 无法解析'}
+
+        json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
+        # 移到顶层
+        result={ **result,**json_data}
+
+        if 'original_dict' in json_data.keys() and  json_data['original_dict']:
+            result={**json_data['original_dict'],**result}
+
+
+        return result
+    # 分校的审批流列表
+    async def page_institution_audit(self,
+                                     social_credit_code: str = Query( '',title='统一社会信用代码',description=" 统一社会信用代码",examples=['DK156512656']),
+                                     institution_name: str = Query(None, description="机构名称", example='XX小学'),
+                                     institution_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),
+                                     block: str = Query("", title=" ", description="地域管辖区", ),
+                                     borough: str = Query("", title="  ", description=" 行政管辖区", ),
+                                     process_code: str = Query("", title="流程代码", description="例如p_institution_open", ),
+                                     page_request=Depends(PageRequest)):
+        items = []
+        #PlanningSchoolBaseInfoOptional
+        print('入参接收',page_request,)
+        req= InstitutionPageSearch(block=block,
+                                   borough=borough,
+                                   institution_name=institution_name,
+                                   social_credit_code=social_credit_code,
+                                   institution_org_type=institution_org_type,
+                                   founder_type_lv3=[]
+                                   )
+        print('入参接收2',req)
+        paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,  )
+        print('333',page_request)
+        return paging_result
     async def patch_open_cancel(self,
 
                                 process_instance_id: int = Query(0, title="流程ID", description="流程ID",
@@ -346,73 +466,8 @@ class InstitutionView(BaseView):
         return res2
         pass
 
-    # 分校的审批流列表
-    async def page_institution_audit(self,
-                                     social_credit_code: str = Query( '',title='统一社会信用代码',description=" 统一社会信用代码",examples=['DK156512656']),
-                                     institution_name: str = Query(None, description="机构名称", example='XX小学'),
-                                     institution_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),
-                                    block: str = Query("", title=" ", description="地域管辖区", ),
-                                     borough: str = Query("", title="  ", description=" 行政管辖区", ),
-                                process_code: str = Query("", title="流程代码", description="例如p_institution_open", ),
-                                page_request=Depends(PageRequest)):
-        items = []
-        #PlanningSchoolBaseInfoOptional
-        print('入参接收',page_request,)
-        req= InstitutionPageSearch(block=block,
-                              borough=borough,
-                              institution_name=institution_name,
-                                   social_credit_code=social_credit_code,
-                                   institution_org_type=institution_org_type,
-                                   founder_type_lv3=[]
-                              )
-        print('入参接收2',req)
-        paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,  )
-        print('333',page_request)
-        return paging_result
-
-    #工作流申请详情
-    async def get_institution_workflow_info(self,
-
-                                       apply_id: int = Query(..., description="流程ID", example='1'),
-
-                                       ):
-        relationinfo = tinfo = ''
-        # 转发去 工作流获取详细
-        result = await self.system_rule.get_work_flow_instance_by_process_instance_id(
-            apply_id)
-        if not result.get('json_data'):
-            return {'工作流数据异常 无法解析'}
-
-        json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
-        # 移到顶层
-        result={ **result,**json_data}
-
-        if 'original_dict' in json_data.keys() and  json_data['original_dict']:
-            result={**json_data['original_dict'],**result}
 
 
-        return result
-
-    # 删除
-    async def delete(self,
-                     institution_id: int = Query(..., description="|", example='1'),
-                     ):
-        # print(school_id)
-        res = await self.school_rule.softdelete_institution(institution_id)
-
-        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            target=OperationTarget.INSTITUTION.value,
-            action_type=OperationType.DELETE.value,
-            change_module=ChangeModule.KEY_INFO_CHANGE.value,
-            change_detail="删除",
-
-            action_target_id=str(institution_id),
-
-            change_data= JsonUtils.dict_to_json_str({'institution_id':institution_id}),
 
 
-        ))
-
-        return res
         # return  school_id
