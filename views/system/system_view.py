@@ -73,7 +73,7 @@ class SystemView(BaseView):
         res = await self.system_config_rule.add_system_config(system_config)
         print(res)
         return res
-
+    # 系统配置 列表
     async def page_system_config(self,
                                  page_request=Depends(PageRequest),
                                  config_name: str = Query(None, title="", description="", min_length=1, max_length=50,
@@ -86,14 +86,14 @@ class SystemView(BaseView):
         title = ''
         res = await self.system_config_rule.query_system_config_with_page(config_name, school_id, page_request)
         return res
-
+    # 系统配置详情
     async def get_system_config_detail(self,
-                                       config_id: int = Query(0, description="", example='1'),
+                                       config_id: int|str = Query( 0, description="", example='1'),
                                        ):
         res = await self.system_config_rule.get_system_config_by_id(config_id)
 
         return res
-
+    # 修改系统配置
     async def put_system_config(self,
                                 system_config: SystemConfig
 

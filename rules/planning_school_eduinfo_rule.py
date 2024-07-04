@@ -1,4 +1,5 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -8,6 +9,7 @@ from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from business_exceptions.planning_school_eduinfo import PlanningSchoolEduinfoNotFoundError
 from daos.planning_school_eduinfo_dao import PlanningSchoolEduinfoDAO
 from models.planning_school_eduinfo import PlanningSchoolEduinfo
+from views.common.common_view import convert_snowid_in_model
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo  as PlanningSchoolEduinfoModel
 
 
@@ -32,6 +34,7 @@ class PlanningSchoolEduinfoRule(object):
         else:
             planning_school = orm_model_to_view_model(planning_school_eduinfo_db, PlanningSchoolEduinfoModel)
 
+        convert_snowid_in_model(planning_school,extra_colums=["planning_school_id"])
 
         return planning_school
 
@@ -53,6 +56,8 @@ class PlanningSchoolEduinfoRule(object):
         planning_school_eduinfo_db.deleted = 0
         planning_school_eduinfo_db.created_uid = 0
         planning_school_eduinfo_db.updated_uid = 0
+        planning_school_eduinfo_db.planning_school_id =  int(planning_school.planning_school_id)
+        planning_school_eduinfo_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
         planning_school_eduinfo_db = await self.planning_school_eduinfo_dao.add_planning_school_eduinfo(planning_school_eduinfo_db)
         planning_school = orm_model_to_view_model(planning_school_eduinfo_db, PlanningSchoolEduinfoModel, exclude=["created_at",'updated_at'])

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -14,7 +14,7 @@ class School(BaseDBModel):
     __table_args__ = {'comment': '学校'}
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True,)
-    planning_school_id: Mapped[int] = mapped_column( nullable=True  , comment="规划校id",default=0)
+    planning_school_id: Mapped[int] = mapped_column(BigInteger, nullable=True  , comment="规划校id",default=0)
     institution_category: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 单位分类")
 
     school_name: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校名称")

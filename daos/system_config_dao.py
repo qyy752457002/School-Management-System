@@ -26,19 +26,20 @@ class SystemConfigDAO(DAOBase):
 		await session.commit()
 
 	async def get_system_config_by_id(self, id):
+		id=int(id)
 		session = await self.slave_db()
 		result = await session.execute(select(SystemConfig).where(SystemConfig.id == id))
 		return result.scalar_one_or_none()
 
 	async def get_system_config_by_name(self, id,system_config:SystemConfigModel=None):
 		session = await self.slave_db()
-		query= select(SystemConfig).where(SystemConfig.config_name == id)
+		query= select(SystemConfig).where(SystemConfig.config_name == id).where(SystemConfig.is_deleted == False)
 		if system_config.school_id:
 			query=query.where(SystemConfig.school_id == system_config.school_id)
 		result = await session.execute(query)
 		return result.scalar_one_or_none()
 	async def query_system_config_with_page(self,  page_request: PageRequest,config_name,school_id):
-		query = select(SystemConfig).where(SystemConfig.is_deleted == False)
+		query = select(SystemConfig).where(SystemConfig.is_deleted == False).order_by(SystemConfig.id.desc())
 		if config_name:
 			query = query.where(SystemConfig.config_name == config_name)
 		if school_id:

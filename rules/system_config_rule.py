@@ -1,3 +1,4 @@
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -15,7 +16,7 @@ class SystemConfigRule(object):
     async def get_system_config_by_id(self, system_config_id):
         system_config_db = await self.system_config_dao.get_system_config_by_id(system_config_id)
         # 可选 , exclude=[""]
-        system_config = orm_model_to_view_model(system_config_db, SystemConfigModel)
+        system_config = orm_model_to_view_model(system_config_db, SystemConfigModel,exclude=["id", ])
         return system_config
 
     async def add_system_config(self, system_config: SystemConfigModel):
@@ -24,9 +25,11 @@ class SystemConfigRule(object):
         if exists_system_config:
             raise Exception(f"系统{system_config.config_name}已存在")
         system_config_db = view_model_to_orm_model(system_config, SystemConfig, exclude=["id"])
+        system_config_db.id = 0
+        system_config_db.id  = SnowflakeIdGenerator(1, 1).generate_id()
 
         system_config_db = await self.system_config_dao.add_system_config(system_config_db)
-        system_config = orm_model_to_view_model(system_config_db, SystemConfigModel, exclude=["created_at", 'updated_at'])
+        system_config = orm_model_to_view_model(system_config_db, SystemConfigModel, exclude=["created_at", 'updated_at','id'])
         return system_config
 
     async def update_system_config(self, system_config, ):
@@ -37,6 +40,7 @@ class SystemConfigRule(object):
         for key, value in system_config.dict().items():
             if value:
                 need_update_list.append(key)
+        need_update_list.remove('id')
 
         system_config_db = await self.system_config_dao.update_system_config(system_config, *need_update_list)
 
@@ -63,6 +67,12 @@ class SystemConfigRule(object):
         paging_result = PaginatedResponse.from_paging(paging, SystemConfigModel,other_mapper={
 
         })
+        # 把item里把每个元素的ID字段转换为str类型
+
+        for item in paging_result.items:
+            item.id =  str(item.id)
+
+
         title= ''
         return paging_result
 

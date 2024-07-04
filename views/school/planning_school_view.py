@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import datetime
 from typing import List
@@ -15,7 +16,8 @@ from business_exceptions.planning_school import PlanningSchoolValidateError, Pla
 from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
 from rules.system_rule import SystemRule
-from views.common.common_view import compare_modify_fields, get_extend_params, get_client_ip
+from views.common.common_view import compare_modify_fields, get_extend_params, get_client_ip, convert_dates_to_strings, \
+    serialize
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
@@ -60,7 +62,7 @@ class PlanningSchoolView(BaseView):
                                                         max_length=20, example='SC2032633'),
                   planning_school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
                                                     example='XX小学'),
-                  planning_school_id: int = Query(..., description="学校id|根据学校查规划校", example='1'),
+                  planning_school_id: int|str = Query(..., description="学校id|根据学校查规划校", example='1'),
 
                   ):
         planning_school= ''
@@ -119,8 +121,6 @@ class PlanningSchoolView(BaseView):
     async def put_keyinfo(self,
                           planning_school: PlanningSchoolKeyInfo,
                           request: Request,
-                          # planning_school_id:str= Query(..., title="学校编号", description="学校id/园所id",min_length=1,max_length=20,example='SC2032633'),
-
                           ):
         # 检测 是否允许修改
         is_draft = await self.planning_school_rule.is_can_not_add_workflow(planning_school.id,True)
@@ -159,7 +159,7 @@ class PlanningSchoolView(BaseView):
         return res
 
     # 删除
-    async def delete(self, planning_school_id: int = Query(..., title="", description="学校id/园所id",
+    async def delete(self, planning_school_id: int|str = Query(..., title="", description="学校id/园所id",
                                                            example='2203'), ):
         print(planning_school_id)
         res = await self.planning_school_rule.softdelete_planning_school(planning_school_id)
@@ -172,8 +172,10 @@ class PlanningSchoolView(BaseView):
             change_detail="修改基本信息",
             action_target_id=str(planning_school_id),
             # change_data=str(res)[0:1000]
-        change_data= JsonUtils.dict_to_json_str(res)
-            ,  ))
+        change_data= json.dumps(convert_dates_to_strings( serialize(res))),
+        # change_data= JsonUtils.dict_to_json_str(res.__dict__),
+        ))
+
 
         return res
 
@@ -183,7 +185,7 @@ class PlanningSchoolView(BaseView):
         origin = await self.planning_school_rule.get_planning_school_by_id(planning_school_baseinfo.id)
         log_con = compare_modify_fields(planning_school_baseinfo, origin)
 
-        res = await self.planning_school_rule.update_planning_school_byargs(planning_school_baseinfo, 2)
+        res = await self.planning_school_rule.update_planning_school_byargs(planning_school_baseinfo, )
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
@@ -240,7 +242,7 @@ class PlanningSchoolView(BaseView):
 
 
     # 开办   校验合法性等  业务逻辑   开班式 校验所有的数据是否 都填写了
-    async def patch_open(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
+    async def patch_open(self, planning_school_id: str|int = Query(..., title="学校编号", description="学校id/园所id",
                                                                min_length=1, max_length=20, example='SC2032633')):
         # print(planning_school)
         # 检测 是否允许修改
@@ -398,7 +400,7 @@ class PlanningSchoolView(BaseView):
                        planning_school: PlanningSchoolBaseInfo,
                        planning_school_communication: PlanningSchoolCommunications,
                        planning_school_eduinfo: PlanningSchoolEduInfo,
-                       planning_school_id: int = Query(..., title="", description="学校id/园所id", example='38'),
+                       planning_school_id: int|str = Query(..., title="", description="学校id/园所id", example='38'),
 
                        ):
         # print(planning_school)

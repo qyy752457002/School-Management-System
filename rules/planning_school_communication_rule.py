@@ -1,4 +1,5 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -8,6 +9,7 @@ from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from business_exceptions.planning_school_communication import PlanningSchoolCommunicationNotFoundError
 from daos.planning_school_communication_dao import PlanningSchoolCommunicationDAO
 from models.planning_school_communication import PlanningSchoolCommunication
+from views.common.common_view import convert_snowid_in_model
 from views.models.planning_school_communications import PlanningSchoolCommunications  as PlanningSchoolCommunicationModel
 
 
@@ -40,6 +42,7 @@ class PlanningSchoolCommunicationRule(object):
             # raise PlanningSchoolCommunicationNotFoundError(f"规划校通信信息{planning_school_communication_id}不存在")
         # planning_school_communication_db = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel)
         # planning_school_communication_db = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel)
+        convert_snowid_in_model(planning_school, extra_colums=["planning_school_id"])
         return planning_school
 
 
@@ -60,6 +63,9 @@ class PlanningSchoolCommunicationRule(object):
         planning_school_communication_db.status = '正常'
         planning_school_communication_db.created_uid = 0
         planning_school_communication_db.updated_uid = 0
+        planning_school_communication_db.planning_school_id =  int(planning_school.planning_school_id)
+
+        planning_school_communication_db.id = SnowflakeIdGenerator(1, 1).generate_id()
         print(planning_school_communication_db,'模型2db')
 
         planning_school_communication_db = await self.planning_school_communication_dao.add_planning_school_communication(planning_school_communication_db)

@@ -2,6 +2,7 @@ import json
 
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.utils.json import JsonUtils
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
@@ -15,7 +16,7 @@ from rules.common.common_rule import send_request
 from rules.enum_value_rule import EnumValueRule
 from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
-from views.common.common_view import workflow_service_config
+from views.common.common_view import workflow_service_config, convert_snowid_to_strings, convert_snowid_in_model
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus, \
     PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit, PlanningSchoolBaseInfoOptional
 from views.models.planning_school import PlanningSchoolBaseInfo
@@ -36,9 +37,14 @@ class PlanningSchoolRule(object):
             raise PlanningSchoolNotFoundError()
         # 可选 , exclude=[""]
         planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel)
+        #str
+        convert_snowid_in_model(planning_school)
+
         if extra_model:
             planning_school_extra = orm_model_to_view_model(planning_school_db, extra_model,
                                                        exclude=[""])
+            convert_snowid_in_model(planning_school_extra)
+
             return planning_school,planning_school_extra
 
         else:
@@ -59,6 +65,7 @@ class PlanningSchoolRule(object):
         planning_school_db.status =  PlanningSchoolStatus.DRAFT.value
         planning_school_db.created_uid = 0
         planning_school_db.updated_uid = 0
+        planning_school_db.id =SnowflakeIdGenerator(1, 1).generate_id()
         if planning_school.province and len( planning_school.province)>0:
             pass
         else:
@@ -70,7 +77,9 @@ class PlanningSchoolRule(object):
 
         planning_school_db = await self.planning_school_dao.add_planning_school(planning_school_db)
         print('id 111',planning_school_db.id)
-        planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=["created_at",'updated_at'])
+        planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=["created_at",'updated_at',])
+        #str
+        convert_snowid_in_model(planning_school)
         return planning_school
 
     async def delete_planning_school(self, planning_school_id):
@@ -121,10 +130,13 @@ class PlanningSchoolRule(object):
                                                                                   founder_type_lv3 )
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, PlanningSchoolModel)
+        #str
+        convert_snowid_to_strings(paging_result)
         return paging_result
 
 
     async def update_planning_school_status(self, planning_school_id, target_status,action=None):
+
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
@@ -143,7 +155,7 @@ class PlanningSchoolRule(object):
         need_update_list.append('status')
 
         print(exists_planning_school.status,2222222)
-        planning_school_db = await self.planning_school_dao.update_planning_school_byargs(exists_planning_school,*need_update_list)
+        planning_school_db = await self.planning_school_dao.update_planning_school_byargs(exists_planning_school,*need_update_list,is_commit=True)
         if action=='open':
             school_rule = get_injector(SchoolRule)
 
@@ -151,7 +163,7 @@ class PlanningSchoolRule(object):
         # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
         return planning_school_db
 
-    async def update_planning_school_byargs(self, planning_school,ctype=1):
+    async def update_planning_school_byargs(self, planning_school,need_update_list=None):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school.id)
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
@@ -161,18 +173,21 @@ class PlanningSchoolRule(object):
             planning_school.status= PlanningSchoolStatus.OPENING.value
         else:
             pass
-        need_update_list = []
-        for key, value in planning_school.__dict__.items():
-            if key.startswith('_'):
-                continue
-            if value:
-                need_update_list.append(key)
+        if not need_update_list:
 
+            need_update_list = []
+            for key, value in planning_school.__dict__.items():
+                if key.startswith('_'):
+                    continue
+                if value:
+                    need_update_list.append(key)
+            need_update_list.remove('id')
 
-        planning_school_db = await self.planning_school_dao.update_planning_school_byargs(planning_school, *need_update_list)
+        planning_school_db = await self.planning_school_dao.update_planning_school_byargs(planning_school, *need_update_list,is_commit=True)
 
         # 更新不用转换   因为得到的对象不熟全属性
         # planning_school = orm_model_to_view_model(planning_school_db, SchoolModel, exclude=[""])
+        convert_snowid_in_model(planning_school_db)
         return planning_school_db
 
 
@@ -185,6 +200,7 @@ class PlanningSchoolRule(object):
         lst = []
         for row in res:
             planning_school = orm_model_to_view_model(row, PlanningSchoolModel)
+            convert_snowid_in_model(planning_school)
             lst.append(planning_school)
         return lst
 
@@ -314,17 +330,22 @@ class PlanningSchoolRule(object):
 
         response = await send_request(apiname,datadict,'post',True)
         print(response,'接口响应')
-        if audit_info.transaction_audit_action== AuditAction.PASS.value:
-            # 成功则写入数据
-            # transrule = get_injector(StudentTransactionRule)
-            # await transrule.deal_student_transaction(student_edu_info)
-            res2 = await self.deal_planning_school(audit_info.process_instance_id, action)
-        # 终态的处理
+        try:
+            if audit_info.transaction_audit_action== AuditAction.PASS.value:
+                # 成功则写入数据
+                # transrule = get_injector(StudentTransactionRule)
+                # await transrule.deal_student_transaction(student_edu_info)
+                res2 = await self.deal_planning_school(audit_info.process_instance_id, action)
+                pass
+            # 终态的处理 这个要改为另一个方式
 
-        await self.set_transaction_end(audit_info.process_instance_id, audit_info.transaction_audit_action)
+            await self.set_transaction_end(audit_info.process_instance_id, audit_info.transaction_audit_action)
 
 
-        return response
+            return response
+        except Exception as e:
+            print(e)
+            return response
         pass
 
     async def deal_planning_school(self,process_instance_id ,action, ):
@@ -361,7 +382,10 @@ class PlanningSchoolRule(object):
         tinfo=await self.planning_school_dao.get_planning_school_by_process_instance_id(process_instance_id)
         if tinfo:
             tinfo.workflow_status=status.value
-            await self.update_planning_school_byargs(tinfo)
+            tinfo.id = int(tinfo.id)
+
+            planning_school_db = await self.planning_school_dao.update_planning_school_byargs(tinfo,['workflow_status'],is_commit=True)
+            # await self.update_planning_school_byargs(tinfo,['workflow_status'])
 
 
         pass

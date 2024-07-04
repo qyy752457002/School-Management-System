@@ -1,5 +1,4 @@
-from views.models.teachers import NewTeacher, TeacherInfo, RetireTeacherQuery
-from fastapi import Query, Depends, Body
+from views.models.teachers import NewTeacher, TeacherInfo
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
 
@@ -11,6 +10,7 @@ from rules.teachers_rule import TeachersRule
 from rules.teachers_info_rule import TeachersInfoRule
 from views.models.teachers import Teachers, TeacherInfo, CurrentTeacherQueryRe, CurrentTeacherQuery, \
     CurrentTeacherInfoSaveModel, TeacherApprovalQuery
+from fastapi import Query, Depends, Body
 
 
 class TeachersView(BaseView):
@@ -63,7 +63,7 @@ class TeachersView(BaseView):
         return paging_result
 
     # 获取教职工基本信息
-    async def get_teacherinfo(self, teacher_id: int = Query(..., title="教师名称", description="教师名称",
+    async def get_teacherinfo(self, teacher_id: int = Query(..., title="姓名", description="教师名称",
                                                             example=123)):
         res = await self.teacher_info_rule.get_teachers_info_by_teacher_id(teacher_id)
         return res
@@ -87,7 +87,7 @@ class TeachersView(BaseView):
 
     # 删除教职工基本信息
     async def delete_teacherinfo(self,
-                                 teacher_id: int = Query(..., title="教师名称", description="教师名称",
+                                 teacher_id: int = Query(..., title="姓名", description="教师名称",
                                                          example=123)):
         await self.teacher_info_rule.delete_teachers_info(teacher_id)
         return str(teacher_id)
@@ -137,9 +137,9 @@ class TeachersView(BaseView):
     #                                ):
     #     await self.teacher_rule.teacher_active(teacher_id)
     #     return teacher_id
-    async def page_teacher_retire(self, current_teacher=Depends(RetireTeacherQuery), page_request=Depends(PageRequest)):
-        """
-        退休老师分页查询
-        """
-        paging_result = await self.teacher_info_rule.query_retire_teacher_with_page(current_teacher, page_request)
-        return paging_result
+    # async def page_teacher_retire(self, current_teacher=Depends(RetireTeacherQuery), page_request=Depends(PageRequest)):
+    #     """
+    #     退休老师分页查询
+    #     """
+    #     paging_result = await self.teacher_info_rule.query_retire_teacher_with_page(current_teacher, page_request)
+    #     return paging_result

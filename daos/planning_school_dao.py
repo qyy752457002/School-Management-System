@@ -10,11 +10,14 @@ from models.planning_school import PlanningSchool
 class PlanningSchoolDAO(DAOBase):
 
     async def get_planning_school_by_id(self, planning_school_id):
+        planning_school_id= int(planning_school_id)
         session = await self.slave_db()
         result = await session.execute(select(PlanningSchool).where(PlanningSchool.id == planning_school_id))
         return result.scalar_one_or_none()
 
     async def get_planning_school_by_process_instance_id(self, planning_school_id):
+        planning_school_id= int(planning_school_id)
+
         session = await self.slave_db()
         result = await session.execute(select(PlanningSchool).where(PlanningSchool.process_instance_id == planning_school_id))
         return result.scalar()
@@ -146,7 +149,12 @@ class PlanningSchoolDAO(DAOBase):
 
 
     async def update_planning_school_byargs(self, planning_school: PlanningSchool, *args, is_commit: bool = True):
+        planning_school.id = int(planning_school.id)
         session =await self.master_db()
         update_contents = get_update_contents(planning_school, *args)
+        #id unset
+        if 'id' in update_contents.keys():
+            update_contents.pop('id')
         query = update(PlanningSchool).where(PlanningSchool.id == planning_school.id).values(**update_contents)
+        # 这里会
         return await self.update(session, query, planning_school, update_contents, is_commit=is_commit)

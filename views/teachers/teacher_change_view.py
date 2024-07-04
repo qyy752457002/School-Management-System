@@ -3,9 +3,8 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 from fastapi import Query
 
-from views.models.teacher_change import TeacherChangeLogModel,TeacherChangeDetail
+from views.models.teacher_change import TeacherChangeLogModel
 from rules.teacher_change_rule import TeacherChangeRule
-
 
 class TeacherChangeView(BaseView):
     def __init__(self):

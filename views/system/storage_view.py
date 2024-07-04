@@ -23,7 +23,8 @@ class StorageView(BaseView):
 
 #     解析 文件和桶  返回 数据结构
     async def get_file_data_preview(self, filename: str, bucket,sence=''):
-        data = [ ]
+        # data = dict()
+        data = [ dict()]
 
         try:
             print('解析的文件',filename,bucket)
@@ -64,7 +65,7 @@ class StorageView(BaseView):
         except Exception as e:
             print('解析文件报错',e)
 
-        return {}
+        return data
     async def get_download_url(self, id: str):
         return await self.system_rule.get_download_url_by_id(id)
 
