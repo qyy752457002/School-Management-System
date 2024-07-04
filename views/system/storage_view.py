@@ -23,7 +23,8 @@ class StorageView(BaseView):
 
 #     解析 文件和桶  返回 数据结构
     async def get_file_data_preview(self, filename: str, bucket,sence=''):
-        data = dict()
+        # data = dict()
+        data = [ dict()]
 
         try:
             print('解析的文件',filename,bucket)
