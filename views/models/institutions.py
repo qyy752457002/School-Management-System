@@ -152,15 +152,15 @@ class InstitutionsAdd(BaseModel):
 
 
 class InstitutionBaseInfo(BaseModel):
-    #  todo 法1 别名方式   出时 要映射为ins开头的字段  todo 法2  视图映射转换方式 需要支持互转  可改  外部键不变   且 m2v时需要映射
+    #  todo 法1 新增时别名方式   获取模型 时 要映射为ins开头的字段  todo 法2  视图映射转换方式 需要支持互转  可改  外部键不变   且 m2v时需要映射
     id:int= Query( 0, title="", description="学校id", example='1')
-    institution_name: str |None = Field("", title='单位名称', description="单位名称",examples=['文化部'])
+    school_name: str |None = Field("",alias="institution_name", title='单位名称', description="单位名称",examples=['文化部'])
     institution_type: str |None = Field("",   title='单位类型',  description="单位类型 ",examples=[''])
 
     institution_en_name: str |None = Field("",title='单位名称英文',   description=" 单位名称英文",examples=['CEDUCUL'])
     institution_category: str |None = Field("", title='单位分类',  description=" 单位分类",examples=['事业单位'])
     sy_zones: str |None = Field("",   title='属地管理行政部门所在地地区',  description=" 属地管理行政部门所在地地区",examples=['铁西区'])
-    institution_code: str |None = Field("",   title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
+    school_no: str |None = Field("",alias="institution_code",   title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
     social_credit_code: str|None = Field("",   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656'])
     create_date: str |None = Field("",   title='成立年月',  description=" 成立年月",examples=['2020-10-23'])
     leg_repr_name: str |None = Field("",   title='法定代表人姓名',  description=" 法定代表人姓名",examples=['XXX'])

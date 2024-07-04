@@ -83,7 +83,7 @@ class InstitutionView(BaseView):
             # raise InstitutionStatusError(f"{origin.institution_name}状态为正常，不能修改")
         log_con = compare_modify_fields(institution_baseinfo, origin)
         # todo 完成转换 v2m ins 转学校
-        school_db = view_model_to_orm_model(institution_baseinfo, School,    exclude=["id"])
+        school_db = view_model_to_orm_model(institution_baseinfo, School,    exclude=["id"])    #这里已经是school开头的字段 应该可以直接转
 
 
         res = await self.school_rule.update_school_byargs(school_db, )

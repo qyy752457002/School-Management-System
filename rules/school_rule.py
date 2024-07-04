@@ -42,22 +42,24 @@ class SchoolRule(object):
     p_school_dao: PlanningSchoolDAO
     enum_value_dao: EnumValueDAO
     system_rule: SystemRule
+    other_mapper={"school_name": "institution_name",
+                  "school_no": "institution_code",
+                  }
 
 
 
     async def get_school_by_id(self, school_id,extra_model=None):
-        other_mapper={ }
+        # other_mapper={ }
         school_db = await self.school_dao.get_school_by_id(school_id)
         if not school_db:
             return None
         if extra_model:
             if (extra_model== InstitutionKeyInfo):
                 # 加了转换
-                other_mapper={"school_name": "institution_name",
-                               "school_no": "institution_code",
-                           }
+                pass
 
-            school = orm_model_to_view_model(school_db, extra_model,other_mapper=other_mapper)
+
+            school = orm_model_to_view_model(school_db, extra_model,other_mapper=self.other_mapper)
         else:
             school = orm_model_to_view_model(school_db, SchoolModel)
         return school
@@ -267,7 +269,7 @@ class SchoolRule(object):
         # 字段映射的示例写法   , {"hash_password": "password"}
         if extra_model:
             # paging.data = [extra_model(**item) for item in paging.data]
-            paging_result = PaginatedResponse.from_paging(paging, extra_model)
+            paging_result = PaginatedResponse.from_paging(paging, extra_model,other_mapper=self.other_mapper)
 
         else:
             paging_result = PaginatedResponse.from_paging(paging, SchoolModel)
