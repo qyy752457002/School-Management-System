@@ -185,16 +185,16 @@ class TeacherTransactionQuery(BaseModel):
     证件号码：teacher_id_number
     """
     teacher_name: str = Query(..., title="姓名", description="姓名")
-    teacher_id_type: str = Query(..., title="证件类型", description="证件类型")
+    teacher_id_type: str = Query(..., title="身份证件类型", description="证件类型")
     teacher_id_number: str = Query(..., title="证件号码", description="证件号码")
 
 
 class TeacherTransactionQueryRe(BaseModel):
     teacher_id: int = Field(None, title="教师ID", description="教师ID")
-    teacher_name: str = Field(..., title="教师名称", description="教师名称")
+    teacher_name: str = Field(..., title="姓名", description="教师名称")
     teacher_gender: Gender = Field(..., title="教师性别", description="教师性别")
-    teacher_id_type: str = Field("", title="证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="证件号", description="证件号")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
     teacher_employer: int = Field(0, title="任职单位", description="任职单位")
     teacher_avatar: str = Field("", title="头像", description="头像")
@@ -210,7 +210,7 @@ class TeacherAddModel(BaseModel):
     出生日期：teacher_date_of_birth
     """
     teacher_name: str = Field(..., title="姓名", description="姓名")
-    teacher_id_type: str = Field(..., title="证件类型", description="证件类型")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field(..., title="证件号码", description="证件号码")
     teacher_gender: Gender = Field(..., title="性别", description="性别")
     teacher_date_of_birth: date | None = Field(..., title="出生日期", description="出生日期")
@@ -227,7 +227,7 @@ class TeacherAddReModel(BaseModel):
     """
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     teacher_name: str = Field(..., title="姓名", description="姓名")
-    teacher_id_type: str = Field(..., title="证件类型", description="证件类型")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field(..., title="证件号码", description="证件号码")
     teacher_gender: Gender = Field(..., title="性别", description="性别")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
@@ -250,8 +250,8 @@ class TeacherTransactionQueryModel(BaseModel):
     """
     teacher_name: Optional[str] = Query("", title="姓名", description="姓名")
     teacher_number: Optional[str] = Query("", title="教职工号", description="教职工号")
-    teacher_id_type: Optional[str] = Query("", title="证件类型", description="证件类型")
-    teacher_id_number: Optional[str] = Query("", title="证件号", description="证件号")
+    teacher_id_type: Optional[str] = Query("", title="身份证件类型", description="证件类型")
+    teacher_id_number: Optional[str] = Query("", title="身份证件号", description="证件号")
     teacher_gender: Optional[Gender] = Query(None, title="性别", description="性别")
     transaction_time_s: Optional[date] = Query(None, title="申请开始时间", description="申请开始时间")
     transaction_time_e: Optional[date] = Query(None, title="申请结束时间", description="申请结束时间")
@@ -261,8 +261,8 @@ class TeacherTransactionQueryModel(BaseModel):
 class TeacherTransactionQueryReModel(BaseModel):
     teacher_name: str = Field(..., title="姓名", description="姓名")
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    teacher_id_type: Optional[str] = Field("", title="证件类型", description="证件类型")
-    teacher_id_number: Optional[str] = Field("", title="证件号", description="证件号")
+    teacher_id_type: Optional[str] = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: Optional[str] = Field("", title="身份证件号", description="证件号")
     transaction_id: int = Field(..., title="异动id", description="异动id")
     teacher_number: Optional[str] = Field(None, title="教职工号", description="教职工号")
     teacher_gender: Optional[Gender] = Field(None, title="性别", description="性别")
@@ -472,8 +472,8 @@ class TeacherTransferQueryModel(BaseModel):
     """
     teacher_name: Optional[str] = Query("", title="姓名", description="姓名")
     teacher_number: Optional[str] = Query("", title="教职工号", description="教职工号")
-    teacher_id_type: Optional[str] = Query("", title="证件类型", description="证件类型")
-    teacher_id_number: Optional[str] = Query("", title="证件号", description="证件号")
+    teacher_id_type: Optional[str] = Query("", title="身份证件类型", description="证件类型")
+    teacher_id_number: Optional[str] = Query("", title="身份证件号", description="证件号")
     teacher_gender: Optional[Gender] = Query(None, title="性别", description="性别")
     original_district_province_id: Optional[int] = Query(None, title="原行政属地省", description="原行政属地省")
     original_district_city_id: Optional[int] = Query(None, title="原行政属地市", description="原行政属地市")
@@ -522,8 +522,8 @@ class TeacherTransferQueryReModel(BaseModel):
     teacher_id: int = Field(0, title="教师ID", description="教师ID")
     teacher_name: str = Field("", title="姓名", description="姓名")
     teacher_number: Optional[str] = Field("", title="教职工号", description="教职工号")
-    teacher_id_type: Optional[str] = Field("", title="证件类型", description="证件类型")
-    teacher_id_number: Optional[str] = Field("", title="证件号", description="证件号")
+    teacher_id_type: Optional[str] = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: Optional[str] = Field("", title="身份证件号", description="证件号")
     teacher_gender: Optional[Gender] = Field(None, title="性别", description="性别")
     original_district_province_name: Optional[str] = Field("", title="原行政属地省", description="原行政属地省")
     original_district_city_name: Optional[str] = Field("", title="原行政属地市", description="原行政属地市")
@@ -651,8 +651,8 @@ class TeacherBorrowQueryModel(BaseModel):
     """
     teacher_name: Optional[str] = Query("", title="姓名", description="姓名")
     teacher_number: Optional[str] = Query("", title="教职工号", description="教职工号")
-    teacher_id_type: Optional[str] = Query("", title="证件类型", description="证件类型")
-    teacher_id_number: Optional[str] = Query("", title="证件号", description="证件号")
+    teacher_id_type: Optional[str] = Query("", title="身份证件类型", description="证件类型")
+    teacher_id_number: Optional[str] = Query("", title="身份证件号", description="证件号")
     teacher_gender: Optional[Gender] = Query(None, title="性别", description="性别")
     original_district_province_id: Optional[int] = Query(None, title="原行政属地省", description="原行政属地省")
     original_district_city_id: Optional[int] = Query(None, title="原行政属地市", description="原行政属地市")
@@ -701,8 +701,8 @@ class TeacherBorrowQueryReModel(BaseModel):
     teacher_id: int = Field(0, title="教师ID", description="教师ID")
     teacher_name: str = Field("", title="姓名", description="姓名")
     teacher_number: Optional[str] = Field("", title="教职工号", description="教职工号")
-    teacher_id_type: Optional[str] = Field("", title="证件类型", description="证件类型")
-    teacher_id_number: Optional[str] = Field("", title="证件号", description="证件号")
+    teacher_id_type: Optional[str] = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: Optional[str] = Field("", title="身份证件号", description="证件号")
     teacher_gender: Optional[Gender] = Field(None, title="性别", description="性别")
     original_district_province_name: Optional[str] = Field("", title="原行政属地省", description="原行政属地省")
     original_district_city_name: Optional[str] = Field("", title="原行政属地市", description="原行政属地市")

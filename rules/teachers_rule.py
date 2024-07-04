@@ -347,7 +347,7 @@ class TeachersRule(object):
             local_file_path = "c.xlsx"
             reader = ExcelReader()
             reader.set_data(local_file_path)
-            # reader.register_model("Sheet1", CombinedModel)
+            reader.register_model("Sheet1", CombinedModel)
             logger.info("Test开始注册模型")
             reader.register_model("Sheet1", TeachersCreatModel)
             # reader.register_model("Sheet1", TeacherInfoCreateModel)
