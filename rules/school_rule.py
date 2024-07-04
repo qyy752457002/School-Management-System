@@ -44,6 +44,9 @@ class SchoolRule(object):
     system_rule: SystemRule
     other_mapper={"school_name": "institution_name",
                   "school_no": "institution_code",
+                  "school_en_name": "institution_en_name",
+                  "school_org_type": "institution_type",
+
                   }
 
 

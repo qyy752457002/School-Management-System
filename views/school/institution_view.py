@@ -66,11 +66,11 @@ class InstitutionView(BaseView):
                    block: str = Query("", title=" ", description="地域管辖区", ),
                    borough: str = Query("", title="  ", description=" 行政管辖区", ),
                    page_request= Depends(PageRequest),
-
-
                   ):
         print(page_request)
         items=[]
+        if not institution_category:
+            institution_category = [InstitutionType.INSTITUTION,InstitutionType.ADMINISTRATION]
         res = await self.school_rule.query_school_with_page(page_request,institution_category=institution_category,school_name=institution_name,school_org_type=institution_org_type,block=block,borough=borough,social_credit_code=social_credit_code,extra_model=InstitutionOptional)
         return res
     # 修改 变更 基本信息

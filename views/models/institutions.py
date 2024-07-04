@@ -98,7 +98,8 @@ class InstitutionOptional(BaseModel):
     membership_category: str |None = Field("",   title='隶属单位类型',  description=" 隶属单位类型",examples=['行政'])
     workflow_status: str |None = Field("",   title='',  description=" ",examples=[''])
     process_instance_id:int|None= Query(0, title="", description="", example='1')
-
+    block: str |None = Query("", title=" ", description="地域管辖区", ),
+    borough: str |None = Query("", title="  ", description=" 行政管辖区", ),
 
 class InstitutionKeyInfo(BaseModel):
     # 如果 不一样 需要转换到orm模型的

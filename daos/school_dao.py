@@ -119,7 +119,10 @@ class SchoolDAO(DAOBase):
         if social_credit_code:
             query = query.where(School.social_credit_code == social_credit_code)
         if institution_category:
-            query = query.where(School.institution_category == institution_category)
+            if isinstance(institution_category, list):
+                query = query.where(School.institution_category.in_(institution_category))
+            else:
+                query = query.where(School.institution_category == institution_category)
         if school_name:
             query = query.where(School.school_name == school_name)
         if planning_school_id:

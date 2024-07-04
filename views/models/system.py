@@ -24,9 +24,10 @@ class InstitutionType(str, Enum):
     """
     INSTITUTION = "institution"
     ADMINISTRATION = "administration"
+    SCHOOL = "school"
     @classmethod
     def to_list(cls):
-        return [cls.INSTITUTION, cls.ADMINISTRATION,]
+        return [cls.INSTITUTION, cls.ADMINISTRATION,cls.SCHOOL]
 class ProcessCodeType(str, Enum):
     """
     """
