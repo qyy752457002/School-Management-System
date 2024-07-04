@@ -6,11 +6,13 @@ from mini_framework.utils.logging import logger
 # from rules.school_rule import PlanningSchoolRule
 from rules.school_rule import SchoolRule
 from rules.storage_rule import StorageRule
+from rules.system_rule import SystemRule
 from views.models.school import School
 
 class SchoolExecutor(TaskExecutor):
     def __init__(self):
         self.school_rule = get_injector(SchoolRule)
+        self.system_rule = get_injector(SystemRule)
         self._storage_rule: StorageRule = get_injector(StorageRule)
 
         super().__init__()
@@ -24,7 +26,8 @@ class SchoolExecutor(TaskExecutor):
 
             info = task.payload
             data= [ ]
-            data =await self._storage_rule.get_file_data(info.file_name, info.bucket,info.scene)
+            fileinfo = self.system_rule.get_download_url_by_id(info.file_name)
+            data =await self._storage_rule.get_file_data(fileinfo.file_name, fileinfo.bucket_name,info.scene)
 
             for item in data:
 

@@ -220,7 +220,7 @@ class StudentsRule(object):
 
 
     async def student_export(self, task: Task):
-        bucket =  'student'
+        bucket = 'student'
         print(bucket,'桶')
 
         export_params: NewStudentsQuery = (
@@ -244,7 +244,7 @@ class StudentsRule(object):
                 item.approval_status =  item.approval_status.value
 
 
-            logger.info('分页的结果',paging_result.items)
+            # logger.info('分页的结果',len(paging_result.items))
             excel_writer = ExcelWriter()
             excel_writer.add_data("Sheet1", paging_result.items)
             excel_writer.set_data(temp_file_path)
@@ -258,9 +258,12 @@ class StudentsRule(object):
         file_storage =  storage_manager.put_file_to_object(
             bucket, f"{random_file_name}.xlsx", temp_file_path
         )
+        # 这里会写入 task result 提示 缺乏 result file id  导致报错
         file_storage_resp = await storage_manager.add_file(
             self.file_storage_dao, file_storage
         )
+        print('file_storage_resp ',file_storage_resp)
+
         task_result = TaskResult()
         task_result.task_id = task.task_id
         task_result.result_file = file_storage_resp.file_name
@@ -269,8 +272,10 @@ class StudentsRule(object):
         task_result.last_updated = datetime.now()
         task_result.state = TaskState.succeeded
         task_result.result_extra = {"file_size": file_storage.file_size}
+        print('拼接数据task_result ',task_result)
 
-        await self.task_dao.add_task_result(task_result)
+        resadd = await self.task_dao.add_task_result(task_result)
+        print('task_result写入结果',resadd)
         return task_result
 
 
