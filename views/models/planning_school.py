@@ -208,7 +208,7 @@ class PlanningSchoolBaseInfoOptional(BaseModel):
     historical_evolution: str = Field(None, title="", description="历史沿革", examples=['xxxxxxxxxxxxxxxxxxxx'])
     status: str = Field(None, title="", description="", examples=[''])
     workflow_status: str|None = Field(None, title="", description="", examples=[''])
-    process_instance_id: int = Field(None, title="", description="", examples=[''])
+    process_instance_id: int = Field(None, title="", description="", examples=[0])
     location_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
     urban_ethnic_nature: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
@@ -280,7 +280,7 @@ class PlanningSchoolImport(PlanningSchoolOptional, PlanningSchoolCommunications)
 
 class PlanningSchoolTransactionAudit(BaseModel):
     node_id: int = Query(0, description="节点ID", example='2')
-    process_instance_id: int = Query(0, description="流程实例ID", example='2')
+    process_instance_id: int = Query(0, description="流程实例ID", example=0)
     transaction_audit_action: AuditAction = Query(..., description="审批的操作",
                                                  example='pass')
     remark: str = Query("", description="审批的备注", min_length=0, max_length=200,
