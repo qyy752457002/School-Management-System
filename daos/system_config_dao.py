@@ -32,7 +32,7 @@ class SystemConfigDAO(DAOBase):
 
 	async def get_system_config_by_name(self, id,system_config:SystemConfigModel=None):
 		session = await self.slave_db()
-		query= select(SystemConfig).where(SystemConfig.config_name == id)
+		query= select(SystemConfig).where(SystemConfig.config_name == id).where(SystemConfig.is_deleted == False)
 		if system_config.school_id:
 			query=query.where(SystemConfig.school_id == system_config.school_id)
 		result = await session.execute(query)
