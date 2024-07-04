@@ -1,3 +1,4 @@
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -24,6 +25,8 @@ class SystemConfigRule(object):
         if exists_system_config:
             raise Exception(f"系统{system_config.config_name}已存在")
         system_config_db = view_model_to_orm_model(system_config, SystemConfig, exclude=["id"])
+        system_config_db.id = 0
+        system_config_db.id  = SnowflakeIdGenerator(1, 1).generate_id()
 
         system_config_db = await self.system_config_dao.add_system_config(system_config_db)
         system_config = orm_model_to_view_model(system_config_db, SystemConfigModel, exclude=["created_at", 'updated_at'])

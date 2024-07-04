@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -12,7 +12,7 @@ class SystemConfig(BaseDBModel):
     __tablename__ = 'lfun_system_config'
     __table_args__ = {'comment': '系统配置表'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="ID",autoincrement=False)
     config_name: Mapped[str] = mapped_column(String(255),  nullable=True, comment="配置项",default='')
     config_code: Mapped[str] = mapped_column(String(255),  nullable=True, comment="配置项编码",default='')
     config_value: Mapped[str] = mapped_column(String(1024),  nullable=True, comment="配置项值",default='')
