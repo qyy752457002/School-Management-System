@@ -26,6 +26,7 @@ class SystemConfigDAO(DAOBase):
 		await session.commit()
 
 	async def get_system_config_by_id(self, id):
+		id=int(id)
 		session = await self.slave_db()
 		result = await session.execute(select(SystemConfig).where(SystemConfig.id == id))
 		return result.scalar_one_or_none()
