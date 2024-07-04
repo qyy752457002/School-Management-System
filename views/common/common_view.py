@@ -2,6 +2,8 @@ from datetime import date, datetime
 
 from fastapi.params import Query
 from mini_framework.design_patterns.singleton import singleton
+from sqlalchemy.orm import InstanceState
+
 from daos.enum_value_dao import EnumValueDAO
 from views.common.constant import Constant
 from views.models.extend_params import ExtendParams
@@ -126,6 +128,8 @@ def convert_dates_to_strings(stuinfoadddict):
             stuinfoadddict[key] = value.strftime("%Y-%m-%d %H:%M:%S")
         if isinstance(value,Query) or isinstance(value,tuple):
             stuinfoadddict[key] = None
+        # if isinstance(value,InstanceState):
+        #     stuinfoadddict[key] = value.value
     return stuinfoadddict
 def convert_snowid_to_strings(paging_result):
     """
@@ -149,3 +153,22 @@ def convert_snowid_in_model(item,extra_colums=None):
         for col in extra_colums:
             if hasattr(item, col) and isinstance(getattr(item, col), int):
                 setattr(item, col, str(getattr(item, col)))
+import json
+from sqlalchemy.orm import class_mapper
+
+def serialize(model):
+    """
+    将SQLAlchemy模型实例序列化为字典。
+    """
+    # 获取模型的映射器
+    columns = [c.key for c in class_mapper(model.__class__).columns]
+    return dict((c, getattr(model, c)) for c in columns)
+
+# 假设你有一个SQLAlchemy模型实例
+# model_instance = MyModel()
+
+# 将模型实例转换为字典
+# model_dict = serialize(model_instance)
+
+# 将字典转换为JSON
+# model_json = json.dumps(model_dict)

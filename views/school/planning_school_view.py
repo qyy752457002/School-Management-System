@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import datetime
 from typing import List
@@ -15,7 +16,8 @@ from business_exceptions.planning_school import PlanningSchoolValidateError, Pla
 from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
 from rules.system_rule import SystemRule
-from views.common.common_view import compare_modify_fields, get_extend_params, get_client_ip
+from views.common.common_view import compare_modify_fields, get_extend_params, get_client_ip, convert_dates_to_strings, \
+    serialize
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
@@ -170,8 +172,10 @@ class PlanningSchoolView(BaseView):
             change_detail="修改基本信息",
             action_target_id=str(planning_school_id),
             # change_data=str(res)[0:1000]
-        change_data= JsonUtils.dict_to_json_str(res)
-            ,  ))
+        change_data= json.dumps(convert_dates_to_strings( serialize(res))),
+        # change_data= JsonUtils.dict_to_json_str(res.__dict__),
+        ))
+
 
         return res
 
