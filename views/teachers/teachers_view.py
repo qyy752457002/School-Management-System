@@ -63,7 +63,7 @@ class TeachersView(BaseView):
         return paging_result
 
     # 获取教职工基本信息
-    async def get_teacherinfo(self, teacher_id: int = Query(..., title="教师名称", description="教师名称",
+    async def get_teacherinfo(self, teacher_id: int = Query(..., title="姓名", description="教师名称",
                                                             example=123)):
         res = await self.teacher_info_rule.get_teachers_info_by_teacher_id(teacher_id)
         return res
@@ -87,7 +87,7 @@ class TeachersView(BaseView):
 
     # 删除教职工基本信息
     async def delete_teacherinfo(self,
-                                 teacher_id: int = Query(..., title="教师名称", description="教师名称",
+                                 teacher_id: int = Query(..., title="姓名", description="教师名称",
                                                          example=123)):
         await self.teacher_info_rule.delete_teachers_info(teacher_id)
         return str(teacher_id)

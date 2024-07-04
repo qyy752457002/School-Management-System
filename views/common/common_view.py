@@ -127,3 +127,21 @@ def convert_dates_to_strings(stuinfoadddict):
         if isinstance(value,Query) or isinstance(value,tuple):
             stuinfoadddict[key] = None
     return stuinfoadddict
+def convert_snowid_to_strings(paging_result):
+    """
+    将传入的 items 中每个元素的 id 属性转换为字符串类型。
+
+    :param items: 包含可迭代对象的列表或元组，其中每个对象都有 'id' 属性。
+    """
+    items=paging_result.items
+    for item in items:
+        convert_snowid_in_model(item)
+def convert_snowid_in_model(item):
+    """
+    将传入的 items 中每个元素的 id 属性转换为字符串类型。
+
+    :param items: 包含可迭代对象的列表或元组，其中每个对象都有 'id' 属性。
+    """
+
+    if hasattr(item, 'id') and isinstance(item.id, int):
+        item.id = str(item.id)

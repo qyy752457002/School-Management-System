@@ -90,7 +90,7 @@ class TeacherWorkExperienceView(BaseView):
         self.teacher_work_experience_rule = get_injector(TeacherWorkExperienceRule)
 
     async def get_teacher_work_experience(self,
-                                          teacher_work_experience_id: int = Query(...,
+                                          teacher_work_experience_id: str = Query(...,
                                                                                   title="teacher_work_experienceID",
                                                                                   description="teacher_work_experienceID",
                                                                                   example=1234)
@@ -104,7 +104,7 @@ class TeacherWorkExperienceView(BaseView):
         return res
 
     async def delete_teacher_work_experience(self,
-                                             teacher_work_experience_id: int = Query(...,
+                                             teacher_work_experience_id: str = Query(...,
                                                                                      title="teacher_work_experienceID",
                                                                                      description="teacher_work_experienceID",
                                                                                      example=1234)
