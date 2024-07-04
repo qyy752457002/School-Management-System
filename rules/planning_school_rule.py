@@ -2,6 +2,7 @@ import json
 
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.utils.json import JsonUtils
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
@@ -59,6 +60,7 @@ class PlanningSchoolRule(object):
         planning_school_db.status =  PlanningSchoolStatus.DRAFT.value
         planning_school_db.created_uid = 0
         planning_school_db.updated_uid = 0
+        planning_school_db.id =SnowflakeIdGenerator(1, 1).generate_id()
         if planning_school.province and len( planning_school.province)>0:
             pass
         else:
