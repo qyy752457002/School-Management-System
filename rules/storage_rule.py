@@ -12,6 +12,7 @@ from views.models.institutions import Institutions, InstitutionsValid
 from views.models.planning_school import PlanningSchool, PlanningSchoolImport
 from views.models.school import School
 from views.models.students import NewStudents
+from views.models.system import ImportScene
 from views.models.teachers import TeachersCreatModel
 
 
@@ -62,29 +63,37 @@ class StorageRule(object):
         # source='c.xlsx'
         local_filepath = 'planning_school.xlsx'
 
-        # local_filepath='temp/'+ random_id+filename
-        # resp =  storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
+        # 下载文件到本地
+        local_filepath='temp/'+ random_id+filename
 
         # 根据不同场景 获取不同的模型
         sheetname = 'Sheet1'
 
         SampleModel = None
+        if sence == ImportScene.PLANNING_SCHOOL.value:
+            # 暂时调试
+            local_filepath = 'planning_school.xlsx'
 
-        if sence == 'institution':
-            SampleModel = Institutions
-            sheetname = 'Sheet1'
-        if sence == 'planning_school_import':
             SampleModel = PlanningSchoolImport
             sheetname = 'Sheet1'
-        if sence == 'school_import':
-            SampleModel = School
+        else:
+            resp =  storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
+
+            if sence == ImportScene.INSTITUTION.value:
+                SampleModel = Institutions
             sheetname = 'Sheet1'
-        if sence == 'new_student_import':
-            SampleModel = NewStudents
-            sheetname = 'Sheet1'
-        if sence == 'teacher_import':
-            SampleModel = TeachersCreatModel
-            sheetname = 'Sheet1'
+
+            if sence ==ImportScene.SCHOOL.value:
+                SampleModel = School
+                sheetname = 'Sheet1'
+            if sence ==ImportScene.NEWSTUDENT.value:
+                SampleModel = NewStudents
+                sheetname = 'Sheet1'
+            if sence == ImportScene.NEW_TEACHERS.value:
+                SampleModel = TeachersCreatModel
+                sheetname = 'Sheet1'
+            pass
+
 
 
         resdata = TestExcelReader(local_filepath, sheetname, SampleModel).read_valid()
@@ -103,7 +112,7 @@ class TestExcelReader:
         # 执行读取操作
         self.reader.set_data(self.filename)
         result = self.reader.execute()
-        print('文件读取器',result)
+        # print('文件读取器',result)
         # os.remove(self.filename)  # 清理创建的临时文件
         if self.sheetname in result.keys():
             result = result[self.sheetname]

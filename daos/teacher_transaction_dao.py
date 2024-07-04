@@ -48,7 +48,7 @@ class TeacherTransactionDAO(DAOBase):
         session = await self.master_db()
         update_contents = get_update_contents(teacher_transaction, *args)
         query = update(TeacherTransaction).where(
-            TeacherTransaction.transaction_id == teacher_transaction.transaction.id).values(
+            TeacherTransaction.transaction_id == teacher_transaction.transaction_id).values(
             **update_contents)
         return await self.update(session, query, teacher_transaction, update_contents, is_commit=is_commit)
 

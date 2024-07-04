@@ -1,8 +1,9 @@
 -i https://mirror.f123.pub/repository/pypi/simple
 
-lfun-mini-framework==0.0.73
+lfun-mini-framework==0.0.75
 
 id-validator==1.0.20
 setuptools~=68.2.0
 requests~=2.32.3
 kazoo~=2.10.0
+XlsxWriter==3.2.0

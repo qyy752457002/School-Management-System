@@ -225,11 +225,14 @@ class SystemRule(object):
                     file_storage=FileStorageModel(file_name=fileinfo.file_name,bucket_name=fileinfo.bucket_name,file_size=fileinfo.file_size, )
                     try:
                         url = storage_manager.query_get_object_url_with_token(file_storage)
+                        print('获取的结果',url)
                     except Exception as e:
-                        print(e)
+                        print('error',e)
                         if hasattr(e, 'user_message'):
 
                             id=  e.user_message
+
+                        return e
 
                         pass
                     pprint.pprint(id)

@@ -61,7 +61,7 @@ class NewStudentExportExecutor(TaskExecutor):
         self.student_rule = get_injector(StudentsRule)
         super().__init__()
 
-    async def execute(self, context: Context):
+    async def execute(self,  context: 'Context'):
         try:
             task = context.task
             logger.info("Test")
@@ -75,8 +75,11 @@ class NewStudentExportExecutor(TaskExecutor):
             else:
                 raise ValueError("Invalid payload type")
             task_result = await self.student_rule.student_export(task)
-            task.result_file = task_result.file_name
-            task.result_bucket = task_result.bucket_name
+            task.result_file = task_result.result_file
+            task.result_bucket = task_result.result_bucket
+            logger.info(f" res  {task_result}")
+            print('rule的结构', task_result)
+            print('task结果',task)
             logger.info(f" import to {task_result.result_file}")
         except Exception as e:
             logger.error(f" export failed")
