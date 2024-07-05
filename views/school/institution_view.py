@@ -229,13 +229,13 @@ class InstitutionView(BaseView):
             raise InstitutionStatusError()
 
         # 请求工作流
-        school = await self.institution_rule.get_school_by_id(institution_id,)
+        school = await self.institution_rule.get_school_by_id(institution_id, )
 
         res = await self.institution_rule.add_school_work_flow(school)
         process_instance_id=0
         if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
-            pl = InstitutionOptional(id=institution_id, process_instance_id=process_instance_id,workflow_status=AuditAction.NEEDAUDIT.value)
+            pl = InstitutionsWorkflowInfo(id=institution_id, process_instance_id=process_instance_id,workflow_status=AuditAction.NEEDAUDIT.value)
 
             res_u = await self.institution_rule.update_school_byargs(pl  )
 
