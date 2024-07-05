@@ -55,7 +55,8 @@ class InstitutionRule(SchoolRule):
 
         datadict['apply_user'] =  'tester'
         mapa = school_flow.__dict__
-        mapa['school_id'] = school_flow.id
+        mapa['institution_id'] = school_flow.id
+        mapa = map_keys(mapa, self.other_mapper)
         datadict['json_data'] =  json.dumps(mapa, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
         url=url+apiname
