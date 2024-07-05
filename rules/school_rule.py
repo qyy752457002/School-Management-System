@@ -42,14 +42,13 @@ class SchoolRule(object):
     p_school_dao: PlanningSchoolDAO
     enum_value_dao: EnumValueDAO
     system_rule: SystemRule
+    # 定义映射关系 orm到视图的映射关系
     other_mapper={"school_name": "institution_name",
                   "school_no": "institution_code",
                   "school_en_name": "institution_en_name",
                   "school_org_type": "institution_type",
-
+                  "create_school_date": "create_date",
                   }
-
-
 
     async def get_school_by_id(self, school_id,extra_model=None):
         # other_mapper={ }
@@ -57,11 +56,6 @@ class SchoolRule(object):
         if not school_db:
             return None
         if extra_model:
-            if (extra_model== InstitutionKeyInfo):
-                # 加了转换
-                pass
-
-
             school = orm_model_to_view_model(school_db, extra_model,other_mapper=self.other_mapper)
         else:
             school = orm_model_to_view_model(school_db, SchoolModel)
@@ -518,13 +512,15 @@ class SchoolRule(object):
 
         pass
 
-    async def add_school_keyinfo_change_work_flow(self, school_flow: SchoolKeyInfo,):
+    async def add_school_keyinfo_change_work_flow(self, school_flow: SchoolKeyInfo,process_code=None):
         # school_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
         data= school_flow
         datadict =  data.__dict__
         datadict['process_code'] = SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE
+        if process_code:
+            datadict['process_code'] = process_code
         datadict['teacher_id'] =  0
         datadict['applicant_name'] =  'tester'
         datadict['school_no'] = school_flow.school_no

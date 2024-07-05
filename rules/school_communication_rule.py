@@ -14,18 +14,28 @@ from views.models.school_communications import SchoolCommunications  as SchoolCo
 @dataclass_inject
 class SchoolCommunicationRule(object):
     school_communication_dao: SchoolCommunicationDAO
+    # 定义映射关系 orm到视图的映射关系
+    other_mapper={"school_web_url": "website_url",
 
-    async def get_school_communication_by_id(self, school_communication_id):
+                  }
+
+    async def get_school_communication_by_id(self, school_communication_id,extra_model=None):
         school_communication_db = await self.school_communication_dao.get_school_communication_by_id(school_communication_id)
         # 可选 , exclude=[""]
-        school = orm_model_to_view_model(school_communication_db, SchoolCommunicationModel)
+        if extra_model:
+            school = orm_model_to_view_model(school_communication_db, extra_model,other_mapper=self.other_mapper)
+        else:
+            school = orm_model_to_view_model(school_communication_db, SchoolCommunicationModel)
         return school
-    async def get_school_communication_by_school_id(self, school_communication_id):
+    async def get_school_communication_by_school_id(self, school_communication_id,extra_model=None):
         school_communication_db = await self.school_communication_dao.get_school_communication_by_school_id(school_communication_id)
         if not school_communication_db:
             return None
         # 可选 , exclude=[""]
-        school = orm_model_to_view_model(school_communication_db, SchoolCommunicationModel)
+        if extra_model:
+            school = orm_model_to_view_model(school_communication_db, extra_model,other_mapper=self.other_mapper)
+        else:
+            school = orm_model_to_view_model(school_communication_db, SchoolCommunicationModel)
         return school
 
     async def add_school_communication(self, school: SchoolCommunicationModel,convertmodel=True):
