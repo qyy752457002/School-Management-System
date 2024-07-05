@@ -29,7 +29,7 @@ class Grade(BaseDBModel):
 
     grade_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级名称/班级名称")
     sort_number: Mapped[int] = mapped_column(nullable=True,default=0, comment="排序序号")
-    class_number: Mapped[int] = mapped_column(nullable=True,default=0, comment="本年级班级数量")
+    class_number: Mapped[int] = mapped_column(nullable=False,default=0, comment="本年级班级数量")
 
     grade_alias: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级别名")
     description: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="简介")
