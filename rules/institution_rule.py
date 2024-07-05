@@ -31,7 +31,7 @@ from views.models.planning_school import PlanningSchool as PlanningSchoolModel, 
 @dataclass_inject
 class InstitutionRule(SchoolRule):
 
-    async def add_school_keyinfo_change_work_flow(self, school_flow: InstitutionKeyInfo,process_code=None):
+    async def add_school_keyinfo_change_work_flow(self, school_flow: InstitutionKeyInfo,process_code=None,institution_info=None):
         # school_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
@@ -56,6 +56,8 @@ class InstitutionRule(SchoolRule):
         datadict['apply_user'] =  'tester'
         mapa = school_flow.__dict__
         mapa['institution_id'] = school_flow.id
+        # 合并info
+        mapa.update(institution_info.__dict__)
         mapa = map_keys(mapa, self.other_mapper)
         datadict['json_data'] =  json.dumps(mapa, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
