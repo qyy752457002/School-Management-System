@@ -27,7 +27,7 @@ from pydantic import BaseModel, Field
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
 from views.models.institutions import Institutions, InstitutionTask, InstitutionOptional, InstitutionKeyInfo, \
-    InstitutionPageSearch, InstitutionsAdd, InstitutionBaseInfo, InstitutionsWorkflowInfo
+    InstitutionPageSearch, InstitutionsAdd, InstitutionBaseInfo, InstitutionsWorkflowInfo, InstitutionCommunications
 from rules.institution_rule import InstitutionRule
 from mini_framework.web.request_context import request_context_manager
 
@@ -161,7 +161,11 @@ class InstitutionView(BaseView):
         return res
 
     # 修改 变更 基本信息
-    async def patch_baseinfo(self, institution_baseinfo: InstitutionBaseInfo):
+    async def patch_baseinfo(self,
+                             institution_baseinfo: InstitutionBaseInfo,
+                             institution_cominfo: InstitutionCommunications,
+
+                             ):
         # 学校转ins
         origin = await self.institution_rule.get_school_by_id(institution_baseinfo.id,extra_model=InstitutionBaseInfo)
 
@@ -174,6 +178,9 @@ class InstitutionView(BaseView):
 
 
         res = await self.institution_rule.update_school_byargs(school_db, )
+        institution_cominfo.school_id = institution_baseinfo.id
+
+        res_com = await self.school_communication_rule.update_school_communication_byargs(institution_cominfo, )
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(

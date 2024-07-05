@@ -42,14 +42,13 @@ class SchoolRule(object):
     p_school_dao: PlanningSchoolDAO
     enum_value_dao: EnumValueDAO
     system_rule: SystemRule
+    # 定义映射关系 orm到视图的映射关系
     other_mapper={"school_name": "institution_name",
                   "school_no": "institution_code",
                   "school_en_name": "institution_en_name",
                   "school_org_type": "institution_type",
-
+                  "create_school_date": "create_date",
                   }
-
-
 
     async def get_school_by_id(self, school_id,extra_model=None):
         # other_mapper={ }
