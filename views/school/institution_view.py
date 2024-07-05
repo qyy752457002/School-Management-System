@@ -110,11 +110,14 @@ class InstitutionView(BaseView):
 
         res2 = compare_modify_fields(school, origin)
         # print(  res2)
+        schoolorigin = await self.institution_rule.get_school_by_id(school.id,InstitutionBaseInfo)
+        comm = await self.school_communication_rule.get_school_communication_by_school_id(school.id,InstitutionCommunications )
+        schoolorigin.leg_repr_name = comm.leg_repr_name
 
         # res = await self.planning_institution_rule.update_planning_institution_byargs(planning_school)
         #  工作流
         # planning_school.id = planning_institution_id
-        res = await self.institution_rule.add_school_keyinfo_change_work_flow(school,INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE)
+        res = await self.institution_rule.add_school_keyinfo_change_work_flow(school,INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE, schoolorigin)
         process_instance_id=0
         if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
@@ -229,7 +232,9 @@ class InstitutionView(BaseView):
             raise InstitutionStatusError()
 
         # 请求工作流
-        school = await self.institution_rule.get_school_by_id(institution_id, )
+        school = await self.institution_rule.get_school_by_id(institution_id,InstitutionBaseInfo )
+        comm = await self.school_communication_rule.get_school_communication_by_school_id(institution_id,InstitutionCommunications )
+        school.leg_repr_name = comm.leg_repr_name
 
         res = await self.institution_rule.add_school_work_flow(school)
         process_instance_id=0
@@ -270,8 +275,9 @@ class InstitutionView(BaseView):
             raise InstitutionStatusError()
         # 请求工作流
 
-        school = await self.institution_rule.get_school_by_id(institution_id,)
-
+        school = await self.institution_rule.get_school_by_id(institution_id,InstitutionBaseInfo)
+        comm = await self.school_communication_rule.get_school_communication_by_school_id(institution_id,InstitutionCommunications )
+        school.leg_repr_name = comm.leg_repr_name
         res = await self.institution_rule.add_school_close_work_flow(school, action_reason,related_license_upload)
         process_instance_id=0
 

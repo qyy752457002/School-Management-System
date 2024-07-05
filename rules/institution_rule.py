@@ -20,7 +20,7 @@ from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, map_keys
 from views.models.institutions import Institutions as InstitutionModel, Institutions, InstitutionKeyInfo, \
-    InstitutionOptional
+    InstitutionOptional, InstitutionBaseInfo
 from views.models.planning_school import PlanningSchoolTransactionAudit, PlanningSchoolStatus
 from views.models.system import SCHOOL_OPEN_WORKFLOW_CODE, INSTITUTION_OPEN_WORKFLOW_CODE, SCHOOL_CLOSE_WORKFLOW_CODE, \
     INSTITUTION_CLOSE_WORKFLOW_CODE, SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE
@@ -31,7 +31,7 @@ from views.models.planning_school import PlanningSchool as PlanningSchoolModel, 
 @dataclass_inject
 class InstitutionRule(SchoolRule):
 
-    async def add_school_keyinfo_change_work_flow(self, school_flow: InstitutionKeyInfo,process_code=None):
+    async def add_school_keyinfo_change_work_flow(self, school_flow: InstitutionKeyInfo,process_code=None,institution_info=None):
         # school_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
@@ -55,7 +55,10 @@ class InstitutionRule(SchoolRule):
 
         datadict['apply_user'] =  'tester'
         mapa = school_flow.__dict__
-        mapa['school_id'] = school_flow.id
+        mapa['institution_id'] = school_flow.id
+        # 合并info
+        mapa.update(institution_info.__dict__)
+        mapa = map_keys(mapa, self.other_mapper)
         datadict['json_data'] =  json.dumps(mapa, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
         url=url+apiname
@@ -76,7 +79,7 @@ class InstitutionRule(SchoolRule):
 
 
     # 向工作流中心发送申请
-    async def add_school_work_flow(self, school_flow: SchoolModel,):
+    async def add_school_work_flow(self, school_flow: InstitutionBaseInfo,):
         # school_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
@@ -85,16 +88,17 @@ class InstitutionRule(SchoolRule):
         datadict['process_code'] = INSTITUTION_OPEN_WORKFLOW_CODE
         datadict['teacher_id'] =  0
         datadict['applicant_name'] =  'tester'
-        datadict['school_code'] = school_flow.school_code
+        # datadict['school_code'] = school_flow.school_code
         datadict['school_name'] = school_flow.school_name
-        datadict['founder_type_lv3'] =   school_flow.founder_type_lv3
-        datadict['block'] =   school_flow.block
-        datadict['borough'] =   school_flow.borough
-        datadict['school_level'] =   school_flow.school_level
+        # datadict['founder_type_lv3'] =   school_flow.founder_type_lv3
+        # datadict['block'] =   school_flow.block
+        # datadict['borough'] =   school_flow.borough
+        # datadict['school_level'] =   school_flow.school_level
         datadict['school_no'] =   school_flow.school_no
         datadict['apply_user'] =  'tester'
         dicta = school_flow.__dict__
-        dicta['school_id'] = school_flow.id
+        dicta['institution_id'] = school_flow.id
+        dicta = map_keys(dicta, self.other_mapper)
 
         datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
@@ -115,26 +119,27 @@ class InstitutionRule(SchoolRule):
         return response
 
 
-    async def add_school_close_work_flow(self, school_flow: SchoolModel,action_reason,related_license_upload):
+    async def add_school_close_work_flow(self, school_flow: InstitutionBaseInfo,action_reason,related_license_upload):
         # school_flow.id=0
         data= school_flow
         datadict =  data.__dict__
         datadict['process_code'] = INSTITUTION_CLOSE_WORKFLOW_CODE
         datadict['teacher_id'] =  0
         datadict['applicant_name'] =  'tester'
-        datadict['school_code'] = school_flow.school_code
+        # datadict['school_code'] = school_flow.school_code
         datadict['school_name'] = school_flow.school_name
-        datadict['founder_type_lv3'] =   school_flow.founder_type_lv3
-        datadict['block'] =   school_flow.block
-        datadict['borough'] =   school_flow.borough
-        datadict['school_level'] =   school_flow.school_level
+        # datadict['founder_type_lv3'] =   school_flow.founder_type_lv3
+        # datadict['block'] =   school_flow.block
+        # datadict['borough'] =   school_flow.borough
+        # datadict['school_level'] =   school_flow.school_level
         datadict['school_no'] =   school_flow.school_no
 
         datadict['apply_user'] =  'tester'
         dicta = school_flow.__dict__
         dicta['action_reason']= action_reason
         dicta['related_license_upload']= related_license_upload
-        dicta['school_id'] = school_flow.id
+        dicta['institution_id'] = school_flow.id
+        dicta = map_keys(dicta, self.other_mapper)
 
         datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
