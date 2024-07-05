@@ -230,6 +230,8 @@ class InstitutionView(BaseView):
 
         # 请求工作流
         school = await self.institution_rule.get_school_by_id(institution_id,InstitutionBaseInfo )
+        comm = await self.school_communication_rule.get_school_communication_by_school_id(institution_id,InstitutionCommunications )
+        school.leg_repr_name = comm.leg_repr_name
 
         res = await self.institution_rule.add_school_work_flow(school)
         process_instance_id=0

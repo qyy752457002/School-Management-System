@@ -96,6 +96,7 @@ class InstitutionRule(SchoolRule):
         datadict['apply_user'] =  'tester'
         dicta = school_flow.__dict__
         dicta['institution_id'] = school_flow.id
+        dicta = map_keys(dicta, self.other_mapper)
 
         datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
@@ -136,6 +137,7 @@ class InstitutionRule(SchoolRule):
         dicta['action_reason']= action_reason
         dicta['related_license_upload']= related_license_upload
         dicta['institution_id'] = school_flow.id
+        dicta = map_keys(dicta, self.other_mapper)
 
         datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
