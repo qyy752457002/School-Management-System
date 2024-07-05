@@ -153,7 +153,7 @@ class InstitutionKeyInfo(BaseModel):
     social_credit_code: str|None = Field( '',   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656']),
 
     # school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633')
-    planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
+    planning_school_id: int|str|None = Field(None, title="", description="规划校id",examples=['1'])
     workflow_status: str |None = Field("",   title='',  description=" ",examples=[''])
     process_instance_id:int|None= Field(0, title="", description="", example='1')
 
@@ -163,7 +163,7 @@ class InstitutionsWorkflowInfo(BaseModel):
     workflow_status: str |None = Field("",   title='',  description=" ",examples=[''])
     process_instance_id:int|None= Field(0, title="", description="", example='1')
 
-    status: str = Field(PlanningSchoolStatus.DRAFT,  alias='',   title='状态',  description=" 状态",examples=[''])
+    status: str = Field( '',  alias='',   title='状态',  description=" 状态",examples=[''])
     planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
 
 

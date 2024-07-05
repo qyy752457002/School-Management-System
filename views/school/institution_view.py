@@ -229,13 +229,13 @@ class InstitutionView(BaseView):
             raise InstitutionStatusError()
 
         # 请求工作流
-        school = await self.institution_rule.get_school_by_id(institution_id,)
+        school = await self.institution_rule.get_school_by_id(institution_id, )
 
         res = await self.institution_rule.add_school_work_flow(school)
         process_instance_id=0
         if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
-            pl = InstitutionOptional(id=institution_id, process_instance_id=process_instance_id,workflow_status=AuditAction.NEEDAUDIT.value)
+            pl = InstitutionsWorkflowInfo(id=institution_id, process_instance_id=process_instance_id,workflow_status=AuditAction.NEEDAUDIT.value)
 
             res_u = await self.institution_rule.update_school_byargs(pl  )
 
@@ -277,7 +277,7 @@ class InstitutionView(BaseView):
 
         if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
-            pl = InstitutionOptional(id=institution_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
+            pl = InstitutionsWorkflowInfo(id=institution_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
             resu = await self.institution_rule.update_school_byargs(pl  )
 
@@ -303,8 +303,10 @@ class InstitutionView(BaseView):
     # 学校搜索 模糊搜索 TODO 增加 区域ID  学校ID 支持多个传入
     async def get_search(self,
                          request: Request  ,
+                         institution_category: InstitutionType = Query(None, title='单位分类',examples=['institution/administration']),
 
-                         school_name: str = Query("", title="学校名称", description="1-20字符", ),
+
+                         school_name: str = Query("", title="名称", description="1-20字符", ),
                          school_id: str = Query("", title="多个逗号分割", description="", ),
                          block: str = Query("", title="地域管辖区", description="", ),
                          borough: str = Query("", title="行政管辖区", description="", ),
@@ -313,8 +315,10 @@ class InstitutionView(BaseView):
 
                          ):
         items = []
+        if not institution_category:
+            institution_category = [InstitutionType.INSTITUTION,InstitutionType.ADMINISTRATION]
         # 学校 区 只能看自己的范围内的数据
-        paging_result = await self.institution_rule.query_schools(school_name,await get_extend_params(request),school_id,block,borough,)
+        paging_result = await self.institution_rule.query_schools(school_name,await get_extend_params(request),school_id,block,borough,institution_category=institution_category,extra_model=InstitutionBaseInfo)
         return paging_result
 
     # 学校开设审核
