@@ -175,6 +175,8 @@ class PlanningSchoolBaseInfo(BaseModel):
     location_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
     urban_ethnic_nature: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
+    admin: str |None = Field("",   title='管理员',  description=" ",examples=[''])
+    admin_phone: str |None = Field("",   title='管理员手机',  description=" ",examples=[''])
 
 # 规划校的 基本信息模型   视图的额模型是按需提供的
 class PlanningSchoolBaseInfoOptional(BaseModel):
@@ -212,6 +214,8 @@ class PlanningSchoolBaseInfoOptional(BaseModel):
     location_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
     urban_ethnic_nature: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
+    admin: str |None = Field("",   title='管理员',  description=" ",examples=[''])
+    admin_phone: str |None = Field("",   title='管理员手机',  description=" ",examples=[''])
 
 class PlanningSchoolKeyAddInfo(BaseModel):
     id: int|str = Query(None, title="", description="规划校id", example='1')
