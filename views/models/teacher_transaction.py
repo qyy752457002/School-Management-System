@@ -125,16 +125,16 @@ class TeacherTransactionModel(BaseModel):
     transaction_time: Optional[datetime] | None = Field(datetime.now(), title="操作时间", description="操作时间")
     teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
 
-    @model_validator(mode='before')
-    @classmethod
-    def check_id_before(self, data):
-        if isinstance(data["teacher_id"], str):
-            data["teacher_id"] = int(data["teacher_id"])
-        elif isinstance(data["teacher_id"], int):
-            data["teacher_id"] = str(data["teacher_id"])
-        else:
-            pass
-        return data
+    # @model_validator(mode='before')
+    # @classmethod
+    # def check_id_before(self, data):
+    #     if isinstance(data["teacher_id"], str):
+    #         data["teacher_id"] = int(data["teacher_id"])
+    #     elif isinstance(data["teacher_id"], int):
+    #         data["teacher_id"] = str(data["teacher_id"])
+    #     else:
+    #         pass
+    #     return data
 
     @model_validator(mode='after')
     def check_transaction_type(self):
