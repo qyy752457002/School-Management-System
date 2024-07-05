@@ -25,6 +25,15 @@ class SchoolCommunications(BaseModel):
     detailed_address: str = Field(None, title="", description="园所详细地址",examples=['FSDFSD'])
     related_license_upload: str = Field(None, title="", description="相关证照上传",examples=[''])
     school_web_url: str = Field(None, title="", description="校园网域名",examples=['WW.SS.CC'])
+    def check_id_before(self, data: dict):
+        _change_list= ["school_id", 'id']
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
 
 
 

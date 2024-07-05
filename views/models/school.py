@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
 
@@ -55,6 +55,16 @@ class School(BaseModel):
             }
         }
 
+    def check_id_before(self, data: dict):
+        _change_list= ["id", "planning_school_id"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+
 # 学校的 基本信息模型   视图的额模型是按需提供的
 class SchoolBaseInfoOptional(BaseModel):
     id:int= Query(0, title="", description="学校id", example='1')
@@ -84,6 +94,15 @@ class SchoolBaseInfoOptional(BaseModel):
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
     admin: str |None = Field("",   title='管理员',  description=" ",examples=[''])
     admin_phone: str |None = Field("",   title='管理员手机',  description=" ",examples=[''])
+    def check_id_before(self, data: dict):
+        _change_list= ["id", ]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
 
 
 # 学校的 基本信息模型   视图的额模型是按需提供的
@@ -115,6 +134,15 @@ class SchoolBaseInfo(BaseModel):
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
     admin: str |None = Field("",   title='管理员',  description=" ",examples=[''])
     admin_phone: str |None = Field("",   title='管理员手机',  description=" ",examples=[''])
+    def check_id_before(self, data: dict):
+        _change_list= ["id", ]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
 
 
 class SchoolKeyInfo(BaseModel):
@@ -131,6 +159,15 @@ class SchoolKeyInfo(BaseModel):
     school_operation_type: str|None = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
     school_level: str|None = Query(None, title="", description=" 学校星级",examples=['5'])
+    def check_id_before(self, data: dict):
+        _change_list= ["id", 'planning_school_id']
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
 
 class SchoolKeyAddInfo(BaseModel):
     id:int= Query(None, title="", description="学校id", example='1')
@@ -145,6 +182,15 @@ class SchoolKeyAddInfo(BaseModel):
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
     school_level: str|None = Query(None, title="", description=" 学校星级",examples=['5'])
     school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'planning_school_id' ]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
 
 class SchoolTask(BaseModel):
     file_name: str = Field('', title="",description="",examples=[' '])
@@ -175,4 +221,13 @@ class SchoolPageSearch(BaseModel):
     province: str |None= Query("", title=" ", description="", ),
     city: str|None = Query("", title=" ", description="", ),
     planning_school_id: int|None = Query(0, title=" ", description="", ),
+    def check_id_before(self, data: dict):
+        _change_list= ["planning_school_id", ]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
 
