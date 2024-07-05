@@ -21,6 +21,7 @@ from views.models.operation_record import OperationRecord, OperationTarget, Chan
 from rules.operation_record import OperationRecordRule
 from daos.operation_record_dao import OperationRecordDAO
 from views.common.common_view import compare_modify_fields
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 from datetime import datetime
 
