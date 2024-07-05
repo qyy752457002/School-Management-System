@@ -110,11 +110,19 @@ class SchoolDAO(DAOBase):
     async def query_school_with_page(self, page_request: PageRequest, school_name,school_no,school_code,
                                               block,school_level,borough,status,founder_type,
                                               founder_type_lv2,
-                                              founder_type_lv3 ,planning_school_id,province,city) -> Paging:
+                                              founder_type_lv3 ,planning_school_id,province,city,institution_category,social_credit_code,school_org_type) -> Paging:
         query = select(School).join(PlanningSchool, PlanningSchool.id == School.planning_school_id, isouter=True).order_by(desc(School.id))
         query = query.where(School.is_deleted == False)
 
-
+        if school_org_type:
+            query = query.where(School.school_org_type == school_org_type)
+        if social_credit_code:
+            query = query.where(School.social_credit_code == social_credit_code)
+        if institution_category:
+            if isinstance(institution_category, list):
+                query = query.where(School.institution_category.in_(institution_category))
+            else:
+                query = query.where(School.institution_category == institution_category)
         if school_name:
             query = query.where(School.school_name == school_name)
         if planning_school_id:
@@ -138,7 +146,7 @@ class SchoolDAO(DAOBase):
         if city:
             query = query.where(PlanningSchool.city == city)
 
-        if len(founder_type_lv3)>0:
+        if founder_type_lv3 and  len(founder_type_lv3)>0:
             query = query.where(School.founder_type_lv3.in_(founder_type_lv3))
 
 

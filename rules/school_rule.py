@@ -24,6 +24,7 @@ from rules.enum_value_rule import EnumValueRule
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config
 from views.models.extend_params import ExtendParams
+from views.models.institutions import InstitutionKeyInfo
 # from rules.planning_school_rule import PlanningSchoolRule
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolTransactionAudit, PlanningSchoolKeyInfo
 from views.models.school import School as SchoolModel, SchoolKeyAddInfo, SchoolKeyInfo
@@ -41,15 +42,27 @@ class SchoolRule(object):
     p_school_dao: PlanningSchoolDAO
     enum_value_dao: EnumValueDAO
     system_rule: SystemRule
+    other_mapper={"school_name": "institution_name",
+                  "school_no": "institution_code",
+                  "school_en_name": "institution_en_name",
+                  "school_org_type": "institution_type",
+
+                  }
 
 
 
     async def get_school_by_id(self, school_id,extra_model=None):
+        # other_mapper={ }
         school_db = await self.school_dao.get_school_by_id(school_id)
         if not school_db:
             return None
         if extra_model:
-            school = orm_model_to_view_model(school_db, extra_model)
+            if (extra_model== InstitutionKeyInfo):
+                # 加了转换
+                pass
+
+
+            school = orm_model_to_view_model(school_db, extra_model,other_mapper=self.other_mapper)
         else:
             school = orm_model_to_view_model(school_db, SchoolModel)
         return school
@@ -72,7 +85,7 @@ class SchoolRule(object):
         school_db.status =  PlanningSchoolStatus.DRAFT.value
         school_db.created_uid = 0
         school_db.updated_uid = 0
-        if school.planning_school_id>0 :
+        if school.planning_school_id and  school.planning_school_id>0 :
             # rule互相应用有问题  用dao
             p_exists_school_model = await self.p_school_dao.get_planning_school_by_id(  school.planning_school_id)
             if not p_exists_school_model:
@@ -143,7 +156,7 @@ class SchoolRule(object):
         school_db = await self.school_dao.add_school(school_db)
         school = orm_model_to_view_model(school_db, SchoolKeyAddInfo, exclude=["created_at",'updated_at'])
         return school
-
+    # 废弃 未使用
     async def update_school(self, school,ctype=1):
         exists_school = await self.school_dao.get_school_by_id(school.id)
         if not exists_school:
@@ -188,7 +201,7 @@ class SchoolRule(object):
     async def update_school_byargs(self, school,):
         exists_school = await self.school_dao.get_school_by_id(school.id)
         if not exists_school:
-            raise Exception(f"学校{school.id}不存在")
+            raise Exception(f"单位{school.id}不存在")
         if exists_school.status== PlanningSchoolStatus.DRAFT.value:
             exists_school.status= PlanningSchoolStatus.OPENING.value
             school.status= PlanningSchoolStatus.OPENING.value
@@ -212,7 +225,7 @@ class SchoolRule(object):
     async def delete_school(self, school_id):
         exists_school = await self.school_dao.get_school_by_id(school_id)
         if not exists_school:
-            raise Exception(f"学校{school_id}不存在")
+            raise Exception(f"单位{school_id}不存在")
         school_db = await self.school_dao.delete_school(exists_school)
         school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""],)
         return school
@@ -220,7 +233,7 @@ class SchoolRule(object):
     async def softdelete_school(self, school_id):
         exists_school = await self.school_dao.get_school_by_id(school_id)
         if not exists_school:
-            raise Exception(f"学校{school_id}不存在")
+            raise Exception(f"单位{school_id}不存在")
         school_db = await self.school_dao.softdelete_school(exists_school)
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""],)
         return school_db
@@ -231,10 +244,10 @@ class SchoolRule(object):
     async def get_school_count(self):
         return await self.school_dao.get_school_count()
 
-    async def query_school_with_page(self, page_request: PageRequest,   school_name,school_no,school_code,
-                                     block,school_level,borough,status,founder_type,
-                                     founder_type_lv2,
-                                     founder_type_lv3,planning_school_id,province,city ):
+    async def query_school_with_page(self, page_request: PageRequest,   school_name=None,school_no=None,school_code=None,
+                                     block=None,school_level=None,borough=None,status=None,founder_type=None,
+                                     founder_type_lv2=None,
+                                     founder_type_lv3=None,planning_school_id=None,province=None,city=None ,institution_category=None,social_credit_code=None,school_org_type=None,extra_model =None):
         #  根据举办者类型  1及 -3级  处理为条件   1  2ji全部转换为 3级  最后in 3级查询
         enum_value_rule = get_injector(EnumValueRule)
         if founder_type:
@@ -246,7 +259,7 @@ class SchoolRule(object):
 
 
             # query = query.where(PlanningSchool.founder_type_lv2 == founder_type_lv2)
-        if len(founder_type_lv2)>0:
+        if founder_type_lv2 and  len(founder_type_lv2)>0:
             founder_type_lv3_res= await enum_value_rule.get_next_level_enum_values('founder_type_lv2'  ,founder_type_lv2)
             for item in founder_type_lv3_res:
                 founder_type_lv3.append(item.enum_value)
@@ -254,17 +267,22 @@ class SchoolRule(object):
         paging = await self.school_dao.query_school_with_page(page_request,  school_name,school_no,school_code,
                                                                 block,school_level,borough,status,founder_type,
                                                                 founder_type_lv2,
-                                                                founder_type_lv3,planning_school_id,province,city
+                                                                founder_type_lv3,planning_school_id,province,city,institution_category,social_credit_code,school_org_type
                                                                                 )
         # 字段映射的示例写法   , {"hash_password": "password"}
-        paging_result = PaginatedResponse.from_paging(paging, SchoolModel)
+        if extra_model:
+            # paging.data = [extra_model(**item) for item in paging.data]
+            paging_result = PaginatedResponse.from_paging(paging, extra_model,other_mapper=self.other_mapper)
+
+        else:
+            paging_result = PaginatedResponse.from_paging(paging, SchoolModel)
         return paging_result
 
 
     async def update_school_status(self, school_id, status,action=None):
         exists_school = await self.school_dao.get_school_by_id(school_id)
         if not exists_school:
-            raise Exception(f"学校{school_id}不存在")
+            raise Exception(f"单位{school_id}不存在")
         # 判断运来的状态 进行后续的更新
         if status== PlanningSchoolStatus.NORMAL.value and exists_school.status== PlanningSchoolStatus.OPENING.value:
             # 开办
@@ -274,7 +292,7 @@ class SchoolRule(object):
             exists_school.status= PlanningSchoolStatus.CLOSED.value
         else:
             # exists_school.status= PlanningSchoolStatus.OPENING.value
-            raise Exception(f"学校当前状态不支持您的操作")
+            raise Exception(f"单位当前状态不支持您的操作")
 
         need_update_list = []
         need_update_list.append('status')
@@ -288,7 +306,7 @@ class SchoolRule(object):
         return school_db
 
 
-
+    # 搜索使用
     async def query_schools(self,school_name,extend_params:ExtendParams|None,school_id=None,block=None,borough=None):
         # block,borough
         session = await db_connection_manager.get_async_session("default", True)
