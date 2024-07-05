@@ -46,6 +46,7 @@ class Classes(BaseModel):
     ethnic_language: str = Field(None, description="少数民族语言", examples=['fsdfdsfsdxxx'])
     is_att_class: str|bool = Field(None, description="是否附设班", examples=[True])
     att_class_type: str = Field(None, description="附设班类型", examples=['附设班类型'])
+    class_standard_name: str|None = Field(None, description="", examples=[''])
     monitor_id: int|None = Field(None, description="班长的学生id", examples=['1'])
 
 

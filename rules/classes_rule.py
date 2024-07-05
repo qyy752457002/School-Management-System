@@ -4,6 +4,9 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.class_dao import ClassesDAO
+from daos.grade_dao import GradeDAO
+from daos.school_dao import SchoolDAO
+from daos.student_session_dao import StudentSessionDao
 from models.classes import Classes
 from rules.enum_value_rule import EnumValueRule
 from rules.teachers_rule import TeachersRule
@@ -15,6 +18,9 @@ from views.models.system import DISTRICT_ENUM_KEY, GRADE_ENUM_KEY, MAJOR_LV3_ENU
 @dataclass_inject
 class ClassesRule(object):
     classes_dao: ClassesDAO
+    school_dao: SchoolDAO
+    session_dao: StudentSessionDao
+    grade_dao: GradeDAO
 
     async def get_classes_by_id(self, classes_id):
         classes_db = await self.classes_dao.get_classes_by_id(classes_id)
@@ -49,6 +55,20 @@ class ClassesRule(object):
         classes_db = view_model_to_orm_model(classes, Classes, exclude=["id"],other_mapper={
 
         })
+        # 学校类别  届别 年级 班号
+        class_std_name_mix = []
+        if classes.school_id:
+            school_db = await self.school_dao.get_school_by_id(classes.school_id)
+            class_std_name_mix.append(school_db.school_name)
+            pass
+        if classes.session_id:
+            session_db = await self.session_dao.get_student_session_by_id(classes.session_id)
+            pass
+        if classes.grade_id:
+            grade_db = await self.grade_dao.get_grade_by_id(classes.grade_id)
+            pass
+
+
 
         classes_db = await self.classes_dao.add_classes(classes_db)
         classes = orm_model_to_view_model(classes_db, ClassesModel, exclude=["created_at", 'updated_at'])
