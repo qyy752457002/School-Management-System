@@ -15,6 +15,7 @@ class School(BaseDBModel):
 
     id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True,)
     planning_school_id: Mapped[int] = mapped_column(BigInteger, nullable=True  , comment="规划校id",default=0)
+    institution_category: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 单位分类")
 
     school_name: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校名称")
     school_no: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校编号")
@@ -22,9 +23,7 @@ class School(BaseDBModel):
     school_operation_license_number: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="办学许可证号")
     block: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="地域管辖区")
     borough: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="行政管辖区")
-    # school_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校类型")
     school_edu_level: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="教育层次")
-    # school_nature: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校性质")
     school_category: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校（机构）类别")
     school_operation_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="办学类型")
     school_org_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校办别")
@@ -57,6 +56,8 @@ class School(BaseDBModel):
     junior_middle_school_system: Mapped[str] = mapped_column(String(10), nullable=True,default='', comment="初中学制")
     junior_middle_school_entry_age: Mapped[str] = mapped_column(String(10), nullable=True,default='', comment="初中入学年龄")
     senior_middle_school_system: Mapped[str] = mapped_column(String(10), nullable=True,default='', comment="高中学制")
+    membership_no: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 隶属单位号")
+
     process_instance_id: Mapped[int] = mapped_column(nullable=True,default=0, comment="流程ID")
     workflow_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="工作流审核状态", default='')
 

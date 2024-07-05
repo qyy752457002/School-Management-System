@@ -9,15 +9,7 @@ from mini_framework.databases.entities import BaseDBModel
 class Institution(BaseDBModel):
     """
     行政事业单位表
-    institution_category: str = Field(...,   description=" 单位分类",examples=['事业单位'])
-    institution_type: str = Field(...,   description="单位类型 ",examples=[''])
-    leg_repr_certificatenumber: str = Field(...,   description=" 法人证书号",examples=['DF1256565656'])
-    is_entity: str = Field(...,   description=" 是否实体",examples=['是'])
-    membership_no: str = Field(...,   description=" 隶属单位号",examples=['DFF1565165656'])
-    membership_category: str = Field(...,   description=" 隶属单位类型",examples=['行政'])
-
-
-    """
+        """
     __tablename__ = 'lfun_institutions'
     __table_args__ = {'comment': '行政事业单位表'}
 
