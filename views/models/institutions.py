@@ -167,7 +167,7 @@ class InstitutionsWorkflowInfo(BaseModel):
     planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
 
 
-
+# 基础信息和分页的结果再用
 class InstitutionBaseInfo(BaseModel):
     #  todo 法1 新增时别名方式   获取模型 时 要映射为ins开头的字段  todo 法2  视图映射转换方式 需要支持互转  可改  外部键不变   且 m2v时需要映射
     id:int= Query( 0, title="", description="学校id", example='1')

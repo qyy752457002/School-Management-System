@@ -229,7 +229,7 @@ class InstitutionView(BaseView):
             raise InstitutionStatusError()
 
         # 请求工作流
-        school = await self.institution_rule.get_school_by_id(institution_id, )
+        school = await self.institution_rule.get_school_by_id(institution_id,InstitutionBaseInfo )
 
         res = await self.institution_rule.add_school_work_flow(school)
         process_instance_id=0
@@ -270,7 +270,7 @@ class InstitutionView(BaseView):
             raise InstitutionStatusError()
         # 请求工作流
 
-        school = await self.institution_rule.get_school_by_id(institution_id,)
+        school = await self.institution_rule.get_school_by_id(institution_id,InstitutionBaseInfo)
 
         res = await self.institution_rule.add_school_close_work_flow(school, action_reason,related_license_upload)
         process_instance_id=0
