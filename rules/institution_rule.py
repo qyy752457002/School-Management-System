@@ -24,6 +24,8 @@ from views.models.institutions import Institutions as InstitutionModel, Institut
 from views.models.planning_school import PlanningSchoolTransactionAudit, PlanningSchoolStatus
 from views.models.system import SCHOOL_OPEN_WORKFLOW_CODE, INSTITUTION_OPEN_WORKFLOW_CODE, SCHOOL_CLOSE_WORKFLOW_CODE, \
     INSTITUTION_CLOSE_WORKFLOW_CODE, SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE
+from views.models.school import School as SchoolModel, SchoolKeyAddInfo, SchoolKeyInfo
+from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus
 
 
 @dataclass_inject
@@ -73,4 +75,74 @@ class InstitutionRule(SchoolRule):
         return response
 
 
-    pass
+    # 向工作流中心发送申请
+    async def add_school_work_flow(self, school_flow: SchoolModel,):
+        # school_flow.id=0
+        httpreq= HTTPRequest()
+        url= workflow_service_config.workflow_config.get("url")
+        data= school_flow
+        datadict =  data.__dict__
+        datadict['process_code'] = INSTITUTION_OPEN_WORKFLOW_CODE
+        datadict['teacher_id'] =  0
+        datadict['applicant_name'] =  'tester'
+        datadict['school_code'] = school_flow.school_code
+        datadict['school_name'] = school_flow.school_name
+        datadict['founder_type_lv3'] =   school_flow.founder_type_lv3
+        datadict['block'] =   school_flow.block
+        datadict['borough'] =   school_flow.borough
+        datadict['school_level'] =   school_flow.school_level
+        datadict['school_no'] =   school_flow.school_no
+        datadict['apply_user'] =  'tester'
+        dicta = school_flow.__dict__
+        dicta['school_id'] = school_flow.id
+
+        datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
+        apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
+        url=url+apiname
+        headerdict = {
+            "accept": "application/json",
+            "Content-Type": "application/json"
+        }
+        # 如果是query 需要拼接参数
+        # url+=  ('?' +urlencode(datadict))
+        print('参数', url, datadict,headerdict)
+        response= None
+        try:
+            response = await httpreq.post_json(url,datadict,headerdict)
+            print('请求工作流结果',response)
+        except Exception as e:
+            print(e)
+        return response
+
+
+    async def add_school_close_work_flow(self, school_flow: SchoolModel,action_reason,related_license_upload):
+        # school_flow.id=0
+        data= school_flow
+        datadict =  data.__dict__
+        datadict['process_code'] = INSTITUTION_CLOSE_WORKFLOW_CODE
+        datadict['teacher_id'] =  0
+        datadict['applicant_name'] =  'tester'
+        datadict['school_code'] = school_flow.school_code
+        datadict['school_name'] = school_flow.school_name
+        datadict['founder_type_lv3'] =   school_flow.founder_type_lv3
+        datadict['block'] =   school_flow.block
+        datadict['borough'] =   school_flow.borough
+        datadict['school_level'] =   school_flow.school_level
+        datadict['school_no'] =   school_flow.school_no
+
+        datadict['apply_user'] =  'tester'
+        dicta = school_flow.__dict__
+        dicta['action_reason']= action_reason
+        dicta['related_license_upload']= related_license_upload
+        dicta['school_id'] = school_flow.id
+
+        datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
+        apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
+
+        response= None
+        try:
+            response = await send_request(apiname,datadict,'post')
+            print('请求工作流结果',response)
+        except Exception as e:
+            print(e)
+        return response
