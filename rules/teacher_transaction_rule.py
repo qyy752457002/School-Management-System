@@ -51,7 +51,7 @@ class TeacherTransactionRule(object):
         teacher_db = await self.teachers_dao.get_teachers_by_id(teacher_transaction_db.teacher_id)
         if not teacher_db:
             raise TeacherNotFoundError()
-        teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
+        # teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
         teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)
         return teacher_transaction
@@ -62,7 +62,7 @@ class TeacherTransactionRule(object):
         """
         transaction_type = teacher_transaction.transaction_type
         teacher_transaction_db = view_model_to_orm_model(teacher_transaction, TeacherTransaction)
-        teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
+        # teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_db = await self.teachers_dao.get_teachers_by_id(teacher_transaction_db.teacher_id)
         teacher_sub_status = teacher_db.teacher_sub_status
         if not teacher_db:
@@ -72,7 +72,7 @@ class TeacherTransactionRule(object):
         if transaction_type != TransactionType.INTERNAL.value:
             teacher_db.teacher_sub_status = transaction_type
             await self.teachers_dao.update_teachers(teacher_db, "teacher_sub_status")
-            teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
+            # teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
             teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
             teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)
             # teacher_transaction_log = OperationRecord(
@@ -92,7 +92,7 @@ class TeacherTransactionRule(object):
         else:
             teacher_db.teacher_sub_status = transaction_type
             await self.teachers_dao.update_teachers(teacher_db, "teacher_sub_status")
-            teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
+            # teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
             teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
             teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)
         #     teacher_transaction_log = OperationRecord(

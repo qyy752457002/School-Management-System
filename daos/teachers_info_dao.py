@@ -179,13 +179,8 @@ class TeachersInfoDao(DAOBase):
     async def get_teacher_approval(self, teacher_id):
         session = await self.slave_db()
         result = await session.execute(
-            select(Teacher, TeacherInfo.teacher_base_id, TeacherInfo.highest_education,
-                   TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
-                   School.school_name,
-                   TeacherInfo.enter_school_time).join(School, Teacher.teacher_employer == School.id,
-                                                       ).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
-                                                              isouter=True,
-                                                              ).where(Teacher.teacher_id == teacher_id))
+            select(Teacher, TeacherInfo).join(School, Teacher.teacher_employer == School.id,
+                                              ).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
+                                                     isouter=True,
+                                                     ).where(Teacher.teacher_id == teacher_id))
         return result.scalar_one_or_none()
-
-

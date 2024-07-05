@@ -1060,23 +1060,97 @@ class NewTeacherRe(BaseModel):
 
 
 class NewTeacherApprovalCreate(BaseModel):
-    teacher_base_id: Optional[int] = Field(None, title="教师ID", description="教师ID")
+
+    #老师关键信息
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    teacher_name: Optional[str] = Field("", title="姓名", description="姓名", example="张三")
-    teacher_id_number: Optional[str] = Field("", title="身份证号", description="身份证号", example="123456789012345678")
-    teacher_id_type: Optional[str] = Field("", title="身份证件类型", description="证件类型")
-    teacher_gender: Optional[Gender] = Field(None, title="性别", description="性别", example="男")
-    teacher_employer: Optional[int] = Field(None, title="单位部门", description="单位部门", example="xx学校")
-    highest_education: Optional[str] = Field("", title="最高学历", description="最高学历", example="本科")
-    political_status: Optional[str] = Field("", title="政治面貌", description="政治面貌", example="群众")
-    in_post: Optional[bool] = Field(None, title="是否在编", description="是否在编", example="yes")
-    school_name: Optional[str] = Field("", title="", description="", example="")
-    employment_form: Optional[str] = Field("", title="用人形式", description="用人形式", example="合同")
-    enter_school_time: Optional[date] = Field(None, title="进本校时间", description="进本校时间", example="2010-01-01")
-    teacher_main_status: Optional[str] = Field(None, title="主要状态", description="主要状态", example="unemployed")
-    teacher_sub_status: Optional[str] = Field(None, title="次要状态", description="次要状态", example="unsubmitted")
-    is_approval: Optional[bool] = Field(None, title="是否在审批中", description="是否在审批中")
-    teacher_number: Optional[str] = Field("", title="教职工号", description="教职工号", example="123456789012345678")
+    teacher_name: str = Field(..., title="姓名", description="教师名称")
+    teacher_gender: Gender = Field(..., title="性别", description="教师性别")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="身份证件号", description="证件号")
+    teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
+    teacher_employer: int = Field(0, title="单位部门", description="单位部门", gt=0)
+    teacher_avatar: str = Field("", title="头像", description="头像")
+    mobile: str = Field("", title="手机号", description="手机号")
+
+    #教师基本信息
+    teacher_base_id: Optional[int] = Field(None, title="教师ID", description="教师ID")
+    ethnicity: Optional[str] = Field(None, title="民族", description="民族", example="汉族")
+    nationality: str = Field(..., title="国家/地区", description="国家地区", example="中国")
+    political_status: Optional[str] = Field(None, title="政治面貌", description="政治面貌", example="党员")
+    native_place: str = Field("", title="籍贯", description="籍贯", example="沈阳")
+    birth_place: str = Field("", title="出生地", description="出生地", example="沈阳")
+    former_name: str = Field("", title="曾用名", description="曾用名", example="张三")
+    marital_status: str = Field("", title="婚姻状况", description="婚姻状况", example="已婚")
+    health_condition: str = Field("", title="健康状况", description="健康状况", example="良好")
+    highest_education: str = Field("", title="最高学历", description="最高学历", example="本科")
+    institution_of_highest_education: str = Field("", title="获得最高学历的院校或者机构",
+                                                  description="获得最高学历的院校或者机构", example="沈阳师范大学")
+    special_education_start_time: date = Field(..., title="特教开始时间", description="特教开始时间",
+                                               example="2021-10-10")
+    start_working_date: date = Field(..., title="参加工作年月", description="参加工作年月", example="2010-01-01")
+    enter_school_time: date = Field(..., title="进本校时间", description="进本校时间", example="2010-01-01")
+    source_of_staff: str = Field(..., title="教职工来源", description="教职工来源", example="招聘")
+    staff_category: str = Field(..., title="教职工类别", description="教职工类别", example="教师")
+    in_post: bool = Field(..., title="是否在编", description="是否在编")
+    employment_form: str = Field(..., title="用人形式", description="用人形式", example="合同")
+    contract_signing_status: str = Field(..., title="合同签订情况", description="合同签订情况", example="已签")
+    current_post_type: str = Field("", title="现在岗位类型", description="现在岗位类型", example="教师")
+    current_post_level: str = Field("", title="现岗位等级", description="现岗位等级", example="一级")
+    current_technical_position: str = Field("", title="现妆业技术职务", description="现妆业技术职务", example="教师")
+    full_time_special_education_major_graduate: bool = Field(..., title="是否全日制特殊教育专业毕业",
+                                                             description="是否全日制特殊教育专业毕业", )
+    received_preschool_education_training: bool = Field(..., title="是否受过学前教育培训",
+                                                        description="是否受过学前教育培训")
+    full_time_normal_major_graduate: bool = Field(..., title="是否全日制师范类专业毕业",
+                                                  description="是否全日制师范类专业毕业")
+    received_special_education_training: bool = Field(..., title="是否受过特教专业培训",
+                                                      description="是否受过特教专业培训")
+    has_special_education_certificate: bool = Field(..., title="是否有特教证书", description="是否有特教证书")
+
+    information_technology_application_ability: str = Field(..., title="信息技术应用能力",
+                                                            description="信息技术应用能力", example="优秀")
+
+    free_normal_college_student: bool = Field(..., title="是否免费师范生", description="是否免费师范生")
+
+    participated_in_basic_service_project: bool = Field(..., title="是否参加基层服务项目",
+                                                        description="是否参加基层服务项目")
+    basic_service_start_date: Optional[date] = Field(None, title="基层服务起始日期",
+                                                     description="基层服务起始日期",
+                                                     example="2010-01-01")
+    basic_service_end_date: Optional[date] = Field(None, title="基层服务结束日期",
+                                                   description="基层服务结束日期",
+                                                   example="2010-01-01")
+    special_education_teacher: bool = Field(..., title="是否特教", description="是否特教")
+    dual_teacher: bool = Field(..., title="是否双师型", description="是否双师型")
+    has_occupational_skill_level_certificate: bool = Field(..., title="是否具备职业技能等级证书",
+                                                           description="是否具备职业技能等级证书", )
+    enterprise_work_experience: str = Field(..., title="企业工作时长", description="企业工作时长", example="3年")
+    county_level_backbone: bool = Field(..., title="是否县级以上骨干", description="是否县级以上骨干")
+    psychological_health_education_teacher: bool = Field(..., title="是否心理健康教育教师",
+                                                         description="是否心理健康教育教师")
+    recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
+    teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
+    department: str = Field(..., title="部门", description="部门", example="部门")
+    org_id: int = Field(..., title="组织ID", description="组织ID")
+
+    hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
+    hukou_type: str = Field("", title="户口类别", description="户口类别", example="户口类别")
+    main_teaching_level: str = Field("", title="主要任课学段", description="主要任课学段", example="主要任课学段")
+    teacher_qualification_cert_num: str = Field("", title="教师资格证编号", description="教师资格证编号",
+                                                example="教师资格证编号")
+    teaching_discipline: str = Field("", title="任教学科", description="任教学科", example="任教学科")
+    language: str = Field("", title="语种", description="语种", example="语种")
+    language_proficiency_level: str = Field("", title="语言掌握程度", description="语言掌握程度",
+                                            example="语言掌握程度")
+    language_certificate_name: str = Field("", title="语言证书名称", description="语言证书名称", example="语言证书名称")
+    contact_address: str = Field("", title="通讯地址省市县", description="通讯地址省市县", example="通讯地址省市县")
+    contact_address_details: str = Field("", title="通讯地址详细信息", description="通讯地址详细信息",
+                                         example="通讯地址详细信息")
+    email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
+    highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
+    highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
+    is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
+    other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
 
 
 class CurrentTeacherQuery(BaseModel):
