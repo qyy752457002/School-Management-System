@@ -65,7 +65,7 @@ class InstitutionView(BaseView):
             school_eduinfo = await self.school_eduinfo_rule.get_school_eduinfo_by_school_id(institution_id)
         except Exception as e:
             print(e)
-        return {'institution': school,     'institution_keyinfo': institution_keyinfo,'school_communication': school_communication, 'school_eduinfo': school_eduinfo,}
+        return {'institution': school,     'institution_keyinfo': institution_keyinfo,'institution_communication': school_communication, 'institution_eduinfo': school_eduinfo,}
 
     async def post(self, school: InstitutionsAdd):
         # res = await self.institution_rule.add_institution(school)
