@@ -101,30 +101,6 @@ class InstitutionOptional(BaseModel):
     block: str |None = Query("", title=" ", description="地域管辖区", ),
     borough: str |None = Query("", title="  ", description=" 行政管辖区", ),
 
-class InstitutionKeyInfo(BaseModel):
-    # 如果 不一样 需要转换到orm模型的
-    id:int= Query(None, title="", description="", example='1')
-    school_name: str = Field(...,alias='institution_name', title='单位名称',  examples=['文化部'])
-    school_no: str = Field(..., alias='institution_code',  title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
-    # institution_name: str |None = Field(..., title='单位名称',  examples=['文化部'])
-    # institution_code: str |None = Field(...,   title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
-    membership_no: str |None = Field(...,   title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
-    block: str |None = Query("", title=" ", description="地域管辖区", ),
-    borough: str |None = Query("", title="  ", description=" 行政管辖区", ),
-    status: str |None = Field(PlanningSchoolStatus.DRAFT,   title='状态',  description=" 状态",examples=[''])
-    social_credit_code: str|None = Field( '',   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656']),
-
-    # school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633')
-    planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
-    # borough:str=Query('', title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
-    # block: str = Query('', title=" Author", description="地域管辖区",examples=['铁西区'])
-    # school_name: str = Query('', title="学校名称", description="园所名称",examples=['XX小学'])
-    # school_type: str = Query('', title="", description=" 学校类型",examples=['中小学'])
-    school_edu_level: str|None = Query('', title="", description="办学类型/学校性质",examples=['学前教育'])
-    school_category: str|None = Query('', title="", description=" 办学类型二级",examples=['小学'])
-    school_operation_type: str|None = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
-    school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
-    school_level: str|None = Query(None, title="", description=" 学校星级",examples=['5'])
 
 class InstitutionPageSearch(BaseModel):
     social_credit_code: str|None = Field( '',   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656']),
@@ -163,17 +139,31 @@ class InstitutionsAdd(BaseModel):
     status: str = Field(PlanningSchoolStatus.DRAFT,  alias='',   title='状态',  description=" 状态",examples=[''])
     planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
 
-    # school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
-    # planning_school_id: int = Field(0, title="", description="规划校id",examples=['1'])
-    # school_no:str= Query(..., title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633')
-    # borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
-    # block: str = Query(..., title=" Author", description="地域管辖区",examples=['铁西区'])
-    # school_edu_level: str|None = Query('', title="", description="办学类型/学校性质",examples=['学前教育'])
-    # school_category: str|None = Query('', title="", description=" 办学类型二级",examples=['小学'])
-    # school_operation_type: str|None = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
-    # school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
-    # school_level: str|None = Query(None, title="", description=" 学校星级",examples=['5'])
-    # school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
+
+class InstitutionKeyInfo(BaseModel):
+    # 如果 不一样 需要转换到orm模型的
+    id:int= Query(None, title="", description="", example='1')
+    school_name: str = Field(...,alias='institution_name', title='单位名称',  examples=['文化部'])
+    school_no: str = Field(..., alias='institution_code',  title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
+    membership_no: str |None = Field(...,   title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
+    block: str |None = Field("", title=" ", description="地域管辖区", ),
+    borough: str |None = Field("", title="  ", description=" 行政管辖区", ),
+    status: str |None = Field(PlanningSchoolStatus.DRAFT,   title='状态',  description=" 状态",examples=[''])
+    social_credit_code: str|None = Field( '',   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656']),
+
+    # school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633')
+    planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
+    workflow_status: str |None = Field("",   title='',  description=" ",examples=[''])
+    process_instance_id:int|None= Field(0, title="", description="", example='1')
+
+class InstitutionsWorkflowInfo(BaseModel):
+    id:int= Query(None, title="", description="", example='1')
+
+    workflow_status: str |None = Field("",   title='',  description=" ",examples=[''])
+    process_instance_id:int|None= Field(0, title="", description="", example='1')
+
+    status: str = Field(PlanningSchoolStatus.DRAFT,  alias='',   title='状态',  description=" 状态",examples=[''])
+    planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
 
 
 

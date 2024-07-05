@@ -518,13 +518,15 @@ class SchoolRule(object):
 
         pass
 
-    async def add_school_keyinfo_change_work_flow(self, school_flow: SchoolKeyInfo,):
+    async def add_school_keyinfo_change_work_flow(self, school_flow: SchoolKeyInfo,process_code=None):
         # school_flow.id=0
         httpreq= HTTPRequest()
         url= workflow_service_config.workflow_config.get("url")
         data= school_flow
         datadict =  data.__dict__
         datadict['process_code'] = SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE
+        if process_code:
+            datadict['process_code'] = process_code
         datadict['teacher_id'] =  0
         datadict['applicant_name'] =  'tester'
         datadict['school_no'] = school_flow.school_no
