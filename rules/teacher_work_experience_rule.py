@@ -31,9 +31,9 @@ class TeacherWorkExperienceRule(object):
         if not exits_teacher:
             raise TeacherNotFoundError()
         teacher_work_experience_db = view_model_to_orm_model(teacher_work_experience, TeacherWorkExperience)
+        teacher_work_experience_db.teacher_work_experience_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_work_experience_db = await self.teacher_work_experience_dao.add_teacher_work_experience(
             teacher_work_experience_db)
-        teacher_work_experience_db.teacher_work_experience_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_work_experience = orm_model_to_view_model(teacher_work_experience_db, TeacherWorkExperienceUpdateModel)
         # teacher_work_experience = convert_snowid_in_model(teacher_work_experience,
         #                                                   extra_colums=["teacher_work_experience_id", "teacher_id"])
