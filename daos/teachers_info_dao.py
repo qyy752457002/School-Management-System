@@ -1,5 +1,5 @@
 from datetime import date, datetime
-
+from mini_framework.databases.entities import BaseDBModel
 from sqlalchemy import select, func, update
 
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
@@ -179,13 +179,57 @@ class TeachersInfoDao(DAOBase):
     async def get_teacher_approval(self, teacher_id):
         session = await self.slave_db()
         result = await session.execute(
-            select(Teacher, TeacherInfo.teacher_base_id, TeacherInfo.highest_education,
-                   TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
-                   School.school_name,
-                   TeacherInfo.enter_school_time).join(School, Teacher.teacher_employer == School.id,
-                                                       ).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
-                                                              isouter=True,
-                                                              ).where(Teacher.teacher_id == teacher_id))
-        return result.scalar_one_or_none()
+            select(Teacher.teacher_id,
+                TeacherInfo.teacher_base_id,
+                   TeacherInfo.ethnicity, TeacherInfo.nationality, TeacherInfo.political_status,
+                   TeacherInfo.native_place, TeacherInfo.birth_place, TeacherInfo.former_name,
+                   TeacherInfo.marital_status, TeacherInfo.health_condition,
+                   TeacherInfo.highest_education, TeacherInfo.institution_of_highest_education,
+                   TeacherInfo.special_education_start_time, TeacherInfo.start_working_date,
+                   TeacherInfo.enter_school_time, TeacherInfo.source_of_staff,
+                   TeacherInfo.staff_category, TeacherInfo.in_post, TeacherInfo.employment_form,
+                   TeacherInfo.contract_signing_status, TeacherInfo.current_post_type,
+                   TeacherInfo.current_post_level, TeacherInfo.current_technical_position,
+                   TeacherInfo.full_time_special_education_major_graduate,
+                   TeacherInfo.received_preschool_education_training,
+                   TeacherInfo.full_time_normal_major_graduate,
+                   TeacherInfo.received_special_education_training,
+                   TeacherInfo.has_special_education_certificate,
+                   TeacherInfo.information_technology_application_ability,
+                   TeacherInfo.free_normal_college_student,
+                   TeacherInfo.participated_in_basic_service_project,
+                   TeacherInfo.basic_service_start_date, TeacherInfo.basic_service_end_date,
+                   TeacherInfo.special_education_teacher, TeacherInfo.dual_teacher,
+                   TeacherInfo.has_occupational_skill_level_certificate,
+                   TeacherInfo.enterprise_work_experience, TeacherInfo.county_level_backbone,
+                   TeacherInfo.psychological_health_education_teacher, TeacherInfo.recruitment_method,
+                   TeacherInfo.teacher_number, TeacherInfo.department,
+                   TeacherInfo.org_id, TeacherInfo.hmotf, TeacherInfo.hukou_type,
+                   TeacherInfo.main_teaching_level, TeacherInfo.teacher_qualification_cert_num,
+                   TeacherInfo.teaching_discipline, TeacherInfo.language,
+                   TeacherInfo.language_proficiency_level, TeacherInfo.language_certificate_name,
+                   TeacherInfo.contact_address, TeacherInfo.contact_address_details,
+                   TeacherInfo.email, TeacherInfo.highest_education_level,
+                   TeacherInfo.highest_degree_name, TeacherInfo.is_major_graduate,
+                   TeacherInfo.other_contact_address_details,
+                   Teacher.teacher_gender, Teacher.teacher_id_type, Teacher.teacher_id_number,
+                   Teacher.teacher_date_of_birth, Teacher.teacher_employer, Teacher.teacher_avatar,
+                   Teacher.teacher_sub_status, Teacher.teacher_main_status, Teacher.identity, Teacher.mobile,
+                   School.school_name).join(School, Teacher.teacher_employer == School.id,
+                                            ).join(TeacherInfo,
+                                                   Teacher.teacher_id == TeacherInfo.teacher_id,
+                                                   ).where(Teacher.teacher_id == teacher_id))
+        result = result.first()
 
+        # select(Teacher, TeacherInfo.teacher_base_id, TeacherInfo.highest_education,
+        #        TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
+        #        School.school_name,
+        #        TeacherInfo.enter_school_time).join(School, Teacher.teacher_employer == School.id,
+        #                                            ).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
+        #                                                   isouter=True,
+        #                                                   ).where(Teacher.teacher_id == teacher_id))
+
+        # return result.scalar_one_or_none()
+
+        return result
 
