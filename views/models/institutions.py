@@ -193,6 +193,7 @@ class InstitutionBaseInfo(BaseModel):
     process_instance_id:int= Query(0, title="", description="", example='1')
     status: str |None = Field( '',   title='状态',  description=" 状态",examples=[''])
     urban_ethnic_nature: str |None = Field("",   title='所在地民族属性',  description="",examples=[''])
+    leg_repr_name: str |None= Field(None, title="", description="法定代表人姓名",examples=['XX'])
 
     # 下面的待映射
     # school_short_name: str = Field('', title="", description="园所简称",examples=['MXXX'])
