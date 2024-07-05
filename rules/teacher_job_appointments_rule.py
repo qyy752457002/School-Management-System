@@ -7,6 +7,7 @@ from models.teacher_job_appointments import TeacherJobAppointments
 from views.models.teacher_extend import TeacherJobAppointmentsModel, TeacherJobAppointmentsUpdateModel
 from business_exceptions.teacher import TeacherNotFoundError, TeacherJobAppointmentsNotFoundError
 import json
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 
 @dataclass_inject
@@ -31,6 +32,7 @@ class TeacherJobAppointmentsRule(object):
         teacher_job_appointments_db = view_model_to_orm_model(teacher_job_appointments, TeacherJobAppointments,
                                                               exclude=["concurrent_position"])
         teacher_job_appointments_db.concurrent_position = concurrent_positions_json
+        teacher_job_appointments_db.teacher_job_appointments_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_job_appointments_db = await self.teacher_job_appointments_dao.add_teacher_job_appointments(
             teacher_job_appointments_db)
         teacher_job_appointments = orm_model_to_view_model(teacher_job_appointments_db, TeacherJobAppointmentsModel,

@@ -1,9 +1,7 @@
-from mini_framework.web.views import BaseView
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
-from fastapi import Query
 
-from rules.work_flow_define_rule import WorkFlowNodeDefineRule
+from drop.work_flow_define_rule import WorkFlowNodeDefineRule
 from views.models.work_flow_define import WorkFlowDefineModel
 from views.models.work_flow_instance import WorkFlowInstanceModel
 

@@ -37,7 +37,7 @@ action_target_id: str = Field(..., title="操作对象ID", description="操作�
     doc_upload: Mapped[str] = mapped_column(String(255), nullable=True, comment=" 附件", default='')
     status: Mapped[str] = mapped_column(String(255), nullable=True, comment=" 状态", default='')
 
-    operator_id: Mapped[int] = mapped_column(nullable=True, comment=" 操作人", default=0)
+    operator_id: Mapped[int] = mapped_column(BigInteger, nullable=True, comment=" 操作人", default=0)
     operator_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="操作人姓名", default='')
 
     change_module: Mapped[str] = mapped_column(String(64), nullable=True, comment="变更模块")

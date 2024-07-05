@@ -15,7 +15,8 @@ from views.models.teacher_transaction import TeacherTransactionModel, TeacherTra
 from rules.teacher_transaction_rule import TeacherTransactionRule
 from rules.teachers_rule import TeachersRule
 from rules.teacher_borrow_rule import TeacherBorrowRule
-from views.models.teacher_transaction import TeacherBorrowModel, TeacherBorrowReModel, TeacherBorrowQueryModel
+from views.models.teacher_transaction import TeacherBorrowModel, TeacherBorrowReModel, TeacherBorrowQueryModel, \
+    TeacherRetireQuery,TeacherRetireCreateModel
 from mini_framework.web.std_models.page import PageRequest
 from views.models.teachers import TeacherAdd
 from typing import Optional
@@ -302,6 +303,30 @@ class TeacherRetireView(BaseView):
         """
         user_id = "asdfasdf"
         res = await self.teacher_retire_rule.add_teacher_retire(teacher_retire, user_id)
+        return res
+
+    async def page_teacher_retire(self, current_teacher=Depends(TeacherRetireQuery), page_request=Depends(PageRequest)):
+        """
+        退休老师分页查询
+        """
+        paging_result = await self.teacher_retire_rule.query_retire_teacher_with_page(current_teacher, page_request)
+        return paging_result
+
+
+# 退休相关
+class TeacherRetireView(BaseView):
+    def __init__(self):
+        super().__init__()
+
+        self.teacher_retire_rule = get_injector(TeacherRetireRule)
+
+    async def post_teacher_retire(self, teacher_retire:TeacherRetireCreateModel):
+        """
+        教师退休
+        """
+        user_id = "asdfasdf"
+        res = await self.teacher_retire_rule.add_teacher_retire(teacher_retire, user_id)
+        print(res.teacher_id)
         return res
 
     async def page_teacher_retire(self, current_teacher=Depends(TeacherRetireQuery), page_request=Depends(PageRequest)):

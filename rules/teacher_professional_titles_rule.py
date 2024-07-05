@@ -6,6 +6,7 @@ from models.teacher_professional_titles import TeacherProfessionalTitles
 from views.models.teacher_extend import TeacherProfessionalTitlesModel, TeacherProfessionalTitlesUpdateModel
 from daos.teachers_dao import TeachersDao
 from business_exceptions.teacher import TeacherNotFoundError, TeacherProfessionalTitleNotFoundError
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 
 @dataclass_inject
@@ -25,6 +26,7 @@ class TeacherProfessionalTitlesRule(object):
         if not exits_teacher:
             raise TeacherNotFoundError()
         teacher_professional_titles_db = view_model_to_orm_model(teacher_professional_titles, TeacherProfessionalTitles)
+        teacher_professional_titles_db.teacher_professional_titles_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_professional_titles_db = await self.teacher_professional_titles_dao.add_teacher_professional_titles(
             teacher_professional_titles_db)
         teacher_professional_titles = orm_model_to_view_model(teacher_professional_titles_db,

@@ -1,13 +1,9 @@
-from sqlalchemy import select, func, update
+from sqlalchemy import select, update
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
-from mini_framework.databases.queries.pages import Paging
-from mini_framework.web.std_models.page import PageRequest
 
-from models.work_flow_define import WorkFlowDefine
-from models.work_flow_node_define import WorkFlowNodeDefine
-from models.work_flow_instance import WorkFlowInstance
-from models.work_flow_node_instance import WorkFlowNodeInstance
-from typing import List
+from drop.work_flow_node_define import WorkFlowNodeDefine
+from drop.work_flow_instance import WorkFlowInstance
+from drop.work_flow_node_instance import WorkFlowNodeInstance
 
 
 class WorkFlowNodeInstanceDAO(DAOBase):

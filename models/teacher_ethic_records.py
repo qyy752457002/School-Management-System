@@ -1,4 +1,4 @@
-from sqlalchemy import String, Date
+from sqlalchemy import String, Date, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
 from datetime import date
@@ -28,8 +28,8 @@ class TeacherEthicRecords(BaseDBModel):
     __tablename__ = 'lfun_teacher_ethic_records'
     __table_args__ = {'comment': 'teacher_ethic_records信息表'}
 
-    teacher_ethic_records_id: Mapped[int] = mapped_column(primary_key=True, comment="teacher_ethic_recordsID")
-    teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")
+    teacher_ethic_records_id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="teacher_ethic_recordsID")
+    teacher_id: Mapped[int] = mapped_column(BigInteger,nullable=False, comment="教师ID")
     ethics_assessment_date: Mapped[date] = mapped_column(Date, nullable=False, comment="师德考核时间")
     ethics_assessment_conclusion: Mapped[str] = mapped_column(String(64), nullable=False, comment="师德考核结论")
     assessment_institution_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="考核单位名称")

@@ -1,7 +1,6 @@
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
-from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
-from mini_framework.databases.queries.pages import Pagination, Paging
+from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.web.std_models.page import PageRequest
 from daos.transfer_details_dao import TransferDetailsDAO
 from daos.teachers_dao import TeachersDao
 from models.transfer_details import TransferDetails
@@ -10,23 +9,22 @@ from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTra
     TransferDetailsReModel, TransferDetailsGetModel, TeacherTransferQueryModel, TeacherTransferQueryReModel, \
     TransferAndBorrowExtraModel
 from business_exceptions.teacher import TeacherNotFoundError, ApprovalStatusError
-from models.teacher_change_log import TeacherChangeLog
 from daos.teacher_change_dao import TeacherChangeLogDAO
 from rules.teacher_change_rule import TeacherChangeRule
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from daos.enum_value_dao import EnumValueDAO
 from rules.enum_value_rule import EnumValueRule
-from pydantic import BaseModel, Field
 from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
 from rules.operation_record import OperationRecordRule
 from daos.operation_record_dao import OperationRecordDAO
 from rules.teachers_rule import TeachersRule
 from views.models.teachers import TeacherRe, TeacherAdd
 
-from views.models.teacher_transaction import TeacherAddModel, WorkflowQueryModel
+from views.models.teacher_transaction import WorkflowQueryModel
 from datetime import datetime
 from daos.school_dao import SchoolDAO
-from typing import Type
+
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 
 @dataclass_inject
@@ -61,6 +59,7 @@ class TransferDetailsRule(object):
             if is_approval:
                 raise ApprovalStatusError()
             transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
+            transfer_details_db.transfer_details_id = SnowflakeIdGenerator(1, 1).generate_id()
             transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
             transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
             transfer_and_borrow_extra_model = await self.get_transfer_and_borrow_extra(
@@ -90,9 +89,9 @@ class TransferDetailsRule(object):
                 process_instance_id=work_flow_instance["process_instance_id"])
             await self.operation_record_rule.add_operation_record(teacher_transfer_log)
             await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
-            return transfer_details
+            return True
         except Exception as e:
-            raise e
+            return str(e)
 
     async def add_transfer_in_outer_details(self, add_teacher: TeacherAdd,
                                             transfer_details: TransferDetailsModel,
@@ -131,6 +130,39 @@ class TransferDetailsRule(object):
             return True
         except Exception as e:
             raise e
+
+            transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
+            transfer_details_db.transfer_details_id = SnowflakeIdGenerator(1, 1).generate_id()
+            transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
+            transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
+            transfer_and_borrow_extra_model = await self.get_transfer_and_borrow_extra(
+                original_district_area_id=transfer_details_work.original_district_area_id,
+                current_district_area_id=transfer_details_work.current_district_area_id,
+                current_unit_id=transfer_details.current_unit_id)
+            original_unit_name = transfer_details_work.original_unit_name
+            current_unit_name = transfer_and_borrow_extra_model.current_unit_name
+            params = {"process_code": "t_transfer_in_outer", "applicant_name": user_id}
+            model_list = [transfer_details_work, teachers, transfer_and_borrow_extra_model]
+            work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
+            teacher_transfer_log = OperationRecord(
+                action_target_id=transfer_details_work.teacher_id,
+                target=OperationTarget.TEACHER.value,
+                action_type=OperationType.CREATE.value,
+                ip="127.0.0.1",
+                change_data="",
+                operation_time=datetime.now(),
+                doc_upload="",
+                change_module=ChangeModule.TRANSFER.value,
+                change_detail=f"从{original_unit_name}调入到{current_unit_name}",
+                status="/",
+                operator_id=1,
+                operator_name=user_id,
+                process_instance_id=work_flow_instance["process_instance_id"])
+            await self.operation_record_rule.add_operation_record(teacher_transfer_log)
+            await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
+            return True
+        except Exception as e:
+            return str(e)
 
     async def add_transfer_out_details(self, transfer_details: TransferDetailsModel,
                                        user_id):

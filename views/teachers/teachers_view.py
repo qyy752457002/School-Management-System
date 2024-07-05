@@ -1,4 +1,5 @@
 from views.models.teachers import NewTeacher, TeacherInfo
+from fastapi import Query, Depends, Body
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
 
@@ -143,3 +144,6 @@ class TeachersView(BaseView):
     #     """
     #     paging_result = await self.teacher_info_rule.query_retire_teacher_with_page(current_teacher, page_request)
     #     return paging_result
+
+
+
