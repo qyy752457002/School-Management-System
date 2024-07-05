@@ -69,6 +69,7 @@ class SchoolView(BaseView):
                 'school_keyinfo': school_keyinfo}
 
     async def post(self, school: SchoolKeyAddInfo):
+        print('入参',school)
         res = await self.school_rule.add_school(school)
         print(res)
         resc = SchoolCommunications(id=0)
