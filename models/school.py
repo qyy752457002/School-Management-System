@@ -57,6 +57,9 @@ class School(BaseDBModel):
     junior_middle_school_entry_age: Mapped[str] = mapped_column(String(10), nullable=True,default='', comment="初中入学年龄")
     senior_middle_school_system: Mapped[str] = mapped_column(String(10), nullable=True,default='', comment="高中学制")
     membership_no: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 隶属单位号")
+    is_entity: Mapped[bool] = mapped_column(  nullable=True,default=True, comment=" 是否实体")
+    admin: Mapped[str] = mapped_column(String(64), nullable=True, comment="管理员", default='')
+    admin_phone: Mapped[str] = mapped_column(String(64), nullable=True, comment="管理员手机", default='')
 
     process_instance_id: Mapped[int] = mapped_column(nullable=True,default=0, comment="流程ID")
     workflow_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="工作流审核状态", default='')
