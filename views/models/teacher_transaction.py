@@ -420,16 +420,16 @@ class TeacherRetireQuery(BaseModel):
                                                 example="2010-01-01")
     retire_date_s: Optional[date] = Query(None, title="非在职时间起始", description="", example="2010-01-01")
     retire_date_e: Optional[date] = Query(None, title="非在职时间截止", description="", example="2010-01-01")
-    @model_validator(mode='before')
-    @classmethod
-    def check_id_before(self, data: dict):
-        if isinstance(data["teacher_employer"], str):
-            data["teacher_employer"] = int(data["teacher_employer"])
-        elif isinstance(data["teacher_employer"], int):
-            data["teacher_employer"] = str(data["teacher_employer"])
-        else:
-            pass
-        return data
+    # @model_validator(mode='before')
+    # @classmethod
+    # def check_id_before(self, data: dict):
+    #     if isinstance(data["teacher_employer"], str):
+    #         data["teacher_employer"] = int(data["teacher_employer"])
+    #     elif isinstance(data["teacher_employer"], int):
+    #         data["teacher_employer"] = str(data["teacher_employer"])
+    #     else:
+    #         pass
+    #     return data
 
 class TeacherRetireCreateModel(BaseModel):
     transaction_type: TransactionType = Field(..., title="异动类型", description="异动类型")
@@ -439,16 +439,16 @@ class TeacherRetireCreateModel(BaseModel):
                                                         description="操作时间")
     retire_date: Optional[date] | None = Field(None, title="离退休时间", description="离退休时间")
     retire_number: str = Field(..., title="离退休证号", description="离退休证号")
-    @model_validator(mode='before')
-    @classmethod
-    def check_id_before(self, data: dict):
-        if isinstance(data["teacher_id"], str):
-            data["teacher_id"] = int(data["teacher_id"])
-        elif isinstance(data["teacher_id"], int):
-            data["teacher_id"] = str(data["teacher_id"])
-        else:
-            pass
-        return data
+    # @model_validator(mode='before')
+    # @classmethod
+    # def check_id_before(self, data: dict):
+    #     if isinstance(data["teacher_id"], str):
+    #         data["teacher_id"] = int(data["teacher_id"])
+    #     elif isinstance(data["teacher_id"], int):
+    #         data["teacher_id"] = str(data["teacher_id"])
+    #     else:
+    #         pass
+    #     return data
 
 
 class TeacherRetireUpdateModel(BaseModel):
@@ -460,22 +460,22 @@ class TeacherRetireUpdateModel(BaseModel):
                                                         description="操作时间")
     retire_date: Optional[date] | None = Field(None, title="离退休时间", description="离退休时间")
     retire_number: str = Field(..., title="离退休证号", description="离退休证号")
-    @model_validator(mode='before')
-    @classmethod
-    def check_id_before(self, data: dict):
-        if isinstance(data["teacher_id"], str):
-            data["teacher_id"] = int(data["teacher_id"])
-        elif isinstance(data["teacher_id"], int):
-            data["teacher_id"] = str(data["teacher_id"])
-        else:
-            pass
-        if isinstance(data["teacher_retire_id"], str):
-            data["teacher_retire_id"] = int(data["teacher_retire_id"])
-        elif isinstance(data["teacher_retire_id"], int):
-            data["teacher_retire_id"] = str(data["teacher_retire_id"])
-        else:
-            pass
-        return data
+    # @model_validator(mode='before')
+    # @classmethod
+    # def check_id_before(self, data: dict):
+    #     if isinstance(data["teacher_id"], str):
+    #         data["teacher_id"] = int(data["teacher_id"])
+    #     elif isinstance(data["teacher_id"], int):
+    #         data["teacher_id"] = str(data["teacher_id"])
+    #     else:
+    #         pass
+    #     if isinstance(data["teacher_retire_id"], str):
+    #         data["teacher_retire_id"] = int(data["teacher_retire_id"])
+    #     elif isinstance(data["teacher_retire_id"], int):
+    #         data["teacher_retire_id"] = str(data["teacher_retire_id"])
+    #     else:
+    #         pass
+    #     return data
 
 
 # 调动相关模型

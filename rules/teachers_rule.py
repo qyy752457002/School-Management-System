@@ -160,7 +160,6 @@ class TeachersRule(object):
             raise TeacherNotFoundError()
         old_teachers = orm_model_to_view_model(exists_teachers, TeachersModel, exclude=["hash_password"])
         teachers_main_status = exists_teachers.teacher_main_status
-        res = compare_modify_fields(teachers, old_teachers)
         if teachers_main_status == "employed":
             # teacher_info_db= await self.teachers_info_dao.get_teachers_info_by_teacher_id(teachers.teacher_id)
             # teacher_info = orm_model_to_view_model(teacher_info_db, CurrentTeacherInfoSaveModel, exclude=[""])
@@ -169,6 +168,7 @@ class TeachersRule(object):
             # teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers.teacher_id)
             # teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
             #                                                  exclude=[""])
+            res = compare_modify_fields(teachers, old_teachers)
             params = {"process_code": "t_keyinfo", "teacher_id": teachers.teacher_id, "applicant_name": user_id}
             work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teachers, params)
             update_params = {"teacher_main_status": "employed", "teacher_sub_status": "active"}
@@ -192,9 +192,11 @@ class TeachersRule(object):
             await self.operation_record_rule.add_operation_record(teacher_change_log)
 
         elif teachers_main_status == "unemployed":
-            teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
-            teachers_db = await self.teachers_dao.update_teachers(teachers_db)
-            teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=["hash_password"])
+            need_update_list = []
+            for key, value in teachers.dict().items():
+                if value:
+                    need_update_list.append(key)
+            teachers=await self.teachers_dao.update_teachers(teachers, *need_update_list)
         return teachers
 
     async def delete_teachers(self, teachers_id, user_id):
