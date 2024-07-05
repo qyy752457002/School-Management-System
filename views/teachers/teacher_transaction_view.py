@@ -29,12 +29,13 @@ class TransferDetailsView(BaseView):
         self.teacher_rule = get_injector(TeachersRule)
 
     async def get_transfer_details(self,
-                                   transfer_details_id: int = Query(None, title="transfer_detailsID",
+                                   transfer_details_id: str = Query(None, title="transfer_detailsID",
                                                                     description="transfer_detailsID", example=1234)
                                    ):
         """
         审批时仅查看调动信息，无日志信息
         """
+        transfer_details_id = int(transfer_details_id)
         res = await self.transfer_details_rule.get_transfer_details_by_transfer_details_id(transfer_details_id)
         return res
 
@@ -49,7 +50,6 @@ class TransferDetailsView(BaseView):
         """
 
         user_id = "asdfasdf"
-
         if add_teacher != None:
             await self.transfer_details_rule.add_transfer_in_outer_details(add_teacher, transfer_details, user_id)
         else:
@@ -74,11 +74,12 @@ class TransferDetailsView(BaseView):
     #     res = await self.transfer_details_rule.update_transfer_details(transfer_details)
     #     return res
 
-    async def get_transfer_details_all(self, teacher_id: int = Query(None, title="transfer_ID",
+    async def get_transfer_details_all(self, teacher_id: str = Query(None, title="transfer_ID",
                                                                      description="transfer_ID", example=1234)):
         """
         查询单个老师所有调动信息,是教师详情页中的调动明细
         """
+        teacher_id = int(teacher_id)
         return await self.transfer_details_rule.get_all_transfer_details(teacher_id)
 
     async def page_transfer_with_page(self, transfer_details=Depends(TeacherTransferQueryModel),
@@ -154,43 +155,49 @@ class TransferDetailsView(BaseView):
     #     return res
 
     async def patch_transfer_approved(self,
-                                      teacher_id: int = Body(None, title="transfer_detailsID",
+                                      teacher_id: str = Body(None, title="transfer_detailsID",
                                                              description="transfer_detailsID", example=1234),
-                                      process_instance_id: int = Body(..., title="流程实例id",
+                                      process_instance_id: str = Body(..., title="流程实例id",
                                                                       description="流程实例id",
                                                                       example=123),
                                       reason: str = Body("", title="reason",
                                                          description="审核理由")):
 
         user_id = "asdfasdf"
+        teacher_id = int(teacher_id)
+        process_instance_id = int(process_instance_id)
         reason = reason
         res = await self.transfer_details_rule.transfer_approved(teacher_id, process_instance_id, user_id,
                                                                  reason)
         return res
 
     async def patch_transfer_rejected(self,
-                                      teacher_id: int = Body(None, title="教师id",
+                                      teacher_id: str = Body(None, title="教师id",
                                                              description="教师id", example=1234),
-                                      process_instance_id: int = Body(..., title="流程实例id",
+                                      process_instance_id: str = Body(..., title="流程实例id",
                                                                       description="流程实例id",
                                                                       example=123),
                                       reason: str = Body("", title="reason",
                                                          description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
+        teacher_id = int(teacher_id)
+        process_instance_id = int(process_instance_id)
         res = await self.transfer_details_rule.transfer_rejected(teacher_id, process_instance_id, user_id,
                                                                  reason)
         return res
 
     async def patch_transfer_revoked(self,
-                                     teacher_id: int = Body(None, title="教师id",
+                                     teacher_id: str = Body(None, title="教师id",
                                                             description="教师id", example=1234),
-                                     process_instance_id: int = Body(..., title="流程实例id", description="流程实例id",
+                                     process_instance_id: str = Body(..., title="流程实例id", description="流程实例id",
                                                                      example=123),
                                      reason: str = Body("", title="reason",
                                                         description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
+        teacher_id = int(teacher_id)
+        process_instance_id = int(process_instance_id)
         res = await self.transfer_details_rule.transfer_revoked(teacher_id, process_instance_id, user_id,
                                                                 reason)
         return res
@@ -200,7 +207,6 @@ class TransferDetailsView(BaseView):
 class TeacherTransactionView(BaseView):
     def __init__(self):
         super().__init__()
-
         self.teacher_transaction_rule = get_injector(TeacherTransactionRule)
 
     async def get_teacher_transaction(self,
