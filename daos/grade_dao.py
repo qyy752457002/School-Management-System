@@ -89,3 +89,11 @@ class GradeDAO(DAOBase):
             query = query.where(Grade.district == district)
         paging = await self.query_page(query, page_request)
         return paging
+    #根据学校ID和年级ID 设置年级的班级数量自增1
+    async def increment_class_number(self,school_id,grade_id):
+        session = await self.master_db()
+        query = update(Grade).where(Grade.school_id == school_id).where(Grade.id == grade_id).values(
+            class_number= Grade.class_number + 1
+        )
+        await session.execute(query)
+        await session.commit()
