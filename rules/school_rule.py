@@ -56,11 +56,6 @@ class SchoolRule(object):
         if not school_db:
             return None
         if extra_model:
-            if (extra_model== InstitutionKeyInfo):
-                # 加了转换
-                pass
-
-
             school = orm_model_to_view_model(school_db, extra_model,other_mapper=self.other_mapper)
         else:
             school = orm_model_to_view_model(school_db, SchoolModel)
