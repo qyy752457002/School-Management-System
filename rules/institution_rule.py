@@ -18,7 +18,7 @@ from models.student_transaction import AuditAction
 from rules.common.common_rule import send_request
 from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
-from views.common.common_view import workflow_service_config
+from views.common.common_view import workflow_service_config, map_keys
 from views.models.institutions import Institutions as InstitutionModel, Institutions, InstitutionKeyInfo, \
     InstitutionOptional
 from views.models.planning_school import PlanningSchoolTransactionAudit, PlanningSchoolStatus
@@ -146,3 +146,38 @@ class InstitutionRule(SchoolRule):
         except Exception as e:
             print(e)
         return response
+
+    async def deal_school(self,process_instance_id ,action, ):
+        #  读取流程实例ID
+        school = await self.school_dao.get_school_by_process_instance_id(process_instance_id)
+        if not school:
+            print('未查到规划信息',process_instance_id)
+            return
+        if action=='open':
+            res = await self.update_school_status(school.id,  PlanningSchoolStatus.NORMAL.value, 'open')
+        if action=='close':
+            res = await self.update_school_status(school.id,  PlanningSchoolStatus.CLOSED.value, 'close')
+        if action=='keyinfo_change':
+            # todo 把基本信息变更 改进去
+            # res = await self.update_school_status(school.id,  PlanningSchoolStatus.CLOSED.value, 'close')
+            # 读取流程的原始信息  更新到数据库
+            result = await self.system_rule.get_work_flow_instance_by_process_instance_id(
+                process_instance_id)
+            if not result.get('json_data'):
+                # return {'工作流数据异常 无法解析'}
+                pass
+            json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
+            print(json_data)
+            # 拿到的是 实际模型的数下  和 需要校验的原始的 键不同   这里转为 原始的键 先
+            json_data= map_keys(json_data, self.other_mapper)
+            # obj = view_model_to_orm_model(json_data, InstitutionKeyInfo,other_mapper=self.other_mapper)
+
+            planning_school_orm = InstitutionKeyInfo( **json_data)
+            planning_school_orm.id= school.id
+
+            res = await self.update_school_byargs(  planning_school_orm)
+            pass
+
+        # res = await self.update_school_status(school_id,  PlanningSchoolStatus.NORMAL.value, 'open')
+
+        pass
