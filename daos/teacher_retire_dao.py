@@ -45,7 +45,7 @@ class TeachersRetireDao(DAOBase):
 
     async def query_retire_teacher_with_page(self, query_model: TeacherRetireQuery,
                                              page_request: PageRequest) -> Paging:
-        query = select(TeacherRetire.retire_date,TeacherRetire.retire_number, Teacher.teacher_id,
+        query = select(TeacherRetire.retire_date, TeacherRetire.retire_number, Teacher.teacher_id,
                        Teacher.teacher_main_status,
                        Teacher.teacher_sub_status,
                        Teacher.teacher_name, Teacher.teacher_id_number,
@@ -53,9 +53,11 @@ class TeachersRetireDao(DAOBase):
                        Teacher.teacher_employer, TeacherInfo.highest_education,
                        TeacherInfo.political_status, TeacherInfo.in_post,
                        School.school_name,
-                       TeacherInfo.enter_school_time).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
-                                                           ).join(School, Teacher.teacher_employer == School.id,
-                                                                  )
+                       TeacherInfo.enter_school_time).join(TeacherRetire,
+                                                           Teacher.teacher_id == TeacherRetire.teacher_id).join(
+            TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id, isouter=True
+            ).join(School, Teacher.teacher_employer == School.id,
+                   )
         query = query.where(Teacher.teacher_main_status == TeacherMainStatus.RETIRED.value)
 
         if query_model.teacher_name:

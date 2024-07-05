@@ -225,7 +225,7 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
     email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
     highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
     highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
-    is_major_graduate: bool = Field(..., title="是否为师范生", description="是否为师范生")
+    is_major_graduate: bool|None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
 
     @model_validator(mode='after')
@@ -370,7 +370,7 @@ class TeacherInfo(BaseModel):  # 基本信息
     email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
     highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
     highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
-    is_major_graduate: bool = Field(..., title="是否为师范生", description="是否为师范生")
+    is_major_graduate: bool|None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
 
     @model_validator(mode='after')
@@ -616,7 +616,7 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
     email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
     highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
     highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
-    is_major_graduate: bool = Field(..., title="是否为师范生", description="是否为师范生")
+    is_major_graduate: bool|None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
 
 
@@ -743,7 +743,7 @@ class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
     email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
     highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
     highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
-    is_major_graduate: bool = Field(..., title="是否为师范生", description="是否为师范生")
+    is_major_graduate: bool|None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
 
 
@@ -870,7 +870,7 @@ class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
     email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
     highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
     highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
-    is_major_graduate: bool = Field(..., title="是否为师范生", description="是否为师范生")
+    is_major_graduate: bool|None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
 
 
@@ -995,7 +995,7 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
     email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
     highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
     highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
-    is_major_graduate: bool = Field(..., title="是否为师范生", description="是否为师范生")
+    is_major_graduate: bool|None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
 
     @model_validator(mode='after')
