@@ -47,9 +47,11 @@ class TeacherTransactionRule(object):
         添加教师异动
         """
         teacher_transaction_db = view_model_to_orm_model(teacher_transaction, TeacherTransaction)
+
         teacher_db = await self.teachers_dao.get_teachers_by_id(teacher_transaction_db.teacher_id)
         if not teacher_db:
             raise TeacherNotFoundError()
+        teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
         teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)
         return teacher_transaction
@@ -60,6 +62,7 @@ class TeacherTransactionRule(object):
         """
         transaction_type = teacher_transaction.transaction_type
         teacher_transaction_db = view_model_to_orm_model(teacher_transaction, TeacherTransaction)
+        teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_db = await self.teachers_dao.get_teachers_by_id(teacher_transaction_db.teacher_id)
         teacher_sub_status = teacher_db.teacher_sub_status
         if not teacher_db:
@@ -69,42 +72,44 @@ class TeacherTransactionRule(object):
         if transaction_type != TransactionType.INTERNAL.value:
             teacher_db.teacher_sub_status = transaction_type
             await self.teachers_dao.update_teachers(teacher_db, "teacher_sub_status")
+            teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
             teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
             teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)
-            teacher_transaction_log = OperationRecord(
-                action_target_id=teacher_transaction.teacher_id,
-                target=OperationTarget.TEACHER.value,
-                action_type=OperationType.CREATE.value,
-                ip="127.0.0.1",
-                change_data="",
-                operation_time=datetime.now(),
-                doc_upload="",
-                change_module=ChangeModule.TRANSACTION.value,
-                change_detail=f'{teacher_transaction.transaction_type}',
-                status="/",
-                operator_id=1,
-                operator_name=user_id,
-                process_instance_id=0)
+            # teacher_transaction_log = OperationRecord(
+            #     action_target_id=teacher_transaction.teacher_id,
+            #     target=OperationTarget.TEACHER.value,
+            #     action_type=OperationType.CREATE.value,
+            #     ip="127.0.0.1",
+            #     change_data="",
+            #     operation_time=datetime.now(),
+            #     doc_upload="",
+            #     change_module=ChangeModule.TRANSACTION.value,
+            #     change_detail=f'{teacher_transaction.transaction_type}',
+            #     status="/",
+            #     operator_id=1,
+            #     operator_name=user_id,
+            #     process_instance_id=0)
         else:
             teacher_db.teacher_sub_status = transaction_type
             await self.teachers_dao.update_teachers(teacher_db, "teacher_sub_status")
+            teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
             teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
             teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)
-            teacher_transaction_log = OperationRecord(
-                action_target_id=teacher_transaction.teacher_id,
-                target=OperationTarget.TEACHER.value,
-                action_type=OperationType.CREATE.value,
-                ip="127.0.0.1",
-                change_data=f'{{"原岗位":{teacher_transaction.original_position}, "新岗位":{teacher_transaction.current_position}}}',
-                operation_time=datetime.now(),
-                doc_upload="",
-                change_module=ChangeModule.TRANSACTION.value,
-                change_detail=f'{teacher_transaction.transaction_type}',
-                status="/",
-                operator_id=1,
-                operator_name=user_id,
-                process_instance_id=0)
-        await self.operation_record_rule.add_operation_record(teacher_transaction_log)
+        #     teacher_transaction_log = OperationRecord(
+        #         action_target_id=teacher_transaction.teacher_id,
+        #         target=OperationTarget.TEACHER.value,
+        #         action_type=OperationType.CREATE.value,
+        #         ip="127.0.0.1",
+        #         change_data=f'{{"原岗位":{teacher_transaction.original_position}, "新岗位":{teacher_transaction.current_position}}}',
+        #         operation_time=datetime.now(),
+        #         doc_upload="",
+        #         change_module=ChangeModule.TRANSACTION.value,
+        #         change_detail=f'{teacher_transaction.transaction_type}',
+        #         status="/",
+        #         operator_id=1,
+        #         operator_name=user_id,
+        #         process_instance_id=0)
+        # await self.operation_record_rule.add_operation_record(teacher_transaction_log)
         return teacher_transaction
 
     async def delete_teacher_transaction(self, teacher_transaction_id):
@@ -176,7 +181,7 @@ class TeacherTransactionRule(object):
         teacher_transaction.approval_status = "revoked"
         return await self.teacher_transaction_dao.update_teacher_transaction(teacher_transaction, "approval_status")
 
-    async def transaction_teacher_active(self, teachers_id,transaction_id):
+    async def transaction_teacher_active(self, teachers_id, transaction_id):
         teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
         if not teachers:
             raise TeacherNotFoundError()
