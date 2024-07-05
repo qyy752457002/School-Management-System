@@ -115,9 +115,11 @@ class StudentBaseInfo(BaseDBModel):
     permanent_address: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="常住地址")
     remark: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="备注", )
     county: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="区县")
-    emporary_borrowing_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="临时借读状态",
-                                                           default="Y")
+    emporary_borrowing_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="临时借读状态",default="Y")
     identity: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份",default='')
+    nationality: Mapped[str] = mapped_column(String(64), nullable=True, comment="国籍/地区",default='')
+    enrollment_method: Mapped[str] = mapped_column(String(64), nullable=True, comment="就读方式",default='')
+
 
     flow_out_time: Mapped[str] = mapped_column(String(64), default='', nullable=True, comment="流出时间")
     flow_out_reason: Mapped[str] = mapped_column(String(64), nullable=True, comment="流出原因")
