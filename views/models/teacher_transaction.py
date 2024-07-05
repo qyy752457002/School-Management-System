@@ -439,16 +439,16 @@ class TeacherRetireCreateModel(BaseModel):
                                                         description="操作时间")
     retire_date: Optional[date] | None = Field(None, title="离退休时间", description="离退休时间")
     retire_number: str = Field(..., title="离退休证号", description="离退休证号")
-    # @model_validator(mode='before')
-    # @classmethod
-    # def check_id_before(self, data: dict):
-    #     if isinstance(data["teacher_id"], str):
-    #         data["teacher_id"] = int(data["teacher_id"])
-    #     elif isinstance(data["teacher_id"], int):
-    #         data["teacher_id"] = str(data["teacher_id"])
-    #     else:
-    #         pass
-    #     return data
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        if isinstance(data["teacher_id"], str):
+            data["teacher_id"] = int(data["teacher_id"])
+        elif isinstance(data["teacher_id"], int):
+            data["teacher_id"] = str(data["teacher_id"])
+        else:
+            pass
+        return data
 
 
 class TeacherRetireUpdateModel(BaseModel):
