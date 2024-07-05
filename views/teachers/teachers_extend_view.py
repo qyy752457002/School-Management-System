@@ -90,11 +90,12 @@ class TeacherWorkExperienceView(BaseView):
         self.teacher_work_experience_rule = get_injector(TeacherWorkExperienceRule)
 
     async def get_teacher_work_experience(self,
-                                          teacher_work_experience_id: int = Query(...,
+                                          teacher_work_experience_id: str = Query(...,
                                                                                   title="teacher_work_experienceID",
                                                                                   description="teacher_work_experienceID",
                                                                                   example=1234)
                                           ):
+        teacher_work_experience_id = int(teacher_work_experience_id)
         res = await self.teacher_work_experience_rule.get_teacher_work_experience_by_teacher_work_experience_id(
             teacher_work_experience_id)
         return res
@@ -104,11 +105,12 @@ class TeacherWorkExperienceView(BaseView):
         return res
 
     async def delete_teacher_work_experience(self,
-                                             teacher_work_experience_id: int = Query(...,
+                                             teacher_work_experience_id: str = Query(...,
                                                                                      title="teacher_work_experienceID",
                                                                                      description="teacher_work_experienceID",
                                                                                      example=1234)
                                              ):
+        teacher_work_experience_id = int(teacher_work_experience_id)
         await self.teacher_work_experience_rule.delete_teacher_work_experience(teacher_work_experience_id)
         return str(teacher_work_experience_id)
 
@@ -116,7 +118,7 @@ class TeacherWorkExperienceView(BaseView):
         res = await self.teacher_work_experience_rule.update_teacher_work_experience(teacher_work_experience)
         return res
 
-    async def get_teacher_work_experience_all(self, teacher_id: int = Query(..., title="teacher_id",
+    async def get_teacher_work_experience_all(self, teacher_id: str = Query(..., title="teacher_id",
                                                                             description="teacher_id",
                                                                             example=1234)):
         return await self.teacher_work_experience_rule.get_all_teacher_work_experience(teacher_id)

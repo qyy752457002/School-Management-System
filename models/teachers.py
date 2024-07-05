@@ -1,4 +1,4 @@
-from sqlalchemy import String, Date
+from sqlalchemy import String, Date, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -28,7 +28,7 @@ class Teacher(BaseDBModel):
     __tablename__ = 'lfun_teachers'
     __table_args__ = {'comment': '教师表模型'}
 
-    teacher_id: Mapped[int] = mapped_column(primary_key=True, comment="教师ID", autoincrement=True)
+    teacher_id: Mapped[int] = mapped_column( primary_key=True, comment="教师ID")
     teacher_gender: Mapped[str] = mapped_column(String(64), nullable=True, default="", comment="教师性别")
     teacher_name: Mapped[str] = mapped_column(String(64), nullable=True, default="", comment="教师名称")
     teacher_id_type: Mapped[str] = mapped_column(String(64), nullable=True, default="", comment="证件类型")

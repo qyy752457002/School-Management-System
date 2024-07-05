@@ -8,6 +8,7 @@ from models.teacher_work_experience import TeacherWorkExperience
 from views.models.teacher_extend import TeacherWorkExperienceModel, TeacherWorkExperienceUpdateModel
 # 雪花id生成器
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
+from views.common.common_view import convert_snowid_in_model
 
 
 @dataclass_inject
@@ -21,6 +22,8 @@ class TeacherWorkExperienceRule(object):
         if not teacher_work_experience_db:
             raise TeacherWorkExperienceNotFoundError()
         teacher_work_experience = orm_model_to_view_model(teacher_work_experience_db, TeacherWorkExperienceUpdateModel)
+        # teacher_work_experience = convert_snowid_in_model(teacher_work_experience,
+        #                                                   extra_colums=["teacher_work_experience_id", "teacher_id"])
         return teacher_work_experience
 
     async def add_teacher_work_experience(self, teacher_work_experience: TeacherWorkExperienceModel):
@@ -28,10 +31,12 @@ class TeacherWorkExperienceRule(object):
         if not exits_teacher:
             raise TeacherNotFoundError()
         teacher_work_experience_db = view_model_to_orm_model(teacher_work_experience, TeacherWorkExperience)
+        teacher_work_experience_db.teacher_work_experience_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_work_experience_db = await self.teacher_work_experience_dao.add_teacher_work_experience(
             teacher_work_experience_db)
-        teacher_work_experience_db.teacher_work_experience_id = SnowflakeIdGenerator(1, 1).generate_id()
-        teacher_work_experience = orm_model_to_view_model(teacher_work_experience_db, TeacherWorkExperienceModel)
+        teacher_work_experience = orm_model_to_view_model(teacher_work_experience_db, TeacherWorkExperienceUpdateModel)
+        # teacher_work_experience = convert_snowid_in_model(teacher_work_experience,
+        #                                                   extra_colums=["teacher_work_experience_id", "teacher_id"])
         return teacher_work_experience
 
     async def delete_teacher_work_experience(self, teacher_work_experience_id):
@@ -43,6 +48,8 @@ class TeacherWorkExperienceRule(object):
             exists_teacher_work_experience)
         teacher_work_experience = orm_model_to_view_model(teacher_work_experience_db, TeacherWorkExperienceModel,
                                                           exclude=[""])
+        # teacher_work_experience = convert_snowid_in_model(teacher_work_experience,
+        #                                                   extra_colums=["teacher_work_experience_id", "teacher_id"])
         return teacher_work_experience
 
     async def update_teacher_work_experience(self, teacher_work_experience: TeacherWorkExperienceUpdateModel):
@@ -56,6 +63,8 @@ class TeacherWorkExperienceRule(object):
                 need_update_list.append(key)
         teacher_work_experience = await self.teacher_work_experience_dao.update_teacher_work_experience(
             teacher_work_experience, *need_update_list)
+        convert_snowid_in_model(teacher_work_experience,
+                                extra_colums=["teacher_work_experience_id", "teacher_id"])
         return teacher_work_experience
 
     async def get_all_teacher_work_experience(self, teacher_id):

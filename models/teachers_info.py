@@ -51,6 +51,24 @@ class TeacherInfo(BaseDBModel):
        部门：department
        用户名：username
         密码：hash_password
+            hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
+    hukou_type: str = Field("", title="户口类别", description="户口类别", example="户口类别")
+    main_teaching_level: str = Field("", title="主要任课学段", description="主要任课学段", example="主要任课学段")
+    teacher_qualification_cert_num: str = Field("", title="教师资格证编号", description="教师资格证编号",
+                                                example="教师资格证编号")
+    teaching_discipline: str = Field("", title="任教学科", description="任教学科", example="任教学科")
+    language: str = Field("", title="语种", description="语种", example="语种")
+    language_proficiency_level: str = Field("", title="语言掌握程度", description="语言掌握程度",
+                                            example="语言掌握程度")
+    language_certificate_name: str = Field("", title="语言证书名称", description="语言证书名称", example="语言证书名称")
+    contact_address: str = Field("", title="通讯地址省市县", description="通讯地址省市县", example="通讯地址省市县")
+    contact_address_details: str = Field("", title="通讯地址详细信息", description="通讯地址详细信息",
+                                         example="通讯地址详细信息")
+    email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
+    highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
+    highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
+    is_major_graduate: bool = Field(..., title="是否为师范生", description="是否为师范生")
+    other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
        """
     __tablename__ = 'lfun_teachers_info'
     __table_args__ = {'comment': '教师基本信息表模型'}
@@ -114,4 +132,22 @@ class TeacherInfo(BaseDBModel):
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
     department: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="部门")
     org_id: Mapped[int] = mapped_column(INT, nullable=True, default=0, comment="机构ID")
+
+    hmotf: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="港澳台侨外")
+    hukou_type: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="户口类别")
+    main_teaching_level: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="主要任课学段")
+    teacher_qualification_cert_num: Mapped[str] = mapped_column(String(255), nullable=True, default="",
+                                                                comment="教师资格证编号")
+    teaching_discipline: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="任教学科")
+    language: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="语种")
+    language_proficiency_level: Mapped[str] = mapped_column(String(255), nullable=True, default="",
+                                                            comment="语言掌握程度")
+    language_certificate_name: Mapped[str] = mapped_column(String(255), nullable=True, default="",comment="语言证书名称")
+    contact_address: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="通讯地址省市县")
+    contact_address_details: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="通讯地址详细信息")
+    email: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="电子信箱")
+    highest_education_level: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="最高学历层次")
+    highest_degree_name: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="最高学位名称")
+    is_major_graduate: Mapped[bool] = mapped_column(nullable=True, default=False, comment="是否为师范生")
+    other_contact_address_details: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="其他联系方式")
 

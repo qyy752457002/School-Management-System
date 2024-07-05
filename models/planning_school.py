@@ -69,6 +69,8 @@ class PlanningSchool(BaseDBModel):
     senior_middle_planning_school_system: Mapped[str] = mapped_column(String(64), nullable=True, comment="高中学制",default='')
     process_instance_id: Mapped[int] = mapped_column(nullable=True,default=0, comment="流程ID")
     workflow_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="工作流审核状态", default='')
+    admin: Mapped[str] = mapped_column(String(64), nullable=True, comment="管理员", default='')
+    admin_phone: Mapped[str] = mapped_column(String(64), nullable=True, comment="管理员手机", default='')
 
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)
     updated_uid: Mapped[int] = mapped_column( nullable=True , comment="操作人",default=0)

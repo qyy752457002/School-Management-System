@@ -1,8 +1,8 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator, ValidationError, field_validator
 from datetime import date
 from fastapi import Query
 from models.public_enum import YesOrNo
-from typing import Optional, List
+from typing import Optional, List, Any
 
 
 class TeacherLearnExperienceModel(BaseModel):
@@ -99,6 +99,18 @@ class TeacherWorkExperienceModel(BaseModel):
     on_duty_position: str = Field("", title="在职岗位", description="在职岗位")
     institution_nature_category: str = Field("", title="单位性质类别", description="单位性质类别")
 
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        if isinstance(data["teacher_id"], str):
+            data["teacher_id"] = int(data["teacher_id"])
+        elif isinstance(data["teacher_id"], int):
+            data["teacher_id"] = str(data["teacher_id"])
+        else:
+            pass
+        return data
+
+
 
 class TeacherWorkExperienceComModel(TeacherWorkExperienceModel):
     pass
@@ -118,14 +130,31 @@ class TeacherWorkExperienceUpdateModel(BaseModel):
     在职岗位：on_duty_position
     单位性质类别：institution_nature_category
     """
-    teacher_work_experience_id: int = Field(..., title="teacher_work_experience_id",
-                                            description="teacher_work_experience_id")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_work_experience_id: int | str = Field(..., title="teacher_work_experience_id",
+                                                  description="teacher_work_experience_id")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
     start_date: date = Field(..., title="开始时间", description="开始时间")
     end_date: date = Field(..., title="结束时间", description="结束时间")
     on_duty_position: str = Field(..., title="在职岗位", description="在职岗位")
     institution_nature_category: str = Field("", title="单位性质类别", description="单位性质类别")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        if isinstance(data["teacher_id"], str):
+            data["teacher_id"] = int(data["teacher_id"])
+        elif isinstance(data["teacher_id"], int):
+            data["teacher_id"] = str(data["teacher_id"])
+        else:
+            pass
+        if isinstance(data["teacher_work_experience_id"], str):
+            data["teacher_work_experience_id"] = int(data["teacher_work_experience_id"])
+        elif isinstance(data["teacher_work_experience_id"], int):
+            data["teacher_work_experience_id"] = str(data["teacher_work_experience_id"])
+        else:
+            pass
+        return data
 
 
 # class TeacherJobAppointmentsModel(BaseModel):
@@ -517,10 +546,9 @@ class EducationalTeachingModel(BaseModel):
 class EducationalTeachingComModel(EducationalTeachingModel):
     pass
 
+
 class EducationalTeachingResultModel(EducationalTeachingModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
-
-
 
 
 class EducationalTeachingUpdateModel(BaseModel):
@@ -584,8 +612,6 @@ class DomesticTrainingResultModel(DomesticTrainingModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
-
-
 class DomesticTrainingUpdateModel(BaseModel):
     """
     domestic_training：domestic_training_id
@@ -622,7 +648,7 @@ class OverseasStudyModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     start_date: date = Field(..., title="开始日期", description="开始日期")
     end_date: date = Field(..., title="结束日期", description="结束日期")
-    country_region: str = Field(..., title="国家地区", description="国家地区")
+    country_region: str = Field(..., title="国家/地区", description="国家地区")
     training_institution_name: str = Field("", title="研修机构名称", description="研修机构名称")
     project_name: str = Field(..., title="项目名称", description="项目名称")
     organizing_institution_name: str = Field("", title="项目组织单位名称", description="项目组织单位名称")
@@ -634,7 +660,6 @@ class OverseasStudyComModel(OverseasStudyModel):
 
 class OverseasStudyResultModel(OverseasStudyModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
-
 
 
 class OverseasStudyUpdateModel(BaseModel):
@@ -652,7 +677,7 @@ class OverseasStudyUpdateModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     start_date: date = Field(..., title="开始日期", description="开始日期")
     end_date: date = Field(..., title="结束日期", description="结束日期")
-    country_region: str = Field(..., title="国家地区", description="国家地区")
+    country_region: str = Field(..., title="国家/地区", description="国家地区")
     training_institution_name: str = Field("", title="研修机构名称", description="研修机构名称")
     project_name: str = Field(..., title="项目名称", description="项目名称")
     organizing_institution_name: str = Field("", title="项目组织单位名称", description="项目组织单位名称")
@@ -709,7 +734,6 @@ class AnnualReviewComModel(AnnualReviewModel):
 
 class AnnualReviewResultModel(AnnualReviewModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
-
 
 
 class AnnualReviewUpdateModel(BaseModel):

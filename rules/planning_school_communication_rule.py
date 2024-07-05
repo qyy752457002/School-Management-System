@@ -136,7 +136,7 @@ class PlanningSchoolCommunicationRule(object):
 
 
     async def update_planning_school_communication_byargs(self, planning_school_communication,ctype=1):
-        if planning_school_communication.planning_school_id>0:
+        if int(planning_school_communication.planning_school_id)>0:
             # planning_school = await self.planning_school_rule.get_planning_school_by_id(planning_school_communication.planning_school_id)
             exists_planning_school_communication = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(planning_school_communication.planning_school_id)
 
