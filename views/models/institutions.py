@@ -175,7 +175,7 @@ class InstitutionBaseInfo(BaseModel):
     school_org_type: str |None = Field("", alias='institution_type',  title='单位类型',  description="单位类型 ",examples=[''])
 
     school_en_name: str |None = Field("",alias='institution_en_name',title='单位名称英文',   description=" 单位名称英文",examples=['CEDUCUL'])
-    institution_category: str |None = Field("", title='单位分类',  description=" 单位分类",examples=['事业单位'])
+    institution_category: str |None = Field("", title='单位分类',  description=" 单位分类",examples=['institution'])
     sy_zones: str |None = Field("",   title='属地管理行政部门所在地地区',  description=" 属地管理行政部门所在地地区",examples=['铁西区'])
 
     school_no: str |None = Field("",alias="institution_code",   title='机构代码',  description=" 机构代码",examples=['DKE1865656'])

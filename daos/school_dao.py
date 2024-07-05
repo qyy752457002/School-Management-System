@@ -6,6 +6,7 @@ from mini_framework.web.std_models.page import PageRequest
 
 from models.planning_school import PlanningSchool
 from models.school import School
+from models.school_communication import SchoolCommunication
 
 
 class SchoolDAO(DAOBase):
@@ -111,7 +112,8 @@ class SchoolDAO(DAOBase):
                                               block,school_level,borough,status,founder_type,
                                               founder_type_lv2,
                                               founder_type_lv3 ,planning_school_id,province,city,institution_category,social_credit_code,school_org_type) -> Paging:
-        query = select(School).join(PlanningSchool, PlanningSchool.id == School.planning_school_id, isouter=True).order_by(desc(School.id))
+        query = (select(School,SchoolCommunication).join(PlanningSchool, PlanningSchool.id == School.planning_school_id, isouter=True)
+                 .join(SchoolCommunication, SchoolCommunication.school_id == School.id, isouter=True).order_by(desc(School.id)))
         query = query.where(School.is_deleted == False)
 
         if school_org_type:
