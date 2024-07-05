@@ -6,6 +6,7 @@ from mini_framework.web.std_models.page import PageRequest
 
 from models.planning_school import PlanningSchool
 from models.school import School
+from models.school_communication import SchoolCommunication
 
 
 class SchoolDAO(DAOBase):
@@ -111,7 +112,13 @@ class SchoolDAO(DAOBase):
                                               block,school_level,borough,status,founder_type,
                                               founder_type_lv2,
                                               founder_type_lv3 ,planning_school_id,province,city,institution_category,social_credit_code,school_org_type) -> Paging:
-        query = select(School).join(PlanningSchool, PlanningSchool.id == School.planning_school_id, isouter=True).order_by(desc(School.id))
+
+        query = (select(
+            School.id, School.planning_school_id, School.institution_category, School.school_name, School.school_no, School.school_code, School.school_operation_license_number, School.block, School.borough, School.school_edu_level, School.school_category, School.school_operation_type, School.school_org_type, School.school_level, School.status, School.kg_level, School.school_short_name, School.school_en_name, School.create_school_date, School.social_credit_code, School.founder_type, School.founder_type_lv2, School.founder_type_lv3, School.founder_name, School.founder_code, School.location_economic_attribute, School.urban_ethnic_nature, School.leg_repr_certificatenumber, School.urban_rural_nature, School.school_org_form, School.school_closure_date, School.department_unit_number, School.sy_zones, School.historical_evolution, School.sy_zones_pro, School.primary_school_system, School.primary_school_entry_age, School.junior_middle_school_system, School.junior_middle_school_entry_age, School.senior_middle_school_system, School.membership_no, School.is_entity, School.process_instance_id, School.workflow_status, School.created_uid, School.updated_uid, School.created_at, School.updated_at, School.is_deleted,
+
+
+            SchoolCommunication.leg_repr_name).select_from(School).join(PlanningSchool, PlanningSchool.id == School.planning_school_id, isouter=True)
+                 .join(SchoolCommunication, SchoolCommunication.school_id == School.id, isouter=True).order_by(desc(School.id)))
         query = query.where(School.is_deleted == False)
 
         if school_org_type:

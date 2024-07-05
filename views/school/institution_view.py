@@ -9,7 +9,7 @@ from mini_framework.web.toolkit.model_utilities import view_model_to_orm_model
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
-from business_exceptions.institution import InstitutionStatusError
+from business_exceptions.institution import InstitutionStatusError, InstitutionNotFoundError
 from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
 from rules.school_communication_rule import SchoolCommunicationRule
@@ -163,24 +163,27 @@ class InstitutionView(BaseView):
     # 修改 变更 基本信息
     async def patch_baseinfo(self,
                              institution_baseinfo: InstitutionBaseInfo,
-                             institution_cominfo: InstitutionCommunications,
+                             institution_communication: InstitutionCommunications,
 
                              ):
         # 学校转ins
         origin = await self.institution_rule.get_school_by_id(institution_baseinfo.id,extra_model=InstitutionBaseInfo)
+
+        if not  origin:
+            raise InstitutionNotFoundError()
 
         if origin.status == PlanningSchoolStatus.DRAFT.value:
             institution_baseinfo.status = PlanningSchoolStatus.OPENING.value
             # raise InstitutionStatusError(f"{origin.institution_name}状态为正常，不能修改")
         log_con = compare_modify_fields(institution_baseinfo, origin)
         # todo 完成转换 v2m ins 转学校
-        school_db = view_model_to_orm_model(institution_baseinfo, School,    exclude=["id"])    #这里已经是school开头的字段 应该可以直接转
+        # school_db = view_model_to_orm_model(institution_baseinfo, School,    exclude=["id"])    #这里已经是school开头的字段 应该可以直接转
 
 
-        res = await self.institution_rule.update_school_byargs(school_db, )
-        institution_cominfo.school_id = institution_baseinfo.id
+        res = await self.institution_rule.update_school_byargs(institution_baseinfo, )
+        institution_communication.school_id = institution_baseinfo.id
 
-        res_com = await self.school_communication_rule.update_school_communication_byargs(institution_cominfo, )
+        res_com = await self.school_communication_rule.update_school_communication_byargs(institution_communication, )
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
@@ -204,32 +207,14 @@ class InstitutionView(BaseView):
                    institution_name: str = Query(None, description="机构名称", example='XX小学'),
                    institution_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),
                    block: str = Query("", title=" ", description="地域管辖区", ),
-                   school_code: str = Query("", title="", description=" 园所标识码", ),
-                   school_level: str = Query("", title="", description=" 学校星级", ),
                    borough: str = Query("", title="  ", description=" 行政管辖区", ),
-                   status: PlanningSchoolStatus = Query("", title="", description=" 状态", examples=['正常']),
-
-                   founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
-                                                                         examples=['地方']),
-                   founder_type_lv2: List[str] = Query([], title="", description="举办者类型二级",
-                                                       examples=['教育部门']),
-                   founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
-                                                       examples=['县级教育部门']),
-
-                   school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1, max_length=20,
-                                          example='SC2032633'),
-                   school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
-                                            example='XX小学'),
-                   planning_school_id: int = Query(None, description="规划校ID", example='1'),
-                   province: str = Query("", title="", description="省份代码", ),
-                   city: str = Query("", title="", description="城市", ),
-
+                   # status: PlanningSchoolStatus = Query("", title="", description=" 状态", examples=['正常']),
                    ):
         print(page_request)
         items=[]
         if not institution_category:
             institution_category = [InstitutionType.INSTITUTION,InstitutionType.ADMINISTRATION]
-        res = await self.institution_rule.query_school_with_page(page_request,institution_category=institution_category,school_name=institution_name,school_org_type=institution_org_type,block=block,borough=borough,social_credit_code=social_credit_code,extra_model=InstitutionOptional)
+        res = await self.institution_rule.query_school_with_page(page_request,institution_category=institution_category,school_name=institution_name,school_org_type=institution_org_type,block=block,borough=borough,social_credit_code=social_credit_code,extra_model=InstitutionBaseInfo)
         return res
 
 
