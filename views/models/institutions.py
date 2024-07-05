@@ -163,7 +163,7 @@ class InstitutionsWorkflowInfo(BaseModel):
     workflow_status: str |None = Field("",   title='',  description=" ",examples=[''])
     process_instance_id:int|None= Field(0, title="", description="", example='1')
 
-    status: str = Field(PlanningSchoolStatus.DRAFT,  alias='',   title='状态',  description=" 状态",examples=[''])
+    status: str = Field( '',  alias='',   title='状态',  description=" 状态",examples=[''])
     planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
 
 
