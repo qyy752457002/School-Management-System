@@ -41,7 +41,8 @@ class Classes(BaseDBModel):
 
     session_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="届别名称",default='')
 
-    class_name: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班级名称")
+    class_name: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班级别名")
+    class_standard_name: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班级名称")
     class_number: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班号")
     class_index: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班级序号")
     year_established: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="建班年份")
