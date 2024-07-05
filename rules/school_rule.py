@@ -4,6 +4,7 @@ import json
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.utils.json import JsonUtils
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 import hashlib
 
@@ -79,6 +80,7 @@ class SchoolRule(object):
         school_db.status =  PlanningSchoolStatus.DRAFT.value
         school_db.created_uid = 0
         school_db.updated_uid = 0
+        school_db.id = SnowflakeIdGenerator(1, 1).generate_id()
         if school.planning_school_id and  school.planning_school_id>0 :
             # rule互相应用有问题  用dao
             p_exists_school_model = await self.p_school_dao.get_planning_school_by_id(  school.planning_school_id)
