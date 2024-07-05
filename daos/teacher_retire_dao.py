@@ -53,9 +53,9 @@ class TeachersRetireDao(DAOBase):
                        Teacher.teacher_employer, TeacherInfo.highest_education,
                        TeacherInfo.political_status, TeacherInfo.in_post,
                        School.school_name,
-                       TeacherInfo.enter_school_time).join(Teacher,
+                       TeacherInfo.enter_school_time).join(TeacherRetire,
                                                            Teacher.teacher_id == TeacherRetire.teacher_id).join(
-            TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,
+            TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id, isouter=True
             ).join(School, Teacher.teacher_employer == School.id,
                    )
         query = query.where(Teacher.teacher_main_status == TeacherMainStatus.RETIRED.value)
