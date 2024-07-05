@@ -57,27 +57,28 @@ class ClassesRule(object):
             if not check_major:
                 raise Exception(f"专业信息{classes.major_for_vocational}不存在,请选择正确的专业")
 
-        classes_db = view_model_to_orm_model(classes, Classes, exclude=["id"],other_mapper={
 
-        })
         # 学校类别  届别 年级 班号
         class_std_name_mix = []
         if classes.school_id:
             school_db = await self.school_dao.get_school_by_id(classes.school_id)
-            class_std_name_mix.append(school_db.school_category)
+            class_std_name_mix.append(school_db.school_category if school_db.school_category else '')
             pass
         if classes.session_id:
             session_db = await self.session_dao.get_student_session_by_id(classes.session_id)
-            class_std_name_mix.append(session_db.session_name)
+            class_std_name_mix.append(session_db.session_name if session_db.session_name else '')
             pass
         if classes.grade_id:
             grade_db = await self.grade_dao.get_grade_by_id(classes.grade_id)
-            class_std_name_mix.append(grade_db.grade_name)
+            class_std_name_mix.append(grade_db.grade_name if grade_db.grade_name else '')
             pass
         class_std_name_mix.append(classes.class_number)
-        classes.class_standard_name = "-".join(class_std_name_mix)
+        classes.class_standard_name = "".join(class_std_name_mix)
+        print(classes)
 
+        classes_db = view_model_to_orm_model(classes, Classes, exclude=["id"],other_mapper={
 
+        })
         classes_db = await self.classes_dao.add_classes(classes_db)
         classes = orm_model_to_view_model(classes_db, ClassesModel, exclude=["created_at", 'updated_at'])
         await self.grade_dao.increment_class_number(classes.school_id,classes.grade_id)
