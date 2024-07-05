@@ -301,10 +301,15 @@ class SchoolRule(object):
 
 
     # 搜索使用
-    async def query_schools(self,school_name,extend_params:ExtendParams|None,school_id=None,block=None,borough=None):
+    async def query_schools(self,school_name,extend_params:ExtendParams|None,school_id=None,block=None,borough=None,institution_category=None,extra_model =None):
         # block,borough
         session = await db_connection_manager.get_async_session("default", True)
         query = select(School)
+        if institution_category:
+            if isinstance(institution_category, list):
+                query = query.where(School.institution_category.in_(institution_category))
+            else:
+                query = query.where(School.institution_category == institution_category)
         if school_name:
             if ',' in school_name:
                 school_name = school_name.split(',')
@@ -356,7 +361,11 @@ class SchoolRule(object):
 
         lst = []
         for row in res:
-            planning_school = orm_model_to_view_model(row, SchoolModel)
+            if extra_model:
+
+                planning_school = orm_model_to_view_model(row, extra_model,other_mapper=self.other_mapper)
+            else:
+                planning_school = orm_model_to_view_model(row, SchoolModel)
 
             # account = PlanningSchool(school_id=row.school_id,
             #                  grade_no=row.grade_no,
