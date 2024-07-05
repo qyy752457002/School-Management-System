@@ -54,7 +54,8 @@ class School(BaseModel):
             "example": {
             }
         }
-
+    @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id", "planning_school_id"]
         for _change in _change_list:
@@ -94,6 +95,8 @@ class SchoolBaseInfoOptional(BaseModel):
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
     admin: str |None = Field("",   title='管理员',  description=" ",examples=[''])
     admin_phone: str |None = Field("",   title='管理员手机',  description=" ",examples=[''])
+    @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id", ]
         for _change in _change_list:
@@ -134,6 +137,8 @@ class SchoolBaseInfo(BaseModel):
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
     admin: str |None = Field("",   title='管理员',  description=" ",examples=[''])
     admin_phone: str |None = Field("",   title='管理员手机',  description=" ",examples=[''])
+    @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id", ]
         for _change in _change_list:
@@ -159,6 +164,8 @@ class SchoolKeyInfo(BaseModel):
     school_operation_type: str|None = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
     school_level: str|None = Query(None, title="", description=" 学校星级",examples=['5'])
+    @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id", 'planning_school_id']
         for _change in _change_list:
@@ -170,9 +177,9 @@ class SchoolKeyInfo(BaseModel):
                 pass
 
 class SchoolKeyAddInfo(BaseModel):
-    id:int= Query(None, title="", description="学校id", example='1')
+    id:int|str= Query(None, title="", description="学校id", example='1')
     school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
-    planning_school_id: int = Field(0, title="", description="规划校id",examples=['1'])
+    planning_school_id: int|str = Field(0, title="", description="规划校id",examples=['1'])
     school_no:str= Query(..., title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633')
     borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
     block: str = Query(..., title=" Author", description="地域管辖区",examples=['铁西区'])
@@ -182,6 +189,8 @@ class SchoolKeyAddInfo(BaseModel):
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
     school_level: str|None = Query(None, title="", description=" 学校星级",examples=['5'])
     school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
+    @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'planning_school_id' ]
         for _change in _change_list:
@@ -221,6 +230,8 @@ class SchoolPageSearch(BaseModel):
     province: str |None= Query("", title=" ", description="", ),
     city: str|None = Query("", title=" ", description="", ),
     planning_school_id: int|None = Query(0, title=" ", description="", ),
+    @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["planning_school_id", ]
         for _change in _change_list:
