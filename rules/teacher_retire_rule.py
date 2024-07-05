@@ -6,7 +6,7 @@ from models.teachers_info import TeacherInfo
 from views.models.teachers import TeacherInfo as TeachersInfoModel
 from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel, TeacherInfoSubmit, \
     CurrentTeacherQuery, CurrentTeacherQueryRe, CurrentTeacherInfoSaveModel, NewTeacherInfoSaveModel, \
-    TeacherInfoCreateModel, NewTeacherApprovalCreate
+    TeacherInfoCreateModel
 from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError, QueryError
 from daos.teachers_dao import TeachersDao
 from rules.organization_memebers_rule import OrganizationMembersRule
@@ -54,7 +54,7 @@ class TeacherRetireRule(object):
         if teacher_main_status != "employed":
             raise TransactionError()
         teacher_transaction_db = view_model_to_orm_model(teacher_retire, TeacherRetire)
-        teacher_transaction_db.teacher_retire_id = SnowflakeIdGenerator(1, 1).generate_id()
+        # teacher_transaction_db.teacher_retire_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_transaction_db = await self.teacher_retire_dao.add_teacher_retire(teacher_transaction_db)
         teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherRetireUpdateModel)
         teacher_db.teacher_sub_status = teacher_retire.transaction_type
