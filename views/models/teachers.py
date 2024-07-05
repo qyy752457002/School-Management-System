@@ -38,7 +38,7 @@ class Teachers(BaseModel):
     单位部门：teacher_employer
     头像：teacher_avatar
     """
-    teacher_id: int = Field(None, title="教师ID", description="教师ID")
+    teacher_id: int|str = Field(None, title="教师ID", description="教师ID")
     teacher_name: str = Field(..., title="姓名", description="教师名称")
     teacher_gender: Gender = Field(..., title="性别", description="教师性别")
     teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
