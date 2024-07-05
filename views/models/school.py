@@ -191,7 +191,7 @@ class SchoolKeyAddInfo(BaseModel):
     school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
     @model_validator(mode="before")
     @classmethod
-    def check_id_before(self, data: dict):
+    def check_id_before(self, data):
         _change_list= ["id",'planning_school_id' ]
         for _change in _change_list:
             if isinstance(data[_change], str):
@@ -200,6 +200,7 @@ class SchoolKeyAddInfo(BaseModel):
                 data[_change] = str(data[_change])
             else:
                 pass
+        return data
 
 class SchoolTask(BaseModel):
     file_name: str = Field('', title="",description="",examples=[' '])

@@ -1,5 +1,5 @@
 from fastapi import Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class SchoolEduInfo(BaseModel):
@@ -28,6 +28,8 @@ class SchoolEduInfo(BaseModel):
     affil_univ_name: str = Field(None, title="", description="附属高校（机构）名称", examples=['是'])
     is_last_yr_revok: bool = Field(None, title="", description="是否上年撤销", examples=[False])
     is_school_counted: bool = Field(None, title="", description="是否计校数", examples=[False])
+    @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["school_id", 'id']
         for _change in _change_list:
@@ -37,5 +39,6 @@ class SchoolEduInfo(BaseModel):
                 data[_change] = str(data[_change])
             else:
                 pass
+        return data
 
 
