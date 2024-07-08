@@ -86,7 +86,7 @@ class SchoolView(BaseView):
         print(res_comm, '模型2 res')
         #
         resedu = SchoolEduInfo(id=0)
-        resedu.school_id = res.id
+        resedu.school_id = int( res.id)
         # 保存教育信息
         res_edu = await self.school_eduinfo_rule.add_school_eduinfo(resedu, convertmodel=False)
         print(res_edu)
