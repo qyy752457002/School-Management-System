@@ -8,8 +8,8 @@ class SchoolEduInfo(BaseModel):
 
     """
 
-    id: int = Query(None, title="", description="", example='1'),
-    school_id: int = Field(0, title="", description="学校id", examples=['1'])
+    id: int|str = Query(None, title="", description="", example='1'),
+    school_id: int|str = Field(0, title="", description="学校id", examples=['1'])
 
     is_ethnic_school: bool = Field(None, title="", description="是否民族校", examples=[False])
     is_att_class: bool = Field(None, title="", description="是否附设班", examples=[False])
