@@ -115,6 +115,7 @@ class SchoolRule(object):
 
         school_db = await self.school_dao.add_school(school_db)
         school = orm_model_to_view_model(school_db, SchoolKeyAddInfo, exclude=["created_at",'updated_at'])
+        convert_snowid_in_model(school,['planning_school_id'])
         return school
 
 
