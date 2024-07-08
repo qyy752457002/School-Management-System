@@ -250,8 +250,6 @@ class StudentsBaseInfo(BaseModel):
     class_number: str = Field("", title="班号", description="班号")
     school: str = Field("", title="学校", description="学校")
     registration_date: date = Field(date(1970, 1, 1), title="登记日期", description="登记日期")
-    residence_address: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
-    residence_district: str = Field("", title="户口所在地new", description="户口所在地new")
     birthplace_district: str = Field("", title="出生地行政区", description="出生地行政区")
     native_place_district: str = Field("", title="籍贯行政区", description="籍贯行政区")
     religious_belief: str = Field("", title="宗教信仰", description="宗教信仰")
@@ -285,6 +283,13 @@ class StudentsBaseInfo(BaseModel):
     edu_number: str = Field('', title="", description="学籍号码")
 
     loc_area_pro: str = Field("", title="", description="", max_length=50)
+    residence_address: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
+    residence_district: str = Field("", title="户口所在地new", description="户口所在地new")
+    health_status: str = Field('', title="健康状况", description="健康状况")
+    birth_place: str = Field("", title="出生地", description="出生地")
+    admission_date: date = Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
+    nationality: str = Field("", title="国籍/地区", description="国籍/地区")
+    enrollment_method: str = Field("", title="就读方式", description="就读方式")
 
 
 
@@ -351,7 +356,11 @@ class NewBaseInfoUpdate(BaseModel):
     permanent_address: str = Field("", title="常住地址", description="常住地址")
     residence_address: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
     residence_district: str = Field("", title="户口所在地new", description="户口所在地new")
-
+    health_status: str = Field('', title="健康状况", description="健康状况")
+    birth_place: str = Field("", title="出生地", description="出生地")
+    admission_date: date = Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
+    nationality: str = Field("", title="国籍/地区", description="国籍/地区")
+    enrollment_method: str = Field("", title="就读方式", description="就读方式")
 # 学生家庭成员信息模型
 class StudentsFamilyInfo(BaseModel):
     """
