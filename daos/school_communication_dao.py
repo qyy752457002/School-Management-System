@@ -22,6 +22,8 @@ class SchoolCommunicationDAO(DAOBase):
 
 
     async def add_school_communication(self, school_communication):
+        if hasattr(school_communication, 'school_id'):
+            school_communication.school_id =  int(school_communication.school_id)
         session = await self.master_db()
         session.add(school_communication)
         await session.commit()

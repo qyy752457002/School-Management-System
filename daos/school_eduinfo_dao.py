@@ -20,6 +20,8 @@ class SchoolEduinfoDAO(DAOBase):
         return result.scalar_one_or_none()
 
     async def add_school_eduinfo(self, school_eduinfo):
+        if hasattr(school_eduinfo, 'school_id'):
+            school_eduinfo.school_id =  int(school_eduinfo.school_id)
         session = await self.master_db()
         session.add(school_eduinfo)
         await session.commit()
