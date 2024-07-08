@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi.params import Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
 from views.models.school_communications import SchoolCommunications
@@ -10,7 +10,7 @@ from views.models.system import InstitutionType
 
 class Institutions(BaseModel):
     #   title 等 必须和表头一样
-    id:int= Query(None, title="", description="", example='1')
+    id:int|str= Query(None, title="", description="", example='1')
 
     institution_name: str = Field(..., title='单位名称', description="单位名称",examples=['文化部'])
     institution_en_name: str = Field(...,title='单位名称英文',   description=" 单位名称英文",examples=['CEDUCUL'])
@@ -47,6 +47,20 @@ class Institutions(BaseModel):
     membership_category: str = Field(...,   title='隶属单位类型',  description=" 隶属单位类型",examples=['行政'])
     workflow_status: str|None = Field("",   title='',  description=" ",examples=[''])
     process_instance_id:int= Query(0, title="", description="", example='1')
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id", ]
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 class InstitutionTask(BaseModel):
     """{'file_name':filename,'bucket':bucket,'scene':scene},"""
@@ -62,7 +76,7 @@ class InstitutionsValid(BaseModel):
 
 class InstitutionOptional(BaseModel):
     #   title 等 必须和表头一样 todo 为了保持原样输出 必须 进行转换 2个视图模型的映射
-    id:int= Query(None, title="", description="", example='1')
+    id:int|str= Query(None, title="", description="", example='1')
 
     institution_name: str|None = Field("", title='单位名称', description="单位名称",examples=['文化部'])
     institution_en_name: str |None= Field("",title='单位名称英文',   description=" 单位名称英文",examples=['CEDUCUL'])
@@ -101,6 +115,20 @@ class InstitutionOptional(BaseModel):
     process_instance_id:int|None= Query(0, title="", description="", example='1')
     block: str |None = Query("", title=" ", description="地域管辖区", ),
     borough: str |None = Query("", title="  ", description=" 行政管辖区", ),
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id", ]
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class InstitutionPageSearch(BaseModel):
@@ -143,7 +171,7 @@ class InstitutionsAdd(BaseModel):
 
 class InstitutionKeyInfo(BaseModel):
     # 如果 不一样 需要转换到orm模型的
-    id:int= Query(None, title="", description="", example='1')
+    id:int|str= Query(None, title="", description="", example='1')
     school_name: str = Field(...,alias='institution_name', title='单位名称',  examples=['文化部'])
     school_no: str = Field(..., alias='institution_code',  title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
     membership_no: str |None = Field(...,   title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
@@ -156,9 +184,23 @@ class InstitutionKeyInfo(BaseModel):
     planning_school_id: int|str|None = Field(None, title="", description="规划校id",examples=['1'])
     workflow_status: str |None = Field("",   title='',  description=" ",examples=[''])
     process_instance_id:int|None= Field(0, title="", description="", example='1')
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id", ]
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 class InstitutionsWorkflowInfo(BaseModel):
-    id:int= Query(None, title="", description="", example='1')
+    id:int|str= Query(None, title="", description="", example='1')
 
     workflow_status: str |None = Field("",   title='',  description=" ",examples=[''])
     process_instance_id:int|None= Field(0, title="", description="", example='1')
@@ -169,8 +211,8 @@ class InstitutionsWorkflowInfo(BaseModel):
 
 # 基础信息和分页的结果再用
 class InstitutionBaseInfo(BaseModel):
-    #  todo 法1 新增时别名方式   获取模型 时 要映射为ins开头的字段  todo 法2  视图映射转换方式 需要支持互转  可改  外部键不变   且 m2v时需要映射
-    id:int= Query( 0, title="", description="学校id", example='1')
+    #   法1 新增时别名方式   获取模型 时 要映射为ins开头的字段  todo 法2  视图映射转换方式 需要支持互转  可改  外部键不变   且 m2v时需要映射
+    id:int|str= Query( 0, title="", description="学校id", example='1')
     school_name: str |None = Field("",alias="institution_name", title='单位名称', description="单位名称",examples=['文化部'])
     school_org_type: str |None = Field("", alias='institution_type',  title='单位类型',  description="单位类型 ",examples=[''])
 
@@ -194,23 +236,20 @@ class InstitutionBaseInfo(BaseModel):
     status: str |None = Field( '',   title='状态',  description=" 状态",examples=[''])
     urban_ethnic_nature: str |None = Field("",   title='所在地民族属性',  description="",examples=[''])
     leg_repr_name: str |None= Field(None, title="", description="法定代表人姓名",examples=['XX'])
-
-    # 下面的待映射
-    # school_short_name: str = Field('', title="", description="园所简称",examples=['MXXX'])
-    # school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
-    # founder_type: str = Field('', title="", description="举办者类型",examples=['地方'])
-    # founder_name: str = Field('', title="", description="举办者名称",examples=['上海教育局'])
-    # school_edu_level: str|None = Field('', title="", description="办学类型/学校性质",examples=['学前教育'])
-    # school_org_form: str = Field('', title="", description="办学组织形式",examples=['教学点'])
-    #
-    # school_category: str|None = Field('', title="", description=" 办学类型二级",examples=['小学'])
-    # school_operation_type: str|None = Field('', title="", description=" 办学类型三级",examples=['附设小学班'])
-    # department_unit_number: str = Field('', title="", description="属地管理行政部门单位号",examples=['SC562369322SG'])
-    # historical_evolution: str = Field('', title="", description="历史沿革",examples=['xxxxxxxxxxxxxxxxxxxx'])
-    # school_closure_date: str = Field('', title="", description="学校关闭日期",examples=[''])
-
-
-
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id", ]
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 class InstitutionCommunications(SchoolCommunications):
 

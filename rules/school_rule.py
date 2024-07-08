@@ -1,5 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import json
+from copy import deepcopy
 
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.utils.http import HTTPRequest
@@ -219,6 +220,7 @@ class SchoolRule(object):
 
         # 更新不用转换   因为得到的对象不熟全属性
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""])
+        school_db= deepcopy(school_db)
         convert_snowid_in_model(school_db,['id'])
 
 

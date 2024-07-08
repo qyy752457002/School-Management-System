@@ -92,6 +92,7 @@ class SchoolDAO(DAOBase):
         return await self.delete(session, school)
 
     async def softdelete_school(self, school):
+        school.id= int(school.id)
         session = await self.master_db()
         deleted_status= 1
         update_stmt = update(School).where(School.id == school.id).values(
