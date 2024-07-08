@@ -118,6 +118,7 @@ class TeachersRule(object):
         await self.operation_record_rule.add_operation_record(teacher_entry_log)
         teachers_info = TeacherInfoSaveModel(teacher_id=teachers_work.teacher_id)
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
+        teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
         teacher_base_id = teachers_info.teacher_base_id
@@ -341,7 +342,7 @@ class TeachersRule(object):
             local_file_path = "c.xlsx"
             reader = ExcelReader()
             reader.set_data(local_file_path)
-            reader.register_model("Sheet1", CombinedModel)
+            # reader.register_model("Sheet1", CombinedModel)
             logger.info("Test开始注册模型")
             reader.register_model("Sheet1", TeachersCreatModel)
             # reader.register_model("Sheet1", TeacherInfoCreateModel)

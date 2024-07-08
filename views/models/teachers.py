@@ -53,9 +53,9 @@ class Teachers(BaseModel):
     def check_id_before(self, data: dict):
         _change_list = ["teacher_id", "teacher_employer"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
@@ -77,7 +77,7 @@ class TeachersCreatModel(BaseModel):
     teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: int | str = Field(0, title="单位部门", description="单位部门", gt=0)
+    teacher_employer: int | str = Field(0, title="单位部门", description="单位部门",)
     teacher_avatar: str = Field("", title="头像", description="头像")
     mobile: str = Field("", title="手机号", description="手机号")
 
@@ -86,9 +86,9 @@ class TeachersCreatModel(BaseModel):
     def check_id_before(self, data: dict):
         _change_list = ["teacher_employer"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
@@ -97,7 +97,7 @@ class TeachersCreatModel(BaseModel):
 
 class TeacherRe(BaseModel):
     """
-    这个模型现在本地查然后是交给工作流的，相当于表单附赠信息
+    这个模型现在本地查然后是交给工作流的,相当于表单附赠信息
     """
     teacher_name: str = Field(..., title="姓名", description="教师名称")
     teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
@@ -105,7 +105,7 @@ class TeacherRe(BaseModel):
     teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: int | str = Field(0, title="单位部门", description="单位部门", gt=0)
+    teacher_employer: int | str = Field(0, title="单位部门", description="单位部门",)
     mobile: str = Field("", title="手机号", description="手机号")
     teacher_main_status: str = Field("", title="主状态", description="主状态")
     teacher_sub_status: str = Field("", title="子状态", description="子状态")
@@ -115,9 +115,9 @@ class TeacherRe(BaseModel):
     def check_id_before(self, data: dict):
         _change_list = ["teacher_id", "teacher_employer"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
@@ -126,14 +126,14 @@ class TeacherRe(BaseModel):
 
 class TeacherAdd(BaseModel):
     """
-    这个是借动和调动时，从系统外进系统内时，建立新老师的时候用的
+    这个是借动和调动时,从系统外进系统内时,建立新老师的时候用的
     """
     teacher_name: str = Field(..., title="姓名", description="教师名称")
     teacher_gender: Gender = Field(..., title="性别", description="教师性别")
     teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: int | str = Field(0, title="单位部门", description="单位部门", gt=0)
+    teacher_employer: int | str = Field(0, title="单位部门", description="单位部门",)
     mobile: str = Field("", title="手机号", description="手机号")
     teacher_main_status: str = Field("", title="主状态", description="主状态")
     teacher_sub_status: str = Field("", title="子状态", description="子状态")
@@ -143,9 +143,9 @@ class TeacherAdd(BaseModel):
     def check_id_before(self, data: dict):
         _change_list = ["teacher_employer"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
@@ -284,9 +284,9 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
     def check_id_before(self, data: dict):
         _change_list = ["teacher_id"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
@@ -441,9 +441,9 @@ class TeacherInfo(BaseModel):  # 基本信息
     def check_id_before(self, data: dict):
         _change_list = ["teacher_id", "teacher_base_id"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
@@ -698,9 +698,9 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
     def check_id_before(self, data: dict):
         _change_list = ["teacher_id", "teacher_base_id"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
@@ -709,7 +709,7 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
 
 class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
     """
-    保存再查看的模型，有些是不需要经过验证
+    保存再查看的模型,有些是不需要经过验证
     姓名：name
     教师ID：teacher_id
     国家地区：nationality
@@ -837,9 +837,9 @@ class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
     def check_id_before(self, data: dict):
         _change_list = ["teacher_id", "teacher_base_id"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
@@ -976,9 +976,9 @@ class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
     def check_id_before(self, data: dict):
         _change_list = ["teacher_id", "teacher_base_id"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
@@ -1113,9 +1113,9 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
     def check_id_before(self, data: dict):
         _change_list = ["teacher_id", "teacher_base_id"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
@@ -1167,9 +1167,9 @@ class NewTeacher(BaseModel):
     def check_id_before(self, data: dict):
         _change_list = ["teacher_employer"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
@@ -1200,9 +1200,9 @@ class NewTeacherRe(BaseModel):
     def check_id_before(self, data: dict):
         _change_list = ["teacher_employer", "teacher_base_id", "teacher_id", "process_instance_id"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
@@ -1234,9 +1234,9 @@ class NewTeacherApprovalCreate(BaseModel):
     def check_id_before(self, data: dict):
         _change_list = ["teacher_employer", "teacher_base_id", "teacher_id"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
@@ -1248,7 +1248,7 @@ class NewTeacherApprovalCreate(BaseModel):
     # teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
     # teacher_id_number: str = Field("", title="身份证件号", description="证件号")
     # teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    # teacher_employer: int = Field(0, title="单位部门", description="单位部门", gt=0)
+    # teacher_employer: int = Field(0, title="单位部门", description="单位部门",)
     # teacher_avatar: str = Field("", title="头像", description="头像")
     # mobile: str = Field("", title="手机号", description="手机号")
     # identity: str = Field("", title="身份", description="身份")
@@ -1337,50 +1337,50 @@ class NewTeacherApprovalCreate(BaseModel):
     # is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
     # other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
 
-    information_technology_application_ability: str = Field(..., title="信息技术应用能力",
-                                                            description="信息技术应用能力", example="优秀")
-
-    free_normal_college_student: bool = Field(..., title="是否免费师范生", description="是否免费师范生")
-
-    participated_in_basic_service_project: bool = Field(..., title="是否参加基层服务项目",
-                                                        description="是否参加基层服务项目")
-    basic_service_start_date: Optional[date] = Field(None, title="基层服务起始日期",
-                                                     description="基层服务起始日期",
-                                                     example="2010-01-01")
-    basic_service_end_date: Optional[date] = Field(None, title="基层服务结束日期",
-                                                   description="基层服务结束日期",
-                                                   example="2010-01-01")
-    special_education_teacher: bool = Field(..., title="是否特教", description="是否特教")
-    dual_teacher: bool = Field(..., title="是否双师型", description="是否双师型")
-    has_occupational_skill_level_certificate: bool = Field(..., title="是否具备职业技能等级证书",
-                                                           description="是否具备职业技能等级证书", )
-    enterprise_work_experience: str = Field(..., title="企业工作时长", description="企业工作时长", example="3年")
-    county_level_backbone: bool = Field(..., title="是否县级以上骨干", description="是否县级以上骨干")
-    psychological_health_education_teacher: bool = Field(..., title="是否心理健康教育教师",
-                                                         description="是否心理健康教育教师")
-    recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
-    teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-    department: str = Field(..., title="部门", description="部门", example="部门")
-    org_id: int = Field(..., title="组织ID", description="组织ID")
-
-    hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
-    hukou_type: str = Field("", title="户口类别", description="户口类别", example="户口类别")
-    main_teaching_level: str = Field("", title="主要任课学段", description="主要任课学段", example="主要任课学段")
-    teacher_qualification_cert_num: str = Field("", title="教师资格证编号", description="教师资格证编号",
-                                                example="教师资格证编号")
-    teaching_discipline: str = Field("", title="任教学科", description="任教学科", example="任教学科")
-    language: str = Field("", title="语种", description="语种", example="语种")
-    language_proficiency_level: str = Field("", title="语言掌握程度", description="语言掌握程度",
-                                            example="语言掌握程度")
-    language_certificate_name: str = Field("", title="语言证书名称", description="语言证书名称", example="语言证书名称")
-    contact_address: str = Field("", title="通讯地址省市县", description="通讯地址省市县", example="通讯地址省市县")
-    contact_address_details: str = Field("", title="通讯地址详细信息", description="通讯地址详细信息",
-                                         example="通讯地址详细信息")
-    email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
-    highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
-    highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
-    is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
-    other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
+    # information_technology_application_ability: str = Field(..., title="信息技术应用能力",
+    #                                                         description="信息技术应用能力", example="优秀")
+    #
+    # free_normal_college_student: bool = Field(..., title="是否免费师范生", description="是否免费师范生")
+    #
+    # participated_in_basic_service_project: bool = Field(..., title="是否参加基层服务项目",
+    #                                                     description="是否参加基层服务项目")
+    # basic_service_start_date: Optional[date] = Field(None, title="基层服务起始日期",
+    #                                                  description="基层服务起始日期",
+    #                                                  example="2010-01-01")
+    # basic_service_end_date: Optional[date] = Field(None, title="基层服务结束日期",
+    #                                                description="基层服务结束日期",
+    #                                                example="2010-01-01")
+    # special_education_teacher: bool = Field(..., title="是否特教", description="是否特教")
+    # dual_teacher: bool = Field(..., title="是否双师型", description="是否双师型")
+    # has_occupational_skill_level_certificate: bool = Field(..., title="是否具备职业技能等级证书",
+    #                                                        description="是否具备职业技能等级证书", )
+    # enterprise_work_experience: str = Field(..., title="企业工作时长", description="企业工作时长", example="3年")
+    # county_level_backbone: bool = Field(..., title="是否县级以上骨干", description="是否县级以上骨干")
+    # psychological_health_education_teacher: bool = Field(..., title="是否心理健康教育教师",
+    #                                                      description="是否心理健康教育教师")
+    # recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
+    # teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
+    # department: str = Field(..., title="部门", description="部门", example="部门")
+    # org_id: int = Field(..., title="组织ID", description="组织ID")
+    #
+    # hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
+    # hukou_type: str = Field("", title="户口类别", description="户口类别", example="户口类别")
+    # main_teaching_level: str = Field("", title="主要任课学段", description="主要任课学段", example="主要任课学段")
+    # teacher_qualification_cert_num: str = Field("", title="教师资格证编号", description="教师资格证编号",
+    #                                             example="教师资格证编号")
+    # teaching_discipline: str = Field("", title="任教学科", description="任教学科", example="任教学科")
+    # language: str = Field("", title="语种", description="语种", example="语种")
+    # language_proficiency_level: str = Field("", title="语言掌握程度", description="语言掌握程度",
+    #                                         example="语言掌握程度")
+    # language_certificate_name: str = Field("", title="语言证书名称", description="语言证书名称", example="语言证书名称")
+    # contact_address: str = Field("", title="通讯地址省市县", description="通讯地址省市县", example="通讯地址省市县")
+    # contact_address_details: str = Field("", title="通讯地址详细信息", description="通讯地址详细信息",
+    #                                      example="通讯地址详细信息")
+    # email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
+    # highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
+    # highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
+    # is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
+    # other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
 
 
 class CurrentTeacherQuery(BaseModel):
@@ -1416,9 +1416,9 @@ class CurrentTeacherQuery(BaseModel):
     def check_id_before(self, data: dict):
         _change_list = ["teacher_employer"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
@@ -1458,9 +1458,9 @@ class CurrentTeacherQueryRe(BaseModel):
     def check_id_before(self, data: dict):
         _change_list = ["teacher_employer", "teacher_base_id", "teacher_id"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
@@ -1489,9 +1489,9 @@ class TeacherApprovalQuery(BaseModel):
     def check_id_before(self, data: dict):
         _change_list = ["teacher_employer"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
@@ -1529,9 +1529,9 @@ class TeacherApprovalQueryRe(BaseModel):
     def check_id_before(self, data: dict):
         _change_list = ["teacher_employer", "teacher_id", "process_instance_id"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
+            if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            elif _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass

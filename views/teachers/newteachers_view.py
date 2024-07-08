@@ -37,16 +37,19 @@ class NewTeachersView(BaseView):
         result.update({"teacher_base_id": teacher_base_id})
         return result
 
-    async def delete_newteacher(self, teacher_id: int = Query(..., title="教师编号", description="教师编号")):
+    async def delete_newteacher(self, teacher_id: int | str = Query(..., title="教师编号", description="教师编号")):
         """
         删除教师信息
         """
         user_id = "asdfasdf"
+        teacher_id = int(teacher_id)
         await self.teacher_rule.delete_teachers(teacher_id, user_id)
         return str(teacher_id)
 
     # 查询单个教职工登记信息
-    async def get_newteacher(self, teacher_id: int = Query(..., title="教师编号", description="教师编号")):
+    async def get_newteacher(self, teacher_id: int | str = Query(..., title="教师编号", description="教师编号")):
+
+        teacher_id = int(teacher_id)
         res = await self.teacher_rule.get_teachers_by_id(teacher_id)
         return res
 
@@ -78,9 +81,10 @@ class NewTeachersView(BaseView):
 
         return res
 
-    async def get_newteacherinfo(self, teacher_id: int = Query(..., title="姓名", description="教师名称",
-                                                               example=123)):
+    async def get_newteacherinfo(self, teacher_id: int | str = Query(..., title="姓名", description="教师名称",
+                                                                     example=123)):
         # todo:重新获取时需要根据状态判断一下返回的应该是需要进行验证的还是不需要验证的。
+        teacher_id = int(teacher_id)
         res = await self.teacher_info_rule.get_teachers_info_by_teacher_id(teacher_id)
         return res
 
@@ -127,33 +131,45 @@ class NewTeachersView(BaseView):
     #     return teacher_id
 
     async def patch_entry_approved(self,
-                                   teacher_id: int = Body(..., title="教师编号", description="教师编号", example=123),
-                                   process_instance_id: int = Body(..., title="流程实例id", description="流程实例id",
-                                                                   example=123),
+                                   teacher_id: int | str = Body(..., title="教师编号", description="教师编号",
+                                                                example=123),
+                                   process_instance_id: int | str = Body(..., title="流程实例id",
+                                                                         description="流程实例id",
+                                                                         example=123),
                                    reason: str = Body(None, title="审批意见", description="审批意见", example="同意")):
         user_id = "asdfasdf"
+        teacher_id = int(teacher_id)
+        process_instance_id = int(process_instance_id)
         reason = reason
         return await self.teacher_rule.entry_approved(teacher_id, process_instance_id, user_id, reason)
 
     async def patch_entry_rejected(self,
-                                   teacher_id: int = Body(..., title="教师编号", description="教师编号", example=123),
-                                   process_instance_id: int = Body(..., title="流程实例id", description="流程实例id",
-                                                                   example=123),
+                                   teacher_id: int | str = Body(..., title="教师编号", description="教师编号",
+                                                                example=123),
+                                   process_instance_id: int | str = Body(..., title="流程实例id",
+                                                                         description="流程实例id",
+                                                                         example=123),
                                    reason: str = Body("", title="reason",
                                                       description="审核理由")):
+        teacher_id = int(teacher_id)
+        process_instance_id = int(process_instance_id)
         user_id = "asdfasdf"
         reason = reason
 
         return await self.teacher_rule.entry_rejected(teacher_id, process_instance_id, user_id, reason)
 
     async def patch_entry_revoked(self,
-                                  teacher_id: int = Body(..., title="教师编号", description="教师编号", example=123),
-                                  process_instance_id: int = Body(..., title="流程实例id", description="流程实例id",
-                                                                  example=123),
+                                  teacher_id: int | str = Body(..., title="教师编号", description="教师编号",
+                                                               example=123),
+                                  process_instance_id: int | str = Body(..., title="流程实例id",
+                                                                        description="流程实例id",
+                                                                        example=123),
                                   ):
         """
         撤回
         """
+        teacher_id = int(teacher_id)
+        process_instance_id = int(process_instance_id)
         user_id = "asdfasdf"
         return await self.teacher_rule.entry_revoked(teacher_id, process_instance_id, user_id)
 
