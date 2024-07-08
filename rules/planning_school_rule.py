@@ -194,7 +194,10 @@ class PlanningSchoolRule(object):
     async def query_planning_schools(self,planning_school_name):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(PlanningSchool).where(PlanningSchool.planning_school_name.like(f'%{planning_school_name}%') ))
+        result = await session.execute(select(PlanningSchool)
+                                       .where(PlanningSchool.planning_school_name.like(f'%{planning_school_name}%') )
+                                       .where(PlanningSchool.is_deleted==  False)
+                                       )
         res= result.scalars().all()
         print(res)
         lst = []
