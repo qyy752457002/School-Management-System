@@ -299,8 +299,6 @@ class NewBaseInfoCreate(BaseModel):
     disabled_person: YesOrNo = Field("N", title="是否残疾人", description="是否残疾人")
     religious_belief: str = Field("", title="宗教信仰", description="宗教信仰")
     political_status: str = Field("", title="政治面貌", description="政治面貌")
-    residence_address: str = Field('', title="户口所在地（详细）", description="户口所在地（详细）")
-    residence_district: str = Field("", title="户口所在行政区", description="户口所在行政区")
     residence_nature: str = Field('', title="户口性质", description="户口性质")
     communication_address: str = Field("", title="通信地址", description="通信地址")
     postal_code: str = Field("", title="邮政编码", description="邮政编码")
@@ -322,7 +320,8 @@ class NewBaseInfoCreate(BaseModel):
     admission_date: date = Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
     nationality: str = Field("", title="国籍/地区", description="国籍/地区")
     enrollment_method: str = Field("", title="就读方式", description="就读方式")
-
+    residence_address: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
+    residence_district: str = Field("", title="户口所在地new", description="户口所在地new")
 
 
 class NewBaseInfoUpdate(BaseModel):
@@ -336,8 +335,6 @@ class NewBaseInfoUpdate(BaseModel):
     disabled_person: YesOrNo = Field("N", title="是否残疾人", description="是否残疾人")
     religious_belief: str = Field("", title="宗教信仰", description="宗教信仰")
     political_status: str = Field("", title="政治面貌", description="政治面貌")
-    residence_address: str = Field(..., title="户口所在地（详细）", description="户口所在地（详细）")
-    residence_district: str = Field("", title="户口所在行政区", description="户口所在行政区")
     residence_nature: str = Field(..., title="户口性质", description="户口性质")
     communication_address: str = Field("", title="通信地址", description="通信地址")
     postal_code: str = Field("", title="邮政编码", description="邮政编码")
@@ -352,7 +349,8 @@ class NewBaseInfoUpdate(BaseModel):
     identity_card_validity_period: str = Field("", title="身份证件有效期", description="身份证件有效期")
     specialty: str = Field("", title="特长", description="特长")
     permanent_address: str = Field("", title="常住地址", description="常住地址")
-
+    residence_address: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
+    residence_district: str = Field("", title="户口所在地new", description="户口所在地new")
 
 # 学生家庭成员信息模型
 class StudentsFamilyInfo(BaseModel):
