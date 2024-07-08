@@ -49,15 +49,10 @@ class School(BaseModel):
     urban_ethnic_nature: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
 
-    class Config:
-        schema_extra = {
-            "example": {
-            }
-        }
     @model_validator(mode="before")
     @classmethod
     def check_id_before(self, data: dict):
-        _change_list= ["id", "planning_school_id"]
+        _change_list= ["id", "planning_school_id",]
         for _change in _change_list:
             if _change not in data:
                 continue
