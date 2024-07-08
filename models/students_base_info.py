@@ -102,11 +102,11 @@ class StudentBaseInfo(BaseDBModel):
     home_phone_number: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="家庭电话")
     email_or_other_contact: Mapped[str] = mapped_column(String(64), nullable=True, default='',
                                                         comment="电子信箱/其他联系方式")
-    migrant_children: Mapped[str] = mapped_column(String(64), nullable=True, comment="是否随迁子女")
-    disabled_person: Mapped[str] = mapped_column(String(64), nullable=True, comment="是否残疾人")
-    only_child: Mapped[str] = mapped_column(String(64), nullable=True, comment="是否独生子女")
-    left_behind_children: Mapped[str] = mapped_column(String(64), nullable=True, comment="是否留守儿童")
-    floating_population: Mapped[str] = mapped_column(String(64), nullable=True, comment="是否流动人口")
+    migrant_children: Mapped[bool] = mapped_column(  nullable=True, default=False,comment="是否随迁子女")
+    disabled_person: Mapped[bool] = mapped_column(  nullable=True,default=False, comment="是否残疾人")
+    only_child: Mapped[bool] = mapped_column(  nullable=True,default=False, comment="是否独生子女")
+    left_behind_children: Mapped[bool] = mapped_column(  nullable=True,default=False, comment="是否留守儿童")
+    floating_population: Mapped[bool] = mapped_column(  nullable=True,default=False, comment="是否流动人口")
     overseas_chinese: Mapped[str] = mapped_column(String(64), nullable=True, default='',comment="是否港澳台侨胞")
     residence_address_detail: Mapped[str] = mapped_column(String(64), nullable=True, default='',
                                                           comment="户口所在地（详细）")
