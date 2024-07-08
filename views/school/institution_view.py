@@ -66,7 +66,7 @@ class InstitutionView(BaseView):
             school_eduinfo = await self.school_eduinfo_rule.get_school_eduinfo_by_school_id(institution_id)
         except Exception as e:
             print(e)
-        return {'institution': school,     'institution_keyinfo': institution_keyinfo,'institution_communication': school_communication, 'institution_eduinfo': school_eduinfo,}
+        return {'institution_baseinfo': school,     'institution_keyinfo': institution_keyinfo,'institution_communication': school_communication, 'institution_eduinfo': school_eduinfo,}
 
     async def post(self, school: InstitutionsAdd):
         # res = await self.institution_rule.add_institution(school)
@@ -110,11 +110,14 @@ class InstitutionView(BaseView):
 
         res2 = compare_modify_fields(school, origin)
         # print(  res2)
+        schoolorigin = await self.institution_rule.get_school_by_id(school.id,InstitutionBaseInfo)
+        comm = await self.school_communication_rule.get_school_communication_by_school_id(school.id,InstitutionCommunications )
+        schoolorigin.leg_repr_name = comm.leg_repr_name
 
         # res = await self.planning_institution_rule.update_planning_institution_byargs(planning_school)
         #  工作流
         # planning_school.id = planning_institution_id
-        res = await self.institution_rule.add_school_keyinfo_change_work_flow(school,INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE)
+        res = await self.institution_rule.add_school_keyinfo_change_work_flow(school,INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE, schoolorigin)
         process_instance_id=0
         if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
@@ -229,13 +232,15 @@ class InstitutionView(BaseView):
             raise InstitutionStatusError()
 
         # 请求工作流
-        school = await self.institution_rule.get_school_by_id(institution_id,)
+        school = await self.institution_rule.get_school_by_id(institution_id,InstitutionBaseInfo )
+        comm = await self.school_communication_rule.get_school_communication_by_school_id(institution_id,InstitutionCommunications )
+        school.leg_repr_name = comm.leg_repr_name
 
         res = await self.institution_rule.add_school_work_flow(school)
         process_instance_id=0
         if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
-            pl = InstitutionOptional(id=institution_id, process_instance_id=process_instance_id,workflow_status=AuditAction.NEEDAUDIT.value)
+            pl = InstitutionsWorkflowInfo(id=institution_id, process_instance_id=process_instance_id,workflow_status=AuditAction.NEEDAUDIT.value)
 
             res_u = await self.institution_rule.update_school_byargs(pl  )
 
@@ -270,14 +275,15 @@ class InstitutionView(BaseView):
             raise InstitutionStatusError()
         # 请求工作流
 
-        school = await self.institution_rule.get_school_by_id(institution_id,)
-
+        school = await self.institution_rule.get_school_by_id(institution_id,InstitutionBaseInfo)
+        comm = await self.school_communication_rule.get_school_communication_by_school_id(institution_id,InstitutionCommunications )
+        school.leg_repr_name = comm.leg_repr_name
         res = await self.institution_rule.add_school_close_work_flow(school, action_reason,related_license_upload)
         process_instance_id=0
 
         if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
-            pl = InstitutionOptional(id=institution_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
+            pl = InstitutionsWorkflowInfo(id=institution_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
             resu = await self.institution_rule.update_school_byargs(pl  )
 
@@ -303,8 +309,10 @@ class InstitutionView(BaseView):
     # 学校搜索 模糊搜索 TODO 增加 区域ID  学校ID 支持多个传入
     async def get_search(self,
                          request: Request  ,
+                         institution_category: InstitutionType = Query(None, title='单位分类',examples=['institution/administration']),
 
-                         school_name: str = Query("", title="学校名称", description="1-20字符", ),
+
+                         school_name: str = Query("", title="名称", description="1-20字符", ),
                          school_id: str = Query("", title="多个逗号分割", description="", ),
                          block: str = Query("", title="地域管辖区", description="", ),
                          borough: str = Query("", title="行政管辖区", description="", ),
@@ -313,8 +321,10 @@ class InstitutionView(BaseView):
 
                          ):
         items = []
+        if not institution_category:
+            institution_category = [InstitutionType.INSTITUTION,InstitutionType.ADMINISTRATION]
         # 学校 区 只能看自己的范围内的数据
-        paging_result = await self.institution_rule.query_schools(school_name,await get_extend_params(request),school_id,block,borough,)
+        paging_result = await self.institution_rule.query_schools(school_name,await get_extend_params(request),school_id,block,borough,institution_category=institution_category,extra_model=InstitutionBaseInfo)
         return paging_result
 
     # 学校开设审核

@@ -25,7 +25,7 @@ class SchoolDAO(DAOBase):
     async def get_school_by_school_name(self, school_name):
         session = await self.slave_db()
         result = await session.execute(
-            select(School).where(School.school_name == school_name))
+            select(School).where(School.school_name == school_name).where(School.is_deleted==False))
         return result.first()
 
     async def add_school(self, school):
@@ -38,6 +38,10 @@ class SchoolDAO(DAOBase):
     async def update_school_byargs(self, school: School, *args, is_commit: bool = True):
         session =await self.master_db()
         update_contents = get_update_contents(school, *args)
+        # 遍历 检查如果模型里没有这个属性 则 删除
+        for key in list(update_contents.keys()):
+            if not hasattr(School, key):
+                del update_contents[key]
         query = update(School).where(School.id == school.id).values(**update_contents)
         return await self.update(session, query, school, update_contents, is_commit=is_commit)
 

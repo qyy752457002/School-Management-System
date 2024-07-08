@@ -1,0 +1,96 @@
+INSERT INTO public.lfun_permission_menu (id,menu_name,menu_path,menu_icon,menu_type,menu_status,menu_remark,parent_id,permission_id,created_uid,updated_uid,created_at,updated_at,is_deleted,menu_code,sort_order) VALUES
+	 (15,'新教职工入职','/onboarding','','menu','','','14',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'onboarding',0),
+	 (5,'班级管理','/class','','menu','','','3',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'class',0),
+	 (14,'新教职工管理','','','root','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'onboarding',0),
+	 (17,'在职教职工管理','','','root','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'employed',0),
+	 (16,'新教职工审批','/onboarding/approve','','menu','','','14',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'approve',0),
+	 (13,'专业管理','/major','','menu','','','12',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'major',0),
+	 (21,'年级管理','/grade','','menu','','','12',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'grade',0),
+	 (18,'年级管理','/grade','','menu','','','9',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'grade',0),
+	 (19,'班级管理','/class','','menu','','','9',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'class',0),
+	 (22,'班级管理','/class','','menu','','','12',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'class',0);
+INSERT INTO public.lfun_permission_menu (id,menu_name,menu_path,menu_icon,menu_type,menu_status,menu_remark,parent_id,permission_id,created_uid,updated_uid,created_at,updated_at,is_deleted,menu_code,sort_order) VALUES
+	 (24,'在职教职工管理','/employed','','menu','','','17',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'employed',0),
+	 (31,'非在职教职工管理','','','root','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'nonemployed',0),
+	 (32,'系统管理','','','root','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'trchsys',0),
+	 (33,'系统配置','/trchsys/config','','menu','','','32',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'trchsysconfig',0),
+	 (34,'任务管理','/trchsys/task','','menu','','','32',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'trchsystask',0),
+	 (35,'新学生信息管理','','','root','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'newstudent',0),
+	 (36,'在校学生信息管理','','','root','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'instudent',0),
+	 (37,'毕业生信息管理','/graduation','','menu','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'graduation',0),
+	 (38,'新生入学管理','/newstudent','','menu','','','35',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'newstudent',0),
+	 (39,'分班管理','/newstudent/classroom','','menu','','','35',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'newstudent_classroom',0);
+INSERT INTO public.lfun_permission_menu (id,menu_name,menu_path,menu_icon,menu_type,menu_status,menu_remark,parent_id,permission_id,created_uid,updated_uid,created_at,updated_at,is_deleted,menu_code,sort_order) VALUES
+	 (40,'届别管理','/newstudent/academia','','menu','','','35',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'newstudent_academia',0),
+	 (41,'在校学生信息管理','/instudent','','menu','','','36',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'instudent',0),
+	 (3,'园所配置管理','','','root','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'config',1),
+	 (4,'班级类型管理','/grade','','menu','','','3',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'grade',0),
+	 (9,'中小学配置管理','','','root','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'config',1),
+	 (12,'职高配置管理','','','root','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'config',1),
+	 (6,'学科管理','/course','','menu','','','3',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'course',0),
+	 (20,'学科管理','/course','','menu','','','9',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'course',0),
+	 (23,'学科管理','/course','','menu','','','12',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'course',0),
+	 (50,'课程管理','/subject','','menu','','','9',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'subject',0);
+INSERT INTO public.lfun_permission_menu (id,menu_name,menu_path,menu_icon,menu_type,menu_status,menu_remark,parent_id,permission_id,created_uid,updated_uid,created_at,updated_at,is_deleted,menu_code,sort_order) VALUES
+	 (51,'课程管理','/subject','','menu','','','12',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'subject',0),
+	 (25,'教职工信息变更审批','/employed/approve','','menu','','','17',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'employedapprove',0),
+	 (26,'变动管理','/employed/workchange','','menu','','','17',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'employedworkchange',5),
+	 (52,'借动管理','','','root','','','17',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'borrow',0),
+	 (27,'借入信息管理','/employed/borrowin','','menu','','','52',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'employedworkborrowin',0),
+	 (28,'借出信息管理','/employed/borrowout','','menu','','','52',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'employedworkborrowout',0),
+	 (29,'调入信息管理','/employed/transferin','','menu','','','53',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'employedworktransferin',0),
+	 (30,'调出信息管理','/employed/transferout','','menu','','','53',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'employedworktransferout',0),
+	 (54,'离退休信息管理','/nonemployed/retire','','menu','','','31',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'employedworkretire',0),
+	 (53,'调动管理','','','root','','','17',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'transfer',0);
+INSERT INTO public.lfun_permission_menu (id,menu_name,menu_path,menu_icon,menu_type,menu_status,menu_remark,parent_id,permission_id,created_uid,updated_uid,created_at,updated_at,is_deleted,menu_code,sort_order) VALUES
+	 (42,'转学管理','/instudent/transfer','','menu','','','36',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'instudent_transfer',0),
+	 (1,'园所信息管理（学校）','/planning','','menu','','','0',1,0,0,'2024-06-04 10:43:11.169988','2024-06-04 10:43:11.169988',false,'planning',0),
+	 (2,'园所信息管理（分校）','/school','','menu','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'school',0),
+	 (55,'园所信息审核（学校）','','','root','','','0',1,0,0,'2024-06-04 10:43:11.169988','2024-06-04 10:43:11.169988',false,'planning-audit',0),
+	 (56,'园所信息审核（分校）','','','root','','','0',1,0,0,'2024-06-04 10:43:11.169988','2024-06-04 10:43:11.169988',false,'school-audit',0),
+	 (57,'学校开设审核','/planning-audit/openschool','','menu','','','55',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'planning-audit-openschool',0),
+	 (58,'学校关闭审核','/planning-audit/closeschool','','menu','','','55',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'planning-audit-closeschool',0),
+	 (59,'关键信息变更审核','/planning-audit/changekeyinfo','','menu','','','55',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'planning-audit-changekeyinfo',0),
+	 (60,'学校开设审核','/school-audit/openschool','','menu','','','56',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'school-audit-openschool',0),
+	 (61,'学校关闭审核','/school-audit/closeschool','','menu','','','56',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'school-audit-closeschool',0);
+INSERT INTO public.lfun_permission_menu (id,menu_name,menu_path,menu_icon,menu_type,menu_status,menu_remark,parent_id,permission_id,created_uid,updated_uid,created_at,updated_at,is_deleted,menu_code,sort_order) VALUES
+	 (62,'关键信息变更审核','/school-audit/changekeyinfo','','menu','','','56',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'school-audit-changekeyinfo',0),
+	 (7,'中小学信息管理（学校）','/planning','','menu','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'planning',0),
+	 (8,'中小学信息管理（分校）','/school','','menu','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'school',0),
+	 (63,'中小学信息审核（学校）','','','root','','','0',1,0,0,'2024-06-04 10:43:11.169988','2024-06-04 10:43:11.169988',false,'planning-audit',0),
+	 (64,'学校开设审核','/planning-audit/openschool','','menu','','','63',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'planning-audit-openschool',0),
+	 (65,'学校关闭审核','/planning-audit/closeschool','','menu','','','63',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'planning-audit-closeschool',0),
+	 (66,'关键信息变更审核','/planning-audit/changekeyinfo','','menu','','','63',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'planning-audit-changekeyinfo',0),
+	 (67,'中小学信息审核（分校）','','','root','','','0',1,0,0,'2024-06-04 10:43:11.169988','2024-06-04 10:43:11.169988',false,'school-audit',0),
+	 (68,'学校开设审核','/school-audit/openschool','','menu','','','67',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'school-audit-openschool',0),
+	 (69,'学校关闭审核','/school-audit/closeschool','','menu','','','67',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'school-audit-closeschool',0);
+INSERT INTO public.lfun_permission_menu (id,menu_name,menu_path,menu_icon,menu_type,menu_status,menu_remark,parent_id,permission_id,created_uid,updated_uid,created_at,updated_at,is_deleted,menu_code,sort_order) VALUES
+	 (70,'关键信息变更审核','/school-audit/changekeyinfo','','menu','','','67',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'school-audit-changekeyinfo',0),
+	 (71,'职高信息审核（学校）','','','root','','','0',1,0,0,'2024-06-04 10:43:11.169988','2024-06-04 10:43:11.169988',false,'planning-audit',0),
+	 (72,'学校开设审核','/planning-audit/openschool','','menu','','','71',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'planning-audit-openschool',0),
+	 (73,'学校关闭审核','/planning-audit/closeschool','','menu','','','71',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'planning-audit-closeschool',0),
+	 (74,'关键信息变更审核','/planning-audit/changekeyinfo','','menu','','','71',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'planning-audit-changekeyinfo',0),
+	 (75,'职高信息审核（分校）','','','root','','','0',1,0,0,'2024-06-04 10:43:11.169988','2024-06-04 10:43:11.169988',false,'school-audit',0),
+	 (76,'学校开设审核','/school-audit/openschool','','menu','','','75',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'school-audit-openschool',0),
+	 (77,'学校关闭审核','/school-audit/closeschool','','menu','','','75',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'school-audit-closeschool',0),
+	 (78,'关键信息变更审核','/school-audit/changekeyinfo','','menu','','','75',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'school-audit-changekeyinfo',0),
+	 (47,'组织管理','/org','','menu','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'org',5);
+INSERT INTO public.lfun_permission_menu (id,menu_name,menu_path,menu_icon,menu_type,menu_status,menu_remark,parent_id,permission_id,created_uid,updated_uid,created_at,updated_at,is_deleted,menu_code,sort_order) VALUES
+	 (48,'组织管理','/org','','menu','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'org',5),
+	 (49,'组织管理','/org','','menu','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'org',5),
+	 (10,'职高信息管理（学校）','/planning','','menu','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'planning',0),
+	 (11,'职高信息管理（分校）','/school','','menu','','','0',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'school',0),
+	 (43,'转入信息管理','/instudent/checkin','','menu','','','36',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'instudent_checkin',0),
+	 (44,'转出信息管理','/instudent/checkout','','menu','','','36',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'instudent_checkout',0),
+	 (45,'异动管理','/instudent/innerTransfer','','menu','','','36',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'instudent_innerTransfer',0),
+	 (46,'临时就读','/instudent/emporaryBorrowing','','menu','','','36',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'instudent_emporaryBorrowing',0),
+	 (79,'机构管理','','','menu','','','0',1,0,0,'2024-06-04 10:43:11.169988','2024-06-04 10:43:11.169988',false,'institution',0),
+	 (80,'机构信息审核','','','menu','','','0',1,0,0,'2024-06-04 10:43:11.169988','2024-06-04 10:43:11.169988',false,'institution-audit',0);
+INSERT INTO public.lfun_permission_menu (id,menu_name,menu_path,menu_icon,menu_type,menu_status,menu_remark,parent_id,permission_id,created_uid,updated_uid,created_at,updated_at,is_deleted,menu_code,sort_order) VALUES
+	 (81,'事业单位管理','/institution/sy','','menu','','','79',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'institution-sy',0),
+	 (82,'行政单位管理','/institution/xz','','menu','','','79',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'institution-xz',0),
+	 (83,'机构开设审核','/institution-audit/open','','menu','','','80',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'institution-audit-open',0),
+	 (84,'机构关闭审核','/institution-audit/close','','menu','','','80',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'institution-audit-close',0),
+	 (85,'关键信息变更审核','/institution-audit/changekeyinfo','','menu','','','80',1,0,0,'2024-06-04 10:43:11.170994','2024-06-04 10:43:11.170994',false,'institution-audit-changekeyinfo',0),
+	 (86,'机构管理','','','menu','','','0',1,0,0,'2024-06-04 10:43:11.169988','2024-06-04 10:43:11.169988',false,'institution',0),
+	 (87,'机构信息审核','','','menu','','','0',1,0,0,'2024-06-04 10:43:11.169988','2024-06-04 10:43:11.169988',false,'institution-audit',0);

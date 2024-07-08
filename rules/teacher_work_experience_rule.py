@@ -34,9 +34,9 @@ class TeacherWorkExperienceRule(object):
         teacher_work_experience_db.teacher_work_experience_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_work_experience_db = await self.teacher_work_experience_dao.add_teacher_work_experience(
             teacher_work_experience_db)
+
+        teacher_work_experience_db.teacher_work_experience_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_work_experience = orm_model_to_view_model(teacher_work_experience_db, TeacherWorkExperienceUpdateModel)
-        # teacher_work_experience = convert_snowid_in_model(teacher_work_experience,
-        #                                                   extra_colums=["teacher_work_experience_id", "teacher_id"])
         return teacher_work_experience
 
     async def delete_teacher_work_experience(self, teacher_work_experience_id):

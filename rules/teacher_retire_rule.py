@@ -6,7 +6,7 @@ from models.teachers_info import TeacherInfo
 from views.models.teachers import TeacherInfo as TeachersInfoModel
 from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel, TeacherInfoSubmit, \
     CurrentTeacherQuery, CurrentTeacherQueryRe, CurrentTeacherInfoSaveModel, NewTeacherInfoSaveModel, \
-    TeacherInfoCreateModel
+    TeacherInfoCreateModel, NewTeacherApprovalCreate
 from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError, QueryError
 from daos.teachers_dao import TeachersDao
 from rules.organization_memebers_rule import OrganizationMembersRule
@@ -23,7 +23,7 @@ from views.models.teacher_transaction import TeacherRetireQueryRe, TeacherRetire
 from models.teacher_retire import TeacherRetire
 from business_exceptions.teacher_transction import TransactionError
 from views.models.teachers import TeacherMainStatus
-from mini_framework.utils.snowflake import SnowflakeIdGenerator
+
 
 @dataclass_inject
 class TeacherRetireRule(object):
@@ -53,26 +53,27 @@ class TeacherRetireRule(object):
             raise TeacherNotFoundError()
         if teacher_main_status != "employed":
             raise TransactionError()
-        teacher_transaction_db = view_model_to_orm_model(teacher_retire, TeacherRetire)
-        # teacher_transaction_db.teacher_retire_id = SnowflakeIdGenerator(1, 1).generate_id()
-        teacher_transaction_db = await self.teacher_retire_dao.add_teacher_retire(teacher_transaction_db)
-        teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherRetireUpdateModel)
         teacher_db.teacher_sub_status = teacher_retire.transaction_type
         teacher_db.teacher_main_status = TeacherMainStatus.RETIRED.value
         await self.teachers_dao.update_teachers(teacher_db, "teacher_sub_status", "teacher_main_status")
-        # teacher_transaction_log = OperationRecord(
-        #     action_target_id=teacher_transaction.teacher_id,
-        #     target=OperationTarget.TEACHER.value,
-        #     action_type=OperationType.CREATE.value,
-        #     ip="127.0.0.1",
-        #     change_data="",
-        #     operation_time=datetime.now(),
-        #     doc_upload="",
-        #     change_module=ChangeModule.RETIREMENT.value,
-        #     change_detail=f'{teacher_transaction.transaction_type}',
-        #     status="/",
-        #     operator_id=1,
-        #     operator_name=user_id,
-        #     process_instance_id=0)
-        # await self.operation_record_rule.add_operation_record(teacher_transaction_log)
+
+        teacher_transaction_db = view_model_to_orm_model(teacher_retire, TeacherRetire)
+        teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
+        teacher_transaction_db = await self.teacher_retire_dao.add_teacher_retire(teacher_transaction_db)
+        teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherRetireUpdateModel)
+        teacher_transaction_log = OperationRecord(
+            action_target_id=teacher_transaction.teacher_id,
+            target=OperationTarget.TEACHER.value,
+            action_type=OperationType.CREATE.value,
+            ip="127.0.0.1",
+            change_data="",
+            operation_time=datetime.now(),
+            doc_upload="",
+            change_module=ChangeModule.RETIREMENT.value,
+            change_detail=f'{teacher_transaction.transaction_type}',
+            status="/",
+            operator_id=1,
+            operator_name=user_id,
+            process_instance_id=0)
+        await self.operation_record_rule.add_operation_record(teacher_transaction_log)
         return teacher_transaction

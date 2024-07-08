@@ -6,7 +6,7 @@ from models.overseas_study import OverseasStudy
 from views.models.teacher_extend import OverseasStudyModel, OverseasStudyUpdateModel
 from daos.teachers_dao import TeachersDao
 from business_exceptions.teacher import TeacherNotFoundError,OverseasStudyNotFoundError
-
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 @dataclass_inject
 class OverseasStudyRule(object):
@@ -23,6 +23,7 @@ class OverseasStudyRule(object):
         if not exits_teacher:
             raise TeacherNotFoundError()
         overseas_study_db = view_model_to_orm_model(overseas_study, OverseasStudy)
+        overseas_study_db.overseas_study_id = SnowflakeIdGenerator(1,1).generate_id()
         overseas_study_db = await self.overseas_study_dao.add_overseas_study(overseas_study_db)
         overseas_study = orm_model_to_view_model(overseas_study_db, OverseasStudyUpdateModel)
         return overseas_study

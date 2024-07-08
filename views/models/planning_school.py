@@ -62,8 +62,8 @@ class PlanningSchool(BaseModel):
     kg_level: str|None = Field(None, title="星级", description="星级", examples=['5'])
     created_uid: int = Field(..., title="创建人", description="创建人", examples=['1'])
    
-    planning_school_short_name: str = Field(..., title="规划校简称", description="规划校简称", examples=['MXXX'])
-    planning_school_en_name: str = Field(..., title="规划校英文名称", description="规划校英文名称", examples=['MinxingPrimarySCHOOL'])
+    planning_school_short_name: str = Field('', title="规划校简称", description="规划校简称", examples=['MXXX'])
+    planning_school_en_name: str = Field( '', title="规划校英文名称", description="规划校英文名称", examples=['MinxingPrimarySCHOOL'])
     create_planning_school_date: str = Field(..., title="建校年月", description="建校年月", examples=['2021-10-10 00:00:00'])
     social_credit_code: str = Field(..., title="统一社会信用代码", description="统一社会信用代码", examples=['XH423423876867'])
     founder_type: str = Field(..., title="举办者类型", description="举办者类型", examples=['地方'])
@@ -147,7 +147,7 @@ class PlanningSchoolOptional(BaseModel):
 class PlanningSchoolBaseInfo(BaseModel):
     id: int|str = Query(None, title="", description="规划校id", example='1'),
     planning_school_name: str = Query(..., title="规划校名称", description="1-20字符", examples=['XX小学'])
-    planning_school_short_name: str = Query(..., title="", description="规划校简称", examples=['MXXX'])
+    planning_school_short_name: str = Query('', title="", description="规划校简称", examples=['MXXX'])
     planning_school_code: str = Query(..., title="", description=" 规划校标识码", examples=['SC562369322SG'])
     create_planning_school_date: str = Query(..., title="", description="建校年月", examples=['2021-10-10 00:00:00'])
     founder_type: str = Query(..., title="", description="举办者类型", examples=['地方'])
@@ -161,7 +161,7 @@ class PlanningSchoolBaseInfo(BaseModel):
 
     planning_school_org_form: str = Query(..., title="", description="办学组织形式", examples=['教学点'])
     social_credit_code: str = Query(..., title="", description="统一社会信用代码", examples=['XH423423876867'])
-    planning_school_en_name: str = Query(..., title="", description="规划校英文名称", examples=['MinxingPrimarySCHOOL'])
+    planning_school_en_name: str = Query( '', title="", description="规划校英文名称", examples=['MinxingPrimarySCHOOL'])
     founder_code: str = Query(..., title="", description="举办者识别码", examples=['SC562369322SG'])
     planning_school_closure_date: str = Query('', title="", description="规划校关闭日期", examples=[''])
     planning_school_org_type: str = Query(..., title="", description=" 规划校办别", examples=['民办'])

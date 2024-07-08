@@ -50,7 +50,7 @@ class PlanningSchoolEduinfoRule(object):
         else:
             planning_school_eduinfo_db = PlanningSchoolEduinfo(**planning_school.__dict__)
             planning_school_eduinfo_db.id = None
-            planning_school_eduinfo_db.planning_school_id= planning_school.planning_school_id
+            planning_school_eduinfo_db.planning_school_id= int(planning_school.planning_school_id)
 
 
         planning_school_eduinfo_db.deleted = 0
@@ -127,7 +127,7 @@ class PlanningSchoolEduinfoRule(object):
 
 
     async def update_planning_school_eduinfo_byargs(self, planning_school_eduinfo,ctype=1):
-        if planning_school_eduinfo.planning_school_id >0:
+        if int(planning_school_eduinfo.planning_school_id) >0:
             # exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school_eduinfo.planning_school_id)
             exists_planning_school_eduinfo = await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_planning_school_id(planning_school_eduinfo.planning_school_id)
 

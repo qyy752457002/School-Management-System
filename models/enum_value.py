@@ -4934,6 +4934,20 @@ class EnumValue(BaseDBModel):
             EnumValue(id=5378, enum_name="school_nature_lv3", enum_value="340", description="实践基地", sort_number=0,parent_id="214",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
 
 
+            EnumValue(id=5379, enum_name="change_module", enum_value="create_school", description="创建学校", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+
+            EnumValue(id=5380, enum_name="change_module", enum_value="close_school", description="关闭学校", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5381, enum_name="change_module", enum_value="new_entry", description="入职", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5382, enum_name="change_module", enum_value="basic_info_change", description="基本信息变更", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5383, enum_name="change_module", enum_value="key_info_change", description="关键信息变更", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5384, enum_name="change_module", enum_value="family_info_change", description="家庭成员信息变更", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5385, enum_name="change_module", enum_value="transfer", description="调动", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5386, enum_name="change_module", enum_value="transaction", description="变动", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5387, enum_name="change_module", enum_value="borrow", description="借动", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5388, enum_name="change_module", enum_value="retirement", description="离退休", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5389, enum_name="change_module", enum_value="student_transaction", description="转学", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+
+
         ]
 
 

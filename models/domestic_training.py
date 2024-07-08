@@ -1,4 +1,4 @@
-from sqlalchemy import String, Date
+from sqlalchemy import String, Date, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
 from datetime import date
@@ -19,8 +19,8 @@ class DomesticTraining(BaseDBModel):
     __tablename__ = 'lfun_domestic_training'
     __table_args__ = {'comment': 'domestic_training信息表'}
 
-    domestic_training_id: Mapped[int] = mapped_column(primary_key=True, comment="domestic_trainingID")
-    teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")
+    domestic_training_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, comment="domestic_trainingID")
+    teacher_id: Mapped[int] = mapped_column(BigInteger, nullable=False, comment="教师ID")
     training_year: Mapped[str] = mapped_column(String(64), nullable=False, comment="培训年度")
     training_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="培训类型")
     training_project: Mapped[str] = mapped_column(String(64), nullable=False, comment="培训项目")

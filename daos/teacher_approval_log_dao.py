@@ -1,11 +1,7 @@
-from sqlalchemy import select, func, update
+from sqlalchemy import select, update
 
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
-from mini_framework.databases.queries.pages import Paging
-from mini_framework.web.std_models.page import PageRequest
-from models.teacher_approval_log import TeacherApprovalLog
-from models.teachers import Teacher
-
+from drop.teacher_approval_log import TeacherApprovalLog
 
 
 class TeacherApprovalLogDao(DAOBase):

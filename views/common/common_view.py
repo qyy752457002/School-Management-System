@@ -172,3 +172,16 @@ def serialize(model):
 
 # 将字典转换为JSON
 # model_json = json.dumps(model_dict)
+
+# 函数来处理键名映射  对于josn里的  每个 根据映射提换键名
+def map_keys(data, key_map):
+    if isinstance(data, dict):
+        new_data = {}
+        for key, value in data.items():
+            new_key = key_map.get(key, key)  # 如果键在映射中，使用新键，否则使用原键
+            new_data[new_key] = map_keys(value, key_map)  # 递归处理嵌套的字典
+        return new_data
+    elif isinstance(data, list):
+        return [map_keys(item, key_map) for item in data]  # 处理列表中的每个元素
+    else:
+        return data  # 如果是基本类型，直接返回

@@ -6,6 +6,7 @@ from models.annual_review import AnnualReview
 from views.models.teacher_extend import AnnualReviewModel, AnnualReviewUpdateModel
 from daos.teachers_dao import TeachersDao
 from business_exceptions.teacher import TeacherNotFoundError,AnnualReviewNotFoundError
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 
 @dataclass_inject
@@ -23,6 +24,7 @@ class AnnualReviewRule(object):
         if not exits_teacher:
             raise TeacherNotFoundError()
         annual_review_db = view_model_to_orm_model(annual_review, AnnualReview)
+        annual_review_db.annual_review_id = SnowflakeIdGenerator(1, 1).generate_id()
         annual_review_db = await self.annual_review_dao.add_annual_review(annual_review_db)
         annual_review = orm_model_to_view_model(annual_review_db, AnnualReviewUpdateModel)
         return annual_review

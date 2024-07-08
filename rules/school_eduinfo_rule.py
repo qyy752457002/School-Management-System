@@ -1,4 +1,5 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -46,7 +47,7 @@ class SchoolEduinfoRule(object):
         school_eduinfo_db.status = '正常'
         school_eduinfo_db.created_uid = 0
         school_eduinfo_db.updated_uid = 0
-
+        school_eduinfo_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
         school_eduinfo_db = await self.school_eduinfo_dao.add_school_eduinfo(school_eduinfo_db)
         school = orm_model_to_view_model(school_eduinfo_db, SchoolEduinfoModel, exclude=["created_at",'updated_at'])

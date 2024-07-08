@@ -1,4 +1,4 @@
-from sqlalchemy import String, Date
+from sqlalchemy import String, Date, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
 from datetime import date
@@ -49,8 +49,8 @@ class ResearchAchievements(BaseDBModel):
     __tablename__ = 'lfun_research_achievements'
     __table_args__ = {'comment': 'research_achievements信息表'}
 
-    research_achievements_id: Mapped[int] = mapped_column(primary_key=True, comment="research_achievementsID")
-    teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")
+    research_achievements_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, comment="research_achievementsID")
+    teacher_id: Mapped[int] = mapped_column(BigInteger, nullable=False, comment="教师ID")
     research_achievement_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="科研成果种类")
     type: Mapped[str] = mapped_column(String(64), nullable=True, comment="类型")
     representative_or_project: Mapped[bool] = mapped_column(nullable=True, comment="是否代表性成果或项目")

@@ -5,7 +5,9 @@ from daos.talent_program_dao import TalentProgramDAO
 from models.talent_program import TalentProgram
 from views.models.teacher_extend import TalentProgramModel, TalentProgramUpdateModel
 from daos.teachers_dao import TeachersDao
-from business_exceptions.teacher import TeacherNotFoundError,TalentProgramNotFoundError
+from business_exceptions.teacher import TeacherNotFoundError, TalentProgramNotFoundError
+
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 
 @dataclass_inject
@@ -23,6 +25,7 @@ class TalentProgramRule(object):
         if not exits_teacher:
             raise TeacherNotFoundError()
         talent_program_db = view_model_to_orm_model(talent_program, TalentProgram)
+        talent_program_db.talent_program_id = SnowflakeIdGenerator(1, 1).generate_id()
         talent_program_db = await self.talent_program_dao.add_talent_program(talent_program_db)
         talent_program = orm_model_to_view_model(talent_program_db, TalentProgramUpdateModel)
         return talent_program
@@ -57,34 +60,30 @@ class TalentProgramRule(object):
             talent_program.append(orm_model_to_view_model(item, TalentProgramUpdateModel))
         return talent_program_db
 
-    async def submitting(self,talent_program_id):
+    async def submitting(self, talent_program_id):
         talent_program = await self.talent_program_dao.get_talent_program_by_talent_program_id(talent_program_id)
         if not talent_program:
             raise TalentProgramNotFoundError()
         talent_program.approval_status = "submitting"
         return await self.talent_program_dao.update_talent_program(talent_program, "approval_status")
 
-    async def submitted(self,talent_program_id):
+    async def submitted(self, talent_program_id):
         talent_program = await self.talent_program_dao.get_talent_program_by_talent_program_id(talent_program_id)
         if not talent_program:
             raise TalentProgramNotFoundError()
         talent_program.approval_status = "submitted"
         return await self.talent_program_dao.update_talent_program(talent_program, "approval_status")
 
-    async def approved(self,talent_program_id):
+    async def approved(self, talent_program_id):
         talent_program = await self.talent_program_dao.get_talent_program_by_talent_program_id(talent_program_id)
         if not talent_program:
             raise TalentProgramNotFoundError()
         talent_program.approval_status = "approved"
         return await self.talent_program_dao.update_talent_program(talent_program, "approval_status")
 
-    async def rejected(self,talent_program_id):
+    async def rejected(self, talent_program_id):
         talent_program = await self.talent_program_dao.get_talent_program_by_talent_program_id(talent_program_id)
         if not talent_program:
             raise TalentProgramNotFoundError()
         talent_program.approval_status = "rejected"
         return await self.talent_program_dao.update_talent_program(talent_program, "approval_status")
-
-
-
-

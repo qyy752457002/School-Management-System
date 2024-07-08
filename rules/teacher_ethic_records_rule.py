@@ -6,7 +6,7 @@ from models.teacher_ethic_records import TeacherEthicRecords
 from views.models.teacher_extend import TeacherEthicRecordsModel, TeacherEthicRecordsUpdateModel
 from daos.teachers_dao import TeachersDao
 from business_exceptions.teacher import TeacherNotFoundError, TeacherEthicRecordsNotFoundError
-
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 @dataclass_inject
 class TeacherEthicRecordsRule(object):
@@ -24,6 +24,7 @@ class TeacherEthicRecordsRule(object):
         if not exits_teacher:
             raise TeacherNotFoundError()
         teacher_ethic_records_db = view_model_to_orm_model(teacher_ethic_records, TeacherEthicRecords)
+        teacher_ethic_records_db.teacher_ethic_records_id = SnowflakeIdGenerator(1,1).generate_id()
         teacher_ethic_records_db = await self.teacher_ethic_records_dao.add_teacher_ethic_records(
             teacher_ethic_records_db)
         teacher_ethic_records = orm_model_to_view_model(teacher_ethic_records_db, TeacherEthicRecordsUpdateModel)

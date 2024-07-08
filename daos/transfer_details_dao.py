@@ -7,10 +7,9 @@ from models.transfer_details import TransferDetails
 from views.models.teacher_transaction import TeacherTransferQueryModel
 from models.teachers_info import TeacherInfo
 from models.teachers import Teacher
-from models.work_flow_node_instance import WorkFlowNodeInstance
-from models.work_flow_instance import WorkFlowInstance
+from drop.work_flow_node_instance import WorkFlowNodeInstance
+from drop.work_flow_instance import WorkFlowInstance
 from models.school import School
-from models.enum_value import EnumValue
 
 
 class TransferDetailsDAO(DAOBase):

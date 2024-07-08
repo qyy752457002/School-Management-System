@@ -1,4 +1,4 @@
-from sqlalchemy import String, Date
+from sqlalchemy import String, Date, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
 from datetime import date
@@ -26,8 +26,8 @@ class TeacherLearnExperience(BaseDBModel):
     __tablename__ = 'lfun_teacher_learn_experience'
     __table_args__ = {'comment': 'teacher_learn_experience信息表'}
 
-    teacher_learn_experience_id: Mapped[int] = mapped_column(primary_key=True, comment="teacher_learn_experienceID")
-    teacher_id: Mapped[int] = mapped_column(nullable=True, comment="教师ID")
+    teacher_learn_experience_id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="teacher_learn_experienceID")
+    teacher_id: Mapped[int] = mapped_column(BigInteger,nullable=True, comment="教师ID")
     education_obtained: Mapped[str] = mapped_column(String(64), nullable=True, comment="获的学历")
     country_or_region_of_education: Mapped[str] = mapped_column(String(64), nullable=True, comment="获得学历国家/地区")
     institution_of_education_obtained: Mapped[str] = mapped_column(String(64), nullable=True, comment="获得学历的院校机构")
