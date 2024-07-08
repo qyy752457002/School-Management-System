@@ -18,6 +18,7 @@ class SchoolDAO(DAOBase):
         return result.scalar()
 
     async def get_school_by_id(self, school_id):
+        school_id=int(school_id)
         session = await self.slave_db()
         result = await session.execute(select(School).where(School.id == school_id))
         return result.scalar_one_or_none()
@@ -36,6 +37,7 @@ class SchoolDAO(DAOBase):
         return school
 
     async def update_school_byargs(self, school: School, *args, is_commit: bool = True):
+        school.id= int(school.id)
         session =await self.master_db()
         update_contents = get_update_contents(school, *args)
         # 遍历 检查如果模型里没有这个属性 则 删除

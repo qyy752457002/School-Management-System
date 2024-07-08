@@ -14,7 +14,7 @@ from business_exceptions.school import SchoolStatusError
 from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
 from rules.system_rule import SystemRule
-from views.common.common_view import compare_modify_fields, get_extend_params
+from views.common.common_view import compare_modify_fields, get_extend_params, convert_snowid_in_model
 from views.models.extend_params import ExtendParams
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, \
@@ -33,7 +33,7 @@ from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 
 from rules.school_communication_rule import SchoolCommunicationRule
-from views.models.system import ImportScene
+from views.models.system import ImportScene, InstitutionType
 
 
 class SchoolView(BaseView):
@@ -69,6 +69,7 @@ class SchoolView(BaseView):
                 'school_keyinfo': school_keyinfo}
 
     async def post(self, school: SchoolKeyAddInfo):
+        print('入参',school)
         res = await self.school_rule.add_school(school)
         print(res)
         resc = SchoolCommunications(id=0)
@@ -86,7 +87,7 @@ class SchoolView(BaseView):
         print(res_comm, '模型2 res')
         #
         resedu = SchoolEduInfo(id=0)
-        resedu.school_id = res.id
+        resedu.school_id = int( res.id)
         # 保存教育信息
         res_edu = await self.school_eduinfo_rule.add_school_eduinfo(resedu, convertmodel=False)
         print(res_edu)
@@ -118,6 +119,8 @@ class SchoolView(BaseView):
             pl = SchoolBaseInfoOptional(id=school.id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
             res = await self.school_rule.update_school_byargs(pl  )
+            if hasattr(res,'id'):
+                res.id = str(res.id)
 
             pass
 
@@ -201,10 +204,14 @@ class SchoolView(BaseView):
                    planning_school_id: int |str= Query(None, description="规划校ID", example='1'),
                    province: str = Query("", title="", description="省份代码", ),
                    city: str = Query("", title="", description="城市", ),
+                   institution_category: InstitutionType = Query(None, title='单位分类',examples=['institution/administration']),
+
 
                    ):
         print(page_request)
         items = []
+        if not institution_category:
+            institution_category = [InstitutionType.SCHOOL, ]
 
         paging_result = await self.school_rule.query_school_with_page(page_request,
                                                                       school_name, school_no, school_code,
@@ -212,7 +219,7 @@ class SchoolView(BaseView):
                                                                       founder_type,
                                                                       founder_type_lv2,
                                                                       founder_type_lv3, planning_school_id, province,
-                                                                      city)
+                                                                      city,institution_category=institution_category)
         return paging_result
 
     # 开办
@@ -235,6 +242,8 @@ class SchoolView(BaseView):
             pl = SchoolBaseInfoOptional(id=school_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
             res = await self.school_rule.update_school_byargs(pl  )
+            if hasattr(res,'id'):
+                res.id = str(res.id)
 
             pass
 
@@ -277,6 +286,7 @@ class SchoolView(BaseView):
             pl = SchoolBaseInfoOptional(id=school_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
             res = await self.school_rule.update_school_byargs(pl  )
+            convert_snowid_in_model(res )
 
             pass
 
@@ -306,6 +316,7 @@ class SchoolView(BaseView):
 
                   ):
         # print(planning_school)
+        school_id= int(school_id)
         school.id = school_id
         school_communication.school_id = school_id
         school_eduinfo.school_id = school_id
@@ -318,6 +329,7 @@ class SchoolView(BaseView):
         log_con = compare_modify_fields(school, origin)
 
         res = await self.school_rule.update_school_byargs(school)
+        convert_snowid_in_model(res )
         res_com = await self.school_communication_rule.update_school_communication_byargs(
             school_communication)
         res_edu = await self.school_eduinfo_rule.update_school_eduinfo_byargs(school_eduinfo)
@@ -346,6 +358,7 @@ class SchoolView(BaseView):
 
                        ):
         # print(planning_school)
+        school_id= int(school_id)
         school.id = school_id
         school_communication.school_id = school_id
         school_eduinfo.school_id = school_id
@@ -358,6 +371,7 @@ class SchoolView(BaseView):
         origin = await self.school_rule.get_school_by_id(school.id)
         log_con = compare_modify_fields(school, origin)
 
+        # convert_school_status(school)
         res = await self.school_rule.update_school_byargs(school)
         res_com = await self.school_communication_rule.update_school_communication_byargs(
             school_communication)

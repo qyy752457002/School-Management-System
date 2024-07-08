@@ -1,10 +1,10 @@
 from fastapi import Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class SchoolCommunications(BaseModel):
-    id:int= Query(None, title="", description="", example='1'),
-    school_id: int = Field(0, title="", description="学校id",examples=['1'])
+    id:int|str= Query(None, title="", description="", example='1'),
+    school_id: int|str = Field(0, title="", description="学校id",examples=['1'])
 
     postal_code: str = Field(None, title="", description="邮政编码",examples=['472566'])
     fax_number: str = Field(None, title="", description="传真电话",examples=['020265656'])
@@ -25,15 +25,21 @@ class SchoolCommunications(BaseModel):
     detailed_address: str = Field(None, title="", description="园所详细地址",examples=['FSDFSD'])
     related_license_upload: str = Field(None, title="", description="相关证照上传",examples=[''])
     school_web_url: str = Field(None, title="", description="校园网域名",examples=['WW.SS.CC'])
+    @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["school_id", 'id']
         for _change in _change_list:
+            if _change not in data:
+                continue
             if isinstance(data[_change], str):
                 data[_change] = int(data[_change])
             elif isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
+        return data
+
 
 
 
