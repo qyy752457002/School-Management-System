@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -13,8 +13,8 @@ class Grade(BaseDBModel):
     __tablename__ = 'lfun_grade'
     __table_args__ = {'comment': '年级表模型'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="年级ID",autoincrement=True)
-    school_id: Mapped[int] = mapped_column( comment="学校ID",default=0,nullable=True)
+    id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="年级ID",autoincrement=False)
+    school_id: Mapped[int] = mapped_column(BigInteger, comment="学校ID",default=0,nullable=True)
 
     school_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="教育阶段/学校类别 例如 小学 初中")
     city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城市 编码")

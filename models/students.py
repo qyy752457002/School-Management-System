@@ -1,4 +1,4 @@
-from sqlalchemy import String, Date
+from sqlalchemy import String, Date, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -131,7 +131,7 @@ class Student(BaseDBModel):
     __tablename__ = 'lfun_students'
     __table_args__ = {'comment': '学生表关键信息模型'}
 
-    student_id: Mapped[int] = mapped_column(primary_key=True, comment="学生ID", autoincrement=True)  # 主键
+    student_id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="学生ID", autoincrement=False)  # 主键
     student_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="学生姓名")
     student_gender: Mapped[str] = mapped_column(String(64), nullable=True, comment="学生性别")
     enrollment_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="报名号")

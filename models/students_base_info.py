@@ -1,4 +1,4 @@
-from sqlalchemy import String, Date
+from sqlalchemy import String, Date, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -56,15 +56,15 @@ class StudentBaseInfo(BaseDBModel):
     __tablename__ = 'lfun_students_base_info'
     __table_args__ = {'comment': '学生表基本信息模型'}
 
-    student_base_id: Mapped[int] = mapped_column(primary_key=True, comment="主键",
-                                                 autoincrement=True)  # 与学生表关联，关系为一对一，主键
+    student_base_id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="主键",
+                                                 autoincrement=False)  # 与学生表关联，关系为一对一，主键
 
-    student_id: Mapped[int] = mapped_column(nullable=False, comment="学生ID", autoincrement=True)  # 与学生表关联，关系为一对一，主键
+    student_id: Mapped[int] = mapped_column(BigInteger,nullable=False, comment="学生ID", autoincrement=False)  # 与学生表关联，关系为一对一，主键
 
     name_pinyin: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="姓名拼音")
 
     session: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="届别")
-    session_id: Mapped[int] = mapped_column(nullable=True, comment="届别id", default=0)
+    session_id: Mapped[int] = mapped_column(BigInteger,nullable=True, comment="届别id", default=0)
     edu_number: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学籍号")
     student_number: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学号")
     graduation_type: Mapped[str] = mapped_column(String(10), nullable=True, default='', comment="毕业类型")
@@ -75,10 +75,10 @@ class StudentBaseInfo(BaseDBModel):
     grade: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="年级")
     classroom: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="班级")
     class_number: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="班号")
-    class_id: Mapped[int] = mapped_column(nullable=True, comment="班级id", default=0)
-    grade_id: Mapped[int] = mapped_column(nullable=True, comment="年级id", default=0)
+    class_id: Mapped[int] = mapped_column(BigInteger,nullable=True, comment="班级id", default=0)
+    grade_id: Mapped[int] = mapped_column(BigInteger,nullable=True, comment="年级id", default=0)
 
-    school_id: Mapped[int] = mapped_column(nullable=True, comment="学校id", default=0)
+    school_id: Mapped[int] = mapped_column(BigInteger,nullable=True, comment="学校id", default=0)
     # 户口所在地(residence_district) 户籍地址修改为户口所在地（详细）(residence_address)
     school: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校")
     registration_date: Mapped[date] = mapped_column(Date, nullable=True, default=date(1970, 1, 1), comment="登记日期")
