@@ -59,12 +59,15 @@ class School(BaseModel):
     def check_id_before(self, data: dict):
         _change_list= ["id", "planning_school_id"]
         for _change in _change_list:
+            if _change not in data:
+                continue
             if isinstance(data[_change], str):
                 data[_change] = int(data[_change])
             elif isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
+        return data
 
 # 学校的 基本信息模型   视图的额模型是按需提供的
 class SchoolBaseInfoOptional(BaseModel):
@@ -100,12 +103,15 @@ class SchoolBaseInfoOptional(BaseModel):
     def check_id_before(self, data: dict):
         _change_list= ["id", ]
         for _change in _change_list:
+            if _change not in data:
+                continue
             if isinstance(data[_change], str):
                 data[_change] = int(data[_change])
             elif isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
+        return data
 
 
 # 学校的 基本信息模型   视图的额模型是按需提供的
@@ -142,12 +148,15 @@ class SchoolBaseInfo(BaseModel):
     def check_id_before(self, data: dict):
         _change_list= ["id", ]
         for _change in _change_list:
+            if _change not in data:
+                continue
             if isinstance(data[_change], str):
                 data[_change] = int(data[_change])
             elif isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
+        return data
 
 
 class SchoolKeyInfo(BaseModel):
@@ -169,12 +178,15 @@ class SchoolKeyInfo(BaseModel):
     def check_id_before(self, data: dict):
         _change_list= ["id", 'planning_school_id']
         for _change in _change_list:
+            if _change not in data:
+                continue
             if isinstance(data[_change], str):
                 data[_change] = int(data[_change])
             elif isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
+        return data
 
 class SchoolKeyAddInfo(BaseModel):
     id:int|str= Field(None, title="", description="学校id", example='1')
@@ -194,6 +206,8 @@ class SchoolKeyAddInfo(BaseModel):
     def check_id_before(self, data):
         _change_list= ["id",'planning_school_id' ]
         for _change in _change_list:
+            if _change not in data:
+                continue
             if isinstance(data[_change], str):
                 data[_change] = int(data[_change])
             elif isinstance(data[_change], int):
@@ -236,10 +250,13 @@ class SchoolPageSearch(BaseModel):
     def check_id_before(self, data: dict):
         _change_list= ["planning_school_id", ]
         for _change in _change_list:
+            if _change not in data:
+                continue
             if isinstance(data[_change], str):
                 data[_change] = int(data[_change])
             elif isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
+        return data
 
