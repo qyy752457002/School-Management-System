@@ -119,6 +119,8 @@ class SchoolView(BaseView):
             pl = SchoolBaseInfoOptional(id=school.id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
             res = await self.school_rule.update_school_byargs(pl  )
+            if hasattr(res,'id'):
+                res.id = str(res.id)
 
             pass
 
