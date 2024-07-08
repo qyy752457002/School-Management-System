@@ -33,7 +33,7 @@ from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 
 from rules.school_communication_rule import SchoolCommunicationRule
-from views.models.system import ImportScene
+from views.models.system import ImportScene, InstitutionType
 
 
 class SchoolView(BaseView):
@@ -201,10 +201,14 @@ class SchoolView(BaseView):
                    planning_school_id: int = Query(None, description="规划校ID", example='1'),
                    province: str = Query("", title="", description="省份代码", ),
                    city: str = Query("", title="", description="城市", ),
+                   institution_category: InstitutionType = Query(None, title='单位分类',examples=['institution/administration']),
+
 
                    ):
         print(page_request)
         items = []
+        if not institution_category:
+            institution_category = [InstitutionType.SCHOOL, ]
 
         paging_result = await self.school_rule.query_school_with_page(page_request,
                                                                       school_name, school_no, school_code,
@@ -212,7 +216,7 @@ class SchoolView(BaseView):
                                                                       founder_type,
                                                                       founder_type_lv2,
                                                                       founder_type_lv3, planning_school_id, province,
-                                                                      city)
+                                                                      city,institution_category=institution_category)
         return paging_result
 
     # 开办
