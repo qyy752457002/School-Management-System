@@ -14,7 +14,7 @@ from business_exceptions.school import SchoolStatusError
 from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
 from rules.system_rule import SystemRule
-from views.common.common_view import compare_modify_fields, get_extend_params
+from views.common.common_view import compare_modify_fields, get_extend_params, convert_snowid_in_model
 from views.models.extend_params import ExtendParams
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, \
@@ -286,6 +286,7 @@ class SchoolView(BaseView):
             pl = SchoolBaseInfoOptional(id=school_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
             res = await self.school_rule.update_school_byargs(pl  )
+            convert_snowid_in_model(res )
 
             pass
 
@@ -327,6 +328,7 @@ class SchoolView(BaseView):
         log_con = compare_modify_fields(school, origin)
 
         res = await self.school_rule.update_school_byargs(school)
+        convert_snowid_in_model(res )
         res_com = await self.school_communication_rule.update_school_communication_byargs(
             school_communication)
         res_edu = await self.school_eduinfo_rule.update_school_eduinfo_byargs(school_eduinfo)

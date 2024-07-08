@@ -219,6 +219,9 @@ class SchoolRule(object):
 
         # 更新不用转换   因为得到的对象不熟全属性
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""])
+        convert_snowid_in_model(school_db,['id'])
+
+
         return school_db
 
     async def delete_school(self, school_id):
