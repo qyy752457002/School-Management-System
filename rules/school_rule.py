@@ -22,7 +22,7 @@ from models.student_transaction import AuditAction
 from rules.common.common_rule import send_request
 from rules.enum_value_rule import EnumValueRule
 from rules.system_rule import SystemRule
-from views.common.common_view import workflow_service_config, convert_snowid_in_model
+from views.common.common_view import workflow_service_config, convert_snowid_in_model, convert_snowid_to_strings
 from views.models.extend_params import ExtendParams
 from views.models.institutions import InstitutionKeyInfo
 # from rules.planning_school_rule import PlanningSchoolRule
@@ -272,6 +272,8 @@ class SchoolRule(object):
 
         else:
             paging_result = PaginatedResponse.from_paging(paging, SchoolModel)
+        convert_snowid_to_strings(paging_result,['planning_school_id'])
+
         return paging_result
 
 
