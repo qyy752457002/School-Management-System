@@ -58,7 +58,7 @@ class ClassesSearchRes(BaseModel):
     school_id: int = Field(None, title="学校ID", description="学校ID", examples=['1'])
     grade_no: str = Field(None, title="年级编号", description="年级编号", examples=['一年级'])
     grade_id: int = Field(None, title="年级ID", description="年级ID", examples=['2'])
-    grade_type: str = Field(None, title="", description="", examples=[''])
+    grade_type: str|None = Field(None, title="", description="", examples=[''])
     grade_type_name: str = Field(None, title="", description="", examples=[''])
 
     class_name: str|None = Field(None, title="Grade_name", description="班级名称", examples=['一年级'])
@@ -77,7 +77,7 @@ class ClassesSearchRes(BaseModel):
     monitor_student_number: str = Field(None, description="班长学号", examples=['S11000236001'])
     class_type: str|None = Field(None, description="中小学班级类型", examples=['小学教学点班'])
     is_bilingual_class: str|bool = Field(None, description="是否少数民族双语教学班", examples=['fsdfdsfsdxxx'])
-    major_for_vocational: str = Field(None, description="中职班级专业", examples=['fsdfdsfsdxxx'])
+    major_for_vocational: str|None = Field(None, description="中职班级专业", examples=['fsdfdsfsdxxx'])
     bilingual_teaching_mode: str = Field(None, description="双语教学模式", examples=['fsdfdsfsdxxx'])
     ethnic_language: str = Field(None, description="少数民族语言", examples=['fsdfdsfsdxxx'])
     is_att_class: str|bool = Field(None, description="是否附设班", examples=['是否附设班'])
