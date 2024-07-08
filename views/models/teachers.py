@@ -38,15 +38,28 @@ class Teachers(BaseModel):
     单位部门：teacher_employer
     头像：teacher_avatar
     """
-    teacher_id: int|str = Field(None, title="教师ID", description="教师ID")
+    teacher_id: int | str = Field(None, title="教师ID", description="教师ID")
     teacher_name: str = Field(..., title="姓名", description="教师名称")
     teacher_gender: Gender = Field(..., title="性别", description="教师性别")
     teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: int = Field(0, title="单位部门", description="单位部门")
+    teacher_employer: int | str = Field(0, title="单位部门", description="单位部门")
     teacher_avatar: str = Field("", title="头像", description="头像")
     mobile: str | None = Field("", title="手机号", description="手机号")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "teacher_employer"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class TeachersCreatModel(BaseModel):
@@ -64,9 +77,22 @@ class TeachersCreatModel(BaseModel):
     teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: int = Field(0, title="单位部门", description="单位部门", gt=0)
+    teacher_employer: int | str = Field(0, title="单位部门", description="单位部门", gt=0)
     teacher_avatar: str = Field("", title="头像", description="头像")
     mobile: str = Field("", title="手机号", description="手机号")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class TeacherRe(BaseModel):
@@ -74,15 +100,28 @@ class TeacherRe(BaseModel):
     这个模型现在本地查然后是交给工作流的，相当于表单附赠信息
     """
     teacher_name: str = Field(..., title="姓名", description="教师名称")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     teacher_gender: Gender = Field(..., title="性别", description="教师性别")
     teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: int = Field(0, title="单位部门", description="单位部门", gt=0)
+    teacher_employer: int | str = Field(0, title="单位部门", description="单位部门", gt=0)
     mobile: str = Field("", title="手机号", description="手机号")
     teacher_main_status: str = Field("", title="主状态", description="主状态")
     teacher_sub_status: str = Field("", title="子状态", description="子状态")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "teacher_employer"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class TeacherAdd(BaseModel):
@@ -94,10 +133,23 @@ class TeacherAdd(BaseModel):
     teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: int = Field(0, title="单位部门", description="单位部门", gt=0)
+    teacher_employer: int | str = Field(0, title="单位部门", description="单位部门", gt=0)
     mobile: str = Field("", title="手机号", description="手机号")
     teacher_main_status: str = Field("", title="主状态", description="主状态")
     teacher_sub_status: str = Field("", title="子状态", description="子状态")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class TeacherCreateResultModel(TeachersCreatModel):
@@ -149,7 +201,7 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
     教职工号：teacher_number
     """
 
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     ethnicity: Optional[str] = Field(None, title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家/地区", description="国家地区", example="中国")
     political_status: Optional[str] = Field(None, title="政治面貌", description="政治面貌", example="党员")
@@ -208,7 +260,6 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
     department: str = Field("", title="部门", description="部门", example="部门")
     org_id: Optional[int] = Field(None, title="组织ID", description="组织ID")
 
-
     hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
     hukou_type: str = Field("", title="户口类别", description="户口类别", example="户口类别")
     main_teaching_level: str = Field("", title="主要任课学段", description="主要任课学段", example="主要任课学段")
@@ -225,8 +276,21 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
     email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
     highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
     highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
-    is_major_graduate: bool|None = Field(False, title="是否为师范生", description="是否为师范生")
+    is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
@@ -293,8 +357,8 @@ class TeacherInfo(BaseModel):  # 基本信息
     招聘方式：recruitment_method
     教职工号：teacher_number
     """
-    teacher_base_id: int = Field(-1, title="教师ID", description="教师ID")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_base_id: int | str = Field(-1, title="教师ID", description="教师ID")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     ethnicity: Optional[str] = Field(None, title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家/地区", description="国家地区", example="中国")
     political_status: Optional[str] = Field(None, title="政治面貌", description="政治面貌", example="党员")
@@ -353,7 +417,6 @@ class TeacherInfo(BaseModel):  # 基本信息
     department: str = Field("", title="部门", description="部门", example="部门")
     org_id: Optional[int] = Field(None, title="组织ID", description="组织ID")
 
-
     hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
     hukou_type: str = Field("", title="户口类别", description="户口类别", example="户口类别")
     main_teaching_level: str = Field("", title="主要任课学段", description="主要任课学段", example="主要任课学段")
@@ -370,8 +433,21 @@ class TeacherInfo(BaseModel):  # 基本信息
     email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
     highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
     highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
-    is_major_graduate: bool|None = Field(False, title="是否为师范生", description="是否为师范生")
+    is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "teacher_base_id"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
@@ -534,8 +610,8 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
     招聘方式：recruitment_method
     教职工号：teacher_number
     """
-    teacher_base_id: int = Field(-1, title="教师ID", description="教师ID")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_base_id: int | str = Field(-1, title="教师ID", description="教师ID")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     ethnicity: str = Field("", title="民族", description="民族", example="汉族")
     nationality: str = Field("", title="国家/地区", description="国家地区", example="中国")
     political_status: str = Field("", title="政治面貌", description="政治面貌", example="党员")
@@ -598,8 +674,6 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
     department: str = Field("", title="部门", description="部门", example="部门")
     org_id: Optional[int] = Field(None, title="组织ID", description="组织ID")
 
-
-
     hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
     hukou_type: str = Field("", title="户口类别", description="户口类别", example="户口类别")
     main_teaching_level: str = Field("", title="主要任课学段", description="主要任课学段", example="主要任课学段")
@@ -616,8 +690,21 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
     email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
     highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
     highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
-    is_major_graduate: bool|None = Field(False, title="是否为师范生", description="是否为师范生")
+    is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "teacher_base_id"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
@@ -665,8 +752,8 @@ class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
     招聘方式：recruitment_method
     教职工号：teacher_number
     """
-    teacher_base_id: int = Field(..., title="教师ID", description="教师ID")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_base_id: int | str = Field(..., title="教师ID", description="教师ID")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     ethnicity: str = Field("", title="民族", description="民族", example="汉族")
     nationality: str = Field("", title="国家/地区", description="国家地区", example="中国")
     political_status: str = Field("", title="政治面貌", description="政治面貌", example="党员")
@@ -726,7 +813,6 @@ class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
     department: str = Field("", title="部门", description="部门", example="部门")
     org_id: Optional[int] = Field(None, title="组织ID", description="组织ID")
 
-
     hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
     hukou_type: str = Field("", title="户口类别", description="户口类别", example="户口类别")
     main_teaching_level: str = Field("", title="主要任课学段", description="主要任课学段", example="主要任课学段")
@@ -743,8 +829,21 @@ class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
     email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
     highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
     highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
-    is_major_graduate: bool|None = Field(False, title="是否为师范生", description="是否为师范生")
+    is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "teacher_base_id"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
@@ -791,8 +890,8 @@ class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
     招聘方式：recruitment_method
     教职工号：teacher_number
     """
-    teacher_base_id: int = Field(..., title="教师ID", description="教师ID")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_base_id: int | str = Field(..., title="教师ID", description="教师ID")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     ethnicity: str | None = Field("", title="民族", description="民族", example="汉族")
     nationality: str = Field("", title="国家/地区", description="国家地区", example="中国")
     political_status: str = Field("", title="政治面貌", description="政治面貌", example="党员")
@@ -853,7 +952,6 @@ class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
     department: str = Field("", title="部门", description="部门", example="部门")
     org_id: Optional[int] = Field(None, title="组织ID", description="组织ID")
 
-
     hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
     hukou_type: str = Field("", title="户口类别", description="户口类别", example="户口类别")
     main_teaching_level: str = Field("", title="主要任课学段", description="主要任课学段", example="主要任课学段")
@@ -870,8 +968,21 @@ class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
     email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
     highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
     highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
-    is_major_graduate: bool|None = Field(False, title="是否为师范生", description="是否为师范生")
+    is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "teacher_base_id"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class TeacherInfoSubmit(BaseModel):  # 基本信息
@@ -917,8 +1028,8 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
     招聘方式：recruitment_method
     教职工号：teacher_number
     """
-    teacher_base_id: int = Field(-1, title="教师ID", description="教师ID")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_base_id: int | str = Field(-1, title="教师ID", description="教师ID")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     ethnicity: Optional[str] = Field(None, title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家/地区", description="国家地区", example="中国")
     political_status: Optional[str] = Field(None, title="政治面貌", description="政治面貌", example="党员")
@@ -976,8 +1087,7 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
     department: str = Field(..., title="部门", description="部门", example="部门")
-    org_id: int = Field(..., title="组织ID", description="组织ID")
-
+    org_id: int | str = Field(..., title="组织ID", description="组织ID")
 
     hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
     hukou_type: str = Field("", title="户口类别", description="户口类别", example="户口类别")
@@ -995,8 +1105,21 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
     email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
     highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
     highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
-    is_major_graduate: bool|None = Field(False, title="是否为师范生", description="是否为师范生")
+    is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "teacher_base_id"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
@@ -1027,7 +1150,7 @@ class NewTeacher(BaseModel):
     teacher_name: Optional[str] = Query("", title="姓名", description="姓名", example="张三")
     teacher_id_number: Optional[str] = Query("", title="身份证号", description="身份证号", example="123456789012345678")
     teacher_gender: Optional[Gender] = Query("", title="性别", description="性别", example="男")
-    teacher_employer: Optional[int] = Query(None, title="单位部门", description="单位部门", example="xx学校")
+    teacher_employer: Optional[int | str] = Query(None, title="单位部门", description="单位部门", example="xx学校")
     highest_education: Optional[str] = Query("", title="最高学历", description="最高学历", example="本科")
     political_status: Optional[str] = Query("", title="政治面貌", description="政治面貌", example="群众")
     in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
@@ -1039,10 +1162,23 @@ class NewTeacher(BaseModel):
     teacher_main_status: Optional[str] = Query(None, title="主要状态", description="主要状态", example="unemployed")
     approval_status: Optional[str] = Query(None, title="审核状态", description="审核状态", example="submitting")
 
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
 
 class NewTeacherRe(BaseModel):
-    teacher_base_id: Optional[int] = Field(0, title="教师ID", description="教师ID")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_base_id: Optional[int | str] = Field(0, title="教师ID", description="教师ID")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     teacher_name: str = Field("", title="姓名", description="姓名", example="张三")
     teacher_id_number: str = Field("", title="身份证号", description="身份证号", example="123456789012345678")
     teacher_gender: str = Field("", title="性别", description="性别", example="男")
@@ -1056,14 +1192,27 @@ class NewTeacherRe(BaseModel):
     in_post: Optional[bool] = Field(None, title="是否在编", description="是否在编", example="yes")
     school_name: str = Field("", title="", description="", example="")
     approval_status: str = Field("submitting", title="审核状态", description="审核状态", example="submitting")
-    process_instance_id: int = Field(..., title="流程实例ID", description="流程实例ID", example="123456789012345678")
+    process_instance_id: int | str = Field(..., title="流程实例ID", description="流程实例ID",
+                                           example="123456789012345678")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer", "teacher_base_id", "teacher_id", "process_instance_id"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class NewTeacherApprovalCreate(BaseModel):
-
-    #老师关键信息
+    # 老师关键信息
     teacher_base_id: Optional[int] = Field(None, title="教师ID", description="教师ID")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     teacher_name: Optional[str] = Field("", title="姓名", description="姓名", example="张三")
     teacher_id_number: Optional[str] = Field("", title="身份证号", description="身份证号", example="123456789012345678")
     teacher_id_type: Optional[str] = Field("", title="身份证件类型", description="证件类型")
@@ -1080,7 +1229,18 @@ class NewTeacherApprovalCreate(BaseModel):
     is_approval: Optional[bool] = Field(None, title="是否在审批中", description="是否在审批中")
     teacher_number: Optional[str] = Field("", title="教职工号", description="教职工号", example="123456789012345678")
 
-
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer", "teacher_base_id", "teacher_id"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
     # teacher_id: int = Field(..., title="教师ID", description="教师ID")
     # teacher_name: str = Field(..., title="姓名", description="教师名称")
@@ -1097,7 +1257,7 @@ class NewTeacherApprovalCreate(BaseModel):
     #
     # school_name: str = Field("", title="", description="", example="")
 
-    #教师基本信息
+    # 教师基本信息
     # teacher_base_id: Optional[int] = Field(None, title="教师ID", description="教师ID")
     # ethnicity: Optional[str] = Field(None, title="民族", description="民族", example="汉族")
     # nationality: str = Field(..., title="国家/地区", description="国家地区", example="中国")
@@ -1196,7 +1356,7 @@ class CurrentTeacherQuery(BaseModel):
     teacher_name: str = Query("", title="姓名", description="姓名", example="张三")
     teacher_id_number: str = Query("", title="身份证号", description="身份证号", example="123456789012345678")
     teacher_gender: Optional[Gender] = Query("", title="性别", description="性别", example="男")
-    teacher_employer: Optional[int] = Query(None, title="单位部门", description="单位部门", example="xx学校")
+    teacher_employer: Optional[int | str] = Query(None, title="单位部门", description="单位部门", example="xx学校")
     highest_education: str = Query("", title="最高学历", description="最高学历", example="本科")
     political_status: str = Query("", title="政治面貌", description="政治面貌", example="群众")
     in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
@@ -1205,6 +1365,19 @@ class CurrentTeacherQuery(BaseModel):
                                                 example="2010-01-01")
     enter_school_time_e: Optional[date] = Query(None, title="进本校结束时间", description="进本校结束时间",
                                                 example="2010-01-01")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class CurrentTeacherQueryRe(BaseModel):
@@ -1221,12 +1394,12 @@ class CurrentTeacherQueryRe(BaseModel):
     进本校时间：enter_school_time
     审核状态：approval_status
     """
-    teacher_base_id: Optional[int] = Field(None, title="教师基本信息id", description="教师ID")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_base_id: Optional[int | str] = Field(None, title="教师基本信息id", description="教师ID")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     teacher_name: str = Query("", title="姓名", description="姓名", example="张三")
     teacher_id_number: str = Query("", title="身份证号", description="身份证号", example="123456789012345678")
     teacher_gender: str = Query("", title="性别", description="性别", example="男")
-    teacher_employer: int = Query(1, title="单位部门", description="单位部门", example="xx学校")
+    teacher_employer: int | str = Query(1, title="单位部门", description="单位部门", example="xx学校")
     highest_education: Optional[str] = Query("", title="最高学历", description="最高学历", example="本科")
     political_status: Optional[str] = Query("", title="政治面貌", description="政治面貌", example="群众")
     in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
@@ -1234,6 +1407,19 @@ class CurrentTeacherQueryRe(BaseModel):
     enter_school_time: Optional[date] = Query(None, title="进本校时间", description="进本校时间", example="2010-01-01")
     school_name: Optional[str] = Query("", title="", description="", example="")
     is_approval: Optional[bool] = Field(None, title="是否在审批中", description="是否在审批中")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer", "teacher_base_id", "teacher_id"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class TeacherApprovalQuery(BaseModel):
@@ -1247,11 +1433,24 @@ class TeacherApprovalQuery(BaseModel):
     身份证号：teacher_id_number
     """
     teacher_name: Optional[str] = Query("", title="姓名", description="姓名", example="张三")
-    teacher_employer: Optional[int] = Query(None, title="单位部门", description="单位部门", example="xx学校")
+    teacher_employer: Optional[int | str] = Query(None, title="单位部门", description="单位部门", example="xx学校")
     teacher_gender: Optional[Gender] = Query(None, title="性别", description="性别", example="男")
     applicant_name: Optional[str] = Query("", title="申请人", description="申请人", example="张三")
     approval_name: Optional[str] = Query("", title="审核人", description="审核人", example="张三")
     teacher_id_number: Optional[str] = Query("", title="身份证号", description="身份证号", example="123456789012345678")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class TeacherApprovalQueryRe(BaseModel):
@@ -1272,13 +1471,26 @@ class TeacherApprovalQueryRe(BaseModel):
     school_name: Optional[str] = Query("", title="单位部门名称", description="单位部门名称", example="xx小学")
     teacher_id_number: Optional[str] = Field("", title="身份证号", description="身份证号", example="123456789012345678")
     employment_form: Optional[str] = Field("", title="用人形式", description="用人形式", example="合同")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     applicant_name: Optional[str] = Field("", title="申请人", description="申请人", example="张三")
     approval_name: Optional[str] = Field("", title="审核人", description="审核人", example="张三")
     start_time: Optional[datetime] = Field(None, title="申请时间", description="申请时间")
     approval_time: Optional[datetime] = Field(None, title="审批时间", description="审批时间")
     approval_status: str = Field("pending", title="审批状态", description="审批状态")
-    process_instance_id: int = Field(0, title="流程实例id", description="流程实例id")
+    process_instance_id: int | str = Field(0, title="流程实例id", description="流程实例id")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer", "teacher_id", "process_instance_id"]
+        for _change in _change_list:
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 # task相关模型
@@ -1295,5 +1507,5 @@ class TeacherChangeLogQueryModel(BaseModel):
     change
     """
     id: Optional[int] = Query(None, title="id", description="id", example=1)
-    teacher_id: int = Query(..., title="teacher_id", description="teacher_id", example=1)
+    teacher_id: int | str = Query(..., title="teacher_id", description="teacher_id", example=1)
     change_module: Optional[ChangeModule] = Query(None, description=" 变更模块", examples=[''])

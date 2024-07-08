@@ -27,7 +27,7 @@ class TeacherLearnExperienceModel(BaseModel):
     education_obtained: str = Field(..., title="获的学历", description="获的学历")
     country_or_region_of_education: str = Field(..., title="获得学历国家/地区", description="获得学历国家/地区")
     institution_of_education_obtained: str = Field(..., title="获得学历的院校机构", description="获得学历的院校机构")
-    major_learned: str = Field(..., title="所学妆业", description="所学妆业")
+    major_learned: str = Field(..., title="所学妆业", description="所学专业")
     is_major_normal: str = Field(..., title="是否师范类专业", description="是否师范类专业")
     admission_date: Optional[date] = Field(None, title="入学时间", description="入学时间")
     graduation_date: Optional[date] = Field(None, title="毕业时间", description="毕业时间")
