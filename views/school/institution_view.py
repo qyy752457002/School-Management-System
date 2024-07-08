@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import List
 
 from fastapi.params import Body
@@ -167,6 +168,7 @@ class InstitutionView(BaseView):
 
 
         ))
+        res= deepcopy(res)
         convert_snowid_in_model(res )
 
         return res
