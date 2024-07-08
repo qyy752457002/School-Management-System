@@ -23,7 +23,7 @@ from models.student_transaction import AuditAction
 from rules.common.common_rule import send_request
 from rules.enum_value_rule import EnumValueRule
 from rules.system_rule import SystemRule
-from views.common.common_view import workflow_service_config
+from views.common.common_view import workflow_service_config, convert_snowid_in_model, convert_snowid_to_strings
 from views.models.extend_params import ExtendParams
 from views.models.institutions import InstitutionKeyInfo
 # from rules.planning_school_rule import PlanningSchoolRule
@@ -60,6 +60,8 @@ class SchoolRule(object):
             school = orm_model_to_view_model(school_db, extra_model,other_mapper=self.other_mapper)
         else:
             school = orm_model_to_view_model(school_db, SchoolModel)
+        convert_snowid_in_model(school,['planning_school_id'])
+
         return school
 
     async def get_school_by_school_name(self, school_name):
@@ -115,6 +117,7 @@ class SchoolRule(object):
 
         school_db = await self.school_dao.add_school(school_db)
         school = orm_model_to_view_model(school_db, SchoolKeyAddInfo, exclude=["created_at",'updated_at'])
+        convert_snowid_in_model(school,['planning_school_id'])
         return school
 
 
@@ -272,6 +275,8 @@ class SchoolRule(object):
 
         else:
             paging_result = PaginatedResponse.from_paging(paging, SchoolModel)
+        convert_snowid_to_strings(paging_result,['planning_school_id'])
+
         return paging_result
 
 

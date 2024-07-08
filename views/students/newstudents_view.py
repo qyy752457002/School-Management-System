@@ -1,7 +1,8 @@
 import datetime
 import json
+from time import strptime
 from typing import List
-
+from datetime import datetime as datetimealias
 
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task import Task
@@ -174,6 +175,17 @@ class NewsStudentsInfoView(BaseView):
 
         origin = await self.students_base_info_rule.get_students_base_info_by_student_id(new_students_base_info.student_id)
         log_con = compare_modify_fields(new_students_base_info, origin)
+        # 如果日期是字符串型 转换为date
+        if isinstance(new_students_base_info.admission_date,str):
+            # 先截取10位长度
+            new_students_base_info.admission_date = new_students_base_info.admission_date[:10]
+            # 创建一个date对象
+            # 使用 strptime 方法将字符串转换为 datetime 对象
+            datetime_object = datetimealias.strptime(new_students_base_info.admission_date, '%Y-%m-%d')
+
+            # 然后，如果您需要一个 date 对象，可以通过 datetime 对象的 date 方法获取
+            new_students_base_info.admission_date = datetime_object.date()
+
 
         res = await self.students_base_info_rule.update_students_base_info(new_students_base_info)
 
