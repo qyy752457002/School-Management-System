@@ -50,7 +50,7 @@ class SchoolView(BaseView):
                   school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1, max_length=20,
                                          example=''),
                   school_name: str = Query(None, description="学校名称", min_length=1, max_length=20, example=''),
-                  school_id: int = Query(..., description="学校id|根据学校查规划校", example='1'),
+                  school_id: int|str = Query(..., description="学校id|根据学校查规划校", example='1'),
                   ):
         school = await self.school_rule.get_school_by_id(school_id)
         school_keyinfo = await self.school_rule.get_school_by_id(school_id, extra_model=SchoolKeyInfo)
@@ -198,7 +198,7 @@ class SchoolView(BaseView):
                                           example='SC2032633'),
                    school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
                                             example='XX小学'),
-                   planning_school_id: int = Query(None, description="规划校ID", example='1'),
+                   planning_school_id: int |str= Query(None, description="规划校ID", example='1'),
                    province: str = Query("", title="", description="省份代码", ),
                    city: str = Query("", title="", description="城市", ),
 
@@ -302,7 +302,7 @@ class SchoolView(BaseView):
                   school: SchoolBaseInfoOptional,
                   school_communication: SchoolCommunications,
                   school_eduinfo: SchoolEduInfo,
-                  school_id: int = Query(..., title="", description="学校id/园所id", example='38'),
+                  school_id: int|str = Query(..., title="", description="学校id/园所id", example='38'),
 
                   ):
         # print(planning_school)
@@ -342,7 +342,7 @@ class SchoolView(BaseView):
                        school: SchoolBaseInfo,
                        school_communication: SchoolCommunications,
                        school_eduinfo: SchoolEduInfo,
-                       school_id: int = Query(..., title="", description="学校id/园所id", example='38'),
+                       school_id: int|str = Query(..., title="", description="学校id/园所id", example='38'),
 
                        ):
         # print(planning_school)
@@ -501,7 +501,7 @@ class SchoolView(BaseView):
                                                        example='SC2032633'),
                                 school_name: str = Query(None, description="学校名称",
                                                          example='XX小学'),
-                                planning_school_id: int = Query(None, description="规划校ID", example='1'),
+                                planning_school_id: int|str = Query(None, description="规划校ID", example='1'),
                                 province: str = Query("", title="", description="省份代码", ),
                                 city: str = Query("", title="", description="城市", ),
 

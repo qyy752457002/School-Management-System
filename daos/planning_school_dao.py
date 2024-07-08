@@ -25,7 +25,7 @@ class PlanningSchoolDAO(DAOBase):
     async def get_planning_school_by_planning_school_name(self, planning_school_name):
         session = await self.slave_db()
         result = await session.execute(
-            select(PlanningSchool).where(PlanningSchool.planning_school_name == planning_school_name))
+            select(PlanningSchool).where(PlanningSchool.planning_school_name == planning_school_name).where(PlanningSchool.is_deleted == False))
         return result.first()
 
     async def add_planning_school(self, planning_school):

@@ -4,6 +4,9 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.class_dao import ClassesDAO
+from daos.grade_dao import GradeDAO
+from daos.school_dao import SchoolDAO
+from daos.student_session_dao import StudentSessionDao
 from models.classes import Classes
 from rules.enum_value_rule import EnumValueRule
 from rules.teachers_rule import TeachersRule
@@ -15,6 +18,10 @@ from views.models.system import DISTRICT_ENUM_KEY, GRADE_ENUM_KEY, MAJOR_LV3_ENU
 @dataclass_inject
 class ClassesRule(object):
     classes_dao: ClassesDAO
+    school_dao: SchoolDAO
+    session_dao: StudentSessionDao
+    grade_dao: GradeDAO
+    class_leader_teacher_rule = 1   #`1填写 2关联老师
 
     async def get_classes_by_id(self, classes_id):
         classes_db = await self.classes_dao.get_classes_by_id(classes_id)
@@ -27,18 +34,22 @@ class ClassesRule(object):
             classes.class_name, classes.school_id,classes)
         if exists_classes:
             raise Exception(f"班级信息{classes.class_name}已存在")
-        # 校验 teacher_id,care_teacher_id
-        teacher_rule = get_injector(TeachersRule)
-        if classes.teacher_id:
-            tea= await teacher_rule.get_teachers_by_id(classes.teacher_id)
-            if not tea:
-                raise Exception(f"班主任信息{classes.teacher_id}不存在")
+        # 校验 teacher_id,care_teacher_id  根据系统配置来决定是允许手填还是关联老师 默认关联老师
+        if self.class_leader_teacher_rule == 1:
             pass
-        if classes.care_teacher_id:
-            tea= await teacher_rule.get_teachers_by_id(classes.care_teacher_id)
-            if not tea:
-                raise Exception(f"保育员信息{classes.care_teacher_id}不存在")
-            pass
+        elif self.class_leader_teacher_rule == 2:
+
+            teacher_rule = get_injector(TeachersRule)
+            if classes.teacher_id:
+                tea= await teacher_rule.get_teachers_by_id(classes.teacher_id)
+                if not tea:
+                    raise Exception(f"班主任信息{classes.teacher_id}不存在")
+                pass
+            if classes.care_teacher_id:
+                tea= await teacher_rule.get_teachers_by_id(classes.care_teacher_id)
+                if not tea:
+                    raise Exception(f"保育员信息{classes.care_teacher_id}不存在")
+                pass
         # 如果存在专业 校验专业是否符合枚举
         if classes.major_for_vocational:
             enum_value_rule = get_injector(EnumValueRule)
@@ -46,12 +57,31 @@ class ClassesRule(object):
             if not check_major:
                 raise Exception(f"专业信息{classes.major_for_vocational}不存在,请选择正确的专业")
 
+
+        # 学校类别  届别 年级 班号
+        class_std_name_mix = []
+        if classes.school_id:
+            school_db = await self.school_dao.get_school_by_id(classes.school_id)
+            class_std_name_mix.append(school_db.school_category if school_db.school_category else '')
+            pass
+        if classes.session_id:
+            session_db = await self.session_dao.get_student_session_by_id(classes.session_id)
+            class_std_name_mix.append(session_db.session_name if session_db.session_name else '')
+            pass
+        if classes.grade_id:
+            grade_db = await self.grade_dao.get_grade_by_id(classes.grade_id)
+            class_std_name_mix.append(grade_db.grade_name if grade_db.grade_name else '')
+            pass
+        class_std_name_mix.append(classes.class_number)
+        classes.class_standard_name = "".join(class_std_name_mix)
+        print(classes)
+
         classes_db = view_model_to_orm_model(classes, Classes, exclude=["id"],other_mapper={
 
         })
-
         classes_db = await self.classes_dao.add_classes(classes_db)
         classes = orm_model_to_view_model(classes_db, ClassesModel, exclude=["created_at", 'updated_at'])
+        await self.grade_dao.increment_class_number(classes.school_id,classes.grade_id)
         return classes
 
     async def update_classes(self, classes, ctype=1):

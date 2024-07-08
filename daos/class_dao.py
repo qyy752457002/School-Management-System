@@ -23,7 +23,7 @@ class ClassesDAO(DAOBase):
 
     async def get_classes_by_classes_name(self, classes_name,school_id=None,classes=None):
         session = await self.slave_db()
-        query =  select(Classes).where(Classes.class_name == classes_name)
+        query =  select(Classes).where(Classes.class_name == classes_name).where(Classes.is_deleted==False)
         if school_id:
             query = query.where(Classes.school_id == school_id)
             # result = await session.execute(select(Classes).where(and_(Classes.class_name == classes_name,Classes.school_id==school_id)))
