@@ -240,6 +240,8 @@ class SchoolView(BaseView):
             pl = SchoolBaseInfoOptional(id=school_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
             res = await self.school_rule.update_school_byargs(pl  )
+            if hasattr(res,'id'):
+                res.id = str(res.id)
 
             pass
 
@@ -351,6 +353,7 @@ class SchoolView(BaseView):
 
                        ):
         # print(planning_school)
+        school_id= int(school_id)
         school.id = school_id
         school_communication.school_id = school_id
         school_eduinfo.school_id = school_id
@@ -363,6 +366,7 @@ class SchoolView(BaseView):
         origin = await self.school_rule.get_school_by_id(school.id)
         log_con = compare_modify_fields(school, origin)
 
+        # convert_school_status(school)
         res = await self.school_rule.update_school_byargs(school)
         res_com = await self.school_communication_rule.update_school_communication_byargs(
             school_communication)
