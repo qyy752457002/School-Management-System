@@ -25,7 +25,7 @@ class SchoolDAO(DAOBase):
     async def get_school_by_school_name(self, school_name):
         session = await self.slave_db()
         result = await session.execute(
-            select(School).where(School.school_name == school_name))
+            select(School).where(School.school_name == school_name).where(School.is_deleted==False))
         return result.first()
 
     async def add_school(self, school):
