@@ -269,7 +269,7 @@ class PlanningSchoolView(BaseView):
         planning_school.id = planning_school_id
         res = await self.planning_school_rule.add_planning_school_work_flow(planning_school, extra_model)
         process_instance_id=0
-        if len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+        if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
             process_instance_id= res[0]['process_instance_id']
             pl = PlanningSchoolBaseInfoOptional(id=planning_school_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
