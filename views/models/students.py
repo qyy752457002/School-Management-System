@@ -288,13 +288,11 @@ class StudentsBaseInfo(BaseModel):
     loc_area_pro: str = Field("", title="", description="", max_length=50)
     residence_address: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
     residence_district: str = Field("", title="户口所在地new", description="户口所在地new")
-    health_status: str = Field('', title="健康状况", description="健康状况")
-    birth_place: str = Field("", title="出生地", description="出生地")
-    admission_date: date |datetime= Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
-    nationality: str = Field("", title="国籍/地区", description="国籍/地区")
-    enrollment_method: str = Field("", title="就读方式", description="就读方式")
-
-
+    health_status: str|None = Field('', title="健康状况", description="健康状况")
+    birth_place: str|None = Field("", title="出生地", description="出生地")
+    admission_date: date |datetime|None= Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
+    nationality: str|None = Field("", title="国籍/地区", description="国籍/地区")
+    enrollment_method: str|None = Field("", title="就读方式", description="就读方式")
 
 class NewBaseInfoCreate(BaseModel):
     student_id: int = Field(..., title="学生id", description="学生id")
@@ -303,8 +301,9 @@ class NewBaseInfoCreate(BaseModel):
     ethnicity: str = Field("", title="民族", description="民族")
     blood_type: str = Field("", title="血型", description="血型")
     health_condition: str = Field('', title="健康状况", description="健康状况")
-    health_status: str = Field('', title="健康状况", description="健康状况")
-    # disabled_person: YesOrNo = Field("N", title="是否残疾人", description="是否残疾人")
+    health_status: str|None = Field('', title="健康状况", description="健康状况")
+
+# disabled_person: YesOrNo = Field("N", title="是否残疾人", description="是否残疾人")
     disabled_person: bool = Field(None, title="是否残疾人", description="是否残疾人")
 
     religious_belief: str = Field("", title="宗教信仰", description="宗教信仰")
@@ -330,30 +329,26 @@ class NewBaseInfoCreate(BaseModel):
     identity_card_validity_period: str = Field("", title="身份证件有效期", description="身份证件有效期")
     specialty: str = Field("", title="特长", description="特长")
     permanent_address: str = Field("", title="常住地址", description="常住地址")
-    birth_place: str = Field("", title="出生地", description="出生地")
+    birth_place: str|None = Field("", title="出生地", description="出生地")
     school_id: int = Field(0, title="学校id", description="学校id")
     session_id: int = Field(0, title="", description="届别id")
     registration_date: date = Field(date(1970, 1, 1), title="登记日期", description="登记日期")
-    # admission_date: date = Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
-    admission_date: date |datetime= Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
+    admission_date: date |datetime|None= Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
 
-    nationality: str = Field("", title="国籍/地区", description="国籍/地区")
-    enrollment_method: str = Field("", title="就读方式", description="就读方式")
-    residence_address: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
-    residence_district: str = Field("", title="户口所在地new", description="户口所在地new")
+    nationality: str |None= Field("", title="国籍/地区", description="国籍/地区")
+    enrollment_method: str|None = Field("", title="就读方式", description="就读方式")
+    residence_address: str|None = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
+    residence_district: str|None= Field("", title="户口所在地new", description="户口所在地new")
 
 
 class NewBaseInfoUpdate(BaseModel):
     student_base_id: int = Field(..., title="学生信息id", description="学生信息id")
     student_id: int = Field(..., title="学生id", description="学生id")
-    # birthplace_district: str = Field(..., title="出生地", description="出生地")
     native_place_district: str = Field(..., title="籍贯", description="籍贯")
     ethnicity: str = Field("", title="民族", description="民族")
     blood_type: str = Field("", title="血型", description="血型")
     health_condition: str = Field(..., title="健康状况", description="健康状况")
-    # disabled_person: YesOrNo = Field("N", title="是否残疾人", description="是否残疾人")
     disabled_person: bool = Field(None, title="是否残疾人", description="是否残疾人")
-
     religious_belief: str = Field("", title="宗教信仰", description="宗教信仰")
     political_status: str = Field("", title="政治面貌", description="政治面貌")
     residence_nature: str = Field(..., title="户口性质", description="户口性质")
@@ -363,26 +358,23 @@ class NewBaseInfoUpdate(BaseModel):
     email_or_other_contact: str = Field("", title="电子信箱/其他联系方式", description="电子信箱/其他联系方式")
     overseas_chinese: str  = Field("", title="是否港澳台侨胞", description="是否港澳台侨胞")
     left_behind_children: bool = Field(None, title="是否留守儿童", description="是否留守儿童")
-    # migrant_children: YesOrNo = Field("N", title="是否随迁子女", description="是否随迁子女")
     migrant_children: bool = Field(None, title="是否随迁子女", description="是否随迁子女")
 
     floating_population: bool = Field("N", title="是否流动人口", description="是否流动人口")
-    # only_child: YesOrNo = Field("N", title="是否独生子女", description="是否独生子女")
     only_child: bool = Field( None, title="是否独生子女", description="是否独生子女")
 
-    # residence_address_detail: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
     identity_card_validity_period: str = Field("", title="身份证件有效期", description="身份证件有效期")
     specialty: str = Field("", title="特长", description="特长")
     permanent_address: str = Field("", title="常住地址", description="常住地址")
     residence_address: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
     residence_district: str = Field("", title="户口所在地new", description="户口所在地new")
-    health_status: str = Field('', title="健康状况", description="健康状况")
-    birth_place: str = Field("", title="出生地", description="出生地")
-    # admission_date: date = Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
+    health_status: str|None = Field('', title="健康状况", description="健康状况")
+
+    birth_place: str|None = Field("", title="出生地", description="出生地")
     admission_date: date |datetime= Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
 
-    nationality: str = Field("", title="国籍/地区", description="国籍/地区")
-    enrollment_method: str = Field("", title="就读方式", description="就读方式")
+    nationality: str |None= Field("", title="国籍/地区", description="国籍/地区")
+    enrollment_method: str |None= Field("", title="就读方式", description="就读方式")
 # 学生家庭成员信息模型
 class StudentsFamilyInfo(BaseModel):
     """
