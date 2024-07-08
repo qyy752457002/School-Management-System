@@ -17,6 +17,7 @@ from models.teachers_info import TeacherInfo
 class ClassesDAO(DAOBase):
 
     async def get_classes_by_id(self, classes_id):
+        classes_id = int(classes_id)
         session = await self.slave_db()
         result = await session.execute(select(Classes).where(Classes.id == classes_id))
         return result.scalar_one_or_none()
@@ -25,13 +26,19 @@ class ClassesDAO(DAOBase):
         session = await self.slave_db()
         query =  select(Classes).where(Classes.class_name == classes_name).where(Classes.is_deleted==False)
         if school_id:
+            school_id = int(school_id)
+
             query = query.where(Classes.school_id == school_id)
             # result = await session.execute(select(Classes).where(and_(Classes.class_name == classes_name,Classes.school_id==school_id)))
         else:
             pass
         if classes.session_id:
+            classes.session_id = int(classes.session_id)
+
             query = query.where(Classes.session_id == classes.session_id)
         if classes.grade_id:
+            classes.grade_id = int(classes.grade_id)
+
             query = query.where(Classes.grade_id == classes.grade_id)
 
         result = await session.execute(query )
@@ -48,6 +55,8 @@ class ClassesDAO(DAOBase):
         session = await self.master_db()
         # session.add(classes)
         if ctype == 1:
+            classes.id = int(classes.id)
+
             update_stmt = update(Classes).where(Classes.id == classes.id).values(
                 classes_id=classes.classes_id,
                 grade_id=classes.grade_id,
@@ -79,6 +88,8 @@ class ClassesDAO(DAOBase):
     async def softdelete_classes(self, classes):
         session = await self.master_db()
         deleted_status = True
+        classes.id = int(classes.id)
+
         update_stmt = update(Classes).where(Classes.id == classes.id).values(
             is_deleted=deleted_status,
         )
@@ -179,6 +190,14 @@ class ClassesDAO(DAOBase):
 
     async def update_classes_byargs(self, classes: Classes, *args, is_commit: bool = True):
         session = await self.master_db()
+        if  classes.id:
+            classes.id= int(classes.id)
+        if  classes.school_id:
+            classes.school_id= int(classes.school_id)
+        if  classes.grade_id:
+            classes.grade_id= int(classes.grade_id)
+        if  classes.session_id:
+            classes.session_id= int(classes.session_id)
         update_contents = get_update_contents(classes, *args)
         query = update(Classes).where(Classes.id == classes.id).values(**update_contents)
         return await self.update(session, query, classes, update_contents, is_commit=is_commit)
