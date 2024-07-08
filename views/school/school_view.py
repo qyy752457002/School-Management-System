@@ -14,7 +14,7 @@ from business_exceptions.school import SchoolStatusError
 from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
 from rules.system_rule import SystemRule
-from views.common.common_view import compare_modify_fields, get_extend_params
+from views.common.common_view import compare_modify_fields, get_extend_params, convert_snowid_in_model
 from views.models.extend_params import ExtendParams
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, \
@@ -50,7 +50,7 @@ class SchoolView(BaseView):
                   school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1, max_length=20,
                                          example=''),
                   school_name: str = Query(None, description="学校名称", min_length=1, max_length=20, example=''),
-                  school_id: int = Query(..., description="学校id|根据学校查规划校", example='1'),
+                  school_id: int|str = Query(..., description="学校id|根据学校查规划校", example='1'),
                   ):
         school = await self.school_rule.get_school_by_id(school_id)
         school_keyinfo = await self.school_rule.get_school_by_id(school_id, extra_model=SchoolKeyInfo)
@@ -69,6 +69,7 @@ class SchoolView(BaseView):
                 'school_keyinfo': school_keyinfo}
 
     async def post(self, school: SchoolKeyAddInfo):
+        print('入参',school)
         res = await self.school_rule.add_school(school)
         print(res)
         resc = SchoolCommunications(id=0)
@@ -118,6 +119,8 @@ class SchoolView(BaseView):
             pl = SchoolBaseInfoOptional(id=school.id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
             res = await self.school_rule.update_school_byargs(pl  )
+            if hasattr(res,'id'):
+                res.id = str(res.id)
 
             pass
 
@@ -198,7 +201,7 @@ class SchoolView(BaseView):
                                           example='SC2032633'),
                    school_name: str = Query(None, description="学校名称", min_length=1, max_length=20,
                                             example='XX小学'),
-                   planning_school_id: int = Query(None, description="规划校ID", example='1'),
+                   planning_school_id: int |str= Query(None, description="规划校ID", example='1'),
                    province: str = Query("", title="", description="省份代码", ),
                    city: str = Query("", title="", description="城市", ),
                    institution_category: InstitutionType = Query(None, title='单位分类',examples=['institution/administration']),
@@ -239,6 +242,8 @@ class SchoolView(BaseView):
             pl = SchoolBaseInfoOptional(id=school_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
             res = await self.school_rule.update_school_byargs(pl  )
+            if hasattr(res,'id'):
+                res.id = str(res.id)
 
             pass
 
@@ -281,6 +286,7 @@ class SchoolView(BaseView):
             pl = SchoolBaseInfoOptional(id=school_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
             res = await self.school_rule.update_school_byargs(pl  )
+            convert_snowid_in_model(res )
 
             pass
 
@@ -306,10 +312,11 @@ class SchoolView(BaseView):
                   school: SchoolBaseInfoOptional,
                   school_communication: SchoolCommunications,
                   school_eduinfo: SchoolEduInfo,
-                  school_id: int = Query(..., title="", description="学校id/园所id", example='38'),
+                  school_id: int|str = Query(..., title="", description="学校id/园所id", example='38'),
 
                   ):
         # print(planning_school)
+        school_id= int(school_id)
         school.id = school_id
         school_communication.school_id = school_id
         school_eduinfo.school_id = school_id
@@ -322,6 +329,7 @@ class SchoolView(BaseView):
         log_con = compare_modify_fields(school, origin)
 
         res = await self.school_rule.update_school_byargs(school)
+        convert_snowid_in_model(res )
         res_com = await self.school_communication_rule.update_school_communication_byargs(
             school_communication)
         res_edu = await self.school_eduinfo_rule.update_school_eduinfo_byargs(school_eduinfo)
@@ -346,10 +354,11 @@ class SchoolView(BaseView):
                        school: SchoolBaseInfo,
                        school_communication: SchoolCommunications,
                        school_eduinfo: SchoolEduInfo,
-                       school_id: int = Query(..., title="", description="学校id/园所id", example='38'),
+                       school_id: int|str = Query(..., title="", description="学校id/园所id", example='38'),
 
                        ):
         # print(planning_school)
+        school_id= int(school_id)
         school.id = school_id
         school_communication.school_id = school_id
         school_eduinfo.school_id = school_id
@@ -362,6 +371,7 @@ class SchoolView(BaseView):
         origin = await self.school_rule.get_school_by_id(school.id)
         log_con = compare_modify_fields(school, origin)
 
+        # convert_school_status(school)
         res = await self.school_rule.update_school_byargs(school)
         res_com = await self.school_communication_rule.update_school_communication_byargs(
             school_communication)
@@ -505,7 +515,7 @@ class SchoolView(BaseView):
                                                        example='SC2032633'),
                                 school_name: str = Query(None, description="学校名称",
                                                          example='XX小学'),
-                                planning_school_id: int = Query(None, description="规划校ID", example='1'),
+                                planning_school_id: int|str = Query(None, description="规划校ID", example='1'),
                                 province: str = Query("", title="", description="省份代码", ),
                                 city: str = Query("", title="", description="城市", ),
 

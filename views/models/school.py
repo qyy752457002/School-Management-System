@@ -1,14 +1,14 @@
 from typing import List
 
 from fastapi import Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
 
 
 class School(BaseModel):
-    id:int= Query(None, title="", description="学校id", example='1')
-    planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
+    id:int|str= Query(None, title="", description="学校id", example='1')
+    planning_school_id: int |str= Field(None, title="", description="规划校id",examples=['1'])
     school_name: str = Field(..., title="学校名称", description="学校名称",examples=['XX小学'])
     school_no: str = Field(..., title="学校编号", description="学校编号",examples=['SC2032633'])
     school_operation_license_number: str = Field(..., title=" Description", description="办学许可证号",examples=['EDU2024012569'])
@@ -49,15 +49,24 @@ class School(BaseModel):
     urban_ethnic_nature: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
 
-    class Config:
-        schema_extra = {
-            "example": {
-            }
-        }
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id", "planning_school_id",]
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 # 学校的 基本信息模型   视图的额模型是按需提供的
 class SchoolBaseInfoOptional(BaseModel):
-    id:int= Query(0, title="", description="学校id", example='1')
+    id:int|str= Query(0, title="", description="学校id", example='1')
     school_name: str = Field( '', title="学校名称", description="1-20字符",examples=['XX小学'])
     school_short_name: str = Field('', title="", description="园所简称",examples=['MXXX'])
     school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
@@ -84,11 +93,25 @@ class SchoolBaseInfoOptional(BaseModel):
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
     admin: str |None = Field("",   title='管理员',  description=" ",examples=[''])
     admin_phone: str |None = Field("",   title='管理员手机',  description=" ",examples=[''])
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id", ]
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 # 学校的 基本信息模型   视图的额模型是按需提供的
 class SchoolBaseInfo(BaseModel):
-    id:int= Query(..., title="", description="学校id", example='1')
+    id:int|str= Query(..., title="", description="学校id", example='1')
     school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
     school_short_name: str = Field('', title="", description="园所简称",examples=['MXXX'])
     school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
@@ -115,13 +138,27 @@ class SchoolBaseInfo(BaseModel):
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
     admin: str |None = Field("",   title='管理员',  description=" ",examples=[''])
     admin_phone: str |None = Field("",   title='管理员手机',  description=" ",examples=[''])
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id", ]
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class SchoolKeyInfo(BaseModel):
-    id:int= Query(None, title="", description="学校id", example='1')
+    id:int|str= Query(None, title="", description="学校id", example='1')
 
     school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633')
-    planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
+    planning_school_id: int|str = Field(None, title="", description="规划校id",examples=['1'])
     borough:str=Query('', title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
     block: str = Query('', title=" Author", description="地域管辖区",examples=['铁西区'])
     school_name: str = Query('', title="学校名称", description="园所名称",examples=['XX小学'])
@@ -131,20 +168,48 @@ class SchoolKeyInfo(BaseModel):
     school_operation_type: str|None = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
     school_level: str|None = Query(None, title="", description=" 学校星级",examples=['5'])
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id", 'planning_school_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 class SchoolKeyAddInfo(BaseModel):
-    id:int= Query(None, title="", description="学校id", example='1')
+    id:int|str= Field(None, title="", description="学校id", example='1')
     school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
-    planning_school_id: int = Field(0, title="", description="规划校id",examples=['1'])
-    school_no:str= Query(..., title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633')
-    borough:str=Query(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
-    block: str = Query(..., title=" Author", description="地域管辖区",examples=['铁西区'])
-    school_edu_level: str|None = Query('', title="", description="办学类型/学校性质",examples=['学前教育'])
-    school_category: str|None = Query('', title="", description=" 办学类型二级",examples=['小学'])
-    school_operation_type: str|None = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
-    school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
-    school_level: str|None = Query(None, title="", description=" 学校星级",examples=['5'])
+    planning_school_id: int|str = Field(0, title="", description="规划校id",examples=['1'])
+    school_no:str= Field(..., title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633')
+    borough:str=Field(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
+    block: str = Field(..., title=" Author", description="地域管辖区",examples=['铁西区'])
+    school_edu_level: str|None = Field('', title="", description="办学类型/学校性质",examples=['学前教育'])
+    school_category: str|None = Field('', title="", description=" 办学类型二级",examples=['小学'])
+    school_operation_type: str|None = Field('', title="", description=" 办学类型三级",examples=['附设小学班'])
+    school_org_type: str = Field('', title="", description=" 学校办别",examples=['民办'])
+    school_level: str|None = Field(None, title="", description=" 学校星级",examples=['5'])
     school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data):
+        _change_list= ["id",'planning_school_id' ]
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 class SchoolTask(BaseModel):
     file_name: str = Field('', title="",description="",examples=[' '])
@@ -174,5 +239,19 @@ class SchoolPageSearch(BaseModel):
     school_name: str|None = Query("", title=" ", description="", ),
     province: str |None= Query("", title=" ", description="", ),
     city: str|None = Query("", title=" ", description="", ),
-    planning_school_id: int|None = Query(0, title=" ", description="", ),
+    planning_school_id: int|str|None = Query(0, title=" ", description="", ),
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["planning_school_id", ]
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
