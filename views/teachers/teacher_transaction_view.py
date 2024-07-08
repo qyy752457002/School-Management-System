@@ -211,11 +211,11 @@ class TeacherTransactionView(BaseView):
         self.teacher_transaction_rule = get_injector(TeacherTransactionRule)
 
     async def get_teacher_transaction(self,
-                                      teacher_transaction_id: str = Query(..., title="teacher_transactionID",
+                                      teacher_transaction_id: int = Query(..., title="teacher_transactionID",
                                                                           description="teacher_transactionID",
                                                                           example=1234)
                                       ):
-        teacher_transaction_id = int(teacher_transaction_id)
+        # teacher_transaction_id = int(teacher_transaction_id)
         # 异动审批中查询单个教师单个异动信息
         res = await self.teacher_transaction_rule.get_teacher_transaction_by_teacher_transaction_id(
             teacher_transaction_id)
@@ -231,13 +231,13 @@ class TeacherTransactionView(BaseView):
     #     res = await self.teacher_transaction_rule.update_teacher_transaction(teacher_transaction)
     #     return res
 
-    async def get_teacher_transaction_all(self, teacher_id: str = Query(None, title="teacher_transactionID",
+    async def get_teacher_transaction_all(self, teacher_id: int = Query(None, title="teacher_transactionID",
                                                                         description="teacher_transactionID",
                                                                         example=1234)):
         """
         单个老师获取该老师的所有异动信息
         """
-        teacher_id = int(teacher_id)
+        # teacher_id = int(teacher_id)
         return await self.teacher_transaction_rule.get_all_teacher_transaction(teacher_id)
 
     async def page_transaction(self, teacher_transaction=Depends(TeacherTransactionQueryModel),
@@ -276,13 +276,13 @@ class TeacherTransactionView(BaseView):
     #     return res
 
     async def patch_teacher_active(self,
-                                   teacher_id: str = Body(..., title="教师编号", description="教师编号",
+                                   teacher_id: int = Body(..., title="教师编号", description="教师编号",
                                                           example=123),
-                                   transaction_id: str = Body(..., title="教师变动记录编号",
+                                   transaction_id: int = Body(..., title="教师变动记录编号",
                                                               description="教师变动记录编号",
                                                               example=123)):
-        teacher_id = int(teacher_id)
-        transaction_id = int(transaction_id)
+        # teacher_id = int(teacher_id)
+        # transaction_id = int(transaction_id)
         try:
             await self.teacher_transaction_rule.transaction_teacher_active(teacher_id, transaction_id)
             return True

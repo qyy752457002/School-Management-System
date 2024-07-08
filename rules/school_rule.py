@@ -4,6 +4,7 @@ import json
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.utils.json import JsonUtils
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 import hashlib
 
@@ -79,6 +80,7 @@ class SchoolRule(object):
         school_db.status =  PlanningSchoolStatus.DRAFT.value
         school_db.created_uid = 0
         school_db.updated_uid = 0
+        school_db.id = SnowflakeIdGenerator(1, 1).generate_id()
         if school.planning_school_id and  school.planning_school_id>0 :
             # rule互相应用有问题  用dao
             p_exists_school_model = await self.p_school_dao.get_planning_school_by_id(  school.planning_school_id)
@@ -301,10 +303,15 @@ class SchoolRule(object):
 
 
     # 搜索使用
-    async def query_schools(self,school_name,extend_params:ExtendParams|None,school_id=None,block=None,borough=None):
+    async def query_schools(self,school_name,extend_params:ExtendParams|None,school_id=None,block=None,borough=None,institution_category=None,extra_model =None):
         # block,borough
         session = await db_connection_manager.get_async_session("default", True)
         query = select(School)
+        if institution_category:
+            if isinstance(institution_category, list):
+                query = query.where(School.institution_category.in_(institution_category))
+            else:
+                query = query.where(School.institution_category == institution_category)
         if school_name:
             if ',' in school_name:
                 school_name = school_name.split(',')
@@ -356,7 +363,11 @@ class SchoolRule(object):
 
         lst = []
         for row in res:
-            planning_school = orm_model_to_view_model(row, SchoolModel)
+            if extra_model:
+
+                planning_school = orm_model_to_view_model(row, extra_model,other_mapper=self.other_mapper)
+            else:
+                planning_school = orm_model_to_view_model(row, SchoolModel)
 
             # account = PlanningSchool(school_id=row.school_id,
             #                  grade_no=row.grade_no,

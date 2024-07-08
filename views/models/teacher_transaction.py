@@ -123,18 +123,18 @@ class TeacherTransactionModel(BaseModel):
     current_position: Optional[str] = Field("", title="现岗位", description="现岗位")
     position_date: Optional[date] | None = Field(None, title="任职日期", description="任职日期")
     transaction_time: Optional[datetime] | None = Field(datetime.now(), title="操作时间", description="操作时间")
-    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
 
-    @model_validator(mode='before')
-    @classmethod
-    def check_id_before(self, data):
-        if isinstance(data["teacher_id"], str):
-            data["teacher_id"] = int(data["teacher_id"])
-        elif isinstance(data["teacher_id"], int):
-            data["teacher_id"] = str(data["teacher_id"])
-        else:
-            pass
-        return data
+    # @model_validator(mode='before')
+    # @classmethod
+    # def check_id_before(self, data):
+    #     if isinstance(data["teacher_id"], str):
+    #         data["teacher_id"] = int(data["teacher_id"])
+    #     elif isinstance(data["teacher_id"], int):
+    #         data["teacher_id"] = str(data["teacher_id"])
+    #     else:
+    #         pass
+    #     return data
 
     @model_validator(mode='after')
     def check_transaction_type(self):
@@ -160,32 +160,32 @@ class TeacherTransactionUpdateModel(BaseModel):
     教师ID：teacher_id
     操作时间：transaction_time
     """
-    transaction_id: int | str = Field(..., title="teacher_transaction_id", description="teacher_transaction_id")
+    transaction_id: int= Field(..., title="teacher_transaction_id", description="teacher_transaction_id")
     transaction_type: str = Field(..., title="异动类型", description="异动类型")
     transaction_remark: str = Field("", title="备注", description="备注")
     original_position: Optional[str] = Field("", title="原岗位", description="原岗位")
     current_position: Optional[str] = Field("", title="现岗位", description="现岗位")
     position_date: Optional[date] | None = Field(None, title="任职日期", description="任职日期")
-    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
+    teacher_id: int= Field(..., title="教师ID", description="教师ID")
     transaction_time: Optional[datetime] | None = Field(default=datetime.now(), title="操作时间",
                                                         description="操作时间")
 
-    @model_validator(mode='before')
-    @classmethod
-    def check_id_before(self, data: dict):
-        if isinstance(data["teacher_id"], str):
-            data["teacher_id"] = int(data["teacher_id"])
-        elif isinstance(data["teacher_id"], int):
-            data["teacher_id"] = str(data["teacher_id"])
-        else:
-            pass
-        if isinstance(data["transaction_id"], str):
-            data["transaction_id"] = int(data["transaction_id"])
-        elif isinstance(data["transaction_id"], int):
-            data["transaction_id"] = str(data["transaction_id"])
-        else:
-            pass
-        return data
+    # @model_validator(mode='before')
+    # @classmethod
+    # def check_id_before(self, data: dict):
+    #     if isinstance(data["teacher_id"], str):
+    #         data["teacher_id"] = int(data["teacher_id"])
+    #     elif isinstance(data["teacher_id"], int):
+    #         data["teacher_id"] = str(data["teacher_id"])
+    #     else:
+    #         pass
+    #     if isinstance(data["transaction_id"], str):
+    #         data["transaction_id"] = int(data["transaction_id"])
+    #     elif isinstance(data["transaction_id"], int):
+    #         data["transaction_id"] = str(data["transaction_id"])
+    #     else:
+    #         pass
+    #     return data
 
 
 class TeacherTransactionGetModel(BaseModel):
@@ -199,28 +199,28 @@ class TeacherTransactionGetModel(BaseModel):
     审批时间：approval_time
     节点实例ID：process_instance_id
     """
-    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
-    transaction_id: int | str = Field(..., title="teacher_transaction_id", description="teacher_transaction_id")
+    teacher_id: int= Field(..., title="教师ID", description="教师ID")
+    transaction_id: int= Field(..., title="teacher_transaction_id", description="teacher_transaction_id")
     transaction_type: str = Field(..., title="异动类型", description="异动类型")
     remark: Optional[str] = Field("", title="备注", description="备注")
     transaction_time: datetime = Field(..., title="申请时间", description="申请时间")
 
-    @model_validator(mode='before')
-    @classmethod
-    def check_id_before(self, data: dict):
-        if isinstance(data["teacher_id"], str):
-            data["teacher_id"] = int(data["teacher_id"])
-        elif isinstance(data["teacher_id"], int):
-            data["teacher_id"] = str(data["teacher_id"])
-        else:
-            pass
-        if isinstance(data["transaction_id"], str):
-            data["transaction_id"] = int(data["transaction_id"])
-        elif isinstance(data["transaction_id"], int):
-            data["transaction_id"] = str(data["transaction_id"])
-        else:
-            pass
-        return data
+    # @model_validator(mode='before')
+    # @classmethod
+    # def check_id_before(self, data: dict):
+    #     if isinstance(data["teacher_id"], str):
+    #         data["teacher_id"] = int(data["teacher_id"])
+    #     elif isinstance(data["teacher_id"], int):
+    #         data["teacher_id"] = str(data["teacher_id"])
+    #     else:
+    #         pass
+    #     if isinstance(data["transaction_id"], str):
+    #         data["transaction_id"] = int(data["transaction_id"])
+    #     elif isinstance(data["transaction_id"], int):
+    #         data["transaction_id"] = str(data["transaction_id"])
+    #     else:
+    #         pass
+    #     return data
 
 
 class TeacherTransactionQuery(BaseModel):
@@ -236,7 +236,7 @@ class TeacherTransactionQuery(BaseModel):
 
 
 class TeacherTransactionQueryRe(BaseModel):
-    teacher_id: int | str = Field(None, title="教师ID", description="教师ID")
+    teacher_id: int= Field(None, title="教师ID", description="教师ID")
     teacher_name: str = Field(..., title="姓名", description="教师名称")
     teacher_gender: Gender = Field(..., title="教师性别", description="教师性别")
     teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
@@ -246,16 +246,16 @@ class TeacherTransactionQueryRe(BaseModel):
     teacher_avatar: str = Field("", title="头像", description="头像")
     mobile: str | None = Field("", title="手机号", description="手机号")
 
-    @model_validator(mode='before')
-    @classmethod
-    def check_id_before(self, data: dict):
-        if isinstance(data["teacher_id"], str):
-            data["teacher_id"] = int(data["teacher_id"])
-        elif isinstance(data["teacher_id"], int):
-            data["teacher_id"] = str(data["teacher_id"])
-        else:
-            pass
-        return data
+    # @model_validator(mode='before')
+    # @classmethod
+    # def check_id_before(self, data: dict):
+    #     if isinstance(data["teacher_id"], str):
+    #         data["teacher_id"] = int(data["teacher_id"])
+    #     elif isinstance(data["teacher_id"], int):
+    #         data["teacher_id"] = str(data["teacher_id"])
+    #     else:
+    #         pass
+    #     return data
 
 
 class TeacherAddModel(BaseModel):
@@ -282,24 +282,24 @@ class TeacherAddReModel(BaseModel):
     教师性别：teacher_gender
     出生日期：teacher_date_of_birth
     """
-    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
+    teacher_id: int= Field(..., title="教师ID", description="教师ID")
     teacher_name: str = Field(..., title="姓名", description="姓名")
     teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field(..., title="证件号码", description="证件号码")
     teacher_gender: Gender = Field(..., title="性别", description="性别")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
 
-    @model_validator(mode='before')
-    @classmethod
-    def check_id_before(self, data: dict):
-        if isinstance(data["teacher_id"], str):
-            data["teacher_id"] = int(data["teacher_id"])
-        elif isinstance(data["teacher_id"], int):
-            data["teacher_id"] = str(data["teacher_id"])
-        else:
-            pass
-
-        return data
+    # @model_validator(mode='before')
+    # @classmethod
+    # def check_id_before(self, data: dict):
+    #     if isinstance(data["teacher_id"], str):
+    #         data["teacher_id"] = int(data["teacher_id"])
+    #     elif isinstance(data["teacher_id"], int):
+    #         data["teacher_id"] = str(data["teacher_id"])
+    #     else:
+    #         pass
+    #
+    #     return data
 
 
 class TeacherTransactionQueryModel(BaseModel):
@@ -329,7 +329,7 @@ class TeacherTransactionQueryModel(BaseModel):
 
 class TeacherTransactionQueryReModel(BaseModel):
     teacher_name: str = Field(..., title="姓名", description="姓名")
-    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
+    teacher_id: int= Field(..., title="教师ID", description="教师ID")
     teacher_id_type: Optional[str] = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: Optional[str] = Field("", title="身份证件号", description="证件号")
     transaction_id: int | str = Field(..., title="异动id", description="异动id")
@@ -339,22 +339,22 @@ class TeacherTransactionQueryReModel(BaseModel):
     transaction_remark: Optional[str] = Field("", title="备注", description="备注")
     transaction_time: Optional[datetime] = Field(None, title="申请时间", description="申请时间")
 
-    @model_validator(mode='before')
-    @classmethod
-    def check_id_before(self, data: dict):
-        if isinstance(data["teacher_id"], str):
-            data["teacher_id"] = int(data["teacher_id"])
-        elif isinstance(data["teacher_id"], int):
-            data["teacher_id"] = str(data["teacher_id"])
-        else:
-            pass
-        if isinstance(data["transaction_id"], str):
-            data["transaction_id"] = int(data["transaction_id"])
-        elif isinstance(data["transaction_id"], int):
-            data["transaction_id"] = str(data["transaction_id"])
-        else:
-            pass
-        return data
+    # @model_validator(mode='before')
+    # @classmethod
+    # def check_id_before(self, data: dict):
+    #     if isinstance(data["teacher_id"], str):
+    #         data["teacher_id"] = int(data["teacher_id"])
+    #     elif isinstance(data["teacher_id"], int):
+    #         data["teacher_id"] = str(data["teacher_id"])
+    #     else:
+    #         pass
+    #     if isinstance(data["transaction_id"], str):
+    #         data["transaction_id"] = int(data["transaction_id"])
+    #     elif isinstance(data["transaction_id"], int):
+    #         data["transaction_id"] = str(data["transaction_id"])
+    #     else:
+    #         pass
+    #     return data
 
 
 # 离退休相关模型

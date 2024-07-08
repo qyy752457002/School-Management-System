@@ -121,7 +121,6 @@ class TeachersRule(object):
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
         teacher_base_id = teachers_info.teacher_base_id
-        await self.teacher_submitted(teachers_work.teacher_id)
         return teachers_work, teacher_base_id
 
     async def query_teacher_operation_record_with_page(self, query_model: TeacherChangeLogQueryModel,
