@@ -316,6 +316,7 @@ class SchoolView(BaseView):
 
                   ):
         # print(planning_school)
+        school_id= int(school_id)
         school.id = school_id
         school_communication.school_id = school_id
         school_eduinfo.school_id = school_id

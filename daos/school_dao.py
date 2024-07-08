@@ -37,6 +37,7 @@ class SchoolDAO(DAOBase):
         return school
 
     async def update_school_byargs(self, school: School, *args, is_commit: bool = True):
+        school.id= int(school.id)
         session =await self.master_db()
         update_contents = get_update_contents(school, *args)
         # 遍历 检查如果模型里没有这个属性 则 删除
