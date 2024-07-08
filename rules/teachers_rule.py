@@ -195,7 +195,7 @@ class TeachersRule(object):
             for key, value in teachers.dict().items():
                 if value:
                     need_update_list.append(key)
-            teachers=await self.teachers_dao.update_teachers(teachers, *need_update_list)
+            teachers = await self.teachers_dao.update_teachers(teachers, *need_update_list)
         return teachers
 
     async def delete_teachers(self, teachers_id, user_id):
@@ -346,7 +346,7 @@ class TeachersRule(object):
             reader.set_data(local_file_path)
             reader.register_model("Sheet1", CombinedModel)
             logger.info("Test开始注册模型")
-            reader.register_model("Sheet1", TeachersCreatModel)
+            # reader.register_model("Sheet1", TeachersCreatModel)
             # reader.register_model("Sheet1", TeacherInfoCreateModel)
             logger.info("Test开始读取模型")
             data = reader.execute()["Sheet1"]
@@ -399,6 +399,102 @@ class TeachersRule(object):
                 try:
                     await self.add_teachers(teacher_model, user_id)
 
+                except Exception as ex:
+                    result.failed_msg = str(ex)
+                    logger.info(f"Failed to add teacher at index {idx}: {ex}")
+                    print(ex, '表内数据异常')
+                    raise ex
+                results.append(result)
+
+            # local_results_path = f"/tmp/c.xlsx"
+            # excel_writer = ExcelWriter()
+            # excel_writer.add_data("Sheet1", results)
+            # excel_writer.set_data(local_results_path)
+            # excel_writer.execute()
+            #
+            # random_file_name = shortuuid.uuid() + ".xlsx"
+            # file_storage = await storage_manager.put_file_to_object(
+            #     source_file.bucket_name, f"{random_file_name}.xlsx", local_results_path
+            # )
+            # file_storage_resp = await storage_manager.add_file(
+            #     self.file_storage_dao, file_storage
+            # )
+            #
+            # task_result = TaskResult()
+            # task_result.task_id = task.task_id
+            # task_result.result_file = file_storage_resp.file_name
+            # task_result.result_bucket = file_storage_resp.bucket_name
+            # task_result.result_file_id = file_storage_resp.file_id
+            # task_result.last_updated = datetime.now()
+            # task_result.state = TaskState.succeeded
+            # task_result.result_extra = {"file_size": 123}
+            #
+            # await self.task_dao.add_task_result(task_result)
+            # return task_result
+
+            # local_results_path = f"/tmp/{source_file.file_name}"
+            # excel_writer = ExcelWriter()
+            # excel_writer.add_data("Sheet1", results)
+            # excel_writer.set_data(local_results_path)
+            # excel_writer.execute()
+            #
+            # random_file_name = shortuuid.uuid() + ".xlsx"
+            # file_storage = await storage_manager.put_file_to_object(
+            #     source_file.bucket_name, f"{random_file_name}.xlsx", local_results_path
+            # )
+            # file_storage_resp = await storage_manager.add_file(
+            #     self.file_storage_dao, file_storage
+            # )
+            #
+            # task_result = TaskResult()
+            # task_result.task_id = task.task_id
+            # task_result.result_file = file_storage_resp.file_name
+            # task_result.result_bucket = file_storage_resp.bucket_name
+            # task_result.result_file_id = file_storage_resp.file_id
+            # task_result.last_updated = datetime.now()
+            # task_result.state = TaskState.succeeded
+            # task_result.result_extra = {"file_size": file_storage.file_size}
+            #
+            # await self.task_dao.add_task_result(task_result)
+            # return task_result
+        except Exception as e:
+            print(e, '异常')
+            raise e
+
+    async def import_teachers_save(self, task: Task, operator):
+        try:
+            if not isinstance(task.payload, TeacherFileStorageModel):
+                raise ValueError("参数错误")
+            # source_file = task.payload
+            # local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
+            # storage_manager.download_file(
+            #     source_file.bucket_name, source_file.file_name, local_file_path
+            # )
+            local_file_path = "c.xlsx"
+            reader = ExcelReader()
+            reader.set_data(local_file_path)
+            logger.info("Test开始注册模型")
+            reader.register_model("Sheet1", TeachersCreatModel)
+            # reader.register_model("Sheet1", TeacherInfoCreateModel)
+            logger.info("Test开始读取模型")
+            data = reader.execute()["Sheet1"]
+            if not isinstance(data, list):
+                raise ValueError("数据格式错误")
+            results = []
+
+            for idx, item in enumerate(data):
+                item = item.dict()
+                teacher_data = {key: item[key] for key in TeachersCreatModel.__fields__.keys() if key in item}
+                logger.info(teacher_data)
+                teacher_model = TeachersCreatModel(**teacher_data)
+                logger.info(type(teacher_data))
+
+                result_dict = teacher_data.copy()
+                result_dict["failed_msg"] = "成功"
+                result = TeacherCreateResultModel(**result_dict)
+                user_id = operator
+                try:
+                    await self.add_teachers(teacher_model, user_id)
                 except Exception as ex:
                     result.failed_msg = str(ex)
                     logger.info(f"Failed to add teacher at index {idx}: {ex}")

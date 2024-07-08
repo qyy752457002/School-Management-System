@@ -5,7 +5,7 @@ from mini_framework.utils.logging import logger
 
 from rules.teachers_rule import TeachersRule
 from models.teachers import Teacher
-from views.models.teachers import TeachersCreatModel, TeacherFileStorageModel,CurrentTeacherQuery
+from views.models.teachers import TeachersCreatModel, TeacherFileStorageModel, CurrentTeacherQuery
 
 
 class TeacherImportExecutor(TaskExecutor):
@@ -27,6 +27,34 @@ class TeacherImportExecutor(TaskExecutor):
             else:
                 raise ValueError("Invalid payload type")
             await self.teacher_rule.import_teachers(task)
+            # task_result = await self.teacher_rule.import_teachers(task)
+            # logger.info(f"Teacher import to {task_result.result_file}")
+        except Exception as e:
+            logger.error(f"Teacher import failed")
+            logger.error(e)
+            raise e
+
+
+class TeacherSaveImportExecutor(TaskExecutor):
+    def __init__(self):
+        self.teacher_rule = get_injector(TeachersRule)
+        super().__init__()
+
+    async def execute(self, context: Context):
+        try:
+            task = context.task
+            operator = task.operator
+            logger.info("Test")
+            logger.info("Teacher_save import begins")
+            task: Task = task
+            logger.info("Test2")
+            if isinstance(task.payload, dict):
+                account_export: TeacherFileStorageModel = TeacherFileStorageModel(**task.payload)
+            elif isinstance(task.payload, TeacherFileStorageModel):
+                account_export: TeacherFileStorageModel = task.payload
+            else:
+                raise ValueError("Invalid payload type")
+            await self.teacher_rule.import_teachers_save(task,operator)
             # task_result = await self.teacher_rule.import_teachers(task)
             # logger.info(f"Teacher import to {task_result.result_file}")
         except Exception as e:
