@@ -16,7 +16,7 @@ from rules.school_communication_rule import SchoolCommunicationRule
 from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
-from views.common.common_view import compare_modify_fields, get_extend_params
+from views.common.common_view import compare_modify_fields, get_extend_params, convert_snowid_in_model
 from views.models.operation_record import OperationTarget, OperationType, ChangeModule, OperationRecord
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolTransactionAudit, \
     PlanningSchoolStatus, PlanningSchoolFounderType
@@ -53,8 +53,9 @@ class InstitutionView(BaseView):
 
 
     async def get(self,
-                  institution_id: int = Query(..., description="|", example='1'),
+                  institution_id: int|str = Query(..., description="|", example='1'),
                   ):
+        institution_id= int(institution_id)
         school = await self.institution_rule.get_school_by_id(institution_id,extra_model=InstitutionOptional)
         institution_keyinfo = await self.institution_rule.get_school_by_id(institution_id, extra_model=InstitutionKeyInfo)
 
@@ -66,6 +67,7 @@ class InstitutionView(BaseView):
             school_eduinfo = await self.school_eduinfo_rule.get_school_eduinfo_by_school_id(institution_id)
         except Exception as e:
             print(e)
+        convert_snowid_in_model(school )
         return {'institution_baseinfo': school,     'institution_keyinfo': institution_keyinfo,'institution_communication': school_communication, 'institution_eduinfo': school_eduinfo,}
 
     async def post(self, school: InstitutionsAdd):
@@ -92,6 +94,7 @@ class InstitutionView(BaseView):
         # 保存教育信息
         res_edu = await self.school_eduinfo_rule.add_school_eduinfo(resedu, convertmodel=False)
         print(res_edu)
+        convert_snowid_in_model(res )
 
         return res
         # return  school
@@ -103,6 +106,8 @@ class InstitutionView(BaseView):
                           ):
         print('入参',school)
         # 检测 是否允许修改
+        school.id = int( school.id)
+
         is_draft = await self.institution_rule.is_can_not_add_workflow(school.id,True)
         if is_draft:
             raise InstitutionStatusError()
@@ -137,14 +142,16 @@ class InstitutionView(BaseView):
             change_data= JsonUtils.dict_to_json_str(res2),
             process_instance_id=process_instance_id
         ))
+        convert_snowid_in_model(school )
 
         return res
 
     # 删除
     async def delete(self,
-                     institution_id: int = Query(..., description="|", example='1'),
+                     institution_id: int |str= Query(..., description="|", example='1'),
                      ):
         # print(school_id)
+        institution_id= int(institution_id)
         res = await self.institution_rule.softdelete_school(institution_id)
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
@@ -160,6 +167,7 @@ class InstitutionView(BaseView):
 
 
         ))
+        convert_snowid_in_model(res )
 
         return res
 
@@ -199,6 +207,7 @@ class InstitutionView(BaseView):
             change_data= JsonUtils.dict_to_json_str(log_con),
 
         ))
+        convert_snowid_in_model(res )
 
         return res
 
@@ -257,6 +266,7 @@ class InstitutionView(BaseView):
             process_instance_id=process_instance_id
 
         ))
+        convert_snowid_in_model(res )
 
         return res
 
@@ -268,6 +278,7 @@ class InstitutionView(BaseView):
                           related_license_upload: str = Query(None, description="相关证照上传", min_length=1,
                                                                     max_length=60, example=''),
                           ):
+        institution_id= int(institution_id)
         # res = await self.institution_rule.update_institution_status(institution_id, PlanningSchoolStatus.CLOSED.value)
         # 检测 是否允许修改
         is_draft = await self.institution_rule.is_can_not_add_workflow(institution_id)
@@ -300,6 +311,7 @@ class InstitutionView(BaseView):
             process_instance_id=process_instance_id
 
         ))
+        convert_snowid_in_model(res )
 
         return res
 
