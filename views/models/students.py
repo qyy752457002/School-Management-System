@@ -2,7 +2,7 @@ from enum import Enum
 
 from fastapi import Query
 from pydantic import BaseModel, Field
-from datetime import date
+from datetime import date, datetime
 from models.public_enum import YesOrNo, Gender, IDtype
 from models.student_transaction import AuditAction
 from models.students import  Relationship, Registration,HealthStatus,StudentApprovalAtatus
@@ -290,7 +290,7 @@ class StudentsBaseInfo(BaseModel):
     residence_district: str = Field("", title="户口所在地new", description="户口所在地new")
     health_status: str = Field('', title="健康状况", description="健康状况")
     birth_place: str = Field("", title="出生地", description="出生地")
-    admission_date: date = Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
+    admission_date: date |datetime= Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
     nationality: str = Field("", title="国籍/地区", description="国籍/地区")
     enrollment_method: str = Field("", title="就读方式", description="就读方式")
 
@@ -334,7 +334,9 @@ class NewBaseInfoCreate(BaseModel):
     school_id: int = Field(0, title="学校id", description="学校id")
     session_id: int = Field(0, title="", description="届别id")
     registration_date: date = Field(date(1970, 1, 1), title="登记日期", description="登记日期")
-    admission_date: date = Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
+    # admission_date: date = Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
+    admission_date: date |datetime= Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
+
     nationality: str = Field("", title="国籍/地区", description="国籍/地区")
     enrollment_method: str = Field("", title="就读方式", description="就读方式")
     residence_address: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
@@ -376,7 +378,9 @@ class NewBaseInfoUpdate(BaseModel):
     residence_district: str = Field("", title="户口所在地new", description="户口所在地new")
     health_status: str = Field('', title="健康状况", description="健康状况")
     birth_place: str = Field("", title="出生地", description="出生地")
-    admission_date: date = Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
+    # admission_date: date = Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
+    admission_date: date |datetime= Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
+
     nationality: str = Field("", title="国籍/地区", description="国籍/地区")
     enrollment_method: str = Field("", title="就读方式", description="就读方式")
 # 学生家庭成员信息模型
