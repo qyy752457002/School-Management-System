@@ -88,36 +88,32 @@ class WorkFlowInstanceCreateModel(BaseModel):
     edu_number: Optional[str] = Field("", title="", description="")
     apply_user: Optional[str] = Field("", title="", description="")
 
-    # @model_validator(mode='before')
-    # @classmethod
-    # def check_id_before(self, data: dict):
-    #     _change_list = ["teacher_employer", "teacher_id", "teacher_base_id", "original_unit_id", "current_unit_id"]
-    #     for _change in _change_list:
-    #         if _change in data and isinstance(data[_change], str):
-    #             data[_change] = int(data[_change])
-    #         elif _change in data and isinstance(data[_change], int):
-    #             data[_change] = str(data[_change])
-    #         else:
-    #             pass
-    #     return data
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer", "teacher_id", "teacher_base_id", "original_unit_id", "current_unit_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class WorkFlowInstanceModel(WorkFlowInstanceCreateModel):
     process_instance_id: int|str = Field(..., title="流程实例id", description="流程实例id")
 
-    # @model_validator(mode='before')
-    # @classmethod
-    # def check_id_before(self, data: dict):
-    #     _change_list = ["teacher_employer", "teacher_id", "teacher_base_id", "original_unit_id", "current_unit_id",
-    #                     "process_instance_id"]
-    #     for _change in _change_list:
-    #         if _change in data and isinstance(data[_change], str):
-    #             data[_change] = int(data[_change])
-    #         elif _change in data and isinstance(data[_change], int):
-    #             data[_change] = str(data[_change])
-    #         else:
-    #             pass
-    #     return data
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer", "teacher_id", "teacher_base_id", "original_unit_id", "current_unit_id",
+                        "process_instance_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class WorkFlowInstanceQueryModel(BaseModel):
@@ -192,6 +188,17 @@ class WorkFlowInstanceQueryModel(BaseModel):
     school_level: Optional[str] = Query("", title="", description="")
     social_credit_code: Optional[str] = Query("", title="", description="")
     institution_name: Optional[str] = Query("", title="", description="")
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer", "teacher_id", "teacher_base_id", "original_unit_id", "current_unit_id",
+                        "process_instance_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class WorkFlowInstanceQueryReModel(BaseModel):

@@ -23,13 +23,14 @@ from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from daos.planning_school_dao import PlanningSchoolDAO
 from views.models.school import School as SchoolModel
 
+from typing import Type, List
+from pydantic import BaseModel
 
 
-async def send_request(apiname,datadict,method='get',is_need_query_param=False):
-
+async def send_request(apiname, datadict, method='get', is_need_query_param=False):
     # 发起审批流的 处理
-    httpreq= HTTPRequest()
-    url= workflow_service_config.workflow_config.get("url")
+    httpreq = HTTPRequest()
+    url = workflow_service_config.workflow_config.get("url")
 
     url = url + apiname
     headerdict = {
@@ -43,13 +44,24 @@ async def send_request(apiname,datadict,method='get',is_need_query_param=False):
 
     print('参数', url, datadict, headerdict)
     if method == 'get':
-        response = await httpreq.get_json(url,headerdict)
+        response = await httpreq.get_json(url, headerdict)
     else:
-        response = await httpreq.post_json(url,datadict,headerdict)
-    print(response,'接口响应')
+        response = await httpreq.post_json(url, datadict, headerdict)
+    print(response, '接口响应')
     if response is None:
         return {}
     if isinstance(response, str):
         return {response}
     return response
     pass
+
+
+async def convert_fields_to_str(model_instance: Type[BaseModel], fields_to_convert: List[str]):
+    # 遍历字段列表，将 int 类型字段转换为 str 类型
+    for field in fields_to_convert:
+        if hasattr(model_instance, field):
+            value = getattr(model_instance, field)
+            if isinstance(value, int):
+                setattr(model_instance, field, str(value))
+    # 返回修改后的模型实例
+    return model_instance

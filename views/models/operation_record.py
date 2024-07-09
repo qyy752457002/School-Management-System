@@ -72,7 +72,7 @@ class ChangeModule(str, Enum):
 
 
 class OperationRecord(BaseModel):
-    action_target_id: int = Field(..., title="操作对象ID", description="操作对象ID", examples=[''])
+    action_target_id: int|str = Field(..., title="操作对象ID", description="操作对象ID", examples=[''])
     target: OperationTarget = Field(..., description=" 操作对象", examples=[''])
     action_type: str = Field(..., title="操作类型", description="操作类型", examples=[''])
     ip: str = Field('', title=" Description", description="操作IP", examples=[''])
@@ -85,3 +85,8 @@ class OperationRecord(BaseModel):
     operator_name: str = Field('', description=" 操作账号", examples=[''])
     operator_id: int = Field(0, description=" 操作人", examples=[''])
     process_instance_id: Optional[int | str] = Field(None, description="流程ID", examples=[''])
+
+
+
+
+

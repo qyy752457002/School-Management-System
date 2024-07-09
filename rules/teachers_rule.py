@@ -59,6 +59,7 @@ class TeachersRule(object):
     operation_record_dao: OperationRecordDAO
 
     async def get_teachers_by_id(self, teachers_id):
+        teachers_id = int(teachers_id)
         teacher_db = await self.teachers_dao.get_teachers_by_id(teachers_id)
         if not teacher_db:
             raise TeacherNotFoundError()
@@ -102,7 +103,7 @@ class TeachersRule(object):
         # await self.teacher_work_flow_rule.update_work_flow_by_param(work_flow_instance["process_instance_id"],
         #                                                             update_params)
         teacher_entry_log = OperationRecord(
-            action_target_id=teachers_work.teacher_id,
+            action_target_id=int(teachers_work.teacher_id),
             target=OperationTarget.TEACHER.value,
             action_type=OperationType.CREATE.value,
             ip="127.0.0.1",
@@ -114,7 +115,7 @@ class TeachersRule(object):
             status="/",
             operator_id=1,
             operator_name=user_id,
-            process_instance_id=work_flow_instance["process_instance_id"])
+            process_instance_id=int(work_flow_instance["process_instance_id"]))
         await self.operation_record_rule.add_operation_record(teacher_entry_log)
         teachers_info = TeacherInfoSaveModel(teacher_id=teachers_work.teacher_id)
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
@@ -173,7 +174,7 @@ class TeachersRule(object):
                                                                         update_params)
             await self.teacher_progressing(teachers.teacher_id)
             teacher_change_log = OperationRecord(
-                action_target_id=teachers.teacher_id,
+                action_target_id=int(teachers.teacher_id),
                 target=OperationTarget.TEACHER.value,
                 action_type=OperationType.MODIFY.value,
                 ip="127.0.0.1",
@@ -185,7 +186,7 @@ class TeachersRule(object):
                 status="/",
                 operator_id=1,
                 operator_name=user_id,
-                process_instance_id=work_flow_instance["process_instance_id"])
+                process_instance_id=int(work_flow_instance["process_instance_id"]))
             await self.operation_record_rule.add_operation_record(teacher_change_log)
 
         elif teachers_main_status == "unemployed":
@@ -193,8 +194,8 @@ class TeachersRule(object):
             for key, value in teachers.dict().items():
                 if value:
                     need_update_list.append(key)
-            teachers=await self.teachers_dao.update_teachers(teachers, *need_update_list)
-        return teachers
+            teachers = await self.teachers_dao.update_teachers(teachers, *need_update_list)
+        return str(teachers.teacher_id)
 
     async def delete_teachers(self, teachers_id, user_id):
         exists_teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
@@ -203,7 +204,7 @@ class TeachersRule(object):
         teachers_db = await self.teachers_dao.delete_teachers(exists_teachers)
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
         teacher_entry_log = OperationRecord(
-            action_target_id=teachers.teacher_id,
+            action_target_id=int(teachers.teacher_id),
             target=OperationTarget.TEACHER.value,
             action_type=OperationType.DELETE.value,
             ip="127.0.0.1",

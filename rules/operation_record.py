@@ -37,6 +37,10 @@ class OperationRecordRule(object):
 
     async def add_operation_record(self, operation_record: OperationRecordModel, request=None):
         # 通用的参数可以 自动获取设置
+        if isinstance(operation_record.action_target_id, str):
+            operation_record.action_target_id = int(operation_record.action_target_id)
+        if isinstance(operation_record.process_instance_id, str):
+            operation_record.process_instance_id = int(operation_record.process_instance_id)
         operation_record.operation_time = datetime.now()
         if request:
             operation_record.ip = get_client_ip(request)

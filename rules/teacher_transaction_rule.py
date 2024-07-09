@@ -34,19 +34,18 @@ class TeacherTransactionRule(object):
     async def get_teacher_transaction_by_teacher_transaction_id(self, teacher_transaction_id):
         teacher_transaction_db = await self.teacher_transaction_dao.get_teacher_transaction_by_teacher_transaction_id(
             teacher_transaction_id)
-        teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionModel)
+        teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)
         return teacher_transaction
 
     async def add_teacher_transaction_with_retire(self, teacher_transaction: TeacherTransactionModel):
         """
         添加教师异动
         """
-        teacher_transaction_db = view_model_to_orm_model(teacher_transaction, TeacherTransaction)
-
-        teacher_db = await self.teachers_dao.get_teachers_by_id(teacher_transaction_db.teacher_id)
+        teacher_db = await self.teachers_dao.get_teachers_by_id(teacher_transaction.teacher_id)
         if not teacher_db:
             raise TeacherNotFoundError()
-        # teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
+        teacher_transaction_db = view_model_to_orm_model(teacher_transaction, TeacherTransaction)
+        teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
         teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)
         return teacher_transaction
@@ -57,7 +56,7 @@ class TeacherTransactionRule(object):
         """
         transaction_type = teacher_transaction.transaction_type
         teacher_transaction_db = view_model_to_orm_model(teacher_transaction, TeacherTransaction)
-        # teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
+        teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_db = await self.teachers_dao.get_teachers_by_id(teacher_transaction_db.teacher_id)
         teacher_sub_status = teacher_db.teacher_sub_status
         if not teacher_db:
@@ -65,10 +64,10 @@ class TeacherTransactionRule(object):
         if teacher_sub_status != "active":
             raise TransactionError()
         if transaction_type != TransactionType.INTERNAL.value:
-            teacher_db.teacher_sub_status = transaction_type
-            await self.teachers_dao.update_teachers(teacher_db, "teacher_sub_status")
             # teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
             teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
+            teacher_db.teacher_sub_status = transaction_type
+            await self.teachers_dao.update_teachers(teacher_db, "teacher_sub_status")
             teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)
             teacher_transaction_log = OperationRecord(
                 action_target_id=teacher_transaction.teacher_id,
@@ -85,10 +84,11 @@ class TeacherTransactionRule(object):
                 operator_name=user_id,
                 process_instance_id=0)
         else:
-            teacher_db.teacher_sub_status = transaction_type
-            await self.teachers_dao.update_teachers(teacher_db, "teacher_sub_status")
+
             # teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
             teacher_transaction_db = await self.teacher_transaction_dao.add_teacher_transaction(teacher_transaction_db)
+            teacher_db.teacher_sub_status = transaction_type
+            await self.teachers_dao.update_teachers(teacher_db, "teacher_sub_status")
             teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel)
             teacher_transaction_log = OperationRecord(
                 action_target_id=teacher_transaction.teacher_id,
@@ -114,7 +114,7 @@ class TeacherTransactionRule(object):
             raise Exception(f"编号为的{teacher_transaction_id}teacher_transaction不存在")
         teacher_transaction_db = await self.teacher_transaction_dao.delete_teacher_transaction(
             exists_teacher_transaction)
-        teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionModel, exclude=[""])
+        teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherTransactionUpdateModel, exclude=[""])
         return teacher_transaction
 
     async def update_teacher_transaction(self, teacher_transaction: TeacherTransactionUpdateModel):

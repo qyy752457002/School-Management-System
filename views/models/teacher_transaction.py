@@ -123,18 +123,16 @@ class TeacherTransactionModel(BaseModel):
     current_position: Optional[str] = Field("", title="现岗位", description="现岗位")
     position_date: Optional[date] | None = Field(None, title="任职日期", description="任职日期")
     transaction_time: Optional[datetime] | None = Field(datetime.now(), title="操作时间", description="操作时间")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
 
-    # @model_validator(mode='before')
-    # @classmethod
-    # def check_id_before(self, data):
-    #     if isinstance(data["teacher_id"], str):
-    #         data["teacher_id"] = int(data["teacher_id"])
-    #     elif isinstance(data["teacher_id"], int):
-    #         data["teacher_id"] = str(data["teacher_id"])
-    #     else:
-    #         pass
-    #     return data
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+        return data
 
     @model_validator(mode='after')
     def check_transaction_type(self):
@@ -160,32 +158,24 @@ class TeacherTransactionUpdateModel(BaseModel):
     教师ID：teacher_id
     操作时间：transaction_time
     """
-    transaction_id: int= Field(..., title="teacher_transaction_id", description="teacher_transaction_id")
+    transaction_id: int | str = Field(..., title="teacher_transaction_id", description="teacher_transaction_id")
     transaction_type: str = Field(..., title="异动类型", description="异动类型")
     transaction_remark: str = Field("", title="备注", description="备注")
     original_position: Optional[str] = Field("", title="原岗位", description="原岗位")
     current_position: Optional[str] = Field("", title="现岗位", description="现岗位")
     position_date: Optional[date] | None = Field(None, title="任职日期", description="任职日期")
-    teacher_id: int= Field(..., title="教师ID", description="教师ID")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     transaction_time: Optional[datetime] | None = Field(default=datetime.now(), title="操作时间",
                                                         description="操作时间")
 
-    # @model_validator(mode='before')
-    # @classmethod
-    # def check_id_before(self, data: dict):
-    #     if isinstance(data["teacher_id"], str):
-    #         data["teacher_id"] = int(data["teacher_id"])
-    #     elif isinstance(data["teacher_id"], int):
-    #         data["teacher_id"] = str(data["teacher_id"])
-    #     else:
-    #         pass
-    #     if isinstance(data["transaction_id"], str):
-    #         data["transaction_id"] = int(data["transaction_id"])
-    #     elif isinstance(data["transaction_id"], int):
-    #         data["transaction_id"] = str(data["transaction_id"])
-    #     else:
-    #         pass
-    #     return data
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "transaction_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+        return data
 
 
 class TeacherTransactionGetModel(BaseModel):
@@ -199,28 +189,20 @@ class TeacherTransactionGetModel(BaseModel):
     审批时间：approval_time
     节点实例ID：process_instance_id
     """
-    teacher_id: int= Field(..., title="教师ID", description="教师ID")
-    transaction_id: int= Field(..., title="teacher_transaction_id", description="teacher_transaction_id")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
+    transaction_id: int | str = Field(..., title="teacher_transaction_id", description="teacher_transaction_id")
     transaction_type: str = Field(..., title="异动类型", description="异动类型")
     remark: Optional[str] = Field("", title="备注", description="备注")
     transaction_time: datetime = Field(..., title="申请时间", description="申请时间")
 
-    # @model_validator(mode='before')
-    # @classmethod
-    # def check_id_before(self, data: dict):
-    #     if isinstance(data["teacher_id"], str):
-    #         data["teacher_id"] = int(data["teacher_id"])
-    #     elif isinstance(data["teacher_id"], int):
-    #         data["teacher_id"] = str(data["teacher_id"])
-    #     else:
-    #         pass
-    #     if isinstance(data["transaction_id"], str):
-    #         data["transaction_id"] = int(data["transaction_id"])
-    #     elif isinstance(data["transaction_id"], int):
-    #         data["transaction_id"] = str(data["transaction_id"])
-    #     else:
-    #         pass
-    #     return data
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "transaction_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+        return data
 
 
 class TeacherTransactionQuery(BaseModel):
@@ -236,26 +218,24 @@ class TeacherTransactionQuery(BaseModel):
 
 
 class TeacherTransactionQueryRe(BaseModel):
-    teacher_id: int= Field(None, title="教师ID", description="教师ID")
+    teacher_id: int | str = Field(None, title="教师ID", description="教师ID")
     teacher_name: str = Field(..., title="姓名", description="教师名称")
     teacher_gender: Gender = Field(..., title="教师性别", description="教师性别")
     teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: int = Field(0, title="任职单位", description="任职单位")
+    teacher_employer: int | str = Field(0, title="任职单位", description="任职单位")
     teacher_avatar: str = Field("", title="头像", description="头像")
     mobile: str | None = Field("", title="手机号", description="手机号")
 
-    # @model_validator(mode='before')
-    # @classmethod
-    # def check_id_before(self, data: dict):
-    #     if isinstance(data["teacher_id"], str):
-    #         data["teacher_id"] = int(data["teacher_id"])
-    #     elif isinstance(data["teacher_id"], int):
-    #         data["teacher_id"] = str(data["teacher_id"])
-    #     else:
-    #         pass
-    #     return data
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "teacher_employer"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+        return data
 
 
 class TeacherAddModel(BaseModel):
@@ -282,7 +262,7 @@ class TeacherAddReModel(BaseModel):
     教师性别：teacher_gender
     出生日期：teacher_date_of_birth
     """
-    teacher_id: int= Field(..., title="教师ID", description="教师ID")
+    teacher_id: int = Field(..., title="教师ID", description="教师ID")
     teacher_name: str = Field(..., title="姓名", description="姓名")
     teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field(..., title="证件号码", description="证件号码")
@@ -300,7 +280,6 @@ class TeacherAddReModel(BaseModel):
     #         pass
     #
     #     return data
-
 
 
 class TeacherTransactionQueryModel(BaseModel):
@@ -330,7 +309,7 @@ class TeacherTransactionQueryModel(BaseModel):
 
 class TeacherTransactionQueryReModel(BaseModel):
     teacher_name: str = Field(..., title="姓名", description="姓名")
-    teacher_id: int= Field(..., title="教师ID", description="教师ID")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     teacher_id_type: Optional[str] = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: Optional[str] = Field("", title="身份证件号", description="证件号")
     transaction_id: int | str = Field(..., title="异动id", description="异动id")
@@ -340,22 +319,14 @@ class TeacherTransactionQueryReModel(BaseModel):
     transaction_remark: Optional[str] = Field("", title="备注", description="备注")
     transaction_time: Optional[datetime] = Field(None, title="申请时间", description="申请时间")
 
-    # @model_validator(mode='before')
-    # @classmethod
-    # def check_id_before(self, data: dict):
-    #     if isinstance(data["teacher_id"], str):
-    #         data["teacher_id"] = int(data["teacher_id"])
-    #     elif isinstance(data["teacher_id"], int):
-    #         data["teacher_id"] = str(data["teacher_id"])
-    #     else:
-    #         pass
-    #     if isinstance(data["transaction_id"], str):
-    #         data["transaction_id"] = int(data["transaction_id"])
-    #     elif isinstance(data["transaction_id"], int):
-    #         data["transaction_id"] = str(data["transaction_id"])
-    #     else:
-    #         pass
-    #     return data
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "transaction_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+        return data
 
 
 # 离退休相关模型
@@ -377,7 +348,7 @@ class TeacherRetireQueryRe(BaseModel):
     teacher_name: str = Query("", title="姓名", description="姓名", example="张三")
     teacher_id_number: str = Query("", title="身份证号", description="身份证号", example="123456789012345678")
     teacher_gender: str = Query("", title="性别", description="性别", example="男")
-    teacher_employer: int | str = Query(1, title="任职单位", description="任职单位", example="xx学校")
+    teacher_employer: Optional[int | str] = Query(None, title="任职单位", description="任职单位", example="xx学校")
     highest_education: Optional[str] = Query("", title="最高学历", description="最高学历", example="本科")
     political_status: Optional[str] = Query("", title="政治面貌", description="政治面貌", example="群众")
     in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
@@ -392,18 +363,10 @@ class TeacherRetireQueryRe(BaseModel):
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
-        if isinstance(data["teacher_id"], str):
-            data["teacher_id"] = int(data["teacher_id"])
-        elif isinstance(data["teacher_id"], int):
-            data["teacher_id"] = str(data["teacher_id"])
-        else:
-            pass
-        if isinstance(data["teacher_employer"], str):
-            data["teacher_employer"] = int(data["teacher_employer"])
-        elif isinstance(data["teacher_employer"], int):
-            data["teacher_employer"] = str(data["teacher_employer"])
-        else:
-            pass
+        _change_list = ["teacher_id", "teacher_employer"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
         return data
 
 
@@ -427,12 +390,10 @@ class TeacherRetireQuery(BaseModel):
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
-        if isinstance(data["teacher_employer"], str):
-            data["teacher_employer"] = int(data["teacher_employer"])
-        elif isinstance(data["teacher_employer"], int):
-            data["teacher_employer"] = str(data["teacher_employer"])
-        else:
-            pass
+        _change_list = ["teacher_employer"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
         return data
 
 
@@ -448,12 +409,10 @@ class TeacherRetireCreateModel(BaseModel):
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
-        if isinstance(data["teacher_id"], str):
-            data["teacher_id"] = int(data["teacher_id"])
-        elif isinstance(data["teacher_id"], int):
-            data["teacher_id"] = str(data["teacher_id"])
-        else:
-            pass
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
         return data
 
 
@@ -472,26 +431,9 @@ class TeacherRetireUpdateModel(BaseModel):
     def check_id_before(self, data: dict):
         _change_list = ["teacher_id", "teacher_retire_id"]
         for _change in _change_list:
-            if isinstance(data[_change], str):
-                data[_change] = int(data[_change])
-            elif isinstance(data[_change], int):
+            if _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
-            else:
-                pass
         return data
-        # if isinstance(data["teacher_id"], str):
-        #     data["teacher_id"] = int(data["teacher_id"])
-        # elif isinstance(data["teacher_id"], int):
-        #     data["teacher_id"] = str(data["teacher_id"])
-        # else:
-        #     pass
-        # if isinstance(data["teacher_retire_id"], str):
-        #     data["teacher_retire_id"] = int(data["teacher_retire_id"])
-        # elif isinstance(data["teacher_retire_id"], int):
-        #     data["teacher_retire_id"] = str(data["teacher_retire_id"])
-        # else:
-        #     pass
-        # return data
 
 
 # 调动相关模型
@@ -515,7 +457,7 @@ class TransferDetailsModel(BaseModel):
     流程id：process_instance_id
     """
 
-    original_unit_id: Optional[int] = Field(None, title="原单位", description="原单位")
+    original_unit_id: Optional[int | str] = Field(None, title="原单位", description="原单位")
     original_position: str = Field("", title="原岗位", description="原岗位")
     original_district_province_id: Optional[int] | None = Field(None, title="原行政属地省", description="原行政属地省")
     original_district_city_id: Optional[int] | None = Field(None, title="原行政属地市", description="原行政属地市")
@@ -526,7 +468,7 @@ class TransferDetailsModel(BaseModel):
     original_unit_name: Optional[str] | None = Field("", title="原单位", description="原单位")
     transfer_in_date: Optional[date] | None = Field(None, title="调入日期", description="调入日期")
 
-    current_unit_id: Optional[int] | None = Field(None, title="现单位", description="现单位")
+    current_unit_id: Optional[int | str] | None = Field(None, title="现单位", description="现单位")
     current_unit_name: Optional[str] | None = Field("", title="现单位", description="现单位")
     current_position: str = Field("", title="现岗位", description="现岗位")
     current_district_province_id: Optional[int] | None = Field(None, title="现行政属地省", description="现行政属地省")
@@ -539,12 +481,21 @@ class TransferDetailsModel(BaseModel):
 
     transfer_reason: str = Field("", title="调动原因", description="调动原因")
     remark: str = Field("", title="备注", description="备注")
-    teacher_id: Optional[int] | None = Field(None, title="教师ID", description="教师ID")
+    teacher_id: Optional[int | str] | None = Field(None, title="教师ID", description="教师ID")
     transfer_type: TransferType = Field("transfer_in", title="调动类型", description="调入或者调出")
-    process_instance_id: int = Field(0, title="流程ID", description="流程ID")
+    process_instance_id: int | str = Field(0, title="流程ID", description="流程ID")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "original_unit_id", "process_instance_id", "current_unit_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+        return data
 
 
-class TransferDetailsReModel(TransferDetailsModel):
+class TransferDetailsReModel(BaseModel):
     """
     原单位：original_unit
     原岗位：original_position
@@ -560,7 +511,45 @@ class TransferDetailsReModel(TransferDetailsModel):
     教师ID：teacher_id
     操作时间：operation_time
     """
-    transfer_details_id: int = Field(..., title="transfer_details_id", description="transfer_details_id")
+    transfer_details_id: int | str = Field(..., title="transfer_details_id", description="transfer_details_id")
+
+    original_unit_id: Optional[int | str] = Field(None, title="原单位", description="原单位")
+    original_position: str = Field("", title="原岗位", description="原岗位")
+    original_district_province_id: Optional[int] | None = Field(None, title="原行政属地省", description="原行政属地省")
+    original_district_city_id: Optional[int] | None = Field(None, title="原行政属地市", description="原行政属地市")
+    original_district_area_id: Optional[int] | None = Field(None, title="原行政属地区", description="原行政属地区")
+    original_region_province_id: Optional[int] | None = Field(None, title="原管辖区域省", description="原管辖区域省")
+    original_region_city_id: Optional[int] | None = Field(None, title="原管辖区域市", description="原管辖区域市")
+    original_region_area_id: Optional[int] | None = Field(None, title="原管辖区域区", description="原管辖区域区")
+    original_unit_name: Optional[str] | None = Field("", title="原单位", description="原单位")
+    transfer_in_date: Optional[date] | None = Field(None, title="调入日期", description="调入日期")
+
+    current_unit_id: Optional[int | str] | None = Field(None, title="现单位", description="现单位")
+    current_unit_name: Optional[str] | None = Field("", title="现单位", description="现单位")
+    current_position: str = Field("", title="现岗位", description="现岗位")
+    current_district_province_id: Optional[int] | None = Field(None, title="现行政属地省", description="现行政属地省")
+    current_district_city_id: Optional[int] | None = Field(None, title="现行政属地市", description="现行政属地市")
+    current_district_area_id: Optional[int] | None = Field(None, title="现行政属地区", description="现行政属地区")
+    current_region_province_id: Optional[int] | None = Field(None, title="现管辖区域省", description="现管辖区域省")
+    current_region_city_id: Optional[int] | None = Field(None, title="现管辖区域市", description="现管辖区域市")
+    current_region_area_id: Optional[int] | None = Field(None, title="现管辖区域区", description="现管辖区域区")
+    transfer_out_date: Optional[date] | None = Field(None, title="调出日期", description="调出日期")
+
+    transfer_reason: str = Field("", title="调动原因", description="调动原因")
+    remark: str = Field("", title="备注", description="备注")
+    teacher_id: Optional[int | str] | None = Field(None, title="教师ID", description="教师ID")
+    transfer_type: TransferType = Field("transfer_in", title="调动类型", description="调入或者调出")
+    process_instance_id: int | str = Field(0, title="流程ID", description="流程ID")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "original_unit_id", "process_instance_id", "current_unit_id",
+                        "transfer_details_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+        return data
 
 
 class TransferAndBorrowExtraModel(BaseModel):
@@ -602,12 +591,30 @@ class TransferDetailsGetModel(BaseModel):
     start_time: Optional[datetime] | None = Field(None, title="申请时间", description="申请时间")
     approval_time: Optional[datetime] | None = Field(None, title="审批时间", description="审批时间")
     approval_name: Optional[str] = Field("", title="审批人", description="审批人")
-    process_instance_id: int = Field(0, title="流程实例id", description="流程实例id")
+    process_instance_id: int | str = Field(0, title="流程实例id", description="流程实例id")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["process_instance_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+        return data
 
 
 class WorkflowQueryModel(BaseModel):
-    teacher_id: Optional[int] = Field(None, title="教师ID", description="教师ID")
+    teacher_id: Optional[int | str] = Field(None, title="教师ID", description="教师ID")
     process_code: Optional[str] = Field(None, title="流程code", description="流程code")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+        return data
 
 
 class TeacherTransferQueryModel(BaseModel):
@@ -640,20 +647,29 @@ class TeacherTransferQueryModel(BaseModel):
     original_region_province_id: Optional[int] = Query(None, title="原管辖区域省", description="原管辖区域省")
     original_region_city_id: Optional[int] = Query(None, title="原管辖区域市", description="原管辖区域市")
     original_region_area_id: Optional[int] = Query(None, title="原管辖区域区", description="原管辖区域区")
-    original_unit_id: Optional[int] = Query(None, title="原单位", description="原单位")
+    original_unit_id: Optional[int | str] = Query(None, title="原单位", description="原单位")
     current_district_province_id: Optional[int] = Query(None, title="现行政属地省", description="现行政属地省")
     current_district_city_id: Optional[int] = Query(None, title="现行政属地市", description="现行政属地市")
     current_district_area_id: Optional[int] = Query(None, title="现行政属地区", description="现行政属地区")
     current_region_province_id: Optional[int] = Query(None, title="现管辖区域省", description="现管辖区域省")
     current_region_city_id: Optional[int] = Query(None, title="现管辖区域市", description="现管辖区域市")
     current_region_area_id: Optional[int] = Query(None, title="现管辖区域区", description="现管辖区域区")
-    current_unit_id: Optional[int] = Query(None, title="现单位id", description="现单位id")
+    current_unit_id: Optional[int | str] = Query(None, title="现单位id", description="现单位id")
     approval_status: Optional[str] = Query("", title="审批状态", description="审批状态")
     start_time_s: Optional[date] = Query(None, title="申请开始时间", description="申请开始时间")
     start_time_e: Optional[date] = Query(None, title="申请结束时间", description="申请结束时间")
     approval_time_s: Optional[date] = Query(None, title="审批开始时间", description="审批开始时间")
     approval_time_e: Optional[date] = Query(None, title="审批结束时间", description="审批结束时间")
     approval_name: Optional[str] = Query("", title="审批人", description="审批人")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["current_unit_id", "original_unit_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+        return data
 
 
 class TeacherTransferQueryReModel(BaseModel):
@@ -677,8 +693,8 @@ class TeacherTransferQueryReModel(BaseModel):
     流程实例id：process_instance_id
 
     """
-    transfer_details_id: int = Field(0, title="调动主键", description="调动主键")
-    teacher_id: int = Field(0, title="教师ID", description="教师ID")
+    transfer_details_id: int | str = Field(0, title="调动主键", description="调动主键")
+    teacher_id: int | str = Field(0, title="教师ID", description="教师ID")
     teacher_name: str = Field("", title="姓名", description="姓名")
     teacher_number: Optional[str] = Field("", title="教职工号", description="教职工号")
     teacher_id_type: Optional[str] = Field("", title="身份证件类型", description="证件类型")
@@ -702,7 +718,16 @@ class TeacherTransferQueryReModel(BaseModel):
     start_time: Optional[datetime] | None = Field(None, title="申请时间", description="申请时间")
     approval_time: Optional[datetime] | None = Field(None, title="审批时间", description="审批时间")
     approval_name: Optional[str] = Field("", title="审批人", description="审批人")
-    process_instance_id: int = Field(0, title="流程实例id", description="流程实例id")
+    process_instance_id: int | str = Field(0, title="流程实例id", description="流程实例id")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["transfer_details_id", "process_instance_id", "teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+        return data
 
 
 # 借动的模型
@@ -725,7 +750,7 @@ class TeacherBorrowModel(BaseModel):
     借动类型：borrow_type
     流程id：process_instance_id
     """
-    original_unit_id: Optional[int] = Field(None, title="原单位", description="原单位")
+    original_unit_id: Optional[int | str] = Field(None, title="原单位", description="原单位")
     original_position: str = Field("", title="原岗位", description="原岗位")
     original_district_province_id: Optional[int] | None = Field(None, title="原行政属地省", description="原行政属地省")
     original_district_city_id: Optional[int] | None = Field(None, title="原行政属地市", description="原行政属地市")
@@ -736,7 +761,7 @@ class TeacherBorrowModel(BaseModel):
     original_unit_name: Optional[str] | None = Field("", title="原单位", description="原单位")
     borrow_in_date: Optional[date] = Field(None, title="借入日期", description="借入日期")
 
-    current_unit_id: Optional[int] | None = Field(None, title="现单位", description="现单位")
+    current_unit_id: Optional[int | str] | None = Field(None, title="现单位", description="现单位")
     current_unit_name: Optional[str] | None = Field("", title="现单位", description="现单位")
     current_position: Optional[str] | None = Field("", title="现岗位", description="现岗位")
     current_district_province_id: Optional[int] | None = Field(None, title="现行政属地省", description="现行政属地省")
@@ -751,10 +776,19 @@ class TeacherBorrowModel(BaseModel):
     remark: str = Field("", title="备注", description="备注")
     teacher_id: Optional[int] | None = Field(None, title="教师ID", description="教师ID")
     borrow_type: BorrowType = Field("borrow_in", title="借动类型", description="借入或者借出")
-    process_instance_id: int = Field(0, title="流程ID", description="流程ID")
+    process_instance_id: int | str = Field(0, title="流程ID", description="流程ID")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "original_unit_id", "process_instance_id", "current_unit_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+        return data
 
 
-class TeacherBorrowReModel(TeacherBorrowModel):
+class TeacherBorrowReModel(BaseModel):
     """
     原单位：original_unit
     原岗位：original_position
@@ -772,21 +806,77 @@ class TeacherBorrowReModel(TeacherBorrowModel):
     """
     teacher_borrow_id: int = Field(..., title="teacher_borrow_id", description="teacher_borrow_id")
 
+    original_unit_id: Optional[int | str] = Field(None, title="原单位", description="原单位")
+    original_position: str = Field("", title="原岗位", description="原岗位")
+    original_district_province_id: Optional[int] | None = Field(None, title="原行政属地省", description="原行政属地省")
+    original_district_city_id: Optional[int] | None = Field(None, title="原行政属地市", description="原行政属地市")
+    original_district_area_id: Optional[int] | None = Field(None, title="原行政属地区", description="原行政属地区")
+    original_region_province_id: Optional[int] | None = Field(None, title="原管辖区域省", description="原管辖区域省")
+    original_region_city_id: Optional[int] | None = Field(None, title="原管辖区域市", description="原管辖区域市")
+    original_region_area_id: Optional[int] | None = Field(None, title="原管辖区域区", description="原管辖区域区")
+    original_unit_name: Optional[str] | None = Field("", title="原单位", description="原单位")
+    borrow_in_date: Optional[date] = Field(None, title="借入日期", description="借入日期")
+
+    current_unit_id: Optional[int | str] | None = Field(None, title="现单位", description="现单位")
+    current_unit_name: Optional[str] | None = Field("", title="现单位", description="现单位")
+    current_position: Optional[str] | None = Field("", title="现岗位", description="现岗位")
+    current_district_province_id: Optional[int] | None = Field(None, title="现行政属地省", description="现行政属地省")
+    current_district_city_id: Optional[int] | None = Field(None, title="现行政属地市", description="现行政属地市")
+    current_district_area_id: Optional[int] | None = Field(None, title="现行政属地区", description="现行政属地区")
+    current_region_province_id: Optional[int] | None = Field(None, title="现管辖区域省", description="现管辖区域省")
+    current_region_city_id: Optional[int] | None = Field(None, title="现管辖区域市", description="现管辖区域市")
+    current_region_area_id: Optional[int] | None = Field(None, title="现管辖区域区", description="现管辖区域区")
+    borrow_out_date: Optional[date] | None = Field(None, title="借出日期", description="借出日期")
+
+    transfer_reason: str = Field("", title="借动原因", description="借动原因")
+    remark: str = Field("", title="备注", description="备注")
+    teacher_id: Optional[int] | None = Field(None, title="教师ID", description="教师ID")
+    borrow_type: BorrowType = Field("borrow_in", title="借动类型", description="借入或者借出")
+    process_instance_id: int | str = Field(0, title="流程ID", description="流程ID")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "original_unit_id", "process_instance_id", "current_unit_id",
+                        "teacher_borrow_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+        return data
+
 
 class TeacherBorrowGetModel(BaseModel):
     """
     单个教师的所有的借动记录
     """
-    original_region: Optional[str] = Field("", title="原地域管辖区域", description="原地域管辖区域")
-    original_district: Optional[str] = Field("", title="原行政属地", description="原行政属地")
-    original_unit: Optional[str] = Field("", title="原单位", description="原单位")
-    current_district: Optional[str] = Field("", title="现行政属地", description="现行政属地")
-    current_region: Optional[str] = Field("", title="现地域管辖区域", description="现地域管辖区域")
-    current_unit_id: Optional[int] = Field(..., title="现单位", description="现单位")
+    original_district_province_name: Optional[str] = Field("", title="原行政属地省", description="原行政属地省")
+    original_district_city_name: Optional[str] = Field("", title="原行政属地市", description="原行政属地市")
+    original_district_area_name: Optional[str] = Field("", title="原行政属地区", description="原行政属地区")
+    original_region_province_name: Optional[str] = Field("", title="原管辖区域省", description="原管辖区域省")
+    original_region_city_name: Optional[str] = Field("", title="原管辖区域市", description="原管辖区域市")
+    original_region_area_name: Optional[str] = Field("", title="原管辖区域区", description="原管辖区域区")
+    original_unit_name: Optional[str] = Field("", title="原单位", description="原单位")
+    current_district_province_name: Optional[str] = Field("", title="现行政属地省", description="现行政属地省")
+    current_district_city_name: Optional[str] = Field("", title="现行政属地市", description="现行政属地市")
+    current_district_area_name: Optional[str] = Field("", title="现行政属地区", description="现行政属地区")
+    current_region_province_name: Optional[str] = Field("", title="现管辖区域省", description="现管辖区域省")
+    current_region_city_name: Optional[str] = Field("", title="现管辖区域市", description="现管辖区域市")
+    current_region_area_name: Optional[str] = Field("", title="现管辖区域区", description="现管辖区域区")
+    current_unit_name: Optional[str] = Field("", title="现单位", description="现单位")
     approval_status: Optional[str] = Field("", title="审批状态", description="审批状态")
-    start_time: Optional[datetime] = Field(None, title="申请时间", description="申请时间")
-    approval_time: Optional[datetime] = Field(None, title="审批时间", description="审批时间")
+    start_time: Optional[datetime] | None = Field(None, title="申请时间", description="申请时间")
+    approval_time: Optional[datetime] | None = Field(None, title="审批时间", description="审批时间")
     approval_name: Optional[str] = Field("", title="审批人", description="审批人")
+    process_instance_id: int | str = Field(0, title="流程实例id", description="流程实例id")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["process_instance_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+        return data
 
 
 class TeacherBorrowQueryModel(BaseModel):
@@ -819,20 +909,29 @@ class TeacherBorrowQueryModel(BaseModel):
     original_region_province_id: Optional[int] = Query(None, title="原管辖区域省", description="原管辖区域省")
     original_region_city_id: Optional[int] = Query(None, title="原管辖区域市", description="原管辖区域市")
     original_region_area_id: Optional[int] = Query(None, title="原管辖区域区", description="原管辖区域区")
-    original_unit_id: Optional[int] = Query(None, title="原单位", description="原单位")
+    original_unit_id: Optional[int | str] = Query(None, title="原单位", description="原单位")
     current_district_province_id: Optional[int] = Query(None, title="现行政属地省", description="现行政属地省")
     current_district_city_id: Optional[int] = Query(None, title="现行政属地市", description="现行政属地市")
     current_district_area_id: Optional[int] = Query(None, title="现行政属地区", description="现行政属地区")
     current_region_province_id: Optional[int] = Query(None, title="现管辖区域省", description="现管辖区域省")
     current_region_city_id: Optional[int] = Query(None, title="现管辖区域市", description="现管辖区域市")
     current_region_area_id: Optional[int] = Query(None, title="现管辖区域区", description="现管辖区域区")
-    current_unit_id: Optional[int] = Query(None, title="现单位id", description="现单位id")
+    current_unit_id: Optional[int | str] = Query(None, title="现单位id", description="现单位id")
     approval_status: Optional[str] = Query("", title="审批状态", description="审批状态")
     start_time_s: Optional[date] = Query(None, title="申请开始时间", description="申请开始时间")
     start_time_e: Optional[date] = Query(None, title="申请结束时间", description="申请结束时间")
     approval_time_s: Optional[date] = Query(None, title="审批开始时间", description="审批开始时间")
     approval_time_e: Optional[date] = Query(None, title="审批结束时间", description="审批结束时间")
     approval_name: Optional[str] = Query("", title="审批人", description="审批人")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["current_unit_id", "original_unit_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+        return data
 
 
 class TeacherBorrowQueryReModel(BaseModel):
@@ -857,7 +956,7 @@ class TeacherBorrowQueryReModel(BaseModel):
 
     """
 
-    teacher_id: int = Field(0, title="教师ID", description="教师ID")
+    teacher_id: int | str = Field(0, title="教师ID", description="教师ID")
     teacher_name: str = Field("", title="姓名", description="姓名")
     teacher_number: Optional[str] = Field("", title="教职工号", description="教职工号")
     teacher_id_type: Optional[str] = Field("", title="身份证件类型", description="证件类型")
@@ -881,5 +980,14 @@ class TeacherBorrowQueryReModel(BaseModel):
     start_time: Optional[datetime] | None = Field(None, title="申请时间", description="申请时间")
     approval_time: Optional[datetime] | None = Field(None, title="审批时间", description="审批时间")
     approval_name: Optional[str] = Field("", title="审批人", description="审批人")
-    teacher_borrow_id: int = Field(0, title="teacher_borrow_id", description="teacher_borrow_id")
-    process_instance_id: int = Field(0, title="流程实例id", description="流程实例id")
+    teacher_borrow_id: int | str = Field(0, title="teacher_borrow_id", description="teacher_borrow_id")
+    process_instance_id: int | str = Field(0, title="流程实例id", description="流程实例id")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_borrow_id", "process_instance_id", "teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+        return data

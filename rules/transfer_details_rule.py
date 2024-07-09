@@ -44,7 +44,7 @@ class TransferDetailsRule(object):
     async def get_transfer_details_by_transfer_details_id(self, transfer_details_id):
         transfer_details_db = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
             transfer_details_id)
-        transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsModel)
+        transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
         return transfer_details
 
     async def add_transfer_in_inner_details(self, transfer_details: TransferDetailsModel, user_id):
@@ -100,6 +100,7 @@ class TransferDetailsRule(object):
             teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
             transfer_details.teacher_id = teachers.teacher_id
             transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
+            transfer_details_db.transfer_details_id = SnowflakeIdGenerator(1, 1).generate_id()
             transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
             transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
             transfer_and_borrow_extra_model = await self.get_transfer_and_borrow_extra(
@@ -131,38 +132,6 @@ class TransferDetailsRule(object):
         except Exception as e:
             raise e
 
-            transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
-            transfer_details_db.transfer_details_id = SnowflakeIdGenerator(1, 1).generate_id()
-            transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
-            transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
-            transfer_and_borrow_extra_model = await self.get_transfer_and_borrow_extra(
-                original_district_area_id=transfer_details_work.original_district_area_id,
-                current_district_area_id=transfer_details_work.current_district_area_id,
-                current_unit_id=transfer_details.current_unit_id)
-            original_unit_name = transfer_details_work.original_unit_name
-            current_unit_name = transfer_and_borrow_extra_model.current_unit_name
-            params = {"process_code": "t_transfer_in_outer", "applicant_name": user_id}
-            model_list = [transfer_details_work, teachers, transfer_and_borrow_extra_model]
-            work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
-            teacher_transfer_log = OperationRecord(
-                action_target_id=transfer_details_work.teacher_id,
-                target=OperationTarget.TEACHER.value,
-                action_type=OperationType.CREATE.value,
-                ip="127.0.0.1",
-                change_data="",
-                operation_time=datetime.now(),
-                doc_upload="",
-                change_module=ChangeModule.TRANSFER.value,
-                change_detail=f"从{original_unit_name}调入到{current_unit_name}",
-                status="/",
-                operator_id=1,
-                operator_name=user_id,
-                process_instance_id=work_flow_instance["process_instance_id"])
-            await self.operation_record_rule.add_operation_record(teacher_transfer_log)
-            await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
-            return True
-        except Exception as e:
-            return str(e)
 
     async def add_transfer_out_details(self, transfer_details: TransferDetailsModel,
                                        user_id):
@@ -219,7 +188,7 @@ class TransferDetailsRule(object):
         if not exists_transfer_details:
             raise Exception(f"编号为的{transfer_details_id}transfer_details不存在")
         transfer_details_db = await self.transfer_details_dao.delete_transfer_details(exists_transfer_details)
-        transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsModel, exclude=[""])
+        transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel, exclude=[""])
         return transfer_details
 
     async def update_transfer_details(self, transfer_details: TransferDetailsReModel):

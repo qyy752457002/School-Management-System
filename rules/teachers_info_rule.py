@@ -24,6 +24,7 @@ from views.common.common_view import compare_modify_fields
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from rules.teachers_rule import TeachersRule
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
+from rules.common.common_rule import convert_fields_to_str
 
 
 @dataclass_inject
@@ -42,6 +43,7 @@ class TeachersInfoRule(object):
 
     # 查询单个教职工基本信息
     async def get_teachers_info_by_teacher_id(self, teachers_id):
+        teachers_id = int(teachers_id)
         teachers_info_db = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teachers_id)
         if not teachers_info_db:
             raise TeacherInfoNotFoundError()
@@ -49,10 +51,12 @@ class TeachersInfoRule(object):
         return teachers_info
 
     async def get_teachers_info_by_teacher_id_exit(self, teachers_id):
+        teachers_id = int(teachers_id)
         exits = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teachers_id)
         return exits
 
     async def get_teachers_info_by_id(self, teachers_base_id):
+        teachers_base_id = int(teachers_base_id)
         teachers_info_db = await self.teachers_info_dao.get_teachers_info_by_id(teachers_base_id)
         if not teachers_info_db:
             raise TeacherInfoNotFoundError()
@@ -60,6 +64,7 @@ class TeachersInfoRule(object):
         return teachers_info
 
     async def add_teachers_info(self, teachers_info: TeacherInfoSaveModel, user_id):
+        teachers_info.teacher_id = int(teachers_info.teacher_id)
         exits_teacher_base = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teachers_info.teacher_id)
         if exits_teacher_base:
             raise TeacherInfoExitError()
@@ -84,6 +89,7 @@ class TeachersInfoRule(object):
         return teachers_info
 
     async def add_teachers_info_import(self, teachers_info: TeacherInfoCreateModel):
+        teachers_info.teacher_id = int(teachers_info.teacher_id)
         exits_teacher_base = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teachers_info.teacher_id)
         if exits_teacher_base:
             raise TeacherInfoExitError()
@@ -94,6 +100,7 @@ class TeachersInfoRule(object):
         return teachers_info
 
     async def add_teachers_info_valid(self, teachers_info: TeacherInfoSubmit, user_id):
+        teachers_info.teacher_id = int(teachers_info.teacher_id)
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
         teacher_main_status = exits_teacher.teacher_main_status
         if not exits_teacher:
@@ -143,6 +150,7 @@ class TeachersInfoRule(object):
         return teachers_info
 
     async def update_teachers_info(self, teachers_info: TeacherInfoSubmit, user_id):
+        teachers_info.teacher_id = int(teachers_info.teacher_id)
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
         if not exits_teacher:
             raise TeacherNotFoundError()
@@ -156,8 +164,10 @@ class TeachersInfoRule(object):
         for key, value in teachers_info.dict().items():
             if value:
                 need_update_list.append(key)
-        teachers_info = await self.teachers_info_dao.update_teachers_info(teachers_info, *need_update_list)
-
+        teachers_info_db = await self.teachers_info_dao.update_teachers_info(teachers_info, *need_update_list)
+        print(type(teachers_info_db))
+        fields_list = ["teacher_id", "teacher_base_id"]
+        teachers_info_db =await convert_fields_to_str(teachers_info_db, fields_list)
         teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
         teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
                                                          exclude=[""])
@@ -170,7 +180,7 @@ class TeachersInfoRule(object):
                 teacher_entry_approval.teacher_id)
             work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
             teacher_entry_save_to_submit_log = OperationRecord(  # 这个是转在职的
-                action_target_id=teacher_entry_approval.teacher_id,
+                action_target_id=int(teacher_entry_approval.teacher_id),
                 target=OperationTarget.TEACHER.value,
                 action_type=OperationType.CREATE.value,
                 ip="127.0.0.1",
@@ -182,14 +192,14 @@ class TeachersInfoRule(object):
                 status="/",
                 operator_id=1,
                 operator_name=user_id,
-                process_instance_id=work_flow_instance["process_instance_id"])
+                process_instance_id=int(work_flow_instance["process_instance_id"]))
             await self.operation_record_rule.add_operation_record(teacher_entry_save_to_submit_log)
             await self.teacher_submitted(teacher_id)
             teachers_rule = get_injector(TeachersRule)
             await teachers_rule.teacher_progressing(teacher_id)
         if teachers_main_status == "employed":
             teacher_base_info_log = OperationRecord(
-                action_target_id=teacher_entry_approval.teacher_id,
+                action_target_id=int(teacher_entry_approval.teacher_id),
                 target=OperationTarget.TEACHER.value,
                 action_type=OperationType.CREATE.value,
                 ip="127.0.0.1",
@@ -211,7 +221,7 @@ class TeachersInfoRule(object):
         # organization.member_type = None
         # organization.identity = None
         # await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
-        return teachers_info
+        return teachers_info_db
 
     async def update_teachers_info_save(self, teachers_info, user_id):
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
@@ -225,7 +235,9 @@ class TeachersInfoRule(object):
             if value:
                 need_update_list.append(key)
         teachers_info = await self.teachers_info_dao.update_teachers_info(teachers_info, *need_update_list)
-        await self.teacher_unsubmitted(teachers_info.teacher_id)
+        fields_list = ["teacher_id", "teacher_base_id"]
+        teachers_info_db =await convert_fields_to_str(teachers_info, fields_list)
+        # await self.teacher_unsubmitted(teachers_info.teacher_id)
         # if exits_teacher.teacher_main_status == "unemployed":
         #     teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
         #     teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
@@ -250,7 +262,7 @@ class TeachersInfoRule(object):
         # organization.member_type = None
         # organization.identity = None
         # await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
-        return teachers_info
+        return teachers_info_db
 
     # 删除单个教职工基本信息
     async def delete_teachers_info(self, teachers_info_id):

@@ -9,14 +9,14 @@ from views.models.teacher_transaction import TeacherBorrowModel, TeacherBorrowRe
     TeacherRetireQuery, TransferDetailsModel, TeacherRetireCreateModel
 from rules.transfer_details_rule import TransferDetailsRule
 
-from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
-    TeacherTransactionQuery, TeacherTransferQueryModel, TeacherTransactionQueryModel
+from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionQuery, \
+    TeacherTransferQueryModel, TeacherTransactionQueryModel
 
 from rules.teacher_transaction_rule import TeacherTransactionRule
 from rules.teachers_rule import TeachersRule
 from rules.teacher_borrow_rule import TeacherBorrowRule
 from views.models.teacher_transaction import TeacherBorrowModel, TeacherBorrowReModel, TeacherBorrowQueryModel, \
-    TeacherRetireQuery,TeacherRetireCreateModel
+    TeacherRetireQuery, TeacherRetireCreateModel
 from mini_framework.web.std_models.page import PageRequest
 from views.models.teachers import TeacherAdd
 from typing import Optional
@@ -320,7 +320,7 @@ class TeacherRetireView(BaseView):
 
         self.teacher_retire_rule = get_injector(TeacherRetireRule)
 
-    async def post_teacher_retire(self, teacher_retire:TeacherRetireCreateModel):
+    async def post_teacher_retire(self, teacher_retire: TeacherRetireCreateModel):
         """
         教师退休
         """
@@ -386,11 +386,12 @@ class TeacherBorrowView(BaseView):
     #     res = await self.teacher_borrow_rule.update_teacher_borrow(teacher_borrow)
     #     return res
 
-    async def get_teacher_borrow_all(self, teacher_id: int = Query(None, title="teacher_borrowID",
-                                                                   description="teacher_borrowID", example=1234)):
+    async def get_teacher_borrow_all(self, teacher_id: int | str = Query(None, title="teacher_borrowID",
+                                                                         description="teacher_borrowID", example=1234)):
         """
         获取单个老师所有借动信息,是教师详情页中的借动明细
         """
+        teacher_id = int(teacher_id)
         return await self.teacher_borrow_rule.get_all_teacher_borrow(teacher_id)
 
     async def page_borrow_with_page(self, teacher_borrow=Depends(TeacherBorrowQueryModel),
