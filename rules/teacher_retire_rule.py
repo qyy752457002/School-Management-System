@@ -58,7 +58,7 @@ class TeacherRetireRule(object):
         await self.teachers_dao.update_teachers(teacher_db, "teacher_sub_status", "teacher_main_status")
 
         teacher_transaction_db = view_model_to_orm_model(teacher_retire, TeacherRetire)
-        teacher_transaction_db.transaction_id = SnowflakeIdGenerator(1, 1).generate_id()
+        teacher_transaction_db.teacher_retire_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_transaction_db = await self.teacher_retire_dao.add_teacher_retire(teacher_transaction_db)
         teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherRetireUpdateModel)
         teacher_transaction_log = OperationRecord(
