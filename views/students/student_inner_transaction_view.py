@@ -1,3 +1,4 @@
+import traceback
 from typing import List
 
 from mini_framework.design_patterns.depend_inject import get_injector
@@ -27,9 +28,14 @@ class StudentInnerTransactionView(BaseView):
 
     async def post(self, student_inner_transaction: StudentInnerTransaction):
         # print(graduation_student)
+        try:
 
 
-        res =await self.student_inner_transaction_rule.add_student_inner_transaction(student_inner_transaction)
+            res =await self.student_inner_transaction_rule.add_student_inner_transaction(student_inner_transaction)
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+            return e
 
         return res
 
@@ -40,8 +46,16 @@ class StudentInnerTransactionView(BaseView):
                    page_request=Depends(PageRequest)):
         print(page_request)
         items = []
+        try:
+            res = await self.student_inner_transaction_rule.query_student_inner_transaction_with_page(page_request, student_inner_transaction_search )
 
-        res = await self.student_inner_transaction_rule.query_student_inner_transaction_with_page(page_request, student_inner_transaction_search )
+
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+            return e
+
+
         return res
 
     # 异动 撤回

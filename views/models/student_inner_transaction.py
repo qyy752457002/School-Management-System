@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Optional, Iterable
 
 from fastapi import Query
 from pydantic import BaseModel, Field, model_validator
@@ -75,6 +75,9 @@ class StudentInnerTransactionSearch(BaseModel):
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id']
         for _change in _change_list:
+            # if isinstance()
+            if not  isinstance(data, Iterable):
+                continue
             if _change not in data:
                 continue
             if isinstance(data[_change], str):
