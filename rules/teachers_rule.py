@@ -23,7 +23,6 @@ from mini_framework.async_task.data_access.task_dao import TaskDAO
 from mini_framework.async_task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter, ExcelReader
 from mini_framework.storage.manager import storage_manager
-from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.utils.logging import logger
 from daos.teacher_entry_dao import TeacherEntryApprovalDao
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
@@ -38,6 +37,8 @@ from daos.operation_record_dao import OperationRecordDAO
 from views.common.common_view import compare_modify_fields
 from models.teachers_info import TeacherInfo
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
+
+from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 
 import os
 
@@ -337,21 +338,22 @@ class TeachersRule(object):
                 raise ValueError("参数错误")
             source_file = task.payload
             local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
+            logger.info("Test开始注册模型")
             storage_manager.download_file(
                 source_file.bucket_name, source_file.file_name, local_file_path
             )
-            local_file_path = "c.xlsx"
-            reader = ExcelReader()
-            reader.set_data(local_file_path)
-            # reader.register_model("Sheet1", CombinedModel)
-            logger.info("Test开始注册模型")
-            # reader.register_model("Sheet1", TeachersCreatModel)
-            # reader.register_model("Sheet1", TeacherInfoCreateModel)
-            logger.info("Test开始读取模型")
-            data = reader.execute()["Sheet1"]
-            if not isinstance(data, list):
-                raise ValueError("数据格式错误")
-            results = []
+            # local_file_path = "c.xlsx"
+            # reader = ExcelReader()
+            # reader.set_data(local_file_path)
+            # # reader.register_model("Sheet1", CombinedModel)
+            # logger.info("Test开始注册模型")
+            # # reader.register_model("Sheet1", TeachersCreatModel)
+            # # reader.register_model("Sheet1", TeacherInfoCreateModel)
+            # logger.info("Test开始读取模型")
+            # data = reader.execute()["Sheet1"]
+            # if not isinstance(data, list):
+            #     raise ValueError("数据格式错误")
+            # results = []
 
             # 两个一起写
             # for idx, item in enumerate(data):
@@ -384,26 +386,26 @@ class TeachersRule(object):
             #
             #         results.append(info_result)
 
-            for idx, item in enumerate(data):
-                item = item.dict()
-                teacher_data = {key: item[key] for key in TeachersCreatModel.__fields__.keys() if key in item}
-                logger.info(teacher_data)
-                teacher_model = TeachersCreatModel(**teacher_data)
-                logger.info(type(teacher_data))
-
-                result_dict = teacher_data.copy()
-                result_dict["failed_msg"] = "成功"
-                result = TeacherCreateResultModel(**result_dict)
-                user_id = "asdfasdf"
-                try:
-                    await self.add_teachers(teacher_model, user_id)
-
-                except Exception as ex:
-                    result.failed_msg = str(ex)
-                    logger.info(f"Failed to add teacher at index {idx}: {ex}")
-                    print(ex, '表内数据异常')
-                    raise ex
-                results.append(result)
+            # for idx, item in enumerate(data):
+            #     item = item.dict()
+            #     teacher_data = {key: item[key] for key in TeachersCreatModel.__fields__.keys() if key in item}
+            #     logger.info(teacher_data)
+            #     teacher_model = TeachersCreatModel(**teacher_data)
+            #     logger.info(type(teacher_data))
+            #
+            #     result_dict = teacher_data.copy()
+            #     result_dict["failed_msg"] = "成功"
+            #     result = TeacherCreateResultModel(**result_dict)
+            #     user_id = "asdfasdf"
+            #     try:
+            #         await self.add_teachers(teacher_model, user_id)
+            #
+            #     except Exception as ex:
+            #         result.failed_msg = str(ex)
+            #         logger.info(f"Failed to add teacher at index {idx}: {ex}")
+            #         print(ex, '表内数据异常')
+            #         raise ex
+            #     results.append(result)
 
             # local_results_path = f"/tmp/c.xlsx"
             # excel_writer = ExcelWriter()
@@ -666,3 +668,10 @@ class TeachersRule(object):
         if teachers.teacher_sub_status != "active":
             teachers.teacher_sub_status = "active"
         return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
+
+    async def get_task_model_by_id(self, id):
+        fileinfo = await self.file_storage_dao.get_file_by_id(int(id))
+        fileinfo = fileinfo._asdict()['FileStorage']
+        task_model = TeacherFileStorageModel(file_name=fileinfo.file_name, bucket_name=fileinfo.bucket_name,
+                                             file_size=fileinfo.file_size)
+        return task_model

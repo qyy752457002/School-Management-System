@@ -6,7 +6,7 @@ from models.teachers_info import TeacherInfo
 from views.models.teachers import TeacherInfo as TeachersInfoModel
 from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel, TeacherInfoSubmit, \
     CurrentTeacherQuery, CurrentTeacherQueryRe, CurrentTeacherInfoSaveModel, NewTeacherInfoSaveModel, \
-    TeacherInfoCreateModel, NewTeacherApprovalCreate
+    TeacherInfoCreateModel
 from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError, QueryError
 from daos.teachers_dao import TeachersDao
 from rules.organization_memebers_rule import OrganizationMembersRule

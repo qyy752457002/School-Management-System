@@ -20,12 +20,14 @@ class TeacherImportExecutor(TaskExecutor):
             logger.info("Teacher import begins")
             task: Task = task
             logger.info("Test2")
+            logger.info(f"{task.payload.bucket_name}")
             if isinstance(task.payload, dict):
                 account_export: TeacherFileStorageModel = TeacherFileStorageModel(**task.payload)
             elif isinstance(task.payload, TeacherFileStorageModel):
                 account_export: TeacherFileStorageModel = task.payload
             else:
                 raise ValueError("Invalid payload type")
+            logger.info("Test3")
             await self.teacher_rule.import_teachers(task)
             # task_result = await self.teacher_rule.import_teachers(task)
             # logger.info(f"Teacher import to {task_result.result_file}")

@@ -1282,18 +1282,6 @@ class NewTeacherApprovalCreate(BaseModel):
                                                       description="是否受过特教专业培训")
     has_special_education_certificate: bool = Field(..., title="是否有特殊教育从业证书", description="是否有特教证书")
 
-    @model_validator(mode='before')
-    @classmethod
-    def check_id_before(self, data: dict):
-        _change_list = ["teacher_employer", "teacher_base_id", "teacher_id"]
-        for _change in _change_list:
-            if _change in data and isinstance(data[_change], str):
-                data[_change] = int(data[_change])
-            elif _change in data and isinstance(data[_change], int):
-                data[_change] = str(data[_change])
-            else:
-                pass
-        return data
 
     free_normal_college_student: bool = Field(..., title="是否属于免费（公费）师范生", description="是否免费师范生")
 
@@ -1336,6 +1324,20 @@ class NewTeacherApprovalCreate(BaseModel):
     highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
     is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer", "teacher_base_id", "teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
 
 
 class CurrentTeacherQuery(BaseModel):
@@ -1484,9 +1486,7 @@ class TeacherApprovalQueryRe(BaseModel):
     def check_id_before(self, data: dict):
         _change_list = ["teacher_employer", "teacher_id", "process_instance_id"]
         for _change in _change_list:
-            if _change in data and isinstance(data[_change], str):
-                data[_change] = int(data[_change])
-            elif _change in data and isinstance(data[_change], int):
+            if _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
             else:
                 pass
