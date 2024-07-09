@@ -154,6 +154,7 @@ class StudentTransactionRule(object):
                                                       other_mapper=flipped_dict)
         # print(student_transaction)
         # print(vars(student_transaction))
+        convert_snowid_in_model(student_transaction, ["id",'student_id','school_id','class_id','session_id','relation_id','process_instance_id','in_school_id','grade_id','transferin_audit_id'])
 
         return student_transaction
 
