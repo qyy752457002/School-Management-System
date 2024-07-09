@@ -12,7 +12,7 @@ from business_exceptions.subject import SubjectAlreadyExistError, SubjectNotFoun
 from daos.subject_dao import SubjectDAO
 from models.subject import Subject
 from rules.course_rule import CourseRule
-from views.common.common_view import convert_snowid_to_strings
+from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
 from views.models.subject import Subject  as SubjectModel
 from views.models.extend_params import ExtendParams
 
@@ -42,6 +42,7 @@ class SubjectRule(object):
 
         subject_db = await self.subject_dao.add_subject(subject_db)
         subject = orm_model_to_view_model(subject_db, SubjectModel, exclude=["created_at",'updated_at'])
+        convert_snowid_in_model(subject, ["id",'student_id','school_id','class_id','session_id','relation_id','process_instance_id','in_school_id','grade_id','transferin_audit_id'])
         return subject
 
     async def update_subject(self, subject,):
@@ -54,6 +55,8 @@ class SubjectRule(object):
                 need_update_list.append(key)
 
         subject_db = await self.subject_dao.update_subject(subject, *need_update_list)
+        convert_snowid_in_model(subject_db, ["id",'student_id','school_id','class_id','session_id','relation_id','process_instance_id','in_school_id','grade_id','transferin_audit_id'])
+
 
         return subject_db
 
