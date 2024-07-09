@@ -1,5 +1,6 @@
 import datetime
 import json
+import traceback
 from time import strptime
 from typing import List
 from datetime import datetime as datetimealias
@@ -208,12 +209,35 @@ class NewsStudentsInfoView(BaseView):
 
                                              ):
         """
-        分班
+        分班 捕获异常
         """
-        res = await self.students_base_info_rule.update_students_class_division(class_id, student_id)
-        res_div = await self.class_division_records_rule.add_class_division_records(class_id, student_id)
-        # 更新学生的 班级和 学校信息
-        res3 = await self.students_base_info_rule.update_students_base_info( StudentsBaseInfo(student_id=student_id,class_id=class_id,school_id=res_div.school_id,grade_id=res_div.grade_id))
+        try:
+            res=None
+            if class_id:
+                class_id = int(class_id)
+            # 学生班级和学生状态
+            res = await self.students_base_info_rule.update_students_class_division(class_id, student_id)
+            # 分班记录
+            res_div = await self.class_division_records_rule.add_class_division_records(class_id, student_id)
+            # 更新学生的 班级和 学校信息
+            student_ids= student_id
+            if ',' in student_ids:
+                student_ids = student_ids.split(',')
+            else:
+                student_ids = [student_ids]
+            for student_id in student_ids:
+                baseinfo =  StudentsBaseInfo(student_id=student_id,class_id=class_id,school_id=res_div.school_id,grade_id=res_div.grade_id)
+
+                res3 = await self.students_base_info_rule.update_students_base_info(baseinfo)
+
+        except ValueError as e:
+            traceback.print_exc()
+            return  e
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+
+            return  e
 
         return res
     # 摇号分班  未使用

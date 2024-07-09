@@ -18,9 +18,9 @@ class Classes(BaseModel):
 
     class_name: str = Field('', title="Grade_name", description="班级名称", examples=['一年级'])
     class_number: str = Field('', description="班号", examples=['一年级'])
-    class_index: str = Field('', description="班级序号", examples=['一班'])
+    class_index: str |None= Field('', description="班级序号", examples=['一班'])
     year_established: str = Field(None, description="建班年份", examples=['2023'])
-    teacher_id: int|str = Field(None, description="班主任id", examples=['1'])
+    teacher_id: int|str |None= Field(None, description="班主任id", examples=['1'])
     teacher_id_card: str = Field(None, description="班主任身份证", examples=['fsdfdsfsdxxx'])
     teacher_card_type: str = Field(None, description="班主任证件类型", examples=['idcard'])
 

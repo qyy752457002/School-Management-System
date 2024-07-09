@@ -267,7 +267,7 @@ class StudentsBaseInfo(BaseModel):
     only_child: bool = Field( None, title="是否独生子女", description="是否独生子女")
     # left_behind_children: YesOrNo = Field("N", title="是否留守儿童", description="是否留守儿童")
     left_behind_children: bool = Field(None, title="是否留守儿童", description="是否留守儿童")
-    floating_population: bool = Field("N", title="是否流动人口", description="是否流动人口")
+    floating_population: bool = Field(False, title="是否流动人口", description="是否流动人口")
 
     # floating_population: YesOrNo = Field("N", title="是否流动人口", description="是否流动人口")
     overseas_chinese: str  = Field("", title="是否港澳台侨胞", description="是否港澳台侨胞")
@@ -319,7 +319,7 @@ class NewBaseInfoCreate(BaseModel):
 
     # migrant_children: YesOrNo = Field("N", title="是否随迁子女", description="是否随迁子女")
     migrant_children: bool = Field(None, title="是否随迁子女", description="是否随迁子女")
-    floating_population: bool = Field("N", title="是否流动人口", description="是否流动人口")
+    floating_population: bool = Field(False, title="是否流动人口", description="是否流动人口")
 
     # floating_population: YesOrNo = Field("N", title="是否流动人口", description="是否流动人口")
     # only_child: YesOrNo = Field("N", title="是否独生子女", description="是否独生子女")
@@ -360,7 +360,7 @@ class NewBaseInfoUpdate(BaseModel):
     left_behind_children: bool = Field(None, title="是否留守儿童", description="是否留守儿童")
     migrant_children: bool = Field(None, title="是否随迁子女", description="是否随迁子女")
 
-    floating_population: bool = Field("N", title="是否流动人口", description="是否流动人口")
+    floating_population: bool = Field(False, title="是否流动人口", description="是否流动人口")
     only_child: bool = Field( None, title="是否独生子女", description="是否独生子女")
 
     identity_card_validity_period: str = Field("", title="身份证件有效期", description="身份证件有效期")
