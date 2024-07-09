@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -12,10 +12,10 @@ class OrganizationMembers(BaseDBModel):
     __tablename__ = 'lfun_organization_members'
     __table_args__ = {'comment': '组织部门成员表模型'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True)
-    org_id: Mapped[int] = mapped_column( comment="部门ID",default=0,nullable=True)
+    id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="ID",autoincrement=False)
+    org_id: Mapped[int] = mapped_column(BigInteger, comment="部门ID",default=0,nullable=True)
     # 要求 这里出现的所有人必须在 教师表里有 
-    teacher_id: Mapped[int] = mapped_column( comment="教师ID",default=0,nullable=True)
+    teacher_id: Mapped[int] = mapped_column( BigInteger,comment="教师ID",default=0,nullable=True)
 
     member_name: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="姓名")
 

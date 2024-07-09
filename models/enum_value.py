@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime,BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -17,7 +17,7 @@ class EnumValue(BaseDBModel):
     __tablename__ = 'lfun_enum_value'
     __table_args__ = {'comment': '枚举表模型'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="ID",autoincrement=False)
     enum_name: Mapped[str] = mapped_column(String(60), nullable=True,default='', comment="枚举类型的名称")
     enum_value: Mapped[str] = mapped_column(String(60), nullable=True,default='', comment="枚举的具体值")
     description: Mapped[str] = mapped_column(String(60), nullable=True,default='', comment="枚举值的描述或标签")

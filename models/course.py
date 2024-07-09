@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -12,14 +12,14 @@ class Course(BaseDBModel):
     __tablename__ = 'lfun_course'
     __table_args__ = {'comment': '学科表模型'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="ID",autoincrement=False)
     school_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="教育阶段/学校类别 例如 小学 初中 多个逗号隔开")
     city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城市")
 
     district: Mapped[str] = mapped_column(String(64), nullable=True, comment="",default='')
-    school_id: Mapped[int] = mapped_column( comment="学校ID",nullable=True,default=0)
+    school_id: Mapped[int] = mapped_column( BigInteger,comment="学校ID",nullable=True,default=0)
     course_no: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="学科编码")
-    grade_id: Mapped[int] = mapped_column( comment="年级ID",nullable=True,default=0)
+    grade_id: Mapped[int] = mapped_column(BigInteger, comment="年级ID",nullable=True,default=0)
     course_name: Mapped[str] = mapped_column(String(24), nullable=False, comment="学科名称")
 
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)

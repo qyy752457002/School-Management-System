@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -13,14 +13,14 @@ class Classes(BaseDBModel):
     __tablename__ = 'lfun_classes'
     __table_args__ = {'comment': '班级表模型'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID",autoincrement=True)
-    school_id: Mapped[int] = mapped_column( comment="学校ID")
-    grade_id: Mapped[int] = mapped_column( comment="年级ID",default=0,nullable=True)
+    id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="班级ID",autoincrement=False)
+    school_id: Mapped[int] = mapped_column(BigInteger, comment="学校ID")
+    grade_id: Mapped[int] = mapped_column(BigInteger, comment="年级ID",default=0,nullable=True)
     grade_no: Mapped[str] = mapped_column(String(20), nullable=True,default='', comment="年级编号")
 
     is_att_class: Mapped[bool] = mapped_column(  nullable=True,default=False, comment="是否附设班")
     att_class_type: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="附设班类型")
-    session_id: Mapped[int] = mapped_column( comment="届别ID",default=0,nullable=True)
+    session_id: Mapped[int] = mapped_column(BigInteger, comment="届别ID",default=0,nullable=True)
 
     session_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="届别名称",default='')
 
@@ -30,12 +30,12 @@ class Classes(BaseDBModel):
     class_index: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班级序号")
     year_established: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="建班年份")
     teacher_id_card: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任身份证")
-    teacher_id: Mapped[int] = mapped_column(  nullable=True,default=0, comment="班主任id")
+    teacher_id: Mapped[int] = mapped_column( BigInteger, nullable=True,default=0, comment="班主任id")
     teacher_card_type: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任证件类型")
     teacher_name: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任姓名")
     teacher_phone: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任电话")
     teacher_job_number: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任工号")
-    care_teacher_id: Mapped[int] = mapped_column(  nullable=True,default=0, comment="保育员id")
+    care_teacher_id: Mapped[int] = mapped_column( BigInteger, nullable=True,default=0, comment="保育员id")
 
     care_teacher_id_card: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="保育员身份证")
     care_teacher_card_type: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班主任证件类型")
@@ -45,7 +45,7 @@ class Classes(BaseDBModel):
     education_stage: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="教育阶段")
     school_system: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="学制")
     monitor: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班长")
-    monitor_id: Mapped[int] = mapped_column(  nullable=True,default=0, comment="班长的学生id")
+    monitor_id: Mapped[int] = mapped_column( BigInteger, nullable=True,default=0, comment="班长的学生id")
 
     monitor_student_number: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="班长学号")
     class_type: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="中小学班级类型")

@@ -1,4 +1,7 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from copy import deepcopy
+
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
@@ -10,6 +13,7 @@ from daos.student_session_dao import StudentSessionDao
 from models.classes import Classes
 from rules.enum_value_rule import EnumValueRule
 from rules.teachers_rule import TeachersRule
+from views.common.common_view import convert_snowid_in_model, convert_snowid_to_strings
 from views.models.classes import Classes as ClassesModel
 from views.models.classes import ClassesSearchRes
 from views.models.system import DISTRICT_ENUM_KEY, GRADE_ENUM_KEY, MAJOR_LV3_ENUM_KEY
@@ -79,6 +83,7 @@ class ClassesRule(object):
         classes_db = view_model_to_orm_model(classes, Classes, exclude=["id"],other_mapper={
 
         })
+        classes_db.id = SnowflakeIdGenerator(1, 1).generate_id()
         classes_db = await self.classes_dao.add_classes(classes_db)
         classes = orm_model_to_view_model(classes_db, ClassesModel, exclude=["created_at", 'updated_at'])
         await self.grade_dao.increment_class_number(classes.school_id,classes.grade_id)
@@ -98,6 +103,8 @@ class ClassesRule(object):
         # classes_db = await self.classes_dao.update_classes(classes_db,ctype)
         # 更新不用转换   因为得到的对象不熟全属性
         # classes = orm_model_to_view_model(classes_db, ClassesModel, exclude=[""])
+        classes_db = deepcopy(classes_db)
+        convert_snowid_in_model(classes_db,['id'])
         return classes_db
 
     async def softdelete_classes(self, classes_id):
@@ -131,5 +138,6 @@ class ClassesRule(object):
                     item.grade_type_name = grade_enums[item.grade_type].description
                 else:
                     item.grade_type_name = item.grade_type
+        paging_result = convert_snowid_to_strings(paging_result,["id", "school_id",'grade_id','session_id','teacher_id','care_teacher_id'])
 
         return paging_result

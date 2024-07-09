@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -12,7 +12,7 @@ class SubDbInfo(BaseDBModel):
     __tablename__ = 'lfun_sub_db_info'
     __table_args__ = {'comment': '各学校DB信息表模型'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID",autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="班级ID",autoincrement=False)
     db_name: Mapped[str] = mapped_column(String(255),  nullable=True, comment="数据库名称",default='')
     db_host: Mapped[str] = mapped_column(String(255),  nullable=True, comment="数据库地址",default='')
     db_port: Mapped[str] = mapped_column(String(255),  nullable=True, comment="数据库端口",default='')

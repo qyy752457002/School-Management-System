@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -12,13 +12,13 @@ class Subject(BaseDBModel):
     __tablename__ = 'lfun_subject'
     __table_args__ = {'comment': '课程表模型'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="ID",autoincrement=False)
     subject_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="课程名称=年级+学科")
     subject_alias: Mapped[str] = mapped_column(String(64), nullable=False, comment="课程别名")
     subject_level: Mapped[str] = mapped_column(String(64), nullable=False, comment="课程等级 国家/地方/校本")
     course_name: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="学科名称")
-    grade_id: Mapped[int] = mapped_column( comment="年级ID",default=0,nullable=True)
-    school_id: Mapped[int] = mapped_column( comment="学校ID",nullable=True,default=0)
+    grade_id: Mapped[int] = mapped_column(BigInteger, comment="年级ID",default=0,nullable=True)
+    school_id: Mapped[int] = mapped_column(BigInteger, comment="学校ID",nullable=True,default=0)
     course_no: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="学科编码")
 
     subject_description: Mapped[str] = mapped_column(String(255), nullable=True,default='', comment="课程简介")

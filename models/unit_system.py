@@ -1,4 +1,4 @@
-from sqlalchemy import String, Date, DateTime
+from sqlalchemy import String, Date, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
 from datetime import date, datetime
@@ -12,9 +12,9 @@ class UnitSystem(BaseDBModel):
     __tablename__ = 'lfun_unit_system'
     __table_args__ = {'comment': '单位部署系统的 模型 '}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="",autoincrement=True)
-    school_id: Mapped[int] = mapped_column( primary_key=False, comment="学校ID",nullable=True,default=0)
-    institution_id: Mapped[int] = mapped_column(  comment="行政单位ID 例如区 市教育局",nullable=True,default=0)
+    id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="",autoincrement=False)
+    school_id: Mapped[int] = mapped_column( BigInteger,primary_key=False, comment="学校ID",nullable=True,default=0)
+    institution_id: Mapped[int] = mapped_column(BigInteger,  comment="行政单位ID 例如区 市教育局",nullable=True,default=0)
     unit_url: Mapped[str] = mapped_column(String(255),comment="api地址",nullable=True,default='',)
     remark: Mapped[str] = mapped_column(String(40),comment="",nullable=True,default='')
     created_at: Mapped[datetime] = mapped_column(comment="创建时间",default=datetime.now)
