@@ -62,7 +62,7 @@ class TeacherRetireRule(object):
         teacher_transaction_db = await self.teacher_retire_dao.add_teacher_retire(teacher_transaction_db)
         teacher_transaction = orm_model_to_view_model(teacher_transaction_db, TeacherRetireUpdateModel)
         teacher_transaction_log = OperationRecord(
-            action_target_id=teacher_transaction.teacher_id,
+            action_target_id=int(teacher_transaction.teacher_id),
             target=OperationTarget.TEACHER.value,
             action_type=OperationType.CREATE.value,
             ip="127.0.0.1",
