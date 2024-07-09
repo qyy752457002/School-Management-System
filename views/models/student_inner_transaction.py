@@ -76,8 +76,6 @@ class StudentInnerTransactionSearch(BaseModel):
         _change_list= ["id",'student_id','school_id','class_id']
         for _change in _change_list:
             # if isinstance()
-            if not  isinstance(data, Iterable):
-                continue
             if _change not in data:
                 continue
             if isinstance(data[_change], str):

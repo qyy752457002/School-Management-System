@@ -6,7 +6,7 @@ from datetime import date, datetime
 from models.public_enum import YesOrNo, Gender, IDtype
 from models.student_transaction import AuditAction
 from models.students import  Relationship, Registration,HealthStatus,StudentApprovalAtatus
-from typing import Optional
+from typing import Optional, Iterable
 
 
 class StudentStatus(str, Enum):
@@ -44,6 +44,7 @@ class NewStudents(BaseModel):
     school_id: int|str = Field(0, title="", description="学校id")
     session_id: int|str = Field(0, title="", description="届别id")
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id']
         for _change in _change_list:
@@ -87,6 +88,7 @@ class NewStudentsQuery(BaseModel):
     emporary_borrowing_status: Optional[str] = Query('', title="", description="临时借读")
     edu_number: Optional[str] = Query('', title="", description="学籍号")
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id']
         for _change in _change_list:
@@ -135,6 +137,7 @@ class NewStudentsQueryRe(BaseModel):
     enrollment_date: str|date |None= Field(None, title="入学登记日期", description="")
     grade_name: str|None = Field(None, title="年级名称", description="")
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id']
         for _change in _change_list:
@@ -169,6 +172,7 @@ class StudentsKeyinfo(BaseModel):
     id_number: str = Field(..., title="证件号码", description="证件号码")
     photo: str = Field('', title="照片", description="照片")
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id']
         for _change in _change_list:
@@ -215,6 +219,7 @@ class StudentsKeyinfoDetail(BaseModel):
     loc_area: str = Field("", title="", description="", max_length=50)
     loc_area_pro: str = Field("", title="", description="", max_length=50)
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id']
         for _change in _change_list:
@@ -250,6 +255,7 @@ class StudentsKeyinfoChange(BaseModel):
     photo: str = Field('', title="照片", description="照片")
     approval_status: Optional[str] = Query(None, title="状态", description="状态")
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id']
         for _change in _change_list:
@@ -275,6 +281,7 @@ class StudentsKeyinfoChangeAudit(BaseModel):
     remark: str = Query("", description="审批的备注", min_length=0, max_length=200,
                         example='同意 无误')
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id','apply_id']
         for _change in _change_list:
@@ -383,6 +390,7 @@ class StudentsBaseInfo(BaseModel):
     nationality: str|None = Field("", title="国籍/地区", description="国籍/地区")
     enrollment_method: str|None = Field("", title="就读方式", description="就读方式")
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id','student_base_id','grade_id']
         for _change in _change_list:
@@ -442,6 +450,7 @@ class NewBaseInfoCreate(BaseModel):
     residence_address: str|None = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
     residence_district: str|None= Field("", title="户口所在地new", description="户口所在地new")
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id']
         for _change in _change_list:
@@ -491,6 +500,7 @@ class NewBaseInfoUpdate(BaseModel):
     nationality: str |None= Field("", title="国籍/地区", description="国籍/地区")
     enrollment_method: str |None= Field("", title="就读方式", description="就读方式")
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id','student_base_id']
         for _change in _change_list:
@@ -542,6 +552,7 @@ class StudentsFamilyInfo(BaseModel):
     workplace: str = Field("", title="工作单位", description="工作单位")
     family_member_occupation: str = Field("", title="家庭成员职业", description="家庭成员职业")
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id','student_family_info_id']
         for _change in _change_list:
@@ -593,6 +604,7 @@ class StudentsFamilyInfoCreate(BaseModel):
     workplace: str = Field("", title="工作单位", description="工作单位")
     family_member_occupation: str = Field("", title="家庭成员职业", description="家庭成员职业")
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id']
         for _change in _change_list:
@@ -643,6 +655,7 @@ class StudentsUpdateFamilyInfo(BaseModel):
     workplace: str = Field("", title="工作单位", description="工作单位")
     family_member_occupation: str = Field("", title="家庭成员职业", description="家庭成员职业")
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id','student_family_info_id']
         for _change in _change_list:
@@ -676,6 +689,7 @@ class GraduationStudents(BaseModel):
     class_id: int|str = Field(0, title="", description="班级")
     class_name: str = Field('', title="", description="班级名称")
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id']
         for _change in _change_list:
@@ -699,6 +713,7 @@ class NewStudentsFlowOut(BaseModel):
     flow_out_time: str = Query(..., description="流出时间", min_length=1, max_length=20, examples=["2020-10-10"]),
     flow_out_reason: str = Query('', description="流出原因", min_length=1, max_length=20, examples=["家庭搬迁"]),
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id']
         for _change in _change_list:
@@ -720,9 +735,13 @@ class StudentSession(BaseModel):
     session_status: str = Query(..., description="届别状态", min_length=1, max_length=20, examples=["开"])
     year: str|None = Query(None, description="年份", min_length=1, max_length=20, examples=["2024"])
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id']
         for _change in _change_list:
+            # if not  isinstance(data, Iterable):
+            #     pass
+                # continue
             if _change not in data:
                 continue
             if isinstance(data[_change], str):
@@ -761,6 +780,7 @@ class NewStudentTransferIn(BaseModel):
     residence_district: str = Field('', title="户口所在行政区", description="户口所在行政区")
     student_id: int |str= Query(0, title="", description="id", example='1'),
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id']
         for _change in _change_list:
@@ -781,6 +801,7 @@ class StudentGraduation(BaseModel):
     credential_notes: str = Query('', description="制证备注",  max_length=200, examples=[""])
     graduation_photo: str = Query('', description="毕业照",   max_length=200, examples=[""])
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id']
         for _change in _change_list:
