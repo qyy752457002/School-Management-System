@@ -216,7 +216,7 @@ class NewsStudentsInfoView(BaseView):
         res3 = await self.students_base_info_rule.update_students_base_info( StudentsBaseInfo(student_id=student_id,class_id=class_id,school_id=res_div.school_id,grade_id=res_div.grade_id))
 
         return res
-    # 摇号分班
+    # 摇号分班  未使用
     async def patch_newstudent_lottery_classdivision(self,
                                                      background_tasks: BackgroundTasks,
 
