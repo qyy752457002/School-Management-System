@@ -23,6 +23,7 @@ class GradeRule(object):
         grade_db = await self.grade_dao.get_grade_by_id(grade_id)
         # 可选 , exclude=[""]
         grade = orm_model_to_view_model(grade_db, GradeModel)
+        convert_snowid_in_model(grade, ["id", "school_id",])
         return grade
 
     async def get_grade_by_grade_name(self, grade_name):
@@ -77,6 +78,7 @@ class GradeRule(object):
         print(need_update_list,222,grade)
         grade_db = await self.grade_dao.update_grade_byargs(grade,*need_update_list)
         grade = orm_model_to_view_model(grade_db, GradeModel, exclude=[""])
+        convert_snowid_in_model(grade, ["id", "school_id",])
         return grade
 
     async def delete_grade(self, grade_id):
@@ -87,6 +89,7 @@ class GradeRule(object):
 
         grade_db = await self.grade_dao.delete_grade(exists_grade)
         grade = orm_model_to_view_model(grade_db, GradeModel, exclude=[""])
+        convert_snowid_in_model(grade, ["id", "school_id",])
         return grade
 
     async def softdelete_grade(self, grade_id):
