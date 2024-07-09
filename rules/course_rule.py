@@ -1,6 +1,7 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 from typing import List
 
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -9,6 +10,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from business_exceptions.course import CourseNotFoundError, CourseAlreadyExistError
 from daos.course_dao import CourseDAO
 from models.course import Course
+from views.common.common_view import convert_snowid_to_strings
 from views.models.course import Course  as CourseModel
 from views.models.extend_params import ExtendParams
 
@@ -18,6 +20,7 @@ class CourseRule(object):
     course_dao: CourseDAO
 
     async def get_course_by_id(self, course_id):
+        course_id=int(course_id)
         course_db = await self.course_dao.get_course_by_id(course_id)
         # 可选 , exclude=[""]
         course = orm_model_to_view_model(course_db, CourseModel)
@@ -34,6 +37,7 @@ class CourseRule(object):
         if exists_course:
             raise CourseAlreadyExistError()
         course_db = view_model_to_orm_model(course, Course,    exclude=["id"])
+        course_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
         course_db = await self.course_dao.add_course(course_db)
         course = orm_model_to_view_model(course_db, CourseModel, exclude=["created_at",'updated_at'])
@@ -100,6 +104,7 @@ class CourseRule(object):
                                                                                 )
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, CourseModel)
+        convert_snowid_to_strings(paging_result, ["id", "school_id",'grade_id',])
         return paging_result
 
 
