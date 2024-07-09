@@ -23,7 +23,7 @@ class Organization(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def check_id_before(self, data: dict):
-        _change_list= ["id", "school_id",'parent_id',]
+        _change_list= ["id", "school_id",'parent_id','teacher_id','org_id']
         for _change in _change_list:
             if _change not in data:
                 continue

@@ -64,6 +64,7 @@ class OrganizationMembersRule(object):
         organization = orm_model_to_view_model(organization_members_db, Organization, exclude=["created_at",'updated_at'])
         org_rule = get_injector(OrganizationRule)
         await org_rule.increment_organization_member_cnt(organization_members_db.org_id)
+        convert_snowid_in_model(organization, ["id", "school_id",'parent_id','teacher_id','org_id'])
 
         return organization
 
@@ -74,7 +75,8 @@ class OrganizationMembersRule(object):
             exists_organization_members = await self.organization_members_dao.get_organization_members_by_id(organization.id)
         else:
             exists_organization_members = await self.organization_members_dao.get_organization_members_by_param(organization)
-            organization.id = exists_organization_members.id
+            if exists_organization_members:
+                organization.id = exists_organization_members.id
 
         if not exists_organization_members:
             raise  OrganizationMemberNotFoundError()
@@ -88,6 +90,8 @@ class OrganizationMembersRule(object):
 
         organization_members_db = await self.organization_members_dao.update_organization_members(organization_members_db,*need_update_list)
         print(organization_members_db,999)
+        convert_snowid_in_model(organization_members_db, ["id", "school_id",'parent_id','teacher_id','org_id'])
+
         return organization_members_db
 
     async def update_organization_members_by_teacher_id(self, organization: OrganizationMembers,):
@@ -112,6 +116,8 @@ class OrganizationMembersRule(object):
             raise OrganizationMemberNotFoundError()
         organization_members_db = await self.organization_members_dao.delete_organization_members(exists_organization)
         organization = orm_model_to_view_model(organization_members_db, Organization, exclude=[""],)
+        convert_snowid_in_model(organization, ["id", "school_id",'parent_id','teacher_id','org_id'])
+
         return organization
 
     async def softdelete_organization_members(self, organization_members_id):
@@ -140,7 +146,7 @@ class OrganizationMembersRule(object):
         if not parent_id_lv2:
             # parent_id_lv2= [int(parent_id)]
             pass
-        if isinstance(org_ids, str):
+        if org_ids and  isinstance(org_ids, str):
             org_ids=org_ids.split(',')
             int_list = [int(i) for i in org_ids]
             parent_id_lv2= parent_id_lv2+int_list
@@ -157,7 +163,7 @@ class OrganizationMembersRule(object):
             # "teacher_identity": "updated_at",
             "teacher_id_number": "card_number",
         })
-        convert_snowid_to_strings(paging_result, ["id", "org_id",'teacher_id',])
+        convert_snowid_to_strings(paging_result, ["id", "school_id",'parent_id','teacher_id','org_id'])
         return paging_result
 
 
