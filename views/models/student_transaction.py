@@ -36,28 +36,28 @@ class StudentTransactionStatus(str, Enum):
 
 
 class StudentEduInfo(BaseModel):
-    student_id: int|str = Query(..., description="学生id",title='学生id', min_length=1, max_length=20, examples=["1"], example="1"),
-    province_id: str = Query('', description="省份", min_length=1, max_length=20, examples=["13000"], example="13000"),
-    city_id: str = Query('', description="市", min_length=1, max_length=20, examples=["142323"]),
-    area_id: str = Query('', description="区", min_length=1, max_length=20, examples=["1522000"]),
-    district_id: str = Query('', description="区县", min_length=1, max_length=20, examples=["1622222"]),
-    transfer_in_type: str = Query("", description="转入类型", min_length=1, max_length=20, examples=["指定日期转入"]),
+    student_id: int|str|None = Query(..., description="学生id",title='学生id', min_length=1, max_length=20, examples=["1"], example="1"),
+    province_id: str |None= Query('', description="省份", min_length=1, max_length=20, examples=["13000"], example="13000"),
+    city_id: str|None = Query('', description="市", min_length=1, max_length=20, examples=["142323"]),
+    area_id: str|None = Query('', description="区", min_length=1, max_length=20, examples=["1522000"]),
+    district_id: str |None= Query('', description="区县", min_length=1, max_length=20, examples=["1622222"]),
+    transfer_in_type: str |None= Query("", description="转入类型", min_length=1, max_length=20, examples=["指定日期转入"]),
     edu_number: str|None = Query("", description="国家学籍号码", min_length=1, max_length=20, examples=["DF23321312"]),
-    school_id: int|str = Query(..., title="", description="学校ID", examples=["102"])
-    school_name: str = Query('', title="", description="学校名称", examples=["XXxiaoxue"])
-    session: str = Query('', title="", description="届别", examples=["2003"])
-    attached_class: str = Query("", title="", description="附设班", examples=["3班"])
-    grade_id: str|int = Query(..., title="", description="年级ID", examples=["102"])
-    grade_name: str = Query('', title="", description="年级", examples=["2年级"])
-    class_id: str|int = Query(..., title="", description="班级id", examples=["125"])
-    classes: str = Query('', title="", description="班级", examples=["二2班"])
-    major_id: str|int = Query(0, title="", description="专业", examples=["农业"])
-    transfer_time: str = Query("", description="转学时间", min_length=1, max_length=20, examples=["2020-10-10"]),
-    transfer_reason: str = Query("", description="转学原因", min_length=1, max_length=20, examples=["家庭搬迁..."]),
-    status: str = Query('', description="", min_length=1, max_length=20, examples=["..."]),
-    doc_upload: str = Field('', description=" 附件", examples=[''])
-    id: int|str = Query(0, description="id", examples=["1"], example="1"),
-    relation_id: int |str= Query(0, description="关联id", examples=["1"], example="1"),
+    school_id: int|str|None = Query(..., title="", description="学校ID", examples=["102"])
+    school_name: str|None = Query('', title="", description="学校名称", examples=["XXxiaoxue"])
+    session: str|None = Query('', title="", description="届别", examples=["2003"])
+    attached_class: str |None= Query("", title="", description="附设班", examples=["3班"])
+    grade_id: str|int|None = Query(..., title="", description="年级ID", examples=["102"])
+    grade_name: str |None= Query('', title="", description="年级", examples=["2年级"])
+    class_id: str|int |None= Query(..., title="", description="班级id", examples=["125"])
+    classes: str|None = Query('', title="", description="班级", examples=["二2班"])
+    major_id: str|int|None = Query(0, title="", description="专业", examples=["农业"])
+    transfer_time: str|None = Query("", description="转学时间", min_length=1, max_length=20, examples=["2020-10-10"]),
+    transfer_reason: str|None = Query("", description="转学原因", min_length=1, max_length=20, examples=["家庭搬迁..."]),
+    status: str|None = Query('', description="", min_length=1, max_length=20, examples=["..."]),
+    doc_upload: str |None= Field('', description=" 附件", examples=[''])
+    id: int|str|None = Query(0, description="id", examples=["1"], example="1"),
+    relation_id: int |str|None= Query(0, description="关联id", examples=["1"], example="1"),
     remark: str|None = Query('', title="", description="", examples=["备注"])
     process_instance_id: int|None|str = Field(0, title="", description="", examples=['1'])
     @model_validator(mode="before")
@@ -75,7 +75,6 @@ class StudentEduInfo(BaseModel):
             else:
                 pass
         return data
-
 
 class StudentEduInfoOut(BaseModel):
     student_id: int|str = Query(..., description="学生id", min_length=1, max_length=20, examples=["1"], example="1"),

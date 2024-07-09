@@ -67,8 +67,11 @@ class StudentTransactionRule(object):
                 baseinfo2[0][key] = ''
             # delattr(graduation_student, key)
         print('信息',baseinfo2, type(baseinfo2[0]))
+        if isinstance(baseinfo2[0], dict):
+            baseinfo  =  StudentEduInfo(**baseinfo2[0])
+        else:
 
-        baseinfo = orm_model_to_view_model(baseinfo2[0], StudentEduInfo, exclude=[""],
+            baseinfo = orm_model_to_view_model(baseinfo2[0], StudentEduInfo, exclude=[""],
                                            other_mapper={"major_name": "major_name", })
         # baseinfo= baseinfo2[0]
 
