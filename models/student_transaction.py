@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -61,7 +61,7 @@ doc_upload: str = Field('',   description=" 附件",examples=[''])
     __tablename__ = 'lfun_student_transaction'
     __table_args__ = {'comment': '转学休学入学毕业申请表'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID", autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="班级ID", autoincrement=False)
     school_name: Mapped[str] = mapped_column(String(255), nullable=True, comment="学校名称", default='')
     grade_name: Mapped[str] = mapped_column(String(255), nullable=True, comment="年级", default='')
     classes: Mapped[str] = mapped_column(String(255), nullable=True, comment="班级", default='')
@@ -70,15 +70,15 @@ doc_upload: str = Field('',   description=" 附件",examples=[''])
     doc_upload: Mapped[str] = mapped_column(String(255), nullable=True, comment="附件", default='')
     process_instance_id: Mapped[int] = mapped_column(  nullable=True, comment="流程ID", default=0)
 
-    student_id: Mapped[int] = mapped_column(nullable=True, comment="学生ID", default=0)
+    student_id: Mapped[int] = mapped_column(BigInteger,nullable=True, comment="学生ID", default=0)
     student_no: Mapped[str] = mapped_column(String(255), nullable=True, comment="学号", default='')
     student_name: Mapped[str] = mapped_column(String(255), nullable=True, comment="学生姓名", default='')
 
     current_org: Mapped[str] = mapped_column(String(255), nullable=True, comment="当前机构", default='')
     apply_user: Mapped[str] = mapped_column(String(255), nullable=True, comment="申请人", default='')
     apply_time: Mapped[str] = mapped_column(String(255), nullable=True, comment="申请时间", default='')
-    school_id: Mapped[int] = mapped_column(nullable=True, comment="学校ID", default=0)
-    relation_id: Mapped[int] = mapped_column(nullable=True, comment="关联学校ID", default=0)
+    school_id: Mapped[int] = mapped_column(BigInteger,nullable=True, comment="学校ID", default=0)
+    relation_id: Mapped[int] = mapped_column(BigInteger,nullable=True, comment="关联学校ID", default=0)
 
 
     transaction_type: Mapped[str] = mapped_column(String(30), nullable=True, comment="异动类型", default='')

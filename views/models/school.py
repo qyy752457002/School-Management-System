@@ -7,8 +7,8 @@ from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFou
 
 
 class School(BaseModel):
-    id:int= Query(None, title="", description="学校id", example='1')
-    planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
+    id:int|str= Query(None, title="", description="学校id", example='1')
+    planning_school_id: int |str= Field(None, title="", description="规划校id",examples=['1'])
     school_name: str = Field(..., title="学校名称", description="学校名称",examples=['XX小学'])
     school_no: str = Field(..., title="学校编号", description="学校编号",examples=['SC2032633'])
     school_operation_license_number: str = Field(..., title=" Description", description="办学许可证号",examples=['EDU2024012569'])
@@ -66,7 +66,7 @@ class School(BaseModel):
 
 # 学校的 基本信息模型   视图的额模型是按需提供的
 class SchoolBaseInfoOptional(BaseModel):
-    id:int= Query(0, title="", description="学校id", example='1')
+    id:int|str= Query(0, title="", description="学校id", example='1')
     school_name: str = Field( '', title="学校名称", description="1-20字符",examples=['XX小学'])
     school_short_name: str = Field('', title="", description="园所简称",examples=['MXXX'])
     school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
@@ -111,7 +111,7 @@ class SchoolBaseInfoOptional(BaseModel):
 
 # 学校的 基本信息模型   视图的额模型是按需提供的
 class SchoolBaseInfo(BaseModel):
-    id:int= Query(..., title="", description="学校id", example='1')
+    id:int|str= Query(..., title="", description="学校id", example='1')
     school_name: str = Field(..., title="学校名称", description="1-20字符",examples=['XX小学'])
     school_short_name: str = Field('', title="", description="园所简称",examples=['MXXX'])
     school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
@@ -155,10 +155,10 @@ class SchoolBaseInfo(BaseModel):
 
 
 class SchoolKeyInfo(BaseModel):
-    id:int= Query(None, title="", description="学校id", example='1')
+    id:int|str= Query(None, title="", description="学校id", example='1')
 
     school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633')
-    planning_school_id: int = Field(None, title="", description="规划校id",examples=['1'])
+    planning_school_id: int|str = Field(None, title="", description="规划校id",examples=['1'])
     borough:str=Query('', title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
     block: str = Query('', title=" Author", description="地域管辖区",examples=['铁西区'])
     school_name: str = Query('', title="学校名称", description="园所名称",examples=['XX小学'])
@@ -239,7 +239,7 @@ class SchoolPageSearch(BaseModel):
     school_name: str|None = Query("", title=" ", description="", ),
     province: str |None= Query("", title=" ", description="", ),
     city: str|None = Query("", title=" ", description="", ),
-    planning_school_id: int|None = Query(0, title=" ", description="", ),
+    planning_school_id: int|str|None = Query(0, title=" ", description="", ),
     @model_validator(mode="before")
     @classmethod
     def check_id_before(self, data: dict):

@@ -131,7 +131,7 @@ def convert_dates_to_strings(stuinfoadddict):
         # if isinstance(value,InstanceState):
         #     stuinfoadddict[key] = value.value
     return stuinfoadddict
-def convert_snowid_to_strings(paging_result):
+def convert_snowid_to_strings(paging_result,extra_colums=None):
     """
     将传入的 items 中每个元素的 id 属性转换为字符串类型。
 
@@ -139,7 +139,7 @@ def convert_snowid_to_strings(paging_result):
     """
     items=paging_result.items
     for item in items:
-        convert_snowid_in_model(item)
+        convert_snowid_in_model(item,extra_colums)
 def convert_snowid_in_model(item,extra_colums=None):
     """
     将传入的 items 中每个元素的 id 属性转换为字符串类型。

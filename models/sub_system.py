@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -17,7 +17,7 @@ class SubSystem(BaseDBModel):
     __tablename__ = 'lfun_sub_system'
     __table_args__ = {'comment': '子系统表模型'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID",autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="班级ID",autoincrement=False)
     system_name: Mapped[str] = mapped_column(String(255),  nullable=True, comment="系统名称",default='')
     system_no: Mapped[str] = mapped_column(String(255),  nullable=True, comment="系统编号",default='')
     system_url: Mapped[str] = mapped_column(String(255),  nullable=True, comment="系统url",default='')

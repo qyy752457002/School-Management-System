@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -12,7 +12,7 @@ class CourseSchoolNature(BaseDBModel):
     __tablename__ = 'lfun_course_school_nature'
     __table_args__ = {'comment': '课程和学校关系表模型'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="ID",autoincrement=False)
     course_no: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="学科编码")
     school_nature: Mapped[str] = mapped_column(String(40), nullable=True,default='', comment="学校性质 2级或者3级")
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)

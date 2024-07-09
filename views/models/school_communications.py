@@ -3,8 +3,8 @@ from pydantic import BaseModel, Field, model_validator
 
 
 class SchoolCommunications(BaseModel):
-    id:int= Query(None, title="", description="", example='1'),
-    school_id: int = Field(0, title="", description="学校id",examples=['1'])
+    id:int|str= Query(None, title="", description="", example='1'),
+    school_id: int|str = Field(0, title="", description="学校id",examples=['1'])
 
     postal_code: str = Field(None, title="", description="邮政编码",examples=['472566'])
     fax_number: str = Field(None, title="", description="传真电话",examples=['020265656'])

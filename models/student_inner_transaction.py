@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -21,9 +21,9 @@ class StudentInnerTransaction(BaseDBModel):
     __tablename__ = 'lfun_student_inner_transaction'
     __table_args__ = {'comment': '学生校内异动表'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True)
-    student_id: Mapped[int] = mapped_column(nullable=True , comment="学生ID",default=0)  #
-    school_id: Mapped[int] = mapped_column(nullable=True, comment="学校ID", default=0)
+    id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="ID",autoincrement=False)
+    student_id: Mapped[int] = mapped_column(BigInteger,nullable=True , comment="学生ID",default=0)  #
+    school_id: Mapped[int] = mapped_column(BigInteger,nullable=True, comment="学校ID", default=0)
     class_id: Mapped[str] = mapped_column(String(30), nullable=True, comment="班级id", default='')
 
     transaction_type: Mapped[str] = mapped_column(String(255),  nullable=True, comment="异动类型",default='')
