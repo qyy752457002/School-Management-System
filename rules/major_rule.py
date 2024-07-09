@@ -1,4 +1,5 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -7,6 +8,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from business_exceptions.major import MajorAlreadyExistError
 from daos.major_dao import MajorDAO
 from models.major import Major
+from views.common.common_view import convert_snowid_to_strings
 from views.models.majors import Majors  as MajorModel
 from business_exceptions.common import BizDataEmptyError
 
@@ -32,6 +34,7 @@ class MajorRule(object):
         if exists_major:
             raise Exception(f"专业信息{major.major_name}已存在")
         major_db = view_model_to_orm_model(major, Major,    exclude=["id"])
+        major_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
         major_db = await self.major_dao.add_major(major_db)
         major = orm_model_to_view_model(major_db, MajorModel, exclude=["created_at",'updated_at'])
@@ -51,6 +54,8 @@ class MajorRule(object):
         for major in major_list:
             major_db= view_model_to_orm_model(major, Major, exclude=["id"],other_mapper=original_dict_map_view_orm)
             major_db.school_id=school_id
+            major_db.id = SnowflakeIdGenerator(1, 1).generate_id()
+
             res = await self.major_dao.add_major(major_db)
 
             # print(major_db.major_list)
@@ -107,6 +112,7 @@ class MajorRule(object):
         original_dict_map_view_orm ={"major_no":"major_id"}
         flipped_dict = {v: k for k, v in original_dict_map_view_orm.items()}
         paging_result = PaginatedResponse.from_paging(paging, MajorModel ,other_mapper= flipped_dict)
+        convert_snowid_to_strings(paging_result, ["id", "school_id",])
         return paging_result
 
     async def query_major_with_page_param(self, page_request: PageRequest, school_id ):
@@ -117,6 +123,8 @@ class MajorRule(object):
         original_dict_map_view_orm ={"major_no":"major_id"}
         flipped_dict = {v: k for k, v in original_dict_map_view_orm.items()}
         paging_result = PaginatedResponse.from_paging(paging, MajorModel ,other_mapper= flipped_dict)
+        convert_snowid_to_strings(paging_result, ["id", "school_id",])
+
         return paging_result
 
 
