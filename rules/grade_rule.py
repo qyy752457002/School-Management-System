@@ -58,7 +58,7 @@ class GradeRule(object):
 
 
                 await self.grade_dao.add_grade(grade_db)
-
+        convert_snowid_in_model(grade_res, ["id", "school_id",])
         return grade_res
 
     async def update_grade(self, grade):
