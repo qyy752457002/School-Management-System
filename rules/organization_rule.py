@@ -58,6 +58,7 @@ class OrganizationRule(object):
 
         organization_db = await self.organization_dao.add_organization(organization_db)
         organization = orm_model_to_view_model(organization_db, Organization, exclude=["created_at",'updated_at'])
+        convert_snowid_in_model(organization, ["id", "school_id",'parent_id',])
         return organization
 
     async def update_organization(self, organization,):
@@ -75,6 +76,8 @@ class OrganizationRule(object):
 
         organization_db = await self.organization_dao.update_organization(organization_db,*need_update_list)
         print(organization_db,999)
+        convert_snowid_in_model(organization_db, ["id", "school_id",'parent_id',])
+
         return organization_db
 
     async def update_organization_byargs(self, organization,ctype=1):
@@ -112,6 +115,8 @@ class OrganizationRule(object):
             await self.organization_dao.delete_organization_by_ids(parent_id_lv3+parent_id_lv2)
             # organization_db = await self.organization_dao.softdelete_organization(exists_organization)
             pass
+        convert_snowid_in_model(organization, ["id", "school_id",'parent_id',])
+
         return organization
 
     async def softdelete_organization(self, organization_id):
