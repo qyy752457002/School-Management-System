@@ -61,6 +61,7 @@ class StudentEduInfo(BaseModel):
     remark: str|None = Query('', title="", description="", examples=["备注"])
     process_instance_id: int|None|str = Field(0, title="", description="", examples=['1'])
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id','relation_id','process_instance_id','in_school_id','grade_id','transferin_audit_id']
         for _change in _change_list:
@@ -104,6 +105,7 @@ class StudentEduInfoOut(BaseModel):
     edu_number: str|None = Query("", description="国家学籍号码", min_length=1, max_length=30, examples=["DF23321312"])
     process_instance_id: int|str = Field(0, title="", description="", examples=['1'])
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id','relation_id','process_instance_id','in_school_id','grade_id','transferin_audit_id']
         for _change in _change_list:
@@ -125,6 +127,7 @@ class StudentTransaction(BaseModel):
     process_instance_id: int|str = Field(0, title="", description="", examples=['1'])
     status: str = Field('', title="", description="状态", examples=[''])
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id','relation_id','process_instance_id','in_school_id','grade_id','transferin_audit_id']
         for _change in _change_list:
@@ -157,6 +160,7 @@ class StudentTransactionFlow(BaseModel):
     remark: str = Field('', title="", description="备注", examples=[''])
     student_id: int |str= Field(0, title="", description="学生ID", examples=['1'])
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id','relation_id','process_instance_id','in_school_id','grade_id','transferin_audit_id']
         for _change in _change_list:
@@ -179,6 +183,7 @@ class StudentTransactionAudit(BaseModel):
     remark: str = Query("", description="审批的备注", min_length=0, max_length=200,
                         example='同意 无误')
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id','relation_id','process_instance_id','in_school_id','grade_id','transferin_audit_id']
         for _change in _change_list:

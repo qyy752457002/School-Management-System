@@ -72,6 +72,7 @@ class StudentInnerTransactionSearch(BaseModel):
     edu_number: str = Query('', title="", description="学籍号码")
     class_id: int |str = Query( 0, title="", description="班级", examples=["二2班"])
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id']
         for _change in _change_list:
@@ -92,6 +93,7 @@ class StudentInnerTransactionAudit(BaseModel):
     transaction_id: int|str = Query(..., description="申请id", example='2')
     transaction_audit_action: AuditAction = Query(..., description="审批的操作")
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','transaction_id']
         for _change in _change_list:

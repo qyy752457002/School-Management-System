@@ -24,6 +24,7 @@ class Subject(BaseModel):
     textbook_code: str = Field(None, title="", description="教材编码",examples=['YU20329996'])
     reference_book: str = Field(None, title="", description="参考书目",examples=['<语文 初级>'])
     @model_validator(mode="before")
+    @classmethod
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id','relation_id','process_instance_id','in_school_id','grade_id','transferin_audit_id']
         for _change in _change_list:
