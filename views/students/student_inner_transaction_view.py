@@ -46,7 +46,7 @@ class StudentInnerTransactionView(BaseView):
 
     # 异动 撤回
     async def patch_student_inner_transaction_cancel(self,
-                                       transaction_id: int = Query(..., description="异动id", example='2')
+                                       transaction_id: int|str = Query(..., description="异动id", example='2')
                                        ):
         # todo 校验是否本人或者老师
 

@@ -33,7 +33,7 @@ class SubjectView(BaseView):
     async def page(self,
                    request:Request,
                    page_request=Depends(PageRequest),
-                   school_id: int = Query(0, title="学校ID", description="学校ID", examples=[1]),
+                   school_id: int |str= Query(0, title="学校ID", description="学校ID", examples=[1]),
                    subject_name: str = Query('', title=" ", description=" ", examples=[''])
                    ):
         print(page_request)
@@ -44,7 +44,7 @@ class SubjectView(BaseView):
 
     # 删除
     async def delete(self,
-                     id: int = Query(0, title="", description="", examples=[1]),
+                     id: int|str = Query(0, title="", description="", examples=[1]),
                        ):
         res = await self.subject_rule.delete_subject(id)
 

@@ -244,8 +244,8 @@ class NewsStudentsInfoView(BaseView):
     async def patch_newstudent_lottery_classdivision(self,
                                                      background_tasks: BackgroundTasks,
 
-                                             school_id: int  = Query(..., title="", description="学校ID",),
-                                             grade_id: int  = Query(..., title="", description="年级ID",),
+                                             school_id: int |str = Query(..., title="", description="学校ID",),
+                                             grade_id: int |str = Query(..., title="", description="年级ID",),
 
                                              ):
         """
