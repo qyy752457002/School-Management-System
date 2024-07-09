@@ -1,5 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
@@ -16,6 +17,7 @@ from daos.organization_members_dao import OrganizationMembersDAO
 # from models.organization import Campus
 from rules.enum_value_rule import EnumValueRule
 from rules.organization_rule import OrganizationRule
+from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
 from views.models.organization import Organization, OrganizationMembers, OrganizationMembersSearchRes
 # from views.models.organization import Campus as Organization
 
@@ -56,6 +58,7 @@ class OrganizationMembersRule(object):
         # school_db.status =  PlanningSchoolStatus.DRAFT.value
         organization_members_db.created_uid = 0
         organization_members_db.updated_uid = 0
+        organization_members_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
         organization_members_db = await self.organization_members_dao.add_organization_members(organization_members_db)
         organization = orm_model_to_view_model(organization_members_db, Organization, exclude=["created_at",'updated_at'])
@@ -154,6 +157,7 @@ class OrganizationMembersRule(object):
             # "teacher_identity": "updated_at",
             "teacher_id_number": "card_number",
         })
+        convert_snowid_to_strings(paging_result, ["id", "org_id",'teacher_id',])
         return paging_result
 
 
@@ -185,16 +189,16 @@ class OrganizationMembersRule(object):
         return organization_members_db
 
 
-
     async def query_organization_members(self,parent_id,):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(OrganizationModel).where(OrganizationModel.parent_id == parent_id  ))
+        result = await session.execute(select(OrganizationModel).where(OrganizationModel.parent_id == int(parent_id)  ))
         res= result.scalars().all()
 
         lst = []
         for row in res:
             planning_school = orm_model_to_view_model(row, Organization)
+            convert_snowid_in_model(planning_school)
 
             lst.append(planning_school)
         return lst

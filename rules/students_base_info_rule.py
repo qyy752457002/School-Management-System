@@ -1,3 +1,4 @@
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
@@ -9,7 +10,7 @@ from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.student_session import StudentSessionstatus
 from models.students_base_info import StudentBaseInfo
-from views.common.common_view import page_none_deal
+from views.common.common_view import page_none_deal, convert_snowid_to_strings
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
 from views.models.students import NewBaseInfoCreate,NewBaseInfoUpdate,StudentsBaseInfo
 from views.models.students import StudentsBaseInfo as StudentsBaseInfoModel
@@ -77,6 +78,7 @@ class StudentsBaseInfoRule(object):
             pass
         students_base_info_db.session_id = res.session_id
         students_base_info_db.session= res.session_name
+        students_base_info_db.student_base_id = SnowflakeIdGenerator(1, 1).generate_id()
 
 
 
@@ -128,6 +130,7 @@ class StudentsBaseInfoRule(object):
         paging = await self.students_base_info_dao.query_students_with_page(query_model, page_request)
 
         paging_result = PaginatedResponse.from_paging(page_none_deal(paging), NewStudentsQueryRe)
+        convert_snowid_to_strings(paging_result, ["id",'student_id','school_id','class_id','session_id'])
         return paging_result
 
     async def get_students_base_info_count(self):

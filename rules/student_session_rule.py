@@ -1,8 +1,10 @@
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.student_session_dao import StudentSessionDao
 from models.student_session import StudentSession
+from views.common.common_view import convert_snowid_to_strings
 from views.models.students import StudentSession as StudentSessionModel
 
 
@@ -23,6 +25,7 @@ class StudentSessionRule(object):
         新增类别
         """
         session_db = view_model_to_orm_model(session, StudentSession, exclude=["session_id"])
+        session_db.session_id = SnowflakeIdGenerator(1, 1).generate_id()
         session_db = await self.student_session_dao.add_student_session(session_db)
         session = orm_model_to_view_model(session_db, StudentSessionModel, exclude=[""])
         return session
@@ -73,4 +76,5 @@ class StudentSessionRule(object):
         paging = await self.student_session_dao.query_session_with_page(  page_request, status , session_name,session_alias)
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, StudentSessionModel)
+        convert_snowid_to_strings(paging_result, ["id",'student_id','school_id','class_id','session_id'])
         return paging_result

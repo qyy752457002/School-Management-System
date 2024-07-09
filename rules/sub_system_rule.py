@@ -1,10 +1,12 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.sub_system_dao import SubSystemDAO
 from models.sub_system import SubSystem
+from views.common.common_view import convert_snowid_to_strings
 from views.models.sub_system import SubSystem as SubSystemModel
 # from views.models.sub_system import SubSystemSearchRes
 
@@ -24,6 +26,7 @@ class SubSystemRule(object):
         if exists_sub_system:
             raise Exception(f"系统{sub_system.system_name}已存在")
         sub_system_db = view_model_to_orm_model(sub_system, SubSystem, exclude=["id"])
+        sub_system_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
         sub_system_db = await self.sub_system_dao.add_subsystem(sub_system_db)
         sub_system = orm_model_to_view_model(sub_system_db, SubSystemModel, exclude=["created_at", 'updated_at'])
@@ -61,4 +64,5 @@ class SubSystemRule(object):
         # 字段映射的示例写法   , {"hash_password": "password"} SubSystemSearchRes
         # print(paging)
         paging_result = PaginatedResponse.from_paging(paging, SubSystemModel)
+        convert_snowid_to_strings(paging_result, ["id", "org_id",'teacher_id',])
         return paging_result

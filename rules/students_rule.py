@@ -9,6 +9,7 @@ from mini_framework.data.tasks.excel_tasks import ExcelWriter
 from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.storage.view_model import FileStorageModel
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
@@ -116,7 +117,7 @@ class StudentsRule(object):
         if students.enrollment_number:
             if await self.students_dao.get_students_by_param(enrollment_number=students.enrollment_number,is_deleted=False):
                 raise EnrollNumberError()
-
+        students_db.student_id = SnowflakeIdGenerator(1, 1).generate_id()
         students_db = await self.students_dao.add_students(students_db)
         print(students_db)
         students = orm_model_to_view_model(students_db, StudentsKeyinfoModel, exclude=[""])
@@ -175,6 +176,8 @@ class StudentsRule(object):
 
 
         # print(students_db)
+        students_db.student_id = SnowflakeIdGenerator(1, 1).generate_id()
+
         students_db = await self.students_dao.add_students(students_db)
         students = orm_model_to_view_model(students_db, NewStudentTransferIn, exclude=[""],other_mapper={"id": "student_id"})
         return students

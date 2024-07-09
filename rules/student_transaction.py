@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 from fastapi import Query
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.utils.http import HTTPRequest
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -20,7 +21,7 @@ from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.student_transaction import StudentTransaction, TransactionDirection
 from models.students import StudentApprovalAtatus
-from views.common.common_view import workflow_service_config
+from views.common.common_view import workflow_service_config, convert_snowid_to_strings, convert_snowid_in_model
 from views.models.student_transaction import StudentEduInfo as StudentTransactionModel, StudentEduInfo, \
     StudentEduInfoOut, StudentTransactionStatus
 from views.models.students import StudentsBaseInfo
@@ -135,7 +136,7 @@ class StudentTransactionRule(object):
             if classinfo:
                 student_transaction_db.classes = classinfo.class_name
 
-
+        student_transaction_db.id = SnowflakeIdGenerator(1, 1).generate_id()
         student_transaction_db = await self.student_transaction_dao.add_studenttransaction(student_transaction_db)
         # todo
 
@@ -254,6 +255,7 @@ class StudentTransactionRule(object):
         # print(2222222222222, vars(paging.items[0]))
         paging_result = PaginatedResponse.from_paging(paging, StudentEduInfoOut,other_mapper={"student_name":"student_name"})
         # print(3333333333333333,paging_result)
+        convert_snowid_to_strings(paging_result, ["id",'student_id','school_id','class_id','session_id','relation_id','process_instance_id','in_school_id','grade_id','transferin_audit_id'])
         return paging_result
 
     async def query_student_transaction(self, student_transaction_name):
@@ -266,6 +268,7 @@ class StudentTransactionRule(object):
         lst = []
         for row in res:
             planning_school = orm_model_to_view_model(row, StudentTransactionModel)
+            convert_snowid_in_model(planning_school)
 
             lst.append(planning_school)
         return lst
