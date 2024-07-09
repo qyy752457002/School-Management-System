@@ -100,6 +100,8 @@ class TeacherBorrowRule(object):
                                           user_id):
         try:
             teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
+            teachers.teacher_id = int(teachers.teacher_id)
+            teachers.teacher_employer = int(teachers.teacher_employer)
             teacher_borrow.teacher_id = teachers.teacher_id
             teacher_borrow_db = view_model_to_orm_model(teacher_borrow, TeacherBorrow, exclude=["teacher_borrow_id"])
             teacher_borrow_db.teacher_borrow_id = SnowflakeIdGenerator(1, 1).generate_id()
@@ -323,7 +325,7 @@ class TeacherBorrowRule(object):
                 for key, value in teacher.dict().items():
                     if value:
                         need_update_list.append(key)
-                await self.teachers_dao.update_teachers(teachers_db, *need_update_list)
+                await self.teachers_dao.update_teachers(teacher, *need_update_list)
                 await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
             return "该老师借动审批已通过"
 

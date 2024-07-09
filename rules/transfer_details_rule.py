@@ -98,6 +98,8 @@ class TransferDetailsRule(object):
                                             user_id):
         try:
             teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
+            teachers.teacher_id = int(teachers.teacher_id)
+            teachers.teacher_employer = int(teachers.teacher_employer)
             transfer_details.teacher_id = teachers.teacher_id
             transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
             transfer_details_db.transfer_details_id = SnowflakeIdGenerator(1, 1).generate_id()
@@ -132,7 +134,6 @@ class TransferDetailsRule(object):
         except Exception as e:
             raise e
 
-
     async def add_transfer_out_details(self, transfer_details: TransferDetailsModel,
                                        user_id):
         try:
@@ -144,6 +145,7 @@ class TransferDetailsRule(object):
             transfer_details.original_district_area_id = int(school.borough)
             transfer_details.transfer_type = TransferType.OUT.value
             transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
+            transfer_details_db.transfer_details_id = SnowflakeIdGenerator(1, 1).generate_id()
             transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
             transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel,
                                                             exclude=["process_instance_id", "original_unit_name",
@@ -180,7 +182,6 @@ class TransferDetailsRule(object):
             return True
         except Exception as e:
             raise e
-
 
     async def delete_transfer_details(self, transfer_details_id):
         exists_transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
@@ -326,6 +327,7 @@ class TransferDetailsRule(object):
                 teachers_db.teacher_sub_status = "transfer_in"
                 await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status")
                 await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
+                await self.teachers_dao.delete_teachers(teachers_db)
             elif process_code == "t_transfer_in_outer":
                 """增加老师再添加新老师"""
                 update_params = {"teacher_sub_status": "active"}
@@ -337,7 +339,7 @@ class TransferDetailsRule(object):
                 for key, value in teacher.dict().items():
                     if value:
                         need_update_list.append(key)
-                await self.teachers_dao.update_teachers(teachers_db, *need_update_list)
+                await self.teachers_dao.update_teachers(teacher, *need_update_list)
                 await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
             return "该老师调动审批已通过"
 

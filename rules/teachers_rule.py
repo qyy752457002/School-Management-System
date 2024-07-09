@@ -141,12 +141,12 @@ class TeachersRule(object):
         teachers.teacher_main_status = "employed"
         teachers.teacher_sub_status = "submitted"
         teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
+        teachers_db.is_approval = True
         teachers_db.teacher_id = SnowflakeIdGenerator(1, 1).generate_id()
         if teachers_db.teacher_id_type == 'resident_id_card':
             idstatus = check_id_number(teachers_db.teacher_id_number)
             if not idstatus:
                 raise IdCardError()
-
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         # 获取老师信息
         teachers = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
