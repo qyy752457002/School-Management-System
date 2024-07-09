@@ -10,6 +10,8 @@ class MajorDAO(DAOBase):
 
 	async def add_major(self, major: Major):
 		session = await self.master_db()
+		if major.school_id:
+			major.school_id = int(major.school_id)
 		session.add(major)
 		await session.commit()
 		await session.refresh(major)
@@ -29,7 +31,7 @@ class MajorDAO(DAOBase):
 	async def softdelete_major(self, major):
 		session = await self.master_db()
 		deleted_status= True
-		update_stmt = update(Major).where(Major.id == major.id).values(
+		update_stmt = update(Major).where(Major.id == int(major.id)).values(
 			is_deleted= deleted_status,
 		)
 		await session.execute(update_stmt)
@@ -55,9 +57,15 @@ class MajorDAO(DAOBase):
 		session = await self.slave_db()
 		result = await session.execute(select(Major).where(Major.school_id == int(id)).where(Major.is_deleted == False))
 		return result.scalar_one_or_none()
-	async def get_major_by_name(self, name):
+	async def get_major_by_name(self, name,major=None):
 		session = await self.slave_db()
-		result = await session.execute(select(Major).where(Major.major_name == name))
+		query = select(Major).where(Major.major_name == name)
+		if major:
+			if major.school_id:
+				query = query.where(Major.school_id == major.school_id)
+			# query = query.where(Major.id != major.id)
+
+		result = await session.execute( query)
 		return result.scalar_one_or_none()
 
 	async def query_major_with_page(self,page_request: PageRequest, **kwargs, ):
