@@ -1,4 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+import copy
+
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
@@ -6,7 +8,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.LeaderInfo_dao import LeaderInfoDAO
 from models.leader_info import LeaderInfo
-from views.common.common_view import convert_snowid_to_strings
+from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
 from views.models.leader_info import LeaderInfo  as LeaderInfoModel
 
 
@@ -23,7 +25,7 @@ class LeaderInfoRule(object):
 
     async def add_leader_info(self, leader_info: LeaderInfoModel):
         exists_leader_info = await self.leader_info_dao.get_leader_info_by_leader_info_name(
-            leader_info.leader_name)
+            leader_info.leader_name,leader_info)
         if exists_leader_info:
             raise Exception(f"领导信息{leader_info.leader_name}已存在")
         leader_info_db = view_model_to_orm_model(leader_info, LeaderInfo,    exclude=["id"])
@@ -31,6 +33,7 @@ class LeaderInfoRule(object):
 
         leader_info_db = await self.leader_info_dao.add_leader_info(leader_info_db)
         leader_info = orm_model_to_view_model(leader_info_db, LeaderInfoModel, exclude=["created_at",'updated_at'])
+        convert_snowid_in_model(leader_info,  ["id", "school_id",'institution_id','planning_school_id'])
         return leader_info
 
     async def update_leader_info(self, leader_info,ctype=1):
@@ -48,6 +51,7 @@ class LeaderInfoRule(object):
         # leader_info_db = await self.leader_info_dao.update_leader_info(leader_info_db,ctype)
         # 更新不用转换   因为得到的对象不熟全属性
         # leader_info = orm_model_to_view_model(leader_info_db, LeaderInfoModel, exclude=[""])
+        convert_snowid_in_model(leader_info_db,  ["id", "school_id",'institution_id','planning_school_id'])
         return leader_info_db
 
     async def softdelete_leader_info(self, leader_info_id):
@@ -56,6 +60,8 @@ class LeaderInfoRule(object):
             raise Exception(f"领导信息{leader_info_id}不存在")
         leader_info_db = await self.leader_info_dao.softdelete_leader_info(exists_leader_info)
         # leader_info = orm_model_to_view_model(leader_info_db, LeaderInfoModel, exclude=[""],)
+        leader_info_db=copy.deepcopy(leader_info_db)
+        convert_snowid_in_model(leader_info_db,  ["id", "school_id",'institution_id','planning_school_id'])
         return leader_info_db
 
 
@@ -82,7 +88,7 @@ class LeaderInfoRule(object):
         # 字段映射的示例写法   , {"hash_password": "password"}
 
         paging_result = PaginatedResponse.from_paging(paging, LeaderInfoModel)
-        convert_snowid_to_strings(paging_result, ["id", "school_id",])
+        convert_snowid_to_strings(paging_result,  ["id", "school_id",'institution_id','planning_school_id'])
 
         return paging_result
 

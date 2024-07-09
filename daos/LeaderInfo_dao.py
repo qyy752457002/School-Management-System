@@ -30,9 +30,16 @@ class LeaderInfoDAO(DAOBase):
 		result = await session.execute(select(LeaderInfo).where(LeaderInfo.id ==int(id)))
 		return result.scalar_one_or_none()
 
-	async def get_leader_info_by_leader_info_name(self, id):
+	async def get_leader_info_by_leader_info_name(self, leader_name,leader_info=None):
 		session = await self.slave_db()
-		result = await session.execute(select(LeaderInfo).where(LeaderInfo.leader_name == int(id)))
+		query = select(LeaderInfo).where(LeaderInfo.leader_name ==  leader_name)
+		if leader_info.planning_school_id:
+			query = query.where(LeaderInfo.planning_school_id == int(leader_info.planning_school_id))
+		if leader_info.school_id:
+			query = query.where(LeaderInfo.school_id == int(leader_info.school_id))
+		if leader_info.institution_id:
+			query = query.where(LeaderInfo.institution_id == int(leader_info.institution_id) )
+		result = await session.execute(query)
 		return result.scalar_one_or_none()
 
 	async def query_leader_info_with_page(self,  page_request: PageRequest,**kwargs):
