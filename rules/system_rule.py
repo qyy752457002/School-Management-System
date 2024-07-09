@@ -16,7 +16,7 @@ from daos.permission_menu_dao import PermissionMenuDAO
 from daos.roles_dao import RolesDAO
 from models.permission_menu import PermissionMenu
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
-from views.common.common_view import workflow_service_config
+from views.common.common_view import workflow_service_config, convert_snowid_in_model
 
 from views.models.sub_system import SubSystem as SubSystemModel
 from views.models.permission_menu import PermissionMenu as PermissionMenuModel
@@ -119,6 +119,7 @@ class SystemRule(object):
                 "menu_code": "power_code",
                 "menu_type": "power_type",
             })
+            convert_snowid_in_model(system,["id",'permission_id'])
             res[ item['id']] = system
             # res.append(system)
             print(system)
@@ -138,6 +139,8 @@ class SystemRule(object):
                     "menu_code": "power_code",
                     "menu_type": "power_type",
                 })
+                convert_snowid_in_model(system,["id",'permission_id'])
+
                 res[int(item['parent_id'])].children.append(system)
 
         # print(list(paging))
@@ -154,6 +157,8 @@ class SystemRule(object):
                             "menu_code": "power_code",
                             "menu_type": "power_type",
                         })
+                        convert_snowid_in_model(system,["id",'permission_id'])
+
                         item.children.append(system)
 
         # print(dict(paging))

@@ -28,13 +28,13 @@ class PermissionMenu(BaseModel):
     # menu_status: str = Query(None, title="", description="菜单状态", example='1')
     # menu_remark: str = Query(None, title="", description="菜单备注", example='1')
     parent_id: str = Query('', title="", description="父级菜单id", example='1')
-    permission_id: int = Query(0, title="", description="权限ID", example='1')
+    permission_id: int|str = Query(0, title="", description="权限ID", example='1')
     sort_order: int = Query(0, title="", description="排序 从校到大", example='1')
     children: list = Query([], title="", description="", example= [])
     @model_validator(mode="before")
     @classmethod
     def check_id_before(self, data: dict):
-        _change_list= ["id",]
+        _change_list= ["id",'permission_id']
         for _change in _change_list:
             if _change not in data:
                 continue
