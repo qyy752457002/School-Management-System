@@ -1,4 +1,5 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+import copy
 from typing import List
 
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
@@ -10,7 +11,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from business_exceptions.course import CourseNotFoundError, CourseAlreadyExistError
 from daos.course_dao import CourseDAO
 from models.course import Course
-from views.common.common_view import convert_snowid_to_strings
+from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
 from views.models.course import Course  as CourseModel
 from views.models.extend_params import ExtendParams
 
@@ -109,7 +110,11 @@ class CourseRule(object):
 
 
     async def get_course_all(self, filterdict):
-        return await self.course_dao.get_all_course(filterdict)
+        items =  await self.course_dao.get_all_course(filterdict)
+        items = copy.deepcopy(items)
+        for item in items:
+            convert_snowid_in_model(item,["id", "school_id",'grade_id',])
+        return items
 
 
     async def add_course_school(self,school_id,course_list:List[CourseModel],obj:ExtendParams=None):
@@ -120,14 +125,16 @@ class CourseRule(object):
                 raise CourseAlreadyExistError()
         for course in course_list:
             # 扩展参数 放入到视图模型 再转换给orm
-            if obj.county_id:
+            if obj and  obj.county_id:
                 course.district=obj.county_id
-            if obj.edu_type:
+            if obj  and  obj.edu_type:
                 course.school_type=obj.edu_type
             course_db= view_model_to_orm_model(course, Course, exclude=["id"])
+            course_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
             res = await self.course_dao.add_course(course_db)
         course = orm_model_to_view_model(res, CourseModel, exclude=["created_at",'updated_at'])
+        convert_snowid_in_model(course, ["id", "school_id",'grade_id',])
         return course
 
 

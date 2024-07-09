@@ -1,10 +1,11 @@
+from copy import deepcopy
 from typing import List
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 from rules.course_rule import CourseRule
-from views.common.common_view import get_extend_params
+from views.common.common_view import get_extend_params, convert_snowid_to_strings, convert_snowid_in_model
 from views.models.course import Course
 from fastapi import Query, Depends, Body
 
@@ -57,6 +58,8 @@ class CourseView(BaseView):
         print(course_id)
         # return  course_id
         res = await self.course_rule.softdelete_course(course_id)
+        res = deepcopy(res)
+        convert_snowid_in_model(res)
 
         return  res
 
