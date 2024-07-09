@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Iterable
 
 from fastapi import Query
 from pydantic import BaseModel, Field, model_validator
@@ -63,6 +64,8 @@ class StudentEduInfo(BaseModel):
     def check_id_before(self, data: dict):
         _change_list= ["id",'student_id','school_id','class_id','session_id','relation_id','process_instance_id','in_school_id','grade_id','transferin_audit_id']
         for _change in _change_list:
+            if isinstance(_change, Iterable):
+                continue
             if _change not in data:
                 continue
             if isinstance(data[_change], str):
