@@ -201,9 +201,9 @@ class NewsStudentsInfoView(BaseView):
             ))
         return res
 
-
+    # 修改分班
     async def patch_newstudent_classdivision(self,
-                                             class_id: int  = Query(..., title="", description="班级ID",),
+                                             class_id: int|str  = Query(..., title="", description="班级ID",),
                                              student_id:  str  = Query(..., title="", description="学生ID/逗号分割",),
 
                                              ):
@@ -229,7 +229,7 @@ class NewsStudentsInfoView(BaseView):
         background_tasks.add_task(self.lottery_class_division, (school_id,grade_id), message="some notification")
         return {"message": "Notification sent in the background"}
 
-
+    #
     def lottery_class_division(self,args , message=""):
         print(args,message)
         with open("log.txt", mode="a") as log:
@@ -237,15 +237,14 @@ class NewsStudentsInfoView(BaseView):
 
 
     # 分页查询
-    #
     async def page_newstudent_classdivision(self,
                                             enrollment_number: str = Query( '', title="", description="报名号",min_length=1, max_length=30, example=''),
-                                            school_id: int  = Query( 0, title="", description="学校ID",  example=''),
+                                            school_id: int|str  = Query( 0, title="", description="学校ID",  example=''),
                                             id_type: str = Query( '', title="", description="身份证件类型",min_length=1, max_length=30, example=''),
                                             student_name: str = Query( '', title="", description="姓名",min_length=1, max_length=30, example=''),
                                             created_at: str = Query( '', title="", description="分班时间",min_length=1, max_length=30, example=''),
                                             student_gender: str = Query( '', title="", description="性别",min_length=1, max_length=30, example=''),
-                                            class_id: int = Query( 0, title="", description="班级",  example=''),
+                                            class_id: int|str = Query( 0, title="", description="班级",  example=''),
                                             status: str = Query( '', title="", description="状态",min_length=1, max_length=30, example=''),
                               page_request=Depends(PageRequest)):
         """
