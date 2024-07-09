@@ -66,17 +66,17 @@ class StudentInnerTransactionView(BaseView):
 
         student_edu_info = StudentInnerTransactionRes(id=transaction_id,
                                               approval_status=StudentTransactionStatus.CANCEL.value, )
-        res2 = await self.student_inner_transaction_rule.update_student_transaction(student_edu_info)
+        res2 = await self.student_inner_transaction_rule.update_student_inner_transaction(student_edu_info)
 
-        # 流乘记录
-        student_trans_flow = StudentTransactionFlow(apply_id=transaction_id,
-                                                    status=StudentTransactionStatus.CANCEL.value,
-                                                    # stage=audit_info.transferin_audit_action.value,
-                                                    remark= '用户撤回')
-        res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
+        # 流乘记录 todo 工作流
+        # student_trans_flow = StudentTransactionFlow(apply_id=transaction_id,
+        #                                             status=StudentTransactionStatus.CANCEL.value,
+        #                                             # stage=audit_info.transferin_audit_action.value,
+        #                                             remark= '用户撤回')
+        # res = await self.student_transaction_flow_rule.add_student_transaction_flow(student_trans_flow)
 
         # print(new_students_key_info)
-        return res
+        return res2
     # 在校生校内异动审核
     async def patch_student_inner_transaction_audit(self,
                                                     audit_info: StudentInnerTransactionAudit

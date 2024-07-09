@@ -1,4 +1,5 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+import copy
 from datetime import datetime
 
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
@@ -61,6 +62,7 @@ class StudentInnerTransactionRule(object):
             student_inner_transaction_db)
         student_inner_transaction = orm_model_to_view_model(student_inner_transaction_db, StudentInnerTransactionModel,
                                                             exclude=["created_at", 'updated_at', 'transaction_time'])
+        convert_snowid_in_model(student_inner_transaction,  ['id'])
         return student_inner_transaction
 
     async def update_student_inner_transaction(self, student_inner_transaction):
@@ -74,10 +76,12 @@ class StudentInnerTransactionRule(object):
             if value:
                 need_update_list.append(key)
 
-        student_inner_transaction_db = await self.student_inner_transaction_dao.update_student_inner_transaction_byargs(
+        student_inner_transaction_db = await self.student_inner_transaction_dao.update_student_inner_transaction(
             exists_student_inner_transaction, *need_update_list)
         student_inner_transaction = orm_model_to_view_model(student_inner_transaction_db, StudentInnerTransactionModel,
                                                             exclude=[""])
+        student_inner_transaction= copy.deepcopy(student_inner_transaction)
+        convert_snowid_in_model(student_inner_transaction,  ['id'])
         return student_inner_transaction
 
     async def delete_student_inner_transaction(self, student_inner_transaction_id):
