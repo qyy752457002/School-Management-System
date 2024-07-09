@@ -49,6 +49,7 @@ class StudentsFamilyInfoRule(object):
         students_family_info_db.student_family_info_id = SnowflakeIdGenerator(1, 1).generate_id()
         students_family_info_db = await self.students_family_info_dao.add_students_family_info(students_family_info_db)
         students_family_info = orm_model_to_view_model(students_family_info_db, StudentsFamilyInfoModel, exclude=[""])
+        convert_snowid_in_model(students_family_info,["id",'student_id','school_id','class_id','session_id','student_family_info_id'])
         return students_family_info
 
     async def update_students_family_info(self, students_family_info):
@@ -65,6 +66,8 @@ class StudentsFamilyInfoRule(object):
                 need_update_list.append(key)
         students_family_info = await self.students_family_info_dao.update_students_family_info(students_family_info,
                                                                                                *need_update_list)
+        convert_snowid_in_model(students_family_info,["id",'student_id','school_id','class_id','session_id','student_family_info_id'])
+
         return students_family_info
 
     async def delete_students_family_info(self, students_family_info_id):
@@ -78,6 +81,8 @@ class StudentsFamilyInfoRule(object):
         students_family_info_db = await self.students_family_info_dao.delete_students_family_info(
             exists_students_family_info)
         students_family_info = orm_model_to_view_model(students_family_info_db, StudentsFamilyInfoModel, exclude=[""])
+        convert_snowid_in_model(students_family_info,["id",'student_id','school_id','class_id','session_id','student_family_info_id'])
+        
         return students_family_info
 
     async def get_all_students_family_info(self, student_id):
