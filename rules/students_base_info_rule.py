@@ -10,7 +10,7 @@ from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.student_session import StudentSessionstatus
 from models.students_base_info import StudentBaseInfo
-from views.common.common_view import page_none_deal, convert_snowid_to_strings
+from views.common.common_view import page_none_deal, convert_snowid_to_strings, convert_snowid_in_model
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
 from views.models.students import NewBaseInfoCreate,NewBaseInfoUpdate,StudentsBaseInfo
 from views.models.students import StudentsBaseInfo as StudentsBaseInfoModel
@@ -42,6 +42,7 @@ class StudentsBaseInfoRule(object):
         if schoolcominfo:
             students_base_info.loc_area = schoolcominfo.loc_area
             students_base_info.loc_area_pro = schoolcominfo.loc_area_pro
+        convert_snowid_in_model(students_base_info, ["id",'student_id','school_id','class_id','session_id','student_base_id','grade_id'])
 
         return students_base_info
 
@@ -53,6 +54,8 @@ class StudentsBaseInfoRule(object):
         if not students_base_info_db:
             raise StudentNotFoundError()
         students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfo, exclude=[""])
+        convert_snowid_in_model(students_base_info, ["id",'student_id','school_id','class_id','session_id','student_base_id','grade_id'])
+
         return students_base_info
 
 
@@ -100,6 +103,8 @@ class StudentsBaseInfoRule(object):
                 need_update_list.append(key)
         students_base_info = await self.students_base_info_dao.update_students_base_info(students_base_info,
                                                                                          *need_update_list)
+        convert_snowid_in_model(students_base_info, ["id",'student_id','school_id','class_id','session_id','student_base_id','grade_id'])
+
         return students_base_info
 
     async def update_students_class_division(self, class_id, student_ids):
