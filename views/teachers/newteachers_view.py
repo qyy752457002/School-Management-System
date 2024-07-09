@@ -212,6 +212,18 @@ class NewTeachersView(BaseView):
         print('发生任务成功')
         return task
 
+
+    async def post_new_teacher_save_import(self, filestorage: TeacherFileStorageModel) -> Task:
+
+        task = Task(
+            task_type="teacher_save_import",
+            payload=filestorage,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
+
     async def post_new_teacher_export(self, teacher_query: CurrentTeacherQuery) -> Task:
         task = Task(
             task_type="teacher_export",
