@@ -16,7 +16,7 @@ class GradesView(BaseView):
         self.grade_rule = get_injector(GradeRule)
 
     async def get(self,
-                  grade_id: int = Query(None, title="", description="年级ID"),
+                  grade_id: int|str = Query(None, title="", description="年级ID"),
                   city :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
                   district :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
                   ):
@@ -40,7 +40,7 @@ class GradesView(BaseView):
                    request:Request,
 
                    page_request=Depends(PageRequest),
-                   school_id: int = Query(None, title="学校ID", description="学校ID"),
+                   school_id: int|str = Query(None, title="学校ID", description="学校ID"),
                    grade_name: str = Query(None, description="年级名称", min_length=1, max_length=20),
                    city :str= Query(None, title="市", description="",min_length=1,max_length=20,example=''),
                    district :str= Query(None, title="区", description="",min_length=1,max_length=20,example=''),
@@ -75,7 +75,7 @@ class GradesView(BaseView):
         return lst
 
     # 删除
-    async def delete(self, grade_id: int = Query(..., title="", description="年级id", example='1'), ):
+    async def delete(self, grade_id: int|str = Query(..., title="", description="年级id", example='1'), ):
         print(grade_id)
         # return  grade_id
         # todo 权限校验

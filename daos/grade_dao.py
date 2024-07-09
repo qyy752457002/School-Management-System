@@ -10,7 +10,7 @@ class GradeDAO(DAOBase):
 
     async def get_grade_by_id(self, grade_id):
         session = await self.slave_db()
-        result = await session.execute(select(Grade).where(Grade.id == grade_id).where(Grade.is_deleted == False))
+        result = await session.execute(select(Grade).where(Grade.id == int(grade_id)).where(Grade.is_deleted == False))
         return result.scalar_one_or_none()
 
     async def get_grade_by_grade_name(self, grade_name,grade=None):
@@ -18,7 +18,7 @@ class GradeDAO(DAOBase):
         #  定义  市区的字段 是  编码
         query = select(Grade).where(Grade.grade_name == grade_name).where(Grade.is_deleted==False)
         if grade.school_id:
-            query = query.where(Grade.school_id == grade.school_id)
+            query = query.where(Grade.school_id == int(grade.school_id))
         if grade.city:
             query = query.where(Grade.city == grade.city)
         if grade.district:
@@ -45,12 +45,15 @@ class GradeDAO(DAOBase):
         return grade
 
     async def update_grade_byargs(self, grade: Grade, *args, is_commit: bool = True):
+        grade.id= int(grade.id)
         session =await self.master_db()
         update_contents = get_update_contents(grade, *args)
         query = update(Grade).where(Grade.id == grade.id).values(**update_contents)
         return await self.update(session, query, grade, update_contents, is_commit=is_commit)
 
     async def softdelete_grade(self, grade):
+        grade.id= int(grade.id)
+
         session = await self.master_db()
         deleted_status= True
         update_stmt = update(Grade).where(Grade.id == grade.id).values(
@@ -91,6 +94,9 @@ class GradeDAO(DAOBase):
         return paging
     #根据学校ID和年级ID 设置年级的班级数量自增1
     async def increment_class_number(self,school_id,grade_id):
+        grade_id = int(grade_id)
+        school_id = int(school_id)
+
         session = await self.master_db()
         query = update(Grade).where(Grade.school_id == school_id).where(Grade.id == grade_id).values(
             class_number= Grade.class_number + 1
