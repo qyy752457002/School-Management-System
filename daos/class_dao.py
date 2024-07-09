@@ -143,8 +143,8 @@ class ClassesDAO(DAOBase):
 
 
 
-                        ).select_from(Classes).join(School, School.id == Classes.school_id)
-                 .join(Grade, Grade.id == Classes.grade_id)
+                        ).select_from(Classes).join(School, School.id == Classes.school_id,isouter=True)
+                 .join(Grade, Grade.id == Classes.grade_id,isouter=True)
                  .join(Teacher, Teacher.teacher_id == Classes.teacher_id,isouter=True)
                  .join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id,isouter=True)
                  .join(teacher_alias, teacher_alias.teacher_id == Classes.care_teacher_id,isouter=True)
@@ -158,10 +158,11 @@ class ClassesDAO(DAOBase):
 
 
         if school_id:
-            query = query.where(Classes.school_id == school_id)
+
+            query = query.where(Classes.school_id == int(school_id))
             pass
         if grade_id:
-            query = query.where(Classes.grade_id == grade_id)
+            query = query.where(Classes.grade_id == int(grade_id))
         if class_name:
             # query = query.where(Classes.classes_no == class_name)
             query = query.where(Classes.class_name.like(f'%{class_name}%'))

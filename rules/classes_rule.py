@@ -138,6 +138,6 @@ class ClassesRule(object):
                     item.grade_type_name = grade_enums[item.grade_type].description
                 else:
                     item.grade_type_name = item.grade_type
-        paging_result = convert_snowid_to_strings(paging_result,["id", "school_id",'grade_id','session_id','teacher_id','care_teacher_id'])
+        convert_snowid_to_strings(paging_result,["id", "school_id",'grade_id','session_id','teacher_id','care_teacher_id'])
 
         return paging_result

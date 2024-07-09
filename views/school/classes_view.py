@@ -29,12 +29,12 @@ class ClassesView(BaseView):
 
                    school_id: int|str  = Query(0, title="学校ID", description="学校ID", examples=[1]),
 
-                   grade_id: int|str  = Query('', title="年级ID", description="年级ID", examples=[2]),
+                   grade_id: int|str  = Query(0, title="年级ID", description="年级ID", examples=[2]),
                    class_name: str = Query('', title="Grade_name", description="班级名称", examples=['一年级'])
 
                    ):
         school_id= int(school_id)
-        grade_id= int(grade_id)
+        # grade_id= int(grade_id)
         print(page_request)
         items = []
         res = await self.classes_rule.query_classes_with_page(page_request, borough, block, school_id, grade_id,
