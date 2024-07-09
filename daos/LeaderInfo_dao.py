@@ -27,12 +27,12 @@ class LeaderInfoDAO(DAOBase):
 
 	async def get_leader_info_by_id(self, id):
 		session = await self.slave_db()
-		result = await session.execute(select(LeaderInfo).where(LeaderInfo.id == id))
+		result = await session.execute(select(LeaderInfo).where(LeaderInfo.id ==int(id)))
 		return result.scalar_one_or_none()
 
 	async def get_leader_info_by_leader_info_name(self, id):
 		session = await self.slave_db()
-		result = await session.execute(select(LeaderInfo).where(LeaderInfo.leader_name == id))
+		result = await session.execute(select(LeaderInfo).where(LeaderInfo.leader_name == int(id)))
 		return result.scalar_one_or_none()
 
 	async def query_leader_info_with_page(self,  page_request: PageRequest,**kwargs):
@@ -48,17 +48,16 @@ class LeaderInfoDAO(DAOBase):
 		query = update(LeaderInfo).where(LeaderInfo.id == leader_info.id).values(**update_contents)
 		return await self.update(session, query, leader_info, update_contents, is_commit=is_commit)
 
-
 	async def update_leader_info_byargs(self, leader_info: LeaderInfo, *args, is_commit: bool = True):
 		session = await self.master_db()
 		update_contents = get_update_contents(leader_info, *args)
-		query = update(LeaderInfo).where(LeaderInfo.id == leader_info.id).values(**update_contents)
+		query = update(LeaderInfo).where(LeaderInfo.id == int(leader_info.id)).values(**update_contents)
 		return await self.update(session, query, leader_info, update_contents, is_commit=is_commit)
 
 	async def softdelete_leader_info(self, exists_leader_info):
 		session = await self.master_db()
 		deleted_status= 1
-		update_stmt = update(LeaderInfo).where(LeaderInfo.id == exists_leader_info.id).values(
+		update_stmt = update(LeaderInfo).where(LeaderInfo.id == int(exists_leader_info.id)).values(
 			is_deleted= deleted_status,
 		)
 		await session.execute(update_stmt)

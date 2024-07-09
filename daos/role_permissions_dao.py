@@ -27,7 +27,7 @@ class RolePermissionsDAO(DAOBase):
 
 	async def get_rolepermissions_by_id(self, id):
 		session = await self.slave_db()
-		result = await session.execute(select(RolePermission).where(RolePermission.id == id))
+		result = await session.execute(select(RolePermission).where(RolePermission.id == int(id)))
 		return result.scalar_one_or_none()
 
 	async def query_rolepermissions_with_page(self, pageQueryModel, page_request: PageRequest):
@@ -41,5 +41,5 @@ class RolePermissionsDAO(DAOBase):
 	async def update_rolepermissions(self, rolepermissions, *args, is_commit=True):
 		session = await self.master_db()
 		update_contents = get_update_contents(rolepermissions, *args)
-		query = update(RolePermission).where(RolePermission.id == rolepermissions.id).values(**update_contents)
+		query = update(RolePermission).where(RolePermission.id ==int(rolepermissions.id)).values(**update_contents)
 		return await self.update(session, query, rolepermissions, update_contents, is_commit=is_commit)

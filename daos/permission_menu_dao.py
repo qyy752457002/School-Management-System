@@ -30,7 +30,7 @@ class PermissionMenuDAO(DAOBase):
 
 	async def get_permission_menu_by_id(self, id):
 		session = await self.slave_db()
-		result = await session.execute(select(PermissionMenu).where(PermissionMenu.id == id))
+		result = await session.execute(select(PermissionMenu).where(PermissionMenu.id == int(id)))
 		return result.scalar_one_or_none()
 
 	async def query_permission_menu_with_page(self,  page_request: PageRequest,unit_type, edu_type, system_type, role_id: int = None,):
@@ -79,13 +79,13 @@ class PermissionMenuDAO(DAOBase):
 			query = query.where(Role.edu_type == edu_type)
 
 		if role_id:
-			query = query.where(Role.id == role_id)
+			query = query.where(Role.id == int(role_id))
 		if parent_id:
 			if isinstance(parent_id,list):
 				query = query.where(PermissionMenu.parent_id .in_(parent_id))
 				pass
 			else:
-				query = query.where(PermissionMenu.parent_id == parent_id)
+				query = query.where(PermissionMenu.parent_id == int(parent_id))
 
 				pass
 		else:

@@ -27,12 +27,12 @@ class SubSystemDAO(DAOBase):
 
 	async def get_subsystem_by_id(self, id):
 		session = await self.slave_db()
-		result = await session.execute(select(SubSystem).where(SubSystem.id == id))
+		result = await session.execute(select(SubSystem).where(SubSystem.id ==int(id) ))
 		return result.scalar_one_or_none()
 
 	async def get_subsystem_by_name(self, id):
 		session = await self.slave_db()
-		result = await session.execute(select(SubSystem).where(SubSystem.system_name == id))
+		result = await session.execute(select(SubSystem).where(SubSystem.system_name ==int(id) ))
 		return result.scalar_one_or_none()
 
 	async def query_subsystem_with_page(self, page_request: PageRequest, **kwargs):
@@ -45,5 +45,5 @@ class SubSystemDAO(DAOBase):
 	async def update_subsystem(self, subsystem, *args, is_commit=True):
 		session = await self.master_db()
 		update_contents = get_update_contents(subsystem, *args)
-		query = update(SubSystem).where(SubSystem.id == subsystem.id).values(**update_contents)
+		query = update(SubSystem).where(SubSystem.id ==int(subsystem.id) ).values(**update_contents)
 		return await self.update(session, query, subsystem, update_contents, is_commit=is_commit)

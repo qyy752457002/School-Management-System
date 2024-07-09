@@ -39,7 +39,7 @@ class MajorDAO(DAOBase):
 	async def softdelete_major_by_school_id(self, school_id):
 		session = await self.master_db()
 		deleted_status= True
-		update_stmt = update(Major).where(Major.school_id == school_id).values(
+		update_stmt = update(Major).where(Major.school_id == int(school_id)).values(
 			is_deleted= deleted_status,
 		)
 		await session.execute(update_stmt)
@@ -48,12 +48,12 @@ class MajorDAO(DAOBase):
 
 	async def get_major_by_id(self, id):
 		session = await self.slave_db()
-		result = await session.execute(select(Major).where(Major.id == id))
+		result = await session.execute(select(Major).where(Major.id == int(id)))
 		return result.scalar_one_or_none()
 
 	async def get_major_by_school_id(self, id):
 		session = await self.slave_db()
-		result = await session.execute(select(Major).where(Major.school_id == id).where(Major.is_deleted == False))
+		result = await session.execute(select(Major).where(Major.school_id == int(id)).where(Major.is_deleted == False))
 		return result.scalar_one_or_none()
 	async def get_major_by_name(self, name):
 		session = await self.slave_db()
@@ -68,7 +68,7 @@ class MajorDAO(DAOBase):
 		return paging
 
 	async def query_major_with_page_param(self,page_request: PageRequest, school_id ):
-		query = select(Major).where(Major.school_id == school_id,Major.is_deleted == False)
+		query = select(Major).where(Major.school_id == int(school_id),Major.is_deleted == False)
 		paging = await self.query_page(query, page_request)
 		return paging
 
