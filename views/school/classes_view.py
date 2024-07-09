@@ -17,7 +17,7 @@ class ClassesView(BaseView):
     async def post(self, classes: Classes):
         print(classes)
         res = await  self.classes_rule.add_classes(classes)
-        convert_snowid_in_model(res )
+        convert_snowid_in_model(res ,["id", "school_id",'grade_id','session_id','teacher_id','care_teacher_id'])
 
         return res
 
