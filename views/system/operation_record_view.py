@@ -21,22 +21,28 @@ class OperationRecordView(BaseView):
     async def page(self,
                    page_request=Depends(PageRequest),
                    operation_target_type: OperationTarget = Query(None, title="", description="操作的对象的类型",
-                                                                      example='school', min_length=1, max_length=25),
-                   action_target_id: int = Query(None, title="", description="主体id(规划校/学校/老师/学生等的ID)",
-                                                 example='1'),
+                                                                  example='school', min_length=1, max_length=25),
+                   action_target_id: int | str = Query(None, title="",
+                                                       description="主体id(规划校/学校/老师/学生等的ID)",
+                                                       example='1'),
                    operater_account: str = Query(None, title="", description="操作账号", example='admin', min_length=1,
                                                  max_length=25),
-                   operater_id: int = Query(None, title="", description="操作人ID", example='1', ),
-                   process_instance_id: int = Query(None, title="", description="process_instance_id", example='1', ),
-                   operation_module: ChangeModule = Query(None, title="", description="操作模块",  min_length=1, max_length=40,example='key_info_change'),
+                   operater_id: int | str = Query(None, title="", description="操作人ID", example='1', ),
+                   process_instance_id: int | str = Query(None, title="", description="process_instance_id",
+                                                          example='1', ),
+                   operation_module: ChangeModule = Query(None, title="", description="操作模块", min_length=1,
+                                                          max_length=40, example='key_info_change'),
                    operation_type: OperationType = Query(None, title="", description="操作类型", example='创建',
                                                          min_length=1, max_length=25),
                    ):
-        print('入参',page_request)
+        print('入参', page_request)
+        action_target_id = int(action_target_id)
+        operater_id = int(operater_id)
+        process_instance_id = int(process_instance_id)
         items = []
         res = await self.operation_record_rule.query_operation_record_with_page(page_request, operation_target_type,
                                                                                 action_target_id, operater_account,
                                                                                 operater_id, operation_module,
-                                                                                operation_type,process_instance_id
+                                                                                operation_type, process_instance_id
                                                                                 )
         return res
