@@ -7,8 +7,8 @@
     "model": "RBAC",
     "role": [
 
-      "p, data2_admin, data2, read",
-      "g, alice, data2_admin"
+      "school_manage, school_manager, planning_school, open",
+      "g, alice, school_manager"
 
     ]
   }
