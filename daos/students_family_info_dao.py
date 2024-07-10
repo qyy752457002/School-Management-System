@@ -34,7 +34,7 @@ class StudentsFamilyInfoDao(DAOBase):
         """
         session = await self.slave_db()
         result = await session.execute(
-            select(StudentFamilyInfo).where(StudentFamilyInfo.student_family_info_id == students_family_info_id))
+            select(StudentFamilyInfo).where(StudentFamilyInfo.student_family_info_id ==int(students_family_info_id) ))
         return result.scalar_one_or_none()
 
     async def delete_students_family_info(self, students: StudentFamilyInfo):
@@ -47,7 +47,7 @@ class StudentsFamilyInfoDao(DAOBase):
     async def get_all_students_family_info(self, student_id):
         session = await self.slave_db()
         query = select(StudentFamilyInfo).join(Student, StudentFamilyInfo.student_id == Student.student_id).where(
-            StudentFamilyInfo.student_id == student_id)
+            StudentFamilyInfo.student_id ==int(student_id) )
         result = await session.execute(query)
         return result.scalars().all()
 

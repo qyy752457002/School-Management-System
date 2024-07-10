@@ -1,5 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
@@ -16,6 +17,7 @@ from daos.organization_members_dao import OrganizationMembersDAO
 # from models.organization import Campus
 from rules.enum_value_rule import EnumValueRule
 from rules.organization_rule import OrganizationRule
+from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
 from views.models.organization import Organization, OrganizationMembers, OrganizationMembersSearchRes
 # from views.models.organization import Campus as Organization
 
@@ -56,11 +58,13 @@ class OrganizationMembersRule(object):
         # school_db.status =  PlanningSchoolStatus.DRAFT.value
         organization_members_db.created_uid = 0
         organization_members_db.updated_uid = 0
+        organization_members_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
         organization_members_db = await self.organization_members_dao.add_organization_members(organization_members_db)
         organization = orm_model_to_view_model(organization_members_db, Organization, exclude=["created_at",'updated_at'])
         org_rule = get_injector(OrganizationRule)
         await org_rule.increment_organization_member_cnt(organization_members_db.org_id)
+        convert_snowid_in_model(organization, ["id", "school_id",'parent_id','teacher_id','org_id'])
 
         return organization
 
@@ -71,7 +75,8 @@ class OrganizationMembersRule(object):
             exists_organization_members = await self.organization_members_dao.get_organization_members_by_id(organization.id)
         else:
             exists_organization_members = await self.organization_members_dao.get_organization_members_by_param(organization)
-            organization.id = exists_organization_members.id
+            if exists_organization_members:
+                organization.id = exists_organization_members.id
 
         if not exists_organization_members:
             raise  OrganizationMemberNotFoundError()
@@ -85,6 +90,8 @@ class OrganizationMembersRule(object):
 
         organization_members_db = await self.organization_members_dao.update_organization_members(organization_members_db,*need_update_list)
         print(organization_members_db,999)
+        convert_snowid_in_model(organization_members_db, ["id", "school_id",'parent_id','teacher_id','org_id'])
+
         return organization_members_db
 
     async def update_organization_members_by_teacher_id(self, organization: OrganizationMembers,):
@@ -109,6 +116,8 @@ class OrganizationMembersRule(object):
             raise OrganizationMemberNotFoundError()
         organization_members_db = await self.organization_members_dao.delete_organization_members(exists_organization)
         organization = orm_model_to_view_model(organization_members_db, Organization, exclude=[""],)
+        convert_snowid_in_model(organization, ["id", "school_id",'parent_id','teacher_id','org_id'])
+
         return organization
 
     async def softdelete_organization_members(self, organization_members_id):
@@ -137,7 +146,7 @@ class OrganizationMembersRule(object):
         if not parent_id_lv2:
             # parent_id_lv2= [int(parent_id)]
             pass
-        if isinstance(org_ids, str):
+        if org_ids and  isinstance(org_ids, str):
             org_ids=org_ids.split(',')
             int_list = [int(i) for i in org_ids]
             parent_id_lv2= parent_id_lv2+int_list
@@ -154,6 +163,7 @@ class OrganizationMembersRule(object):
             # "teacher_identity": "updated_at",
             "teacher_id_number": "card_number",
         })
+        convert_snowid_to_strings(paging_result, ["id", "school_id",'parent_id','teacher_id','org_id'])
         return paging_result
 
 
@@ -185,16 +195,16 @@ class OrganizationMembersRule(object):
         return organization_members_db
 
 
-
     async def query_organization_members(self,parent_id,):
 
         session = await db_connection_manager.get_async_session("default", True)
-        result = await session.execute(select(OrganizationModel).where(OrganizationModel.parent_id == parent_id  ))
+        result = await session.execute(select(OrganizationModel).where(OrganizationModel.parent_id == int(parent_id)  ))
         res= result.scalars().all()
 
         lst = []
         for row in res:
             planning_school = orm_model_to_view_model(row, Organization)
+            convert_snowid_in_model(planning_school)
 
             lst.append(planning_school)
         return lst

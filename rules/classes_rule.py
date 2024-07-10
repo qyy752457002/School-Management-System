@@ -66,15 +66,15 @@ class ClassesRule(object):
         class_std_name_mix = []
         if classes.school_id:
             school_db = await self.school_dao.get_school_by_id(classes.school_id)
-            class_std_name_mix.append(school_db.school_category if school_db.school_category else '')
+            class_std_name_mix.append(school_db.school_category if school_db and  school_db.school_category else '')
             pass
         if classes.session_id:
             session_db = await self.session_dao.get_student_session_by_id(classes.session_id)
-            class_std_name_mix.append(session_db.session_name if session_db.session_name else '')
+            class_std_name_mix.append(session_db.session_name if session_db and  session_db.session_name else '')
             pass
         if classes.grade_id:
             grade_db = await self.grade_dao.get_grade_by_id(classes.grade_id)
-            class_std_name_mix.append(grade_db.grade_name if grade_db.grade_name else '')
+            class_std_name_mix.append(grade_db.grade_name if grade_db and  grade_db.grade_name else '')
             pass
         class_std_name_mix.append(classes.class_number)
         classes.class_standard_name = "".join(class_std_name_mix)
@@ -138,6 +138,6 @@ class ClassesRule(object):
                     item.grade_type_name = grade_enums[item.grade_type].description
                 else:
                     item.grade_type_name = item.grade_type
-        paging_result = convert_snowid_to_strings(paging_result,["id", "school_id",'grade_id','session_id','teacher_id','care_teacher_id'])
+        convert_snowid_to_strings(paging_result,["id", "school_id",'grade_id','session_id','teacher_id','care_teacher_id'])
 
         return paging_result

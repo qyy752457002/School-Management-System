@@ -1,10 +1,11 @@
+from copy import deepcopy
 from typing import List
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 from rules.course_rule import CourseRule
-from views.common.common_view import get_extend_params
+from views.common.common_view import get_extend_params, convert_snowid_to_strings, convert_snowid_in_model
 from views.models.course import Course
 from fastapi import Query, Depends, Body
 
@@ -15,7 +16,7 @@ class CourseView(BaseView):
     # 新增课程  市区  校
     async def post(self,
                    request:Request,
-                   school_id:int= Query(...,   description="学校ID", example='1'),
+                   school_id:int|str= Query(...,   description="学校ID", example='1'),
                    course_list:List[Course]= Body([], description="选择的课程" , example= [{"course_id":1,"course_name":"语文","course_no":"19","school_id":1,} ]),
 
                    ):
@@ -40,7 +41,7 @@ class CourseView(BaseView):
                    page_request= Depends(PageRequest),
                    # campus_no:str= Query(None, title="校区编号", description="校区编号",min_length=1,max_length=20,example='SC2032633'),
                    # campus_name:str= Query(None, description="校区名称" ,min_length=1,max_length=20,example='XX小学'),
-                   school_id:int= Query(0,   description="学校ID", example='1'),
+                   school_id:int|str= Query(0,   description="学校ID", example='1'),
                    ):
         print(page_request)
         obj= await get_extend_params(request)
@@ -53,10 +54,12 @@ class CourseView(BaseView):
         return res
 
     # 删除
-    async def delete(self, course_id:int= Query(..., title="", description="课程id", example='SC2032633'),):
+    async def delete(self, course_id:int|str= Query(..., title="", description="课程id", example='SC2032633'),):
         print(course_id)
         # return  course_id
         res = await self.course_rule.softdelete_course(course_id)
+        res = deepcopy(res)
+        convert_snowid_in_model(res)
 
         return  res
 
@@ -64,7 +67,7 @@ class CourseView(BaseView):
     async def put(self,
                   request:Request,
 
-        school_id:int= Query(0,   description="学校ID", example='1'),
+        school_id:int|str= Query(0,   description="学校ID", example='1'),
         course_list:List[Course]= Body([], description="选择的课程" , example= [
             {"grade_id":1,"course_name":"语文","course_no":"13", }
         ]),
@@ -102,7 +105,7 @@ class CourseView(BaseView):
 
 
     # 删除
-    async def delete_init_course(self, course_id:int= Query(..., title="", description="课程id", example='SC2032633'),):
+    async def delete_init_course(self, course_id:int|str= Query(..., title="", description="课程id", example='SC2032633'),):
         print(course_id)
         # return  course_id
         res = await self.course_rule.softdelete_course(course_id)

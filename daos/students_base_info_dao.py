@@ -33,7 +33,7 @@ class StudentsBaseInfoDao(DAOBase):
         """
         session = await self.master_db()
         update_contents = get_update_contents(students_base_info, *args)
-        query = update(StudentBaseInfo).where(StudentBaseInfo.student_id == students_base_info.student_id).values(
+        query = update(StudentBaseInfo).where(StudentBaseInfo.student_id == int(students_base_info.student_id)).values(
             **update_contents)
         return await self.update(session, query, students_base_info, update_contents, is_commit=is_commit)
 
@@ -63,7 +63,7 @@ class StudentsBaseInfoDao(DAOBase):
         通过学生id获取单个学生基本信息
         """
         session = await self.slave_db()
-        result = await session.execute(select(StudentBaseInfo).where(StudentBaseInfo.student_id == students_id))
+        result = await session.execute(select(StudentBaseInfo).where(StudentBaseInfo.student_id == int(students_id)))
         return result.scalar_one_or_none()
 
     async def get_students_base_info_ext_by_student_id(self, students_id):
@@ -92,7 +92,7 @@ class StudentsBaseInfoDao(DAOBase):
                                                                                                 PlanningSchool.id == School.planning_school_id,
                                                                                                 isouter=True).join(
             Major, Major.id == Classes.major_for_vocational, isouter=True).where(
-            StudentBaseInfo.student_id == students_id)
+            StudentBaseInfo.student_id ==int(students_id) )
         result_list = await session.execute(query)
         column_names = query.columns.keys()
         # ret = result.scalar_one_or_none()
@@ -113,7 +113,7 @@ class StudentsBaseInfoDao(DAOBase):
         """
         session = await self.slave_db()
         result = await session.execute(
-            select(StudentBaseInfo).where(StudentBaseInfo.student_base_id == student_base_id))
+            select(StudentBaseInfo).where(StudentBaseInfo.student_base_id ==int(student_base_id) ))
         return result.scalar_one_or_none()
 
     async def delete_students_base_info(self, students: Student):
@@ -172,9 +172,9 @@ class StudentsBaseInfoDao(DAOBase):
         if query_model.school:
             query = query.where(StudentBaseInfo.school == query_model.school)
         if query_model.school_id:
-            query = query.where(StudentBaseInfo.school_id == query_model.school_id)
+            query = query.where(StudentBaseInfo.school_id == int(query_model.school_id) )
         if query_model.class_id:
-            query = query.where(StudentBaseInfo.class_id == query_model.class_id)
+            query = query.where(StudentBaseInfo.class_id ==int(query_model.class_id) )
         if query_model.enrollment_date:
             query = query.where(StudentBaseInfo.enrollment_date == query_model.enrollment_date)
         if query_model.county:
@@ -212,7 +212,6 @@ class StudentsBaseInfoDao(DAOBase):
             else:
                 query = query.where(StudentBaseInfo.enrollment_date >=query_model.enrollment_date_range)
 
-
                 # query = query.where(Student.approval_status == query_model.approval_status)
         paging = await self.query_page(query, page_request)
         return paging
@@ -226,7 +225,6 @@ class StudentsBaseInfoDao(DAOBase):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(StudentBaseInfo))
         return result.scalar()
-
 
     async def get_students_base_info_by_param(self, **kwargs):
         """

@@ -27,7 +27,7 @@ class OrganizationDAO(DAOBase):
 			session = await self.master_db()
 		else:
 			session = await self.slave_db()
-		result = await session.execute(select(Organization).where(Organization.id == id))
+		result = await session.execute(select(Organization).where(Organization.id == int(id)))
 		return result.scalar_one_or_none()
 
 	async def get_organization_by_name(self, name,organization):
@@ -70,7 +70,7 @@ class OrganizationDAO(DAOBase):
 
 	async def update_organization_increment_member_cnt(self, organization, *args, is_commit=True):
 		session = await self.master_db()
-		query = update(Organization).where(Organization.id == organization.id).values({Organization.member_cnt: Organization.member_cnt + 1})
+		query = update(Organization).where(Organization.id == int(organization.id)).values({Organization.member_cnt: Organization.member_cnt + 1})
 
 		await session.execute(query)
 		# await session.query(Organization).filter_by(id=organization.id).update({Organization.value: Organization.value + 1})

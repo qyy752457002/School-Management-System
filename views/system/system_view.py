@@ -28,7 +28,7 @@ class SystemView(BaseView):
 
     async def page_menu(self,
                         page_request=Depends(PageRequest),
-                        role_id: int = Query(None, title="", description="角色id",
+                        role_id: int|str = Query(None, title="", description="角色id",
                                              example='1'),
                         unit_type: str = Query(None, title="单位类型 例如学校 市/区", description="", min_length=1,
                                                max_length=20, example='city'),

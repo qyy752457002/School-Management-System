@@ -18,9 +18,9 @@ class Classes(BaseModel):
 
     class_name: str = Field('', title="Grade_name", description="班级名称", examples=['一年级'])
     class_number: str = Field('', description="班号", examples=['一年级'])
-    class_index: str = Field('', description="班级序号", examples=['一班'])
+    class_index: str |None= Field('', description="班级序号", examples=['一班'])
     year_established: str = Field(None, description="建班年份", examples=['2023'])
-    teacher_id: int|str = Field(None, description="班主任id", examples=['1'])
+    teacher_id: int|str |None= Field(None, description="班主任id", examples=['1'])
     teacher_id_card: str = Field(None, description="班主任身份证", examples=['fsdfdsfsdxxx'])
     teacher_card_type: str = Field(None, description="班主任证件类型", examples=['idcard'])
 
@@ -58,7 +58,8 @@ class Classes(BaseModel):
             if isinstance(data[_change], str):
                 data[_change] = int(data[_change])
             elif isinstance(data[_change], int):
-                data[_change] = str(data[_change])
+                # data[_change] = str(data[_change])
+                pass
             else:
                 pass
         return data
@@ -96,9 +97,9 @@ class ClassesSearchRes(BaseModel):
     ethnic_language: str = Field(None, description="少数民族语言", examples=['fsdfdsfsdxxx'])
     is_att_class: str|bool = Field(None, description="是否附设班", examples=['是否附设班'])
     att_class_type: str = Field(None, description="附设班类型", examples=['附设班类型'])
-    borough: str = Field(None, title=" Author Email", description=" 行政管辖区", examples=['铁西区'])
-    block: str = Field(None, title=" Author", description="地域管辖区", examples=['铁西区'])
-    school_name: str = Field(None, title="学校名称", description="学校名称", examples=['XX小学'])
+    borough: str|None = Field(None, title=" Author Email", description=" 行政管辖区", examples=['铁西区'])
+    block: str|None = Field(None, title=" Author", description="地域管辖区", examples=['铁西区'])
+    school_name: str|None = Field(None, title="学校名称", description="学校名称", examples=['XX小学'])
     # session_id: int = Field(0, title="届别ID", description="届别ID", examples=['2'])
     session_name: str = Field('', title="届别名称", description="届别名称", examples=['一年级'])
     teacher_phone: str = Field(None, description="班主任电话", examples=['fsdfdsfsdxxx'])

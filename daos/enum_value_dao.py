@@ -10,7 +10,7 @@ class EnumValueDAO(DAOBase):
 
     async def get_enum_value_by_id(self, enum_value_id):
         session = await self.slave_db()
-        result = await session.execute(select(EnumValue).where(EnumValue.id == enum_value_id))
+        result = await session.execute(select(EnumValue).where(EnumValue.id == int(enum_value_id)))
         return result.scalar_one_or_none()
 
     async def get_enum_value_by_value(self, enum_value, enum_name=None, parent_id=None):

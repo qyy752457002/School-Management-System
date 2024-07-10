@@ -1,8 +1,10 @@
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.student_session_dao import StudentSessionDao
 from models.student_session import StudentSession
+from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
 from views.models.students import StudentSession as StudentSessionModel
 
 
@@ -16,6 +18,8 @@ class StudentSessionRule(object):
         """
         session_db = await self.student_session_dao.get_student_session_by_id(session_id)
         session = orm_model_to_view_model(session_db, StudentSessionModel, exclude=[""])
+        convert_snowid_in_model(session, ["id",'student_id','school_id','class_id','session_id'])
+
         return session
 
     async def add_student_session(self, session: StudentSession):
@@ -23,8 +27,10 @@ class StudentSessionRule(object):
         新增类别
         """
         session_db = view_model_to_orm_model(session, StudentSession, exclude=["session_id"])
+        session_db.session_id = SnowflakeIdGenerator(1, 1).generate_id()
         session_db = await self.student_session_dao.add_student_session(session_db)
         session = orm_model_to_view_model(session_db, StudentSessionModel, exclude=[""])
+        convert_snowid_in_model(session, ["id",'student_id','school_id','class_id','session_id'])
         return session
 
     async def update_student_session(self, session):
@@ -39,6 +45,7 @@ class StudentSessionRule(object):
             if value:
                 need_update_list.append(key)
         session = await self.student_session_dao.update_student_session(session, *need_update_list)
+        convert_snowid_in_model(session, ["id",'student_id','school_id','class_id','session_id'])
         return session
 
     async def delete_student_session(self, session_id):
@@ -73,4 +80,5 @@ class StudentSessionRule(object):
         paging = await self.student_session_dao.query_session_with_page(  page_request, status , session_name,session_alias)
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, StudentSessionModel)
+        convert_snowid_to_strings(paging_result, ["id",'student_id','school_id','class_id','session_id'])
         return paging_result
