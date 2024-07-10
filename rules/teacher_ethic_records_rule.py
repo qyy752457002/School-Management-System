@@ -16,7 +16,7 @@ class TeacherEthicRecordsRule(object):
     async def get_teacher_ethic_records_by_teacher_ethic_records_id(self, teacher_ethic_records_id):
         teacher_ethic_records_db = await self.teacher_ethic_records_dao.get_teacher_ethic_records_by_teacher_ethic_records_id(
             teacher_ethic_records_id)
-        teacher_ethic_records = orm_model_to_view_model(teacher_ethic_records_db, TeacherEthicRecordsModel)
+        teacher_ethic_records = orm_model_to_view_model(teacher_ethic_records_db, TeacherEthicRecordsUpdateModel)
         return teacher_ethic_records
 
     async def add_teacher_ethic_records(self, teacher_ethic_records: TeacherEthicRecordsModel):

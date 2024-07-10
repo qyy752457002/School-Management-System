@@ -35,7 +35,7 @@ class TalentProgramRule(object):
         if not exists_talent_program:
             raise TalentProgramNotFoundError()
         talent_program_db = await self.talent_program_dao.delete_talent_program(exists_talent_program)
-        talent_program = orm_model_to_view_model(talent_program_db, TalentProgramModel, exclude=[""])
+        talent_program = orm_model_to_view_model(talent_program_db, TalentProgramUpdateModel, exclude=[""])
         return talent_program
 
     async def update_talent_program(self, talent_program: TalentProgramUpdateModel):

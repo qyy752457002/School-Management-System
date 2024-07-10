@@ -46,7 +46,7 @@ class TeacherWorkExperienceRule(object):
             raise TeacherWorkExperienceNotFoundError()
         teacher_work_experience_db = await self.teacher_work_experience_dao.delete_teacher_work_experience(
             exists_teacher_work_experience)
-        teacher_work_experience = orm_model_to_view_model(teacher_work_experience_db, TeacherWorkExperienceModel,
+        teacher_work_experience = orm_model_to_view_model(teacher_work_experience_db, TeacherWorkExperienceUpdateModel,
                                                           exclude=[""])
         # teacher_work_experience = convert_snowid_in_model(teacher_work_experience,
         #                                                   extra_colums=["teacher_work_experience_id", "teacher_id"])
