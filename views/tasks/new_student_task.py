@@ -59,7 +59,7 @@ class NewStudentExecutor(TaskExecutor):
             logger.error(f"任务   create failed")
 
 
-# 导出  todo
+# 导出  todo 新生的导出在这里
 class NewStudentExportExecutor(TaskExecutor):
     def __init__(self):
         self.student_rule = get_injector(StudentsRule)
