@@ -658,12 +658,12 @@ class TeachersRule(object):
     async def query_teacher_approval_with_page(self, type, query_model: TeacherApprovalQuery,
                                                page_request: PageRequest, user_id):
         if type == "launch":
-            params = {"applicant_name": user_id, "process_code": "t_entry", "teacher_sub_status": "submitted"}
+            params = {"applicant_name": user_id, "process_code": "t_entry"}
             paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                           TeacherApprovalQueryRe,
                                                                                           params)
         elif type == "approval":
-            params = {"applicant_name": user_id, "process_code": "t_entry", "teacher_sub_status": "submitted"}
+            params = {"applicant_name": user_id, "process_code": "t_entry"}
             paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                           TeacherApprovalQueryRe,
                                                                                           params)
