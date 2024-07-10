@@ -39,6 +39,17 @@ class TeacherLearnExperienceModel(BaseModel):
     study_mode: str = Field(..., title="学习形式", description="学习方式")
     type_of_institution: str = Field("", title="在学单位类别", description="在学单位类别")
 
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
+
 
 class TeacherLearnExperienceComModel(TeacherLearnExperienceModel):
     pass
@@ -65,8 +76,8 @@ class TeacherLearnExperienceUpdateModel(BaseModel):
     学习方式：study_mode
     在学单位类别：type_of_institution
     """
-    teacher_learn_experience_id: int = Field(..., title="教师学习经历ID", description="教师学习经历ID")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_learn_experience_id: int | str = Field(..., title="教师学习经历ID", description="教师学习经历ID")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     education_obtained: str = Field(..., title="获的学历", description="获的学历")
     country_or_region_of_education: str = Field(..., title="获得学历国家/地区", description="获得学历国家/地区")
     institution_of_education_obtained: str = Field(..., title="获得学历的院校机构", description="获得学历的院校机构")
@@ -81,6 +92,19 @@ class TeacherLearnExperienceUpdateModel(BaseModel):
     degree_award_date: date = Field(..., title="学位授予时间", description="学位授予时间")
     study_mode: str = Field(..., title="学习形式", description="学习方式")
     type_of_institution: str = Field("", title="在学单位类别", description="在学单位类别")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "teacher_learn_experience_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            elif _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
 
 
 class TeacherWorkExperienceModel(BaseModel):
@@ -102,14 +126,13 @@ class TeacherWorkExperienceModel(BaseModel):
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
-        if isinstance(data["teacher_id"], str):
-            data["teacher_id"] = int(data["teacher_id"])
-        elif isinstance(data["teacher_id"], int):
-            data["teacher_id"] = str(data["teacher_id"])
-        else:
-            pass
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
         return data
-
 
 
 class TeacherWorkExperienceComModel(TeacherWorkExperienceModel):
@@ -142,18 +165,14 @@ class TeacherWorkExperienceUpdateModel(BaseModel):
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
-        if isinstance(data["teacher_id"], str):
-            data["teacher_id"] = int(data["teacher_id"])
-        elif isinstance(data["teacher_id"], int):
-            data["teacher_id"] = str(data["teacher_id"])
-        else:
-            pass
-        if isinstance(data["teacher_work_experience_id"], str):
-            data["teacher_work_experience_id"] = int(data["teacher_work_experience_id"])
-        elif isinstance(data["teacher_work_experience_id"], int):
-            data["teacher_work_experience_id"] = str(data["teacher_work_experience_id"])
-        else:
-            pass
+        _change_list = ["teacher_id", "teacher_work_experience_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            elif _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
         return data
 
 
@@ -203,6 +222,17 @@ class TeacherJobAppointmentsModel(BaseModel):
     appointment_start_date: date = Field(..., title="聘任开始年月", description="聘任开始时间")
     start_date: Optional[date] = Field(None, title="任职开始年月", description="任职开始年月")
 
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
+
 
 class TeacherJobAppointmentsComModel(TeacherJobAppointmentsModel):
     pass
@@ -225,9 +255,9 @@ class TeacherJobAppointmentsUpdateModel(BaseModel):
     聘任开始时间：appointment_start_date
     结束时间：end_date
     """
-    teacher_job_appointments_id: int = Field(..., title="teacher_job_appointments_id",
-                                             description="teacher_job_appointments_id")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_job_appointments_id: int | str = Field(..., title="teacher_job_appointments_id",
+                                                   description="teacher_job_appointments_id")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     position_category: str = Field(..., title="岗位类别", description="岗位类别")
     position_level: str = Field(..., title="岗位等级", description="岗位等级")
     school_level_position: str = Field(..., title="校级职务", description="校级职务")
@@ -236,6 +266,19 @@ class TeacherJobAppointmentsUpdateModel(BaseModel):
                                                       title="兼任岗位", description="兼任岗位")
     appointment_start_date: date = Field(..., title="聘任开始年月", description="聘任开始时间")
     start_date: Optional[date] = Field(None, description="任职开始年月")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "teacher_job_appointments_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            elif _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
 
 
 # class TeacherJobAppointmentsUpdateModel(BaseModel):
@@ -280,6 +323,17 @@ class TeacherProfessionalTitlesModel(BaseModel):
     employment_start_date: date = Field(..., title="开始年月", description="聘任开始时间")
     employment_end_date: Optional[date] = Field(None, title="结束年月", description="聘任结束时间")
 
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
+
 
 class TeacherProfessionalTitlesComModel(TeacherProfessionalTitlesModel):
     pass
@@ -298,13 +352,26 @@ class TeacherProfessionalTitlesUpdateModel(BaseModel):
     聘任开始时间：employment_start_date
     聘任结束时间：employment_end_date
     """
-    teacher_professional_titles_id: int = Field(..., title="teacher_professional_titles_id",
-                                                description="teacher_professional_titles_id")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_professional_titles_id: int | str = Field(..., title="teacher_professional_titles_id",
+                                                      description="teacher_professional_titles_id")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     current_professional_title: str = Field(..., title="聘任专业技术职务", description="现专业技术职务")
     employing_institution_name: str = Field("", title="聘任单位名称", description="聘任单位名称")
     employment_start_date: date = Field(..., title="开始年月", description="聘任开始时间")
     employment_end_date: Optional[date] = Field(None, title="结束年月", description="聘任结束时间")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "teacher_professional_titles_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            elif _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
 
 
 class TeacherQualificationsModel(BaseModel):
@@ -329,6 +396,17 @@ class TeacherQualificationsModel(BaseModel):
     regular_registration_date: Optional[date] = Field(None, title="定期注册日期", description="定期注册日期")
     regular_registration_conclusion: str = Field("", title="定期注册结论", description="定期注册结论")
 
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
+
 
 class TeacherQualificationsComModel(TeacherQualificationsModel):
     pass
@@ -351,9 +429,9 @@ class TeacherQualificationsUpdateModel(BaseModel):
     定期注册日期：regular_registration_date
     定期注册结论：regular_registration_conclusion
     """
-    teacher_qualifications_id: int = Field(..., title="teacher_qualifications_id",
-                                           description="teacher_qualifications_id")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_qualifications_id: int | str = Field(..., title="teacher_qualifications_id",
+                                                 description="teacher_qualifications_id")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     teacher_qualification_type: str = Field(..., title="种类", description="教师资格证种类")
     qualification_number: str = Field(..., title="证书编号", description="资格证号码")
     teaching_subject: str = Field(..., title="任教学科", description="任教学科")
@@ -362,6 +440,19 @@ class TeacherQualificationsUpdateModel(BaseModel):
     first_registration_date: Optional[date] = Field(None, title="首次注册日期", description="首次注册日期")
     regular_registration_date: Optional[date] = Field(None, title="定期注册日期", description="定期注册日期")
     regular_registration_conclusion: str = Field("", title="定期注册结论", description="定期注册结论")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "teacher_qualifications_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            elif _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
 
 
 class TeacherSkillCertificatesModel(BaseModel):
@@ -388,6 +479,17 @@ class TeacherSkillCertificatesModel(BaseModel):
     issuing_authority: str = Field("", title="发证单位", description="发证单位")
     certificate_number: str = Field("", title="证书编号", description="证书编号")
 
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
+
 
 class TeacherSkillCertificatesComModel(TeacherSkillCertificatesModel):
     pass
@@ -411,9 +513,9 @@ class TeacherSkillCertificatesUpdateModel(BaseModel):
     发证单位：issuing_authority
     证书编号：certificate_number
     """
-    teacher_skill_certificates_id: int = Field(..., title="teacher_skill_certificates_id",
-                                               description="teacher_skill_certificates_id")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_skill_certificates_id: int | str = Field(..., title="teacher_skill_certificates_id",
+                                                     description="teacher_skill_certificates_id")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     language: str = Field(..., title="语种", description="语种")
     proficiency_level: str = Field(..., title="掌握程度", description="掌握程度")
     other_skill_name: str = Field("", title="其他技能名称", description="其他技能名称")
@@ -423,6 +525,19 @@ class TeacherSkillCertificatesUpdateModel(BaseModel):
     issue_year_month: Optional[date] = Field(None, title="发证年月", description="发证年月")
     issuing_authority: str = Field("", title="发证单位", description="发证单位")
     certificate_number: str = Field("", title="证书编号", description="证书编号")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "teacher_skill_certificates_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            elif _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
 
 
 class TeacherEthicRecordsModel(BaseModel):
@@ -463,6 +578,17 @@ class TeacherEthicRecordsModel(BaseModel):
     disciplinary_revocation_date: date = Field(..., title="处分撤销日期", description="处分撤销日期")
     disciplinary_revocation_reason: str = Field("", title="处分撤销原因", description="处分撤销原因")
 
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
+
 
 class TeacherEthicRecordsComModel(TeacherEthicRecordsModel):
     pass
@@ -493,8 +619,9 @@ class TeacherEthicRecordsUpdateModel(BaseModel):
     处分撤销日期：disciplinary_revocation_date
     处分撤销原因：disciplinary_revocation_reason
     """
-    teacher_ethic_records_id: int = Field(..., title="teacher_ethic_records_id", description="teacher_ethic_records_id")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    teacher_ethic_records_id: int | str = Field(..., title="teacher_ethic_records_id",
+                                                description="teacher_ethic_records_id")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     ethics_assessment_date: date = Field(..., title="师德考核时间（年月）", description="师德考核时间")
     ethics_assessment_conclusion: str = Field(..., title="考核结论", description="师德考核结论")
     assessment_institution_name: str = Field("", title="考核单位名称", description="考核单位名称")
@@ -511,6 +638,19 @@ class TeacherEthicRecordsUpdateModel(BaseModel):
     disciplinary_occurrence_date: date = Field(..., title="处分发生日期（年月日）", description="处分发生日期")
     disciplinary_revocation_date: date = Field(..., title="处分撤销日期", description="处分撤销日期")
     disciplinary_revocation_reason: str = Field("", title="处分撤销原因", description="处分撤销原因")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "teacher_ethic_records_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            elif _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
 
 
 class EducationalTeachingModel(BaseModel):
@@ -542,6 +682,17 @@ class EducationalTeachingModel(BaseModel):
     concurrent_job: str = Field(..., title="兼任工作", description="兼任工作")
     concurrent_job_name: str = Field("", title="兼任工作名称", description="兼任工作名称")
 
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
+
 
 class EducationalTeachingComModel(EducationalTeachingModel):
     pass
@@ -567,8 +718,9 @@ class EducationalTeachingUpdateModel(BaseModel):
     兼任工作：concurrent_job
     兼任工作名称：concurrent_job_name
     """
-    educational_teaching_id: int = Field(..., title="educational_teaching_id", description="educational_teaching_id")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    educational_teaching_id: int | str = Field(..., title="educational_teaching_id",
+                                               description="educational_teaching_id")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     academic_year: str = Field(..., title="学年", description="学年")
     semester: str = Field(..., title="学期", description="学期")
     teaching_stage: str = Field(..., title="任教阶段", description="任教阶段")
@@ -581,6 +733,19 @@ class EducationalTeachingUpdateModel(BaseModel):
                                                    description="平均每周其他工作折合课时")
     concurrent_job: str = Field(..., title="兼任工作", description="兼任工作")
     concurrent_job_name: str = Field("", title="兼任工作名称", description="兼任工作名称")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "educational_teaching_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            elif _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
 
 
 class DomesticTrainingModel(BaseModel):
@@ -603,6 +768,17 @@ class DomesticTrainingModel(BaseModel):
     training_hours: str = Field(..., title="获得学时", description="培训学时")
     training_credits: str = Field("", title="培训学分", description="培训学分")
 
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
+
 
 class DomesticTrainingComModel(DomesticTrainingModel):
     pass
@@ -624,8 +800,8 @@ class DomesticTrainingUpdateModel(BaseModel):
     培训学时：training_hours
     培训学分：training_credits
     """
-    domestic_training_id: int = Field(..., title="domestic_training_id", description="domestic_training_id")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    domestic_training_id: int | str = Field(..., title="domestic_training_id", description="domestic_training_id")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     training_year: str = Field(..., title="培训年度", description="培训年度")
     training_type: str = Field(..., title="培训类别", description="培训类型")
     training_project: str = Field(..., title="项目名称", description="培训项目")
@@ -633,6 +809,19 @@ class DomesticTrainingUpdateModel(BaseModel):
     training_mode: str = Field(..., title="培训方式", description="培训方式")
     training_hours: str = Field(..., title="获得学时", description="培训学时")
     training_credits: str = Field("", title="培训学分", description="培训学分")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "domestic_training_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            elif _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
 
 
 class OverseasStudyModel(BaseModel):
@@ -652,6 +841,17 @@ class OverseasStudyModel(BaseModel):
     training_institution_name: str = Field("", title="研修机构名称", description="研修机构名称")
     project_name: str = Field(..., title="项目名称", description="项目名称")
     organizing_institution_name: str = Field("", title="项目组织单位名称", description="项目组织单位名称")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
 
 
 class OverseasStudyComModel(OverseasStudyModel):
@@ -673,14 +873,27 @@ class OverseasStudyUpdateModel(BaseModel):
     项目名称：project_name
     项目组织单位名称：organizing_institution_name
     """
-    overseas_study_id: int = Field(..., title="overseas_study_id", description="overseas_study_id")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    overseas_study_id: int | str = Field(..., title="overseas_study_id", description="overseas_study_id")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     start_date: date = Field(..., title="开始日期", description="开始日期")
     end_date: date = Field(..., title="结束日期", description="结束日期")
     country_region: str = Field(..., title="国家/地区", description="国家地区")
     training_institution_name: str = Field("", title="研修机构名称", description="研修机构名称")
     project_name: str = Field(..., title="项目名称", description="项目名称")
     organizing_institution_name: str = Field("", title="项目组织单位名称", description="项目组织单位名称")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "overseas_study_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            elif _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
 
 
 class TalentProgramModel(BaseModel):
@@ -692,6 +905,17 @@ class TalentProgramModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     talent_project_name: str = Field("", title="入选人才项目名称", description="人才项目名称")
     selected_year: str = Field("", title="年份", description="入选年份")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
 
 
 class TalentProgramComModel(TalentProgramModel):
@@ -709,10 +933,23 @@ class TalentProgramUpdateModel(BaseModel):
     人才项目名称：talent_project_name
     入选年份：selected_year
     """
-    talent_program_id: int = Field(..., title="talent_program_id", description="talent_program_id")
-    teacher_id: int = Field(None, title="教师ID", description="教师ID")
+    talent_program_id: int | str = Field(..., title="talent_program_id", description="talent_program_id")
+    teacher_id: int | str = Field(None, title="教师ID", description="教师ID")
     talent_project_name: str = Field("", title="人才项目名称", description="人才项目名称")
     selected_year: str = Field("", title="入选年份", description="入选年份")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "talent_program_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            elif _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
 
 
 class AnnualReviewModel(BaseModel):
@@ -726,6 +963,17 @@ class AnnualReviewModel(BaseModel):
     assessment_year: str = Field(..., title="考核年度", description="考核年度")
     assessment_result: str = Field(..., title="考核结果", description="考核结果")
     assessment_institution_name: str = Field("", title="考核单位名称", description="考核单位名称")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
 
 
 class AnnualReviewComModel(AnnualReviewModel):
@@ -744,11 +992,24 @@ class AnnualReviewUpdateModel(BaseModel):
     考核结果：assessment_result
     考核单位名称：assessment_institution_name
     """
-    annual_review_id: int = Field(..., title="annual_review_id", description="annual_review_id")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    annual_review_id: int | str = Field(..., title="annual_review_id", description="annual_review_id")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     assessment_year: str = Field(..., title="考核年度", description="考核年度")
     assessment_result: str = Field(..., title="考核结果", description="考核结果")
     assessment_institution_name: str = Field("", title="考核单位名称", description="考核单位名称")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "annual_review_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            elif _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
 
 
 class ResearchAchievementsModel(BaseModel):
@@ -832,6 +1093,17 @@ class ResearchAchievementsModel(BaseModel):
     standard_number: str = Field("", title="标准号", description="标准号")
     publishing_organization: str = Field("", title="发布单位", description="发布单位")
 
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
+
 
 class ResearchAchievementsComModel(ResearchAchievementsModel):
     pass
@@ -883,8 +1155,9 @@ class ResearchAchievementsUpdateModel(BaseModel):
     标准号：standard_number
     发布单位：publishing_organization
     """
-    research_achievements_id: int = Field(..., title="research_achievements_id", description="research_achievements_id")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    research_achievements_id: int | str = Field(..., title="research_achievements_id",
+                                                description="research_achievements_id")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Field(..., title="科研成果类型", description="科研成果种类")
     type: str = Field("", title="类型", description="类型")
     representative_or_project: Optional[bool] = Field(None, title="是否代表性成果和项目",
@@ -924,6 +1197,19 @@ class ResearchAchievementsUpdateModel(BaseModel):
     standard_number: str = Field("", title="标准号", description="标准号")
     publishing_organization: str = Field("", title="发布单位", description="发布单位")
 
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "research_achievements_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            elif _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
+
 
 class ResearchAchievementsQueryModel(BaseModel):
     """
@@ -945,6 +1231,17 @@ class ResearchAchievementsQueryModel(BaseModel):
     disciplinary_field: str = Query("", title="学科领域", description="学科领域", example="学科领域")
     role: str = Query("", title="本人角色", description="本人角色", example="本人角色")
 
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            else:
+                pass
+        return data
+
 
 class ResearchAchievementsQueryReModel(BaseModel):
     """
@@ -957,8 +1254,9 @@ class ResearchAchievementsQueryReModel(BaseModel):
     学科领域：disciplinary_field
     本人角色：role
     """
-    research_achievements_id: int = Field(..., title="research_achievements_id", description="research_achievements_id")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+    research_achievements_id: int | str = Field(..., title="research_achievements_id",
+                                                description="research_achievements_id")
+    teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Query("", title="姓名", description="姓名", example="张三")
     type: str = Query("", title="类型", description="类型", example="类型")
     representative_or_project: Optional[bool] = Query(False, title="是否代表性成果和项目",
@@ -966,3 +1264,14 @@ class ResearchAchievementsQueryReModel(BaseModel):
     name: str = Query("", title="名称", description="名称", example="名称")
     disciplinary_field: str = Query("", title="学科领域", description="学科领域", example="学科领域")
     role: str = Query("", title="本人角色", description="本人角色", example="本人角色")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id", "research_achievements_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data

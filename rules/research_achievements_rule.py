@@ -18,7 +18,7 @@ class ResearchAchievementsRule(object):
     async def get_research_achievements_by_research_achievements_id(self, research_achievements_id):
         research_achievements_db = await self.research_achievements_dao.get_research_achievements_by_research_achievements_id(
             research_achievements_id)
-        research_achievements = orm_model_to_view_model(research_achievements_db, ResearchAchievementsModel)
+        research_achievements = orm_model_to_view_model(research_achievements_db, ResearchAchievementsUpdateModel)
         return research_achievements
 
     async def add_research_achievements(self, research_achievements: ResearchAchievementsModel):
@@ -29,7 +29,7 @@ class ResearchAchievementsRule(object):
         research_achievements_db.research_achievements_id = SnowflakeIdGenerator(1, 1).generate_id()
         research_achievements_db = await self.research_achievements_dao.add_research_achievements(
             research_achievements_db)
-        research_achievements = orm_model_to_view_model(research_achievements_db, ResearchAchievementsModel)
+        research_achievements = orm_model_to_view_model(research_achievements_db, ResearchAchievementsUpdateModel)
         return research_achievements
 
     async def delete_research_achievements(self, research_achievements_id):
@@ -39,7 +39,7 @@ class ResearchAchievementsRule(object):
             raise ResearchAchievementsNotFoundError()
         research_achievements_db = await self.research_achievements_dao.delete_research_achievements(
             exists_research_achievements)
-        research_achievements = orm_model_to_view_model(research_achievements_db, ResearchAchievementsModel,
+        research_achievements = orm_model_to_view_model(research_achievements_db, ResearchAchievementsUpdateModel,
                                                         exclude=[""])
         return research_achievements
 
