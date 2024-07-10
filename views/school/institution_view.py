@@ -38,7 +38,7 @@ from mini_framework.async_task.task import Task
 from views.models.school_communications import SchoolCommunications
 from views.models.school_eduinfo import SchoolEduInfo
 from views.models.system import InstitutionType, SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, \
-    INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE
+    INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE, ImportScene
 
 
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
@@ -399,7 +399,8 @@ class InstitutionView(BaseView):
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="institution_import",
             # 文件 要对应的 视图模型
-            payload=InstitutionTask(file_name=file_name, bucket='', scene='institution_import'),
+            # payload=InstitutionTask(file_name=file_name, bucket='', scene='institution_import'),
+            payload=InstitutionTask(file_name=file_name, scene= ImportScene.INSTITUTION.value, bucket='institution_import' ),
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)

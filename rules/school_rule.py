@@ -71,7 +71,7 @@ class SchoolRule(object):
         school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""])
         return school
 
-    async def add_school(self, school: SchoolModel):
+    async def add_school(self, school: SchoolModel|Institutions):
         exists_school = await self.school_dao.get_school_by_school_name(
             school.school_name)
         if exists_school:

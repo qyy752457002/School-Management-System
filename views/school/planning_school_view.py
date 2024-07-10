@@ -38,7 +38,7 @@ from rules.planning_school_communication_rule import PlanningSchoolCommunication
 
 from rules.planning_school_eduinfo_rule import PlanningSchoolEduinfoRule
 from views.models.student_transaction import StudentTransactionAudit
-from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, ProcessCodeType
+from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, ProcessCodeType, ImportScene
 
 
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
@@ -339,15 +339,17 @@ class PlanningSchoolView(BaseView):
 
     # 导入   任务队列的
     async def post_planning_school_import(self,
-                                      filename: str = Query(..., description="文件名"),
-                                      bucket: str = Query(..., description="文件名"),
-                                      scene: str = Query('', description="文件名"),
+                                          file_name: str = Query(..., description="文件名"),
+                                      # bucket: str = Query(..., description="文件名"),
+                                      # scene: str = Query('', description="文件名"),
                                       ) -> Task:
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="planning_school_import",
             # 文件 要对应的 视图模型
-            payload=PlanningSchoolTask(file_name=filename, bucket=bucket, scene=scene),
+            # payload=PlanningSchoolTask(file_name=filename, bucket=bucket, scene=scene),
+            payload=PlanningSchoolTask(file_name=file_name, scene= ImportScene.PLANNING_SCHOOL.value, bucket='planning_school_import' ),
+
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)

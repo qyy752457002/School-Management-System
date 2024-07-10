@@ -8,6 +8,7 @@ from mini_framework.utils.logging import logger
 from rules.planning_school_communication_rule import PlanningSchoolCommunicationRule
 from rules.planning_school_rule import PlanningSchoolRule
 from rules.storage_rule import StorageRule
+from rules.system_rule import SystemRule
 from views.models.planning_school import PlanningSchool, PlanningSchoolOptional
 from views.models.planning_school_communications import PlanningSchoolCommunications
 
@@ -16,6 +17,8 @@ class PlanningSchoolExecutor(TaskExecutor):
     def __init__(self):
         self.planning_school_rule = get_injector(PlanningSchoolRule)
         self._storage_rule: StorageRule = get_injector(StorageRule)
+        self.system_rule = get_injector(SystemRule)
+
         self.planning_school_communication_rule = get_injector(PlanningSchoolCommunicationRule)
 
         super().__init__()
@@ -29,7 +32,10 @@ class PlanningSchoolExecutor(TaskExecutor):
 
             info = task.payload
             data= [ ]
-            data =await self._storage_rule.get_file_data(info.file_name, info.bucket,info.scene)
+            fileinfo = self.system_rule.get_download_url_by_id(info.file_name)
+            data =await self._storage_rule.get_file_data(fileinfo.file_name, fileinfo.bucket_name,info.scene)
+
+            # data =await self._storage_rule.get_file_data(info.file_name, info.bucket,info.scene)
 
             for item in data:
 
