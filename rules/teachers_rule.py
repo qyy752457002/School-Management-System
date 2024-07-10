@@ -4,13 +4,14 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from datetime import datetime
 from business_exceptions.common import IdCardError
 from daos.teachers_dao import TeachersDao
+from daos.school_dao import SchoolDAO
 from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers import Teacher
 from views.common.common_view import check_id_number
 from views.models.teachers import Teachers as TeachersModel
 from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherCreateResultModel, \
     TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
-    NewTeacherApprovalCreate
+    NewTeacherApprovalCreate,TeachersSaveImportCreatModel
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
 # from rules.teachers_info_rule import TeachersInfoRule
@@ -40,6 +41,7 @@ from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 
+from models.public_enum import Gender
 import os
 
 
@@ -58,6 +60,7 @@ class TeachersRule(object):
     teacher_approval_log: TeacherApprovalLogDao
     operation_record_rule: OperationRecordRule
     operation_record_dao: OperationRecordDAO
+    school_dao: SchoolDAO
 
     async def get_teachers_by_id(self, teachers_id):
         teachers_id = int(teachers_id)
@@ -475,17 +478,19 @@ class TeachersRule(object):
             reader = ExcelReader()
             reader.set_data(local_file_path)
             logger.info("Test开始注册模型")
-            reader.register_model("Sheet1", TeachersCreatModel)
+            reader.register_model("数据", TeachersSaveImportCreatModel)
             # reader.register_model("Sheet1", TeacherInfoCreateModel)
             logger.info("Test开始读取模型")
-            data = reader.execute()["Sheet1"]
+            data = reader.execute()["数据"]
             if not isinstance(data, list):
                 raise ValueError("数据格式错误")
             results = []
 
             for idx, item in enumerate(data):
                 item = item.dict()
-                teacher_data = {key: item[key] for key in TeachersCreatModel.__fields__.keys() if key in item}
+                teacher_data = {key: item[key] for key in TeachersSaveImportCreatModel.__fields__.keys() if key in item}
+                school=await self.school_dao.get_school_by_school_name(teacher_data["em"])
+                # teacher_data["teacher_employer"]=await
                 logger.info(teacher_data)
                 teacher_model = TeachersCreatModel(**teacher_data)
                 logger.info(type(teacher_data))

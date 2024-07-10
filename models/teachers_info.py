@@ -109,7 +109,7 @@ class TeacherInfo(BaseDBModel):
     has_special_education_certificate: Mapped[bool] = mapped_column(nullable=True, default=False,
                                                                     comment="是否有特教证书")
     information_technology_application_ability: Mapped[str] = mapped_column(nullable=True, default="",
-                                                                             comment="信息技术应用能力")
+                                                                            comment="信息技术应用能力")
     free_normal_college_student: Mapped[bool] = mapped_column(nullable=True, default=False,
                                                               comment="是否免费师范生")
     participated_in_basic_service_project: Mapped[bool] = mapped_column(nullable=True,
@@ -131,7 +131,7 @@ class TeacherInfo(BaseDBModel):
     teacher_number: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="教职工号")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
     department: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="部门")
-    org_id: Mapped[int] = mapped_column(INT, nullable=True, default=0, comment="机构ID")
+    org_id: Mapped[int] = mapped_column(BigInteger, nullable=True, default=0, comment="机构ID")
 
     hmotf: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="港澳台侨外")
     hukou_type: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="户口类别")
@@ -142,12 +142,14 @@ class TeacherInfo(BaseDBModel):
     language: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="语种")
     language_proficiency_level: Mapped[str] = mapped_column(String(255), nullable=True, default="",
                                                             comment="语言掌握程度")
-    language_certificate_name: Mapped[str] = mapped_column(String(255), nullable=True, default="",comment="语言证书名称")
+    language_certificate_name: Mapped[str] = mapped_column(String(255), nullable=True, default="",
+                                                           comment="语言证书名称")
     contact_address: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="通讯地址省市县")
-    contact_address_details: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="通讯地址详细信息")
+    contact_address_details: Mapped[str] = mapped_column(String(255), nullable=True, default="",
+                                                         comment="通讯地址详细信息")
     email: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="电子信箱")
     highest_education_level: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="最高学历层次")
     highest_degree_name: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="最高学位名称")
     is_major_graduate: Mapped[bool] = mapped_column(nullable=True, default=False, comment="是否为师范生")
-    other_contact_address_details: Mapped[str] = mapped_column(String(255), nullable=True, default="", comment="其他联系方式")
-
+    other_contact_address_details: Mapped[str] = mapped_column(String(255), nullable=True, default="",
+                                                               comment="其他联系方式")
