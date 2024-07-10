@@ -772,7 +772,7 @@ class TeacherBorrowModel(BaseModel):
     current_region_area_id: Optional[int] | None = Field(None, title="现管辖区域区", description="现管辖区域区")
     borrow_out_date: Optional[date] | None = Field(None, title="借出日期", description="借出日期")
 
-    transfer_reason: str = Field("", title="借动原因", description="借动原因")
+    borrow_reason: str = Field("", title="借动原因", description="借动原因")
     remark: str = Field("", title="备注", description="备注")
     teacher_id: Optional[int] | None = Field(None, title="教师ID", description="教师ID")
     borrow_type: BorrowType = Field("borrow_in", title="借动类型", description="借入或者借出")
@@ -828,7 +828,7 @@ class TeacherBorrowReModel(BaseModel):
     current_region_area_id: Optional[int] | None = Field(None, title="现管辖区域区", description="现管辖区域区")
     borrow_out_date: Optional[date] | None = Field(None, title="借出日期", description="借出日期")
 
-    transfer_reason: str = Field("", title="借动原因", description="借动原因")
+    borrow_reason: str = Field("", title="借动原因", description="借动原因")
     remark: str = Field("", title="备注", description="备注")
     teacher_id: Optional[int] | None = Field(None, title="教师ID", description="教师ID")
     borrow_type: BorrowType = Field("borrow_in", title="借动类型", description="借入或者借出")

@@ -31,7 +31,7 @@ class StudentSessionDao(DAOBase):
         获取单个类别
         """
         session = await self.slave_db()
-        result = await session.execute(select(StudentSession).where(StudentSession.session_id == session_id))
+        result = await session.execute(select(StudentSession).where(StudentSession.session_id == int(session_id)))
         return result.scalar_one_or_none()
 
     async def get_student_session_by_param(self, **kwargs):

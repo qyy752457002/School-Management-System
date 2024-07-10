@@ -1,12 +1,12 @@
 from enum import Enum
 
 from fastapi import Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from datetime import date, datetime
 from models.public_enum import YesOrNo, Gender, IDtype
 from models.student_transaction import AuditAction
 from models.students import  Relationship, Registration,HealthStatus,StudentApprovalAtatus
-from typing import Optional
+from typing import Optional, Iterable
 
 
 class StudentStatus(str, Enum):
@@ -40,9 +40,23 @@ class NewStudents(BaseModel):
     id_type: str = Field("", title="证件类别", description="证件类别")
     id_number: str = Field("", title="证件号码", description="证件号码")
     photo: str = Field("", title="照片", description="照片")
-    student_id: int = Field(0, title="", description="id")
-    school_id: int = Field(0, title="", description="学校id")
-    session_id: int = Field(0, title="", description="届别id")
+    student_id: int|str = Field(0, title="", description="id")
+    school_id: int|str = Field(0, title="", description="学校id")
+    session_id: int|str = Field(0, title="", description="届别id")
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 
 
 
@@ -64,8 +78,8 @@ class NewStudentsQuery(BaseModel):
     id_type: Optional[str] = Query('', title="证件类别", description="证件类别")
     id_number: Optional[str] = Query('', title="证件号码", description="证件号码")
     school: Optional[str|None] = Query('', title="学校", description="学校")
-    school_id: Optional[int ] = Query(0, title="", description="学校id")
-    class_id: Optional[int ] = Query(0, title="", description="班级ID")
+    school_id: Optional[int|str ] = Query(0, title="", description="学校id")
+    class_id: Optional[int|str ] = Query(0, title="", description="班级ID")
 
     enrollment_date: Optional[date] = Query(None, title="登记时间", description="登记时间")
     enrollment_date_range: Optional[str] = Query(None, title="登记时间", description="登记时间区间 逗号分隔")
@@ -73,6 +87,20 @@ class NewStudentsQuery(BaseModel):
     approval_status: Optional[str] = Query('', title="状态", description="状态")
     emporary_borrowing_status: Optional[str] = Query('', title="", description="临时借读")
     edu_number: Optional[str] = Query('', title="", description="学籍号")
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 
 
 class NewStudentsQueryRe(BaseModel):
@@ -87,7 +115,7 @@ class NewStudentsQueryRe(BaseModel):
     区县：county
     状态：status
     """
-    student_id: int|None = Field(..., title="学生id", description="学生id")
+    student_id: int|None|str = Field(..., title="学生id", description="学生id")
     student_name: str|None = Field(None, title="学生姓名", description="学生姓名")
     enrollment_number: str|None = Field(None, title="报名号", description="报名号")
     student_gender: Gender|str|None = Field(None, title="性别", description="性别")
@@ -108,6 +136,20 @@ class NewStudentsQueryRe(BaseModel):
     class_name: str|None = Field(None, title="班级名称", description="")
     enrollment_date: str|date |None= Field(None, title="入学登记日期", description="")
     grade_name: str|None = Field(None, title="年级名称", description="")
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 
 
 class StudentsKeyinfo(BaseModel):
@@ -121,7 +163,7 @@ class StudentsKeyinfo(BaseModel):
     证件号码：id_number
     照片：photo
     """
-    student_id: int = Field(None, title="学生id", description="学生id")
+    student_id: int|str = Field(None, title="学生id", description="学生id")
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
     enrollment_number: str = Field('', title="报名号", description="报名号")
     birthday: date = Field(..., title="生日", description="生日")
@@ -129,6 +171,20 @@ class StudentsKeyinfo(BaseModel):
     id_type: str = Field(..., title="证件类别", description="证件类别")
     id_number: str = Field(..., title="证件号码", description="证件号码")
     photo: str = Field('', title="照片", description="照片")
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 
 
 class StudentsKeyinfoDetail(BaseModel):
@@ -143,7 +199,7 @@ class StudentsKeyinfoDetail(BaseModel):
     照片：photo
 
     """
-    student_id: int = Field(None, title="学生id", description="学生id")
+    student_id: int|str = Field(None, title="学生id", description="学生id")
     student_name: str = Field('', title="学生姓名", description="学生姓名")
     enrollment_number: str = Field('', title="报名号", description="报名号")
     birthday: date = Field('', title="生日", description="生日")
@@ -162,8 +218,20 @@ class StudentsKeyinfoDetail(BaseModel):
     borough: str = Field("", title="", description="", max_length=50)
     loc_area: str = Field("", title="", description="", max_length=50)
     loc_area_pro: str = Field("", title="", description="", max_length=50)
-
-
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 
 class StudentsKeyinfoChange(BaseModel):
     """
@@ -176,8 +244,8 @@ class StudentsKeyinfoChange(BaseModel):
     证件号码：id_number
     照片：photo
     """
-    id: int = Field(None, title="id", description="id")
-    student_id: int = Field(None, title="学生id", description="学生id")
+    id: int|str = Field(None, title="id", description="id")
+    student_id: int|str = Field(None, title="学生id", description="学生id")
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
     enrollment_number: str = Field('', title="报名号", description="报名号")
     birthday: date = Field(..., title="生日", description="生日")
@@ -186,6 +254,20 @@ class StudentsKeyinfoChange(BaseModel):
     id_number: str = Field(..., title="证件号码", description="证件号码")
     photo: str = Field('', title="照片", description="照片")
     approval_status: Optional[str] = Query(None, title="状态", description="状态")
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 
 
 class StudentsKeyinfoChangeAudit(BaseModel):
@@ -193,11 +275,25 @@ class StudentsKeyinfoChangeAudit(BaseModel):
     # in_school_id: int = Field(0, title="学校ID", description="学校ID",examples=['1'])
     # grade_id: int = Field(0, title="年级ID", description="年级ID",examples=['1'])
     # status: str = Field('', title="",description="状态",examples=[''])
-    apply_id: int = Query(..., description="申请id", example='2')
+    apply_id: int |str= Query(..., description="申请id", example='2')
     audit_action: AuditAction = Query(..., description="审批的操作",
                                                  example='pass')
     remark: str = Query("", description="审批的备注", min_length=0, max_length=200,
                         example='同意 无误')
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id','apply_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 
 class StudentsBaseInfo(BaseModel):
     """
@@ -237,11 +333,11 @@ class StudentsBaseInfo(BaseModel):
     常住地址：permanent_address
     备注：remark
     """
-    student_base_id: int = Field(0, title="学生信息id", description="学生信息id")
-    student_id: int = Field(..., title="学生id", description="学生id")
-    grade_id: int|None = Field(0, title="", description="")
-    class_id: int|None = Field(0, title="", description="")
-    school_id: int|None = Field(0, title="", description="")
+    student_base_id: int|str = Field(0, title="学生信息id", description="学生信息id")
+    student_id: int|str = Field(..., title="学生id", description="学生id")
+    grade_id: int|None|str = Field(0, title="", description="")
+    class_id: int|None|str = Field(0, title="", description="")
+    school_id: int|None|str = Field(0, title="", description="")
 
     name_pinyin: str = Field("", title="姓名拼音", description="姓名拼音")
     session: str = Field("", title="届别", description="届别")
@@ -267,7 +363,7 @@ class StudentsBaseInfo(BaseModel):
     only_child: bool = Field( None, title="是否独生子女", description="是否独生子女")
     # left_behind_children: YesOrNo = Field("N", title="是否留守儿童", description="是否留守儿童")
     left_behind_children: bool = Field(None, title="是否留守儿童", description="是否留守儿童")
-    floating_population: bool = Field("N", title="是否流动人口", description="是否流动人口")
+    floating_population: bool = Field(False, title="是否流动人口", description="是否流动人口")
 
     # floating_population: YesOrNo = Field("N", title="是否流动人口", description="是否流动人口")
     overseas_chinese: str  = Field("", title="是否港澳台侨胞", description="是否港澳台侨胞")
@@ -293,9 +389,23 @@ class StudentsBaseInfo(BaseModel):
     admission_date: date |datetime|None= Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
     nationality: str|None = Field("", title="国籍/地区", description="国籍/地区")
     enrollment_method: str|None = Field("", title="就读方式", description="就读方式")
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id','student_base_id','grade_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 
 class NewBaseInfoCreate(BaseModel):
-    student_id: int = Field(..., title="学生id", description="学生id")
+    student_id: int|str = Field(..., title="学生id", description="学生id")
     # birthplace_district: str = Field('', title="出生地", description="出生地")
     native_place_district: str = Field('', title="籍贯", description="籍贯")
     ethnicity: str = Field("", title="民族", description="民族")
@@ -319,7 +429,7 @@ class NewBaseInfoCreate(BaseModel):
 
     # migrant_children: YesOrNo = Field("N", title="是否随迁子女", description="是否随迁子女")
     migrant_children: bool = Field(None, title="是否随迁子女", description="是否随迁子女")
-    floating_population: bool = Field("N", title="是否流动人口", description="是否流动人口")
+    floating_population: bool = Field(False, title="是否流动人口", description="是否流动人口")
 
     # floating_population: YesOrNo = Field("N", title="是否流动人口", description="是否流动人口")
     # only_child: YesOrNo = Field("N", title="是否独生子女", description="是否独生子女")
@@ -330,8 +440,8 @@ class NewBaseInfoCreate(BaseModel):
     specialty: str = Field("", title="特长", description="特长")
     permanent_address: str = Field("", title="常住地址", description="常住地址")
     birth_place: str|None = Field("", title="出生地", description="出生地")
-    school_id: int = Field(0, title="学校id", description="学校id")
-    session_id: int = Field(0, title="", description="届别id")
+    school_id: int|str = Field(0, title="学校id", description="学校id")
+    session_id: int |str= Field(0, title="", description="届别id")
     registration_date: date = Field(date(1970, 1, 1), title="登记日期", description="登记日期")
     admission_date: date |datetime|None= Field(date(1970, 1, 1), title="入学年月new", description="入学年月new")
 
@@ -339,11 +449,25 @@ class NewBaseInfoCreate(BaseModel):
     enrollment_method: str|None = Field("", title="就读方式", description="就读方式")
     residence_address: str|None = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
     residence_district: str|None= Field("", title="户口所在地new", description="户口所在地new")
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 
 
 class NewBaseInfoUpdate(BaseModel):
-    student_base_id: int = Field(..., title="学生信息id", description="学生信息id")
-    student_id: int = Field(..., title="学生id", description="学生id")
+    student_base_id: int|str = Field(..., title="学生信息id", description="学生信息id")
+    student_id: int|str = Field(..., title="学生id", description="学生id")
     native_place_district: str = Field(..., title="籍贯", description="籍贯")
     ethnicity: str = Field("", title="民族", description="民族")
     blood_type: str = Field("", title="血型", description="血型")
@@ -360,7 +484,7 @@ class NewBaseInfoUpdate(BaseModel):
     left_behind_children: bool = Field(None, title="是否留守儿童", description="是否留守儿童")
     migrant_children: bool = Field(None, title="是否随迁子女", description="是否随迁子女")
 
-    floating_population: bool = Field("N", title="是否流动人口", description="是否流动人口")
+    floating_population: bool = Field(False, title="是否流动人口", description="是否流动人口")
     only_child: bool = Field( None, title="是否独生子女", description="是否独生子女")
 
     identity_card_validity_period: str = Field("", title="身份证件有效期", description="身份证件有效期")
@@ -375,6 +499,20 @@ class NewBaseInfoUpdate(BaseModel):
 
     nationality: str |None= Field("", title="国籍/地区", description="国籍/地区")
     enrollment_method: str |None= Field("", title="就读方式", description="就读方式")
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id','student_base_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 # 学生家庭成员信息模型
 class StudentsFamilyInfo(BaseModel):
     """
@@ -396,8 +534,8 @@ class StudentsFamilyInfo(BaseModel):
     工作单位：workplace
     家庭成员职业：family_member_occupation
     """
-    student_family_info_id: int = Field(..., title="家庭成员id", description="家庭成员id")
-    student_id: int = Field(..., title="学生id", description="学生id")
+    student_family_info_id: int|str = Field(..., title="家庭成员id", description="家庭成员id")
+    student_id: int|str = Field(..., title="学生id", description="学生id")
     name: str = Field(..., title="姓名", description="姓名")
     gender: Gender = Field(..., title="性别", description="性别")
     relationship: Relationship = Field(..., title="关系", description="关系")
@@ -413,6 +551,20 @@ class StudentsFamilyInfo(BaseModel):
     contact_address: str = Field(..., title="联系地址", description="联系地址")
     workplace: str = Field("", title="工作单位", description="工作单位")
     family_member_occupation: str = Field("", title="家庭成员职业", description="家庭成员职业")
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id','student_family_info_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 
 
 class StudentsFamilyInfoCreate(BaseModel):
@@ -435,7 +587,7 @@ class StudentsFamilyInfoCreate(BaseModel):
     工作单位：workplace
     家庭成员职业：family_member_occupation
     """
-    student_id: int = Field(..., title="学生id", description="学生id")
+    student_id: int|str = Field(..., title="学生id", description="学生id")
     name: str = Field(..., title="姓名", description="姓名")
     gender: Gender = Field(..., title="性别", description="性别")
     relationship: Relationship = Field(..., title="关系", description="关系")
@@ -451,6 +603,20 @@ class StudentsFamilyInfoCreate(BaseModel):
     contact_address: str = Field(..., title="联系地址", description="联系地址")
     workplace: str = Field("", title="工作单位", description="工作单位")
     family_member_occupation: str = Field("", title="家庭成员职业", description="家庭成员职业")
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 
 
 class StudentsUpdateFamilyInfo(BaseModel):
@@ -471,8 +637,8 @@ class StudentsUpdateFamilyInfo(BaseModel):
     工作单位：workplace
     家庭成员职业：family_member_occupation
     """
-    student_family_info_id: int = Field(..., title="家庭成员id", description="家庭成员id")
-    student_id: int = Field(..., title="学生id", description="学生id")
+    student_family_info_id: int|str = Field(..., title="家庭成员id", description="家庭成员id")
+    student_id: int |str= Field(..., title="学生id", description="学生id")
     name: str = Field(..., title="姓名", description="姓名")
     gender: Gender = Field(..., title="性别", description="性别")
     relationship: Relationship = Field(..., title="关系", description="关系")
@@ -488,11 +654,20 @@ class StudentsUpdateFamilyInfo(BaseModel):
     contact_address: str = Field(..., title="联系地址", description="联系地址")
     workplace: str = Field("", title="工作单位", description="工作单位")
     family_member_occupation: str = Field("", title="家庭成员职业", description="家庭成员职业")
-
-
-
-
-
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id','student_family_info_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 
 class GraduationStudents(BaseModel):
     """
@@ -502,17 +677,31 @@ class GraduationStudents(BaseModel):
 
 
     """
-    id: int = Query(0, title="", description="id", example='1'),
+    id: int |str= Query(0, title="", description="id", example='1'),
 
-    student_id: int = Field(0, title="学生id", description="学生id", examples=['0'])
+    student_id: int|str = Field(0, title="学生id", description="学生id", examples=['0'])
     graduation_type: str = Field('', title="状态", description="状态")
     student_name: str = Field('', title="学生姓名", description="学生姓名")
     student_gender: str = Field('', title="性别", description="性别")
     school_name: str = Field('', title="学校", description="学校")
     borough: str = Field('', title="", description="行政属地")
     edu_number: str = Field('', title="", description="学籍号码")
-    class_id: int = Field(0, title="", description="班级")
+    class_id: int|str = Field(0, title="", description="班级")
     class_name: str = Field('', title="", description="班级名称")
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 
 
 #
@@ -520,17 +709,48 @@ class GraduationStudents(BaseModel):
 
 
 class NewStudentsFlowOut(BaseModel):
-    student_id: int = Query(..., description="学生id", examples=["1"]),
+    student_id: int|str = Query(..., description="学生id", examples=["1"]),
     flow_out_time: str = Query(..., description="流出时间", min_length=1, max_length=20, examples=["2020-10-10"]),
     flow_out_reason: str = Query('', description="流出原因", min_length=1, max_length=20, examples=["家庭搬迁"]),
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 
 
 class StudentSession(BaseModel):
-    session_id: int = Query(0, description="届别id",   examples=["1234567890"]),
+    session_id: int |str= Query(0, description="届别id",   examples=["1234567890"]),
     session_name: str = Query(..., description="届别名称", min_length=1, max_length=20, examples=["2020级"]),
     session_alias: str = Query(..., description="届别别名", min_length=1, max_length=20, examples=["2020届别"]),
     session_status: str = Query(..., description="届别状态", min_length=1, max_length=20, examples=["开"])
     year: str|None = Query(None, description="年份", min_length=1, max_length=20, examples=["2024"])
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id']
+        for _change in _change_list:
+            # if not  isinstance(data, Iterable):
+            #     pass
+                # continue
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 
 
 class NewStudentTransferIn(BaseModel):
@@ -558,14 +778,42 @@ class NewStudentTransferIn(BaseModel):
     edu_number: str = Field('', title="", description="学籍号码", examples=["DF23321312"])
     residence_address_detail: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
     residence_district: str = Field('', title="户口所在行政区", description="户口所在行政区")
-    student_id: int = Query(0, title="", description="id", example='1'),
+    student_id: int |str= Query(0, title="", description="id", example='1'),
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 
 class StudentGraduation(BaseModel):
-    student_id: int = Query(0, title="", description="学生id", example= 1),
+    student_id: int |str= Query(0, title="", description="学生id", example= 1),
     graduation_type: str = Query('', description="毕业类型",   max_length=20, examples=[""]),
     graduation_remarks: str = Query('', description="毕业备注",   max_length=200, examples=[""]),
     credential_notes: str = Query('', description="制证备注",  max_length=200, examples=[""])
     graduation_photo: str = Query('', description="毕业照",   max_length=200, examples=[""])
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data
 class NewStudentTask(BaseModel):
     file_name: str = Field('', title="",description="",examples=[' '])
     bucket: str = Field('', title="",description="",examples=[' '])

@@ -1,5 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
@@ -12,6 +13,7 @@ from business_exceptions.school import SchoolNotFoundError
 from daos.organization_dao import OrganizationDAO
 # from models.organization import Campus
 from rules.enum_value_rule import EnumValueRule
+from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
 from views.models.organization import Organization
 # from views.models.organization import Campus as Organization
 
@@ -52,9 +54,11 @@ class OrganizationRule(object):
         # 只有2步  故新增几位开设中 
         organization_db.created_uid = 0
         organization_db.updated_uid = 0
+        organization_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
         organization_db = await self.organization_dao.add_organization(organization_db)
         organization = orm_model_to_view_model(organization_db, Organization, exclude=["created_at",'updated_at'])
+        convert_snowid_in_model(organization, ["id", "school_id",'parent_id',])
         return organization
 
     async def update_organization(self, organization,):
@@ -72,6 +76,8 @@ class OrganizationRule(object):
 
         organization_db = await self.organization_dao.update_organization(organization_db,*need_update_list)
         print(organization_db,999)
+        convert_snowid_in_model(organization_db, ["id", "school_id",'parent_id',])
+
         return organization_db
 
     async def update_organization_byargs(self, organization,ctype=1):
@@ -109,6 +115,8 @@ class OrganizationRule(object):
             await self.organization_dao.delete_organization_by_ids(parent_id_lv3+parent_id_lv2)
             # organization_db = await self.organization_dao.softdelete_organization(exists_organization)
             pass
+        convert_snowid_in_model(organization, ["id", "school_id",'parent_id',])
+
         return organization
 
     async def softdelete_organization(self, organization_id):
@@ -135,13 +143,11 @@ class OrganizationRule(object):
 
             pass
 
-
-
-
         paging = await self.organization_dao.query_organization_with_page(page_request,  parent_id_lv2 , school_id
                                                               )
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, Organization)
+        convert_snowid_to_strings(paging_result, ["id", "school_id",'parent_id'])
         return paging_result
 
 
@@ -183,6 +189,8 @@ class OrganizationRule(object):
         lst = []
         for row in res:
             planning_school = orm_model_to_view_model(row, OrganizationModel)
+            convert_snowid_in_model(planning_school)
+
 
             lst.append(planning_school)
         return lst
@@ -190,6 +198,6 @@ class OrganizationRule(object):
     async def increment_organization_member_cnt(self, organization_id,):
         #
 
-        exists_organization_members = await self.organization_dao.update_organization_increment_member_cnt( OrganizationModel(id=organization_id, ))
+        exists_organization_members = await self.organization_dao.update_organization_increment_member_cnt( OrganizationModel(id= int(organization_id), ))
 
         return organization_id

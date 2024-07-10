@@ -28,7 +28,7 @@
           "port": 54321,
           "user": "schooloms",
           "password": "J16s10Wp08yfEskmVAJH",
-          "database": "school_oms_dev"
+          "database": "school_oms_test"
         }
       ]
     }
@@ -222,6 +222,14 @@
         "description": "教师导出",
         "executor_cls_model": "views.tasks.new_teacher_task.TeacherExportExecutor",
         "payload_cls_model": "views.models.teachers.CurrentTeacherQuery"
+      },
+      "teacher_save_export": {
+        "topic": "teacher_export",
+        "name": "",
+        "consumer_group_id": "service",
+        "description": "",
+        "executor_cls_model": "views.tasks.new_teacher_task.TeacherSaveExportExecutor",
+        "payload_cls_model": "views.models.teachers.TeacherFileStorageModel"
       }
     }
   }

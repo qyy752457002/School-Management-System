@@ -1,4 +1,5 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -9,7 +10,7 @@ from daos.class_division_records_dao import ClassDivisionRecordsDAO
 from daos.grade_dao import GradeDAO
 from daos.students_dao import StudentsDao
 from models.class_division_records import ClassDivisionRecords
-from views.common.common_view import page_none_deal
+from views.common.common_view import page_none_deal, convert_snowid_to_strings
 from views.models.class_division_records import ClassDivisionRecords as ClassDivisionRecordsModel
 from views.models.class_division_records import ClassDivisionRecordsSearchRes
 from views.models.classes import Classes
@@ -31,12 +32,15 @@ class ClassDivisionRecordsRule(object):
         return class_division_records
 
     async def add_class_division_records(self, class_id, student_ids):
+        class_id = int(class_id)
         class_division_records=[]
         if ',' in student_ids:
             student_ids = student_ids.split(',')
         else:
             student_ids = [student_ids]
         for student_id in student_ids:
+            student_id = int(student_id)
+
             class_division_records = ClassDivisionRecordsModel(class_id=class_id, student_id=student_id)
             class_division_records_db = view_model_to_orm_model(class_division_records, ClassDivisionRecords, exclude=["id"])
 
@@ -64,7 +68,7 @@ class ClassDivisionRecordsRule(object):
 
             class_division_records_db.school_id = grade_info.school_id
             # class_division_records_db.status =
-
+            class_division_records_db.id = SnowflakeIdGenerator(1, 1).generate_id()
             class_division_records_db = await self.class_division_records_dao.add_class_division_records(class_division_records_db)
             class_division_records = orm_model_to_view_model(class_division_records_db, ClassDivisionRecordsModel, exclude=["created_at", 'updated_at'])
 
@@ -114,4 +118,7 @@ class ClassDivisionRecordsRule(object):
         paging=page_none_deal(paging)
         # paging_result = PaginatedResponse.from_paging(, NewStudentsQueryRe)
         paging_result = PaginatedResponse.from_paging(paging, ClassDivisionRecordsSearchRes,other_mapper={"approval_status": "status",})
+        convert_snowid_to_strings(paging_result,["id", "school_id",'grade_id','student_id','class_id'])
+
+
         return paging_result

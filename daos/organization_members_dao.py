@@ -33,16 +33,17 @@ class OrganizationMembersDAO(DAOBase):
 			session = await self.master_db()
 		else:
 			session = await self.slave_db()
-		result = await session.execute(select(OrganizationMembers).where(OrganizationMembers.id == id))
+		result = await session.execute(select(OrganizationMembers).where(OrganizationMembers.id == int(id)))
 		return result.scalar_one_or_none()
 
 	async def get_organization_members_by_param(self, organization:OrganizationMembers):
 		session = await self.slave_db()
 		query = select(OrganizationMembers)
 		if organization.teacher_id:
-			query = query.where(OrganizationMembers.teacher_id == organization.teacher_id)
+			# query = query.where(OrganizationMembers.teacher_id == organization.teacher_id)
+			query = query.where(OrganizationMembers.teacher_id == int(organization.teacher_id))
 		if organization.org_id:
-			query = query.where(OrganizationMembers.org_id == organization.org_id)
+			query = query.where(OrganizationMembers.org_id == int(organization.org_id))
 		if organization.member_type:
 			query = query.where(OrganizationMembers.member_type == organization.member_type)
 
@@ -68,10 +69,10 @@ class OrganizationMembersDAO(DAOBase):
 			if isinstance(parent_id, list):
 				query = query.where(Organization.id.in_(parent_id))
 			else:
-				query = query.where(Organization.id == parent_id)
+				query = query.where(Organization.id == int(parent_id))
 
 		if school_id:
-			query = query.where(Organization.school_id == school_id)
+			query = query.where(Organization.school_id == int(school_id))
 		if teacher_name:
 			query = query.where(Teacher.teacher_name.like(f'%{teacher_name}%'))
 		if teacher_no:
@@ -97,5 +98,5 @@ class OrganizationMembersDAO(DAOBase):
 	async def delete_organization_members_by_teacher_id(self, teacher_id, is_commit=True):
 		session = await self.master_db()
 		update_contents = {"is_deleted":True}
-		query = update(OrganizationMembers).where(OrganizationMembers.teacher_id ==teacher_id).values(is_deleted=True)
+		query = update(OrganizationMembers).where(OrganizationMembers.teacher_id ==int(teacher_id)).values(is_deleted=True)
 		return await self.update(session, query, OrganizationMembers, update_contents, is_commit=is_commit)
