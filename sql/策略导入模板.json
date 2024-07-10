@@ -1,0 +1,41 @@
+[
+  {
+    "app_code": "base-mt",
+    "code": "school_manage",
+    "name": "学校管理", 
+    "description": "学校管理的多个资源的操作集合",
+    "model": "xxxx", // 授权模型
+    "role": [
+      // 策略规则
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "app_code": "xxxx", // 应用编码
+    "code": "xxxx", // 策略编码
+    "name": "xxxx", // 策略名称
+    "description": "xxxx", // 策略描述
+    "model": "xxxx", // 授权模型
+    "role": [
+      // 策略规则
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "app_code": "xxxx", // 应用编码
+    "code": "xxxx", // 策略编码
+    "name": "xxxx", // 策略名称
+    "description": "xxxx", // 策略描述
+    "model": "xxxx", // 授权模型
+    "role": [
+      // 策略规则
+      "",
+      "",
+      ""
+    ]
+  }
+]
