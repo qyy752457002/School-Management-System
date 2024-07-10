@@ -47,7 +47,8 @@ class GradeRule(object):
         grade_res = orm_model_to_view_model(grade_db_res, GradeModel, exclude=[""])
 
         #  市级添加  自动传递到 区级 自动到 校
-        if grade.city:
+        auto_gen= False
+        if auto_gen and  grade.city:
             # 区的转换   or todo
             districts =await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY,grade.city)
             print('区域',districts, '')

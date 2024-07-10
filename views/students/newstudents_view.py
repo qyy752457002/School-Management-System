@@ -16,6 +16,7 @@ from rules.class_division_records_rule import ClassDivisionRecordsRule
 from rules.operation_record import OperationRecordRule
 from views.common.common_view import compare_modify_fields, get_client_ip
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
+from views.models.planning_school import PlanningSchoolImportReq
 from views.models.students import NewStudents, NewStudentsQuery, NewStudentsQueryRe, StudentsKeyinfo, StudentsBaseInfo, \
     StudentsFamilyInfo, NewStudentTask
 # from fastapi import Field
@@ -128,10 +129,14 @@ class NewsStudentsView(BaseView):
 
     # 导入   任务队列的
     async def post_new_student_import(self,
-                                      file_name: str = Body(..., description="文件名"),
+                                      # file_name: str = Body(..., description="文件名"),
+                                      file:PlanningSchoolImportReq
+
                                  # bucket: str = Query(..., description="文件名"),
                                  # scene: str = Query('', description="文件名"),
                                  ) -> Task:
+        file_name= file.file_name
+        
         task = Task(
             #todo sourcefile无法记录3个参数  故 暂时用3个参数来实现  需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="new_student_import",
