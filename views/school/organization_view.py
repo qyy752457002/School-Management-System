@@ -29,9 +29,9 @@ class OrganizationView(BaseView):
     # 分页 支持查询 一级类目下面的二三级类目
     async def page(self,
                    page_request=Depends(PageRequest),
-                   school_id: int = Query(0, title="学校ID", description="学校ID", examples=[1]),
+                   school_id: int|str = Query(0, title="学校ID", description="学校ID", examples=[1]),
 
-                   parent_id: int = Query(0, title="", description="表示要查询的部门ID ", examples=[1]),
+                   parent_id: int|str = Query(0, title="", description="表示要查询的部门ID ", examples=[1]),
                    ):
         print(page_request)
         items = []
@@ -40,7 +40,7 @@ class OrganizationView(BaseView):
 
     # 删除  自动级联删除下层的部门
     async def delete(self,
-                     org_id: int = Query(0, title="", description="", examples=[1]),
+                     org_id: int|str = Query(0, title="", description="", examples=[1]),
                        ):
         print(org_id)
         res = await self.organization_rule.delete_organization(org_id)

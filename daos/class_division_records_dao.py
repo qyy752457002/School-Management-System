@@ -32,7 +32,7 @@ class ClassDivisionRecordsDAO(DAOBase):
 
     async def get_class_division_records_by_id(self, id):
         session = await self.slave_db()
-        result = await session.execute(select(ClassDivisionRecords).where(ClassDivisionRecords.id == id))
+        result = await session.execute(select(ClassDivisionRecords).where(ClassDivisionRecords.id == int(id)))
         return result.scalar_one_or_none()
 
     async def query_class_division_records_with_page(self, school_id, id_type, student_name, created_at, student_gender,
@@ -72,7 +72,7 @@ class ClassDivisionRecordsDAO(DAOBase):
         query = query.filter(mcond)
 
         if school_id:
-            query = query.where(ClassDivisionRecords.school_id == school_id)
+            query = query.where(ClassDivisionRecords.school_id == int(school_id))
         if id_type:
             query = query.where(Student.id_type == id_type)
         if student_name:
@@ -82,7 +82,7 @@ class ClassDivisionRecordsDAO(DAOBase):
         if student_gender:
             query = query.where(Student.student_gender == student_gender)
         if class_id:
-            query = query.where(ClassDivisionRecords.class_id == class_id)
+            query = query.where(ClassDivisionRecords.class_id == int(class_id))
         if status:
             query = query.where(Student.approval_status == status)
         else:
@@ -96,7 +96,9 @@ class ClassDivisionRecordsDAO(DAOBase):
 
     async def update_class_division_records(self, class_division_records, *args, is_commit=True):
         session = await self.master_db()
+        if  class_division_records.id:
+            class_division_records.id= int(class_division_records.id)
         update_contents = get_update_contents(class_division_records, *args)
-        query = update(ClassDivisionRecords).where(ClassDivisionRecords.id == class_division_records.id).values(
+        query = update(ClassDivisionRecords).where(ClassDivisionRecords.id == int(class_division_records.id)).values(
             **update_contents)
         return await self.update(session, query, class_division_records, update_contents, is_commit=is_commit)

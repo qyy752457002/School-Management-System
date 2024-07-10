@@ -50,7 +50,7 @@ class CurrentStudentsView(BaseView):
         self.graduation_student_rule = get_injector(GraduationStudentRule)
         self.student_key_info_change_rule = get_injector(StudentsKeyInfoChangeRule)
 
-    async def get_student_session(self, sessions_id: int = Query(..., title="", description="届别id",
+    async def get_student_session(self, sessions_id: int|str = Query(..., title="", description="届别id",
                                                                  example="1")):
         """
         在校生 查询届别信息
@@ -119,7 +119,7 @@ class CurrentStudentsView(BaseView):
     # 转学申请详情
     async def get_student_transaction_info(self,
 
-                                           apply_id: int = Query(..., description=" ", example='1'),
+                                           apply_id: int|str = Query(..., description=" ", example='1'),
 
                                            ):
         relationinfo = tinfo = ''
@@ -241,7 +241,7 @@ class CurrentStudentsView(BaseView):
         return resultra
     # 转学异动 撤回
     async def patch_transaction_cancel(self,
-                                       transferin_id: int = Query(..., description="转入申请id", example='2')
+                                       transferin_id: int |str= Query(..., description="转入申请id", example='2')
 
                                      # audit_info: StudentTransactionAudit
 
@@ -265,7 +265,7 @@ class CurrentStudentsView(BaseView):
 
     # 在校生转入    详情 就是工作流程的审核记录 各个阶段
     async def get_transferin_audit(self,
-                                   apply_id: int = Query(..., description=" 列表接口返回的process_instance_id", example='1'),
+                                   apply_id: int|str = Query(..., description=" 列表接口返回的process_instance_id", example='1'),
 
                                    ):
         res = await self.student_transaction_flow_rule.query_student_transaction_flow(apply_id)
@@ -347,7 +347,7 @@ class CurrentStudentsView(BaseView):
     async def patch_transferout_tooutside(self,
                                           student_edu_info_in: StudentEduInfoOut,
                                           # student_edu_info_out: StudentEduInfo,
-                                          student_id: int = Query(..., description="学生id", example='1'),
+                                          student_id: int|str = Query(..., description="学生id", example='1'),
 
                                           ):
         # print(new_students_key_info)
@@ -513,7 +513,7 @@ class CurrentStudentsView(BaseView):
     # 转学申请详情
     async def get_student_transaction_info_biz(self,
 
-                                           apply_id: int = Query(..., description=" ", example='1'),
+                                           apply_id: int|str = Query(..., description=" ", example='1'),
 
                                            ):
         relationinfo = tinfo = ''

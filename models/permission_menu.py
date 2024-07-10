@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -18,7 +18,7 @@ class PermissionMenu(BaseDBModel):
     __tablename__ = 'lfun_permission_menu'
     __table_args__ = {'comment': '菜单权限表'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="班级ID",autoincrement=True)
+    id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="班级ID",autoincrement=False)
     menu_name: Mapped[str] = mapped_column(String(64),  nullable=True, comment="菜单名称",default='')
     menu_path: Mapped[str] = mapped_column(String(64),  nullable=True, comment="菜单路径",default='')
     menu_icon: Mapped[str] = mapped_column(String(255),  nullable=True, comment="菜单图标",default='')

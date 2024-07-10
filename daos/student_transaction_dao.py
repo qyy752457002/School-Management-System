@@ -29,18 +29,18 @@ class StudentTransactionDAO(DAOBase):
 
 	async def get_studenttransaction_by_id(self, id):
 		session = await self.slave_db()
-		result = await session.execute(select(StudentTransaction).where(StudentTransaction.id == id))
+		result = await session.execute(select(StudentTransaction).where(StudentTransaction.id ==int(id) ))
 		return result.scalar_one_or_none()
 
 	async def get_studenttransaction_by_process_instance_id(self, id):
 		session = await self.slave_db()
-		result = await session.execute(select(StudentTransaction).where(StudentTransaction.process_instance_id == id).order_by(StudentTransaction.id.desc()))
+		result = await session.execute(select(StudentTransaction).where(StudentTransaction.process_instance_id == int(id)).order_by(StudentTransaction.id.desc()))
 		return result.scalar()
 
 
 	async def get_studenttransaction_by_student_id(self, id):
 		session = await self.slave_db()
-		result = await session.execute(select(StudentTransaction).where(StudentTransaction.student_id == id).order_by(StudentTransaction.id.desc()))
+		result = await session.execute(select(StudentTransaction).where(StudentTransaction.student_id == int(id)).order_by(StudentTransaction.id.desc()))
 		return result.scalar()
 
 	async def query_studenttransaction_with_page(self, page_request: PageRequest, **kwargs,):
@@ -83,5 +83,5 @@ class StudentTransactionDAO(DAOBase):
 	async def update_studenttransaction(self, studenttransaction, *args, is_commit=True):
 		session = await self.master_db()
 		update_contents = get_update_contents(studenttransaction, *args)
-		query = update(StudentTransaction).where(StudentTransaction.id == studenttransaction.id).values(**update_contents)
+		query = update(StudentTransaction).where(StudentTransaction.id == int(studenttransaction.id)).values(**update_contents)
 		return await self.update(session, query, studenttransaction, update_contents, is_commit=is_commit)

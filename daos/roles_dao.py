@@ -27,7 +27,7 @@ class RolesDAO(DAOBase):
 
 	async def get_roles_by_id(self, id):
 		session = await self.slave_db()
-		result = await session.execute(select(Role).where(Role.id == id))
+		result = await session.execute(select(Role).where(Role.id == int(id)))
 		return result.scalar_one_or_none()
 
 	async def query_roles_with_page(self, pageQueryModel, page_request: PageRequest):
@@ -41,5 +41,5 @@ class RolesDAO(DAOBase):
 	async def update_roles(self, roles, *args, is_commit=True):
 		session = await self.master_db()
 		update_contents = get_update_contents(roles, *args)
-		query = update(Role).where(Role.id == roles.id).values(**update_contents)
+		query = update(Role).where(Role.id == int(roles.id)).values(**update_contents)
 		return await self.update(session, query, roles, update_contents, is_commit=is_commit)

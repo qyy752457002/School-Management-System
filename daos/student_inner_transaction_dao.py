@@ -32,7 +32,7 @@ class StudentInnerTransactionDAO(DAOBase):
 
     async def get_student_inner_transaction_by_id(self, id):
         session = await self.slave_db()
-        result = await session.execute(select(StudentInnerTransaction).where(StudentInnerTransaction.id == id))
+        result = await session.execute(select(StudentInnerTransaction).where(StudentInnerTransaction.id == int(id)))
         return result.scalar_one_or_none()
 
     async def query_student_inner_transaction_with_page(self, student_inner_transaction_search,
@@ -62,11 +62,11 @@ class StudentInnerTransactionDAO(DAOBase):
         if student_inner_transaction_search.edu_number:
             query = query.where(StudentBaseInfo.edu_number == student_inner_transaction_search.edu_number)
         if student_inner_transaction_search.school_id:
-            query = query.where(StudentInnerTransaction.school_id == student_inner_transaction_search.school_id)
+            query = query.where(StudentInnerTransaction.school_id == int(student_inner_transaction_search.school_id))
         if student_inner_transaction_search.borough:
             query = query.where(PlanningSchool.borough == student_inner_transaction_search.borough)
         if student_inner_transaction_search.class_id:
-            query = query.where(StudentInnerTransaction.class_id == student_inner_transaction_search.class_id)
+            query = query.where(StudentInnerTransaction.class_id == int(student_inner_transaction_search.class_id))
 
         paging = await self.query_page(query, page_request)
         return paging
@@ -75,5 +75,5 @@ class StudentInnerTransactionDAO(DAOBase):
         session = await self.master_db()
         update_contents = get_update_contents(student_inner_transaction, *args)
         query = update(StudentInnerTransaction).where(
-            StudentInnerTransaction.id == student_inner_transaction.id).values(**update_contents)
+            StudentInnerTransaction.id == int(student_inner_transaction.id)).values(**update_contents)
         return await self.update(session, query, student_inner_transaction, update_contents, is_commit=is_commit)
