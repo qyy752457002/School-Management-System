@@ -10,7 +10,7 @@ from mini_framework.web.views import BaseView
 from rules.teachers_rule import TeachersRule
 from views.models.teachers import Teachers, TeacherInfo, TeachersCreatModel, CurrentTeacherInfoSaveModel, \
     TeacherInfoSaveModel, TeacherInfoSubmit, CombinedModel, TeacherFileStorageModel, CurrentTeacherQuery, \
-    TeacherApprovalQuery, NewTeacherRe, TeacherChangeLogQueryModel
+    TeacherApprovalQuery, TeacherChangeLogQueryModel
 from rules.teachers_info_rule import TeachersInfoRule
 from mini_framework.web.request_context import request_context_manager
 
