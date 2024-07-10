@@ -56,10 +56,11 @@ class TeachersRetireDao(DAOBase):
                        TeacherInfo.enter_school_time).join(TeacherRetire,
                                                            Teacher.teacher_id == TeacherRetire.teacher_id).join(
             TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id, isouter=True
-            ).join(School, Teacher.teacher_employer == School.id,
-                   )
-        query = query.where(Teacher.teacher_main_status == TeacherMainStatus.RETIRED.value)
-
+        ).join(School, Teacher.teacher_employer == School.id,
+               )
+        if query_model.in_post != None:
+            query = query.where(Teacher.teacher_main_status == TeacherMainStatus.RETIRED.value,
+                                TeacherInfo.in_post == query_model.in_post)
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
         if query_model.teacher_id_number:
@@ -75,8 +76,8 @@ class TeachersRetireDao(DAOBase):
             query = query.where(TeacherInfo.highest_education == query_model.highest_education)
         if query_model.political_status:
             query = query.where(TeacherInfo.political_status == query_model.political_status)
-        if query_model.in_post:
-            query = query.where(TeacherInfo.in_post == query_model.in_post)
+        # if query_model.in_post:
+        #     query = query.where(TeacherInfo.in_post == query_model.in_post)
         if query_model.enter_school_time_s and query_model.enter_school_time_e:
             query = query.where(
                 TeacherInfo.enter_school_time >= query_model.enter_school_time_s,

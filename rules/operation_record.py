@@ -14,6 +14,8 @@ from views.common.common_view import get_client_ip
 from views.models.operation_record import OperationRecord as OperationRecordModel
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
+
 
 @dataclass_inject
 class OperationRecordRule(object):
@@ -33,8 +35,12 @@ class OperationRecordRule(object):
         operation_record = orm_model_to_view_model(operation_record_db, OperationRecordModel, exclude=[""])
         return operation_record
 
-    async def add_operation_record(self, operation_record: OperationRecordModel,request=None):
+    async def add_operation_record(self, operation_record: OperationRecordModel, request=None):
         # 通用的参数可以 自动获取设置
+        if isinstance(operation_record.action_target_id, str):
+            operation_record.action_target_id = int(operation_record.action_target_id)
+        if isinstance(operation_record.process_instance_id, str):
+            operation_record.process_instance_id = int(operation_record.process_instance_id)
         operation_record.operation_time = datetime.now()
         if request:
             operation_record.ip = get_client_ip(request)
@@ -47,6 +53,7 @@ class OperationRecordRule(object):
             operation_record.status = ''
 
         operation_record_db = view_model_to_orm_model(operation_record, OperationRecord, exclude=["id"])
+        operation_record_db.id = SnowflakeIdGenerator(1, 1).generate_id()
         # operation_record_db.status =  OperationRecordStatus.DRAFT.value
         operation_record_db.created_uid = 0
         operation_record_db.updated_uid = 0
@@ -80,7 +87,7 @@ class OperationRecordRule(object):
 
     async def query_operation_record_with_page(self, page_request: PageRequest, target, action_target_id,
                                                operator_name,
-                                               operator_id, change_module, action_type,process_instance_id):
+                                               operator_id, change_module, action_type, process_instance_id):
         # 获取分页数据
         kdict = dict()
         if target:
@@ -102,7 +109,6 @@ class OperationRecordRule(object):
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, OperationRecordModel)
         return paging_result
-
 
     async def update_operation_record_status(self, operation_record_id, status):
         exists_operation_record = await self.operation_record_dao.get_operation_record_by_id(operation_record_id)

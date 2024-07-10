@@ -1,4 +1,4 @@
-from sqlalchemy import String, Date
+from sqlalchemy import String, Date, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
 from datetime import date
@@ -14,8 +14,8 @@ class TalentProgram(BaseDBModel):
     __tablename__ = 'lfun_talent_program'
     __table_args__ = {'comment': 'talent_program信息表'}
 
-    talent_program_id: Mapped[int] = mapped_column(primary_key=True, comment="talent_programID")
-    teacher_id: Mapped[int] = mapped_column(nullable=False, comment="教师ID")
+    talent_program_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, comment="talent_programID")
+    teacher_id: Mapped[int] = mapped_column(BigInteger, nullable=False, comment="教师ID")
     talent_project_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="人才项目名称")
     selected_year: Mapped[str] = mapped_column(String(64), nullable=True, comment="入选年份")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")

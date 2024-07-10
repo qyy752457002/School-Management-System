@@ -1,24 +1,12 @@
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
-from daos.teacher_transaction_dao import TeacherTransactionDAO
-from daos.teachers_dao import TeachersDao
-from models.teacher_transaction import TeacherTransaction
-from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
-    TeacherTransactionQueryModel, TeacherTransactionGetModel
-from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
-from business_exceptions.teacher_transction import TransactionError
-from rules.work_flow_instance_rule import WorkFlowNodeInstanceRule
 from mini_framework.utils.http import HTTPRequest
 from urllib.parse import urlencode
 from views.common.common_view import workflow_service_config
-from pydantic import BaseModel, Field
-from views.models.work_flow import WorkFlowInstanceCreateModel, WorkFlowInstanceModel, WorkFlowInstanceQueryModel, \
-    WorkFlowInstanceQueryReModel
+from pydantic import BaseModel
+from views.models.work_flow import WorkFlowInstanceCreateModel, WorkFlowInstanceModel, WorkFlowInstanceQueryModel
 from mini_framework.utils.json import JsonUtils
-from mini_framework.databases.queries.pages import Paging
 from datetime import date, datetime
-from views.models.teachers import TeachersCreatModel
 from typing import Type
 
 
@@ -32,6 +20,7 @@ class TeacherWorkFlowRule(object):
         work_instance_instance = await self.create_workflow_from_model(model, params)
         parameters = work_instance_instance.dict()
         params_data = JsonUtils.dict_to_json_str(parameters)
+
         httpreq = HTTPRequest()
         url = workflow_service_config.workflow_config.get("url")
         api_name = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'

@@ -8,8 +8,8 @@ from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers import Teacher
 from views.common.common_view import check_id_number
 from views.models.teachers import Teachers as TeachersModel
-from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherCreateResultModel, CombinedModel, \
-    TeacherInfoCreateResultModel, TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
+from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherCreateResultModel, \
+    TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
     NewTeacherApprovalCreate
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
@@ -23,26 +23,22 @@ from mini_framework.async_task.data_access.task_dao import TaskDAO
 from mini_framework.async_task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter, ExcelReader
 from mini_framework.storage.manager import storage_manager
-from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
-from mini_framework.storage.view_model import FileStorageModel
 from mini_framework.utils.logging import logger
 from daos.teacher_entry_dao import TeacherEntryApprovalDao
-from models.teacher_entry_approval import TeacherEntryApproval
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from daos.teacher_key_info_approval_dao import TeacherKeyInfoApprovalDao
-from models.teacher_key_info_approval import TeacherKeyInfoApproval
-from models.teacher_change_log import TeacherChangeLog
 from daos.teacher_change_dao import TeacherChangeLogDAO
 from rules.teacher_change_rule import TeacherChangeRule
-from models.teacher_approval_log import TeacherApprovalLog
 from daos.teacher_approval_log_dao import TeacherApprovalLogDao
-from mini_framework.databases.queries.pages import Pagination, Paging
 
 from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
 from rules.operation_record import OperationRecordRule
 from daos.operation_record_dao import OperationRecordDAO
 from views.common.common_view import compare_modify_fields
 from models.teachers_info import TeacherInfo
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
+
+from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 
 import os
 
@@ -64,6 +60,7 @@ class TeachersRule(object):
     operation_record_dao: OperationRecordDAO
 
     async def get_teachers_by_id(self, teachers_id):
+        teachers_id = int(teachers_id)
         teacher_db = await self.teachers_dao.get_teachers_by_id(teachers_id)
         if not teacher_db:
             raise TeacherNotFoundError()
@@ -92,11 +89,11 @@ class TeachersRule(object):
         if length > 0:
             raise TeacherExistsError()
         teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[])
+        teachers_db.teacher_id = SnowflakeIdGenerator(1, 1).generate_id()
         if teachers_db.teacher_id_type == 'resident_id_card':
             idstatus = check_id_number(teachers_db.teacher_id_number)
             if not idstatus:
                 raise IdCardError()
-
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         teachers_work = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
         params = {"process_code": "t_entry", "applicant_name": user_id}
@@ -107,7 +104,7 @@ class TeachersRule(object):
         # await self.teacher_work_flow_rule.update_work_flow_by_param(work_flow_instance["process_instance_id"],
         #                                                             update_params)
         teacher_entry_log = OperationRecord(
-            action_target_id=teachers_work.teacher_id,
+            action_target_id=int(teachers_work.teacher_id),
             target=OperationTarget.TEACHER.value,
             action_type=OperationType.CREATE.value,
             ip="127.0.0.1",
@@ -119,14 +116,14 @@ class TeachersRule(object):
             status="/",
             operator_id=1,
             operator_name=user_id,
-            process_instance_id=work_flow_instance["process_instance_id"])
+            process_instance_id=int(work_flow_instance["process_instance_id"]))
         await self.operation_record_rule.add_operation_record(teacher_entry_log)
         teachers_info = TeacherInfoSaveModel(teacher_id=teachers_work.teacher_id)
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
+        teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
         teacher_base_id = teachers_info.teacher_base_id
-        await self.teacher_submitted(teachers_work.teacher_id)
         return teachers_work, teacher_base_id
 
     async def query_teacher_operation_record_with_page(self, query_model: TeacherChangeLogQueryModel,
@@ -145,6 +142,8 @@ class TeachersRule(object):
         teachers.teacher_main_status = "employed"
         teachers.teacher_sub_status = "submitted"
         teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
+        teachers_db.is_approval = True
+        teachers_db.teacher_id = SnowflakeIdGenerator(1, 1).generate_id()
         if teachers_db.teacher_id_type == 'resident_id_card':
             idstatus = check_id_number(teachers_db.teacher_id_number)
             if not idstatus:
@@ -176,7 +175,7 @@ class TeachersRule(object):
                                                                         update_params)
             await self.teacher_progressing(teachers.teacher_id)
             teacher_change_log = OperationRecord(
-                action_target_id=teachers.teacher_id,
+                action_target_id=int(teachers.teacher_id),
                 target=OperationTarget.TEACHER.value,
                 action_type=OperationType.MODIFY.value,
                 ip="127.0.0.1",
@@ -188,7 +187,7 @@ class TeachersRule(object):
                 status="/",
                 operator_id=1,
                 operator_name=user_id,
-                process_instance_id=work_flow_instance["process_instance_id"])
+                process_instance_id=int(work_flow_instance["process_instance_id"]))
             await self.operation_record_rule.add_operation_record(teacher_change_log)
 
         elif teachers_main_status == "unemployed":
@@ -196,8 +195,8 @@ class TeachersRule(object):
             for key, value in teachers.dict().items():
                 if value:
                     need_update_list.append(key)
-            teachers=await self.teachers_dao.update_teachers(teachers, *need_update_list)
-        return teachers
+            teachers = await self.teachers_dao.update_teachers(teachers, *need_update_list)
+        return str(teachers.teacher_id)
 
     async def delete_teachers(self, teachers_id, user_id):
         exists_teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
@@ -206,7 +205,7 @@ class TeachersRule(object):
         teachers_db = await self.teachers_dao.delete_teachers(exists_teachers)
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
         teacher_entry_log = OperationRecord(
-            action_target_id=teachers.teacher_id,
+            action_target_id=int(teachers.teacher_id),
             target=OperationTarget.TEACHER.value,
             action_type=OperationType.DELETE.value,
             ip="127.0.0.1",
@@ -337,23 +336,24 @@ class TeachersRule(object):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("参数错误")
-            # source_file = task.payload
-            # local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
-            # storage_manager.download_file(
-            #     source_file.bucket_name, source_file.file_name, local_file_path
-            # )
-            local_file_path = "c.xlsx"
-            reader = ExcelReader()
-            reader.set_data(local_file_path)
-            reader.register_model("Sheet1", CombinedModel)
+            source_file = task.payload
+            local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
             logger.info("Test开始注册模型")
-            reader.register_model("Sheet1", TeachersCreatModel)
-            # reader.register_model("Sheet1", TeacherInfoCreateModel)
-            logger.info("Test开始读取模型")
-            data = reader.execute()["Sheet1"]
-            if not isinstance(data, list):
-                raise ValueError("数据格式错误")
-            results = []
+            storage_manager.download_file(
+                source_file.bucket_name, source_file.file_name, local_file_path
+            )
+            # local_file_path = "c.xlsx"
+            # reader = ExcelReader()
+            # reader.set_data(local_file_path)
+            # # reader.register_model("Sheet1", CombinedModel)
+            # logger.info("Test开始注册模型")
+            # # reader.register_model("Sheet1", TeachersCreatModel)
+            # # reader.register_model("Sheet1", TeacherInfoCreateModel)
+            # logger.info("Test开始读取模型")
+            # data = reader.execute()["Sheet1"]
+            # if not isinstance(data, list):
+            #     raise ValueError("数据格式错误")
+            # results = []
 
             # 两个一起写
             # for idx, item in enumerate(data):
@@ -386,6 +386,103 @@ class TeachersRule(object):
             #
             #         results.append(info_result)
 
+            # for idx, item in enumerate(data):
+            #     item = item.dict()
+            #     teacher_data = {key: item[key] for key in TeachersCreatModel.__fields__.keys() if key in item}
+            #     logger.info(teacher_data)
+            #     teacher_model = TeachersCreatModel(**teacher_data)
+            #     logger.info(type(teacher_data))
+            #
+            #     result_dict = teacher_data.copy()
+            #     result_dict["failed_msg"] = "成功"
+            #     result = TeacherCreateResultModel(**result_dict)
+            #     user_id = "asdfasdf"
+            #     try:
+            #         await self.add_teachers(teacher_model, user_id)
+            #
+            #     except Exception as ex:
+            #         result.failed_msg = str(ex)
+            #         logger.info(f"Failed to add teacher at index {idx}: {ex}")
+            #         print(ex, '表内数据异常')
+            #         raise ex
+            #     results.append(result)
+
+            # local_results_path = f"/tmp/c.xlsx"
+            # excel_writer = ExcelWriter()
+            # excel_writer.add_data("Sheet1", results)
+            # excel_writer.set_data(local_results_path)
+            # excel_writer.execute()
+            #
+            # random_file_name = shortuuid.uuid() + ".xlsx"
+            # file_storage = await storage_manager.put_file_to_object(
+            #     source_file.bucket_name, f"{random_file_name}.xlsx", local_results_path
+            # )
+            # file_storage_resp = await storage_manager.add_file(
+            #     self.file_storage_dao, file_storage
+            # )
+            #
+            # task_result = TaskResult()
+            # task_result.task_id = task.task_id
+            # task_result.result_file = file_storage_resp.file_name
+            # task_result.result_bucket = file_storage_resp.bucket_name
+            # task_result.result_file_id = file_storage_resp.file_id
+            # task_result.last_updated = datetime.now()
+            # task_result.state = TaskState.succeeded
+            # task_result.result_extra = {"file_size": 123}
+            #
+            # await self.task_dao.add_task_result(task_result)
+            # return task_result
+
+            # local_results_path = f"/tmp/{source_file.file_name}"
+            # excel_writer = ExcelWriter()
+            # excel_writer.add_data("Sheet1", results)
+            # excel_writer.set_data(local_results_path)
+            # excel_writer.execute()
+            #
+            # random_file_name = shortuuid.uuid() + ".xlsx"
+            # file_storage = await storage_manager.put_file_to_object(
+            #     source_file.bucket_name, f"{random_file_name}.xlsx", local_results_path
+            # )
+            # file_storage_resp = await storage_manager.add_file(
+            #     self.file_storage_dao, file_storage
+            # )
+            #
+            # task_result = TaskResult()
+            # task_result.task_id = task.task_id
+            # task_result.result_file = file_storage_resp.file_name
+            # task_result.result_bucket = file_storage_resp.bucket_name
+            # task_result.result_file_id = file_storage_resp.file_id
+            # task_result.last_updated = datetime.now()
+            # task_result.state = TaskState.succeeded
+            # task_result.result_extra = {"file_size": file_storage.file_size}
+            #
+            # await self.task_dao.add_task_result(task_result)
+            # return task_result
+        except Exception as e:
+            print(e, '异常')
+            raise e
+
+    async def import_teachers_save(self, task: Task, operator):
+        try:
+            if not isinstance(task.payload, TeacherFileStorageModel):
+                raise ValueError("参数错误")
+            # source_file = task.payload
+            # local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
+            # storage_manager.download_file(
+            #     source_file.bucket_name, source_file.file_name, local_file_path
+            # )
+            local_file_path = "c.xlsx"
+            reader = ExcelReader()
+            reader.set_data(local_file_path)
+            logger.info("Test开始注册模型")
+            reader.register_model("Sheet1", TeachersCreatModel)
+            # reader.register_model("Sheet1", TeacherInfoCreateModel)
+            logger.info("Test开始读取模型")
+            data = reader.execute()["Sheet1"]
+            if not isinstance(data, list):
+                raise ValueError("数据格式错误")
+            results = []
+
             for idx, item in enumerate(data):
                 item = item.dict()
                 teacher_data = {key: item[key] for key in TeachersCreatModel.__fields__.keys() if key in item}
@@ -396,10 +493,9 @@ class TeachersRule(object):
                 result_dict = teacher_data.copy()
                 result_dict["failed_msg"] = "成功"
                 result = TeacherCreateResultModel(**result_dict)
-                user_id = "asdfasdf"
+                user_id = operator
                 try:
                     await self.add_teachers(teacher_model, user_id)
-
                 except Exception as ex:
                     result.failed_msg = str(ex)
                     logger.info(f"Failed to add teacher at index {idx}: {ex}")
@@ -572,3 +668,10 @@ class TeachersRule(object):
         if teachers.teacher_sub_status != "active":
             teachers.teacher_sub_status = "active"
         return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
+
+    async def get_task_model_by_id(self, id):
+        fileinfo = await self.file_storage_dao.get_file_by_id(int(id))
+        fileinfo = fileinfo._asdict()['FileStorage']
+        task_model = TeacherFileStorageModel(file_name=fileinfo.file_name, bucket_name=fileinfo.bucket_name,
+                                             file_size=fileinfo.file_size)
+        return task_model

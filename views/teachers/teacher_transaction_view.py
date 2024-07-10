@@ -9,13 +9,14 @@ from views.models.teacher_transaction import TeacherBorrowModel, TeacherBorrowRe
     TeacherRetireQuery, TransferDetailsModel, TeacherRetireCreateModel
 from rules.transfer_details_rule import TransferDetailsRule
 
-from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionUpdateModel, \
-    TeacherTransactionQuery, TeacherTransferQueryModel, TeacherTransactionQueryModel
+from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionQuery, \
+    TeacherTransferQueryModel, TeacherTransactionQueryModel
 
 from rules.teacher_transaction_rule import TeacherTransactionRule
 from rules.teachers_rule import TeachersRule
 from rules.teacher_borrow_rule import TeacherBorrowRule
-from views.models.teacher_transaction import TeacherBorrowModel, TeacherBorrowReModel, TeacherBorrowQueryModel
+from views.models.teacher_transaction import TeacherBorrowModel, TeacherBorrowReModel, TeacherBorrowQueryModel, \
+    TeacherRetireQuery, TeacherRetireCreateModel
 from mini_framework.web.std_models.page import PageRequest
 from views.models.teachers import TeacherAdd
 from typing import Optional
@@ -29,12 +30,13 @@ class TransferDetailsView(BaseView):
         self.teacher_rule = get_injector(TeachersRule)
 
     async def get_transfer_details(self,
-                                   transfer_details_id: int = Query(None, title="transfer_detailsID",
+                                   transfer_details_id: str = Query(None, title="transfer_detailsID",
                                                                     description="transfer_detailsID", example=1234)
                                    ):
         """
         审批时仅查看调动信息，无日志信息
         """
+        transfer_details_id = int(transfer_details_id)
         res = await self.transfer_details_rule.get_transfer_details_by_transfer_details_id(transfer_details_id)
         return res
 
@@ -49,7 +51,6 @@ class TransferDetailsView(BaseView):
         """
 
         user_id = "asdfasdf"
-
         if add_teacher != None:
             await self.transfer_details_rule.add_transfer_in_outer_details(add_teacher, transfer_details, user_id)
         else:
@@ -74,11 +75,12 @@ class TransferDetailsView(BaseView):
     #     res = await self.transfer_details_rule.update_transfer_details(transfer_details)
     #     return res
 
-    async def get_transfer_details_all(self, teacher_id: int = Query(None, title="transfer_ID",
+    async def get_transfer_details_all(self, teacher_id: str = Query(None, title="transfer_ID",
                                                                      description="transfer_ID", example=1234)):
         """
         查询单个老师所有调动信息,是教师详情页中的调动明细
         """
+        teacher_id = int(teacher_id)
         return await self.transfer_details_rule.get_all_transfer_details(teacher_id)
 
     async def page_transfer_with_page(self, transfer_details=Depends(TeacherTransferQueryModel),
@@ -154,43 +156,49 @@ class TransferDetailsView(BaseView):
     #     return res
 
     async def patch_transfer_approved(self,
-                                      teacher_id: int = Body(None, title="transfer_detailsID",
+                                      teacher_id: str = Body(None, title="transfer_detailsID",
                                                              description="transfer_detailsID", example=1234),
-                                      process_instance_id: int = Body(..., title="流程实例id",
+                                      process_instance_id: str = Body(..., title="流程实例id",
                                                                       description="流程实例id",
                                                                       example=123),
                                       reason: str = Body("", title="reason",
                                                          description="审核理由")):
 
         user_id = "asdfasdf"
+        teacher_id = int(teacher_id)
+        process_instance_id = int(process_instance_id)
         reason = reason
         res = await self.transfer_details_rule.transfer_approved(teacher_id, process_instance_id, user_id,
                                                                  reason)
         return res
 
     async def patch_transfer_rejected(self,
-                                      teacher_id: int = Body(None, title="教师id",
+                                      teacher_id: str = Body(None, title="教师id",
                                                              description="教师id", example=1234),
-                                      process_instance_id: int = Body(..., title="流程实例id",
+                                      process_instance_id: str = Body(..., title="流程实例id",
                                                                       description="流程实例id",
                                                                       example=123),
                                       reason: str = Body("", title="reason",
                                                          description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
+        teacher_id = int(teacher_id)
+        process_instance_id = int(process_instance_id)
         res = await self.transfer_details_rule.transfer_rejected(teacher_id, process_instance_id, user_id,
                                                                  reason)
         return res
 
     async def patch_transfer_revoked(self,
-                                     teacher_id: int = Body(None, title="教师id",
+                                     teacher_id: str = Body(None, title="教师id",
                                                             description="教师id", example=1234),
-                                     process_instance_id: int = Body(..., title="流程实例id", description="流程实例id",
+                                     process_instance_id: str = Body(..., title="流程实例id", description="流程实例id",
                                                                      example=123),
                                      reason: str = Body("", title="reason",
                                                         description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
+        teacher_id = int(teacher_id)
+        process_instance_id = int(process_instance_id)
         res = await self.transfer_details_rule.transfer_revoked(teacher_id, process_instance_id, user_id,
                                                                 reason)
         return res
@@ -200,13 +208,12 @@ class TransferDetailsView(BaseView):
 class TeacherTransactionView(BaseView):
     def __init__(self):
         super().__init__()
-
         self.teacher_transaction_rule = get_injector(TeacherTransactionRule)
 
     async def get_teacher_transaction(self,
-                                      teacher_transaction_id: str = Query(..., title="teacher_transactionID",
-                                                                          description="teacher_transactionID",
-                                                                          example=1234)
+                                      teacher_transaction_id: int | str = Query(..., title="teacher_transactionID",
+                                                                                description="teacher_transactionID",
+                                                                                example=1234)
                                       ):
         teacher_transaction_id = int(teacher_transaction_id)
         # 异动审批中查询单个教师单个异动信息
@@ -224,9 +231,9 @@ class TeacherTransactionView(BaseView):
     #     res = await self.teacher_transaction_rule.update_teacher_transaction(teacher_transaction)
     #     return res
 
-    async def get_teacher_transaction_all(self, teacher_id: str = Query(None, title="teacher_transactionID",
-                                                                        description="teacher_transactionID",
-                                                                        example=1234)):
+    async def get_teacher_transaction_all(self, teacher_id: int | str = Query(None, title="teacher_transactionID",
+                                                                              description="teacher_transactionID",
+                                                                              example=1234)):
         """
         单个老师获取该老师的所有异动信息
         """
@@ -269,11 +276,11 @@ class TeacherTransactionView(BaseView):
     #     return res
 
     async def patch_teacher_active(self,
-                                   teacher_id: str = Body(..., title="教师编号", description="教师编号",
-                                                          example=123),
-                                   transaction_id: str = Body(..., title="教师变动记录编号",
-                                                              description="教师变动记录编号",
-                                                              example=123)):
+                                   teacher_id: int | str = Body(..., title="教师编号", description="教师编号",
+                                                                example=123),
+                                   transaction_id: int | str = Body(..., title="教师变动记录编号",
+                                                                    description="教师变动记录编号",
+                                                                    example=123)):
         teacher_id = int(teacher_id)
         transaction_id = int(transaction_id)
         try:
@@ -315,12 +322,13 @@ class TeacherBorrowView(BaseView):
         self.teacher_rule = get_injector(TeachersRule)
 
     async def get_teacher_borrow(self,
-                                 teacher_borrow_id: int = Query(None, title="teacher_borrowID",
-                                                                description="teacher_borrowID", example=1234)
+                                 teacher_borrow_id: int | str = Query(None, title="teacher_borrowID",
+                                                                      description="teacher_borrowID", example=1234)
                                  ):
         """
         审批时仅查看调动信息，无日志信息
         """
+        teacher_borrow_id = int(teacher_borrow_id)
         res = await self.teacher_borrow_rule.get_teacher_borrow_by_teacher_borrow_id(teacher_borrow_id)
         return res
 
@@ -355,11 +363,12 @@ class TeacherBorrowView(BaseView):
     #     res = await self.teacher_borrow_rule.update_teacher_borrow(teacher_borrow)
     #     return res
 
-    async def get_teacher_borrow_all(self, teacher_id: int = Query(None, title="teacher_borrowID",
-                                                                   description="teacher_borrowID", example=1234)):
+    async def get_teacher_borrow_all(self, teacher_id: int | str = Query(None, title="teacher_borrowID",
+                                                                         description="teacher_borrowID", example=1234)):
         """
         获取单个老师所有借动信息,是教师详情页中的借动明细
         """
+        teacher_id = int(teacher_id)
         return await self.teacher_borrow_rule.get_all_teacher_borrow(teacher_id)
 
     async def page_borrow_with_page(self, teacher_borrow=Depends(TeacherBorrowQueryModel),
@@ -437,52 +446,60 @@ class TeacherBorrowView(BaseView):
     #     return res
 
     async def patch_borrow_approved(self,
-                                    teacher_id: int = Body(None, title="transfer_detailsID",
-                                                           description="transfer_detailsID", example=1234),
-                                    process_instance_id: int = Body(..., title="流程实例id",
-                                                                    description="流程实例id",
-                                                                    example=123),
+                                    teacher_id: int | str = Body(None, title="transfer_detailsID",
+                                                                 description="transfer_detailsID", example=1234),
+                                    process_instance_id: int | str = Body(..., title="流程实例id",
+                                                                          description="流程实例id",
+                                                                          example=123),
                                     reason: str = Body("", title="reason",
                                                        description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
+        teacher_id = int(teacher_id)
+        process_instance_id = int(process_instance_id)
         res = await self.teacher_borrow_rule.borrow_approved(teacher_id, process_instance_id, user_id,
                                                              reason)
         return res
 
     async def patch_borrow_rejected(self,
-                                    teacher_id: int = Body(None, title="transfer_detailsID",
-                                                           description="transfer_detailsID", example=1234),
-                                    process_instance_id: int = Body(..., title="流程实例id",
-                                                                    description="流程实例id",
-                                                                    example=123),
+                                    teacher_id: int | str = Body(None, title="transfer_detailsID",
+                                                                 description="transfer_detailsID", example=1234),
+                                    process_instance_id: int | str = Body(..., title="流程实例id",
+                                                                          description="流程实例id",
+                                                                          example=123),
                                     reason: str = Body("", title="reason",
                                                        description="审核理由")):
         user_id = "asdfasdf"
         reason = reason
+        teacher_id = int(teacher_id)
+        process_instance_id = int(process_instance_id)
         res = await self.teacher_borrow_rule.borrow_rejected(teacher_id, process_instance_id, user_id,
                                                              reason)
         return res
 
     async def patch_borrow_revoked(self,
-                                   teacher_id: int = Body(None, title="transfer_detailsID",
-                                                          description="transfer_detailsID", example=1234),
-                                   process_instance_id: int = Body(..., title="流程实例id",
-                                                                   description="流程实例id",
-                                                                   example=123),
+                                   teacher_id: int | str = Body(None, title="transfer_detailsID",
+                                                                description="transfer_detailsID", example=1234),
+                                   process_instance_id: int | str = Body(..., title="流程实例id",
+                                                                         description="流程实例id",
+                                                                         example=123),
                                    reason: str = Body("", title="reason",
                                                       description="审核理由")):
         user_id = "asdfasdf"
+        teacher_id = int(teacher_id)
+        process_instance_id = int(process_instance_id)
         reason = reason
         res = await self.teacher_borrow_rule.borrow_revoked(teacher_id, process_instance_id, user_id,
                                                             reason)
         return res
 
     async def patch_teacher_borrow_active(self,
-                                          teacher_id: int = Body(..., title="教师编号", description="教师编号",
-                                                                 example=123),
-                                          process_instance_id: int = Body(..., title="教师变动记录编号",
-                                                                          description="教师变动记录编号",
-                                                                          example=123)):
+                                          teacher_id: int | str = Body(..., title="教师编号", description="教师编号",
+                                                                       example=123),
+                                          process_instance_id: int | str = Body(..., title="教师变动记录编号",
+                                                                                description="教师变动记录编号",
+                                                                                example=123)):
+        teacher_id = int(teacher_id)
+        process_instance_id = int(process_instance_id)
         await self.teacher_borrow_rule.borrow_teacher_active(teacher_id, process_instance_id)
         return teacher_id

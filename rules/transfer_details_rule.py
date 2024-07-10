@@ -1,7 +1,6 @@
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
-from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
-from mini_framework.databases.queries.pages import Pagination, Paging
+from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.web.std_models.page import PageRequest
 from daos.transfer_details_dao import TransferDetailsDAO
 from daos.teachers_dao import TeachersDao
 from models.transfer_details import TransferDetails
@@ -10,23 +9,22 @@ from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTra
     TransferDetailsReModel, TransferDetailsGetModel, TeacherTransferQueryModel, TeacherTransferQueryReModel, \
     TransferAndBorrowExtraModel
 from business_exceptions.teacher import TeacherNotFoundError, ApprovalStatusError
-from models.teacher_change_log import TeacherChangeLog
 from daos.teacher_change_dao import TeacherChangeLogDAO
 from rules.teacher_change_rule import TeacherChangeRule
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from daos.enum_value_dao import EnumValueDAO
 from rules.enum_value_rule import EnumValueRule
-from pydantic import BaseModel, Field
 from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
 from rules.operation_record import OperationRecordRule
 from daos.operation_record_dao import OperationRecordDAO
 from rules.teachers_rule import TeachersRule
 from views.models.teachers import TeacherRe, TeacherAdd
 
-from views.models.teacher_transaction import TeacherAddModel, WorkflowQueryModel
+from views.models.teacher_transaction import WorkflowQueryModel
 from datetime import datetime
 from daos.school_dao import SchoolDAO
-from typing import Type
+
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 
 @dataclass_inject
@@ -46,7 +44,7 @@ class TransferDetailsRule(object):
     async def get_transfer_details_by_transfer_details_id(self, transfer_details_id):
         transfer_details_db = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
             transfer_details_id)
-        transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsModel)
+        transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
         return transfer_details
 
     async def add_transfer_in_inner_details(self, transfer_details: TransferDetailsModel, user_id):
@@ -61,6 +59,7 @@ class TransferDetailsRule(object):
             if is_approval:
                 raise ApprovalStatusError()
             transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
+            transfer_details_db.transfer_details_id = SnowflakeIdGenerator(1, 1).generate_id()
             transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
             transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
             transfer_and_borrow_extra_model = await self.get_transfer_and_borrow_extra(
@@ -90,17 +89,20 @@ class TransferDetailsRule(object):
                 process_instance_id=work_flow_instance["process_instance_id"])
             await self.operation_record_rule.add_operation_record(teacher_transfer_log)
             await self.teachers_rule.teacher_progressing(transfer_details.teacher_id)
-            return transfer_details
+            return True
         except Exception as e:
-            raise e
+            return str(e)
 
     async def add_transfer_in_outer_details(self, add_teacher: TeacherAdd,
                                             transfer_details: TransferDetailsModel,
                                             user_id):
         try:
             teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
+            teachers.teacher_id = int(teachers.teacher_id)
+            teachers.teacher_employer = int(teachers.teacher_employer)
             transfer_details.teacher_id = teachers.teacher_id
             transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
+            transfer_details_db.transfer_details_id = SnowflakeIdGenerator(1, 1).generate_id()
             transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
             transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel)
             transfer_and_borrow_extra_model = await self.get_transfer_and_borrow_extra(
@@ -143,6 +145,7 @@ class TransferDetailsRule(object):
             transfer_details.original_district_area_id = int(school.borough)
             transfer_details.transfer_type = TransferType.OUT.value
             transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
+            transfer_details_db.transfer_details_id = SnowflakeIdGenerator(1, 1).generate_id()
             transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
             transfer_details_work = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel,
                                                             exclude=["process_instance_id", "original_unit_name",
@@ -180,14 +183,13 @@ class TransferDetailsRule(object):
         except Exception as e:
             raise e
 
-
     async def delete_transfer_details(self, transfer_details_id):
         exists_transfer_details = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
             transfer_details_id)
         if not exists_transfer_details:
             raise Exception(f"编号为的{transfer_details_id}transfer_details不存在")
         transfer_details_db = await self.transfer_details_dao.delete_transfer_details(exists_transfer_details)
-        transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsModel, exclude=[""])
+        transfer_details = orm_model_to_view_model(transfer_details_db, TransferDetailsReModel, exclude=[""])
         return transfer_details
 
     async def update_transfer_details(self, transfer_details: TransferDetailsReModel):
@@ -325,6 +327,7 @@ class TransferDetailsRule(object):
                 teachers_db.teacher_sub_status = "transfer_in"
                 await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status")
                 await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
+                await self.teachers_dao.delete_teachers(teachers_db)
             elif process_code == "t_transfer_in_outer":
                 """增加老师再添加新老师"""
                 update_params = {"teacher_sub_status": "active"}
@@ -336,7 +339,7 @@ class TransferDetailsRule(object):
                 for key, value in teacher.dict().items():
                     if value:
                         need_update_list.append(key)
-                await self.teachers_dao.update_teachers(teachers_db, *need_update_list)
+                await self.teachers_dao.update_teachers(teacher, *need_update_list)
                 await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
             return "该老师调动审批已通过"
 

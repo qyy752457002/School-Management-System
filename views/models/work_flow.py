@@ -42,13 +42,13 @@ class WorkFlowInstanceCreateModel(BaseModel):
     process_status: Optional[WorkFlowInstanceStatus] = Field("pending", title="流程状态", description="流程状态")
     reason: str = Field("", title="说明", description="说明")
     # 老师入职和关键信息变更相关
-    teacher_id: Optional[int] = Field(None, title="教师ID", description="教师ID")
+    teacher_id: Optional[int | str] = Field(None, title="教师ID", description="教师ID")
     teacher_name: Optional[str] = Field("", title="教师姓名", description="教师姓名")
     teacher_gender: Optional[str] = Field("", title="教师性别", description="教师性别")
     teacher_id_type: Optional[str] = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: Optional[str] = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: Optional[date] = Field(None, title="出生日期", description="出生日期")
-    teacher_employer: Optional[int] = Field(None, title="任职单位", description="任职单位")
+    teacher_employer: Optional[int | str] = Field(None, title="任职单位", description="任职单位")
     teacher_main_status: Optional[str] = Field("unemployed", title="主状态", description="主状态")
     teacher_sub_status: Optional[str] = Field("submitted", title="子状态", description="子状态")
     highest_education: Optional[str] = Field("", title="最高学历", description="最高学历")
@@ -59,7 +59,7 @@ class WorkFlowInstanceCreateModel(BaseModel):
     enter_school_time: Optional[date] = Field(None, title="入校时间", description="入校时间")
     in_post: Optional[bool] = Field(False, title="是否在编", description="是否在编")
     # 老师调动和借动相关
-    original_unit_id: Optional[int] = Field(None, title="原单位", description="原单位")
+    original_unit_id: Optional[int | str] = Field(None, title="原单位", description="原单位")
     original_position: Optional[str] = Field("", title="原岗位", description="原岗位")
     original_district_province_id: Optional[int] = Field(None, title="原行政属地省", description="原行政属地省")
     original_district_city_id: Optional[int] = Field(None, title="原行政属地市", description="原行政属地市")
@@ -69,7 +69,7 @@ class WorkFlowInstanceCreateModel(BaseModel):
     original_region_area_id: Optional[int] = Field(None, title="原管辖区域区", description="原管辖区域区")
     transfer_in_date: Optional[date] = Field(None, title="调入日期", description="调入日期")
     borrow_in_date: Optional[date] = Field(None, title="借入日期", description="借入日期")
-    current_unit_id: Optional[int] = Field(None, title="现单位", description="现单位")
+    current_unit_id: Optional[int | str] = Field(None, title="现单位", description="现单位")
     current_position: Optional[str] = Field("", title="现岗位", description="现岗位")
     current_district_province_id: Optional[int] = Field(None, title="现行政属地省", description="现行政属地省")
     current_district_city_id: Optional[int] = Field(None, title="现行政属地市", description="现行政属地市")
@@ -88,9 +88,32 @@ class WorkFlowInstanceCreateModel(BaseModel):
     edu_number: Optional[str] = Field("", title="", description="")
     apply_user: Optional[str] = Field("", title="", description="")
 
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer", "teacher_id", "teacher_base_id", "original_unit_id", "current_unit_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
 
 class WorkFlowInstanceModel(WorkFlowInstanceCreateModel):
-    process_instance_id: int = Field(..., title="流程实例id", description="流程实例id")
+    process_instance_id: int|str = Field(..., title="流程实例id", description="流程实例id")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer", "teacher_id", "teacher_base_id", "original_unit_id", "current_unit_id",
+                        "process_instance_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class WorkFlowInstanceQueryModel(BaseModel):
@@ -165,6 +188,17 @@ class WorkFlowInstanceQueryModel(BaseModel):
     school_level: Optional[str] = Query("", title="", description="")
     social_credit_code: Optional[str] = Query("", title="", description="")
     institution_name: Optional[str] = Query("", title="", description="")
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer", "teacher_id", "teacher_base_id", "original_unit_id", "current_unit_id",
+                        "process_instance_id"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class WorkFlowInstanceQueryReModel(BaseModel):

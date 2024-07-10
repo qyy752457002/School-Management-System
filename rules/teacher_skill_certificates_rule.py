@@ -7,6 +7,7 @@ from views.models.teacher_extend import TeacherSkillCertificatesModel, TeacherSk
 from daos.teacher_work_experience_dao import TeacherWorkExperienceDAO
 from daos.teachers_dao import TeachersDao
 from business_exceptions.teacher import TeacherNotFoundError, TeacherSkillNotFoundError
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 
 @dataclass_inject
@@ -26,6 +27,7 @@ class TeacherSkillCertificatesRule(object):
         if not exits_teacher:
             raise TeacherNotFoundError()
         teacher_skill_certificates_db = view_model_to_orm_model(teacher_skill_certificates, TeacherSkillCertificates)
+        teacher_skill_certificates_db.teacher_skill_certificates_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_skill_certificates_db = await self.teacher_skill_certificates_dao.add_teacher_skill_certificates(
             teacher_skill_certificates_db)
         teacher_skill_certificates = orm_model_to_view_model(teacher_skill_certificates_db,
