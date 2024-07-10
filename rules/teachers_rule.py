@@ -129,6 +129,53 @@ class TeachersRule(object):
         teacher_base_id = teachers_info.teacher_base_id
         return teachers_work, teacher_base_id
 
+    async def add_teachers_import_save(self, teachers: TeachersSaveImportCreatModel, user_id):
+        teacher_id_number = teachers.teacher_id_number
+        teacher_id_type = teachers.teacher_id_type
+        teacher_name = teachers.teacher_name
+        teacher_gender = teachers.teacher_gender
+        length = await self.teachers_dao.get_teachers_info_by_prams(teacher_id_number, teacher_id_type,
+                                                                    teacher_name, teacher_gender)
+        if length > 0:
+            raise TeacherExistsError()
+        teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[])
+        teachers_db.teacher_id = SnowflakeIdGenerator(1, 1).generate_id()
+        if teachers_db.teacher_id_type == 'resident_id_card':
+            idstatus = check_id_number(teachers_db.teacher_id_number)
+            if not idstatus:
+                raise IdCardError()
+        teachers_db = await self.teachers_dao.add_teachers(teachers_db)
+        teachers_work = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
+        params = {"process_code": "t_entry", "applicant_name": user_id}
+        await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
+            teachers_work.teacher_id)
+        work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teachers_work, params)
+        # update_params = {"teacher_sub_status": "submitted"}
+        # await self.teacher_work_flow_rule.update_work_flow_by_param(work_flow_instance["process_instance_id"],
+        #                                                             update_params)
+        teacher_entry_log = OperationRecord(
+            action_target_id=int(teachers_work.teacher_id),
+            target=OperationTarget.TEACHER.value,
+            action_type=OperationType.CREATE.value,
+            ip="127.0.0.1",
+            change_data="",
+            operation_time=datetime.now(),
+            doc_upload="",
+            change_module=ChangeModule.NEW_ENTRY.value,
+            change_detail="入职登记",
+            status="/",
+            operator_id=1,
+            operator_name=user_id,
+            process_instance_id=int(work_flow_instance["process_instance_id"]))
+        await self.operation_record_rule.add_operation_record(teacher_entry_log)
+        teachers_info = TeacherInfoSaveModel(teacher_id=teachers_work.teacher_id)
+        teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
+        teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
+        teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
+        teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
+        teacher_base_id = teachers_info.teacher_base_id
+        return teachers_work, teacher_base_id
+
 
     async def query_teacher_operation_record_with_page(self, query_model: TeacherChangeLogQueryModel,
                                                        page_request: PageRequest):
@@ -501,7 +548,7 @@ class TeachersRule(object):
                 result = TeacherImportSaveResultModel(**result_dict)
                 user_id = operator
                 try:
-                    await self.add_teachers(teacher_model, user_id)
+                    await self.add_teachers_import_save(teacher_model, user_id)
                 except Exception as ex:
                     result.failed_msg = str(ex)
                     logger.info(f"Failed to add teacher at index {idx}: {ex}")
@@ -564,49 +611,50 @@ class TeachersRule(object):
             print(e, '异常')
             raise e
 
-    async def teachers_export(self, task: Task):
-        bucket = "teachers_export"
-        export_params: CurrentTeacherQuery = (
-            task.payload if task.payload is CurrentTeacherQuery() else CurrentTeacherQuery()
-        )
-        page_request = PageRequest(page=1, per_page=10)
-        random_file_name = f"teacher_export_{shortuuid.uuid()}.xlsx"
-        temp_file_path = os.path.join(os.path.dirname(__file__), 'tmp')
-        if not os.path.exists(temp_file_path):
-            os.makedirs(temp_file_path)
-        temp_file_path = os.path.join(temp_file_path, random_file_name)
-        while True:
-            paging = await self.teachers_info_dao.query_current_teacher_with_page(
-                export_params, page_request
-            )
-            paging_result = PaginatedResponse.from_paging(
-                paging, CurrentTeacherQueryRe, {"hash_password": "password"}
-            )
-            logger.info(paging_result.items)
-            excel_writer = ExcelWriter()
-            excel_writer.add_data("Sheet1", paging_result.items)
-            excel_writer.set_data(temp_file_path)
-            excel_writer.execute()
-            if len(paging.items) < page_request.per_page:
-                break
-            page_request.page += 1
-        file_storage = await storage_manager.put_file_to_object(
-            bucket, f"{random_file_name}.xlsx", temp_file_path
-        )
-        file_storage_resp = await storage_manager.add_file(
-            self.file_storage_dao, file_storage
-        )
-        task_result = TaskResult()
-        task_result.task_id = task.task_id
-        task_result.result_file = file_storage_resp.file_name
-        task_result.result_bucket = file_storage_resp.bucket_name
-        task_result.result_file_id = file_storage_resp.file_id
-        task_result.last_updated = datetime.now()
-        task_result.state = TaskState.succeeded
-        task_result.result_extra = {"file_size": file_storage.file_size}
-        await self.task_dao.add_task_result(task_result)
-        return task_result
+    # async def teachers_export(self, task: Task):
+    #     bucket = "teachers_export"
+    #     export_params: CurrentTeacherQuery = (
+    #         task.payload if task.payload is CurrentTeacherQuery() else CurrentTeacherQuery()
+    #     )
+    #     page_request = PageRequest(page=1, per_page=10)
+    #     random_file_name = f"teacher_export_{shortuuid.uuid()}.xlsx"
+    #     temp_file_path = os.path.join(os.path.dirname(__file__), 'tmp')
+    #     if not os.path.exists(temp_file_path):
+    #         os.makedirs(temp_file_path)
+    #     temp_file_path = os.path.join(temp_file_path, random_file_name)
+    #     while True:
+    #         paging = await self.teachers_info_dao.query_current_teacher_with_page(
+    #             export_params, page_request
+    #         )
+    #         paging_result = PaginatedResponse.from_paging(
+    #             paging, CurrentTeacherQueryRe, {"hash_password": "password"}
+    #         )
+    #         logger.info(paging_result.items)
+    #         excel_writer = ExcelWriter()
+    #         excel_writer.add_data("Sheet1", paging_result.items)
+    #         excel_writer.set_data(temp_file_path)
+    #         excel_writer.execute()
+    #         if len(paging.items) < page_request.per_page:
+    #             break
+    #         page_request.page += 1
+    #     file_storage = await storage_manager.put_file_to_object(
+    #         bucket, f"{random_file_name}.xlsx", temp_file_path
+    #     )
+    #     file_storage_resp = await storage_manager.add_file(
+    #         self.file_storage_dao, file_storage
+    #     )
+    #     task_result = TaskResult()
+    #     task_result.task_id = task.task_id
+    #     task_result.result_file = file_storage_resp.file_name
+    #     task_result.result_bucket = file_storage_resp.bucket_name
+    #     task_result.result_file_id = file_storage_resp.file_id
+    #     task_result.last_updated = datetime.now()
+    #     task_result.state = TaskState.succeeded
+    #     task_result.result_extra = {"file_size": file_storage.file_size}
+    #     await self.task_dao.add_task_result(task_result)
+    #     return task_result
 
+    # 审批相关
     async def query_teacher_approval_with_page(self, type, query_model: TeacherApprovalQuery,
                                                page_request: PageRequest, user_id):
         if type == "launch":

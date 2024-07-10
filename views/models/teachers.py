@@ -1210,7 +1210,7 @@ class NewTeacherRe(BaseModel):
     teacher_name: str = Field("", title="姓名", description="姓名", example="张三")
     teacher_id_number: str = Field("", title="身份证号", description="身份证号", example="123456789012345678")
     teacher_gender: str = Field("", title="性别", description="性别", example="男")
-    teacher_employer: int = Field(None, title="单位部门", description="单位部门", example="xx学校")
+    teacher_employer: int|str = Field(None, title="单位部门", description="单位部门", example="xx学校")
     highest_education: Optional[str] = Field("", title="最高学历", description="最高学历", example="本科")
     political_status: Optional[str] = Field("", title="政治面貌", description="政治面貌", example="群众")
     employment_form: Optional[str] = Field("", title="用人形式", description="用人形式", example="合同")
