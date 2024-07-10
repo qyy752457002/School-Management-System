@@ -10,7 +10,7 @@ from mini_framework.web.views import BaseView
 from rules.teachers_rule import TeachersRule
 from views.models.teachers import Teachers, TeacherInfo, TeachersCreatModel, CurrentTeacherInfoSaveModel, \
     TeacherInfoSaveModel, TeacherInfoSubmit, CombinedModel, TeacherFileStorageModel, CurrentTeacherQuery, \
-    TeacherApprovalQuery, NewTeacherRe, TeacherChangeLogQueryModel
+    TeacherApprovalQuery, TeacherChangeLogQueryModel
 from rules.teachers_info_rule import TeachersInfoRule
 from mini_framework.web.request_context import request_context_manager
 
@@ -216,50 +216,50 @@ class NewTeachersView(BaseView):
         return task
 
 
-async def post_new_teacher_save_import(self, filestorage: TeacherFileStorageModel) -> Task:
-    task = Task(
-        task_type="teacher_save_import",
-        payload=filestorage,
-        operator=request_context_manager.current().current_login_account.account_id
-    )
-    task = await app.task_topic.send(task)
-    print('发生任务成功')
-    return task
+    async def post_new_teacher_save_import(self, filestorage: TeacherFileStorageModel) -> Task:
+        task = Task(
+            task_type="teacher_save_import",
+            payload=filestorage,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
 
 
-async def post_new_teacher_export(self, teacher_query: CurrentTeacherQuery) -> Task:
-    task = Task(
-        task_type="teacher_export",
-        payload=teacher_query,
-        operator=request_context_manager.current().current_login_account.account_id
-    )
-    task = await app.task_topic.send(task)
-    print('发生任务成功')
-    return task
+    async def post_new_teacher_export(self, teacher_query: CurrentTeacherQuery) -> Task:
+        task = Task(
+            task_type="teacher_export",
+            payload=teacher_query,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
 
 
-async def page_new_teacher_launch(self, teacher_approval_query=Depends(TeacherApprovalQuery),
-                                  page_request=Depends(PageRequest)):
-    """
-    分页查询
-    """
-    type = 'launch'
-    user_id = "asdfasdf"
-    paging_result = await self.teacher_rule.query_teacher_approval_with_page(type, teacher_approval_query,
-                                                                             page_request, user_id)
-    return paging_result
+    async def page_new_teacher_launch(self, teacher_approval_query=Depends(TeacherApprovalQuery),
+                                      page_request=Depends(PageRequest)):
+        """
+        分页查询
+        """
+        type = 'launch'
+        user_id = "asdfasdf"
+        paging_result = await self.teacher_rule.query_teacher_approval_with_page(type, teacher_approval_query,
+                                                                                 page_request, user_id)
+        return paging_result
 
 
-async def page_new_teacher_approval(self, teacher_approval_query=Depends(TeacherApprovalQuery),
-                                    page_request=Depends(PageRequest)):
-    """
-    分页查询
-    """
-    type = 'approval'
-    user_id = "asdfasdf"
-    paging_result = await self.teacher_rule.query_teacher_approval_with_page(type, teacher_approval_query,
-                                                                             page_request, user_id)
-    return paging_result
+    async def page_new_teacher_approval(self, teacher_approval_query=Depends(TeacherApprovalQuery),
+                                        page_request=Depends(PageRequest)):
+        """
+        分页查询
+        """
+        type = 'approval'
+        user_id = "asdfasdf"
+        paging_result = await self.teacher_rule.query_teacher_approval_with_page(type, teacher_approval_query,
+                                                                                 page_request, user_id)
+        return paging_result
 
 # 下面都是测试工作流的
 

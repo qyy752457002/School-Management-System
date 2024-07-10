@@ -12,6 +12,7 @@ from daos.operation_record_dao import OperationRecordDAO
 from models.operation_record import OperationRecord
 from views.common.common_view import get_client_ip
 from views.models.operation_record import OperationRecord as OperationRecordModel
+from views.models.operation_record import OperationRecordRe
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
@@ -107,7 +108,7 @@ class OperationRecordRule(object):
 
         paging = await self.operation_record_dao.query_operation_record_with_page(page_request, **kdict)
         # 字段映射的示例写法   , {"hash_password": "password"}
-        paging_result = PaginatedResponse.from_paging(paging, OperationRecordModel)
+        paging_result = PaginatedResponse.from_paging(paging, OperationRecordRe)
         return paging_result
 
     async def update_operation_record_status(self, operation_record_id, status):
