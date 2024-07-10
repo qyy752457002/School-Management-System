@@ -339,7 +339,7 @@ class PlanningSchoolView(BaseView):
 
     # 导入   任务队列的
     async def post_planning_school_import(self,
-                                          file_name: str = Query(..., description="文件名"),
+                                          file_name: str = Body(..., description="文件名"),
                                       # bucket: str = Query(..., description="文件名"),
                                       # scene: str = Query('', description="文件名"),
                                       ) -> Task:

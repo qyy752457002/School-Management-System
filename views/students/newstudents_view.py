@@ -5,6 +5,7 @@ from time import strptime
 from typing import List
 from datetime import datetime as datetimealias
 
+from fastapi.params import Body
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task import Task
 from mini_framework.web.request_context import request_context_manager
@@ -127,7 +128,7 @@ class NewsStudentsView(BaseView):
 
     # 导入   任务队列的
     async def post_new_student_import(self,
-                                      file_name: str = Query(..., description="文件名"),
+                                      file_name: str = Body(..., description="文件名"),
                                  # bucket: str = Query(..., description="文件名"),
                                  # scene: str = Query('', description="文件名"),
                                  ) -> Task:
