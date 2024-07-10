@@ -263,23 +263,33 @@ class StudentsRule(object):
             bucket, f"{random_file_name}.xlsx", temp_file_path
         )
         # 这里会写入 task result 提示 缺乏 result file id  导致报错
-        file_storage_resp = await storage_manager.add_file(
-            self.file_storage_dao, file_storage
-        )
-        print('file_storage_resp ',file_storage_resp)
+        try:
 
-        task_result = TaskResult()
-        task_result.task_id = task.task_id
-        task_result.result_file = file_storage_resp.file_name
-        task_result.result_bucket = file_storage_resp.bucket_name
-        task_result.result_file_id = file_storage_resp.file_id
-        task_result.last_updated = datetime.now()
-        task_result.state = TaskState.succeeded
-        task_result.result_extra = {"file_size": file_storage.file_size}
-        print('拼接数据task_result ',task_result)
+            file_storage_resp = await storage_manager.add_file(
+                self.file_storage_dao, file_storage
+            )
+            print('file_storage_resp ',file_storage_resp)
 
-        resadd = await self.task_dao.add_task_result(task_result)
-        print('task_result写入结果',resadd)
+            task_result = TaskResult()
+            task_result.task_id = task.task_id
+            task_result.result_file = file_storage_resp.file_name
+            task_result.result_bucket = file_storage_resp.bucket_name
+            task_result.result_file_id = file_storage_resp.file_id
+            task_result.last_updated = datetime.now()
+            task_result.state = TaskState.succeeded
+            task_result.result_extra = {"file_size": file_storage.file_size}
+            if not task_result.result_file_id:
+                task_result.result_file_id =  0
+            print('拼接数据task_result ',task_result)
+
+            resadd = await self.task_dao.add_task_result(task_result)
+            print('task_result写入结果',resadd)
+        except Exception as e:
+            logger.debug('保存文件记录和插入taskresult 失败')
+
+            logger.error(e)
+            task_result = TaskResult()
+
         return task_result
 
 
