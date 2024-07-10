@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -53,7 +53,7 @@ class Institution(BaseDBModel):
     is_entity: Mapped[bool] = mapped_column(  nullable=True,default=False, comment=" 是否实体")
     membership_no: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 隶属单位号")
     membership_category: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment=" 隶属单位类型")
-    process_instance_id: Mapped[int] = mapped_column(nullable=True,default=0, comment="流程ID")
+    process_instance_id: Mapped[int] = mapped_column(BigInteger,nullable=True,default=0, comment="流程ID")
     workflow_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="工作流审核状态", default='')
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, comment="创建时间")
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, comment="更新时间")
