@@ -7,6 +7,7 @@ from mini_framework.web.std_models.page import PageRequest
 from models.planning_school import PlanningSchool
 from models.school import School
 from models.school_communication import SchoolCommunication
+from views.models.system import InstitutionType
 
 
 class SchoolDAO(DAOBase):
@@ -137,6 +138,8 @@ class SchoolDAO(DAOBase):
                 query = query.where(School.institution_category.in_(institution_category))
             else:
                 query = query.where(School.institution_category == institution_category)
+        else:
+            query = query.where(School.institution_category.not_in( [InstitutionType.INSTITUTION, InstitutionType.ADMINISTRATION, ]))
         if school_name:
             query = query.where(School.school_name == school_name)
         if planning_school_id:
