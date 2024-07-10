@@ -142,13 +142,13 @@ class SystemRule(object):
                 res[int(item['parent_id'])].children.append(system)
 
         # print(list(paging))
-        paging2 = await self.permission_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
+        paging3 = await self.permission_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
                                                                                  role_id, ids_3)
         for _, pm in res.items():
             for item in pm.children:
                 print(item.id, item.children)
-                for value in paging2:
-                    if int(value['parent_id']) == item.id:
+                for value in paging3:
+                    if int(value['parent_id']) == int(item.id):
                         system = orm_model_to_view_model(value, PermissionMenuModel, other_mapper={
                             "menu_name": "power_name",
                             "menu_path": "power_url",
