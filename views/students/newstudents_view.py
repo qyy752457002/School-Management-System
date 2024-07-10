@@ -5,6 +5,7 @@ from time import strptime
 from typing import List
 from datetime import datetime as datetimealias
 
+from fastapi.params import Body
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task import Task
 from mini_framework.web.request_context import request_context_manager
@@ -15,11 +16,13 @@ from rules.class_division_records_rule import ClassDivisionRecordsRule
 from rules.operation_record import OperationRecordRule
 from views.common.common_view import compare_modify_fields, get_client_ip
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
+from views.models.planning_school import PlanningSchoolImportReq
 from views.models.students import NewStudents, NewStudentsQuery, NewStudentsQueryRe, StudentsKeyinfo, StudentsBaseInfo, \
     StudentsFamilyInfo, NewStudentTask
 # from fastapi import Field
 from mini_framework.web.views import BaseView
 
+from views.models.system import ImportScene
 from views.models.teachers import NewTeacher, TeacherInfo
 from fastapi import Query, Depends, BackgroundTasks
 
@@ -126,15 +129,20 @@ class NewsStudentsView(BaseView):
 
     # 导入   任务队列的
     async def post_new_student_import(self,
-                                 filename: str = Query(..., description="文件名"),
-                                 bucket: str = Query(..., description="文件名"),
-                                 scene: str = Query('', description="文件名"),
+                                      # file_name: str = Body(..., description="文件名"),
+                                      file:PlanningSchoolImportReq
+
+                                 # bucket: str = Query(..., description="文件名"),
+                                 # scene: str = Query('', description="文件名"),
                                  ) -> Task:
+        file_name= file.file_name
+        
         task = Task(
             #todo sourcefile无法记录3个参数  故 暂时用3个参数来实现  需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="new_student_import",
             # 文件 要对应的 视图模型
-            payload=NewStudentTask(file_name=filename, bucket=bucket, scene=scene),
+            # payload=NewStudentTask(file_name=filename, bucket=bucket, scene=scene),
+            payload=NewStudentTask(file_name=file_name, scene= ImportScene.NEWSTUDENT.value, bucket='new_student_import' ),
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)

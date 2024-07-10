@@ -10,6 +10,7 @@ import traceback
 from rules.storage_rule import StorageRule
 from rules.students_base_info_rule import StudentsBaseInfoRule
 from rules.students_rule import StudentsRule
+from rules.system_rule import SystemRule
 from views.models.students import NewStudents, NewBaseInfoCreate, NewStudentsQuery
 
 
@@ -18,6 +19,7 @@ from views.models.students import NewStudents, NewBaseInfoCreate, NewStudentsQue
 class NewStudentExecutor(TaskExecutor):
     def __init__(self):
         self.new_student_rule = get_injector(StudentsRule)
+        self.system_rule = get_injector(SystemRule)
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
         self._storage_rule: StorageRule = get_injector(StorageRule)
         super().__init__()
@@ -31,7 +33,9 @@ class NewStudentExecutor(TaskExecutor):
 
             info = task.payload
             data = []
-            data = await self._storage_rule.get_file_data(info.file_name, info.bucket, info.scene)
+            fileinfo = self.system_rule.get_download_url_by_id(info.file_name)
+            data =await self._storage_rule.get_file_data(fileinfo.file_name, fileinfo.bucket_name,info.scene)
+            # data = await self._storage_rule.get_file_data(info.file_name, info.bucket, info.scene)
 
             for item in data:
                 if isinstance(item, dict):
@@ -55,7 +59,7 @@ class NewStudentExecutor(TaskExecutor):
             logger.error(f"任务   create failed")
 
 
-# 导出  todo
+# 导出  todo 新生的导出在这里
 class NewStudentExportExecutor(TaskExecutor):
     def __init__(self):
         self.student_rule = get_injector(StudentsRule)
