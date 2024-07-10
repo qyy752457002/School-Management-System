@@ -9,9 +9,9 @@ from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers import Teacher
 from views.common.common_view import check_id_number
 from views.models.teachers import Teachers as TeachersModel
-from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherCreateResultModel, \
+from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherImportSaveResultModel, \
     TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
-    NewTeacherApprovalCreate,TeachersSaveImportCreatModel
+    NewTeacherApprovalCreate, TeachersSaveImportCreatModel
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
 # from rules.teachers_info_rule import TeachersInfoRule
@@ -128,6 +128,7 @@ class TeachersRule(object):
         teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
         teacher_base_id = teachers_info.teacher_base_id
         return teachers_work, teacher_base_id
+
 
     async def query_teacher_operation_record_with_page(self, query_model: TeacherChangeLogQueryModel,
                                                        page_request: PageRequest):
@@ -488,16 +489,16 @@ class TeachersRule(object):
 
             for idx, item in enumerate(data):
                 item = item.dict()
-                teacher_data = {key: item[key] for key in TeachersSaveImportCreatModel.__fields__.keys() if key in item}
-                school=await self.school_dao.get_school_by_school_name(teacher_data["em"])
-                # teacher_data["teacher_employer"]=await
-                logger.info(teacher_data)
-                teacher_model = TeachersCreatModel(**teacher_data)
-                logger.info(type(teacher_data))
+                # teacher_data = {key: item[key] for key in TeachersSaveImportCreatModel.__fields__.keys() if key in item}
+                school = await self.school_dao.get_school_by_school_name(item["teacher_employer"])
+                item["teacher_employer"] = school.school_id
+                logger.info(item)
+                teacher_model = TeachersSaveImportCreatModel(**item)
+                logger.info(type(item))
 
-                result_dict = teacher_data.copy()
+                result_dict = item.copy()
                 result_dict["failed_msg"] = "成功"
-                result = TeacherCreateResultModel(**result_dict)
+                result = TeacherImportSaveResultModel(**result_dict)
                 user_id = operator
                 try:
                     await self.add_teachers(teacher_model, user_id)
