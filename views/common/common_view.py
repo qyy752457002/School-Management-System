@@ -173,6 +173,7 @@ def serialize(model):
 # 将字典转换为JSON
 # model_json = json.dumps(model_dict)
 
+
 # 函数来处理键名映射  对于josn里的  每个 根据映射提换键名
 def map_keys(data, key_map):
     if isinstance(data, dict):
@@ -185,3 +186,32 @@ def map_keys(data, key_map):
         return [map_keys(item, key_map) for item in data]  # 处理列表中的每个元素
     else:
         return data  # 如果是基本类型，直接返回
+import requests
+
+def download_file(url, local_filepath):
+    """
+    从指定的URL下载文件并保存到本地路径。
+
+    :param url: 要下载的文件的URL
+    :param local_filepath: 本地文件保存路径
+    :return: None
+    """
+    try:
+        # 发送GET请求下载文件
+        response = requests.get(url, stream=True)  # 使用stream=True可以处理大文件
+
+        # 检查请求是否成功
+        if response.status_code == 200:
+            # 打开本地文件路径以写入二进制内容
+            with open(local_filepath, 'wb') as file:
+                # 将下载的内容写入文件
+                for chunk in response.iter_content(chunk_size=8192):  # 逐块写入文件，可以有效处理大文件
+                    file.write(chunk)
+            print(f'文件已保存到 {local_filepath}')
+        else:
+            print(f'请求失败，状态码：{response.status_code}')
+    except requests.exceptions.RequestException as e:
+        print(f'请求异常：{e}')
+
+# 使用函数
+# download_file('http://example.com/file.pdf', 'path/to/your/local/file.pdf')

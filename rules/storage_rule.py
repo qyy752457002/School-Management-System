@@ -8,12 +8,15 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.storage.view_model import FileStorageResponseModel, FileStorageModel
+
+from views.common import common_view
 from views.models.institutions import Institutions, InstitutionsValid
 from views.models.planning_school import PlanningSchool, PlanningSchoolImport
 from views.models.school import School
 from views.models.students import NewStudents
 from views.models.system import ImportScene
 from views.models.teachers import TeachersCreatModel
+from mini_framework.utils.logging import logger
 
 
 @dataclass_inject
@@ -57,7 +60,7 @@ class StorageRule(object):
         return resp
 
     #     解析 文件和桶  返回 数据结构
-    async def get_file_data(self, filename: str, bucket, sence=''):
+    async def get_file_data(self, filename: str, bucket, sence='',file_direct_url=None):
         # 下载保存本地
         random_id = str(uuid.uuid4())
         # source='c.xlsx'
@@ -70,29 +73,38 @@ class StorageRule(object):
         sheetname = 'Sheet1'
 
         SampleModel = None
+        if file_direct_url is not None:
+            resp =  common_view.download_file( file_direct_url,local_filepath)
+            logger.debug('下载文件的res')
+            logger.debug( resp)
+            pass
+        else:
+
+            resp =  storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
+            logger.debug('下载文件的res')
+            logger.debug( resp)
         if sence == ImportScene.PLANNING_SCHOOL.value:
             # 暂时调试
-            local_filepath = 'planning_school.xlsx'
+            # local_filepath = 'planning_school.xlsx'
 
             SampleModel = PlanningSchoolImport
             sheetname = 'Sheet1'
-        else:
-            resp =  storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
 
-            if sence == ImportScene.INSTITUTION.value:
-                SampleModel = Institutions
+
+        if sence == ImportScene.INSTITUTION.value:
+            SampleModel = Institutions
             sheetname = 'Sheet1'
 
-            if sence ==ImportScene.SCHOOL.value:
-                SampleModel = School
-                sheetname = 'Sheet1'
-            if sence ==ImportScene.NEWSTUDENT.value:
-                SampleModel = NewStudents
-                sheetname = 'Sheet1'
-            if sence == ImportScene.NEW_TEACHERS.value:
-                SampleModel = TeachersCreatModel
-                sheetname = 'Sheet1'
-            pass
+        if sence ==ImportScene.SCHOOL.value:
+            SampleModel = School
+            sheetname = 'Sheet1'
+        if sence ==ImportScene.NEWSTUDENT.value:
+            SampleModel = NewStudents
+            sheetname = 'Sheet1'
+        if sence == ImportScene.NEW_TEACHERS.value:
+            SampleModel = TeachersCreatModel
+            sheetname = 'Sheet1'
+        pass
 
 
 
