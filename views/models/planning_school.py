@@ -2,6 +2,7 @@ from enum import Enum
 from typing import List, Optional
 
 from fastapi import Query
+from fastapi.params import Body
 from pydantic import BaseModel, Field
 
 from models.student_transaction import AuditAction
@@ -289,3 +290,8 @@ class PlanningSchoolTransactionAudit(BaseModel):
                                                  example='pass')
     remark: str = Query("", description="审批的备注", min_length=0, max_length=200,
                         example='同意 无误')
+
+
+class PlanningSchoolImportReq(BaseModel, ):
+    file_name: str = Body(..., description="文件名"),
+

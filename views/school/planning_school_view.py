@@ -21,7 +21,7 @@ from views.common.common_view import compare_modify_fields, get_extend_params, g
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
-    PlanningSchoolBaseInfoOptional, PlanningSchoolTask, PlanningSchoolTransactionAudit
+    PlanningSchoolBaseInfoOptional, PlanningSchoolTask, PlanningSchoolTransactionAudit, PlanningSchoolImportReq
 from views.models.planning_school_communications import PlanningSchoolCommunications
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
 from views.models.school import School
@@ -339,10 +339,11 @@ class PlanningSchoolView(BaseView):
 
     # 导入   任务队列的
     async def post_planning_school_import(self,
-                                          file_name: str = Body(..., description="文件名"),
+                                          file:PlanningSchoolImportReq
                                       # bucket: str = Query(..., description="文件名"),
                                       # scene: str = Query('', description="文件名"),
                                       ) -> Task:
+        file_name= file.file_name
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="planning_school_import",
