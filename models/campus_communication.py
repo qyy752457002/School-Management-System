@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime
+from sqlalchemy import String, DateTime, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -13,8 +13,8 @@ class CampusCommunication(BaseDBModel):
     __tablename__ = 'lfun_campus_communications'
     __table_args__ = {'comment': '校区通信表'}
 
-    id: Mapped[int] = mapped_column(primary_key=True, comment="ID",autoincrement=True)
-    campus_id: Mapped[int] = mapped_column( nullable=True  , comment="校区id",default=0)
+    id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="ID",autoincrement=False)
+    campus_id: Mapped[int] = mapped_column(BigInteger, nullable=True  , comment="校区id",default=0)
 
     postal_code: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="邮政编码")
     fax_number: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="传真电话")
