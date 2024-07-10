@@ -1,3 +1,5 @@
+import traceback
+
 from mini_framework.async_task.consumers import TaskExecutor
 from mini_framework.async_task.task import Task, Context
 from mini_framework.design_patterns.depend_inject import get_injector
@@ -25,9 +27,14 @@ class SchoolExecutor(TaskExecutor):
             print('开始执行task')
 
             info = task.payload
+            logger.debug( f"{info}",  )
+
             data= [ ]
             fileinfo =await self.system_rule.get_download_url_by_id(info.file_name)
+            logger.debug( f"{fileinfo}",  )
+
             data =await self._storage_rule.get_file_data(fileinfo.file_name, fileinfo.bucket_name,info.scene,file_direct_url=fileinfo)
+            logger.debug( f"{data}",  )
 
             for item in data:
 
@@ -40,10 +47,14 @@ class SchoolExecutor(TaskExecutor):
                     raise ValueError("Invalid payload type")
                 res = await self.school_rule.add_school(data_import)
                 print('插入数据res',res)
+                logger.debug( f"{res}",  )
+
             logger.info(f"任务   created")
         except Exception as e:
             print(e,'异常')
-            logger.error(f"任务   create failed")
+            logger.debug( f"任务   create failed", traceback.format_exception(e))
+
+            # logger.error(f"任务   create failed")
 
 
 # 导出  todo

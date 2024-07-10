@@ -67,7 +67,7 @@ class NewStudentExportExecutor(TaskExecutor):
 
     async def execute(self,  task: "Task"):
         try:
-            # task = context.task
+            # task = context.task  在字段 "result_file_id" 中空值违反了非空约束
             logger.info("Test")
             logger.info(" export begins")
             task: Task = task
