@@ -1,9 +1,11 @@
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.students_family_info_dao import StudentsFamilyInfoDao
 from daos.students_dao import StudentsDao
 from models.students_family_info import StudentFamilyInfo
+from views.common.common_view import convert_snowid_in_model
 from views.models.students import StudentsFamilyInfo as StudentsFamilyInfoModel
 from business_exceptions.student import StudentFamilyInfoNotFoundError, StudentNotFoundError, \
     StudentFamilyInfoExistsError
@@ -44,8 +46,10 @@ class StudentsFamilyInfoRule(object):
             raise StudentFamilyInfoExistsError()
 
         students_family_info_db = view_model_to_orm_model(students_family_info, StudentFamilyInfo, exclude=[""])
+        students_family_info_db.student_family_info_id = SnowflakeIdGenerator(1, 1).generate_id()
         students_family_info_db = await self.students_family_info_dao.add_students_family_info(students_family_info_db)
         students_family_info = orm_model_to_view_model(students_family_info_db, StudentsFamilyInfoModel, exclude=[""])
+        convert_snowid_in_model(students_family_info,["id",'student_id','school_id','class_id','session_id','student_family_info_id'])
         return students_family_info
 
     async def update_students_family_info(self, students_family_info):
@@ -62,6 +66,8 @@ class StudentsFamilyInfoRule(object):
                 need_update_list.append(key)
         students_family_info = await self.students_family_info_dao.update_students_family_info(students_family_info,
                                                                                                *need_update_list)
+        convert_snowid_in_model(students_family_info,["id",'student_id','school_id','class_id','session_id','student_family_info_id'])
+
         return students_family_info
 
     async def delete_students_family_info(self, students_family_info_id):
@@ -75,6 +81,8 @@ class StudentsFamilyInfoRule(object):
         students_family_info_db = await self.students_family_info_dao.delete_students_family_info(
             exists_students_family_info)
         students_family_info = orm_model_to_view_model(students_family_info_db, StudentsFamilyInfoModel, exclude=[""])
+        convert_snowid_in_model(students_family_info,["id",'student_id','school_id','class_id','session_id','student_family_info_id'])
+        
         return students_family_info
 
     async def get_all_students_family_info(self, student_id):
@@ -85,5 +93,8 @@ class StudentsFamilyInfoRule(object):
         student_family_info_db = await self.students_family_info_dao.get_all_students_family_info(student_id)
         student_family_info = []
         for item in student_family_info_db:
-            student_family_info.append(orm_model_to_view_model(item, StudentsFamilyInfoModel))
+            student_family_info_model = orm_model_to_view_model(item, StudentsFamilyInfoModel)
+            convert_snowid_in_model(student_family_info_model)
+            student_family_info.append(student_family_info_model)
+
         return student_family_info

@@ -1,5 +1,6 @@
 import datetime
 import json
+import traceback
 from time import strptime
 from typing import List
 from datetime import datetime as datetimealias
@@ -201,27 +202,50 @@ class NewsStudentsInfoView(BaseView):
             ))
         return res
 
-
+    # 修改分班
     async def patch_newstudent_classdivision(self,
-                                             class_id: int  = Query(..., title="", description="班级ID",),
+                                             class_id: int|str  = Query(..., title="", description="班级ID",),
                                              student_id:  str  = Query(..., title="", description="学生ID/逗号分割",),
 
                                              ):
         """
-        分班
+        分班 捕获异常
         """
-        res = await self.students_base_info_rule.update_students_class_division(class_id, student_id)
-        res_div = await self.class_division_records_rule.add_class_division_records(class_id, student_id)
-        # 更新学生的 班级和 学校信息
-        res3 = await self.students_base_info_rule.update_students_base_info( StudentsBaseInfo(student_id=student_id,class_id=class_id,school_id=res_div.school_id,grade_id=res_div.grade_id))
+        try:
+            res=None
+            if class_id:
+                class_id = int(class_id)
+            # 学生班级和学生状态
+            res = await self.students_base_info_rule.update_students_class_division(class_id, student_id)
+            # 分班记录
+            res_div = await self.class_division_records_rule.add_class_division_records(class_id, student_id)
+            # 更新学生的 班级和 学校信息
+            student_ids= student_id
+            if ',' in student_ids:
+                student_ids = student_ids.split(',')
+            else:
+                student_ids = [student_ids]
+            for student_id in student_ids:
+                baseinfo =  StudentsBaseInfo(student_id=student_id,class_id=class_id,school_id=res_div.school_id,grade_id=res_div.grade_id)
+
+                res3 = await self.students_base_info_rule.update_students_base_info(baseinfo)
+
+        except ValueError as e:
+            traceback.print_exc()
+            return  e
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+
+            return  e
 
         return res
-    # 摇号分班
+    # 摇号分班  未使用
     async def patch_newstudent_lottery_classdivision(self,
                                                      background_tasks: BackgroundTasks,
 
-                                             school_id: int  = Query(..., title="", description="学校ID",),
-                                             grade_id: int  = Query(..., title="", description="年级ID",),
+                                             school_id: int |str = Query(..., title="", description="学校ID",),
+                                             grade_id: int |str = Query(..., title="", description="年级ID",),
 
                                              ):
         """
@@ -229,7 +253,7 @@ class NewsStudentsInfoView(BaseView):
         background_tasks.add_task(self.lottery_class_division, (school_id,grade_id), message="some notification")
         return {"message": "Notification sent in the background"}
 
-
+    #
     def lottery_class_division(self,args , message=""):
         print(args,message)
         with open("log.txt", mode="a") as log:
@@ -237,15 +261,14 @@ class NewsStudentsInfoView(BaseView):
 
 
     # 分页查询
-    #
     async def page_newstudent_classdivision(self,
                                             enrollment_number: str = Query( '', title="", description="报名号",min_length=1, max_length=30, example=''),
-                                            school_id: int  = Query( 0, title="", description="学校ID",  example=''),
+                                            school_id: int|str  = Query( 0, title="", description="学校ID",  example=''),
                                             id_type: str = Query( '', title="", description="身份证件类型",min_length=1, max_length=30, example=''),
                                             student_name: str = Query( '', title="", description="姓名",min_length=1, max_length=30, example=''),
                                             created_at: str = Query( '', title="", description="分班时间",min_length=1, max_length=30, example=''),
                                             student_gender: str = Query( '', title="", description="性别",min_length=1, max_length=30, example=''),
-                                            class_id: int = Query( 0, title="", description="班级",  example=''),
+                                            class_id: int|str = Query( 0, title="", description="班级",  example=''),
                                             status: str = Query( '', title="", description="状态",min_length=1, max_length=30, example=''),
                               page_request=Depends(PageRequest)):
         """

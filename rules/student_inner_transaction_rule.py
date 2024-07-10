@@ -1,7 +1,9 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+import copy
 from datetime import datetime
 
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
@@ -12,6 +14,7 @@ from sqlalchemy import select
 from daos.student_inner_transaction_dao import StudentInnerTransactionDAO
 from models.student_inner_transaction import StudentInnerTransaction
 from rules.student_transaction import StudentTransactionRule
+from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
 from views.models.student_inner_transaction import StudentInnerTransactionRes as StudentInnerTransactionModel, \
     StudentInnerTransactionRes
 
@@ -53,11 +56,13 @@ class StudentInnerTransactionRule(object):
         student_edu_info_out = await stutran.get_student_edu_info_by_id(student_inner_transaction.student_id, )
         student_inner_transaction_db.school_id = int(student_edu_info_out.school_id)
         student_inner_transaction_db.class_id = str(student_edu_info_out.class_id)
+        student_inner_transaction_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
         student_inner_transaction_db = await self.student_inner_transaction_dao.add_student_inner_transaction(
             student_inner_transaction_db)
         student_inner_transaction = orm_model_to_view_model(student_inner_transaction_db, StudentInnerTransactionModel,
                                                             exclude=["created_at", 'updated_at', 'transaction_time'])
+        convert_snowid_in_model(student_inner_transaction,  ['id'])
         return student_inner_transaction
 
     async def update_student_inner_transaction(self, student_inner_transaction):
@@ -71,10 +76,12 @@ class StudentInnerTransactionRule(object):
             if value:
                 need_update_list.append(key)
 
-        student_inner_transaction_db = await self.student_inner_transaction_dao.update_student_inner_transaction_byargs(
+        student_inner_transaction_db = await self.student_inner_transaction_dao.update_student_inner_transaction(
             exists_student_inner_transaction, *need_update_list)
         student_inner_transaction = orm_model_to_view_model(student_inner_transaction_db, StudentInnerTransactionModel,
                                                             exclude=[""])
+        student_inner_transaction= copy.deepcopy(student_inner_transaction)
+        convert_snowid_in_model(student_inner_transaction,  ['id'])
         return student_inner_transaction
 
     async def delete_student_inner_transaction(self, student_inner_transaction_id):
@@ -110,6 +117,7 @@ class StudentInnerTransactionRule(object):
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, StudentInnerTransactionRes,
                                                       {"class_name": "classes", "school_name": "school_name"})
+        convert_snowid_to_strings(paging_result, ["id", "org_id",'teacher_id',])
         return paging_result
 
     async def query_student_inner_transaction(self, student_inner_transaction_name):
@@ -122,6 +130,7 @@ class StudentInnerTransactionRule(object):
         lst = []
         for row in res:
             planning_school = orm_model_to_view_model(row, StudentInnerTransactionModel)
+            convert_snowid_in_model(planning_school)
 
             lst.append(planning_school)
         return lst

@@ -23,7 +23,7 @@ class StudentsDao(DAOBase):
         """
         session = await self.master_db()
         update_contents = get_update_contents(students, *args)
-        query = update(Student).where(Student.student_id == students.student_id).values(**update_contents)
+        query = update(Student).where(Student.student_id == int(students.student_id)).values(**update_contents)
         return await self.update(session, query, students, update_contents, is_commit=is_commit)
 
     async def get_students_by_id(self, students_id):
@@ -31,7 +31,7 @@ class StudentsDao(DAOBase):
         获取单个学生信息
         """
         session = await self.slave_db()
-        result = await session.execute(select(Student).where(Student.student_id == students_id))
+        result = await session.execute(select(Student).where(Student.student_id == int(students_id)))
         return result.scalar_one_or_none()
 
     async def get_students_by_param(self, **kwargs):
@@ -51,7 +51,7 @@ class StudentsDao(DAOBase):
         """
         session = await self.master_db()
         deleted_status= True
-        update_stmt = update(Student).where(Student.student_id == students.student_id).values(
+        update_stmt = update(Student).where(Student.student_id == int(students.student_id)).values(
             is_deleted= deleted_status,
         )
         await session.execute(update_stmt)

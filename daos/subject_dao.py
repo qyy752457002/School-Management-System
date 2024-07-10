@@ -34,22 +34,22 @@ class SubjectDAO(DAOBase):
 			session = await self.master_db()
 		else:
 			session = await self.slave_db()
-		result = await session.execute(select(Subject).where(Subject.id == id))
+		result = await session.execute(select(Subject).where(Subject.id == int(id)))
 		return result.scalar_one_or_none()
 	async def get_subject_by_param(self, subject: SubjectModel):
 		session = await self.slave_db()
 		query = select(Subject).where(Subject.is_deleted == False)
 		if subject.id:
-			query = query.where(Subject.id == subject.id)
+			query = query.where(Subject.id == int(subject.id))
 
 		if subject.subject_name:
 			query = query.where(Subject.subject_name == subject.subject_name)
 		if subject.course_no:
 			query = query.where(Subject.course_no == subject.course_no)
 		if subject.school_id:
-			query = query.where(Subject.school_id == subject.school_id)
+			query = query.where(Subject.school_id ==int(subject.school_id) )
 		if subject.grade_id:
-			query = query.where(Subject.grade_id == subject.grade_id)
+			query = query.where(Subject.grade_id == int(subject.grade_id))
 
 
 		result = await session.execute( query)
@@ -59,7 +59,7 @@ class SubjectDAO(DAOBase):
 		
 		### �˴���д��ѯ����
 		if school_id:
-			query = query.where(Subject.school_id == school_id)
+			query = query.where(Subject.school_id == int(school_id))
 		
 		paging = await self.query_page(query, page_request)
 		return paging
@@ -67,5 +67,5 @@ class SubjectDAO(DAOBase):
 	async def update_subject(self, subject, *args, is_commit=True):
 		session = await self.master_db()
 		update_contents = get_update_contents(subject, *args)
-		query = update(Subject).where(Subject.id == subject.id).values(**update_contents)
+		query = update(Subject).where(Subject.id ==int(subject.id) ).values(**update_contents)
 		return await self.update(session, query, subject, update_contents, is_commit=is_commit)

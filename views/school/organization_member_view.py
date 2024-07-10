@@ -29,9 +29,9 @@ class OrganizationMemberView(BaseView):
     # 分页 成员列表
     async def page(self,
                    page_request=Depends(PageRequest),
-                   school_id: int = Query(0, title="学校ID", description="学校ID", examples=[1]),
+                   school_id: int|str = Query(0, title="学校ID", description="学校ID", examples=[1]),
 
-                   parent_id: int = Query(0, title="", description="表示要查询的部门ID", examples=[1]),
+                   parent_id: int |str= Query(0, title="", description="表示要查询的部门ID", examples=[1]),
                    org_ids: str = Query('', title="", description="", examples=[1]),
                     teacher_name: str = Query('', title=" ", description=" ", examples=['']),
                     teacher_no: str = Query('', alias='teacher_number', title=" ", description=" ", examples=['']),
@@ -46,7 +46,7 @@ class OrganizationMemberView(BaseView):
 
     # 删除
     async def delete(self,
-                     id: int = Query(0, title="", description="", examples=[1]),
+                     id: int |str= Query(0, title="", description="", examples=[1]),
                      # org_id: int = Query(0, title="", description="", examples=[1]),
                      ):
         res = await self.organization_members_rule.delete_organization_members(id)
