@@ -211,7 +211,8 @@ class SchoolView(BaseView):
         print(page_request)
         items = []
         if not institution_category:
-            institution_category = [InstitutionType.SCHOOL, ]
+            # institution_category = [InstitutionType.SCHOOL, ]
+            pass
 
         paging_result = await self.school_rule.query_school_with_page(page_request,
                                                                       school_name, school_no, school_code,
