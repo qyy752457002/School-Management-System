@@ -14,12 +14,15 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
 from daos.permission_menu_dao import PermissionMenuDAO
 from daos.roles_dao import RolesDAO
+from drop.work_flow_node_define import WorkFlowNodeDefine
 from models.permission_menu import PermissionMenu
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from views.common.common_view import workflow_service_config, convert_snowid_in_model
 
 from views.models.sub_system import SubSystem as SubSystemModel
 from views.models.permission_menu import PermissionMenu as PermissionMenuModel
+from views.models.system import PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, SCHOOL_CLOSE_WORKFLOW_CODE, \
+    INSTITUTION_CLOSE_WORKFLOW_CODE
 
 
 @dataclass_inject
@@ -172,6 +175,29 @@ class SystemRule(object):
         try:
             paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                           result_model, params)
+            # 针对如果是 关闭的 审核列表  遍历处理里面的 每个图片信息 取获取转换一个URL附上
+            if paging and hasattr(paging, 'items'):
+                for item in paging.items:
+                    if process_code == PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE or process_code == SCHOOL_CLOSE_WORKFLOW_CODE or process_code == INSTITUTION_CLOSE_WORKFLOW_CODE:
+                        # print(item.id)
+                        # print(item.process_instance_id)
+                        # print(item.process_instance_id)
+                        # print(item.process_instance_id)
+                        # print(item.process_instance_id)
+                        # print(item.process_instance_id)
+                        if isinstance(item, dict)  :
+                            item['related_license_upload_url']=None
+                            if 'related_license_upload' in item.keys() and item['related_license_upload'] and  len(item['related_license_upload'])>0:
+                                print('item', item['related_license_upload'])
+
+                                item['related_license_upload_url'] = await self.get_download_url_by_id(
+                                    item['related_license_upload'])
+                        elif isinstance(item, object) :
+                            item.related_license_upload_url = None
+                            if   item.related_license_upload:
+                                item.related_license_upload_url = await self.get_download_url_by_id(
+                                item.related_license_upload)
+
             return paging
         except Exception as e:
             print('异常', e, )
@@ -234,7 +260,7 @@ class SystemRule(object):
                         if hasattr(e, 'user_message'):
                             id = e.user_message
 
-                        return e
+                        return url
 
                         pass
                     pprint.pprint(id)
