@@ -61,7 +61,7 @@ class School(BaseDBModel):
     admin: Mapped[str] = mapped_column(String(64), nullable=True, comment="管理员", default='')
     admin_phone: Mapped[str] = mapped_column(String(64), nullable=True, comment="管理员手机", default='')
 
-    process_instance_id: Mapped[int] = mapped_column(nullable=True,default=0, comment="流程ID")
+    process_instance_id: Mapped[int] = mapped_column(BigInteger,nullable=True,default=0, comment="流程ID")
     workflow_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="工作流审核状态", default='')
 
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)

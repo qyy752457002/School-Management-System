@@ -1,6 +1,6 @@
 from datetime import datetime, date
 
-from sqlalchemy import String, DateTime, Date
+from sqlalchemy import String, DateTime, Date, BigInteger
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -26,5 +26,5 @@ class TeacherKeyInfoApproval(BaseDBModel):
     # operator_id: Mapped[int] = mapped_column(nullable=False, comment="操作人ID", default=0)
     approval_status: Mapped[str] = mapped_column(String(255), nullable=False, comment="审批状态",
                                                  default="submitted")
-    process_instance_id: Mapped[int] = mapped_column(nullable=False, comment="流程ID", default=0)
+    process_instance_id: Mapped[int] = mapped_column(BigInteger,nullable=False, comment="流程ID", default=0)
     is_deleted: Mapped[bool] = mapped_column(nullable=False, comment="删除态", default=False)
