@@ -41,7 +41,7 @@ class TeacherProfessionalTitlesRule(object):
         teacher_professional_titles_db = await self.teacher_professional_titles_dao.delete_teacher_professional_titles(
             exists_teacher_professional_titles)
         teacher_professional_titles = orm_model_to_view_model(teacher_professional_titles_db,
-                                                              TeacherProfessionalTitlesModel, exclude=[""])
+                                                              TeacherProfessionalTitlesUpdateModel, exclude=[""])
         return teacher_professional_titles
 
     async def update_teacher_professional_titles(self,

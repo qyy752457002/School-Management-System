@@ -35,7 +35,7 @@ class TeacherJobAppointmentsRule(object):
         teacher_job_appointments_db.teacher_job_appointments_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_job_appointments_db = await self.teacher_job_appointments_dao.add_teacher_job_appointments(
             teacher_job_appointments_db)
-        teacher_job_appointments = orm_model_to_view_model(teacher_job_appointments_db, TeacherJobAppointmentsModel,
+        teacher_job_appointments = orm_model_to_view_model(teacher_job_appointments_db, TeacherJobAppointmentsUpdateModel,
                                                            exclude=["concurrent_position"])
         teacher_job_appointments.concurrent_position = json.loads(teacher_job_appointments_db.concurrent_position)
         return teacher_job_appointments
@@ -47,7 +47,7 @@ class TeacherJobAppointmentsRule(object):
             raise TeacherJobAppointmentsNotFoundError()
         teacher_job_appointments_db = await self.teacher_job_appointments_dao.delete_teacher_job_appointments(
             exists_teacher_job_appointments)
-        teacher_job_appointments = orm_model_to_view_model(teacher_job_appointments_db, TeacherJobAppointmentsModel,
+        teacher_job_appointments = orm_model_to_view_model(teacher_job_appointments_db,TeacherJobAppointmentsUpdateModel,
                                                            exclude=["concurrent_position"])
         teacher_job_appointments.concurrent_position = json.loads(teacher_job_appointments_db.concurrent_position)
         return teacher_job_appointments

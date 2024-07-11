@@ -36,9 +36,12 @@ class OperationRecordView(BaseView):
                                                          min_length=1, max_length=25),
                    ):
         print('入参', page_request)
-        action_target_id = int(action_target_id)
-        operater_id = int(operater_id)
-        process_instance_id = int(process_instance_id)
+        if action_target_id:
+            action_target_id = int(action_target_id)
+        if operater_id:
+            operater_id = int(operater_id)
+        if process_instance_id:
+            process_instance_id = int(process_instance_id)
         items = []
         res = await self.operation_record_rule.query_operation_record_with_page(page_request, operation_target_type,
                                                                                 action_target_id, operater_account,
