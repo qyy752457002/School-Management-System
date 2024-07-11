@@ -239,6 +239,14 @@
         "executor_cls_model": "views.tasks.newstudent_classdivision_task.NewStudentClassDivisionExportExecutor",
         "payload_cls_model": "views.models.class_division_records.ClassDivisionRecordsSearchRes"
       },
+      "class_import": {
+        "topic": "school_import",
+        "name": "班级导入",
+        "consumer_group_id": "service",
+        "description": "",
+        "executor_cls_model": "views.tasks.class_task.ClassExecutor",
+        "payload_cls_model": "views.models.school.SchoolTask"
+      },
       "teacher_import": {
         "topic": "teacher_import",
         "name": "教师导入",
