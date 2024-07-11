@@ -391,3 +391,20 @@ class NewsStudentsFamilyInfoView(BaseView):
         task = await app.task_topic.send(task)
         print('发生任务成功')
         return task
+
+    # 学生家庭成员导入
+    async def post_newstudent_familyinfo_import(self,
+                                      file:PlanningSchoolImportReq
+
+                                      ) -> Task:
+        file_name= file.file_name
+
+        task = Task(
+            task_type="newstudent_familyinfo_import",
+            # 文件 要对应的 视图模型
+            payload=NewStudentTask(file_name=file_name, scene= ImportScene.NEWSTUDENT_FAMILYINFO.value, bucket='newstudent_familyinfo_import' ),
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task

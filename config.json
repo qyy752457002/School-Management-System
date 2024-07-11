@@ -189,6 +189,14 @@
         "executor_cls_model": "views.tasks.new_student_task.NewStudentExecutor",
         "payload_cls_model": "views.models.students.NewStudentTask"
       },
+      "newstudent_familyinfo_import": {
+        "topic": "newstudent_familyinfo_import",
+        "name": "新生家庭成员信息导入",
+        "consumer_group_id": "service",
+        "description": "新生家庭成员信息导入",
+        "executor_cls_model": "views.tasks.new_student_task.NewStudentFamilyInfoImportExecutor",
+        "payload_cls_model": "views.models.students.NewStudentTask"
+      },
       "school_import": {
         "topic": "school_import",
         "name": "学校导入",
@@ -240,8 +248,8 @@
         "payload_cls_model": "views.models.class_division_records.ClassDivisionRecordsSearchRes"
       },
       "class_import": {
-        "topic": "school_import",
-        "name": "班级导入",
+        "topic": "class_import",
+        "name": "",
         "consumer_group_id": "service",
         "description": "",
         "executor_cls_model": "views.tasks.class_task.ClassExecutor",

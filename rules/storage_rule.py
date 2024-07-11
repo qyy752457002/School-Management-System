@@ -14,7 +14,7 @@ from views.models.classes import Classes
 from views.models.institutions import Institutions, InstitutionsValid
 from views.models.planning_school import PlanningSchool, PlanningSchoolImport
 from views.models.school import School
-from views.models.students import NewStudents
+from views.models.students import NewStudents, StudentsFamilyInfoCreate
 from views.models.system import ImportScene
 from views.models.teachers import TeachersCreatModel
 from mini_framework.utils.logging import logger
@@ -107,6 +107,9 @@ class StorageRule(object):
             sheetname = 'Sheet1'
         if sence == ImportScene.NEW_TEACHERS.value:
             SampleModel = TeachersCreatModel
+            sheetname = 'Sheet1'
+        if sence == ImportScene.NEWSTUDENT_FAMILYINFO.value:
+            SampleModel = StudentsFamilyInfoCreate
             sheetname = 'Sheet1'
         pass
 
