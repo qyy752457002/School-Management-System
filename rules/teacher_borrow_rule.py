@@ -98,44 +98,42 @@ class TeacherBorrowRule(object):
 
     async def add_teacher_borrow_in_outer(self, add_teacher: TeacherAdd, teacher_borrow: TeacherBorrowModel,
                                           user_id):
-        try:
-            teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
-            teachers.teacher_id = int(teachers.teacher_id)
-            teachers.teacher_employer = int(teachers.teacher_employer)
-            teacher_borrow.teacher_id = teachers.teacher_id
-            teacher_borrow_db = view_model_to_orm_model(teacher_borrow, TeacherBorrow, exclude=["teacher_borrow_id"])
-            teacher_borrow_db.teacher_borrow_id = SnowflakeIdGenerator(1, 1).generate_id()
-            teacher_borrow_db = await self.teacher_borrow_dao.add_teacher_borrow(teacher_borrow_db)
-            teacher_borrow_work = orm_model_to_view_model(teacher_borrow_db, TeacherBorrowReModel)
-            transfer_details_rule = get_injector(TransferDetailsRule)
-            transfer_and_borrow_extra_model = await transfer_details_rule.get_transfer_and_borrow_extra(
-                original_district_area_id=teacher_borrow_work.original_district_area_id,
-                current_district_area_id=teacher_borrow_work.current_district_area_id,
-                current_unit_id=teacher_borrow.current_unit_id)
-            original_unit_name = teacher_borrow_work.original_unit_name
-            current_unit_name = transfer_and_borrow_extra_model.current_unit_name
-            params = {"process_code": "t_borrow_in_outer", "applicant_name": user_id}
-            model_list = [teacher_borrow_work, teachers, transfer_and_borrow_extra_model]
-            work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
-            teacher_transfer_log = OperationRecord(
-                action_target_id=teacher_borrow_work.teacher_id,
-                target=OperationTarget.TEACHER.value,
-                action_type=OperationType.CREATE.value,
-                ip="127.0.0.1",
-                change_data="",
-                operation_time=datetime.now(),
-                doc_upload="",
-                change_module=ChangeModule.BORROW.value,
-                change_detail=f"从{original_unit_name}调入到{current_unit_name}",
-                status="/",
-                operator_id=1,
-                operator_name=user_id,
-                process_instance_id=work_flow_instance["process_instance_id"])
-            await self.operation_record_rule.add_operation_record(teacher_transfer_log)
-            await self.teachers_rule.teacher_progressing(teacher_borrow.teacher_id)
-            return True
-        except Exception as e:
-            return str(e)
+
+        teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
+        teachers.teacher_id = int(teachers.teacher_id)
+        teachers.teacher_employer = int(teachers.teacher_employer)
+        teacher_borrow.teacher_id = teachers.teacher_id
+        teacher_borrow_db = view_model_to_orm_model(teacher_borrow, TeacherBorrow, exclude=["teacher_borrow_id"])
+        teacher_borrow_db.teacher_borrow_id = SnowflakeIdGenerator(1, 1).generate_id()
+        teacher_borrow_db = await self.teacher_borrow_dao.add_teacher_borrow(teacher_borrow_db)
+        teacher_borrow_work = orm_model_to_view_model(teacher_borrow_db, TeacherBorrowReModel)
+        transfer_details_rule = get_injector(TransferDetailsRule)
+        transfer_and_borrow_extra_model = await transfer_details_rule.get_transfer_and_borrow_extra(
+            original_district_area_id=teacher_borrow_work.original_district_area_id,
+            current_district_area_id=teacher_borrow_work.current_district_area_id,
+            current_unit_id=teacher_borrow.current_unit_id)
+        original_unit_name = teacher_borrow_work.original_unit_name
+        current_unit_name = transfer_and_borrow_extra_model.current_unit_name
+        params = {"process_code": "t_borrow_in_outer", "applicant_name": user_id}
+        model_list = [teacher_borrow_work, teachers, transfer_and_borrow_extra_model]
+        work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
+        teacher_transfer_log = OperationRecord(
+            action_target_id=teacher_borrow_work.teacher_id,
+            target=OperationTarget.TEACHER.value,
+            action_type=OperationType.CREATE.value,
+            ip="127.0.0.1",
+            change_data="",
+            operation_time=datetime.now(),
+            doc_upload="",
+            change_module=ChangeModule.BORROW.value,
+            change_detail=f"从{original_unit_name}调入到{current_unit_name}",
+            status="/",
+            operator_id=1,
+            operator_name=user_id,
+            process_instance_id=work_flow_instance["process_instance_id"])
+        await self.operation_record_rule.add_operation_record(teacher_transfer_log)
+        await self.teachers_rule.teacher_progressing(teacher_borrow.teacher_id)
+        return True
 
     async def add_teacher_borrow_out(self, teacher_borrow: TeacherBorrowModel, user_id):
         """
@@ -159,7 +157,7 @@ class TeacherBorrowRule(object):
             transfer_and_borrow_extra_model = await transfer_details_rule.get_transfer_and_borrow_extra(
                 original_district_area_id=teacher_borrow_work.original_district_area_id,
                 current_district_area_id=teacher_borrow_work.current_district_area_id,
-                original_unit_id=teacher_borrow.original_unit_id)
+                original_unit_id=original_unit_id)
             transfer_and_borrow_extra_model.current_unit_name = teacher_borrow.current_unit_name
             current_unit_name = transfer_and_borrow_extra_model.current_unit_name
             params = {"process_code": "t_borrow_out", "applicant_name": user_id}
@@ -178,7 +176,7 @@ class TeacherBorrowRule(object):
                 operation_time=datetime.now(),
                 doc_upload="",
                 change_module=ChangeModule.BORROW.value,
-                change_detail=f"从{transfer_and_borrow_extra_model.original_unit_name}借入到{current_unit_name}",
+                change_detail=f"从{school.school_name}借出到{current_unit_name}",
                 status="/",
                 operator_id=1,
                 operator_name=user_id,
@@ -305,7 +303,7 @@ class TeacherBorrowRule(object):
                 # 更新状态
                 teachers_db.teacher_sub_status = "borrow_out"
                 await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status")
-                await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
+                await self.teachers_rule.teacher_pending(int(teacher_id))
             elif process_code == "t_borrow_in_inner":
                 """需要先修改本校老师状态，包括is_deleted和teacher_sub_status，然后再添加新的老师，以及增加老师的调入记录"""
 
@@ -313,7 +311,7 @@ class TeacherBorrowRule(object):
                 await self.teacher_work_flow_rule.update_work_flow_by_param(process_instance_id, update_params)
                 teachers_db.teacher_sub_status = "borrow_in"
                 await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status")
-                await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
+                await self.teachers_rule.teacher_pending(int(teacher_id))
             elif process_code == "t_borrow_in_outer":
                 """增加老师再添加新老师"""
                 update_params = {"teacher_sub_status": "borrow_in"}
@@ -326,7 +324,7 @@ class TeacherBorrowRule(object):
                     if value:
                         need_update_list.append(key)
                 await self.teachers_dao.update_teachers(teacher, *need_update_list)
-                await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
+                await self.teachers_rule.teacher_pending(int(teacher_id))
             return "该老师借动审批已通过"
 
     async def borrow_rejected(self, teacher_id, process_instance_id, user_id, reason):
