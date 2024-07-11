@@ -171,6 +171,15 @@
         "executor_cls_model": "views.tasks.institution_task.InstitutionExecutor",
         "payload_cls_model": "views.models.institutions.InstitutionTask"
       },
+      "institution_export": {
+        "topic": "institution_export",
+        "name": "事业单位导出",
+        "consumer_group_id": "service",
+        "description": "institution_export",
+        "executor_cls_model": "views.tasks.institution_task.InstitutionExportExecutor",
+        "payload_cls_model": "views.models.institutions.InstitutionPageSearch",
+        "payload_is_list": false
+      },
 
       "new_student_import": {
         "topic": "new_student_import",
@@ -178,6 +187,14 @@
         "consumer_group_id": "service",
         "description": "",
         "executor_cls_model": "views.tasks.new_student_task.NewStudentExecutor",
+        "payload_cls_model": "views.models.students.NewStudentTask"
+      },
+      "newstudent_familyinfo_import": {
+        "topic": "newstudent_familyinfo_import",
+        "name": "新生家庭成员信息导入",
+        "consumer_group_id": "service",
+        "description": "新生家庭成员信息导入",
+        "executor_cls_model": "views.tasks.new_student_task.NewStudentFamilyInfoImportExecutor",
         "payload_cls_model": "views.models.students.NewStudentTask"
       },
       "school_import": {
@@ -221,6 +238,22 @@
         "description": "学生导出",
         "executor_cls_model": "views.tasks.new_student_task.NewStudentExportExecutor",
         "payload_cls_model": "views.models.students.NewStudentsQuery"
+      },
+      "newstudent_classdivision_export": {
+        "topic": "newstudent_classdivision_export",
+        "name": "学生分班记录导出",
+        "consumer_group_id": "service",
+        "description": "学生分班记录导出",
+        "executor_cls_model": "views.tasks.newstudent_classdivision_task.NewStudentClassDivisionExportExecutor",
+        "payload_cls_model": "views.models.class_division_records.ClassDivisionRecordsSearchRes"
+      },
+      "class_import": {
+        "topic": "class_import",
+        "name": "",
+        "consumer_group_id": "service",
+        "description": "",
+        "executor_cls_model": "views.tasks.class_task.ClassExecutor",
+        "payload_cls_model": "views.models.school.SchoolTask"
       },
       "teacher_import": {
         "topic": "teacher_import",

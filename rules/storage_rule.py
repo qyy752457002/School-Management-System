@@ -10,10 +10,11 @@ from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.storage.view_model import FileStorageResponseModel, FileStorageModel
 
 from views.common import common_view
+from views.models.classes import Classes
 from views.models.institutions import Institutions, InstitutionsValid
 from views.models.planning_school import PlanningSchool, PlanningSchoolImport
 from views.models.school import School
-from views.models.students import NewStudents
+from views.models.students import NewStudents, StudentsFamilyInfoCreate
 from views.models.system import ImportScene
 from views.models.teachers import TeachersCreatModel
 from mini_framework.utils.logging import logger
@@ -98,11 +99,17 @@ class StorageRule(object):
         if sence ==ImportScene.SCHOOL.value:
             SampleModel = School
             sheetname = 'Sheet1'
+        if sence ==ImportScene.CLASS.value:
+            SampleModel = Classes
+            sheetname = 'Sheet1'
         if sence ==ImportScene.NEWSTUDENT.value:
             SampleModel = NewStudents
             sheetname = 'Sheet1'
         if sence == ImportScene.NEW_TEACHERS.value:
             SampleModel = TeachersCreatModel
+            sheetname = 'Sheet1'
+        if sence == ImportScene.NEWSTUDENT_FAMILYINFO.value:
+            SampleModel = StudentsFamilyInfoCreate
             sheetname = 'Sheet1'
         pass
 

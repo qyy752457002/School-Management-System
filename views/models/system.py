@@ -98,12 +98,13 @@ class ImportScene(str, Enum):
     TEACHERS_EXTEND = "teachers_extend"
     INSTITUTION = "institution"
     NEWSTUDENT = "new_student"
+    NEWSTUDENT_FAMILYINFO = "new_student_familyinfo"
     CLASS = "class"
 
     @classmethod
     def to_list(cls):
         return [cls.PLANNING_SCHOOL, cls.SCHOOL, cls.NEW_TEACHERS, cls.TEACHERS_BASIC, cls.TEACHERS_SHORTCUT,
-                cls.TEACHERS_EXTEND, cls.INSTITUTION, cls.NEWSTUDENT, cls.CLASS
+                cls.TEACHERS_EXTEND, cls.INSTITUTION, cls.NEWSTUDENT, cls.CLASS,cls.NEWSTUDENT_FAMILYINFO
                 ]
 class SystemConfig(BaseModel):
     """
