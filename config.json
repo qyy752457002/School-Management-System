@@ -77,6 +77,11 @@
         "db": 22,
         "prefix": "",
         "server_key": "default"
+      },
+      "account": {
+        "db": 3,
+        "prefix": "",
+        "server_key": "default"
       }
     }
   },
@@ -166,21 +171,30 @@
         "executor_cls_model": "views.tasks.institution_task.InstitutionExecutor",
         "payload_cls_model": "views.models.institutions.InstitutionTask"
       },
-      "account_export": {
-        "topic": "account_export",
-        "name": "测试任务",
+      "institution_export": {
+        "topic": "institution_export",
+        "name": "事业单位导出",
         "consumer_group_id": "service",
-        "description": "测试任务",
-        "executor_cls_model": "web_test.views.account.account_task.AccountExportExecutor",
-        "payload_cls_model": "web_test.views.models.account.AccountModel",
-        "payload_is_list": true
+        "description": "institution_export",
+        "executor_cls_model": "views.tasks.institution_task.InstitutionExportExecutor",
+        "payload_cls_model": "views.models.institutions.InstitutionPageSearch",
+        "payload_is_list": false
       },
+
       "new_student_import": {
         "topic": "new_student_import",
         "name": "新生导入",
         "consumer_group_id": "service",
         "description": "",
         "executor_cls_model": "views.tasks.new_student_task.NewStudentExecutor",
+        "payload_cls_model": "views.models.students.NewStudentTask"
+      },
+      "newstudent_familyinfo_import": {
+        "topic": "newstudent_familyinfo_import",
+        "name": "新生家庭成员信息导入",
+        "consumer_group_id": "service",
+        "description": "新生家庭成员信息导入",
+        "executor_cls_model": "views.tasks.new_student_task.NewStudentFamilyInfoImportExecutor",
         "payload_cls_model": "views.models.students.NewStudentTask"
       },
       "school_import": {
@@ -191,6 +205,15 @@
         "executor_cls_model": "views.tasks.school_task.SchoolExecutor",
         "payload_cls_model": "views.models.school.SchoolTask"
       },
+      "school_export": {
+        "topic": "school_export",
+        "name": "学校导出",
+        "consumer_group_id": "service",
+        "description": "school_export",
+        "executor_cls_model": "views.tasks.school_task.SchoolExportExecutor",
+        "payload_cls_model": "views.models.school.SchoolPageSearch",
+        "payload_is_list": false
+      },
       "planning_school_import": {
         "topic": "planning_school_import",
         "name": "规划校上传和导入",
@@ -199,6 +222,15 @@
         "executor_cls_model": "views.tasks.planning_school_task.PlanningSchoolExecutor",
         "payload_cls_model": "views.models.planning_school.PlanningSchoolTask"
       },
+      "planning_school_export": {
+        "topic": "planning_school_export",
+        "name": "规划校的导出",
+        "consumer_group_id": "service",
+        "description": "planning_school_export",
+        "executor_cls_model": "views.tasks.planning_school_task.PlanningSchoolExportExecutor",
+        "payload_cls_model": "views.models.planning_school.PlanningSchoolPageSearch",
+        "payload_is_list": false
+      },
       "student_export": {
         "topic": "student_export",
         "name": "学生导出",
@@ -206,6 +238,22 @@
         "description": "学生导出",
         "executor_cls_model": "views.tasks.new_student_task.NewStudentExportExecutor",
         "payload_cls_model": "views.models.students.NewStudentsQuery"
+      },
+      "newstudent_classdivision_export": {
+        "topic": "newstudent_classdivision_export",
+        "name": "学生分班记录导出",
+        "consumer_group_id": "service",
+        "description": "学生分班记录导出",
+        "executor_cls_model": "views.tasks.newstudent_classdivision_task.NewStudentClassDivisionExportExecutor",
+        "payload_cls_model": "views.models.class_division_records.ClassDivisionRecordsSearchRes"
+      },
+      "class_import": {
+        "topic": "class_import",
+        "name": "",
+        "consumer_group_id": "service",
+        "description": "",
+        "executor_cls_model": "views.tasks.class_task.ClassExecutor",
+        "payload_cls_model": "views.models.school.SchoolTask"
       },
       "teacher_import": {
         "topic": "teacher_import",

@@ -30,6 +30,9 @@ def compare_modify_fields(view_model, orm_model):
     od = orm_model.__dict__
     vd = convert_dates_to_strings(vd)
     od = convert_dates_to_strings(od)
+    # 定义要转换的值的map
+    key_map = {'preSchoolEducation': '学前教育', 'kindergarten': '幼儿园', 'attachedKindergartenClass': '附设幼儿班', 'primaryEducation': '初等教育', 'primarySchool': '小学', 'primarySchoolTeachingPoint': '小学教学点', 'attachedPrimarySchoolClass': '附设小学班', 'adultPrimarySchool': '成人小学', 'staffPrimarySchool': '职工小学', 'migrantWorkerPrimarySchool': '农民工小学', 'primarySchoolClass': '小学班', 'literacyClass': '扫盲班', 'secondaryEducation': '中等教育', 'ordinaryJuniorHigh': '普通初中', 'vocationalJuniorHigh': '职业初中', 'attachedVocationalJuniorHighClass': '附设职业初中班', 'adultEmployeeJuniorHigh': '成人职工初中', 'adultFarmerJuniorHigh': '成人农民初中', 'adultJuniorHigh': '成人初中', 'ordinaryHighSchool': '普通高中', 'comprehensiveHighSchool': '完全中学', 'seniorHighSchool': '高级中学', 'twelveYearSystemSchool': '十二年一贯制学校', 'attachedOrdinaryHighSchoolClass': '附设普通高中班', 'adultHighSchool': '成人高中', 'adultEmployeeHighSchool': '成人职工高中', 'adultFarmerHighSchool': '成人农民高中', 'secondaryVocationalSchool': '中等职业学校', 'adjustedSecondaryVocationalSchool': '调整后中等职业学校', 'secondaryTechnicalSchool': '中等技术学校', 'secondaryNormalSchool': '中等师范学校', 'adultSecondaryProfessionalSchool': '成人中等专业学校', 'vocationalHighSchool': '职业高中学校', 'technicalSchool': '技工学校', 'attachedVocationalClass': '附设中职班', 'otherVocationalInstitutions': '其他中职机构', 'workStudySchool': '工读学校', 'specialEducation': '特殊教育', 'specialEducationSchool': '特殊教育学校', 'schoolForBlind': '盲人学校', 'schoolForDeaf': '聋人学校', 'schoolForIntellectuallyDisabled': '培智学校', 'otherSpecialEducationSchools': '其他特教学校', 'attachedSpecialEducationClasses': '附设特教班', 'otherEducation': '其他教育', 'jinxingInstitution': '进修机构', 'researchInstitution': '研究机构', 'educationResearchInstitute': '教育研究院', 'practiceInstitution': '实践机构', 'practiceBase': '实践基地', 'trainingInstitution': '培训机构', 'PublicOwnership': '公办', 'PrivateOwnership': '民办', '1': '一星', '2': '二星', '3': '三星', '4': '四星', '5': '五星', 'resident_id_card': '居民身份证', 'military_officer_id': '军官证', 'soldier_id': '士兵证', 'civilian_officer_id': '文职干部证', 'military_retiree_id': '部队离退休证', 'hong_kong_passport_id': '香港特区护照/身份证明', 'macau_passport_id': '澳门特区护照/身份证明', 'taiwan_resident_travel_permit': '台湾居民来往大陆通行证', 'overseas_permanent_residence_permit': '境外永久居住证', 'passport': '护照', 'birth_certificate': '出生证明', 'household_register': '户口薄', 'other': '其他', 'male': '男', 'female': '女'}
+
     for key, value in vd.items():
         if value:
             if key in od and od[key] != value:
@@ -45,11 +48,18 @@ def compare_modify_fields(view_model, orm_model):
                     if not key_cn:
                         key_cn = orm_model.model_fields[key].description
 
+
+
                 valueold = od[key]
                 if isinstance(valueold, date):
                     valueold = valueold.strftime('%Y-%m-%d')
                 if isinstance(value, date):
                     value = value.strftime('%Y-%m-%d')
+                    
+                if valueold in key_map.keys():
+                    valueold = key_map[valueold]
+                if value in key_map.keys():
+                    value = key_map[value]
 
                 # 枚举类型的转换
                 if isinstance(valueold, Enum):
@@ -190,6 +200,7 @@ def serialize(model):
 # 将字典转换为JSON
 # model_json = json.dumps(model_dict)
 
+
 # 函数来处理键名映射  对于josn里的  每个 根据映射提换键名
 def map_keys(data, key_map):
     if isinstance(data, dict):
@@ -202,3 +213,45 @@ def map_keys(data, key_map):
         return [map_keys(item, key_map) for item in data]  # 处理列表中的每个元素
     else:
         return data  # 如果是基本类型，直接返回
+import requests
+
+def download_file(url, local_filepath):
+    """
+    从指定的URL下载文件并保存到本地路径。
+
+    :param url: 要下载的文件的URL
+    :param local_filepath: 本地文件保存路径
+    :return: None
+    """
+    try:
+        # 发送GET请求下载文件
+        response = requests.get(url, stream=True)  # 使用stream=True可以处理大文件
+
+        # 检查请求是否成功
+        if response.status_code == 200:
+            # 打开本地文件路径以写入二进制内容
+            with open(local_filepath, 'wb') as file:
+                # 将下载的内容写入文件
+                for chunk in response.iter_content(chunk_size=8192):  # 逐块写入文件，可以有效处理大文件
+                    file.write(chunk)
+            print(f'文件已保存到 {local_filepath}')
+        else:
+            print(f'请求失败，状态码：{response.status_code}')
+    except requests.exceptions.RequestException as e:
+        print(f'请求异常：{e}')
+
+# 使用函数
+# download_file('http://example.com/file.pdf', 'path/to/your/local/file.pdf')
+# 定义函数 针对 对象里每个属性 如果类型是 pydantic的QUERY 则设置为None
+def convert_query_to_none(obj):
+    """
+    将pydantic的Query类型属性设置为None。
+
+    :param obj: 要转换的对象
+    :return: 转换后的对象
+    """
+    for field_name, field in obj.__fields__.items():
+        field = getattr(obj, field_name)
+        if isinstance(field , Query) or isinstance(field, tuple):
+            setattr(obj, field_name, None)
+    return obj

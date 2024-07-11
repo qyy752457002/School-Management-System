@@ -1,10 +1,16 @@
 import hashlib
 import json
+import os
 from datetime import datetime
 
 import shortuuid
+from mini_framework.async_task.data_access.models import TaskResult
+from mini_framework.async_task.task import Task, TaskState
+from mini_framework.data.tasks.excel_tasks import ExcelWriter
+from mini_framework.storage.manager import storage_manager
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.utils.json import JsonUtils
+from mini_framework.utils.logging import logger
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
@@ -20,7 +26,7 @@ from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, map_keys
 from views.models.institutions import Institutions as InstitutionModel, Institutions, InstitutionKeyInfo, \
-    InstitutionOptional, InstitutionBaseInfo
+    InstitutionOptional, InstitutionBaseInfo, InstitutionPageSearch
 from views.models.planning_school import PlanningSchoolTransactionAudit, PlanningSchoolStatus
 from views.models.system import SCHOOL_OPEN_WORKFLOW_CODE, INSTITUTION_OPEN_WORKFLOW_CODE, SCHOOL_CLOSE_WORKFLOW_CODE, \
     INSTITUTION_CLOSE_WORKFLOW_CODE, SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE
@@ -186,3 +192,76 @@ class InstitutionRule(SchoolRule):
         # res = await self.update_school_status(school_id,  PlanningSchoolStatus.NORMAL.value, 'open')
 
         pass
+
+
+    async def institution_export(self, task: Task):
+        bucket = 'student'
+        print(bucket,'桶')
+
+        export_params: InstitutionPageSearch = (
+            task.payload if task.payload is InstitutionPageSearch() else InstitutionPageSearch()
+        )
+        page_request = PageRequest(page=1, per_page=100)
+        random_file_name = f"institution_export{shortuuid.uuid()}.xlsx"
+        temp_file_path = os.path.join(os.path.dirname(__file__), 'tmp')
+        if not os.path.exists(temp_file_path):
+            os.makedirs(temp_file_path)
+        temp_file_path = os.path.join(temp_file_path, random_file_name)
+        while True:
+            # todo  这里的参数需要 解包
+            paging = await self.school_dao.query_school_with_page(
+                page_request, export_params.school_name,export_params.school_no,export_params.school_code,
+                export_params.block,export_params.school_level,export_params.borough,export_params.status,export_params.founder_type,
+                export_params.founder_type_lv2,
+                export_params.founder_type_lv3 ,export_params.planning_school_id,export_params.province,export_params.city,export_params.institution_category,
+            )
+            paging_result = PaginatedResponse.from_paging(
+                paging, InstitutionPageSearch, {"hash_password": "password"}
+            )
+            # 处理每个里面的状态 1. 0
+            for item in paging_result.items:
+                item.approval_status =  item.approval_status.value
+
+            # logger.info('分页的结果',len(paging_result.items))
+            excel_writer = ExcelWriter()
+            excel_writer.add_data("Sheet1", paging_result.items)
+            excel_writer.set_data(temp_file_path)
+            excel_writer.execute()
+            # break
+            if len(paging.items) < page_request.per_page:
+                break
+            page_request.page += 1
+        #     保存文件时可能报错
+        print('临时文件路径',temp_file_path)
+        file_storage =  storage_manager.put_file_to_object(
+            bucket, f"{random_file_name}.xlsx", temp_file_path
+        )
+        # 这里会写入 task result 提示 缺乏 result file id  导致报错
+        try:
+
+            file_storage_resp = await storage_manager.add_file(
+                self.file_storage_dao, file_storage
+            )
+            print('file_storage_resp ',file_storage_resp)
+
+            task_result = TaskResult()
+            task_result.task_id = task.task_id
+            task_result.result_file = file_storage_resp.file_name
+            task_result.result_bucket = file_storage_resp.bucket_name
+            task_result.result_file_id = file_storage_resp.file_id
+            task_result.last_updated = datetime.now()
+            task_result.state = TaskState.succeeded
+            task_result.result_extra = {"file_size": file_storage.file_size}
+            if not task_result.result_file_id:
+                task_result.result_file_id =  0
+            print('拼接数据task_result ',task_result)
+
+            resadd = await self.task_dao.add_task_result(task_result)
+            print('task_result写入结果',resadd)
+        except Exception as e:
+            logger.debug('保存文件记录和插入taskresult 失败')
+
+            logger.error(e)
+            task_result = TaskResult()
+
+        return task_result

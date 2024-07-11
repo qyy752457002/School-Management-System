@@ -17,10 +17,11 @@ from rules.school_communication_rule import SchoolCommunicationRule
 from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
-from views.common.common_view import compare_modify_fields, get_extend_params, convert_snowid_in_model
+from views.common.common_view import compare_modify_fields, get_extend_params, convert_snowid_in_model, \
+    convert_query_to_none
 from views.models.operation_record import OperationTarget, OperationType, ChangeModule, OperationRecord
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolTransactionAudit, \
-    PlanningSchoolStatus, PlanningSchoolFounderType
+    PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolImportReq
 from views.models.school import School, SchoolKeyInfo, SchoolPageSearch, SchoolBaseInfo
 # from fastapi import Field
 from fastapi import Query, Depends, Body
@@ -38,7 +39,7 @@ from mini_framework.async_task.task import Task
 from views.models.school_communications import SchoolCommunications
 from views.models.school_eduinfo import SchoolEduInfo
 from views.models.system import InstitutionType, SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, \
-    INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE
+    INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE, ImportScene
 
 
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
@@ -390,16 +391,21 @@ class InstitutionView(BaseView):
     # 导入 事业单位      上传文件获取 桶底值
 
     async def post_institution_import(self,
-                                      file_name: str = Body(..., description="文件名"),
+                                      # file_name: str = Body(..., description="文件名"),
+                                      file:PlanningSchoolImportReq
+
                                       # bucket: str = Query(..., description="文件名"),
                                       # scene: str = Query('', description="文件名"),
                                       ) -> Task:
+        file_name= file.file_name
+
 
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="institution_import",
             # 文件 要对应的 视图模型
-            payload=InstitutionTask(file_name=file_name, bucket='', scene='institution_import'),
+            # payload=InstitutionTask(file_name=file_name, bucket='', scene='institution_import'),
+            payload=InstitutionTask(file_name=file_name, scene= ImportScene.INSTITUTION.value, bucket='institution_import' ),
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
@@ -507,3 +513,25 @@ class InstitutionView(BaseView):
         # print(new_students_key_info)
         return res2
         pass
+    #事业单位导出
+    async def post_institution_export(self,
+                                 # students_query=Depends(NewStudentsQuery),
+                                 page_search:InstitutionPageSearch = Depends(InstitutionPageSearch),
+                                 ) -> Task:
+        print('入参接收',page_search)
+        institution_category = [InstitutionType.INSTITUTION,InstitutionType.ADMINISTRATION]
+        page_search.institution_category=institution_category
+
+        page_search= convert_query_to_none(page_search)
+
+
+        print('入参接收2',page_search)
+        task = Task(
+            task_type="institution_export",
+            payload=page_search,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
+
