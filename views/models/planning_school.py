@@ -260,7 +260,7 @@ class PlanningSchoolKeyInfo(BaseModel):
 class PlanningSchoolPageSearch(BaseModel):
     # process_code: str = Query("", title=" ", description="", ),
     block:Optional[str]  = Query("", title=" ", description="地域管辖区", ),
-    planning_school_code: str = Query("", title="", description=" 园所标识码", ),
+    planning_school_code: str = Query(None, title="", description=" 园所标识码", ),
     planning_school_level: str = Query("", title="", description=" 学校星级", ),
     planning_school_name: str = Query("", title="学校名称", description="1-20字符", ),
     planning_school_no: str = Query("", title="学校编号", description="学校编号/园所代码", min_length=1,

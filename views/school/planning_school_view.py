@@ -17,7 +17,7 @@ from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
 from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_extend_params, get_client_ip, convert_dates_to_strings, \
-    serialize
+    serialize, convert_query_to_none
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
@@ -622,6 +622,7 @@ class PlanningSchoolView(BaseView):
 
 
                                           ) -> Task:
+        page_search= convert_query_to_none(page_search)
         task = Task(
             task_type="planning_school_export",
             payload=page_search,
