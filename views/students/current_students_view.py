@@ -497,7 +497,7 @@ class CurrentStudentsView(BaseView):
 
 
         return res
-
+    # 在校生导出
     async def post_current_student_export(self,
         students_query=Depends(NewStudentsQuery),
 
