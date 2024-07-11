@@ -132,30 +132,32 @@ class InstitutionOptional(BaseModel):
 
 
 class InstitutionPageSearch(BaseModel):
-    social_credit_code: str|None = Field( '',   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656']),
-    block: str = Query("", title=" ", description="地域管辖区", ),
-    school_code: str = Query("", title=" ", description="", ),
-    school_level: str = Query("", title=" ", description="", ),
-    planning_school_code: str = Query("", title="", description=" 园所标识码", ),
-    planning_school_level: str = Query("", title="", description=" 学校星级", ),
-    planning_school_name: str = Query("", title="学校名称", description="1-20字符", ),
+    social_credit_code: str|None = Field( '',   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656'])
+    block: str = Query("", title=" ", description="地域管辖区", )
+    school_code: str = Query("", title=" ", description="", )
+    school_level: str = Query("", title=" ", description="", )
+    planning_school_code: str = Query("", title="", description=" 园所标识码", )
+    planning_school_level: str = Query("", title="", description=" 学校星级", )
+    planning_school_name: str = Query("", title="学校名称", description="1-20字符", )
     planning_school_no: str = Query("", title="学校编号", description="学校编号/园所代码",
-                                    max_length=50, ),
-    borough: str = Query("", title="  ", description=" 行政管辖区", ),
-    status: PlanningSchoolStatus|None = Query("", title="", description=" 状态", examples=['正常']),
+                                    max_length=50, )
+    borough: str = Query("", title="  ", description=" 行政管辖区", )
+    status: PlanningSchoolStatus|None = Query("", title="", description=" 状态", examples=['正常'])
 
     founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
-                                                          examples=['地方']),
+                                                          examples=['地方'])
     founder_type_lv2: List[str] = Query([], title="", description="举办者类型二级",
-                                        examples=['教育部门']),
+                                        examples=['教育部门'])
     founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
-                                        examples=['县级教育部门']),
-    school_no: str|None = Query("", title=" ", description="", ),
-    school_name: str|None = Query("", title=" ", description="", ),
-    province: str |None= Query("", title=" ", description="", ),
-    city: str|None = Query("", title=" ", description="", ),
-    planning_school_id: int|None = Query(0, title=" ", description="", ),
-    school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),
+                                        examples=['县级教育部门'])
+    school_no: str|None = Query("", title=" ", description="", )
+    school_name: str|None = Query("", title=" ", description="", )
+    province: str |None= Query("", title=" ", description="", )
+    city: str|None = Query("", title=" ", description="", )
+    planning_school_id: int|None = Query(0, title=" ", description="", )
+    school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
+    institution_category: InstitutionType = Query(None, title='单位分类',examples=['institution/administration'])
+
 
 class InstitutionsAdd(BaseModel):
     #   title  实际根据title匹配

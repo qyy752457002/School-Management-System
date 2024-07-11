@@ -17,7 +17,8 @@ from rules.school_communication_rule import SchoolCommunicationRule
 from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
-from views.common.common_view import compare_modify_fields, get_extend_params, convert_snowid_in_model
+from views.common.common_view import compare_modify_fields, get_extend_params, convert_snowid_in_model, \
+    convert_query_to_none
 from views.models.operation_record import OperationTarget, OperationType, ChangeModule, OperationRecord
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolTransactionAudit, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolImportReq
@@ -513,3 +514,24 @@ class InstitutionView(BaseView):
         return res2
         pass
     #事业单位导出
+    async def post_institution_export(self,
+                                 # students_query=Depends(NewStudentsQuery),
+                                 page_search:InstitutionPageSearch = Depends(InstitutionPageSearch),
+                                 ) -> Task:
+        print('入参接收',page_search)
+        institution_category = [InstitutionType.INSTITUTION,InstitutionType.ADMINISTRATION]
+        page_search.institution_category=institution_category
+
+        page_search= convert_query_to_none(page_search)
+
+
+        print('入参接收2',page_search)
+        task = Task(
+            task_type="institution_export",
+            payload=page_search,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
+

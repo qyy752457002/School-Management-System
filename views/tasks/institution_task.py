@@ -9,6 +9,7 @@ from rules.institution_rule import InstitutionRule
 # from web_test.rules.planning_school_rule import InstitutionRule
 # from web_test.views.models.account import InstitutionCreateModel
 from models.institution import Institution as Institutions
+from rules.school_rule import SchoolRule
 from rules.storage_rule import StorageRule
 from rules.system_rule import SystemRule
 from views.models.institutions import Institutions as InstitutionsModel
@@ -52,6 +53,17 @@ class InstitutionExecutor(TaskExecutor):
 
 # 导出  todo
 class InstitutionExportExecutor(TaskExecutor):
-    async def execute(self, task: 'FileTask'):
+    def __init__(self):
+        self.institution_rule = get_injector(InstitutionRule)
+        self._storage_rule: StorageRule = get_injector(StorageRule)
+        self.system_rule = get_injector(SystemRule)
+        super().__init__()
+    async def execute(self, task: 'Task'):
         print("test")
         print(dict(task))
+        task: Task = task
+        logger.info("负载" ,task.payload)
+
+        task_result = await self.institution_rule.institution_export(task)
+        task.result_file = task_result.result_file
+        task.result_bucket = task_result.result_bucket

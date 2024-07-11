@@ -171,6 +171,15 @@
         "executor_cls_model": "views.tasks.institution_task.InstitutionExecutor",
         "payload_cls_model": "views.models.institutions.InstitutionTask"
       },
+      "institution_export": {
+        "topic": "institution_export",
+        "name": "事业单位导出",
+        "consumer_group_id": "service",
+        "description": "institution_export",
+        "executor_cls_model": "views.tasks.institution_task.InstitutionExportExecutor",
+        "payload_cls_model": "views.models.institutions.InstitutionPageSearch",
+        "payload_is_list": false
+      },
 
       "new_student_import": {
         "topic": "new_student_import",
