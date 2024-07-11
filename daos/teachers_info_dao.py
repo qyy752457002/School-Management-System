@@ -127,7 +127,7 @@ class TeachersInfoDao(DAOBase):
         进本校时间：enter_school_time
         """
         query = select(Teacher.teacher_id, TeacherInfo.teacher_base_id, Teacher.teacher_name, Teacher.teacher_id_number,
-                       Teacher.teacher_gender,
+                       Teacher.teacher_gender, Teacher.teacher_main_status, Teacher.teacher_sub_status,
                        Teacher.teacher_employer, TeacherInfo.highest_education,
                        TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
                        School.school_name,
