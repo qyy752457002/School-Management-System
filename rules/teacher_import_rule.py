@@ -61,12 +61,12 @@ class TeacherImportRule:
             local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
             logger.info("Test开始注册模型")
             storage_manager.download_file(
-                source_file.bucket_name, source_file.file_name, local_file_path
+                source_file.virtual_bucket_name, source_file.file_name, local_file_path
             )
             # local_file_path = "c.xlsx"
             reader = ExcelReader()
             reader.set_data(local_file_path)
-            reader.register_model("数据", CombinedModel)
+            reader.register_model("数据", CombinedModel, header=1)
             logger.info("Test开始注册模型")
             # reader.register_model("Sheet1", TeachersCreatModel)
             # reader.register_model("Sheet1", TeacherInfoCreateModel)
@@ -75,8 +75,6 @@ class TeacherImportRule:
             if not isinstance(data, list):
                 raise ValueError("数据格式错误")
             results = []
-            teachers_info_rule = get_injector(TeachersInfoRule)
-
             # 两个一起写
             for idx, item in enumerate(data):
                 item = item.dict()
@@ -89,7 +87,8 @@ class TeacherImportRule:
                 result = TeacherImportResultModel(**result_dict)
                 user_id = task.operator
                 try:
-                    teachers_work, teacher_base_id = await self.teacher_rule.add_teachers_import_save(teacher_model, user_id)
+                    teachers_work, teacher_base_id = await self.teacher_rule.add_teachers_import_save(teacher_model,
+                                                                                                      user_id)
                     teacher_id = teachers_work.teacher_id
                     teacher_base_id = teacher_base_id
                     if teacher_id:
