@@ -16,7 +16,7 @@ from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
 # from rules.teachers_info_rule import TeachersInfoRule
 from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, TeacherChangeLogQueryModel, \
-    CurrentTeacherInfoSaveModel, TeacherRe, TeacherAdd, CombinedModel, TeacherInfoSubmit
+    CurrentTeacherInfoSaveModel, TeacherRe, TeacherAdd, CombinedModel, TeacherInfoSubmit, TeachersSchool
 
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
@@ -219,10 +219,14 @@ class TeachersRule(object):
             #                                                  exclude=[""])
             res = compare_modify_fields(teachers, old_teachers)
             params = {"process_code": "t_keyinfo", "teacher_id": teachers.teacher_id, "applicant_name": user_id}
-            work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teachers, params)
-            update_params = {"teacher_main_status": "employed", "teacher_sub_status": "active"}
-            await self.teacher_work_flow_rule.update_work_flow_by_param(work_flow_instance["process_instance_id"],
-                                                                        update_params)
+            school = await self.school_dao.get_school_by_id(teachers.teacher_employer)
+            school_name = ""
+            if school:
+                school_name = school.school_name
+            teachers_school = TeachersSchool(school_name=school_name, teacher_main_status="employed",
+                                             teacher_sub_status="active")
+            model_list = [teachers, teachers_school]
+            work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
             await self.teacher_progressing(teachers.teacher_id)
             teacher_change_log = OperationRecord(
                 action_target_id=int(teachers.teacher_id),
@@ -253,6 +257,8 @@ class TeachersRule(object):
         if not exists_teachers:
             raise TeacherNotFoundError()
         teachers_db = await self.teachers_dao.delete_teachers(exists_teachers)
+        await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
+            teachers_id)
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=[""])
         teacher_entry_log = OperationRecord(
             action_target_id=int(teachers.teacher_id),
@@ -269,7 +275,7 @@ class TeachersRule(object):
             operator_name=user_id,
             process_instance_id=0)
         await self.operation_record_rule.add_operation_record(teacher_entry_log)
-        return teachers
+        return True
 
     async def get_all_teachers(self):
         teachers_db = await self.teachers_dao.get_all_teachers()
@@ -379,8 +385,6 @@ class TeachersRule(object):
             await self.teacher_active(teachers_id)
             await self.teacher_pending(teachers_id)
             return "该老师关键信息变更审批已撤回"
-
-
 
     # 审批相关
     async def query_teacher_approval_with_page(self, type, query_model: TeacherApprovalQuery,
