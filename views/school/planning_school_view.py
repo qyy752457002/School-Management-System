@@ -622,7 +622,11 @@ class PlanningSchoolView(BaseView):
 
 
                                           ) -> Task:
+        print('入参接收',page_search)
+
         page_search= convert_query_to_none(page_search)
+        print('入参接收2',page_search)
+
         task = Task(
             task_type="planning_school_export",
             payload=page_search,
