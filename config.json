@@ -77,6 +77,11 @@
         "db": 22,
         "prefix": "",
         "server_key": "default"
+      },
+      "account": {
+        "db": 3,
+        "prefix": "",
+        "server_key": "default"
       }
     }
   },
@@ -182,6 +187,15 @@
         "description": "",
         "executor_cls_model": "views.tasks.school_task.SchoolExecutor",
         "payload_cls_model": "views.models.school.SchoolTask"
+      },
+      "school_export": {
+        "topic": "school_export",
+        "name": "学校导出",
+        "consumer_group_id": "service",
+        "description": "school_export",
+        "executor_cls_model": "views.tasks.school_task.SchoolExportExecutor",
+        "payload_cls_model": "views.models.school.SchoolPageSearch",
+        "payload_is_list": false
       },
       "planning_school_import": {
         "topic": "planning_school_import",

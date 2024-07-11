@@ -5,6 +5,8 @@ from mini_framework.async_task.task import Task, Context
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.logging import logger
 
+from rules.planning_school_communication_rule import PlanningSchoolCommunicationRule
+from rules.planning_school_rule import PlanningSchoolRule
 # from rules.school_rule import PlanningSchoolRule
 from rules.school_rule import SchoolRule
 from rules.storage_rule import StorageRule
@@ -59,6 +61,18 @@ class SchoolExecutor(TaskExecutor):
 
 # 导出  todo
 class SchoolExportExecutor(TaskExecutor):
-    async def execute(self, task: 'FileTask'):
+    def __init__(self):
+        self.school_rule = get_injector(SchoolRule)
+        self._storage_rule: StorageRule = get_injector(StorageRule)
+        self.system_rule = get_injector(SystemRule)
+        self.planning_school_communication_rule = get_injector(PlanningSchoolCommunicationRule)
+        super().__init__()
+    async def execute(self, task: 'Task'):
         print("test")
         print(dict(task))
+        task: Task = task
+        logger.info("负载" ,task.payload)
+
+        task_result = await self.school_rule.school_export(task)
+        task.result_file = task_result.result_file
+        task.result_bucket = task_result.result_bucket

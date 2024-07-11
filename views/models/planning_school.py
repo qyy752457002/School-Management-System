@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from fastapi import Query
 from fastapi.params import Body
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from models.student_transaction import AuditAction
 from views.models.planning_school_communications import PlanningSchoolCommunications
@@ -259,21 +259,22 @@ class PlanningSchoolKeyInfo(BaseModel):
 
 class PlanningSchoolPageSearch(BaseModel):
     # process_code: str = Query("", title=" ", description="", ),
-    block:Optional[str]  = Query("", title=" ", description="地域管辖区", ),
-    planning_school_code: str = Query("", title="", description=" 园所标识码", ),
-    planning_school_level: str = Query("", title="", description=" 学校星级", ),
-    planning_school_name: str = Query("", title="学校名称", description="1-20字符", ),
-    planning_school_no: str = Query("", title="学校编号", description="学校编号/园所代码", min_length=1,
-                                    max_length=20, ),
-    borough: str = Query("", title="  ", description=" 行政管辖区", ),
-    status: PlanningSchoolStatus|None = Query("", title="", description=" 状态", examples=['正常']),
+    block:Optional[str]  = Query("", title=" ", description="地域管辖区", )
+    planning_school_code: str = Query(None, title="", description=" 园所标识码", )
+    planning_school_level: str = Query("", title="", description=" 学校星级", )
+    planning_school_name: str = Query("", title="学校名称", description="1-20字符", )
+    planning_school_no: str = Query("", title="学校编号", description="学校编号/园所代码",
+                                    max_length=40, )
+    borough: str = Query("", title="  ", description=" 行政管辖区", )
+    status: PlanningSchoolStatus|None = Query("", title="", description=" 状态", examples=['正常'])
 
     founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
-                                                          examples=['地方']),
+                                                          examples=['地方'])
     founder_type_lv2: List[str] = Query([], title="", description="举办者类型二级",
-                                        examples=['教育部门']),
+                                        examples=['教育部门'])
     founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
-                                        examples=['县级教育部门']),
+                                        examples=['县级教育部门'])
+
 
 class PlanningSchoolTask(BaseModel):
     file_name: str = Field('', title="",description="",examples=[' '])

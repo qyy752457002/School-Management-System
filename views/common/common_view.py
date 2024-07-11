@@ -215,3 +215,16 @@ def download_file(url, local_filepath):
 
 # 使用函数
 # download_file('http://example.com/file.pdf', 'path/to/your/local/file.pdf')
+# 定义函数 针对 对象里每个属性 如果类型是 pydantic的QUERY 则设置为None
+def convert_query_to_none(obj):
+    """
+    将pydantic的Query类型属性设置为None。
+
+    :param obj: 要转换的对象
+    :return: 转换后的对象
+    """
+    for field_name, field in obj.__fields__.items():
+        field = getattr(obj, field_name)
+        if isinstance(field , Query) or isinstance(field, tuple):
+            setattr(obj, field_name, None)
+    return obj

@@ -14,7 +14,8 @@ from business_exceptions.school import SchoolStatusError
 from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
 from rules.system_rule import SystemRule
-from views.common.common_view import compare_modify_fields, get_extend_params, convert_snowid_in_model
+from views.common.common_view import compare_modify_fields, get_extend_params, convert_snowid_in_model, \
+    convert_query_to_none
 from views.models.extend_params import ExtendParams
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, \
@@ -611,3 +612,19 @@ class SchoolView(BaseView):
         return res2
         pass
     # 学校导出
+    async def post_school_export(self,
+                                          # students_query=Depends(NewStudentsQuery),
+                                          page_search = Depends(SchoolPageSearch),
+                                          ) -> Task:
+        print('入参接收',page_search)
+
+        page_search= convert_query_to_none(page_search)
+        print('入参接收2',page_search)
+        task = Task(
+            task_type="school_export",
+            payload=page_search,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
