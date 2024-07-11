@@ -19,7 +19,7 @@ from daos.operation_record_dao import OperationRecordDAO
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from daos.teacher_retire_dao import TeachersRetireDao
 from views.models.teacher_transaction import TeacherRetireQueryRe, TeacherRetireQuery, TeacherRetireCreateModel, \
-    TeacherRetireUpdateModel
+    TeacherRetireUpdateModel,TransactionType
 from models.teacher_retire import TeacherRetire
 from business_exceptions.teacher_transction import TransactionError
 from views.models.teachers import TeacherMainStatus
@@ -70,7 +70,7 @@ class TeacherRetireRule(object):
             operation_time=datetime.now(),
             doc_upload="",
             change_module=ChangeModule.RETIREMENT.value,
-            change_detail=f'{teacher_transaction.transaction_type.value}',
+            change_detail=f'{TransactionType.get_chinese(teacher_retire.transaction_type)}',
             status="/",
             operator_id=1,
             operator_name=user_id,

@@ -32,7 +32,7 @@ class StorageRule(object):
         :return: 文件上传路径
         """
         filename = filename.split("/")[-1]
-        storage_info = FileStorageModel(file_name=filename, bucket_name="school", file_size=file_size)
+        storage_info = FileStorageModel(file_name=filename, virtual_bucket_name="school", file_size=file_size)
         resp = await storage_manager.add_file(self.storage_dao, storage_info)
         return resp
 
@@ -44,7 +44,7 @@ class StorageRule(object):
         :return: 文件上传路径
         """
         filename = filename.split("/")[-1]
-        storage_info = FileStorageModel(file_name=filename, bucket_name="student", file_size=file_size)
+        storage_info = FileStorageModel(file_name=filename, virtual_bucket_name="student", file_size=file_size)
         resp = await storage_manager.add_file(self.storage_dao, storage_info)
         return resp
 
@@ -56,7 +56,7 @@ class StorageRule(object):
         :return: 文件上传路径
         """
         filename = filename.split("/")[-1]
-        storage_info = FileStorageModel(file_name=filename, bucket_name="teacher", file_size=file_size)
+        storage_info = FileStorageModel(file_name=filename, virtual_bucket_name="teacher", file_size=file_size)
         resp = await storage_manager.add_file(self.storage_dao, storage_info)
         return resp
 

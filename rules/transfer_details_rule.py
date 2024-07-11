@@ -8,7 +8,7 @@ from views.models.teacher_transaction import TransferDetailsModel, TransferType
 from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTransactionQueryRe, \
     TransferDetailsReModel, TransferDetailsGetModel, TeacherTransferQueryModel, TeacherTransferQueryReModel, \
     TransferAndBorrowExtraModel
-from business_exceptions.teacher import TeacherNotFoundError, ApprovalStatusError
+from business_exceptions.teacher import TeacherNotFoundError, ApprovalStatusError,TeacherStatusError
 from daos.teacher_change_dao import TeacherChangeLogDAO
 from rules.teacher_change_rule import TeacherChangeRule
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
@@ -58,6 +58,8 @@ class TransferDetailsRule(object):
             is_approval = exists_teachers.is_approval
             if is_approval:
                 raise ApprovalStatusError()
+            if exists_teachers.teacher_sub_status != "active":
+                raise TeacherStatusError()
             transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
             transfer_details_db.transfer_details_id = SnowflakeIdGenerator(1, 1).generate_id()
             transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
@@ -139,6 +141,8 @@ class TransferDetailsRule(object):
         try:
             teachers_db = await self.teachers_dao.get_teachers_by_id(transfer_details.teacher_id)
             teachers = orm_model_to_view_model(teachers_db, TeacherRe)
+            if teachers.teacher_sub_status != "active":
+                raise TeacherStatusError()
             original_unit_id = teachers.teacher_employer
             school = await self.school_dao.get_school_by_id(original_unit_id)
             transfer_details.original_unit_name = school.school_name
@@ -172,7 +176,7 @@ class TransferDetailsRule(object):
                 operation_time=datetime.now(),
                 doc_upload="",
                 change_module=ChangeModule.TRANSFER.value,
-                change_detail=f"从{transfer_and_borrow_extra_model.original_unit_name}调入到{current_unit_name}",
+                change_detail=f"从{school.school_name}调入到{current_unit_name}",
                 status="/",
                 operator_id=1,
                 operator_name=user_id,

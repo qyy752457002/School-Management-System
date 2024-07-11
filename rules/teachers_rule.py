@@ -14,7 +14,6 @@ from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, Teac
     NewTeacherApprovalCreate, TeachersSaveImportCreatModel, TeacherImportResultModel
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
-# from rules.teachers_info_rule import TeachersInfoRule
 from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, TeacherChangeLogQueryModel, \
     CurrentTeacherInfoSaveModel, TeacherRe, TeacherAdd, CombinedModel, TeacherInfoSubmit, TeachersSchool
 
@@ -208,6 +207,8 @@ class TeachersRule(object):
         if not exists_teachers:
             raise TeacherNotFoundError()
         old_teachers = orm_model_to_view_model(exists_teachers, TeachersModel, exclude=["hash_password"])
+        old_teachers.teacher_id = int(old_teachers.teacher_id)
+        old_teachers.teacher_employer = int(old_teachers.teacher_employer)
         teachers_main_status = exists_teachers.teacher_main_status
         if teachers_main_status == "employed":
             # teacher_info_db= await self.teachers_info_dao.get_teachers_info_by_teacher_id(teachers.teacher_id)
@@ -458,6 +459,7 @@ class TeachersRule(object):
     async def get_task_model_by_id(self, id):
         fileinfo = await self.file_storage_dao.get_file_by_id(int(id))
         fileinfo = fileinfo._asdict()['FileStorage']
-        task_model = TeacherFileStorageModel(file_name=fileinfo.file_name, bucket_name=fileinfo.bucket_name,
+        task_model = TeacherFileStorageModel(file_name=fileinfo.file_name,
+                                             virtual_bucket_name=fileinfo.virtual_bucket_name,
                                              file_size=fileinfo.file_size)
         return task_model

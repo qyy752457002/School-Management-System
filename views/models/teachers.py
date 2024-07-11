@@ -563,7 +563,7 @@ class TeacherInfo(BaseModel):  # 基本信息
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
-        _change_list = ["teacher_id", "teacher_base_id"]
+        _change_list = ["teacher_id", "teacher_base_id","org_id"]
         for _change in _change_list:
             if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
