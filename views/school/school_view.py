@@ -610,3 +610,4 @@ class SchoolView(BaseView):
         # print(new_students_key_info)
         return res2
         pass
+    # 学校导出

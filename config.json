@@ -166,15 +166,7 @@
         "executor_cls_model": "views.tasks.institution_task.InstitutionExecutor",
         "payload_cls_model": "views.models.institutions.InstitutionTask"
       },
-      "account_export": {
-        "topic": "account_export",
-        "name": "测试任务",
-        "consumer_group_id": "service",
-        "description": "测试任务",
-        "executor_cls_model": "web_test.views.account.account_task.AccountExportExecutor",
-        "payload_cls_model": "web_test.views.models.account.AccountModel",
-        "payload_is_list": true
-      },
+
       "new_student_import": {
         "topic": "new_student_import",
         "name": "新生导入",
@@ -198,6 +190,15 @@
         "description": "",
         "executor_cls_model": "views.tasks.planning_school_task.PlanningSchoolExecutor",
         "payload_cls_model": "views.models.planning_school.PlanningSchoolTask"
+      },
+      "planning_school_export": {
+        "topic": "planning_school_export",
+        "name": "规划校的导出",
+        "consumer_group_id": "service",
+        "description": "planning_school_export",
+        "executor_cls_model": "views.tasks.planning_school_task.PlanningSchoolExportExecutor",
+        "payload_cls_model": "views.models.planning_school.PlanningSchoolPageSearch",
+        "payload_is_list": false
       },
       "student_export": {
         "topic": "student_export",

@@ -356,3 +356,6 @@ class NewsStudentsFamilyInfoView(BaseView):
         """
         res = await self.students_family_info_rule.get_all_students_family_info(student_id)
         return res
+    #分班导出
+
+    # 新生导出
