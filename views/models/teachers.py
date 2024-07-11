@@ -62,6 +62,14 @@ class Teachers(BaseModel):
         return data
 
 
+class TeachersSchool(BaseModel):
+    """这个模型的作用是在老师关键信息变更审批时，除了把老师更新信息送到工作流（不是在本地查），还需要将当时的状态和就职单位名字送上工作流"""
+    teacher_main_status: str = Field("", title="主状态", description="主状态")
+    teacher_sub_status: str = Field("", title="子状态", description="子状态")
+    school_name: str = Field("", title="学校名称", description="学校名称")
+
+
+
 class TeachersCreatModel(BaseModel):
     """
     姓名：teacher_name
@@ -127,11 +135,9 @@ class TeacherImportSaveResultModel(TeachersSaveImportCreatModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
-
-
 class TeacherRe(BaseModel):
     """
-    这个模型现在本地查然后是交给工作流的,相当于表单附赠信息
+    这个模型先在本地查然后是交给工作流的,相当于表单附赠信息
     """
     teacher_name: str = Field(..., title="姓名", description="教师名称")
     teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
@@ -337,7 +343,6 @@ class TeacherInfoCreateResultModel(TeacherInfoCreateModel):
 
 
 class CombinedModel(BaseModel):
-
     teacher_name: str = Field(..., title="姓名", description="教师名称")
     teacher_gender: str = Field(..., title="性别", description="教师性别")
     teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
@@ -424,13 +429,9 @@ class CombinedModel(BaseModel):
     is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
 
+
 class TeacherImportResultModel(CombinedModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
-
-
-
-
-
 
 
 class TeacherFileStorageModel(FileStorageModel):
@@ -958,7 +959,7 @@ class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
-        _change_list = ["teacher_id", "teacher_base_id","org_id"]
+        _change_list = ["teacher_id", "teacher_base_id", "org_id"]
         for _change in _change_list:
             if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
@@ -1305,7 +1306,7 @@ class NewTeacherRe(BaseModel):
     teacher_name: str = Field("", title="姓名", description="姓名", example="张三")
     teacher_id_number: str = Field("", title="身份证号", description="身份证号", example="123456789012345678")
     teacher_gender: str = Field("", title="性别", description="性别", example="男")
-    teacher_employer: int|str = Field(None, title="单位部门", description="单位部门", example="xx学校")
+    teacher_employer: int | str = Field(None, title="单位部门", description="单位部门", example="xx学校")
     highest_education: Optional[str] = Field("", title="最高学历", description="最高学历", example="本科")
     political_status: Optional[str] = Field("", title="政治面貌", description="政治面貌", example="群众")
     employment_form: Optional[str] = Field("", title="用人形式", description="用人形式", example="合同")
@@ -1525,6 +1526,8 @@ class CurrentTeacherQueryRe(BaseModel):
     enter_school_time: Optional[date] = Query(None, title="进本校年月", description="进本校时间", example="2010-01-01")
     school_name: Optional[str] = Query("", title="", description="", example="")
     is_approval: Optional[bool] = Field(None, title="是否在审批中", description="是否在审批中")
+    teacher_main_status: Optional[str] = Field("", title="主要状态", description="主要状态", example="unemployed")
+    teacher_sub_status: Optional[str] = Field("", title="次要状态", description="次要状态", example="unemployed")
 
     @model_validator(mode='before')
     @classmethod

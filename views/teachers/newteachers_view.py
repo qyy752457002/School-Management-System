@@ -43,6 +43,7 @@ class NewTeachersView(BaseView):
         """
         user_id = "asdfasdf"
         teacher_id = int(teacher_id)
+
         await self.teacher_rule.delete_teachers(teacher_id, user_id)
         return str(teacher_id)
 
