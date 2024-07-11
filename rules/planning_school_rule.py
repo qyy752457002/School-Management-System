@@ -473,7 +473,9 @@ class PlanningSchoolRule(object):
         while True:
             # todo  这里的参数需要 解包
             paging = await self.planning_school_dao.query_planning_school_with_page(
-                export_params, page_request
+                 page_request,export_params.planning_school_name,export_params.planning_school_no,export_params.planning_school_code,
+                export_params.block,export_params.planning_school_level,export_params.borough,export_params.status,export_params.founder_type,
+                export_params.founder_type_lv2,export_params.founder_type_lv3
             )
             paging_result = PaginatedResponse.from_paging(
                 paging, PlanningSchoolPageSearch, {"hash_password": "password"}
@@ -481,7 +483,6 @@ class PlanningSchoolRule(object):
             # 处理每个里面的状态 1. 0
             for item in paging_result.items:
                 item.approval_status =  item.approval_status.value
-
 
             # logger.info('分页的结果',len(paging_result.items))
             excel_writer = ExcelWriter()
