@@ -81,6 +81,11 @@
         "db": 2,
         "prefix": "",
         "server_key": "default"
+      },
+      "account": {
+        "db": 3,
+        "prefix": "",
+        "server_key": "default"
       }
     }
   },

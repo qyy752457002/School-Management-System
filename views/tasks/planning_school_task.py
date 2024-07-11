@@ -8,7 +8,8 @@ from mini_framework.utils.logging import logger
 from rules.planning_school_communication_rule import PlanningSchoolCommunicationRule
 from rules.planning_school_rule import PlanningSchoolRule
 from rules.storage_rule import StorageRule
-from views.models.planning_school import PlanningSchool, PlanningSchoolOptional
+from rules.system_rule import SystemRule
+from views.models.planning_school import PlanningSchool, PlanningSchoolOptional, PlanningSchoolPageSearch
 from views.models.planning_school_communications import PlanningSchoolCommunications
 
 
@@ -16,6 +17,7 @@ class PlanningSchoolExecutor(TaskExecutor):
     def __init__(self):
         self.planning_school_rule = get_injector(PlanningSchoolRule)
         self._storage_rule: StorageRule = get_injector(StorageRule)
+        self.system_rule = get_injector(SystemRule)
         self.planning_school_communication_rule = get_injector(PlanningSchoolCommunicationRule)
 
         super().__init__()
@@ -27,9 +29,13 @@ class PlanningSchoolExecutor(TaskExecutor):
         try:
             print('开始执行task')
 
-            info = task.payload
+            fileinfo=info = task.payload
             data= [ ]
-            data =await self._storage_rule.get_file_data(info.file_name, info.bucket,info.scene)
+            # 得到的是下载链接  下载到本地
+            # fileinfo =await self.system_rule.get_download_url_by_id(info.file_name)
+            data =await self._storage_rule.get_file_data(fileinfo.file_name, fileinfo.bucket_name,info.scene)
+
+            # data =await self._storage_rule.get_file_data(info.file_name, info.bucket,info.scene)
 
             for item in data:
 
@@ -71,8 +77,26 @@ class PlanningSchoolExecutor(TaskExecutor):
 
 # 导出  todo
 class PlanningSchoolExportExecutor(TaskExecutor):
+    def __init__(self):
+        self.planning_school_rule = get_injector(PlanningSchoolRule)
+        self._storage_rule: StorageRule = get_injector(StorageRule)
+        self.system_rule = get_injector(SystemRule)
+        self.planning_school_communication_rule = get_injector(PlanningSchoolCommunicationRule)
+        super().__init__()
     async def execute(self, task: 'Task'):
         print("test")
         print(dict(task))
-        task.result_file =  ''
-        task.result_bucket =  ''
+        task: Task = task
+        logger.info("负载" ,task.payload)
+        if isinstance(task.payload, dict):
+            student_export: PlanningSchoolPageSearch = PlanningSchoolPageSearch(**task.payload)
+        elif isinstance(task.payload, PlanningSchoolPageSearch):
+            student_export: PlanningSchoolPageSearch = task.payload
+        else:
+            raise ValueError("Invalid payload type")
+        task_result = await self.planning_school_rule.planning_school_export(task)
+        task.result_file = task_result.result_file
+        task.result_bucket = task_result.result_bucket
+
+        # task.result_file =  ''
+        # task.result_bucket =  ''

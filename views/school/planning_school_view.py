@@ -17,11 +17,11 @@ from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
 from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_extend_params, get_client_ip, convert_dates_to_strings, \
-    serialize
+    serialize, convert_query_to_none
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
-    PlanningSchoolBaseInfoOptional, PlanningSchoolTask, PlanningSchoolTransactionAudit
+    PlanningSchoolBaseInfoOptional, PlanningSchoolTask, PlanningSchoolTransactionAudit, PlanningSchoolImportReq
 from views.models.planning_school_communications import PlanningSchoolCommunications
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
 from views.models.school import School
@@ -38,7 +38,7 @@ from rules.planning_school_communication_rule import PlanningSchoolCommunication
 
 from rules.planning_school_eduinfo_rule import PlanningSchoolEduinfoRule
 from views.models.student_transaction import StudentTransactionAudit
-from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, ProcessCodeType
+from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, ProcessCodeType, ImportScene
 
 
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
@@ -339,15 +339,18 @@ class PlanningSchoolView(BaseView):
 
     # 导入   任务队列的
     async def post_planning_school_import(self,
-                                      filename: str = Query(..., description="文件名"),
-                                      bucket: str = Query(..., description="文件名"),
-                                      scene: str = Query('', description="文件名"),
+                                          file:PlanningSchoolImportReq
+                                      # bucket: str = Query(..., description="文件名"),
+                                      # scene: str = Query('', description="文件名"),
                                       ) -> Task:
+        file_name= file.file_name
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="planning_school_import",
             # 文件 要对应的 视图模型
-            payload=PlanningSchoolTask(file_name=filename, bucket=bucket, scene=scene),
+            # payload=PlanningSchoolTask(file_name=filename, bucket=bucket, scene=scene),
+            payload=PlanningSchoolTask(file_name=file_name, scene= ImportScene.PLANNING_SCHOOL.value, bucket='planning_school_import' ),
+
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
@@ -612,3 +615,23 @@ class PlanningSchoolView(BaseView):
 
 
         return result
+    # 规划校导出
+    async def post_planning_school_export(self,
+                                          # students_query=Depends(NewStudentsQuery),
+                                          page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
+
+
+                                          ) -> Task:
+        print('入参接收',page_search)
+
+        page_search= convert_query_to_none(page_search)
+        print('入参接收2',page_search)
+
+        task = Task(
+            task_type="planning_school_export",
+            payload=page_search,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task

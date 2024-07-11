@@ -6,11 +6,13 @@ from mini_framework.utils.logging import logger
 from rules.teachers_rule import TeachersRule
 from models.teachers import Teacher
 from views.models.teachers import TeachersCreatModel, TeacherFileStorageModel, CurrentTeacherQuery
+from rules.teacher_import_rule import TeacherImportRule
 
 
 class TeacherImportExecutor(TaskExecutor):
     def __init__(self):
         self.teacher_rule = get_injector(TeachersRule)
+        self.teacher_import_rule = get_injector(TeacherImportRule)
         super().__init__()
 
     async def execute(self, context: Context):
@@ -28,7 +30,7 @@ class TeacherImportExecutor(TaskExecutor):
             else:
                 raise ValueError("Invalid payload type")
             logger.info("Test3")
-            await self.teacher_rule.import_teachers(task)
+            await self.teacher_import_rule.import_teachers(task)
             # task_result = await self.teacher_rule.import_teachers(task)
             # logger.info(f"Teacher import to {task_result.result_file}")
         except Exception as e:
@@ -40,6 +42,7 @@ class TeacherImportExecutor(TaskExecutor):
 class TeacherSaveImportExecutor(TaskExecutor):
     def __init__(self):
         self.teacher_rule = get_injector(TeachersRule)
+        self.teacher_import_rule = get_injector(TeacherImportRule)
         super().__init__()
 
     async def execute(self, context: Context):
@@ -56,7 +59,7 @@ class TeacherSaveImportExecutor(TaskExecutor):
                 account_export: TeacherFileStorageModel = task.payload
             else:
                 raise ValueError("Invalid payload type")
-            await self.teacher_rule.import_teachers_save(task,operator)
+            await self.teacher_import_rule.import_teachers_save(task)
             # task_result = await self.teacher_rule.import_teachers(task)
             # logger.info(f"Teacher import to {task_result.result_file}")
         except Exception as e:
@@ -69,6 +72,7 @@ class TeacherSaveImportExecutor(TaskExecutor):
 class TeacherExportExecutor(TaskExecutor):
     def __init__(self):
         self.teacher_rule = get_injector(TeachersRule)
+        self.teacher_import_rule = get_injector(TeacherImportRule)
         super().__init__()
 
     async def execute(self, context: Context):

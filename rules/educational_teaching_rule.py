@@ -36,7 +36,7 @@ class EducationalTeachingRule(object):
             raise TeacherInfoNotFoundError()
         educational_teaching_db = await self.educational_teaching_dao.delete_educational_teaching(
             exists_educational_teaching)
-        educational_teaching = orm_model_to_view_model(educational_teaching_db, EducationalTeachingModel, exclude=[""])
+        educational_teaching = orm_model_to_view_model(educational_teaching_db, EducationalTeachingUpdateModel, exclude=[""])
         return educational_teaching
 
     async def update_educational_teaching(self, educational_teaching: EducationalTeachingUpdateModel):

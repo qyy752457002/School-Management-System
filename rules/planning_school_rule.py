@@ -1,7 +1,17 @@
 import json
+import os
+from datetime import datetime
 
+import shortuuid
+from mini_framework.async_task.data_access.models import TaskResult
+from mini_framework.async_task.data_access.task_dao import TaskDAO
+from mini_framework.async_task.task import Task, TaskState
+from mini_framework.data.tasks.excel_tasks import ExcelWriter
+from mini_framework.storage.manager import storage_manager
+from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.utils.json import JsonUtils
+from mini_framework.utils.logging import logger
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
@@ -18,7 +28,7 @@ from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, convert_snowid_to_strings, convert_snowid_in_model
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus, \
-    PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit, PlanningSchoolBaseInfoOptional
+    PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit, PlanningSchoolBaseInfoOptional, PlanningSchoolPageSearch
 from views.models.planning_school import PlanningSchoolBaseInfo
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 
@@ -30,6 +40,9 @@ from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_
 class PlanningSchoolRule(object):
     planning_school_dao: PlanningSchoolDAO
     system_rule: SystemRule
+    file_storage_dao: FileStorageDAO
+    task_dao: TaskDAO
+
 
     async def get_planning_school_by_id(self, planning_school_id,extra_model=None):
         planning_school_db = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
@@ -444,3 +457,74 @@ class PlanningSchoolRule(object):
         if tinfo and  tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
             return True
         return False
+
+    async def planning_school_export(self, task: Task):
+        bucket = 'student'
+        print(bucket,'桶')
+
+        export_params: PlanningSchoolPageSearch = (
+            task.payload if task.payload is PlanningSchoolPageSearch() else PlanningSchoolPageSearch()
+        )
+        page_request = PageRequest(page=1, per_page=100)
+        random_file_name = f"planning_school_export_{shortuuid.uuid()}.xlsx"
+        temp_file_path = os.path.join(os.path.dirname(__file__), 'tmp')
+        if not os.path.exists(temp_file_path):
+            os.makedirs(temp_file_path)
+        temp_file_path = os.path.join(temp_file_path, random_file_name)
+        while True:
+            # todo  这里的参数需要 解包
+            paging = await self.planning_school_dao.query_planning_school_with_page(
+                 page_request,export_params.planning_school_name,export_params.planning_school_no,export_params.planning_school_code,
+                export_params.block,export_params.planning_school_level,export_params.borough,export_params.status,export_params.founder_type,
+                export_params.founder_type_lv2,export_params.founder_type_lv3
+            )
+            paging_result = PaginatedResponse.from_paging(
+                paging, PlanningSchoolPageSearch, {"hash_password": "password"}
+            )
+            # 处理每个里面的状态 1. 0
+            for item in paging_result.items:
+                item.approval_status =  item.approval_status.value
+
+            # logger.info('分页的结果',len(paging_result.items))
+            excel_writer = ExcelWriter()
+            excel_writer.add_data("Sheet1", paging_result.items)
+            excel_writer.set_data(temp_file_path)
+            excel_writer.execute()
+            # break
+            if len(paging.items) < page_request.per_page:
+                break
+            page_request.page += 1
+        #     保存文件时可能报错
+        print('临时文件路径',temp_file_path)
+        file_storage =  storage_manager.put_file_to_object(
+            bucket, f"{random_file_name}.xlsx", temp_file_path
+        )
+        # 这里会写入 task result 提示 缺乏 result file id  导致报错
+        try:
+
+            file_storage_resp = await storage_manager.add_file(
+                self.file_storage_dao, file_storage
+            )
+            print('file_storage_resp ',file_storage_resp)
+
+            task_result = TaskResult()
+            task_result.task_id = task.task_id
+            task_result.result_file = file_storage_resp.file_name
+            task_result.result_bucket = file_storage_resp.bucket_name
+            task_result.result_file_id = file_storage_resp.file_id
+            task_result.last_updated = datetime.now()
+            task_result.state = TaskState.succeeded
+            task_result.result_extra = {"file_size": file_storage.file_size}
+            if not task_result.result_file_id:
+                task_result.result_file_id =  0
+            print('拼接数据task_result ',task_result)
+
+            resadd = await self.task_dao.add_task_result(task_result)
+            print('task_result写入结果',resadd)
+        except Exception as e:
+            logger.debug('保存文件记录和插入taskresult 失败')
+
+            logger.error(e)
+            task_result = TaskResult()
+
+        return task_result

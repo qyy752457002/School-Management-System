@@ -188,9 +188,8 @@ class OrganizationRule(object):
 
         lst = []
         for row in res:
-            planning_school = orm_model_to_view_model(row, OrganizationModel)
+            planning_school = orm_model_to_view_model(row, Organization)
             convert_snowid_in_model(planning_school)
-
 
             lst.append(planning_school)
         return lst

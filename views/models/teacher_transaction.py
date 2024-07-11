@@ -194,6 +194,7 @@ class TeacherTransactionGetModel(BaseModel):
     transaction_type: str = Field(..., title="异动类型", description="异动类型")
     remark: Optional[str] = Field("", title="备注", description="备注")
     transaction_time: datetime = Field(..., title="申请时间", description="申请时间")
+    is_active: bool = Field(..., title="是否已经恢复在职", description="是否已经恢复在职")
 
     @model_validator(mode='before')
     @classmethod

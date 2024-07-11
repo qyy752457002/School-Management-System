@@ -159,7 +159,6 @@ class TeachersInfoRule(object):
         if not exists_teachers_info:
             raise TeacherInfoNotFoundError()
         old_teachers_info = orm_model_to_view_model(exists_teachers_info, TeachersInfoModel, exclude=[""])
-
         need_update_list = []
         for key, value in teachers_info.dict().items():
             if value:

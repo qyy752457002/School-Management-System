@@ -161,7 +161,8 @@ class ClassesDAO(DAOBase):
 
             query = query.where(Classes.school_id == int(school_id))
             pass
-        if grade_id:
+        if grade_id and int(grade_id)>0:
+            print(grade_id)
             query = query.where(Classes.grade_id == int(grade_id))
         if class_name:
             # query = query.where(Classes.classes_no == class_name)
