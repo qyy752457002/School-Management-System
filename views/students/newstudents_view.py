@@ -15,6 +15,7 @@ from starlette.requests import Request
 from rules.class_division_records_rule import ClassDivisionRecordsRule
 from rules.operation_record import OperationRecordRule
 from views.common.common_view import compare_modify_fields, get_client_ip
+from views.models.class_division_records import ClassDivisionRecordsSearchRes
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchoolImportReq
 from views.models.students import NewStudents, NewStudentsQuery, NewStudentsQueryRe, StudentsKeyinfo, StudentsBaseInfo, \
@@ -356,17 +357,34 @@ class NewsStudentsFamilyInfoView(BaseView):
         """
         res = await self.students_family_info_rule.get_all_students_family_info(student_id)
         return res
-    #分班导出
+
+
 
     # 新生导出
-    async def post_new_student_export(self,
-                                          students_query=Depends(NewStudentsQuery),
 
-                                          ) -> Task:
+    async def post_new_student_export(self,
+                                      students_query=Depends(NewStudentsQuery),
+
+                                      ) -> Task:
         students_query.approval_status =   [StudentApprovalAtatus.ENROLLMENT  ]
 
         task = Task(
             task_type="student_export",
+            payload=students_query,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
+    #分班导出
+    async def post_newstudent_classdivision_export(self,
+                                                   students_query=Depends(ClassDivisionRecordsSearchRes),
+
+                                                   ) -> Task:
+        # students_query.approval_status =   [StudentApprovalAtatus.ENROLLMENT  ]
+
+        task = Task(
+            task_type="newstudent_classdivision_export",
             payload=students_query,
             operator=request_context_manager.current().current_login_account.account_id
         )

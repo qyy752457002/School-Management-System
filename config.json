@@ -231,6 +231,14 @@
         "executor_cls_model": "views.tasks.new_student_task.NewStudentExportExecutor",
         "payload_cls_model": "views.models.students.NewStudentsQuery"
       },
+      "newstudent_classdivision_export": {
+        "topic": "newstudent_classdivision_export",
+        "name": "学生分班记录导出",
+        "consumer_group_id": "service",
+        "description": "学生分班记录导出",
+        "executor_cls_model": "views.tasks.newstudent_classdivision_task.NewStudentClassDivisionExportExecutor",
+        "payload_cls_model": "views.models.class_division_records.ClassDivisionRecordsSearchRes"
+      },
       "teacher_import": {
         "topic": "teacher_import",
         "name": "教师导入",

@@ -57,7 +57,7 @@ class ClassDivisionRecordsSearchRes(BaseModel):
     enrollment_number: str = Field('', title="", description="报名号",examples=['1'])
     id_type: str = Field('', title="", description="身份证件类型",examples=['1'])
     student_name: str = Field('', title="", description="姓名",examples=['1'])
-    created_at: datetime = Field('', title="", description="分班时间",examples=['1'])
+    created_at: datetime|None = Field(None, title="", description="分班时间",examples=['1'])
     student_gender: str = Field('', title="", description="性别",examples=['1'])
     status: str = Field('', title="", description="状态",examples=['1'])
     class_id: int|str = Field(0, title="班级ID", description="班级ID",examples=['1'])
