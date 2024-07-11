@@ -193,7 +193,7 @@
       },
       "planning_school_export": {
         "topic": "planning_school_export",
-        "name": "规划校导出",
+        "name": "规划校的导出",
         "consumer_group_id": "service",
         "description": "planning_school_export",
         "executor_cls_model": "views.tasks.planning_school_task.PlanningSchoolExportExecutor",

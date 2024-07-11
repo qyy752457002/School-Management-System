@@ -616,7 +616,7 @@ class PlanningSchoolView(BaseView):
 
         return result
     # 规划校导出
-    async def post_current_student_export(self,
+    async def post_planning_school_export(self,
                                           # students_query=Depends(NewStudentsQuery),
                                           page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
 
