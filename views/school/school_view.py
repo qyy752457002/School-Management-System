@@ -611,3 +611,15 @@ class SchoolView(BaseView):
         return res2
         pass
     # 学校导出
+    async def post_school_export(self,
+                                          # students_query=Depends(NewStudentsQuery),
+                                          page_search = Depends(SchoolPageSearch),
+                                          ) -> Task:
+        task = Task(
+            task_type="school_export",
+            payload=page_search,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task

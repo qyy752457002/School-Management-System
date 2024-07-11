@@ -4,6 +4,7 @@ from fastapi import Query
 from pydantic import BaseModel, Field, model_validator
 
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
+from views.models.system import InstitutionType
 
 
 class School(BaseModel):
@@ -240,6 +241,8 @@ class SchoolPageSearch(BaseModel):
     province: str |None= Query("", title=" ", description="", ),
     city: str|None = Query("", title=" ", description="", ),
     planning_school_id: int|str|None = Query(0, title=" ", description="", ),
+
+    institution_category: InstitutionType = Query(None, title='单位分类',examples=['institution/administration']),
     @model_validator(mode="before")
     @classmethod
     def check_id_before(self, data: dict):
