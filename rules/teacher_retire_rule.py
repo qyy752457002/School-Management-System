@@ -70,7 +70,7 @@ class TeacherRetireRule(object):
             operation_time=datetime.now(),
             doc_upload="",
             change_module=ChangeModule.RETIREMENT.value,
-            change_detail=f'{teacher_transaction.transaction_type}',
+            change_detail=f'{teacher_transaction.transaction_type.value}',
             status="/",
             operator_id=1,
             operator_name=user_id,

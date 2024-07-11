@@ -175,8 +175,8 @@ class TeacherAdd(BaseModel):
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
     teacher_employer: int | str = Field(0, title="单位部门", description="单位部门", )
     mobile: str = Field("", title="手机号", description="手机号")
-    teacher_main_status: str = Field("", title="主状态", description="主状态")
-    teacher_sub_status: str = Field("", title="子状态", description="子状态")
+    teacher_main_status: str = Field("employed", title="主状态", description="主状态")
+    teacher_sub_status: str = Field("active", title="子状态", description="子状态")
 
     @model_validator(mode='before')
     @classmethod
