@@ -1,11 +1,16 @@
 import json
 import os
+from datetime import datetime
 
 import shortuuid
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.data_access.models import TaskResult
+from mini_framework.async_task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter
+from mini_framework.storage.manager import storage_manager
+from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.utils.json import JsonUtils
+from mini_framework.utils.logging import logger
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
@@ -34,6 +39,9 @@ from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_
 class PlanningSchoolRule(object):
     planning_school_dao: PlanningSchoolDAO
     system_rule: SystemRule
+    file_storage_dao: FileStorageDAO
+    task_dao: TaskDAO
+
 
     async def get_planning_school_by_id(self, planning_school_id,extra_model=None):
         planning_school_db = await self.planning_school_dao.get_planning_school_by_id(planning_school_id)
