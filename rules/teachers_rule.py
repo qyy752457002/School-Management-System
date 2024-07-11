@@ -459,6 +459,7 @@ class TeachersRule(object):
     async def get_task_model_by_id(self, id):
         fileinfo = await self.file_storage_dao.get_file_by_id(int(id))
         fileinfo = fileinfo._asdict()['FileStorage']
-        task_model = TeacherFileStorageModel(file_name=fileinfo.file_name, virtual_bucket_name=fileinfo.bucket_name,
+        task_model = TeacherFileStorageModel(file_name=fileinfo.file_name,
+                                             virtual_bucket_name=fileinfo.virtual_bucket_name,
                                              file_size=fileinfo.file_size)
         return task_model
