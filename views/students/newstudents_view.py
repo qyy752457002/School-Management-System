@@ -29,7 +29,7 @@ from fastapi import Query, Depends, BackgroundTasks
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
-from models.students import Student
+from models.students import Student, StudentApprovalAtatus
 from rules.students_rule import StudentsRule
 from rules.students_base_info_rule import StudentsBaseInfoRule
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
@@ -359,3 +359,17 @@ class NewsStudentsFamilyInfoView(BaseView):
     #分班导出
 
     # 新生导出
+    async def post_new_student_export(self,
+                                          students_query=Depends(NewStudentsQuery),
+
+                                          ) -> Task:
+        students_query.approval_status =   [StudentApprovalAtatus.ENROLLMENT  ]
+
+        task = Task(
+            task_type="student_export",
+            payload=students_query,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task

@@ -12,6 +12,7 @@ from starlette.requests import Request
 
 from business_exceptions.student import StudentExistsThisSchoolError, StudentTransactionExistsError
 from models.student_transaction import AuditAction, TransactionDirection, AuditFlowStatus
+from models.students import StudentApprovalAtatus
 from rules.classes_rule import ClassesRule
 from rules.graduation_student_rule import GraduationStudentRule
 from rules.operation_record import OperationRecordRule
@@ -502,6 +503,7 @@ class CurrentStudentsView(BaseView):
         students_query=Depends(NewStudentsQuery),
 
                                           ) -> Task:
+        students_query.approval_status =   [StudentApprovalAtatus.ASSIGNMENT  ]
         task = Task(
             task_type="student_export",
             payload=students_query,
