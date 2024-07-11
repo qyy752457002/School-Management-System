@@ -244,7 +244,7 @@
         "name": "学生分班记录导出",
         "consumer_group_id": "service",
         "description": "学生分班记录导出",
-        "executor_cls_model": "views.tasks.newstudent_classdivision_task.NewStudentClassDivisionExportExecutor",
+        "executor_cls_model": "views.tasks.newstudent_class_division_task.NewStudentClassDivisionExportExecutor",
         "payload_cls_model": "views.models.class_division_records.ClassDivisionRecordsSearchRes"
       },
       "class_import": {
