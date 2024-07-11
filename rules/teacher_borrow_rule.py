@@ -7,7 +7,7 @@ from models.teacher_borrow import TeacherBorrow, BorrowType
 from mini_framework.design_patterns.depend_inject import get_injector
 from rules.transfer_details_rule import TransferDetailsRule
 
-from business_exceptions.teacher import TeacherNotFoundError, ApprovalStatusError
+from business_exceptions.teacher import TeacherNotFoundError, ApprovalStatusError,TeacherStatusError
 from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTransactionQueryRe, TeacherBorrowModel, \
     TeacherBorrowReModel, TeacherBorrowGetModel, TeacherBorrowQueryModel, TeacherBorrowQueryReModel
 
@@ -60,6 +60,8 @@ class TeacherBorrowRule(object):
             is_approval = exists_teachers.is_approval
             if is_approval:
                 raise ApprovalStatusError()
+            if exists_teachers .teacher_sub_status != "active":
+                raise TeacherStatusError()
             teacher_borrow_db = view_model_to_orm_model(teacher_borrow, TeacherBorrow, exclude=["teacher_borrow_id"])
             teacher_borrow_db.teacher_borrow_id = SnowflakeIdGenerator(1, 1).generate_id()
             teacher_borrow_db = await self.teacher_borrow_dao.add_teacher_borrow(teacher_borrow_db)
@@ -126,7 +128,7 @@ class TeacherBorrowRule(object):
             operation_time=datetime.now(),
             doc_upload="",
             change_module=ChangeModule.BORROW.value,
-            change_detail=f"从{original_unit_name}调入到{current_unit_name}",
+            change_detail=f"从{original_unit_name}借入到{current_unit_name}",
             status="/",
             operator_id=1,
             operator_name=user_id,
@@ -142,6 +144,8 @@ class TeacherBorrowRule(object):
         try:
             teachers_db = await self.teachers_dao.get_teachers_by_id(teacher_borrow.teacher_id)
             teachers = orm_model_to_view_model(teachers_db, TeacherRe)
+            if teachers.teacher_sub_status != "active":
+                raise TeacherStatusError()
             original_unit_id = teachers.teacher_employer
             school = await self.school_dao.get_school_by_id(original_unit_id)
             teacher_borrow.original_unit_name = school.school_name

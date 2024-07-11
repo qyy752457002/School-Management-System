@@ -159,14 +159,17 @@ class TeachersInfoRule(object):
         if not exists_teachers_info:
             raise TeacherInfoNotFoundError()
         old_teachers_info = orm_model_to_view_model(exists_teachers_info, TeachersInfoModel, exclude=[""])
+        old_teachers_info.teacher_id = int(old_teachers_info.teacher_id)
+        old_teachers_info.teacher_base_id = int(old_teachers_info.teacher_base_id)
+        if old_teachers_info.org_id:
+            old_teachers_info.org_id = int(old_teachers_info.org_id)
         need_update_list = []
         for key, value in teachers_info.dict().items():
             if value:
                 need_update_list.append(key)
         teachers_info_db = await self.teachers_info_dao.update_teachers_info(teachers_info, *need_update_list)
-        print(type(teachers_info_db))
         fields_list = ["teacher_id", "teacher_base_id"]
-        teachers_info_db =await convert_fields_to_str(teachers_info_db, fields_list)
+        teachers_info_db = await convert_fields_to_str(teachers_info_db, fields_list)
         teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
         teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
                                                          exclude=[""])
@@ -235,7 +238,7 @@ class TeachersInfoRule(object):
                 need_update_list.append(key)
         teachers_info = await self.teachers_info_dao.update_teachers_info(teachers_info, *need_update_list)
         fields_list = ["teacher_id", "teacher_base_id"]
-        teachers_info_db =await convert_fields_to_str(teachers_info, fields_list)
+        teachers_info_db = await convert_fields_to_str(teachers_info, fields_list)
         # await self.teacher_unsubmitted(teachers_info.teacher_id)
         # if exits_teacher.teacher_main_status == "unemployed":
         #     teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
