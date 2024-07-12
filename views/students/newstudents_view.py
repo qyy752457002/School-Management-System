@@ -78,6 +78,7 @@ class NewsStudentsView(BaseView):
                                                                   example="1")):
         """新生查询关键信息"""
         res = await self.students_rule.get_students_by_id(student_id)
+
         return res
 
     async def put_newstudentkeyinfo(self, new_students_key_info: StudentsKeyinfo,request:Request):
