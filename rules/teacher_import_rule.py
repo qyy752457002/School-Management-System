@@ -14,6 +14,7 @@ from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, Teac
     NewTeacherApprovalCreate, TeachersSaveImportCreatModel, TeacherImportResultModel, \
     TeachersSaveImportRegisterCreatModel
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
+from business_exceptions.school import SchoolNotFoundError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
 # from rules.teachers_info_rule import TeachersInfoRule
 from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, TeacherChangeLogQueryModel, \
@@ -47,6 +48,7 @@ class TeacherImportRule:
     school_dao: SchoolDAO
     teacher_rule: TeachersRule
     teachers_info_rule: TeachersInfoRule
+    file_storage_dao: FileStorageDAO
 
     # 导入导出相关
     async def import_teachers(self, task: Task):
@@ -175,8 +177,11 @@ class TeacherImportRule:
                 item = item.dict()
                 # teacher_data = {key: item[key] for key in TeachersSaveImportCreatModel.__fields__.keys() if key in item}
                 school = await self.school_dao.get_school_by_school_name(item["teacher_employer"])
-                school = school._asdict()['School']
-                item["teacher_employer"] = school.id
+                if school:
+                    school = school._asdict()['School']
+                    item["teacher_employer"] = school.id
+                else:
+                    raise SchoolNotFoundError()
                 logger.info(item)
                 teacher_model = TeachersSaveImportCreatModel(**item)
                 logger.info(type(item))
@@ -193,57 +198,57 @@ class TeacherImportRule:
                     raise ex
                 results.append(result)
 
-            # local_results_path = f"/tmp/c.xlsx"
-            # excel_writer = ExcelWriter()
-            # excel_writer.add_data("Sheet1", results)
-            # excel_writer.set_data(local_results_path)
-            # excel_writer.execute()
-            #
-            # random_file_name = shortuuid.uuid() + ".xlsx"
-            # file_storage = await storage_manager.put_file_to_object(
-            #     source_file.bucket_name, f"{random_file_name}.xlsx", local_results_path
-            # )
-            # file_storage_resp = await storage_manager.add_file(
-            #     self.file_storage_dao, file_storage
-            # )
-            #
-            # task_result = TaskResult()
-            # task_result.task_id = task.task_id
-            # task_result.result_file = file_storage_resp.file_name
-            # task_result.result_bucket = file_storage_resp.bucket_name
-            # task_result.result_file_id = file_storage_resp.file_id
-            # task_result.last_updated = datetime.now()
-            # task_result.state = TaskState.succeeded
-            # task_result.result_extra = {"file_size": 123}
-            #
-            # await self.task_dao.add_task_result(task_result)
-            # return task_result
+            local_results_path = f"/tmp/{source_file.file_name}"
+            excel_writer = ExcelWriter()
+            excel_writer.add_data("Sheet1", results)
+            excel_writer.set_data(local_results_path)
+            excel_writer.execute()
 
-            # local_results_path = f"/tmp/{source_file.file_name}"
-            # excel_writer = ExcelWriter()
-            # excel_writer.add_data("Sheet1", results)
-            # excel_writer.set_data(local_results_path)
-            # excel_writer.execute()
-            #
-            # random_file_name = shortuuid.uuid() + ".xlsx"
-            # file_storage = await storage_manager.put_file_to_object(
-            #     source_file.bucket_name, f"{random_file_name}.xlsx", local_results_path
-            # )
-            # file_storage_resp = await storage_manager.add_file(
-            #     self.file_storage_dao, file_storage
-            # )
-            #
-            # task_result = TaskResult()
-            # task_result.task_id = task.task_id
-            # task_result.result_file = file_storage_resp.file_name
-            # task_result.result_bucket = file_storage_resp.bucket_name
-            # task_result.result_file_id = file_storage_resp.file_id
-            # task_result.last_updated = datetime.now()
-            # task_result.state = TaskState.succeeded
-            # task_result.result_extra = {"file_size": file_storage.file_size}
-            #
-            # await self.task_dao.add_task_result(task_result)
-            # return task_result
+            random_file_name = shortuuid.uuid() + ".xlsx"
+            file_storage = await storage_manager.put_file_to_object(
+                source_file.virtual_bucket_name, f"{random_file_name}.xlsx", local_results_path
+            )
+            file_storage_resp = await storage_manager.add_file(
+                self.file_storage_dao, file_storage
+            )
+
+            task_result = TaskResult()
+            task_result.task_id = task.task_id
+            task_result.result_file = file_storage_resp.file_name
+            task_result.result_bucket = file_storage_resp.bucket_name
+            task_result.result_file_id = file_storage_resp.file_id
+            task_result.last_updated = datetime.now()
+            task_result.state = TaskState.succeeded
+            task_result.result_extra = {"file_size": 123}
+
+            await self.task_dao.add_task_result(task_result)
+            return task_result
+
+            local_results_path = f"/tmp/{source_file.file_name}"
+            excel_writer = ExcelWriter()
+            excel_writer.add_data("Sheet1", results)
+            excel_writer.set_data(local_results_path)
+            excel_writer.execute()
+
+            random_file_name = shortuuid.uuid() + ".xlsx"
+            file_storage = await storage_manager.put_file_to_object(
+                source_file.bucket_name, f"{random_file_name}.xlsx", local_results_path
+            )
+            file_storage_resp = await storage_manager.add_file(
+                self.file_storage_dao, file_storage
+            )
+
+            task_result = TaskResult()
+            task_result.task_id = task.task_id
+            task_result.result_file = file_storage_resp.file_name
+            task_result.result_bucket = file_storage_resp.bucket_name
+            task_result.result_file_id = file_storage_resp.file_id
+            task_result.last_updated = datetime.now()
+            task_result.state = TaskState.succeeded
+            task_result.result_extra = {"file_size": file_storage.file_size}
+
+            await self.task_dao.add_task_result(task_result)
+            return task_result
         except Exception as e:
             print(e, '异常')
             raise e
