@@ -17,7 +17,8 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
-from business_exceptions.planning_school import PlanningSchoolNotFoundError
+from business_exceptions.planning_school import PlanningSchoolNotFoundError, \
+    PlanningSchoolNotFoundByProcessInstanceIdError
 from daos.planning_school_communication_dao import PlanningSchoolCommunicationDAO
 from daos.planning_school_dao import PlanningSchoolDAO
 from daos.planning_school_eduinfo_dao import PlanningSchoolEduinfoDAO
@@ -387,6 +388,7 @@ class PlanningSchoolRule(object):
             return response
         except Exception as e:
             print(e)
+            raise e
             return response
         pass
 
@@ -394,7 +396,9 @@ class PlanningSchoolRule(object):
         #  读取流程实例ID
         planning_school = await self.planning_school_dao.get_planning_school_by_process_instance_id(process_instance_id)
         if not planning_school:
-            print('未查到规划信息',process_instance_id)
+            print('未查到规划校信息',process_instance_id)
+            # raise Exception('未查到规划校信息')
+            raise PlanningSchoolNotFoundByProcessInstanceIdError()
             return
         if action=='open':
             res = await self.update_planning_school_status(planning_school.id,  PlanningSchoolStatus.NORMAL.value, 'open')

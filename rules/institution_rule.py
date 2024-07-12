@@ -162,7 +162,7 @@ class InstitutionRule(SchoolRule):
         #  读取流程实例ID
         school = await self.school_dao.get_school_by_process_instance_id(process_instance_id)
         if not school:
-            print('未查到规划信息',process_instance_id)
+            print('未查到事业单位信息',process_instance_id)
             return
         if action=='open':
             res = await self.update_school_status(school.id,  PlanningSchoolStatus.NORMAL.value, 'open')
