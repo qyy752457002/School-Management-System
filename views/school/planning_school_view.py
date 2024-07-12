@@ -121,13 +121,13 @@ class PlanningSchoolView(BaseView):
         res_edu = await self.planning_school_eduinfo_rule.add_planning_school_eduinfo(resedu, convertmodel=False)
         print(res_edu)
         school_res = await self.school_rule.add_school_from_planning_school(res)
-        planning_school = orm_model_to_view_model(res_comm, PlanningSchoolCommunications, exclude=["created_at",'updated_at',])
+        # planning_school_com = orm_model_to_view_model(res_comm, PlanningSchoolCommunications, exclude=["created_at",'updated_at',])
 
 
-        await self.school_communication_rule.add_school_communication_from_planning_school(planning_school,school_res)
-        planning_school = orm_model_to_view_model(res_edu, PlanningSchoolEduInfo, exclude=["created_at",'updated_at',])
+        # await self.school_communication_rule.add_school_communication_from_planning_school(planning_school_com,school_res)
+        # planning_school = orm_model_to_view_model(res_edu, PlanningSchoolEduInfo, exclude=["created_at",'updated_at',])
 
-        await self.school_eduinfo_rule.add_school_eduinfo_from_planning_school(planning_school,school_res)
+        # await self.school_eduinfo_rule.add_school_eduinfo_from_planning_school(planning_school,school_res)
 
         return res
 
