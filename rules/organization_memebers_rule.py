@@ -68,10 +68,13 @@ class OrganizationMembersRule(object):
         # 更新部门成员的计数
         org_rule = get_injector(OrganizationRule)
         cnt = await self.get_organization_members_count(organization_members.org_id)
-        orginfo = self.organization_dao.get_organization_by_id(organization_members_db.org_id)
-        orginfo.member_cnt= cnt
 
-        await org_rule.update_organization(orginfo)
+        orginfo =await self.organization_dao.get_organization_by_id(organization_members_db.org_id)
+        if orginfo:
+            orginfo_vm = orm_model_to_view_model(orginfo, Organization, exclude=["created_at",'updated_at'],other_mapper={ })
+
+            orginfo_vm.member_cnt= cnt
+            await org_rule.update_organization(orginfo_vm)
 
         convert_snowid_in_model(organization_members_db_res, ["id", "school_id",'parent_id','teacher_id','org_id'])
 
