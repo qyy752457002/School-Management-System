@@ -4946,6 +4946,13 @@ class EnumValue(BaseDBModel):
             EnumValue(id=5387, enum_name="change_module", enum_value="borrow", description="借动", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=5388, enum_name="change_module", enum_value="retirement", description="离退休", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=5389, enum_name="change_module", enum_value="student_transaction", description="转学", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5390, enum_name="student_approval_status", enum_value="enrollment", description="入学", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5391, enum_name="student_approval_status", enum_value="assignment", description="分班", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5392, enum_name="student_approval_status", enum_value="formal", description="正式在校", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5393, enum_name="student_approval_status", enum_value="out", description="流出", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5394, enum_name="student_approval_status", enum_value="graduated", description="毕业", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=5395, enum_name="student_approval_status", enum_value="archived", description="归档完成", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+           
 
 
         ]
