@@ -250,7 +250,7 @@ class SystemRule(object):
                 print(fileinfo)  # 使用 _asdict() 方法转换为字典
                 if hasattr(fileinfo, 'file_name'):
 
-                    file_storage = FileStorageModel(file_name=fileinfo.file_name, bucket_name=fileinfo.bucket_name,
+                    file_storage = FileStorageModel(file_name=fileinfo.file_name, bucket_name=fileinfo.virtual_bucket_name,
                                                     file_size=fileinfo.file_size, )
                     try:
                         url = storage_manager.query_get_object_url_with_token(file_storage)
