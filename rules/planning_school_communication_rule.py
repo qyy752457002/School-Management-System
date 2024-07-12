@@ -68,9 +68,9 @@ class PlanningSchoolCommunicationRule(object):
         planning_school_communication_db.id = SnowflakeIdGenerator(1, 1).generate_id()
         print(planning_school_communication_db,'模型2db')
 
-        planning_school_communication_db = await self.planning_school_communication_dao.add_planning_school_communication(planning_school_communication_db)
-        # planning_school = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel, exclude=["created_at",'updated_at'])
-        return planning_school_communication_db
+        planning_school_communication_db_res = await self.planning_school_communication_dao.add_planning_school_communication(planning_school_communication_db)
+        planning_school = orm_model_to_view_model(planning_school_communication_db_res, PlanningSchoolCommunicationModel, exclude=["created_at",'updated_at'])
+        return planning_school
 
     async def update_planning_school_communication(self, planning_school,ctype=1):
         exists_planning_school = await self.planning_school_communication_dao.get_planning_school_communication_by_id(planning_school.id)
