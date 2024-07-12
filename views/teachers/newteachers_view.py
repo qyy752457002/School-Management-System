@@ -209,8 +209,8 @@ class NewTeachersView(BaseView):
         task = Task(
             task_type="teacher_import",
             payload=filestorage,
-            operator="123456"
-            # operator=request_context_manager.current().current_login_account.account_id
+            # operator="123456"
+            operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
         print('发生任务成功')
@@ -223,8 +223,8 @@ class NewTeachersView(BaseView):
         task = Task(
             task_type="teacher_save_import",
             payload=filestorage,
-            operator="123456"
-            # operator=request_context_manager.current().current_login_account.account_id
+            # operator="123456"
+            operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
         print('发生任务成功')
