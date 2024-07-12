@@ -8,6 +8,7 @@ from mini_framework.async_task.task import Task
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.json import JsonUtils
 from mini_framework.web.request_context import request_context_manager
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
@@ -15,6 +16,9 @@ from business_exceptions.planning_school import PlanningSchoolValidateError, Pla
     PlanningSchoolStatusError
 from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
+from rules.school_communication_rule import SchoolCommunicationRule
+from rules.school_eduinfo_rule import SchoolEduinfoRule
+from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_extend_params, get_client_ip, convert_dates_to_strings, \
     serialize, convert_query_to_none
@@ -54,6 +58,10 @@ class PlanningSchoolView(BaseView):
         self.planning_school_eduinfo_rule = get_injector(PlanningSchoolEduinfoRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
         self.system_rule = get_injector(SystemRule)
+        self.school_rule = get_injector(SchoolRule)
+        self.school_eduinfo_rule = get_injector(SchoolEduinfoRule)
+        self.school_communication_rule = get_injector(SchoolCommunicationRule)
+
 
     #   包含3部分信息 1.基本信息 2.通讯信息 3.教育信息
     async def get(self,
@@ -112,6 +120,14 @@ class PlanningSchoolView(BaseView):
         # 保存教育信息
         res_edu = await self.planning_school_eduinfo_rule.add_planning_school_eduinfo(resedu, convertmodel=False)
         print(res_edu)
+        school_res = await self.school_rule.add_school_from_planning_school(res)
+        planning_school = orm_model_to_view_model(res_comm, PlanningSchoolCommunications, exclude=["created_at",'updated_at',])
+
+
+        await self.school_communication_rule.add_school_communication_from_planning_school(planning_school,school_res)
+        planning_school = orm_model_to_view_model(res_edu, PlanningSchoolEduInfo, exclude=["created_at",'updated_at',])
+
+        await self.school_eduinfo_rule.add_school_eduinfo_from_planning_school(planning_school,school_res)
 
         return res
 

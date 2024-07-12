@@ -162,10 +162,10 @@ class SchoolRule(object):
         # school.school_level = planning_school.planning_school_level
         # school.school_code = planning_school.planning_school_code
 
-        await self.add_school(school)
+        res = await self.add_school(school)
 
 
-        return school
+        return res
     # 废弃 未使用
     async def update_school(self, school,ctype=1):
         exists_school = await self.school_dao.get_school_by_id(school.id)

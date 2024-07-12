@@ -171,8 +171,10 @@ class PlanningSchoolRule(object):
         planning_school_db = await self.planning_school_dao.update_planning_school_byargs(exists_planning_school,*need_update_list,is_commit=True)
         if action=='open':
             school_rule = get_injector(SchoolRule)
+            planning_school = orm_model_to_view_model(exists_planning_school, PlanningSchoolModel, exclude=["created_at",'updated_at',])
 
-            await school_rule.add_school_from_planning_school(exists_planning_school)
+
+            await school_rule.add_school_from_planning_school(planning_school)
         # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
         return planning_school_db
 
