@@ -38,7 +38,8 @@ from views.models.extend_params import ExtendParams
 from views.models.institutions import InstitutionKeyInfo, Institutions
 # from rules.planning_school_rule import PlanningSchoolRule
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolTransactionAudit, PlanningSchoolKeyInfo
-from views.models.school import School as SchoolModel, SchoolKeyAddInfo, SchoolKeyInfo, SchoolPageSearch
+from views.models.school import School as SchoolModel, SchoolKeyAddInfo, SchoolKeyInfo, SchoolPageSearch, \
+    SchoolBaseInfoOptional
 
 from views.models.school import SchoolBaseInfo
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus
@@ -82,7 +83,7 @@ class SchoolRule(object):
         school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""])
         return school
 
-    async def add_school(self, school: SchoolModel|Institutions):
+    async def add_school(self, school:SchoolKeyAddInfo| SchoolModel|Institutions|SchoolBaseInfoOptional):
         exists_school = await self.school_dao.get_school_by_school_name(
             school.school_name)
         if exists_school:
@@ -134,38 +135,36 @@ class SchoolRule(object):
 
 
     async def add_school_from_planning_school(self, planning_school: PlanningSchool):
-        # todo 这里的值转换 用 数据库db类型直接赋值  模型转容易报错   另 其他2个表的写入
-        return None
-        school = orm_model_to_view_model(planning_school, SchoolKeyAddInfo, exclude=["id"])
-        school.school_name = planning_school.planning_school_name
-        school.planning_school_id = planning_school.id
+        # todo 这里的值转换 用 数据库db类型直接赋值  模型转容易报错   另 其他2个表的写入  检查是否原有的  防止重复新增
+        # return None
 
-        school.school_no = planning_school.planning_school_no
-        school.borough = planning_school.borough
-        school.block = planning_school.block
-        # school.school_type = planning_school.planning_school_type
-        school.school_edu_level = planning_school.planning_school_edu_level
-        school.school_category = planning_school.planning_school_category
-        school.school_operation_type = planning_school.planning_school_operation_type
-        school.school_org_type = planning_school.planning_school_org_type
-        school.school_level = planning_school.planning_school_level
-        school.school_code = planning_school.planning_school_code
+        # schooldatabaseinfo = SchoolBaseInfoOptional(**planning_school.__dict__)
+        dicta = planning_school.__dict__
+        dicta['school_name'] = planning_school.planning_school_name
+        dicta['planning_school_id'] = planning_school.id
+        dicta['school_no'] = planning_school.planning_school_no
+        dicta['school_edu_level'] = planning_school.planning_school_edu_level
+        dicta['school_category'] = planning_school.planning_school_category
+        dicta['school_operation_type'] = planning_school.planning_school_operation_type
+        dicta['school_org_type'] = planning_school.planning_school_org_type
+        dicta['school_level'] = planning_school.planning_school_level
+        dicta['school_code'] = planning_school.planning_school_code
 
-        exists_school = await self.school_dao.get_school_by_school_name(
-            school.school_name)
-        if exists_school:
-            raise Exception(f"学校{school.school_name}已存在")
-        #  other_mapper={"password": "hash_password"},
-        #                                              exclude=["first_name", "last_name"]
-        school_db = view_model_to_orm_model(school, School,    exclude=["id"])
+        school = SchoolKeyAddInfo(** dicta)
+        # school = orm_model_to_view_model(planning_school, SchoolKeyAddInfo, exclude=["id"])
+        # school.school_name = planning_school.planning_school_name
+        # school.planning_school_id = planning_school.id
+        # school.school_no = planning_school.planning_school_no
+        # school.school_edu_level = planning_school.planning_school_edu_level
+        # school.school_category = planning_school.planning_school_category
+        # school.school_operation_type = planning_school.planning_school_operation_type
+        # school.school_org_type = planning_school.planning_school_org_type
+        # school.school_level = planning_school.planning_school_level
+        # school.school_code = planning_school.planning_school_code
 
-        school_db.status =  PlanningSchoolStatus.DRAFT.value
-        school_db.created_uid = 0
-        school_db.updated_uid = 0
-        print(school_db)
+        await self.add_school(school)
 
-        school_db = await self.school_dao.add_school(school_db)
-        school = orm_model_to_view_model(school_db, SchoolKeyAddInfo, exclude=["created_at",'updated_at'])
+
         return school
     # 废弃 未使用
     async def update_school(self, school,ctype=1):

@@ -150,7 +150,7 @@ class PlanningSchoolDAO(DAOBase):
 
     async def update_planning_school_byargs(self, planning_school: PlanningSchool, *args, is_commit: bool = True):
         planning_school.id = int(planning_school.id)
-        if planning_school.process_instance_id:
+        if hasattr(planning_school, 'process_instance_id') and  planning_school.process_instance_id:
             planning_school.process_instance_id = int(planning_school.process_instance_id)
         session =await self.master_db()
         update_contents = get_update_contents(planning_school, *args)
