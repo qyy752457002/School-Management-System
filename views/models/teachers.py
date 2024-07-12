@@ -27,6 +27,53 @@ class TeacherMainStatus(str, Enum):
         return [cls.UNEMPLOYED, cls.EMPLOYED, cls.RETIRED]
 
 
+class IdentityType(str, Enum):
+    RESIDENT_ID_CARD = "resident_id_card"
+    MILITARY_OFFICER_ID = "military_officer_id"
+    SOLDIER_ID = "soldier_id"
+    CIVILIAN_OFFICER_ID = "civilian_officer_id"
+    MILITARY_RETIRE_ID = "military_retiree_id"
+    HONG_KONG_PASSPORT_ID = "hong_kong_passport_id"
+    MACAU_PASSPORT_ID = "macau_passport_id"
+    TAIWAN_RESIDENT_TRAVEL_PERMIT = "taiwan_resident_travel_permit"
+    OVERSEAS_PERMANENT_RESIDENCE_PERMIT = "overseas_permanent_residence_permit"
+    PASSPORT = "passport"
+    BIRTH_CERTIFICATE = "birth_certificate"
+    HOUSEHOLD_REGISTER = "household_register"
+    OTHER = "other"
+    UNKNOWN = "unknown"
+
+    @classmethod
+    def to_dict(cls):
+        return {
+            "居民身份证": cls.RESIDENT_ID_CARD,
+            "军官证": cls.MILITARY_OFFICER_ID,
+            "士兵证": cls.SOLDIER_ID,
+            "文职干部证": cls.CIVILIAN_OFFICER_ID,
+            "部队离退休证": cls.MILITARY_RETIRE_ID,
+            "香港特区护照/身份证明": cls.HONG_KONG_PASSPORT_ID,
+            "澳门特区护照/身份证明": cls.MACAU_PASSPORT_ID,
+            "台湾居民来往大陆通行证": cls.TAIWAN_RESIDENT_TRAVEL_PERMIT,
+            "境外永久居住证": cls.OVERSEAS_PERMANENT_RESIDENCE_PERMIT,
+            "护照": cls.PASSPORT,
+            "出生证明": cls.BIRTH_CERTIFICATE,
+            "户口薄": cls.HOUSEHOLD_REGISTER,
+            "其他": cls.OTHER
+        }
+
+    # 中文到枚举值的映射
+    @classmethod
+    def from_chinese(cls, chinese_value: str):
+        return cls.to_dict().get(chinese_value, cls.UNKNOWN)
+
+    @classmethod
+    def to_list(cls):
+        return [cls.RESIDENT_ID_CARD, cls.MILITARY_OFFICER_ID, cls.SOLDIER_ID, cls.CIVILIAN_OFFICER_ID,
+                cls.MILITARY_RETIRE_ID, cls.HONG_KONG_PASSPORT_ID, cls.MACAU_PASSPORT_ID,
+                cls.TAIWAN_RESIDENT_TRAVEL_PERMIT, cls.OVERSEAS_PERMANENT_RESIDENCE_PERMIT, cls.PASSPORT,
+                cls.BIRTH_CERTIFICATE, cls.HOUSEHOLD_REGISTER, cls.OTHER]
+
+
 class Teachers(BaseModel):
     """
     教师ID:teacher_id
@@ -69,7 +116,6 @@ class TeachersSchool(BaseModel):
     school_name: str = Field("", title="学校名称", description="学校名称")
 
 
-
 class TeachersCreatModel(BaseModel):
     """
     姓名：teacher_name
@@ -103,6 +149,25 @@ class TeachersCreatModel(BaseModel):
         return data
 
 
+class TeachersSaveImportRegisterCreatModel(BaseModel):
+    """
+    姓名：teacher_name
+    性别：teacher_gender
+    证件类型：teacher_id_type
+    证件号：teacher_id_number
+    出生日期：teacher_date_of_birth
+    单位部门：teacher_employer
+    头像：teacher_avatar
+    """
+    teacher_name: str = Field(..., title="姓名", description="教师名称")
+    teacher_gender: str = Field(..., title="性别", description="教师性别")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: int = Field("", title="身份证件号", description="证件号")
+    teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
+    teacher_employer: str = Field(..., title="单位部门", description="单位部门", )
+    mobile: int = Field("", title="手机号", description="手机号")
+
+
 class TeachersSaveImportCreatModel(BaseModel):
     """
     姓名：teacher_name
@@ -115,7 +180,7 @@ class TeachersSaveImportCreatModel(BaseModel):
     """
     teacher_name: str = Field(..., title="姓名", description="教师名称")
     teacher_gender: Gender = Field(..., title="性别", description="教师性别")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_type: IdentityType = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
     teacher_employer: int = Field(..., title="单位部门", description="单位部门", )
@@ -123,11 +188,15 @@ class TeachersSaveImportCreatModel(BaseModel):
 
     @model_validator(mode='before')
     @classmethod
-    def check_gender(self, data: dict):
-        if data["teacher_gender"] == "男":
-            data["teacher_gender"] = Gender.MALE.value
-        elif data["teacher_gender"] == "女":
-            data["teacher_gender"] = Gender.FEMALE.value
+    def check_id_type(self, data: dict):
+        data["teacher_id_type"] = IdentityType.from_chinese(data["teacher_id_type"])
+        data["teacher_gender"] = Gender.from_chinese(data["teacher_gender"])
+        _change_list = ["teacher_id_number", "mobile"]
+        for _change in _change_list:
+            if _change in data:
+                data[_change] = str(data[_change])
+            else:
+                pass
         return data
 
 
@@ -563,7 +632,7 @@ class TeacherInfo(BaseModel):  # 基本信息
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
-        _change_list = ["teacher_id", "teacher_base_id","org_id"]
+        _change_list = ["teacher_id", "teacher_base_id", "org_id"]
         for _change in _change_list:
             if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
