@@ -100,6 +100,7 @@ class StudentsRule(object):
                 students.borough = baseinfo.borough
                 students.loc_area_pro = baseinfo.loc_area_pro
                 students.loc_area = baseinfo.loc_area
+        convert_snowid_in_model(students, ["id",'student_id','school_id','class_id','session_id'])
 
         return students
 
