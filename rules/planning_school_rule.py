@@ -17,13 +17,18 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
-from business_exceptions.planning_school import PlanningSchoolNotFoundError
+from business_exceptions.planning_school import PlanningSchoolNotFoundError, \
+    PlanningSchoolNotFoundByProcessInstanceIdError
+from daos.planning_school_communication_dao import PlanningSchoolCommunicationDAO
 from daos.planning_school_dao import PlanningSchoolDAO
+from daos.planning_school_eduinfo_dao import PlanningSchoolEduinfoDAO
 from models.planning_school import PlanningSchool
 from models.student_transaction import AuditAction
 from rules import enum_value_rule
 from rules.common.common_rule import send_request
 from rules.enum_value_rule import EnumValueRule
+from rules.school_communication_rule import SchoolCommunicationRule
+from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, convert_snowid_to_strings, convert_snowid_in_model
@@ -32,6 +37,8 @@ from views.models.planning_school import PlanningSchool as PlanningSchoolModel, 
 from views.models.planning_school import PlanningSchoolBaseInfo
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 
+from views.models.planning_school_communications import PlanningSchoolCommunications
+from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
 from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, \
     PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE
 
@@ -42,6 +49,9 @@ class PlanningSchoolRule(object):
     system_rule: SystemRule
     file_storage_dao: FileStorageDAO
     task_dao: TaskDAO
+    planning_school_communication_dao: PlanningSchoolCommunicationDAO
+    planning_school_eduinfo_dao: PlanningSchoolEduinfoDAO
+
 
 
     async def get_planning_school_by_id(self, planning_school_id,extra_model=None):
@@ -171,8 +181,25 @@ class PlanningSchoolRule(object):
         planning_school_db = await self.planning_school_dao.update_planning_school_byargs(exists_planning_school,*need_update_list,is_commit=True)
         if action=='open':
             school_rule = get_injector(SchoolRule)
+            school_communication_rule = get_injector(SchoolCommunicationRule)
+            school_eduinfo_rule = get_injector(SchoolEduinfoRule)
+            planning_school = orm_model_to_view_model(exists_planning_school, PlanningSchoolModel, exclude=["created_at",'updated_at',])
 
-            await school_rule.add_school_from_planning_school(exists_planning_school)
+            school_res =await school_rule.add_school_from_planning_school(planning_school)
+            # school_res = await self.school_rule.add_school_from_planning_school(res)
+            exists_planning_school_com = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(planning_school_id)
+            res_comm = orm_model_to_view_model(exists_planning_school_com, PlanningSchoolCommunications, exclude=["created_at",'updated_at',])
+
+
+            await school_communication_rule.add_school_communication_from_planning_school(res_comm,school_res)
+            # planning_school_edu = orm_model_to_view_model(res_edu, PlanningSchoolEduInfo, exclude=["created_at",'updated_at',])
+            exists_planning_school_edu= await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_planning_school_id(planning_school_id)
+            res_edu = orm_model_to_view_model(exists_planning_school_edu, PlanningSchoolEduInfo, exclude=["created_at",'updated_at',])
+
+
+            await school_eduinfo_rule.add_school_eduinfo_from_planning_school(res_edu,school_res)
+
+
         # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
         return planning_school_db
 
@@ -322,6 +349,7 @@ class PlanningSchoolRule(object):
         # 发起审批流的 处理
 
         datadict = audit_info.__dict__
+        audit_info.process_instance_id= int(audit_info.process_instance_id)
         if audit_info.process_instance_id>0:
             node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  audit_info.process_instance_id)
             audit_info.node_id=node_id['node_instance_id']
@@ -361,6 +389,7 @@ class PlanningSchoolRule(object):
             return response
         except Exception as e:
             print(e)
+            raise e
             return response
         pass
 
@@ -368,7 +397,9 @@ class PlanningSchoolRule(object):
         #  读取流程实例ID
         planning_school = await self.planning_school_dao.get_planning_school_by_process_instance_id(process_instance_id)
         if not planning_school:
-            print('未查到规划信息',process_instance_id)
+            print('未查到规划校信息',process_instance_id)
+            # raise Exception('未查到规划校信息')
+            raise PlanningSchoolNotFoundByProcessInstanceIdError()
             return
         if action=='open':
             res = await self.update_planning_school_status(planning_school.id,  PlanningSchoolStatus.NORMAL.value, 'open')
@@ -400,7 +431,7 @@ class PlanningSchoolRule(object):
             tinfo.workflow_status=status.value
             tinfo.id = int(tinfo.id)
 
-            planning_school_db = await self.planning_school_dao.update_planning_school_byargs(tinfo,['workflow_status'],is_commit=True)
+            planning_school_db = await self.planning_school_dao.update_planning_school_byargs(tinfo,'workflow_status' ,is_commit=True)
             # await self.update_planning_school_byargs(tinfo,['workflow_status'])
 
 
