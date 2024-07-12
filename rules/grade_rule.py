@@ -78,7 +78,7 @@ class GradeRule(object):
 
         print(need_update_list,222,grade)
         grade_db = await self.grade_dao.update_grade_byargs(grade,*need_update_list)
-        grade = orm_model_to_view_model(grade_db, GradeModel, exclude=[""])
+        # gradev = orm_model_to_view_model(grade_db, GradeModel,  )
         convert_snowid_in_model(grade, ["id", "school_id",])
         return grade
 
