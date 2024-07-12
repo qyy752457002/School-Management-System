@@ -35,7 +35,7 @@ class NewStudentExecutor(TaskExecutor):
             info = task.payload
             data = []
             fileinfo =await self.system_rule.get_download_url_by_id(info.file_name)
-            data =await self._storage_rule.get_file_data(fileinfo.file_name, fileinfo.bucket_name,info.scene)
+            data =await self._storage_rule.get_file_data(info.file_name, info.bucket_name,info.scene)
             # data = await self._storage_rule.get_file_data(info.file_name, info.bucket, info.scene)
 
             for item in data:
@@ -81,7 +81,7 @@ class NewStudentFamilyInfoImportExecutor(TaskExecutor):
             info = task.payload
             data = []
             fileinfo =await self.system_rule.get_download_url_by_id(info.file_name)
-            data =await self._storage_rule.get_file_data(fileinfo.file_name, fileinfo.bucket_name,info.scene)
+            data =await self._storage_rule.get_file_data(info.file_name, info.bucket_name,info.scene)
             # data = await self._storage_rule.get_file_data(info.file_name, info.bucket, info.scene)
 
             for item in data:

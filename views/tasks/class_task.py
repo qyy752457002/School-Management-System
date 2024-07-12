@@ -38,7 +38,7 @@ class ClassExecutor(TaskExecutor):
             fileinfo =await self.system_rule.get_download_url_by_id(info.file_name)
             logger.debug( f"{fileinfo}",  )
 
-            data =await self._storage_rule.get_file_data(fileinfo.file_name, fileinfo.bucket_name,info.scene,file_direct_url=fileinfo)
+            data =await self._storage_rule.get_file_data(info.file_name, info.bucket_name,info.scene,file_direct_url=fileinfo)
             logger.debug( f"{data}",  )
 
             for item in data:
