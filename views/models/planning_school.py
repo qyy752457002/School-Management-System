@@ -285,12 +285,28 @@ class PlanningSchoolImport(PlanningSchoolOptional, PlanningSchoolCommunications)
     pass
 
 class PlanningSchoolTransactionAudit(BaseModel):
-    node_id: int = Query(0, description="节点ID", example='2')
-    process_instance_id: int = Query(0, description="流程实例ID", example=0)
+    node_id: int|str = Query(0, description="节点ID", example='2')
+    process_instance_id: int|str = Query(0, description="流程实例ID", example=0)
     transaction_audit_action: AuditAction = Query(..., description="审批的操作",
                                                  example='pass')
     remark: str = Query("", description="审批的备注", min_length=0, max_length=200,
                         example='同意 无误')
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id", "planning_school_id",'process_instance_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                # data[_change] = str(data[_change])
+                pass
+            else:
+                pass
+        return data
+
 
 
 class PlanningSchoolImportReq(BaseModel, ):
