@@ -88,8 +88,6 @@ class SchoolRule(object):
             school.school_name)
         if exists_school:
             raise Exception(f"学校{school.school_name}已存在")
-        #  other_mapper={"password": "hash_password"},
-        #                                              exclude=["first_name", "last_name"]
         school_db = view_model_to_orm_model(school, School,    exclude=["id"])
 
         school_db.status =  PlanningSchoolStatus.DRAFT.value

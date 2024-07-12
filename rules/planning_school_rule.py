@@ -431,7 +431,7 @@ class PlanningSchoolRule(object):
             tinfo.workflow_status=status.value
             tinfo.id = int(tinfo.id)
 
-            planning_school_db = await self.planning_school_dao.update_planning_school_byargs(tinfo,['workflow_status'],is_commit=True)
+            planning_school_db = await self.planning_school_dao.update_planning_school_byargs(tinfo,'workflow_status' ,is_commit=True)
             # await self.update_planning_school_byargs(tinfo,['workflow_status'])
 
 
