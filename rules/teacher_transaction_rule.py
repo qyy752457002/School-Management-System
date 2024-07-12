@@ -94,7 +94,7 @@ class TeacherTransactionRule(object):
                 target=OperationTarget.TEACHER.value,
                 action_type=OperationType.CREATE.value,
                 ip="127.0.0.1",
-                change_data=f'{{"原岗位":{teacher_transaction.original_position}, "新岗位":{teacher_transaction.current_position}}}',
+                change_data=f'{{岗位信息：{{"before":{teacher_transaction.original_position}, "after":{teacher_transaction.current_position}}}}}',
                 operation_time=datetime.now(),
                 doc_upload="",
                 change_module=ChangeModule.TRANSACTION.value,
