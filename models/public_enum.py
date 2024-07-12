@@ -13,6 +13,14 @@ class Gender(str, Enum):
     def to_list(cls):
         return [cls.FEMALE, cls.MALE, cls.NULL]
 
+    @classmethod
+    def to_dict(cls):
+        return {"男": cls.MALE, "女": cls.FEMALE}
+
+    @classmethod
+    def from_chinese(cls, chinese):
+        return cls.to_dict().get(chinese, cls.NULL)
+
 
 class YesOrNo(str, Enum):
     """

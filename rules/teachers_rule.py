@@ -14,7 +14,6 @@ from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, Teac
     NewTeacherApprovalCreate, TeachersSaveImportCreatModel, TeacherImportResultModel
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
-# from rules.teachers_info_rule import TeachersInfoRule
 from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, TeacherChangeLogQueryModel, \
     CurrentTeacherInfoSaveModel, TeacherRe, TeacherAdd, CombinedModel, TeacherInfoSubmit, TeachersSchool
 
@@ -168,7 +167,7 @@ class TeachersRule(object):
             operator_name=user_id,
             process_instance_id=int(work_flow_instance["process_instance_id"]))
         await self.operation_record_rule.add_operation_record(teacher_entry_log)
-        teachers_info = TeacherInfoSaveModel(teacher_id=teachers_work.teacher_id)
+        teachers_info = TeacherInfoSaveModel(teacher_id=int(teachers_work.teacher_id))
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
         teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
@@ -208,6 +207,8 @@ class TeachersRule(object):
         if not exists_teachers:
             raise TeacherNotFoundError()
         old_teachers = orm_model_to_view_model(exists_teachers, TeachersModel, exclude=["hash_password"])
+        old_teachers.teacher_id = int(old_teachers.teacher_id)
+        old_teachers.teacher_employer = int(old_teachers.teacher_employer)
         teachers_main_status = exists_teachers.teacher_main_status
         if teachers_main_status == "employed":
             # teacher_info_db= await self.teachers_info_dao.get_teachers_info_by_teacher_id(teachers.teacher_id)
@@ -321,10 +322,11 @@ class TeachersRule(object):
                                                                                         parameters)
         if node_instance == "rejected":
             teacher = await self.teachers_dao.get_teachers_by_id(teachers_id)
-            teacher.teacher_sub_status = "unsubmitted"
             teacher.teacher_main_status = "unemployed"
+            teacher.teacher_sub_status = "unsubmitted"
             teacher.is_approval = False
-            await self.teachers_dao.update_teachers(teacher, "teacher_main_status ", "teacher_sub_status",
+
+            await self.teachers_dao.update_teachers(teacher, "teacher_main_status", "teacher_sub_status",
                                                     "is_approval")
             return "该老师入职审批已拒绝"
 
@@ -458,6 +460,7 @@ class TeachersRule(object):
     async def get_task_model_by_id(self, id):
         fileinfo = await self.file_storage_dao.get_file_by_id(int(id))
         fileinfo = fileinfo._asdict()['FileStorage']
-        task_model = TeacherFileStorageModel(file_name=fileinfo.file_name, bucket_name=fileinfo.bucket_name,
+        task_model = TeacherFileStorageModel(file_name=fileinfo.file_name,
+                                             virtual_bucket_name=fileinfo.virtual_bucket_name,
                                              file_size=fileinfo.file_size)
         return task_model

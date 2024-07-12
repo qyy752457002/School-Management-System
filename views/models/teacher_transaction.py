@@ -74,6 +74,8 @@ class EmploymentStatus(str, Enum):
         return [status.value for status in cls]
 
 
+
+
 class TransactionType(str, Enum):
     """
     校内岗位调动：internal
@@ -103,6 +105,26 @@ class TransactionType(str, Enum):
     @classmethod
     def to_list(cls):
         return [status.value for status in cls]
+
+    @classmethod
+    def to_dict(cls):
+        return {
+            cls.INTERNAL: "校内岗位调动",
+            cls.SICK_LEAVE: "病休",
+            cls.TRAINING: "进修",
+            cls.EXCHANGE: "交流",
+            cls.ABROAD: "出国（境）",
+            cls.EARLY_RETIREMENT: "内退",
+            cls.UNEMPLOYED: "落聘",
+            cls.DECEASED: "死亡",
+            cls.OTHER: "其他",
+            cls.RETIRE: "退休",
+            cls.RETIRE_HONOR: "离休"
+        }
+
+    @classmethod
+    def get_chinese(cls, value):
+        return cls.to_dict().get(value, "未知")
 
 
 # 异动相关模型

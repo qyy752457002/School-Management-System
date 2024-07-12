@@ -116,3 +116,7 @@ class QueryError(MiniHTTPException):
     def __init__(self):
         super().__init__(404, "QUERY_ERROR", "Query error.", "查询为空")
 
+class TeacherStatusError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "TEACHER_STATUS_ERROR", "teacher_status error.", "教师非在职状态，不可执行此操作")
+
