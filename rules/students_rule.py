@@ -52,7 +52,9 @@ class StudentsRule(object):
         # 照片等  处理URL 72
         if students.photo and students.photo.isnumeric():
             sysrule = get_injector(SystemRule)
-            students.photo = await sysrule.get_download_url_by_id(students.photo)
+            fileurl = await sysrule.get_download_url_by_id(students.photo)
+            students.photo =  fileurl
+            students.photo_url =  fileurl
             logger.info(f"photo url:{students.photo}")
 
             pass
@@ -268,7 +270,7 @@ class StudentsRule(object):
             task_result = TaskResult()
             task_result.task_id = task.task_id
             task_result.result_file = file_storage_resp.file_name
-            task_result.result_bucket = file_storage_resp.bucket_name
+            task_result.result_bucket = file_storage_resp.virtual_bucket_name
             task_result.result_file_id = file_storage_resp.file_id
             task_result.last_updated = datetime.now()
             task_result.state = TaskState.succeeded

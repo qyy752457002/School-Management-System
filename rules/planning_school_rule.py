@@ -431,7 +431,7 @@ class PlanningSchoolRule(object):
             tinfo.workflow_status=status.value
             tinfo.id = int(tinfo.id)
 
-            planning_school_db = await self.planning_school_dao.update_planning_school_byargs(tinfo,['workflow_status'],is_commit=True)
+            planning_school_db = await self.planning_school_dao.update_planning_school_byargs(tinfo,'workflow_status' ,is_commit=True)
             # await self.update_planning_school_byargs(tinfo,['workflow_status'])
 
 
@@ -541,7 +541,7 @@ class PlanningSchoolRule(object):
             task_result = TaskResult()
             task_result.task_id = task.task_id
             task_result.result_file = file_storage_resp.file_name
-            task_result.result_bucket = file_storage_resp.bucket_name
+            task_result.result_bucket = file_storage_resp.virtual_bucket_name
             task_result.result_file_id = file_storage_resp.file_id
             task_result.last_updated = datetime.now()
             task_result.state = TaskState.succeeded
