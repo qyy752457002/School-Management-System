@@ -21,8 +21,9 @@ class StudentGraduatedType(str, Enum):
 
 class StudentApprovalAtatus(str, Enum):
     """
-    入学
+    入学   存在2个模式  先入学  再分班 和先分班  再入学
     分班
+    正式在校
     流出
     毕业
     归档完成
@@ -30,13 +31,14 @@ class StudentApprovalAtatus(str, Enum):
     """
     ENROLLMENT = "enrollment"
     ASSIGNMENT = "assignment"
+    FORMAL = "formal"
     OUT = "out"
     GRADUATED = "graduated"
     ARCHIVED = "archived"
 
     @classmethod
     def to_list(cls):
-        return [cls.ENROLLMENT, cls.ASSIGNMENT, cls.OUT, cls.GRADUATED,cls.ARCHIVED]
+        return [cls.ENROLLMENT, cls.ASSIGNMENT,cls.FORMAL, cls.OUT, cls.GRADUATED,cls.ARCHIVED]
 
 
 class Relationship(str, Enum):

@@ -19,7 +19,7 @@ from business_exceptions.common import IdCardError, EnrollNumberError, EduNumber
 from daos.school_dao import SchoolDAO
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
-from models.students import Student
+from models.students import Student, StudentApprovalAtatus
 from rules.storage_rule import StorageRule
 from views.common.common_view import check_id_number, convert_snowid_in_model
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel, StudentsKeyinfoDetail, StudentsKeyinfo, \
@@ -309,3 +309,21 @@ class StudentsRule(object):
                 student_edu_info.edu_number = school_info.edu_number
 
         return student_edu_info
+
+    async def update_student_formaladmission(self, student_id):
+        """
+        编辑学生关键信息  StudentApprovalAtatus.FORMAL_ADMISSION.value
+        """
+        # 判断student_id存在逗号,  则分割为列表
+        if ',' in student_id:
+            student_id = student_id.split(',')
+
+        students = await self.students_dao.update_student_formaladmission( student_id, StudentApprovalAtatus.FORMAL.value )
+        # if not exists_students:
+        #     raise StudentNotFoundError()
+        # need_update_list = []
+        # for key, value in students.dict().items():
+        #     if value:
+        #         need_update_list.append(key)
+        # students = await self.students_dao.update_students(students, *need_update_list)
+        return students

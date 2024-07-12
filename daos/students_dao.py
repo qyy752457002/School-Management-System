@@ -67,3 +67,19 @@ class StudentsDao(DAOBase):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(Student))
         return result.scalar()
+
+    async def update_student_formaladmission(self, student_id, status, is_commit: bool = True):
+        """
+        编辑学生关键信息
+        """
+        session = await self.master_db()
+        # update_contents =  {"": status}
+        if isinstance(student_id,list):
+            query = update(Student).where(Student.student_id.in_(student_id)).values( approval_status = status)
+        else:
+            query = update(Student).where(Student.student_id == int(student_id)).values( approval_status = status)
+        await session.execute(query)
+        await session.commit()
+        return student_id
+
+        # return await self.update(session, query, None, {}, is_commit=is_commit)

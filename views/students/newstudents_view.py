@@ -120,12 +120,12 @@ class NewsStudentsView(BaseView):
         return res_base_info
 
     # todo 仅仅修改一个状态就行
-
-    async def patch_formaladmission(self, student_id: List[str] = Query(..., description="学生id", min_length=1,
-                                                                        max_length=20, example=["SC2032633"]),
+    # 正式录取接口
+    async def patch_formaladmission(self, student_id: str  = Query(..., description="学生id",  example=["123,569,987"]),
                                     ):
         print(student_id)
-        return student_id
+        res = await self.students_rule.update_student_formaladmission(student_id, )
+        return res
 
 
     # 导入   任务队列的
