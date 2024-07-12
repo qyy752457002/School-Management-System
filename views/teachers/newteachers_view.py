@@ -217,11 +217,14 @@ class NewTeachersView(BaseView):
         return task
 
 
-    async def post_new_teacher_save_import(self, filestorage: TeacherFileStorageModel) -> Task:
+    async def post_new_teacher_save_import(self,  file_id: int | str = Query(..., title="文件id",
+                                                                       example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
         task = Task(
             task_type="teacher_save_import",
             payload=filestorage,
-            operator=request_context_manager.current().current_login_account.account_id
+            operator="123456"
+            # operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
         print('发生任务成功')

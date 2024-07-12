@@ -21,6 +21,7 @@ class TeachersDao(DAOBase):
 
     async def update_teachers(self, teachers, *args, is_commit: bool = True):
         session = await self.master_db()
+        print(dir(teachers))
         update_contents = get_update_contents(teachers, *args)
         query = update(Teacher).where(Teacher.teacher_id == teachers.teacher_id).values(**update_contents)
         return await self.update(session, query, teachers, update_contents, is_commit=is_commit)

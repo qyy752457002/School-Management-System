@@ -322,10 +322,11 @@ class TeachersRule(object):
                                                                                         parameters)
         if node_instance == "rejected":
             teacher = await self.teachers_dao.get_teachers_by_id(teachers_id)
-            teacher.teacher_sub_status = "unsubmitted"
             teacher.teacher_main_status = "unemployed"
+            teacher.teacher_sub_status = "unsubmitted"
             teacher.is_approval = False
-            await self.teachers_dao.update_teachers(teacher, "teacher_main_status ", "teacher_sub_status",
+
+            await self.teachers_dao.update_teachers(teacher, "teacher_main_status", "teacher_sub_status",
                                                     "is_approval")
             return "该老师入职审批已拒绝"
 
