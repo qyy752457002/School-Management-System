@@ -30,6 +30,8 @@ class SchoolDAO(DAOBase):
             select(School).where(School.school_name == school_name).where(School.is_deleted==False))
         return result.first()
 
+
+
     async def add_school(self, school):
         session = await self.master_db()
         session.add(school)

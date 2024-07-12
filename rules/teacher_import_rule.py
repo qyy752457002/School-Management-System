@@ -11,7 +11,8 @@ from views.common.common_view import check_id_number
 from views.models.teachers import Teachers as TeachersModel
 from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherImportSaveResultModel, \
     TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
-    NewTeacherApprovalCreate, TeachersSaveImportCreatModel, TeacherImportResultModel
+    NewTeacherApprovalCreate, TeachersSaveImportCreatModel, TeacherImportResultModel, \
+    TeachersSaveImportRegisterCreatModel
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
 # from rules.teachers_info_rule import TeachersInfoRule
@@ -33,12 +34,6 @@ from rules.teacher_change_rule import TeacherChangeRule
 from daos.teacher_approval_log_dao import TeacherApprovalLogDao
 from mini_framework.design_patterns.depend_inject import get_injector
 
-from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
-from rules.operation_record import OperationRecordRule
-from daos.operation_record_dao import OperationRecordDAO
-from views.common.common_view import compare_modify_fields
-from models.teachers_info import TeacherInfo
-from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from rules.teachers_info_rule import TeachersInfoRule
 from rules.teachers_rule import TeachersRule
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
@@ -47,6 +42,7 @@ from models.public_enum import Gender
 import os
 
 
+@dataclass_inject
 class TeacherImportRule:
     school_dao: SchoolDAO
     teacher_rule: TeachersRule
@@ -158,16 +154,16 @@ class TeacherImportRule:
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("参数错误")
-            # source_file = task.payload
-            # local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
-            # storage_manager.download_file(
-            #     source_file.bucket_name, source_file.file_name, local_file_path
-            # )
-            local_file_path = "c.xlsx"
+            source_file = task.payload
+            local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
+            logger.info("Test开始注册模型")
+            storage_manager.download_file(
+                source_file.virtual_bucket_name, source_file.file_name, local_file_path
+            )
             reader = ExcelReader()
             reader.set_data(local_file_path)
             logger.info("Test开始注册模型")
-            reader.register_model("数据", TeachersSaveImportCreatModel)
+            reader.register_model("数据", TeachersSaveImportRegisterCreatModel, header=1)
             # reader.register_model("Sheet1", TeacherInfoCreateModel)
             logger.info("Test开始读取模型")
             data = reader.execute()["数据"]
@@ -179,7 +175,8 @@ class TeacherImportRule:
                 item = item.dict()
                 # teacher_data = {key: item[key] for key in TeachersSaveImportCreatModel.__fields__.keys() if key in item}
                 school = await self.school_dao.get_school_by_school_name(item["teacher_employer"])
-                item["teacher_employer"] = school.school_id
+                school = school._asdict()['School']
+                item["teacher_employer"] = school.id
                 logger.info(item)
                 teacher_model = TeachersSaveImportCreatModel(**item)
                 logger.info(type(item))

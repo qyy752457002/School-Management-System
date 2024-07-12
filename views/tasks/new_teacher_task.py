@@ -22,7 +22,7 @@ class TeacherImportExecutor(TaskExecutor):
             logger.info("Teacher import begins")
             task: Task = task
             logger.info("Test2")
-            logger.info(f"{task.payload.bucket_name}")
+            logger.info(f"{task.payload.virtual_bucket_name}")
             if isinstance(task.payload, dict):
                 account_export: TeacherFileStorageModel = TeacherFileStorageModel(**task.payload)
             elif isinstance(task.payload, TeacherFileStorageModel):
