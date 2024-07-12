@@ -52,7 +52,9 @@ class StudentsRule(object):
         # 照片等  处理URL 72
         if students.photo and students.photo.isnumeric():
             sysrule = get_injector(SystemRule)
-            students.photo = await sysrule.get_download_url_by_id(students.photo)
+            fileurl = await sysrule.get_download_url_by_id(students.photo)
+            students.photo =  fileurl
+            students.photo_url =  fileurl
             logger.info(f"photo url:{students.photo}")
 
             pass
