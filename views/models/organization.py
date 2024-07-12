@@ -42,28 +42,12 @@ class OrganizationMembers(BaseModel):
     """
     org_id: Mapped[int] = mapped_column( comment="部门ID",default=0,nullable=True)
     # 要求 这里出现的所有人必须在 教师表里有
-    teacher_id: Mapped[int] = mapped_column( comment="教师ID",default=0,nullable=True)
 
-    member_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="姓名")
-
-    member_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="成员类型/岗位 例如老师 领导 职工等")
-    birthday: Mapped[str] = mapped_column(String(64), nullable=False, comment="生日")
-    gender: Mapped[str] = mapped_column(String(64), nullable=False, comment="性别")
-    mobile: Mapped[str] = mapped_column(String(64), nullable=False, comment="手机")
-    card_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="证件类型")
-    card_number: Mapped[str] = mapped_column(String(64), nullable=False, comment="证件号码")
-    identity: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份",default='')
     """
     id:int|str= Query(None, title="", description="id", example='1')
     org_id: int|str = Field(None, title="", description="部门ID",examples=['1'])
     teacher_id: int|str = Field(None, title="", description="教师ID",examples=['1'])
-    # member_name: str = Field(None, title="", description="姓名",examples=['张三'])
     member_type: str = Field(None, title="", description="成员类型/岗位 例如老师 领导 职工等",examples=['老师'])
-    # birthday: str = Field(None, title="", description="生日",examples=['1990-01-01'])
-    # gender: str = Field(None, title="", description="性别",examples=['男'])
-    # mobile: str = Field(None, title="", description="手机",examples=['13800000000'])
-    # card_type: str = Field(None, title="", description="证件类型",examples=['身份证'])
-    # card_number: str = Field(None, title="", description="证件号码",examples=['123456789012345678'])
     identity: str = Field(None, title="", description="身份",examples=['学生'])
     @model_validator(mode="before")
     @classmethod

@@ -1,5 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
+from mini_framework.utils.logging import logger
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
@@ -10,6 +11,7 @@ from sqlalchemy import select
 from business_exceptions.organization import OrganizationNotFoundError, OrganizationExistError, \
     OrganizationMemberExistError, OrganizationMemberNotFoundError
 from business_exceptions.school import SchoolNotFoundError
+from daos.organization_dao import OrganizationDAO
 from daos.organization_members_dao import OrganizationMembersDAO
 # from daos.organization_members_dao import CampusDAO
 # from daos.organization_members_dao import OrganizationDAO
@@ -29,6 +31,7 @@ from models.organization_members import OrganizationMembers as OrganizationMembe
 @dataclass_inject
 class OrganizationMembersRule(object):
     organization_members_dao: OrganizationMembersDAO
+    organization_dao: OrganizationDAO
 
     async def get_organization_members_by_id(self, organization_members_id,extra_model=None):
         organization_members_db = await self.organization_members_dao.get_organization_members_by_id(organization_members_id)
@@ -47,26 +50,32 @@ class OrganizationMembersRule(object):
         organization = orm_model_to_view_model(organization_members_db, Organization, exclude=[""])
         return organization
     # todo 增加 对 部门计数的更新
-    async def add_organization_members(self, organization: OrganizationMembers):
-        # 去重和 新增插入  todo 有可能重复  手动处理去重
-        print("add_organization_members", organization)
+    async def add_organization_members(self, organization_members: OrganizationMembers):
+        # 去重和 新增插入    有可能重复  手动处理去重
+        logger.debug("增加组织成员", organization_members)
+        print("add_organization_members", organization_members)
         exists_organization_members = await self.organization_members_dao.get_organization_members_by_param(
-             organization)
+            organization_members)
         if exists_organization_members:
             raise OrganizationMemberExistError()
-        organization_members_db = view_model_to_orm_model(organization, OrganizationMembersModel,    exclude=["id"])
-        # school_db.status =  PlanningSchoolStatus.DRAFT.value
+        organization_members_db = view_model_to_orm_model(organization_members, OrganizationMembersModel,    exclude=["id"])
         organization_members_db.created_uid = 0
         organization_members_db.updated_uid = 0
         organization_members_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
         organization_members_db = await self.organization_members_dao.add_organization_members(organization_members_db)
-        organization = orm_model_to_view_model(organization_members_db, Organization, exclude=["created_at",'updated_at'])
+        organization_members_db_res = orm_model_to_view_model(organization_members_db, OrganizationMembers, exclude=["created_at",'updated_at'],other_mapper={ })
+        # 更新部门成员的计数
         org_rule = get_injector(OrganizationRule)
-        await org_rule.increment_organization_member_cnt(organization_members_db.org_id)
-        convert_snowid_in_model(organization, ["id", "school_id",'parent_id','teacher_id','org_id'])
+        cnt = await self.get_organization_members_count(organization_members.org_id)
+        orginfo = self.organization_dao.get_organization_by_id(organization_members_db.org_id)
+        orginfo.member_cnt= cnt
 
-        return organization
+        await org_rule.update_organization(orginfo)
+
+        convert_snowid_in_model(organization_members_db_res, ["id", "school_id",'parent_id','teacher_id','org_id'])
+
+        return organization_members_db_res
 
     async def update_organization_members(self, organization,):
         # 默认 改 支持通过ID来修改或者通过教师ID 组织ID来修改
@@ -131,8 +140,8 @@ class OrganizationMembersRule(object):
     async def get_all_organization_memberss(self):
         return await self.organization_members_dao.get_all_organization_memberss()
 
-    async def get_organization_members_count(self):
-        return await self.organization_members_dao.get_organization_members_count()
+    async def get_organization_members_count(self,org_id ):
+        return await self.organization_members_dao.get_organization_members_count(org_id)
 
     async def query_organization_members_with_page(self, page_request: PageRequest,   parent_id , school_id ,teacher_name,teacher_no,mobile,birthday,org_ids  ):
         parent_id_lv2=[]
