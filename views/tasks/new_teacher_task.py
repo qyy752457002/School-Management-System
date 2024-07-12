@@ -61,7 +61,6 @@ class TeacherSaveImportExecutor(TaskExecutor):
                 raise ValueError("Invalid payload type")
             await self.teacher_import_rule.import_teachers_save(task)
             # task_result = await self.teacher_rule.import_teachers(task)
-            # logger.info(f"Teacher import to {task_result.result_file}")
         except Exception as e:
             logger.error(f"Teacher import failed")
             logger.error(e)

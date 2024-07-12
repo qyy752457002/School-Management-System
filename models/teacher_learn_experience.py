@@ -32,7 +32,7 @@ class TeacherLearnExperience(BaseDBModel):
     country_or_region_of_education: Mapped[str] = mapped_column(String(64), nullable=True, comment="获得学历国家/地区")
     institution_of_education_obtained: Mapped[str] = mapped_column(String(64), nullable=True, comment="获得学历的院校机构")
     major_learned: Mapped[str] = mapped_column(String(64), nullable=True, comment="所学妆业")
-    is_major_normal: Mapped[bool] = mapped_column(String(64),default=False, nullable=True, comment="是否师范类专业")
+    is_major_normal: Mapped[bool] = mapped_column(default=False, nullable=True, comment="是否师范类专业")
     admission_date: Mapped[date] = mapped_column(Date, nullable=True, comment="入学时间")
     graduation_date: Mapped[date] = mapped_column(Date, nullable=True, comment="毕业时间")
     degree_level: Mapped[str] = mapped_column(String(64), nullable=False, comment="学位层次")
