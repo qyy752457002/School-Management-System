@@ -6,5 +6,6 @@ class EnumValue(BaseModel):
     description : str = Field(..., title="", description="枚举值的描述或标签",examples=[''])
     sort_number: int = Field(0, title="", description="排序序号",examples=[ 2])
     parent_id: str = Field('', title="", description="父级ID",examples=[''])
+    id: str|int  = Field('', title="", description="",examples=[''])
 
 
