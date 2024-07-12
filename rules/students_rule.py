@@ -53,7 +53,6 @@ class StudentsRule(object):
         if students.photo and students.photo.isnumeric():
             sysrule = get_injector(SystemRule)
             fileurl = await sysrule.get_download_url_by_id(students.photo)
-            students.photo =  fileurl
             students.photo_url =  fileurl
             logger.info(f"photo url:{students.photo}")
 
