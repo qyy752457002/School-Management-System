@@ -1,4 +1,5 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from mini_framework.databases.entities import BaseDBModel
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
@@ -8,6 +9,8 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from business_exceptions.school_communication import SchoolCommunicationNotFoundError
 from daos.school_communication_dao import SchoolCommunicationDAO
 from models.school_communication import SchoolCommunication
+from views.models.planning_school import PlanningSchool
+from views.models.planning_school_communications import PlanningSchoolCommunications
 from views.models.school_communications import SchoolCommunications  as SchoolCommunicationModel
 
 
@@ -149,4 +152,27 @@ class SchoolCommunicationRule(object):
         # 更新不用转换   因为得到的对象不熟全属性
         # planning_school = orm_model_to_view_model(planning_school_db, SchoolModel, exclude=[""])
         return school_communication_db
+    async def add_school_communication_from_planning_school(self, planning_school: PlanningSchoolCommunications,school_res):
+        # todo 这里的值转换 用 数据库db类型直接赋值  模型转容易报错   另 其他2个表的写入  检查是否原有的  防止重复新增
+        # return None
+
+        # schooldatabaseinfo = SchoolBaseInfoOptional(**planning_school.__dict__)
+        dicta = planning_school.__dict__
+        dicta['school_id'] = school_res.id
+
+        school = SchoolCommunicationModel(** dicta)
+        # school = orm_model_to_view_model(planning_school, SchoolKeyAddInfo, exclude=["id"])
+        # school.school_name = planning_school.planning_school_name
+        # school.planning_school_id = planning_school.id
+        # school.school_no = planning_school.planning_school_no
+        # school.school_edu_level = planning_school.planning_school_edu_level
+        # school.school_category = planning_school.planning_school_category
+        # school.school_operation_type = planning_school.planning_school_operation_type
+        # school.school_org_type = planning_school.planning_school_org_type
+        # school.school_level = planning_school.planning_school_level
+        # school.school_code = planning_school.planning_school_code
+
+        return await self.add_school_communication(school)
+
+
 

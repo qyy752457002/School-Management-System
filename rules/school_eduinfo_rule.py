@@ -8,6 +8,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from business_exceptions.school_eduinfo import SchoolEduinfoNotFoundError
 from daos.school_eduinfo_dao import SchoolEduinfoDAO
 from models.school_eduinfo import SchoolEduinfo
+from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
 from views.models.school_eduinfo import SchoolEduInfo  as SchoolEduinfoModel
 
 
@@ -137,6 +138,27 @@ class SchoolEduinfoRule(object):
         # 更新不用转换   因为得到的对象不熟全属性
         # planning_school = orm_model_to_view_model(planning_school_db, SchoolModel, exclude=[""])
         return school_eduinfo_db
+    async def add_school_eduinfo_from_planning_school(self, planning_school: PlanningSchoolEduInfo,school_res):
+        # todo 这里的值转换 用 数据库db类型直接赋值  模型转容易报错   另 其他2个表的写入  检查是否原有的  防止重复新增
+        # return None
+
+        # schooldatabaseinfo = SchoolBaseInfoOptional(**planning_school.__dict__)
+        dicta = planning_school.__dict__
+        dicta['school_id'] = school_res.id
+
+        school = SchoolEduinfoModel(** dicta)
+        # school = orm_model_to_view_model(planning_school, SchoolKeyAddInfo, exclude=["id"])
+        # school.school_name = planning_school.planning_school_name
+        # school.planning_school_id = planning_school.id
+        # school.school_no = planning_school.planning_school_no
+        # school.school_edu_level = planning_school.planning_school_edu_level
+        # school.school_category = planning_school.planning_school_category
+        # school.school_operation_type = planning_school.planning_school_operation_type
+        # school.school_org_type = planning_school.planning_school_org_type
+        # school.school_level = planning_school.planning_school_level
+        # school.school_code = planning_school.planning_school_code
+
+        return await self.add_school_eduinfo(school)
 
 
 

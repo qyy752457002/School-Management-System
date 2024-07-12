@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, update, delete
+from sqlalchemy import select, func, update, delete, desc
 
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
@@ -81,7 +81,7 @@ class GradeDAO(DAOBase):
         return result.scalar()
 
     async def query_grade_with_page(self, grade_name,school_id, page_request: PageRequest,city='', district='') -> Paging:
-        query = select(Grade).where(Grade.is_deleted == False)
+        query = select(Grade).where(Grade.is_deleted == False).order_by( desc(Grade.id))
         if grade_name:
             query = query.where(Grade.grade_name.like(f'%{grade_name}%') )
         if school_id:
