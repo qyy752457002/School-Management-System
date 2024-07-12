@@ -384,15 +384,15 @@ class SchoolView(BaseView):
         res2 = await self.patch_open(str(school_id))
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            target=OperationTarget.SCHOOL.value,
-            action_type=OperationType.CREATE.value,
-            change_module=ChangeModule.CREATE_SCHOOL.value,
-            change_detail="开办分校",
-            action_target_id=str(school_id),
-            # change_data=str(log_con)[0:1000],
-
-            ))
+        # res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+        #     target=OperationTarget.SCHOOL.value,
+        #     action_type=OperationType.CREATE.value,
+        #     change_module=ChangeModule.CREATE_SCHOOL.value,
+        #     change_detail="开办分校",
+        #     action_target_id=str(school_id),
+        #     # change_data=str(log_con)[0:1000],
+        #
+        #     ))
 
         return res2
     # 学校搜索 模糊搜索 TODO 增加 区域ID  学校ID 支持多个传入
