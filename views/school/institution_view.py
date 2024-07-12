@@ -218,7 +218,7 @@ class InstitutionView(BaseView):
     async def page(self,
                    page_request= Depends(PageRequest),
                    institution_category: InstitutionType = Query(None, title='单位分类',examples=['institution/administration']),
-                   social_credit_code: str = Query( '',title='统一社会信用代码',description=" 统一社会信用代码",examples=['DK156512656']),
+                   social_credit_code: str = Query( '',title='统一社会信用代码',description=" 统一社会信用代码",examples=['1']),
                    institution_name: str = Query(None, description="机构名称", example='XX小学'),
                    institution_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),
                    block: str = Query("", title=" ", description="地域管辖区", ),
@@ -435,7 +435,7 @@ class InstitutionView(BaseView):
         return result
     # 分校的审批流列表
     async def page_institution_audit(self,
-                                     social_credit_code: str = Query( '',title='统一社会信用代码',description=" 统一社会信用代码",examples=['DK156512656']),
+                                     social_credit_code: str = Query( '',title='统一社会信用代码',description=" 统一社会信用代码",examples=['2']),
                                      institution_name: str = Query(None, description="机构名称", example='XX小学'),
                                      institution_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),
                                      block: str = Query("", title=" ", description="地域管辖区", ),
