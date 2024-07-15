@@ -1,6 +1,7 @@
 from mini_framework.web.router import root_router
 from views.school.router import routers as schoolrouters
 from views.grades.router import routers as grades_router
+from views.tasks.router import init_task_router
 from views.teachers.router import routers as teachers_router
 from views.system.router import routers as systemrouters
 
@@ -17,3 +18,5 @@ def init_router():
     root_router.include_router(systemrouters())
     root_router.include_router(studentrouters())
     root_router.include_router(publicrouters())
+    root_router.include_router(init_task_router())
+
