@@ -6,7 +6,7 @@ from datetime import datetime
 
 from mini_framework.async_task.data_access.models import TaskResult
 from mini_framework.async_task.data_access.task_dao import TaskDAO
-from mini_framework.async_task.task import Task, TaskState
+from mini_framework.async_task.task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.storage.manager import storage_manager

@@ -10,7 +10,7 @@ from mini_framework.web.web_command import WebCommand
 def main():
     root_path = os.path.dirname(os.path.abspath(__file__))
     cli = CLI(root_path)
-    cli.register('task', AsyncTaskCommand)
+    cli.register('task', AsyncTaskCommand, router_func_module="views.tasks.router.init_task_router")
 
     cli.register('db-init', DatabaseInitCommand, metadata_model="models.metadata")
     cli.register('dao-gen', DAOGenerateCommand, model_list=[('models.work_flow_define', 'WorkFlowDefine'),

@@ -5,7 +5,7 @@ from datetime import datetime, date
 
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
-from mini_framework.async_task.task import Task, TaskState
+from mini_framework.async_task.task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter
 from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
