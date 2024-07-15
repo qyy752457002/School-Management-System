@@ -24,7 +24,7 @@ class PlanningSchoolExecutor(TaskExecutor):
 
     async def execute(self, context: 'Context'):
         task: Task = context.task
-        print(task)
+        print('入参task',task)
         # 读取 文件内容  再解析到 各个的 插入 库
         try:
             print('开始执行task')
