@@ -45,6 +45,7 @@ from views.models.teacher_extend import ResearchAchievementsModel, ResearchAchie
 from rules.research_achievements_rule import ResearchAchievementsRule
 
 
+
 class TeacherLearnExperienceView(BaseView):
     def __init__(self):
         super().__init__()
