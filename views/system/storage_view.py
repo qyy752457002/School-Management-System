@@ -1,5 +1,9 @@
+import traceback
+from os.path import join
+
 from fastapi.params import Query
 from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.utils.logging import logger
 from mini_framework.web.views import BaseView
 
 from rules.storage_rule import StorageRule
@@ -28,7 +32,18 @@ class StorageView(BaseView):
 
         try:
             print('解析的文件',filename,bucket)
-            res = await self._storage_rule.get_file_data(filename, bucket,sence)
+            buckets = bucket.split('/')
+            filepath = '/'. join( [buckets[1], buckets[2]])
+
+            info = await self._storage_rule.get_file_by_name(filename, buckets[1],filepath )
+            logger.debug('查询文件', f"{info}",  )
+
+            fileinfo =await self.system_rule.get_download_url_by_id(info.id )
+            logger.debug('根据ID下载文件', f"{fileinfo}",  )
+            res =await self._storage_rule.get_file_data(info.file_name, info.bucket_name,info.scene,file_direct_url=fileinfo)
+            logger.debug('根据URL解析数据', f"{data}",  )
+
+            # res = await self._storage_rule.get_file_data(filename, bucket,sence)
             print('解析的结构',res )
             # 存在ID的tuple 过滤掉
             data = [ ]
@@ -42,6 +57,8 @@ class StorageView(BaseView):
                 # 获取模型的属性和title
                 fields_dict = {i:field.title for i,field in value.__class__.__fields__.items()}
                 print('map22',fields_dict)
+                logger.debug( f"数据的栏位", value.__fields__,value.__class__, fields_dict)
+
                 changeitems= value.__dict__
                 needdel= []
                 cndict=dict()
@@ -59,11 +76,14 @@ class StorageView(BaseView):
                     del changeitems[i]
                 changeitems= { **cndict}
                 data.append(changeitems)
+                logger.debug( f"解析到的预览数据",changeitems)
+
                 print(data)
             return {"data":data}
 
         except Exception as e:
             print('解析文件报错',e)
+            logger.debug( f"发生异常", traceback.format_exception(e))
 
         return data
     async def get_download_url(self, id: str):

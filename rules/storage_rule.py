@@ -118,6 +118,11 @@ class StorageRule(object):
         resdata = TestExcelReader(local_filepath, sheetname, SampleModel).read_valid()
         print(resdata)
         return resdata
+#     调用 get_file_by_name
+    async def get_file_by_name(self, filename: str, bucket, filepath=''):
+        return await self.storage_dao.get_file_by_name( bucket,filepath , filename)
+
+
 
 
 class TestExcelReader:
