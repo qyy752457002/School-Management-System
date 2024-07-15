@@ -258,7 +258,6 @@ class PlanningSchoolKeyInfo(BaseModel):
 
 
 class PlanningSchoolPageSearch(BaseModel):
-    # process_code: str = Query("", title=" ", description="", ),
     block:Optional[str]  = Query("", title=" ", description="地域管辖区", )
     planning_school_code: str = Query(None, title="", description=" 园所标识码", )
     planning_school_level: str = Query("", title="", description=" 学校星级", )
