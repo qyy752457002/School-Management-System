@@ -6,10 +6,12 @@ from views.models.institutions import InstitutionTask, InstitutionPageSearch
 from views.models.planning_school import PlanningSchoolTask, PlanningSchoolPageSearch
 from views.models.school import SchoolTask, SchoolPageSearch
 from views.models.students import NewStudentTask, NewStudentsQuery
+from views.models.teachers import TeacherFileStorageModel, CurrentTeacherQuery
 from views.tasks.class_task import ClassExecutor
 from views.tasks.institution_task import InstitutionExecutor, InstitutionExportExecutor
 from views.tasks.new_student_task import NewStudentExecutor, NewStudentFamilyInfoImportExecutor, \
     NewStudentExportExecutor
+from views.tasks.new_teacher_task import TeacherImportExecutor, TeacherExportExecutor, TeacherSaveImportExecutor
 from views.tasks.newstudent_class_division_task import NewStudentClassDivisionExportExecutor
 from views.tasks.planning_school_task import PlanningSchoolExecutor, PlanningSchoolExportExecutor
 from views.tasks.school_task import SchoolExecutor, SchoolExportExecutor
@@ -131,4 +133,34 @@ def init_task_router():
         payload_cls=SchoolTask,
         payload_is_list=False,
         description="班级导入",
+    )
+    task_router.register(
+        code="teacher_import",
+        consumer_group_id="service",
+        topic="teacher_import",
+        name="教师导入",
+        executor_cls=TeacherImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="教师导入",
+    )
+    task_router.register(
+        code="teacher_export",
+        consumer_group_id="service",
+        topic="teacher_export",
+        name="教师导出",
+        executor_cls=TeacherExportExecutor,
+        payload_cls=CurrentTeacherQuery,
+        payload_is_list=False,
+        description="教师导出",
+    )
+    task_router.register(
+        code="teacher_save_import",
+        consumer_group_id="service",
+        topic="teacher_save_import",
+        name="教师保存导入",
+        executor_cls=TeacherSaveImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
     )

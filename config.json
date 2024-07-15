@@ -166,7 +166,7 @@
 
       "teacher_import": {
         "topic": "teacher_import",
-        "name": "教师导入",
+        "name": "",
         "consumer_group_id": "service",
         "description": "教师导入",
         "executor_cls_model": "views.tasks.new_teacher_task.TeacherImportExecutor",
