@@ -29,13 +29,13 @@ class PlanningSchoolExecutor(TaskExecutor):
         try:
             print('开始执行task')
 
-            fileinfo=info = task.payload
+            info = task.payload
             data= [ ]
             # 得到的是下载链接  下载到本地
-            # fileinfo =await self.system_rule.get_download_url_by_id(info.file_name)
-            data =await self._storage_rule.get_file_data(fileinfo.file_name, fileinfo.bucket_name,info.scene)
-
-            # data =await self._storage_rule.get_file_data(info.file_name, info.bucket,info.scene)
+            fileinfo =await self.system_rule.get_download_url_by_id(info.file_name)
+            logger.debug( f"{fileinfo}",  )
+            data =await self._storage_rule.get_file_data(info.file_name, info.bucket_name,info.scene,file_direct_url=fileinfo)
+            logger.debug( f"{data}",  )
 
             for item in data:
 
@@ -68,11 +68,15 @@ class PlanningSchoolExecutor(TaskExecutor):
                 task.result_bucket =  ''
 
                 print('插入数据res',res)
+                logger.debug( f"{res}",  )
+
             logger.info(f"任务   created")
         except Exception as e:
             traceback.print_exc()
             print(e,'异常')
-            logger.error(f"任务   create failed")
+            logger.debug( f"任务   create failed", traceback.format_exception(e))
+
+            # logger.error(f"任务   create failed")
 
 
 # 导出  todo
