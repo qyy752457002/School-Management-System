@@ -15,7 +15,7 @@ from rules.teachers_info_rule import TeachersInfoRule
 from mini_framework.web.request_context import request_context_manager
 
 from mini_framework.async_task.app.app_factory import app
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.task.task import Task
 from views.models.teachers import NewTeacherTask
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 

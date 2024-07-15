@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Final
 
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.task.task import Task
 from pydantic import BaseModel, Field
 
 class TaskActionType(str, Enum):

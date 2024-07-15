@@ -3,7 +3,7 @@ from typing import List
 
 from fastapi.params import Body
 from mini_framework.async_task.app.app_factory import app
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.task.task import Task
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.json import JsonUtils
 from mini_framework.web.toolkit.model_utilities import view_model_to_orm_model
@@ -34,7 +34,7 @@ from rules.institution_rule import InstitutionRule
 from mini_framework.web.request_context import request_context_manager
 
 from mini_framework.async_task.app.app_factory import app
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.task.task import Task
 
 from views.models.school_communications import SchoolCommunications
 from views.models.school_eduinfo import SchoolEduInfo
