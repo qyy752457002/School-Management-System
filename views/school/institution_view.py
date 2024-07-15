@@ -3,7 +3,7 @@ from typing import List
 
 from fastapi.params import Body
 from mini_framework.async_task.app.app_factory import app
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.task.task import Task
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.json import JsonUtils
 from mini_framework.web.toolkit.model_utilities import view_model_to_orm_model
@@ -34,7 +34,7 @@ from rules.institution_rule import InstitutionRule
 from mini_framework.web.request_context import request_context_manager
 
 from mini_framework.async_task.app.app_factory import app
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.task.task import Task
 
 from views.models.school_communications import SchoolCommunications
 from views.models.school_eduinfo import SchoolEduInfo
@@ -218,7 +218,7 @@ class InstitutionView(BaseView):
     async def page(self,
                    page_request= Depends(PageRequest),
                    institution_category: InstitutionType = Query(None, title='单位分类',examples=['institution/administration']),
-                   social_credit_code: str = Query( '',title='统一社会信用代码',description=" 统一社会信用代码",examples=['DK156512656']),
+                   social_credit_code: str = Query( '',title='统一社会信用代码',description=" 统一社会信用代码",examples=['1']),
                    institution_name: str = Query(None, description="机构名称", example='XX小学'),
                    institution_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),
                    block: str = Query("", title=" ", description="地域管辖区", ),
@@ -435,7 +435,7 @@ class InstitutionView(BaseView):
         return result
     # 分校的审批流列表
     async def page_institution_audit(self,
-                                     social_credit_code: str = Query( '',title='统一社会信用代码',description=" 统一社会信用代码",examples=['DK156512656']),
+                                     social_credit_code: str = Query( '',title='统一社会信用代码',description=" 统一社会信用代码",examples=['2']),
                                      institution_name: str = Query(None, description="机构名称", example='XX小学'),
                                      institution_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),
                                      block: str = Query("", title=" ", description="地域管辖区", ),

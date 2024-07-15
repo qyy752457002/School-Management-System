@@ -207,7 +207,8 @@ class SchoolKeyAddInfo(BaseModel):
             if isinstance(data[_change], str):
                 data[_change] = int(data[_change])
             elif isinstance(data[_change], int):
-                data[_change] = str(data[_change])
+                # data[_change] = str(data[_change])
+                pass
             else:
                 pass
         return data

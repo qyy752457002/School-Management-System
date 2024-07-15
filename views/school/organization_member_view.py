@@ -20,7 +20,7 @@ class OrganizationMemberView(BaseView):
         super().__init__()
         self.organization_rule = get_injector(OrganizationRule)
         self.organization_members_rule = get_injector(OrganizationMembersRule)
-
+    # 新增成员
     async def post(self, organization_members: OrganizationMembers):
         # print(organization)
         res = await  self.organization_members_rule.add_organization_members(organization_members)

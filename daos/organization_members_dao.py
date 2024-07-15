@@ -18,9 +18,9 @@ class OrganizationMembersDAO(DAOBase):
 		await session.refresh(organization_members)
 		return organization_members
 
-	async def get_organization_members_count(self, ):
+	async def get_organization_members_count(self,org_id ):
 		session = await self.slave_db()
-		result = await session.execute(select(func.count()).select_from(OrganizationMembers))
+		result = await session.execute(select(func.count()).select_from(OrganizationMembers).where(OrganizationMembers.org_id == int(org_id)).where(OrganizationMembers.is_deleted == False))
 		return result.scalar()
 
 	async def delete_organization_members(self, organization_members: OrganizationMembers):

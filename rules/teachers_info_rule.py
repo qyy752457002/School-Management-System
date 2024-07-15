@@ -276,7 +276,7 @@ class TeachersInfoRule(object):
         return teachers_info
 
     async def query_teacher_with_page(self, query_model: NewTeacher, page_request: PageRequest, user_id):
-        params = {"applicant_name": user_id, "process_code": "t_entry", }
+        params = {"applicant_name": user_id, "process_code": "t_entry", "approval_status": "t_query"}
         paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                       NewTeacherRe, params)
         return paging

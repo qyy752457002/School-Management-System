@@ -6,7 +6,7 @@ from datetime import datetime
 
 from mini_framework.async_task.data_access.models import TaskResult
 from mini_framework.async_task.data_access.task_dao import TaskDAO
-from mini_framework.async_task.task import Task, TaskState
+from mini_framework.async_task.task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.storage.manager import storage_manager
@@ -88,8 +88,6 @@ class SchoolRule(object):
             school.school_name)
         if exists_school:
             raise Exception(f"学校{school.school_name}已存在")
-        #  other_mapper={"password": "hash_password"},
-        #                                              exclude=["first_name", "last_name"]
         school_db = view_model_to_orm_model(school, School,    exclude=["id"])
 
         school_db.status =  PlanningSchoolStatus.DRAFT.value
@@ -686,7 +684,7 @@ class SchoolRule(object):
             task_result = TaskResult()
             task_result.task_id = task.task_id
             task_result.result_file = file_storage_resp.file_name
-            task_result.result_bucket = file_storage_resp.bucket_name
+            task_result.result_bucket = file_storage_resp.virtual_bucket_name
             task_result.result_file_id = file_storage_resp.file_id
             task_result.last_updated = datetime.now()
             task_result.state = TaskState.succeeded

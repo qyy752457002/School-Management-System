@@ -23,7 +23,7 @@ from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, 
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
 from mini_framework.async_task.data_access.task_dao import TaskDAO
-from mini_framework.async_task.task import Task, TaskState
+from mini_framework.async_task.task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter, ExcelReader
 from mini_framework.storage.manager import storage_manager
 from mini_framework.utils.logging import logger
@@ -49,6 +49,7 @@ class TeacherImportRule:
     teacher_rule: TeachersRule
     teachers_info_rule: TeachersInfoRule
     file_storage_dao: FileStorageDAO
+    task_dao: TaskDAO
 
     # 导入导出相关
     async def import_teachers(self, task: Task):
@@ -101,6 +102,30 @@ class TeacherImportRule:
                     logger.info(f"Failed to add teacher at index {idx}: {ex}")
                     print(ex, '表内数据异常')
                     raise ex
+            local_results_path = f"/tmp/c.xlsx"
+            excel_writer = ExcelWriter()
+            excel_writer.add_data("Sheet1", results)
+            excel_writer.set_data(local_results_path)
+            excel_writer.execute()
+
+            random_file_name = shortuuid.uuid() + ".xlsx"
+            file_storage = await storage_manager.put_file_to_object(
+                source_file.virtual_bucket_name, f"{random_file_name}.xlsx", local_results_path
+            )
+            file_storage_resp = await storage_manager.add_file(
+                self.file_storage_dao, file_storage
+            )
+
+            task_result = TaskResult()
+            task_result.task_id = task.task_id
+            task_result.result_file = file_storage_resp.file_name
+            task_result.result_bucket = file_storage_resp.bucket_name
+            task_result.result_file_id = file_storage_resp.file_id
+            task_result.last_updated = datetime.now()
+            task_result.state = TaskState.succeeded
+            task_result.result_extra = {"file_size": file_storage.file_size}
+            await self.task_dao.add_task_result(task_result)
+            return task_result
         except Exception as e:
             print(e, '异常')
             raise e
@@ -126,31 +151,7 @@ class TeacherImportRule:
             #         raise ex
             #     results.append(result)
 
-            # local_results_path = f"/tmp/c.xlsx"
-            # excel_writer = ExcelWriter()
-            # excel_writer.add_data("Sheet1", results)
-            # excel_writer.set_data(local_results_path)
-            # excel_writer.execute()
-            #
-            # random_file_name = shortuuid.uuid() + ".xlsx"
-            # file_storage = await storage_manager.put_file_to_object(
-            #     source_file.bucket_name, f"{random_file_name}.xlsx", local_results_path
-            # )
-            # file_storage_resp = await storage_manager.add_file(
-            #     self.file_storage_dao, file_storage
-            # )
-            #
-            # task_result = TaskResult()
-            # task_result.task_id = task.task_id
-            # task_result.result_file = file_storage_resp.file_name
-            # task_result.result_bucket = file_storage_resp.bucket_name
-            # task_result.result_file_id = file_storage_resp.file_id
-            # task_result.last_updated = datetime.now()
-            # task_result.state = TaskState.succeeded
-            # task_result.result_extra = {"file_size": 123}
-            #
-            # await self.task_dao.add_task_result(task_result)
-            # return task_result
+
 
     async def import_teachers_save(self, task: Task):
         try:
@@ -205,43 +206,17 @@ class TeacherImportRule:
             excel_writer.execute()
 
             random_file_name = shortuuid.uuid() + ".xlsx"
-            file_storage = await storage_manager.put_file_to_object(
+            file_storage = storage_manager.put_file_to_object(
                 source_file.virtual_bucket_name, f"{random_file_name}.xlsx", local_results_path
             )
-            file_storage_resp = await storage_manager.add_file(
+            file_storage_resp = storage_manager.add_file(
                 self.file_storage_dao, file_storage
             )
 
             task_result = TaskResult()
             task_result.task_id = task.task_id
             task_result.result_file = file_storage_resp.file_name
-            task_result.result_bucket = file_storage_resp.bucket_name
-            task_result.result_file_id = file_storage_resp.file_id
-            task_result.last_updated = datetime.now()
-            task_result.state = TaskState.succeeded
-            task_result.result_extra = {"file_size": 123}
-
-            await self.task_dao.add_task_result(task_result)
-            return task_result
-
-            local_results_path = f"/tmp/{source_file.file_name}"
-            excel_writer = ExcelWriter()
-            excel_writer.add_data("Sheet1", results)
-            excel_writer.set_data(local_results_path)
-            excel_writer.execute()
-
-            random_file_name = shortuuid.uuid() + ".xlsx"
-            file_storage = await storage_manager.put_file_to_object(
-                source_file.bucket_name, f"{random_file_name}.xlsx", local_results_path
-            )
-            file_storage_resp = await storage_manager.add_file(
-                self.file_storage_dao, file_storage
-            )
-
-            task_result = TaskResult()
-            task_result.task_id = task.task_id
-            task_result.result_file = file_storage_resp.file_name
-            task_result.result_bucket = file_storage_resp.bucket_name
+            task_result.result_bucket = file_storage_resp.virtual_bucket_name
             task_result.result_file_id = file_storage_resp.file_id
             task_result.last_updated = datetime.now()
             task_result.state = TaskState.succeeded
@@ -249,6 +224,8 @@ class TeacherImportRule:
 
             await self.task_dao.add_task_result(task_result)
             return task_result
+
+
         except Exception as e:
             print(e, '异常')
             raise e

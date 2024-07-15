@@ -194,7 +194,7 @@ class OrganizationRule(object):
             lst.append(planning_school)
         return lst
 
-    async def increment_organization_member_cnt(self, organization_id,):
+    async def increment_organization_member_cnt(self, organization_id,cnt):
         #
 
         exists_organization_members = await self.organization_dao.update_organization_increment_member_cnt( OrganizationModel(id= int(organization_id), ))

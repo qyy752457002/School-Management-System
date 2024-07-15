@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List
 
 from mini_framework.async_task.app.app_factory import app
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.task.task import Task
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.json import JsonUtils
 from mini_framework.web.request_context import request_context_manager
@@ -373,7 +373,7 @@ class PlanningSchoolView(BaseView):
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
-        print('发生任务成功')
+        print('发生任务成功',task)
         return task
 
     # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性     允许 部分 不填  现保存
