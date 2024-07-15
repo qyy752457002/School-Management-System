@@ -259,7 +259,8 @@ class PlanningSchoolView(BaseView):
 
     # 开办   校验合法性等  业务逻辑   开班式 校验所有的数据是否 都填写了
     async def patch_open(self, planning_school_id: str | int = Query(..., title="学校编号", description="学校id/园所id",
-                                                                     min_length=1, max_length=20, example='SC2032633')):
+                                                                     min_length=1, max_length=20, example='SC2032633'),
+                         is_add_log=True):
         # print(planning_school)
         # 检测 是否允许修改
         is_draft = await self.planning_school_rule.is_can_not_add_workflow(planning_school_id)
@@ -295,16 +296,17 @@ class PlanningSchoolView(BaseView):
             pass
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(planning_school_id),
-            action_type=OperationType.MODIFY.value,
-            # change_data=str(planning_school_id)[0:1000],
-            change_data=JsonUtils.dict_to_json_str(planning_school_id),
-            target=OperationTarget.PLANNING_SCHOOL.value,
-            change_module=ChangeModule.CREATE_SCHOOL.value,
-            change_detail="开办学校",
-            process_instance_id=process_instance_id
-        ))
+        if is_add_log:
+            res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+                action_target_id=str(planning_school_id),
+                action_type=OperationType.MODIFY.value,
+                # change_data=str(planning_school_id)[0:1000],
+                change_data=JsonUtils.dict_to_json_str(planning_school_id),
+                target=OperationTarget.PLANNING_SCHOOL.value,
+                change_module=ChangeModule.CREATE_SCHOOL.value,
+                change_detail="开办学校",
+                process_instance_id=process_instance_id
+            ))
 
         return res
 
@@ -444,19 +446,19 @@ class PlanningSchoolView(BaseView):
 
         #  调用 内部方法 开办
 
-        res2 = await self.patch_open(str(planning_school_id))
+        res2 = await self.patch_open(str(planning_school_id),False)
 
-        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        # res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-        #     action_type=OperationType.MODIFY.value,
-        #     target=OperationTarget.PLANNING_SCHOOL.value,
-        #     change_module=ChangeModule.CREATE_SCHOOL.value,
-        #     change_detail="提交全部信息 开办",
-        #     action_target_id=str(planning_school_id),
-        #     # change_data=str(log_con)[0:1000],
-        #     change_data=JsonUtils.dict_to_json_str(log_con),
-        #
-        # ))
+         # 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_type=OperationType.MODIFY.value,
+            target=OperationTarget.PLANNING_SCHOOL.value,
+            change_module=ChangeModule.CREATE_SCHOOL.value,
+            change_detail="提交全部信息 开办",
+            action_target_id=str(planning_school_id),
+            # change_data=str(log_con)[0:1000],
+            change_data=JsonUtils.dict_to_json_str(log_con),
+
+        ))
 
         return res2
 
