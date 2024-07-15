@@ -373,7 +373,7 @@ class PlanningSchoolView(BaseView):
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
-        print('发生任务成功')
+        print('发生任务成功',task)
         return task
 
     # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性     允许 部分 不填  现保存

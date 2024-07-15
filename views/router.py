@@ -19,4 +19,6 @@ def init_router():
     root_router.include_router(studentrouters())
     root_router.include_router(publicrouters())
     # root_router.include_router(init_task_router())
+    init_task_router()
+
 
