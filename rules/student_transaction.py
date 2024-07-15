@@ -225,7 +225,6 @@ class StudentTransactionRule(object):
             "accept": "application/json",
             "Content-Type": "application/json"
         }
-        # 如果是query 需要拼接参数
         url+=  ('?' +urlencode(datadict))
         print('参数', url, datadict,headerdict)
         response= None

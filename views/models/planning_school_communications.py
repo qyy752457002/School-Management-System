@@ -21,5 +21,6 @@ class PlanningSchoolCommunications(BaseModel):
     loc_area_pro: str|None = Field(None, title="园所所在地(省级)", description="园所所在地(省级)",examples=['FSDFSD'])
     detailed_address: str|None = Field(None, title="园所详细地址", description="园所详细地址",examples=['FSDFSD'])
     related_license_upload: str |None= Field(None, title="相关证照上传", description="相关证照上传",examples=[''])
+    related_license_upload_url: str |None= Field(None, title="相关证照上传url", description="",examples=[''])
     school_web_url: str|None = Field(None, title="校园网域名", description="校园网域名",examples=['WW.SS.CC'])
 
