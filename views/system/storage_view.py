@@ -33,7 +33,7 @@ class StorageView(BaseView):
         try:
             print('解析的文件',filename,bucket)
             buckets = bucket.split('/')
-            filepath = '/'. join( [buckets[1], buckets[2]])
+            filepath = '/'. join( [buckets[1],filename])
 
             info = await self._storage_rule.get_file_by_name(filename, buckets[1],filepath )
             logger.debug('查询文件', f"{info}",  )
@@ -82,7 +82,7 @@ class StorageView(BaseView):
             return {"data":data}
 
         except Exception as e:
-            print('解析文件报错',e)
+            print('解析文件报错',e,e.__traceback__)
             logger.debug( f"发生异常", traceback.format_exception(e))
 
         return data
