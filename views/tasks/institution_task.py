@@ -1,5 +1,5 @@
 from mini_framework.async_task.consumers import TaskExecutor
-from mini_framework.async_task.task import Task, Context
+from mini_framework.async_task.task.task_context import Task, Context
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.logging import logger
 
@@ -30,7 +30,7 @@ class InstitutionExecutor(TaskExecutor):
             info = task.payload
             data= [ ]
             fileinfo =await self.system_rule.get_download_url_by_id(info.file_name)
-            data =await self._storage_rule.get_file_data(fileinfo.file_name, fileinfo.bucket_name,info.scene)
+            data =await self._storage_rule.get_file_data(info.file_name, info.bucket_name,info.scene)
             # data =await self._storage_rule.get_file_data(info.file_name, info.bucket,info.scene)
             for item in data:
                 if isinstance(item, dict):

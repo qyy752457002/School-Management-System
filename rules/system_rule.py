@@ -179,12 +179,6 @@ class SystemRule(object):
             if paging and hasattr(paging, 'items'):
                 for item in paging.items:
                     if process_code == PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE or process_code == SCHOOL_CLOSE_WORKFLOW_CODE or process_code == INSTITUTION_CLOSE_WORKFLOW_CODE:
-                        # print(item.id)
-                        # print(item.process_instance_id)
-                        # print(item.process_instance_id)
-                        # print(item.process_instance_id)
-                        # print(item.process_instance_id)
-                        # print(item.process_instance_id)
                         if isinstance(item, dict)  :
                             item['related_license_upload_url']=None
                             if 'related_license_upload' in item.keys() and item['related_license_upload'] and  len(item['related_license_upload'])>0:
@@ -250,7 +244,7 @@ class SystemRule(object):
                 print(fileinfo)  # 使用 _asdict() 方法转换为字典
                 if hasattr(fileinfo, 'file_name'):
 
-                    file_storage = FileStorageModel(file_name=fileinfo.file_name, bucket_name=fileinfo.virtual_bucket_name,
+                    file_storage = FileStorageModel(file_name=fileinfo.file_name, virtual_bucket_name=fileinfo.virtual_bucket_name,
                                                     file_size=fileinfo.file_size, )
                     try:
                         url = storage_manager.query_get_object_url_with_token(file_storage)

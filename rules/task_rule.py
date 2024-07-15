@@ -2,14 +2,14 @@ from datetime import datetime
 
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskInfo, TaskProgress, TaskResult
-from mini_framework.async_task.task import Task, TaskState
+from mini_framework.async_task.task.task import Task, TaskState
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.toolkit.model_utilities import view_model_to_orm_model, orm_model_to_view_model
 
 from daos.task_dao import TaskDAO
 from views.models.task import TaskModel
-# from mini_framework.async_task.task import Task as TaskModel
+# from mini_framework.async_task.task.task import Task as TaskModel
 
 
 
