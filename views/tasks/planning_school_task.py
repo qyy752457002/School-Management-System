@@ -9,7 +9,8 @@ from rules.planning_school_communication_rule import PlanningSchoolCommunication
 from rules.planning_school_rule import PlanningSchoolRule
 from rules.storage_rule import StorageRule
 from rules.system_rule import SystemRule
-from views.models.planning_school import PlanningSchool, PlanningSchoolOptional, PlanningSchoolPageSearch
+from views.models.planning_school import PlanningSchool, PlanningSchoolOptional, PlanningSchoolPageSearch, \
+    PlanningSchoolImport
 from views.models.planning_school_communications import PlanningSchoolCommunications
 
 
@@ -51,9 +52,20 @@ class PlanningSchoolExecutor(TaskExecutor):
 
                 if isinstance(item, dict):
                     data_import: PlanningSchoolOptional = PlanningSchoolOptional(**item)
+                    print('得到字典')
 
                 elif isinstance(item, PlanningSchoolOptional):
                     data_import: PlanningSchoolOptional = item
+                    print('得到对象2')
+
+                elif isinstance(item, PlanningSchoolImport):
+                    data_import: PlanningSchoolImport = item
+                    print('得到对象3')
+                    if data_import.school_type != '学校':
+                        continue
+                    else:
+                        pass
+
                 else:
                     raise ValueError("Invalid payload type")
                 res = await self.planning_school_rule.add_planning_school(data_import)

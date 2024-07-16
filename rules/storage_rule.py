@@ -106,7 +106,7 @@ class StorageRule(object):
             logger.debug('下载文件的res')
             logger.debug( resp)
         if sence == ImportScene.PLANNING_SCHOOL.value:
-            # 暂时调试
+            # 规划校
             # local_filepath = 'planning_school.xlsx'
 
             SampleModel = PlanningSchoolImport
