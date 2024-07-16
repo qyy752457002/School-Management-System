@@ -309,5 +309,7 @@ class PlanningSchoolTransactionAudit(BaseModel):
 
 
 class PlanningSchoolImportReq(BaseModel, ):
-    file_name: str = Body(..., description="文件名"),
+    file_name: str = Body(..., description="文件名")
+    bucket: str|None = Body( '',alias='bucket_name', description="")
+    scene: str |None= Body('', description="")
 

@@ -27,15 +27,25 @@ class PlanningSchoolExecutor(TaskExecutor):
         print('入参task',task)
         # 读取 文件内容  再解析到 各个的 插入 库
         try:
-            print('开始执行task')
 
             info = task.payload
+            print('开始执行task',info)
+
             data= [ ]
-            # 得到的是下载链接  下载到本地
-            fileinfo =await self.system_rule.get_download_url_by_id(info.file_name)
-            logger.debug('根据ID下载文件', f"{fileinfo}",  )
-            data =await self._storage_rule.get_file_data(info.file_name, info.bucket_name,info.scene,file_direct_url=fileinfo)
-            logger.debug('根据URL解析数据', f"{data}",  )
+            if info.file_name.isdecimal():
+                # 得到的是下载链接  下载到本地
+                fileinfo =await self.system_rule.get_download_url_by_id(info.file_name)
+                logger.debug('根据ID下载文件', f"{fileinfo}",  )
+                data =await self._storage_rule.get_file_data(info.file_name, info.bucket_name,info.scene,file_direct_url=fileinfo)
+                logger.debug('根据URL解析数据', f"{data}",  )
+                pass
+            else:
+                # 得到的是 3个参数   下载到本地
+
+                data =await self._storage_rule.get_file_data(info.file_name, info.bucket,info.scene,file_direct_url=None)
+                logger.debug('根据URL解析数据', f"{data}",  )
+                pass
+
 
             for item in data:
 

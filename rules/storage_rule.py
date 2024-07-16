@@ -63,6 +63,10 @@ class StorageRule(object):
 
     #     解析 文件和桶  返回 数据结构
     async def get_file_data(self, filename: str, bucket, sence='',file_direct_url=None):
+        # 目前的前段传入的是实际的bucket 它没传虚拟bucket 但鉴于他们直接的对应关系 这里可以处理得到虚拟bucket
+        if bucket.find('/') != -1:
+            bucket = bucket.split('/')[1]
+
         # 下载保存本地
         random_id = str(uuid.uuid4())
 
