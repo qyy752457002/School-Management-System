@@ -65,11 +65,19 @@ class StorageRule(object):
     async def get_file_data(self, filename: str, bucket, sence='',file_direct_url=None):
         # 下载保存本地
         random_id = str(uuid.uuid4())
-        # source='c.xlsx'
-        local_filepath = 'planning_school.xlsx'
 
         # 下载文件到本地
-        local_filepath='temp/'+ random_id+filename
+        # local_filepath='temp/'+ random_id+filename
+        # 获取当前脚本所在目录的绝对路径
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # 指定文件名
+
+        # 创建一个相对路径，基于'script_dir'，并包含随机ID和文件名
+        local_filepath = os.path.join(script_dir, 'temp', random_id + filename)
+
+        # 确保'temp'目录存在，如果不存在则创建它
+        os.makedirs(os.path.join(script_dir, 'temp'), exist_ok=True)
 
         # 根据不同场景 获取不同的模型
         sheetname = 'Sheet1'
@@ -92,7 +100,6 @@ class StorageRule(object):
             SampleModel = PlanningSchoolImport
             sheetname = 'Sheet1'
 
-
         if sence == ImportScene.INSTITUTION.value:
             SampleModel = Institutions
             sheetname = 'Sheet1'
@@ -114,10 +121,10 @@ class StorageRule(object):
             sheetname = 'Sheet1'
         pass
 
-
-
         resdata = TestExcelReader(local_filepath, sheetname, SampleModel).read_valid()
         print(resdata)
+        # 删除临时文件
+        # os.remove(local_filepath)
         return resdata
 #     调用 get_file_by_name
     async def get_file_by_name(self, filename: str, bucket, filepath=''):
