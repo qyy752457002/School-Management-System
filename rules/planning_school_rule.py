@@ -209,8 +209,9 @@ class PlanningSchoolRule(object):
             raise PlanningSchoolNotFoundError()
 
         if exists_planning_school.status== PlanningSchoolStatus.DRAFT.value:
-            planning_school.status= PlanningSchoolStatus.OPENING.value
-            planning_school.status= PlanningSchoolStatus.OPENING.value
+            if hasattr(planning_school,'status'):
+
+                planning_school.status= PlanningSchoolStatus.OPENING.value
         else:
             pass
         if not need_update_list:

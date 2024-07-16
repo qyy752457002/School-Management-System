@@ -21,7 +21,7 @@ from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_extend_params, get_client_ip, convert_dates_to_strings, \
-    serialize, convert_query_to_none
+    serialize, convert_query_to_none, convert_snowid_in_model
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
@@ -146,13 +146,9 @@ class PlanningSchoolView(BaseView):
 
         tinfo=origin = await self.planning_school_rule.get_planning_school_by_id(planning_school.id)
 
-
-
-
         res2 = compare_modify_fields(planning_school, origin)
         # print(  res2)
         process_instance_id = 0
-
 
         if tinfo and  tinfo.status == PlanningSchoolStatus.NORMAL.value:
             #  工作流
@@ -166,13 +162,13 @@ class PlanningSchoolView(BaseView):
                 res = await self.planning_school_rule.update_planning_school_byargs(pl)
 
                 pass
+            convert_snowid_in_model(res,['id','process_instance_id'])
             pass
         else:
             # 检测是否有待处理的流程ID
             res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
 
             pass
-
 
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
