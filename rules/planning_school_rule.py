@@ -5,7 +5,7 @@ from datetime import datetime
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
 from mini_framework.async_task.data_access.task_dao import TaskDAO
-from mini_framework.async_task.task import Task, TaskState
+from mini_framework.async_task.task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter
 from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
@@ -209,8 +209,9 @@ class PlanningSchoolRule(object):
             raise PlanningSchoolNotFoundError()
 
         if exists_planning_school.status== PlanningSchoolStatus.DRAFT.value:
-            planning_school.status= PlanningSchoolStatus.OPENING.value
-            planning_school.status= PlanningSchoolStatus.OPENING.value
+            if hasattr(planning_school,'status'):
+
+                planning_school.status= PlanningSchoolStatus.OPENING.value
         else:
             pass
         if not need_update_list:
@@ -431,7 +432,7 @@ class PlanningSchoolRule(object):
             tinfo.workflow_status=status.value
             tinfo.id = int(tinfo.id)
 
-            planning_school_db = await self.planning_school_dao.update_planning_school_byargs(tinfo,['workflow_status'],is_commit=True)
+            planning_school_db = await self.planning_school_dao.update_planning_school_byargs(tinfo,'workflow_status' ,is_commit=True)
             # await self.update_planning_school_byargs(tinfo,['workflow_status'])
 
 
@@ -482,9 +483,10 @@ class PlanningSchoolRule(object):
         tinfo=await self.get_planning_school_by_id(student_id)
         print('当前信息',tinfo)
         if not is_all_status_allow:
+            # 如果 是草稿态 则锁定
             if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
                 return  True
-        # 检查是否有占用
+        # 检查是否有占用 如果有待处理的流程ID 则锁定
         if tinfo and  tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
             return True
         return False
@@ -541,7 +543,7 @@ class PlanningSchoolRule(object):
             task_result = TaskResult()
             task_result.task_id = task.task_id
             task_result.result_file = file_storage_resp.file_name
-            task_result.result_bucket = file_storage_resp.bucket_name
+            task_result.result_bucket = file_storage_resp.virtual_bucket_name
             task_result.result_file_id = file_storage_resp.file_id
             task_result.last_updated = datetime.now()
             task_result.state = TaskState.succeeded
@@ -559,3 +561,18 @@ class PlanningSchoolRule(object):
             task_result = TaskResult()
 
         return task_result
+    async def is_can_change_keyinfo(self, student_id,is_all_status_allow=False):
+        tinfo=await self.get_planning_school_by_id(student_id)
+        print('当前信息',tinfo)
+        if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
+            return  True
+        if tinfo and  tinfo.status != PlanningSchoolStatus.NORMAL.value:
+            # return  True
+
+            # 检查是否有占用 如果有待处理的流程ID 则锁定
+            if tinfo and  tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
+                return False
+            return True
+        if tinfo and  tinfo.status == PlanningSchoolStatus.CLOSED.value:
+            return  False
+        return True

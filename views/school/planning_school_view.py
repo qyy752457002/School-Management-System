@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List
 
 from mini_framework.async_task.app.app_factory import app
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.task.task import Task
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.json import JsonUtils
 from mini_framework.web.request_context import request_context_manager
@@ -21,7 +21,7 @@ from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_extend_params, get_client_ip, convert_dates_to_strings, \
-    serialize, convert_query_to_none
+    serialize, convert_query_to_none, convert_snowid_in_model
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
@@ -133,29 +133,43 @@ class PlanningSchoolView(BaseView):
                           planning_school: PlanningSchoolKeyInfo,
                           request: Request,
                           ):
+        # 如果是草稿态 允许直接修改关键信息
+        # 如果 不是normal态 也是允许修改关键信息的  但是要校验是否有待处理的流程ID
+        # 如果是正式态 允许改 发起审核流程
+        # 如果是关闭态 不允许这个操作
+        is_can = await self.planning_school_rule.is_can_change_keyinfo(planning_school.id,)
+
         # 检测 是否允许修改
         is_draft = await self.planning_school_rule.is_can_not_add_workflow(planning_school.id, True)
-        if is_draft:
+        if is_draft or not is_can:
             raise PlanningSchoolStatusError()
 
-        origin = await self.planning_school_rule.get_planning_school_by_id(planning_school.id)
+        tinfo=origin = await self.planning_school_rule.get_planning_school_by_id(planning_school.id)
 
         res2 = compare_modify_fields(planning_school, origin)
         # print(  res2)
-
-        # res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
-        #  工作流
-        # planning_school.id = planning_school_id
-        res = await self.planning_school_rule.add_planning_school_keyinfo_change_work_flow(planning_school, )
         process_instance_id = 0
-        if res and len(res) > 1 and 'process_instance_id' in res[0].keys() and res[0]['process_instance_id']:
-            process_instance_id = res[0]['process_instance_id']
-            pl = PlanningSchoolBaseInfoOptional(id=planning_school.id, process_instance_id=process_instance_id,
-                                                workflow_status=AuditAction.NEEDAUDIT.value)
 
-            res = await self.planning_school_rule.update_planning_school_byargs(pl)
+        if tinfo and  tinfo.status == PlanningSchoolStatus.NORMAL.value:
+            #  工作流
+            # planning_school.id = planning_school_id
+            res = await self.planning_school_rule.add_planning_school_keyinfo_change_work_flow(planning_school, )
+            if res and len(res) > 1 and 'process_instance_id' in res[0].keys() and res[0]['process_instance_id']:
+                process_instance_id = res[0]['process_instance_id']
+                pl = PlanningSchoolBaseInfoOptional(id=planning_school.id, process_instance_id=process_instance_id,
+                                                    workflow_status=AuditAction.NEEDAUDIT.value)
+
+                res = await self.planning_school_rule.update_planning_school_byargs(pl)
+
+                pass
+            convert_snowid_in_model(res,['id','process_instance_id'])
+            pass
+        else:
+            # 检测是否有待处理的流程ID
+            res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
 
             pass
+
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
@@ -259,7 +273,8 @@ class PlanningSchoolView(BaseView):
 
     # 开办   校验合法性等  业务逻辑   开班式 校验所有的数据是否 都填写了
     async def patch_open(self, planning_school_id: str | int = Query(..., title="学校编号", description="学校id/园所id",
-                                                                     min_length=1, max_length=20, example='SC2032633')):
+                                                                     min_length=1, max_length=20, example='SC2032633'),
+                         is_add_log=True):
         # print(planning_school)
         # 检测 是否允许修改
         is_draft = await self.planning_school_rule.is_can_not_add_workflow(planning_school_id)
@@ -295,16 +310,17 @@ class PlanningSchoolView(BaseView):
             pass
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(planning_school_id),
-            action_type=OperationType.MODIFY.value,
-            # change_data=str(planning_school_id)[0:1000],
-            change_data=JsonUtils.dict_to_json_str(planning_school_id),
-            target=OperationTarget.PLANNING_SCHOOL.value,
-            change_module=ChangeModule.CREATE_SCHOOL.value,
-            change_detail="开办学校",
-            process_instance_id=process_instance_id
-        ))
+        if is_add_log:
+            res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+                action_target_id=str(planning_school_id),
+                action_type=OperationType.MODIFY.value,
+                # change_data=str(planning_school_id)[0:1000],
+                change_data=JsonUtils.dict_to_json_str(planning_school_id),
+                target=OperationTarget.PLANNING_SCHOOL.value,
+                change_module=ChangeModule.CREATE_SCHOOL.value,
+                change_detail="开办学校",
+                process_instance_id=process_instance_id
+            ))
 
         return res
 
@@ -358,8 +374,7 @@ class PlanningSchoolView(BaseView):
     # 导入   任务队列的
     async def post_planning_school_import(self,
                                           file: PlanningSchoolImportReq
-                                          # bucket: str = Query(..., description="文件名"),
-                                          # scene: str = Query('', description="文件名"),
+
                                           ) -> Task:
         file_name = file.file_name
         task = Task(
@@ -368,12 +383,12 @@ class PlanningSchoolView(BaseView):
             # 文件 要对应的 视图模型
             # payload=PlanningSchoolTask(file_name=filename, bucket=bucket, scene=scene),
             payload=PlanningSchoolTask(file_name=file_name, scene=ImportScene.PLANNING_SCHOOL.value,
-                                       bucket='planning_school_import'),
+                                       bucket= file.bucket, ),
 
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
-        print('发生任务成功')
+        print('发生任务成功',task)
         return task
 
     # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性     允许 部分 不填  现保存
@@ -444,19 +459,19 @@ class PlanningSchoolView(BaseView):
 
         #  调用 内部方法 开办
 
-        res2 = await self.patch_open(str(planning_school_id))
+        res2 = await self.patch_open(str(planning_school_id),False)
 
-        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        # res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-        #     action_type=OperationType.MODIFY.value,
-        #     target=OperationTarget.PLANNING_SCHOOL.value,
-        #     change_module=ChangeModule.CREATE_SCHOOL.value,
-        #     change_detail="提交全部信息 开办",
-        #     action_target_id=str(planning_school_id),
-        #     # change_data=str(log_con)[0:1000],
-        #     change_data=JsonUtils.dict_to_json_str(log_con),
-        #
-        # ))
+         # 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+            action_type=OperationType.MODIFY.value,
+            target=OperationTarget.PLANNING_SCHOOL.value,
+            change_module=ChangeModule.CREATE_SCHOOL.value,
+            change_detail="提交全部信息 开办",
+            action_target_id=str(planning_school_id),
+            # change_data=str(log_con)[0:1000],
+            change_data=JsonUtils.dict_to_json_str(log_con),
+
+        ))
 
         return res2
 

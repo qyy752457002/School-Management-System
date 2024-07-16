@@ -3,7 +3,7 @@ from typing import List
 
 from fastapi.params import Body
 from mini_framework.async_task.app.app_factory import app
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.task.task import Task
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.json import JsonUtils
 from mini_framework.web.toolkit.model_utilities import view_model_to_orm_model
@@ -34,7 +34,7 @@ from rules.institution_rule import InstitutionRule
 from mini_framework.web.request_context import request_context_manager
 
 from mini_framework.async_task.app.app_factory import app
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.task.task import Task
 
 from views.models.school_communications import SchoolCommunications
 from views.models.school_eduinfo import SchoolEduInfo
@@ -107,30 +107,36 @@ class InstitutionView(BaseView):
 
                           ):
         print('入参',school)
+        is_can = await self.school_rule.is_can_change_keyinfo(school.id,)
         # 检测 是否允许修改
         school.id = int( school.id)
 
         is_draft = await self.institution_rule.is_can_not_add_workflow(school.id,True)
-        if is_draft:
+        if is_draft  or not is_can:
             raise InstitutionStatusError()
-        origin = await self.institution_rule.get_school_by_id(school.id,extra_model=InstitutionKeyInfo)
+        tinfo=origin = await self.institution_rule.get_school_by_id(school.id,extra_model=InstitutionKeyInfo)
 
         res2 = compare_modify_fields(school, origin)
         # print(  res2)
         schoolorigin = await self.institution_rule.get_school_by_id(school.id,InstitutionBaseInfo)
         comm = await self.school_communication_rule.get_school_communication_by_school_id(school.id,InstitutionCommunications )
         schoolorigin.leg_repr_name = comm.leg_repr_name
-
-        # res = await self.planning_institution_rule.update_planning_institution_byargs(planning_school)
-        #  工作流
-        # planning_school.id = planning_institution_id
-        res = await self.institution_rule.add_school_keyinfo_change_work_flow(school,INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE, schoolorigin)
         process_instance_id=0
-        if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
-            process_instance_id= res[0]['process_instance_id']
-            pl = InstitutionsWorkflowInfo(id=school.id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
-            resu = await self.institution_rule.update_school_byargs(pl  )
+        if tinfo and  tinfo.status == PlanningSchoolStatus.NORMAL.value:
+            #  工作流
+            # planning_school.id = planning_institution_id
+            res = await self.institution_rule.add_school_keyinfo_change_work_flow(school,INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE, schoolorigin)
+            if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+                process_instance_id= res[0]['process_instance_id']
+                pl = InstitutionsWorkflowInfo(id=school.id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
+
+                resu = await self.institution_rule.update_school_byargs(pl  )
+
+                pass
+            convert_snowid_in_model(res,['id','process_instance_id'])
+        else:
+            res = await self.school_rule.update_school_byargs(school)
 
             pass
 
@@ -218,7 +224,7 @@ class InstitutionView(BaseView):
     async def page(self,
                    page_request= Depends(PageRequest),
                    institution_category: InstitutionType = Query(None, title='单位分类',examples=['institution/administration']),
-                   social_credit_code: str = Query( '',title='统一社会信用代码',description=" 统一社会信用代码",examples=['DK156512656']),
+                   social_credit_code: str = Query( '',title='统一社会信用代码',description=" 统一社会信用代码",examples=['1']),
                    institution_name: str = Query(None, description="机构名称", example='XX小学'),
                    institution_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),
                    block: str = Query("", title=" ", description="地域管辖区", ),
@@ -435,7 +441,7 @@ class InstitutionView(BaseView):
         return result
     # 分校的审批流列表
     async def page_institution_audit(self,
-                                     social_credit_code: str = Query( '',title='统一社会信用代码',description=" 统一社会信用代码",examples=['DK156512656']),
+                                     social_credit_code: str = Query( '',title='统一社会信用代码',description=" 统一社会信用代码",examples=['2']),
                                      institution_name: str = Query(None, description="机构名称", example='XX小学'),
                                      institution_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),
                                      block: str = Query("", title=" ", description="地域管辖区", ),

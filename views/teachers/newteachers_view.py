@@ -15,7 +15,7 @@ from rules.teachers_info_rule import TeachersInfoRule
 from mini_framework.web.request_context import request_context_manager
 
 from mini_framework.async_task.app.app_factory import app
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.task.task import Task
 from views.models.teachers import NewTeacherTask
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 
@@ -209,8 +209,8 @@ class NewTeachersView(BaseView):
         task = Task(
             task_type="teacher_import",
             payload=filestorage,
-            operator="123456"
-            # operator=request_context_manager.current().current_login_account.account_id
+            # operator="123456"
+            operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
         print('发生任务成功')
@@ -223,8 +223,8 @@ class NewTeachersView(BaseView):
         task = Task(
             task_type="teacher_save_import",
             payload=filestorage,
-            operator="123456"
-            # operator=request_context_manager.current().current_login_account.account_id
+            # operator="123456"
+            operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
         print('发生任务成功')

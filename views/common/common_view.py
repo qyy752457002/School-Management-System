@@ -63,6 +63,8 @@ def compare_modify_fields(view_model, orm_model):
                'female': '女'}
 
     for key, value in vd.items():
+        if key == 'id':
+            continue
         if value:
             if key in od and od[key] != value:
                 print(key, value, od[key])

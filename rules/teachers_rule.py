@@ -20,7 +20,7 @@ from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, 
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
 from mini_framework.async_task.data_access.task_dao import TaskDAO
-from mini_framework.async_task.task import Task, TaskState
+from mini_framework.async_task.task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter, ExcelReader
 from mini_framework.storage.manager import storage_manager
 from mini_framework.utils.logging import logger
@@ -167,7 +167,7 @@ class TeachersRule(object):
             operator_name=user_id,
             process_instance_id=int(work_flow_instance["process_instance_id"]))
         await self.operation_record_rule.add_operation_record(teacher_entry_log)
-        teachers_info = TeacherInfoSaveModel(teacher_id=int(teachers_work.teacher_id))
+        teachers_info = TeacherInfoSaveModel(teacher_id=teachers_work.teacher_id)
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
         teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
@@ -392,12 +392,12 @@ class TeachersRule(object):
     async def query_teacher_approval_with_page(self, type, query_model: TeacherApprovalQuery,
                                                page_request: PageRequest, user_id):
         if type == "launch":
-            params = {"applicant_name": user_id, "process_code": "t_entry"}
+            params = {"applicant_name": user_id, "process_code": "t_entry", "teacher_sub_status": "submitted"}
             paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                           TeacherApprovalQueryRe,
                                                                                           params)
         elif type == "approval":
-            params = {"applicant_name": user_id, "process_code": "t_entry"}
+            params = {"applicant_name": user_id, "process_code": "t_entry", "teacher_sub_status": "submitted"}
             paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                           TeacherApprovalQueryRe,
                                                                                           params)

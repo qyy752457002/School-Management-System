@@ -258,21 +258,20 @@ class PlanningSchoolKeyInfo(BaseModel):
 
 
 class PlanningSchoolPageSearch(BaseModel):
-    # process_code: str = Query("", title=" ", description="", ),
-    block:Optional[str]  = Query("", title=" ", description="地域管辖区", )
-    planning_school_code: str = Query(None, title="", description=" 园所标识码", )
-    planning_school_level: str = Query("", title="", description=" 学校星级", )
-    planning_school_name: str = Query("", title="学校名称", description="1-20字符", )
-    planning_school_no: str = Query("", title="学校编号", description="学校编号/园所代码",
+    block:Optional[str|None]  = Query("", title=" ", description="地域管辖区", )
+    planning_school_code: str|None = Query(None, title="", description=" 园所标识码", )
+    planning_school_level: str|None = Query("", title="", description=" 学校星级", )
+    planning_school_name: str |None= Query("", title="学校名称", description="1-20字符", )
+    planning_school_no: str |None= Query("", title="学校编号", description="学校编号/园所代码",
                                     max_length=40, )
-    borough: str = Query("", title="  ", description=" 行政管辖区", )
+    borough: str|None = Query("", title="  ", description=" 行政管辖区", )
     status: PlanningSchoolStatus|None = Query("", title="", description=" 状态", examples=['正常'])
 
-    founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
+    founder_type: List[PlanningSchoolFounderType]|None = Query([], title="", description="举办者类型",
                                                           examples=['地方'])
-    founder_type_lv2: List[str] = Query([], title="", description="举办者类型二级",
+    founder_type_lv2: List[str]|None = Query([], title="", description="举办者类型二级",
                                         examples=['教育部门'])
-    founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
+    founder_type_lv3: List[str] |None= Query([], title="", description="举办者类型三级",
                                         examples=['县级教育部门'])
 
 
@@ -281,7 +280,21 @@ class PlanningSchoolTask(BaseModel):
     bucket: str = Field('', title="",description="",examples=[' '])
     scene: str = Field('', title="",description="",examples=[' '])
 
-class PlanningSchoolImport(PlanningSchoolOptional, PlanningSchoolCommunications):
+class PlanningSchoolImportbak(PlanningSchoolOptional, PlanningSchoolCommunications):
+    pass
+class PlanningSchoolImport(BaseModel, ):
+    # title是和栏位表头匹配的 描述是为了和模型里的注释一致 方便理解的 产品提供的它的名称不统一
+    school_name: str = Field( '', title="学校名称", description="1-20字符",examples=['XX小学'])
+    borough: str|None = Field(None, title="行政管辖区", description=" 行政管辖区", examples=['铁西区'])
+
+    block: str|None = Field(None, title="地域管辖区", description="地域管辖区", examples=['铁西区'])
+    school_code: str = Field('', title="学校代码", description=" ",examples=['SC562369322SG'])
+    school_type: str = Field('', title="学校/分校", description=" ",examples=['SC562369322SG'])
+
+    detailed_address: str = Field(None, title="学校详细地址", description="",examples=['FSDFSD'])
+    school_edu_level: str |None= Field('', title="教育层次", description="",examples=['学前教育'])
+    school_category: str|None = Field('', title="学校（机构）类别", description="办学类型二级",examples=['小学'])
+    school_org_type: str = Query('', title="学校办别", description=" 学校办别",examples=['民办'])
     pass
 
 class PlanningSchoolTransactionAudit(BaseModel):
@@ -310,5 +323,7 @@ class PlanningSchoolTransactionAudit(BaseModel):
 
 
 class PlanningSchoolImportReq(BaseModel, ):
-    file_name: str = Body(..., description="文件名"),
+    file_name: str = Body(..., description="文件名")
+    bucket: str|None = Body( '',alias='bucket_name', description="")
+    scene: str |None= Body('', description="")
 

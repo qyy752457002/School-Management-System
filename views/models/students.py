@@ -207,6 +207,7 @@ class StudentsKeyinfoDetail(BaseModel):
     id_type: str = Field('', title="证件类别", description="证件类别")
     id_number: str = Field('', title="证件号码", description="证件号码")
     photo: str|None = Field('', title="照片", description="照片")
+    photo_url: str|None = Field('', title="照片url", description="照片url")
     province: str|None = Field('', title=" ", description="",examples=[''],min_length=0,max_length=30)
     city: str|None = Field('', title=" ", description="",examples=[''],min_length=0,max_length=30)
     school_name: str = Field('', title="学校名称", description="学校名称",examples=['XX小学'])

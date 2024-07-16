@@ -8,6 +8,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.storage.view_model import FileStorageResponseModel, FileStorageModel
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model
 
 from views.common import common_view
 from views.models.classes import Classes
@@ -62,13 +63,33 @@ class StorageRule(object):
 
     #     解析 文件和桶  返回 数据结构
     async def get_file_data(self, filename: str, bucket, sence='',file_direct_url=None):
+        # 目前的前段传入的是实际的bucket 它没传虚拟bucket 但鉴于他们直接的对应关系 这里可以处理得到虚拟bucket
+        if bucket.find('/') != -1:
+            bucket = bucket.split('/')[1]
+
         # 下载保存本地
         random_id = str(uuid.uuid4())
-        # source='c.xlsx'
-        local_filepath = 'planning_school.xlsx'
 
         # 下载文件到本地
-        local_filepath='temp/'+ random_id+filename
+        # local_filepath='temp/'+ random_id+filename
+        # 获取当前脚本所在目录的绝对路径
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        # 获取当前脚本所在目录的父目录
+        parent_dir = os.path.dirname(script_dir)
+
+        # 构建与 script_dir 并列的 temp 目录的路径
+        temp_dir_path = os.path.join(parent_dir, 'temp')
+
+        # 确保 temp 目录存在，如果不存在则创建它
+        os.makedirs(temp_dir_path, exist_ok=True)
+
+        # 指定文件名
+
+        # 创建一个相对路径，基于'script_dir'，并包含随机ID和文件名
+        local_filepath = os.path.join(temp_dir_path,   random_id + filename)
+
+        # 确保'temp'目录存在，如果不存在则创建它
+        # os.makedirs(os.path.join(temp_dir_path, 'temp'), exist_ok=True)
 
         # 根据不同场景 获取不同的模型
         sheetname = 'Sheet1'
@@ -85,12 +106,11 @@ class StorageRule(object):
             logger.debug('下载文件的res')
             logger.debug( resp)
         if sence == ImportScene.PLANNING_SCHOOL.value:
-            # 暂时调试
+            # 规划校
             # local_filepath = 'planning_school.xlsx'
 
             SampleModel = PlanningSchoolImport
             sheetname = 'Sheet1'
-
 
         if sence == ImportScene.INSTITUTION.value:
             SampleModel = Institutions
@@ -113,11 +133,19 @@ class StorageRule(object):
             sheetname = 'Sheet1'
         pass
 
-
-
         resdata = TestExcelReader(local_filepath, sheetname, SampleModel).read_valid()
         print(resdata)
+        # 删除临时文件
+        # os.remove(local_filepath)
         return resdata
+#     调用 get_file_by_name
+    async def get_file_by_name(self, filename: str, bucket, filepath=''):
+        info =  await self.storage_dao.get_file_by_name( bucket,filepath , filename)
+        # classes = orm_model_to_view_model(info, FileStorageResponseModel)
+        return info
+
+
+
 
 
 class TestExcelReader:
