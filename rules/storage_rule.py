@@ -95,6 +95,7 @@ class StorageRule(object):
         sheetname = 'Sheet1'
 
         SampleModel = None
+        header = 0
         if file_direct_url is not None:
             resp =  common_view.download_file( file_direct_url,local_filepath)
             logger.debug('下载文件的res')
@@ -111,29 +112,40 @@ class StorageRule(object):
 
             SampleModel = PlanningSchoolImport
             sheetname = 'Sheet1'
+            header=1 # 0 表示第一行是标题 1表示第二行才开始标题
 
         if sence == ImportScene.INSTITUTION.value:
             SampleModel = Institutions
             sheetname = 'Sheet1'
+            header=1 # 0 表示第一行是标题 1表示第二行才开始标题
+
 
         if sence ==ImportScene.SCHOOL.value:
             SampleModel = School
             sheetname = 'Sheet1'
+            header=1 # 0 表示第一行是标题 1表示第二行才开始标题
+
         if sence ==ImportScene.CLASS.value:
             SampleModel = Classes
             sheetname = 'Sheet1'
+            header=1 # 0 表示第一行是标题 1表示第二行才开始标题
+
         if sence ==ImportScene.NEWSTUDENT.value:
             SampleModel = NewStudents
             sheetname = 'Sheet1'
+            header=1 # 0 表示第一行是标题 1表示第二行才开始标题
+
         if sence == ImportScene.NEW_TEACHERS.value:
             SampleModel = TeachersCreatModel
             sheetname = 'Sheet1'
         if sence == ImportScene.NEWSTUDENT_FAMILYINFO.value:
             SampleModel = StudentsFamilyInfoCreate
             sheetname = 'Sheet1'
+            header=1 # 0 表示第一行是标题 1表示第二行才开始标题
+
         pass
 
-        resdata = TestExcelReader(local_filepath, sheetname, SampleModel).read_valid()
+        resdata = TestExcelReader(local_filepath, sheetname, SampleModel,header).read_valid()
         print(resdata)
         # 删除临时文件
         # os.remove(local_filepath)
@@ -149,11 +161,11 @@ class StorageRule(object):
 
 
 class TestExcelReader:
-    def __init__(self, filename, sheetname, SampleModel):
+    def __init__(self, filename, sheetname, SampleModel,header=0):
         self.reader = ExcelReader()
         self.filename = filename
         self.sheetname = sheetname
-        self.reader.register_model(sheetname, SampleModel)
+        self.reader.register_model(sheetname, SampleModel,header)
 
     def read_valid(self):
         # 执行读取操作
