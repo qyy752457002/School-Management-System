@@ -33,7 +33,7 @@ class StudentFamilyInfo(BaseDBModel):
     name: Mapped[str] = mapped_column(String(64), nullable=True, comment="姓名")
     gender: Mapped[str] = mapped_column(String(64), nullable=True, comment="性别")
     relationship: Mapped[str] = mapped_column(String(64), nullable=True, comment="关系")
-    is_guardian: Mapped[str] = mapped_column(String(64), nullable=True, comment="是否监护人")
+    is_guardian: Mapped[bool] = mapped_column( default=False, nullable=True, comment="是否监护人")
     identification_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="证件类型")
     identification_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="证件号码")
     birthday: Mapped[date] = mapped_column(Date, nullable=True, comment="出生日期")
