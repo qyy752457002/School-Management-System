@@ -21,7 +21,7 @@ from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_extend_params, get_client_ip, convert_dates_to_strings, \
-    serialize, convert_query_to_none
+    serialize, convert_query_to_none, convert_snowid_in_model
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
@@ -133,29 +133,43 @@ class PlanningSchoolView(BaseView):
                           planning_school: PlanningSchoolKeyInfo,
                           request: Request,
                           ):
+        # 如果是草稿态 允许直接修改关键信息
+        # 如果 不是normal态 也是允许修改关键信息的  但是要校验是否有待处理的流程ID
+        # 如果是正式态 允许改 发起审核流程
+        # 如果是关闭态 不允许这个操作
+        is_can = await self.planning_school_rule.is_can_change_keyinfo(planning_school.id,)
+
         # 检测 是否允许修改
         is_draft = await self.planning_school_rule.is_can_not_add_workflow(planning_school.id, True)
-        if is_draft:
+        if is_draft or not is_can:
             raise PlanningSchoolStatusError()
 
-        origin = await self.planning_school_rule.get_planning_school_by_id(planning_school.id)
+        tinfo=origin = await self.planning_school_rule.get_planning_school_by_id(planning_school.id)
 
         res2 = compare_modify_fields(planning_school, origin)
         # print(  res2)
-
-        # res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
-        #  工作流
-        # planning_school.id = planning_school_id
-        res = await self.planning_school_rule.add_planning_school_keyinfo_change_work_flow(planning_school, )
         process_instance_id = 0
-        if res and len(res) > 1 and 'process_instance_id' in res[0].keys() and res[0]['process_instance_id']:
-            process_instance_id = res[0]['process_instance_id']
-            pl = PlanningSchoolBaseInfoOptional(id=planning_school.id, process_instance_id=process_instance_id,
-                                                workflow_status=AuditAction.NEEDAUDIT.value)
 
-            res = await self.planning_school_rule.update_planning_school_byargs(pl)
+        if tinfo and  tinfo.status == PlanningSchoolStatus.NORMAL.value:
+            #  工作流
+            # planning_school.id = planning_school_id
+            res = await self.planning_school_rule.add_planning_school_keyinfo_change_work_flow(planning_school, )
+            if res and len(res) > 1 and 'process_instance_id' in res[0].keys() and res[0]['process_instance_id']:
+                process_instance_id = res[0]['process_instance_id']
+                pl = PlanningSchoolBaseInfoOptional(id=planning_school.id, process_instance_id=process_instance_id,
+                                                    workflow_status=AuditAction.NEEDAUDIT.value)
+
+                res = await self.planning_school_rule.update_planning_school_byargs(pl)
+
+                pass
+            convert_snowid_in_model(res,['id','process_instance_id'])
+            pass
+        else:
+            # 检测是否有待处理的流程ID
+            res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
 
             pass
+
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(

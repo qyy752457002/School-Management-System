@@ -107,30 +107,36 @@ class InstitutionView(BaseView):
 
                           ):
         print('入参',school)
+        is_can = await self.school_rule.is_can_change_keyinfo(school.id,)
         # 检测 是否允许修改
         school.id = int( school.id)
 
         is_draft = await self.institution_rule.is_can_not_add_workflow(school.id,True)
-        if is_draft:
+        if is_draft  or not is_can:
             raise InstitutionStatusError()
-        origin = await self.institution_rule.get_school_by_id(school.id,extra_model=InstitutionKeyInfo)
+        tinfo=origin = await self.institution_rule.get_school_by_id(school.id,extra_model=InstitutionKeyInfo)
 
         res2 = compare_modify_fields(school, origin)
         # print(  res2)
         schoolorigin = await self.institution_rule.get_school_by_id(school.id,InstitutionBaseInfo)
         comm = await self.school_communication_rule.get_school_communication_by_school_id(school.id,InstitutionCommunications )
         schoolorigin.leg_repr_name = comm.leg_repr_name
-
-        # res = await self.planning_institution_rule.update_planning_institution_byargs(planning_school)
-        #  工作流
-        # planning_school.id = planning_institution_id
-        res = await self.institution_rule.add_school_keyinfo_change_work_flow(school,INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE, schoolorigin)
         process_instance_id=0
-        if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
-            process_instance_id= res[0]['process_instance_id']
-            pl = InstitutionsWorkflowInfo(id=school.id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
-            resu = await self.institution_rule.update_school_byargs(pl  )
+        if tinfo and  tinfo.status == PlanningSchoolStatus.NORMAL.value:
+            #  工作流
+            # planning_school.id = planning_institution_id
+            res = await self.institution_rule.add_school_keyinfo_change_work_flow(school,INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE, schoolorigin)
+            if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+                process_instance_id= res[0]['process_instance_id']
+                pl = InstitutionsWorkflowInfo(id=school.id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
+
+                resu = await self.institution_rule.update_school_byargs(pl  )
+
+                pass
+            convert_snowid_in_model(res,['id','process_instance_id'])
+        else:
+            res = await self.school_rule.update_school_byargs(school)
 
             pass
 

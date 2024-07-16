@@ -8,6 +8,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.storage.view_model import FileStorageResponseModel, FileStorageModel
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model
 
 from views.common import common_view
 from views.models.classes import Classes
@@ -120,7 +121,10 @@ class StorageRule(object):
         return resdata
 #     调用 get_file_by_name
     async def get_file_by_name(self, filename: str, bucket, filepath=''):
-        return await self.storage_dao.get_file_by_name( bucket,filepath , filename)
+        info =  await self.storage_dao.get_file_by_name( bucket,filepath , filename)
+        # classes = orm_model_to_view_model(info, FileStorageResponseModel)
+        return info
+
 
 
 

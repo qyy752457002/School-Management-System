@@ -209,8 +209,9 @@ class PlanningSchoolRule(object):
             raise PlanningSchoolNotFoundError()
 
         if exists_planning_school.status== PlanningSchoolStatus.DRAFT.value:
-            planning_school.status= PlanningSchoolStatus.OPENING.value
-            planning_school.status= PlanningSchoolStatus.OPENING.value
+            if hasattr(planning_school,'status'):
+
+                planning_school.status= PlanningSchoolStatus.OPENING.value
         else:
             pass
         if not need_update_list:
@@ -482,9 +483,10 @@ class PlanningSchoolRule(object):
         tinfo=await self.get_planning_school_by_id(student_id)
         print('当前信息',tinfo)
         if not is_all_status_allow:
+            # 如果 是草稿态 则锁定
             if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
                 return  True
-        # 检查是否有占用
+        # 检查是否有占用 如果有待处理的流程ID 则锁定
         if tinfo and  tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
             return True
         return False
@@ -559,3 +561,18 @@ class PlanningSchoolRule(object):
             task_result = TaskResult()
 
         return task_result
+    async def is_can_change_keyinfo(self, student_id,is_all_status_allow=False):
+        tinfo=await self.get_planning_school_by_id(student_id)
+        print('当前信息',tinfo)
+        if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
+            return  True
+        if tinfo and  tinfo.status != PlanningSchoolStatus.NORMAL.value:
+            # return  True
+
+            # 检查是否有占用 如果有待处理的流程ID 则锁定
+            if tinfo and  tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
+                return False
+            return True
+        if tinfo and  tinfo.status == PlanningSchoolStatus.CLOSED.value:
+            return  False
+        return True

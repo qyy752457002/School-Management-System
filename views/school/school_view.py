@@ -101,29 +101,38 @@ class SchoolView(BaseView):
                           school: SchoolKeyInfo,
 
                           ):
+        is_can = await self.school_rule.is_can_change_keyinfo(school.id,)
         # 检测 是否允许修改
         is_draft = await self.school_rule.is_can_not_add_workflow(school.id,True)
-        if is_draft:
+        if is_draft  or not is_can:
             raise SchoolStatusError()
-        origin = await self.school_rule.get_school_by_id(school.id)
+        tinfo=origin = await self.school_rule.get_school_by_id(school.id)
 
         res2 = compare_modify_fields(school, origin)
         # print(  res2)
-
-        # res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
-        #  工作流
-        # planning_school.id = planning_school_id
-        res = await self.school_rule.add_school_keyinfo_change_work_flow(school,)
         process_instance_id=0
-        if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
-            process_instance_id= res[0]['process_instance_id']
-            pl = SchoolBaseInfoOptional(id=school.id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
-            res = await self.school_rule.update_school_byargs(pl  )
-            if hasattr(res,'id'):
-                res.id = str(res.id)
+        if tinfo and  tinfo.status == PlanningSchoolStatus.NORMAL.value:
+            #  工作流
+            # planning_school.id = planning_school_id
+            res = await self.school_rule.add_school_keyinfo_change_work_flow(school,)
+            if res and  len(res)>1 and 'process_instance_id' in res[0].keys() and  res[0]['process_instance_id']:
+                process_instance_id= res[0]['process_instance_id']
+                pl = SchoolBaseInfoOptional(id=school.id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
+
+                res = await self.school_rule.update_school_byargs(pl  )
+                convert_snowid_in_model(res,['id','process_instance_id'])
+                if hasattr(res,'id'):
+                    res.id = str(res.id)
+
+                pass
 
             pass
+        else:
+            res = await self.school_rule.update_school_byargs(school)
+
+            pass
+
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
@@ -244,6 +253,8 @@ class SchoolView(BaseView):
             pl = SchoolBaseInfoOptional(id=school_id, process_instance_id=process_instance_id,workflow_status= AuditAction.NEEDAUDIT.value)
 
             res = await self.school_rule.update_school_byargs(pl  )
+            convert_snowid_in_model(res, extra_colums=['id', 'process_instance_id', ])
+
             if hasattr(res,'id'):
                 res.id = str(res.id)
 
