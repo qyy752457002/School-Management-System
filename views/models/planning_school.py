@@ -280,7 +280,21 @@ class PlanningSchoolTask(BaseModel):
     bucket: str = Field('', title="",description="",examples=[' '])
     scene: str = Field('', title="",description="",examples=[' '])
 
-class PlanningSchoolImport(PlanningSchoolOptional, PlanningSchoolCommunications):
+class PlanningSchoolImportbak(PlanningSchoolOptional, PlanningSchoolCommunications):
+    pass
+class PlanningSchoolImport(BaseModel, ):
+    # title是和栏位表头匹配的 描述是为了和模型里的注释一致 方便理解的 产品提供的它的名称不统一
+    school_name: str = Field( '', title="学校名称", description="1-20字符",examples=['XX小学'])
+    borough: str|None = Field(None, title="行政管辖区", description=" 行政管辖区", examples=['铁西区'])
+
+    block: str|None = Field(None, title="地域管辖区", description="地域管辖区", examples=['铁西区'])
+    school_code: str = Field('', title="学校代码", description=" ",examples=['SC562369322SG'])
+    school_type: str = Field('', title="学校/分校", description=" ",examples=['SC562369322SG'])
+
+    detailed_address: str = Field(None, title="学校详细地址", description="",examples=['FSDFSD'])
+    school_edu_level: str |None= Field('', title="教育层次", description="",examples=['学前教育'])
+    school_category: str|None = Field('', title="学校（机构）类别", description="办学类型二级",examples=['小学'])
+    school_org_type: str = Query('', title="学校办别", description=" 学校办别",examples=['民办'])
     pass
 
 class PlanningSchoolTransactionAudit(BaseModel):
@@ -309,5 +323,7 @@ class PlanningSchoolTransactionAudit(BaseModel):
 
 
 class PlanningSchoolImportReq(BaseModel, ):
-    file_name: str = Body(..., description="文件名"),
+    file_name: str = Body(..., description="文件名")
+    bucket: str|None = Body( '',alias='bucket_name', description="")
+    scene: str |None= Body('', description="")
 
