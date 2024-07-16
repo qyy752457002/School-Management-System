@@ -135,21 +135,22 @@ class InstitutionView(BaseView):
 
                 pass
             convert_snowid_in_model(res,['id','process_instance_id'])
+            #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+            res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+                    target=OperationTarget.INSTITUTION.value,
+                    action_type=OperationType.MODIFY.value,
+                    change_module=ChangeModule.KEY_INFO_CHANGE.value,
+                    change_detail="修改关键信息",
+                    action_target_id=str(school.id),
+                    change_data= JsonUtils.dict_to_json_str(res2),
+                    process_instance_id=process_instance_id
+            ))
         else:
             res = await self.school_rule.update_school_byargs(school)
 
             pass
 
-        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            target=OperationTarget.INSTITUTION.value,
-            action_type=OperationType.MODIFY.value,
-            change_module=ChangeModule.KEY_INFO_CHANGE.value,
-            change_detail="修改关键信息",
-            action_target_id=str(school.id),
-            change_data= JsonUtils.dict_to_json_str(res2),
-            process_instance_id=process_instance_id
-        ))
+
         convert_snowid_in_model(school )
 
         return res
