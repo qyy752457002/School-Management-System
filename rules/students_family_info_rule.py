@@ -32,6 +32,9 @@ class StudentsFamilyInfoRule(object):
         """
         新增学生家庭信息
         """
+        # 处理前段传的健康状态是list转为str
+        if isinstance(students_family_info.health_status,list):
+            students_family_info.health_status = ",".join(students_family_info.health_status)
         exits_student = await self.students_dao.get_students_by_id(students_family_info.student_id)
         if not exits_student:
             raise StudentNotFoundError()

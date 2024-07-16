@@ -136,12 +136,17 @@ class OrganizationRule(object):
     async def query_organization_with_page(self, page_request: PageRequest,   parent_id , school_id ):
         parent_id_lv2=[]
         if parent_id:
-            # todo  参照 举办者类型   自动查出 23 级
-            res= await self.query_organization( parent_id)
-            for item in res:
-                parent_id_lv2.append(item.id)
-
-            pass
+            if int(parent_id) >0:
+                parent_id_lv2.append(int(parent_id))
+                #
+                # # todo  参照 举办者类型   自动查出 23 级
+                # res= await self.query_organization( parent_id)
+                # for item in res:
+                #     parent_id_lv2.append(item.id)
+                #
+                # pass
+            else:
+                parent_id_lv2.append(int(parent_id))
 
         paging = await self.organization_dao.query_organization_with_page(page_request,  parent_id_lv2 , school_id
                                                               )

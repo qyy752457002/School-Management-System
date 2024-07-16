@@ -55,7 +55,7 @@ class StorageView(BaseView):
             # 存在ID的tuple 过滤掉
             data = [ ]
             for i,value  in  enumerate(res):
-                if isinstance(value.id, (Query,tuple)):
+                if hasattr(value,'id') and  isinstance(value.id, (Query,tuple)):
                     value.id = 0
                     pass
                 print('数据的数下',value.__fields__)
