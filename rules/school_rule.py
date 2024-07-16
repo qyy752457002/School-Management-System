@@ -212,7 +212,8 @@ class SchoolRule(object):
             raise Exception(f"单位{school.id}不存在")
         if exists_school.status== PlanningSchoolStatus.DRAFT.value:
             if hasattr(school,'status'):
-                school.status= PlanningSchoolStatus.OPENING.value
+                # school.status= PlanningSchoolStatus.OPENING.value
+                pass
 
             exists_school.status= PlanningSchoolStatus.OPENING.value
         else:

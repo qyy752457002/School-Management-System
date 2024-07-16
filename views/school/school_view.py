@@ -126,6 +126,16 @@ class SchoolView(BaseView):
                     res.id = str(res.id)
 
                 pass
+            #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+            res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+                target=OperationTarget.SCHOOL.value,
+                action_type=OperationType.MODIFY.value,
+                change_module=ChangeModule.KEY_INFO_CHANGE.value,
+                change_detail="修改关键信息",
+                action_target_id=str(school.id),
+                change_data= JsonUtils.dict_to_json_str(res2),
+                process_instance_id=process_instance_id
+            ))
 
             pass
         else:
@@ -134,16 +144,7 @@ class SchoolView(BaseView):
             pass
 
 
-        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            target=OperationTarget.SCHOOL.value,
-            action_type=OperationType.MODIFY.value,
-            change_module=ChangeModule.KEY_INFO_CHANGE.value,
-            change_detail="修改关键信息",
-            action_target_id=str(school.id),
-            change_data= JsonUtils.dict_to_json_str(res2),
-            process_instance_id=process_instance_id
-        ))
+
 
         return res
         # return  {school_no,borough,block }
