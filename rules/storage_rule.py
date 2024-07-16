@@ -70,14 +70,22 @@ class StorageRule(object):
         # local_filepath='temp/'+ random_id+filename
         # 获取当前脚本所在目录的绝对路径
         script_dir = os.path.dirname(os.path.abspath(__file__))
+        # 获取当前脚本所在目录的父目录
+        parent_dir = os.path.dirname(script_dir)
+
+        # 构建与 script_dir 并列的 temp 目录的路径
+        temp_dir_path = os.path.join(parent_dir, 'temp')
+
+        # 确保 temp 目录存在，如果不存在则创建它
+        os.makedirs(temp_dir_path, exist_ok=True)
 
         # 指定文件名
 
         # 创建一个相对路径，基于'script_dir'，并包含随机ID和文件名
-        local_filepath = os.path.join(script_dir, 'temp', random_id + filename)
+        local_filepath = os.path.join(temp_dir_path,   random_id + filename)
 
         # 确保'temp'目录存在，如果不存在则创建它
-        os.makedirs(os.path.join(script_dir, 'temp'), exist_ok=True)
+        # os.makedirs(os.path.join(temp_dir_path, 'temp'), exist_ok=True)
 
         # 根据不同场景 获取不同的模型
         sheetname = 'Sheet1'
