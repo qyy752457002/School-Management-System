@@ -163,24 +163,22 @@ class PlanningSchoolView(BaseView):
 
                 pass
             convert_snowid_in_model(res,['id','process_instance_id'])
+            #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
+            res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
+                action_target_id=str(planning_school.id),
+                target=OperationTarget.PLANNING_SCHOOL.value,
+                action_type=OperationType.MODIFY.value,
+                change_module=ChangeModule.KEY_INFO_CHANGE.value,
+                change_detail="修改基本信息",
+                change_data=JsonUtils.dict_to_json_str(res2),
+                process_instance_id=process_instance_id
+            ))
             pass
         else:
             # 检测是否有待处理的流程ID
             res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
 
             pass
-
-
-        #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(planning_school.id),
-            target=OperationTarget.PLANNING_SCHOOL.value,
-            action_type=OperationType.MODIFY.value,
-            change_module=ChangeModule.KEY_INFO_CHANGE.value,
-            change_detail="修改基本信息",
-            change_data=JsonUtils.dict_to_json_str(res2),
-            process_instance_id=process_instance_id
-        ))
 
         return res
 
