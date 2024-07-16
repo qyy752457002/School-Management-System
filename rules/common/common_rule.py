@@ -22,6 +22,7 @@ from views.models.planning_school import PlanningSchoolStatus
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from daos.planning_school_dao import PlanningSchoolDAO
 from views.models.school import School as SchoolModel
+from daos.enum_value_dao import EnumValueDAO
 
 from typing import Type, List
 from pydantic import BaseModel
@@ -65,3 +66,67 @@ async def convert_fields_to_str(model_instance: Type[BaseModel], fields_to_conve
                 setattr(model_instance, field, str(value))
     # 返回修改后的模型实例
     return model_instance
+
+
+async def excel_fields_to_enum(data: dict, import_type):
+    bool_type_fields = ["in_post", "full_time_special_education_major_graduate",
+                        "received_preschool_education_training", "full_time_normal_major_graduate",
+                        "received_special_education_training", "has_special_education_certificate",
+                        "free_normal_college_student", "participated_in_basic_service_project",
+                        "special_education_teacher", "dual_teacher", "has_occupational_skill_level_certificate",
+                        "county_level_backbone", "psychological_health_education_teacher", "is_major_graduate",
+                        "representative_or_project", "is_major_normal", "is_concurrent_other_positions"]
+
+    enum_type_fields = ["hukou_type", "hmotf", "nationality", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                        "", "", "", "", "", "", "",
+                        "", "", "", "", "", "", "", "", ]
+    teacher_info_fields = {"hukou_type": "hukou_type", "hmotf": "hmotf_type", "nationality": "nationality",
+                           "ethnicity": "ethnicity", "marital_status": "marital_status",
+                           "political_status": "political_status", "health_condition": "health_status",
+                           "source_of_staff": "staff_source", "staff_category": "staff_type",
+                           "employment_form": "staffing_arrangement", "contract_signing_status": "singin_contract_type",
+                           "information_technology_application_ability": "information_ability",
+                           "highest_education": "highest_education",
+                           "highest_education_level": "highest_education_level",
+                           "highest_degree_name": "education_name", "current_post_level": "position_level",
+                           "current_technical_position": "professional_technical_position",
+                           "main_teaching_level": "main_teaching_level_type", "teaching_discipline": "subject_category",
+                           "language": "language", "language_proficiency_level": "proficiency",
+                           "language_certificate_name": "language_certificate_names",
+                           "contact_address": "contact_address"}
+    teacher_learn_experience = {}
+
+    model_map = {"import_teacher": teacher_info_fields, "import_teacher_learn_experience": teacher_learn_experience}
+    fields = model_map.get(import_type)
+    for key, value in data.items():
+        if value:
+            if key in bool_type_fields:
+                if value == "是":
+                    data[key] = True
+                elif value == "否":
+                    data[key] = False
+            if key in fields:
+                if key == "contact_address":
+                    data[key] = await get_address_by_description(value)
+
+                else:
+                    data[key] = await get_enum_value(value, fields[key])
+
+    return data
+
+
+async def get_enum_value(description: str, enum_name: str):
+    # 通过规则获取枚举值
+    parts = description.split('-')
+    level = len(parts)
+    last_part = parts[-1]
+    enum_name = f"{enum_name}_lv{level}"
+    enum_value_rule = get_injector(EnumValueRule)
+    enum_value = await enum_value_rule.get_enum_value_by_description_and_name(last_part, enum_name)
+    return enum_value
+
+
+async def get_address_by_description(description: str):
+    enum_value_rule = get_injector(EnumValueRule)
+    enum_value = await enum_value_rule.get_address_by_description(description)
+    return enum_value

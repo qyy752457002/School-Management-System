@@ -93,6 +93,7 @@ class Teachers(BaseModel):
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
     teacher_employer: int | str = Field(0, title="单位部门", description="单位部门")
     teacher_avatar: str = Field("", title="头像", description="头像")
+    teacher_avatar_url: str = Field("", title="头像url", description="头像url")
     mobile: str | None = Field("", title="手机号", description="手机号")
 
     @model_validator(mode='before')
@@ -131,7 +132,7 @@ class TeachersCreatModel(BaseModel):
     teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: int | str = Field(0, title="单位部门", description="单位部门", )
+    teacher_employer: int | str = Field(0, title="任职单位", description="单位部门", )
     teacher_avatar: str = Field("", title="头像", description="头像")
     mobile: str = Field("", title="手机号", description="手机号")
 
@@ -164,7 +165,7 @@ class TeachersSaveImportRegisterCreatModel(BaseModel):
     teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: int = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: str = Field(..., title="单位部门", description="单位部门", )
+    teacher_employer: str = Field(..., title="任职单位", description="单位部门", )
     mobile: int = Field("", title="手机号", description="手机号")
 
 
@@ -183,7 +184,7 @@ class TeachersSaveImportCreatModel(BaseModel):
     teacher_id_type: IdentityType = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: int = Field(..., title="单位部门", description="单位部门", )
+    teacher_employer: int = Field(..., title="任职单位", description="单位部门", )
     mobile: str = Field("", title="手机号", description="手机号")
 
     @model_validator(mode='before')
@@ -213,8 +214,9 @@ class TeacherRe(BaseModel):
     teacher_gender: Gender = Field(..., title="性别", description="教师性别")
     teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field("", title="身份证件号", description="证件号")
+    teacher_avatar: str = Field("", title="头像", description="头像")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: int | str = Field(0, title="单位部门", description="单位部门", )
+    teacher_employer: int | str = Field(0, title="任职单位", description="单位部门", )
     mobile: str = Field("", title="手机号", description="手机号")
     teacher_main_status: str = Field("", title="主状态", description="主状态")
     teacher_sub_status: str = Field("", title="子状态", description="子状态")
@@ -242,7 +244,7 @@ class TeacherAdd(BaseModel):
     teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: int | str = Field(0, title="单位部门", description="单位部门", )
+    teacher_employer: int | str = Field(0, title="任职单位", description="单位部门", )
     mobile: str = Field("", title="手机号", description="手机号")
     teacher_main_status: str = Field("employed", title="主状态", description="主状态")
     teacher_sub_status: str = Field("active", title="子状态", description="子状态")
@@ -362,7 +364,7 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-    department: str = Field("", title="单位部门", description="部门", example="部门")
+    department: str = Field("", title="所在部门", description="部门", example="部门")
     org_id: Optional[int | str] = Field(None, title="组织ID", description="组织ID")
 
     hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
@@ -397,7 +399,6 @@ class TeacherInfoCreateModel(BaseModel):  # 基本信息
                 pass
         return data
 
-    @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
         if self.nationality == "CN":
             if self.ethnicity is None:
@@ -417,7 +418,7 @@ class CombinedModel(BaseModel):
     teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field(..., title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: str = Field(..., title="单位部门", description="单位部门", )
+    teacher_employer: str = Field(..., title="任职单位", description="单位部门", )
     mobile: str = Field(..., title="手机号", description="手机号")
 
     ethnicity: Optional[str] = Field(None, title="民族", description="民族", example="汉族")
@@ -476,7 +477,7 @@ class CombinedModel(BaseModel):
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-    department: str = Field(..., title="单位部门", description="部门", example="部门")
+    department: str = Field(..., title="所在部门", description="部门", example="部门")
     org_id: str = Field(..., title="组织ID", description="组织ID")
 
     hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
@@ -607,7 +608,7 @@ class TeacherInfo(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-    department: str = Field("", title="单位部门", description="部门", example="部门")
+    department: str = Field("", title="所在部门", description="部门", example="部门")
     org_id: Optional[int | str] = Field(None, title="组织ID", description="组织ID")
 
     hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
@@ -864,7 +865,7 @@ class TeacherInfoSaveModel(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-    department: str = Field("", title="单位部门", description="部门", example="部门")
+    department: str = Field("", title="所在部门", description="部门", example="部门")
     org_id: Optional[int | str] = Field(None, title="组织ID", description="组织ID")
 
     hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
@@ -1003,7 +1004,7 @@ class NewTeacherInfoSaveModel(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-    department: str = Field("", title="单位部门", description="部门", example="部门")
+    department: str = Field("", title="所在部门", description="部门", example="部门")
     org_id: Optional[int | str] = Field(None, title="组织ID", description="组织ID")
 
     hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
@@ -1142,7 +1143,7 @@ class CurrentTeacherInfoSaveModel(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field("", title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-    department: str = Field("", title="单位部门", description="部门", example="部门")
+    department: str = Field("", title="所在部门", description="部门", example="部门")
     org_id: Optional[int | str] = Field(None, title="组织ID", description="组织ID")
 
     hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
@@ -1279,7 +1280,7 @@ class TeacherInfoSubmit(BaseModel):  # 基本信息
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-    department: str = Field(..., title="单位部门", description="部门", example="部门")
+    department: str = Field(..., title="所在部门", description="部门", example="部门")
     org_id: int | str = Field(..., title="组织ID", description="组织ID")
 
     hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
@@ -1343,7 +1344,7 @@ class NewTeacher(BaseModel):
     teacher_name: Optional[str] = Query("", title="姓名", description="姓名", example="张三")
     teacher_id_number: Optional[str] = Query("", title="身份证号", description="身份证号", example="123456789012345678")
     teacher_gender: Optional[Gender] = Query("", title="性别", description="性别", example="男")
-    teacher_employer: Optional[int | str] = Query(None, title="单位部门", description="单位部门", example="xx学校")
+    teacher_employer: Optional[int | str] = Query(None, title="任职单位", description="单位部门", example="xx学校")
     highest_education: Optional[str] = Query("", title="最高学历", description="最高学历", example="本科")
     political_status: Optional[str] = Query("", title="政治面貌", description="政治面貌", example="群众")
     in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
@@ -1375,7 +1376,7 @@ class NewTeacherRe(BaseModel):
     teacher_name: str = Field("", title="姓名", description="姓名", example="张三")
     teacher_id_number: str = Field("", title="身份证号", description="身份证号", example="123456789012345678")
     teacher_gender: str = Field("", title="性别", description="性别", example="男")
-    teacher_employer: int | str = Field(None, title="单位部门", description="单位部门", example="xx学校")
+    teacher_employer: int | str = Field(None, title="任职单位", description="单位部门", example="xx学校")
     highest_education: Optional[str] = Field("", title="最高学历", description="最高学历", example="本科")
     political_status: Optional[str] = Field("", title="政治面貌", description="政治面貌", example="群众")
     employment_form: Optional[str] = Field("", title="用人形式", description="用人形式", example="合同")
@@ -1426,7 +1427,7 @@ class NewTeacherApprovalCreate(BaseModel):
     teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
-    teacher_employer: int = Field(0, title="单位部门", description="单位部门", gt=0)
+    teacher_employer: int = Field(0, title="任职单位", description="单位部门", gt=0)
     teacher_avatar: str = Field("", title="头像", description="头像")
     mobile: str = Field("", title="手机号", description="手机号")
     identity: str = Field("", title="身份", description="身份")
@@ -1490,7 +1491,7 @@ class NewTeacherApprovalCreate(BaseModel):
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
-    department: str = Field(..., title="单位部门", description="部门", example="部门")
+    department: str = Field(..., title="所在部门", description="部门", example="部门")
     org_id: int | str = Field(..., title="组织ID", description="组织ID")
 
     hmotf: str = Field("", title="港澳台侨外", description="港澳台侨外", example="港澳台侨外")
@@ -1544,7 +1545,7 @@ class CurrentTeacherQuery(BaseModel):
     teacher_name: str = Query("", title="姓名", description="姓名", example="张三")
     teacher_id_number: str = Query("", title="身份证号", description="身份证号", example="123456789012345678")
     teacher_gender: Optional[Gender] = Query("", title="性别", description="性别", example="男")
-    teacher_employer: Optional[int | str] = Query(None, title="单位部门", description="单位部门", example="xx学校")
+    teacher_employer: Optional[int | str] = Query(None, title="任职单位", description="单位部门", example="xx学校")
     highest_education: str = Query("", title="最高学历", description="最高学历", example="本科")
     political_status: str = Query("", title="政治面貌", description="政治面貌", example="群众")
     in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
@@ -1587,7 +1588,7 @@ class CurrentTeacherQueryRe(BaseModel):
     teacher_name: str = Query("", title="姓名", description="姓名", example="张三")
     teacher_id_number: str = Query("", title="身份证号", description="身份证号", example="123456789012345678")
     teacher_gender: str = Query("", title="性别", description="性别", example="男")
-    teacher_employer: int | str = Query(1, title="单位部门", description="单位部门", example="xx学校")
+    teacher_employer: int | str = Query(1, title="任职单位", description="单位部门", example="xx学校")
     highest_education: Optional[str] = Query("", title="最高学历", description="最高学历", example="本科")
     political_status: Optional[str] = Query("", title="政治面貌", description="政治面貌", example="群众")
     in_post: Optional[bool] = Query(None, title="是否在编", description="是否在编", example="yes")
@@ -1623,7 +1624,7 @@ class TeacherApprovalQuery(BaseModel):
     身份证号：teacher_id_number
     """
     teacher_name: Optional[str] = Query("", title="姓名", description="姓名", example="张三")
-    teacher_employer: Optional[int | str] = Query(None, title="单位部门", description="单位部门", example="xx学校")
+    teacher_employer: Optional[int | str] = Query(None, title="任职单位", description="单位部门", example="xx学校")
     teacher_gender: Optional[Gender] = Query(None, title="性别", description="性别", example="男")
     applicant_name: Optional[str] = Query("", title="申请人", description="申请人", example="张三")
     approval_name: Optional[str] = Query("", title="审核人", description="审核人", example="张三")

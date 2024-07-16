@@ -25,11 +25,68 @@ class EnumValueRule(object):
         enum_value = orm_model_to_view_model(enum_value_db, EnumValueModel)
         return enum_value
 
+    async def get_enum_value_by_description_and_name(self, description, name):
+        enum_value_db = await self.enum_value_dao.get_enum_value_by_description_and_name(description, name)
+        if not enum_value_db:
+            raise EnumValueNotFoundError()
+        enum_value = enum_value_db.enum_value
+        return enum_value
+
+    async def get_address_by_description(self, description):
+        locations = description.split('-')
+        if len(locations) == 1:
+            enum_name = 'province'
+            enum_value_db = await self.enum_value_dao.get_enum_value_by_description_and_name(description, enum_name)
+            if enum_value_db:
+                enum_value = orm_model_to_view_model(enum_value_db, EnumValueModel)
+                province_value = enum_value.enum_value
+                return province_value
+        elif len(locations) == 2:
+            enum_name_city = 'city'
+            enum_value_db = await self.enum_value_dao.get_enum_value_by_description_and_name(locations[0],
+                                                                                             enum_name_city)
+            if enum_value_db:
+                enum_value = orm_model_to_view_model(enum_value_db, EnumValueModel)
+                province_value = enum_value.parent_id
+                city_value = enum_value.enum_value
+                enum_name_country = 'country'
+                enum_value_db = await self.enum_value_dao.get_enum_value_by_description_and_name(locations[1],
+                                                                                                 enum_name_country,
+                                                                                                 parent_id=city_value)
+                if enum_value_db:
+                    enum_value = orm_model_to_view_model(enum_value_db, EnumValueModel)
+                    country_value = enum_value.enum_value
+                    return f"{province_value},{city_value},{country_value}"
+        elif len(locations) == 3:
+            enum_name = 'province'
+            enum_value_db = await self.enum_value_dao.get_enum_value_by_description_and_name(locations[0], enum_name)
+            if enum_value_db:
+                enum_value = orm_model_to_view_model(enum_value_db, EnumValueModel)
+                province_value = enum_value.enum_value
+                enum_name_city = 'city'
+                enum_value_db = await self.enum_value_dao.get_enum_value_by_description_and_name(locations[1],
+                                                                                                 enum_name_city,
+                                                                                                 parent_id=province_value)
+                if enum_value_db:
+                    enum_value = orm_model_to_view_model(enum_value_db, EnumValueModel)
+                    city_value = enum_value.enum_value
+                    enum_name_country = 'country'
+                    enum_value_db = await self.enum_value_dao.get_enum_value_by_description_and_name(locations[2],
+                                                                                                     enum_name_country,
+                                                                                                     parent_id=city_value)
+                    if enum_value_db:
+                        enum_value = orm_model_to_view_model(enum_value_db, EnumValueModel)
+                        country_value = enum_value.enum_value
+                        return f"{province_value},{city_value},{country_value}"
+        return ""
+
     async def get_enum_value_by_enum_value_name(self, enum_value_name):
         enum_value_db = await self.enum_value_dao.get_enum_value_by_enum_value_name(
             enum_value_name)
         enum_value = orm_model_to_view_model(enum_value_db, EnumValueModel, exclude=[""])
         return enum_value
+
+    ''
 
     async def get_district_name(self, area_id):
         city_name = ""
@@ -131,7 +188,7 @@ class EnumValueRule(object):
         paging = await self.enum_value_dao.query_enum_value_with_page(page_request, enum_value_name, parent_code)
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, EnumValueModel)
-        convert_snowid_to_strings(paging_result,  )
+        convert_snowid_to_strings(paging_result, )
 
         return paging_result
 
