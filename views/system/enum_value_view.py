@@ -18,16 +18,26 @@ from views.models.enum_value import EnumValue
 class EnumValueView(BaseView):
     def __init__(self):
         super().__init__()
-        self.enum_value_rule = get_injector( EnumValueRule)
+        self.enum_value_rule = get_injector(EnumValueRule)
 
     async def page(self,
                    page_request=Depends(PageRequest),
-                   enum_name:str= Query(..., title="", description="枚举类型的名称 多个逗号隔开",min_length=1,max_length=100,example='province'),
-                   parent_code:str= Query('', title="", description="父级的code",min_length=1,max_length=20,example='130000'),
+                   enum_name: str = Query(..., title="", description="枚举类型的名称 多个逗号隔开", min_length=1,
+                                          max_length=100, example='province'),
+                   parent_code: str = Query('', title="", description="父级的code", min_length=1, max_length=20,
+                                            example='130000'),
 
                    ):
         # print(page_request)
         items = []
 
-        res = await self.enum_value_rule.query_enum_value_with_page(page_request ,enum_name,parent_code )
+        res = await self.enum_value_rule.query_enum_value_with_page(page_request, enum_name, parent_code)
+        return res
+
+    async def get_address_by_description(self,
+                                         description: str = Query(..., title="",
+                                                                  description="枚举类型的名称 多个逗号隔开",
+                                                                  min_length=1, max_length=100, example='province'),
+                                         ):
+        res = await self.enum_value_rule.get_address_by_description(description)
         return res

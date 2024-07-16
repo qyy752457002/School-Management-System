@@ -151,8 +151,6 @@ class TeacherImportRule:
             #         raise ex
             #     results.append(result)
 
-
-
     async def import_teachers_save(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
@@ -207,9 +205,9 @@ class TeacherImportRule:
 
             random_file_name = shortuuid.uuid() + ".xlsx"
             file_storage = storage_manager.put_file_to_object(
-                source_file.virtual_bucket_name, f"{random_file_name}.xlsx", local_results_path
+                source_file.virtual_bucket_name, f"{random_file_name}", local_results_path
             )
-            file_storage_resp = storage_manager.add_file(
+            file_storage_resp = await storage_manager.add_file(
                 self.file_storage_dao, file_storage
             )
 
@@ -220,9 +218,10 @@ class TeacherImportRule:
             task_result.result_file_id = file_storage_resp.file_id
             task_result.last_updated = datetime.now()
             task_result.state = TaskState.succeeded
+            task_result.result_id = shortuuid.uuid()
             task_result.result_extra = {"file_size": file_storage.file_size}
 
-            await self.task_dao.add_task_result(task_result)
+            await self.task_dao.add_task_result(task_result, is_commit=True)
             return task_result
 
 

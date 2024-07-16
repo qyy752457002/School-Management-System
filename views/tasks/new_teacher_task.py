@@ -1,5 +1,6 @@
 from mini_framework.async_task.consumers import TaskExecutor
-from mini_framework.async_task.task.task_context import Task, Context
+from mini_framework.async_task.task.task import Task
+from mini_framework.async_task.task.task_context import Context
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.logging import logger
 
@@ -15,7 +16,7 @@ class TeacherImportExecutor(TaskExecutor):
         self.teacher_import_rule = get_injector(TeacherImportRule)
         super().__init__()
 
-    async def execute(self, context: Context):
+    async def execute(self, context: "Context"):
         try:
             task = context.task
             logger.info("Test")
@@ -45,9 +46,9 @@ class TeacherSaveImportExecutor(TaskExecutor):
         self.teacher_import_rule = get_injector(TeacherImportRule)
         super().__init__()
 
-    async def execute(self, context: Context):
+    async def execute(self, context: "Context"):
         try:
-            task = context.task
+            task = context
             operator = task.operator
             logger.info("Test")
             logger.info("Teacher_save import begins")
