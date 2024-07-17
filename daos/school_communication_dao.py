@@ -11,26 +11,26 @@ class SchoolCommunicationDAO(DAOBase):
 
     async def get_school_communication_by_id(self, school_communication_id):
         session = await self.slave_db()
-        result = await session.execute(select(SchoolCommunication).where(SchoolCommunication.id == school_communication_id))
+        result = await session.execute(
+            select(SchoolCommunication).where(SchoolCommunication.id == school_communication_id))
         return result.scalar_one_or_none()
-
 
     async def get_school_communication_by_school_id(self, school_communication_id):
         session = await self.slave_db()
-        result = await session.execute(select(SchoolCommunication).where(SchoolCommunication.school_id == school_communication_id))
+        result = await session.execute(
+            select(SchoolCommunication).where(SchoolCommunication.school_id == school_communication_id))
         return result.scalar_one_or_none()
-
 
     async def add_school_communication(self, school_communication):
         if hasattr(school_communication, 'school_id'):
-            school_communication.school_id =  int(school_communication.school_id)
+            school_communication.school_id = int(school_communication.school_id)
         session = await self.master_db()
         session.add(school_communication)
         await session.commit()
         await session.refresh(school_communication)
         return school_communication
 
-    async def update_school_communication(self, school_communication,ctype=1):
+    async def update_school_communication(self, school_communication, ctype=1):
         session = await self.master_db()
         # session.add(school_communication)
         if ctype == 1:
@@ -65,31 +65,29 @@ class SchoolCommunicationDAO(DAOBase):
                 historical_evolution=school_communication.historical_evolution,
             )
 
-
         await session.execute(update_stmt)
         await session.commit()
         return school_communication
 
-
     async def softdelete_school_communication(self, school_communication):
         session = await self.master_db()
-        deleted_status= 1
+        deleted_status = 1
         update_stmt = update(SchoolCommunication).where(SchoolCommunication.id == school_communication.id).values(
-            deleted= deleted_status,
+            deleted=deleted_status,
         )
         await session.execute(update_stmt)
         # await session.delete(school_communication)
         await session.commit()
         return school_communication
 
-
     async def get_school_communication_count(self):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(SchoolCommunication))
         return result.scalar()
 
-    async def query_school_communication_with_page(self, school_communication_name, school_communication_id, school_communication_no,
-                                              page_request: PageRequest) -> Paging:
+    async def query_school_communication_with_page(self, school_communication_name, school_communication_id,
+                                                   school_communication_no,
+                                                   page_request: PageRequest) -> Paging:
         query = select(SchoolCommunication)
         if school_communication_name:
             pass
@@ -103,15 +101,17 @@ class SchoolCommunicationDAO(DAOBase):
         paging = await self.query_page(query, page_request)
         return paging
 
-
-    async def update_school_communication_byargs(self, school_communication: SchoolCommunication, *args, is_commit: bool = True):
-        session =await self.master_db()
+    async def update_school_communication_byargs(self, school_communication: SchoolCommunication, *args,
+                                                 is_commit: bool = True):
+        session = await self.master_db()
         update_contents = get_update_contents(school_communication, *args)
-        if school_communication.school_id>0:
+        if school_communication.school_id > 0:
             # update_contents['planning_school_id'] = planning_school_communication.planning_school_id
-            query = update(SchoolCommunication).where(SchoolCommunication.school_id == school_communication.school_id).values(**update_contents)
+            query = update(SchoolCommunication).where(
+                SchoolCommunication.school_id == school_communication.school_id).values(**update_contents)
 
         else:
 
-            query = update(SchoolCommunication).where(SchoolCommunication.id == school_communication.id).values(**update_contents)
+            query = update(SchoolCommunication).where(SchoolCommunication.id == school_communication.id).values(
+                **update_contents)
         return await self.update(session, query, school_communication, update_contents, is_commit=is_commit)

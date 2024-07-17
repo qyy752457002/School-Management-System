@@ -50,9 +50,9 @@ class StudentsDao(DAOBase):
         删除单个学生信息 无法自动识别主键  故手写
         """
         session = await self.master_db()
-        deleted_status= True
+        deleted_status = True
         update_stmt = update(Student).where(Student.student_id == int(students.student_id)).values(
-            is_deleted= deleted_status,
+            is_deleted=deleted_status,
         )
         await session.execute(update_stmt)
         await session.commit()
@@ -74,10 +74,10 @@ class StudentsDao(DAOBase):
         """
         session = await self.master_db()
         # update_contents =  {"": status}
-        if isinstance(student_id,list):
-            query = update(Student).where(Student.student_id.in_(student_id)).values( approval_status = status)
+        if isinstance(student_id, list):
+            query = update(Student).where(Student.student_id.in_(student_id)).values(approval_status=status)
         else:
-            query = update(Student).where(Student.student_id == int(student_id)).values( approval_status = status)
+            query = update(Student).where(Student.student_id == int(student_id)).values(approval_status=status)
         await session.execute(query)
         await session.commit()
         return student_id
