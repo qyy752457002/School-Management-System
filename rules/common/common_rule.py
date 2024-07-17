@@ -24,7 +24,7 @@ from daos.planning_school_dao import PlanningSchoolDAO
 from views.models.school import School as SchoolModel
 from daos.enum_value_dao import EnumValueDAO
 
-from typing import Type, List
+from typing import Type, List, Dict
 from pydantic import BaseModel
 
 
@@ -68,7 +68,7 @@ async def convert_fields_to_str(model_instance: Type[BaseModel], fields_to_conve
     return model_instance
 
 
-async def excel_fields_to_enum(data: dict, import_type):
+async def excel_fields_to_enum(data: dict, import_type) -> Dict:
     bool_type_fields = ["in_post", "full_time_special_education_major_graduate",
                         "received_preschool_education_training", "full_time_normal_major_graduate",
                         "received_special_education_training", "has_special_education_certificate",
@@ -77,9 +77,6 @@ async def excel_fields_to_enum(data: dict, import_type):
                         "county_level_backbone", "psychological_health_education_teacher", "is_major_graduate",
                         "representative_or_project", "is_major_normal", "is_concurrent_other_positions"]
 
-    enum_type_fields = ["hukou_type", "hmotf", "nationality", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-                        "", "", "", "", "", "", "",
-                        "", "", "", "", "", "", "", "", ]
     teacher_info_fields = {"hukou_type": "hukou_type", "hmotf": "hmotf_type", "nationality": "nationality",
                            "ethnicity": "ethnicity", "marital_status": "marital_status",
                            "political_status": "political_status", "health_condition": "health_status",
@@ -93,7 +90,7 @@ async def excel_fields_to_enum(data: dict, import_type):
                            "main_teaching_level": "main_teaching_level_type", "teaching_discipline": "subject_category",
                            "language": "language", "language_proficiency_level": "proficiency",
                            "language_certificate_name": "language_certificate_names",
-                           "contact_address": "contact_address"}
+                           "contact_address": "contact_address", "current_post_type": "position_type"}
     teacher_learn_experience = {}
 
     model_map = {"import_teacher": teacher_info_fields, "import_teacher_learn_experience": teacher_learn_experience}
@@ -108,22 +105,24 @@ async def excel_fields_to_enum(data: dict, import_type):
             if key in fields:
                 if key == "contact_address":
                     data[key] = await get_address_by_description(value)
-
                 else:
                     data[key] = await get_enum_value(value, fields[key])
-
     return data
 
 
 async def get_enum_value(description: str, enum_name: str):
     # 通过规则获取枚举值
+    values = []
     parts = description.split('-')
     level = len(parts)
-    last_part = parts[-1]
-    enum_name = f"{enum_name}_lv{level}"
-    enum_value_rule = get_injector(EnumValueRule)
-    enum_value = await enum_value_rule.get_enum_value_by_description_and_name(last_part, enum_name)
-    return enum_value
+    for i in range(level - 1, -1, -1):
+        last_part = parts[i]
+        enum_name = f"{enum_name}_lv{i + 1}"
+        enum_value_rule = get_injector(EnumValueRule)
+        enum_value = await enum_value_rule.get_enum_value_by_description_and_name(last_part, enum_name)
+        values.append(enum_value)
+    value = ",".join(reversed(values))
+    return value
 
 
 async def get_address_by_description(description: str):

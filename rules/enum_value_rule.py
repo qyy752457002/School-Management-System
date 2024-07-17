@@ -29,8 +29,10 @@ class EnumValueRule(object):
         enum_value_db = await self.enum_value_dao.get_enum_value_by_description_and_name(description, name)
         if not enum_value_db:
             raise EnumValueNotFoundError()
-        enum_value = enum_value_db.enum_value
+        enum = orm_model_to_view_model(enum_value_db, EnumValueModel)
+        enum_value = enum.enum_value
         return enum_value
+
 
     async def get_address_by_description(self, description):
         locations = description.split('-')

@@ -31,9 +31,7 @@ class EnumValueDAO(DAOBase):
         result = await session.execute(query)
         return result.first()
 
-
-
-    async def get_enum_value_by_description_and_name(self, description, enum_name,parent_id=None):
+    async def get_enum_value_by_description_and_name(self, description, enum_name, parent_id=None):
         session = await self.slave_db()
         cond1 = EnumValue.description == description
         cond2 = EnumValue.enum_name == enum_name

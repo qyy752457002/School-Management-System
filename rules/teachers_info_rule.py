@@ -6,7 +6,7 @@ from models.teachers_info import TeacherInfo
 from views.models.teachers import TeacherInfo as TeachersInfoModel
 from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel, TeacherInfoSubmit, \
     CurrentTeacherQuery, CurrentTeacherQueryRe, CurrentTeacherInfoSaveModel, NewTeacherInfoSaveModel, \
-    TeacherInfoCreateModel, NewTeacherApprovalCreate
+    TeacherInfoCreateModel, NewTeacherApprovalCreate, TeacherInfoImportSubmit
 from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError, QueryError
 from daos.teachers_dao import TeachersDao
 from views.models.organization import OrganizationMembers
@@ -24,7 +24,8 @@ from views.common.common_view import compare_modify_fields
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from rules.teachers_rule import TeachersRule
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
-from rules.common.common_rule import convert_fields_to_str
+from rules.common.common_rule import convert_fields_to_str,excel_fields_to_enum
+
 
 
 @dataclass_inject
@@ -215,15 +216,56 @@ class TeachersInfoRule(object):
                 operator_name=user_id,
                 process_instance_id=0)
             await self.operation_record_rule.add_operation_record(teacher_base_info_log)
-
-        # organization = OrganizationMembers()
-        # organization.id = None
-        # organization.org_id = teachers_info.org_id
-        # organization.teacher_id = teachers_info.teacher_id
-        # organization.member_type = None
-        # organization.identity = None
-        # await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
+        organization = OrganizationMembers()
+        organization.id = None
+        organization.org_id = teachers_info.org_id
+        organization.teacher_id = teachers_info.teacher_id
+        organization.member_type = None
+        organization.identity = None
+        await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
         return teachers_info_db
+
+    async def update_teachers_info_import(self, teachers_info: TeacherInfoImportSubmit, user_id):
+        teacher_id = int(teachers_info.teacher_id)
+        exists_teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_info.teacher_base_id)
+        if not exists_teachers_info:
+            raise TeacherInfoNotFoundError()
+        teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
+        teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
+                                                         exclude=[""])
+        teachers_main_status = teacher_entry_approval.teacher_main_status
+        if teachers_main_status == "unemployed":
+            params = {"process_code": "t_entry", "applicant_name": user_id}
+            teacher_entry_approval.teacher_sub_status = "submitted"
+            await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
+                teacher_entry_approval.teacher_id)
+            work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
+            teacher_entry_save_to_submit_log = OperationRecord(  # 这个是转在职的
+                action_target_id=int(teacher_entry_approval.teacher_id),
+                target=OperationTarget.TEACHER.value,
+                action_type=OperationType.CREATE.value,
+                ip="127.0.0.1",
+                change_data="",
+                operation_time=datetime.now(),
+                doc_upload="",
+                change_module=ChangeModule.NEW_ENTRY.value,
+                change_detail="转在职",
+                status="/",
+                operator_id=1,
+                operator_name=user_id,
+                process_instance_id=int(work_flow_instance["process_instance_id"]))
+            await self.operation_record_rule.add_operation_record(teacher_entry_save_to_submit_log)
+            await self.teacher_submitted(teacher_id)
+            teachers_rule = get_injector(TeachersRule)
+            await teachers_rule.teacher_progressing(teacher_id)
+        organization = OrganizationMembers()
+        organization.id = None
+        organization.org_id = teachers_info.org_id
+        organization.teacher_id = teachers_info.teacher_id
+        organization.member_type = None
+        organization.identity = None
+        await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
+        return True
 
     async def update_teachers_info_save(self, teachers_info, user_id):
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
@@ -237,8 +279,8 @@ class TeachersInfoRule(object):
             if value:
                 need_update_list.append(key)
         teachers_info = await self.teachers_info_dao.update_teachers_info(teachers_info, *need_update_list)
-        fields_list = ["teacher_id", "teacher_base_id"]
-        teachers_info_db = await convert_fields_to_str(teachers_info, fields_list)
+        # fields_list = ["teacher_id", "teacher_base_id"]
+        # teachers_info_db = await convert_fields_to_str(teachers_info, fields_list)
         # await self.teacher_unsubmitted(teachers_info.teacher_id)
         # if exits_teacher.teacher_main_status == "unemployed":
         #     teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
@@ -257,14 +299,14 @@ class TeachersInfoRule(object):
         #     teacher_entry_approval.teacher_id)
         # await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
 
-        # organization = OrganizationMembers()
-        # organization.id = None
-        # organization.org_id = teachers_info.org_id
-        # organization.teacher_id = teachers_info.teacher_id
-        # organization.member_type = None
-        # organization.identity = None
-        # await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
-        return teachers_info_db
+        organization = OrganizationMembers()
+        organization.id = None
+        organization.org_id = teachers_info.org_id
+        organization.teacher_id = teachers_info.teacher_id
+        organization.member_type = None
+        organization.identity = None
+        await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
+        return teachers_info
 
     # 删除单个教职工基本信息
     async def delete_teachers_info(self, teachers_info_id):

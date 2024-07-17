@@ -18,7 +18,8 @@ class TeacherImportExecutor(TaskExecutor):
 
     async def execute(self, context: "Context"):
         try:
-            task = context.task
+            task = context
+            operator = task.operator
             logger.info("Test")
             logger.info("Teacher import begins")
             task: Task = task
@@ -32,8 +33,6 @@ class TeacherImportExecutor(TaskExecutor):
                 raise ValueError("Invalid payload type")
             logger.info("Test3")
             await self.teacher_import_rule.import_teachers(task)
-            # task_result = await self.teacher_rule.import_teachers(task)
-            # logger.info(f"Teacher import to {task_result.result_file}")
         except Exception as e:
             logger.error(f"Teacher import failed")
             logger.error(e)

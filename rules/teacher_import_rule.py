@@ -12,7 +12,7 @@ from views.models.teachers import Teachers as TeachersModel
 from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherImportSaveResultModel, \
     TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
     NewTeacherApprovalCreate, TeachersSaveImportCreatModel, TeacherImportResultModel, \
-    TeachersSaveImportRegisterCreatModel
+    TeachersSaveImportRegisterCreatModel, TeacherInfoImportSubmit
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from business_exceptions.school import SchoolNotFoundError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
@@ -34,10 +34,12 @@ from daos.teacher_change_dao import TeacherChangeLogDAO
 from rules.teacher_change_rule import TeacherChangeRule
 from daos.teacher_approval_log_dao import TeacherApprovalLogDao
 from mini_framework.design_patterns.depend_inject import get_injector
+from rules.common.common_rule import convert_fields_to_str, excel_fields_to_enum
 
 from rules.teachers_info_rule import TeachersInfoRule
 from rules.teachers_rule import TeachersRule
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
+from daos.organization_dao import OrganizationDAO
 
 from models.public_enum import Gender
 import os
@@ -50,6 +52,7 @@ class TeacherImportRule:
     teachers_info_rule: TeachersInfoRule
     file_storage_dao: FileStorageDAO
     task_dao: TaskDAO
+    organization_dao: OrganizationDAO
 
     # 导入导出相关
     async def import_teachers(self, task: Task):
@@ -62,7 +65,6 @@ class TeacherImportRule:
             storage_manager.download_file(
                 source_file.virtual_bucket_name, source_file.file_name, local_file_path
             )
-            # local_file_path = "c.xlsx"
             reader = ExcelReader()
             reader.set_data(local_file_path)
             reader.register_model("数据", CombinedModel, header=1)
@@ -77,11 +79,21 @@ class TeacherImportRule:
             # 两个一起写
             for idx, item in enumerate(data):
                 item = item.dict()
-                result_dict = item.copy()
                 school = await self.school_dao.get_school_by_school_name(item["teacher_employer"])
-                item["teacher_employer"] = school.school_id
+                if school:
+                    school = school._asdict()['School']
+                    item["teacher_employer"] = school.id
+                else:
+                    raise SchoolNotFoundError()
+                organization = await self.organization_dao.get_organization_by_name_and_school_id(
+                    item["department"], item["teacher_employer"])
+                if organization:
+                    item["department"] = str(organization.id)
+                # 这里保证生成模型
+                item["org_id"] = item["department"]
                 teacher_data = {key: item[key] for key in TeachersSaveImportCreatModel.__fields__.keys() if key in item}
                 teacher_model = TeachersSaveImportCreatModel(**teacher_data)
+                result_dict = item.copy()
                 result_dict["failed_msg"] = "成功"
                 result = TeacherImportResultModel(**result_dict)
                 user_id = task.operator
@@ -91,31 +103,31 @@ class TeacherImportRule:
                     teacher_id = teachers_work.teacher_id
                     teacher_base_id = teacher_base_id
                     if teacher_id:
-                        info_data = {key: item[key] for key in TeacherInfoSubmit.__fields__.keys()}
+                        info_data = {key: item[key] for key in TeacherInfoImportSubmit.__fields__.keys()}
                         info_data["teacher_id"] = teacher_id
                         info_data["teacher_base_id"] = teacher_base_id
-                        info_model = TeacherInfoSubmit(**info_data)
-                        await self.teachers_info_rule.update_teachers_info(info_model, user_id)
+                        data_dict = await excel_fields_to_enum(info_data, "import_teacher")
+                        info_model = TeacherInfoImportSubmit(**data_dict)
+                        await self.teachers_info_rule.update_teachers_info_import(info_model, user_id)
                 except Exception as ex:
                     result.failed_msg = str(ex)
                     results.append(result)
                     logger.info(f"Failed to add teacher at index {idx}: {ex}")
                     print(ex, '表内数据异常')
                     raise ex
-            local_results_path = f"/tmp/c.xlsx"
+            local_results_path = f"/tmp/{source_file.file_name}"
             excel_writer = ExcelWriter()
             excel_writer.add_data("Sheet1", results)
             excel_writer.set_data(local_results_path)
             excel_writer.execute()
 
-            random_file_name = shortuuid.uuid() + ".xlsx"
-            file_storage = await storage_manager.put_file_to_object(
+            random_file_name = shortuuid.uuid()
+            file_storage = storage_manager.put_file_to_object(
                 source_file.virtual_bucket_name, f"{random_file_name}.xlsx", local_results_path
             )
             file_storage_resp = await storage_manager.add_file(
                 self.file_storage_dao, file_storage
             )
-
             task_result = TaskResult()
             task_result.task_id = task.task_id
             task_result.result_file = file_storage_resp.file_name
