@@ -7,7 +7,6 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.json import JsonUtils
 from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
-from starlette.requests import Request
 
 from business_exceptions.planning_school import PlanningSchoolValidateError, \
     PlanningSchoolStatusError
@@ -188,7 +187,6 @@ class PlanningSchoolView(BaseView):
             change_module=ChangeModule.BASIC_INFO_CHANGE.value,
             change_detail="修改基本信息",
             action_target_id=str(planning_school_baseinfo.id),
-            # change_data=str(log_con)[0:1000],
             change_data=JsonUtils.dict_to_json_str(log_con),
         ))
 
@@ -222,7 +220,6 @@ class PlanningSchoolView(BaseView):
                                          page_request=Depends(PageRequest)):
         print(page_request, vars(ProcessCodeType))
         items = []
-        # PlanningSchoolBaseInfoOptional
         req = PlanningSchoolPageSearch(block=block,
                                        planning_school_code=planning_school_code,
                                        planning_school_level=planning_school_level,
@@ -233,7 +230,6 @@ class PlanningSchoolView(BaseView):
                                        founder_type=founder_type,
                                        founder_type_lv2=founder_type_lv2,
                                        founder_type_lv3=founder_type_lv3,
-                                       # process_code=process_code,
                                        )
         print('入参接收', req)
         paging_result = await self.system_rule.query_workflow_with_page(req, page_request, '', process_code, )
@@ -293,7 +289,7 @@ class PlanningSchoolView(BaseView):
 
         return res
 
-    # 关闭  todo  附件 和 原因的保存 到日志 
+    # 关闭    附件 和 原因的保存 到日志
     async def patch_close(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
                                                                 min_length=1, max_length=20, example='SC2032633'),
                           action_reason: str = Query(None, description="原因", min_length=1, max_length=20,
@@ -333,7 +329,6 @@ class PlanningSchoolView(BaseView):
             change_module=ChangeModule.CLOSE_SCHOOL.value,
             change_detail="关闭学校",
             action_target_id=str(planning_school_id),
-            # change_data=str(planning_school_id)[0:1000],
             change_data=JsonUtils.dict_to_json_str(planning_school_id),
             process_instance_id=process_instance_id
         ))
@@ -353,9 +348,7 @@ class PlanningSchoolView(BaseView):
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="planning_school_import",
             # 文件 要对应的 视图模型
-            # payload=PlanningSchoolTask(file_name=filename, bucket=bucket, scene=scene),
             payload=task_model,
-
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
@@ -377,8 +370,6 @@ class PlanningSchoolView(BaseView):
         planning_school_eduinfo.planning_school_id = planning_school_id
         planning_school_communication.id = None
         planning_school_eduinfo.id = None
-        # if isinstance(planning_school_eduinfo.att_class_type,  bool):
-        #     planning_school_eduinfo.att_class_type= str( planning_school_eduinfo.att_class_type )
 
         origin = await self.planning_school_rule.get_planning_school_by_id(planning_school.id)
         log_con = compare_modify_fields(planning_school, origin)
@@ -397,7 +388,6 @@ class PlanningSchoolView(BaseView):
             change_module=ChangeModule.CREATE_SCHOOL.value,
             change_detail="暂存全部信息",
             action_target_id=str(planning_school_id),
-            # change_data=str(log_con)[0:1000],
             change_data=JsonUtils.dict_to_json_str(log_con),
 
         ))
@@ -419,8 +409,6 @@ class PlanningSchoolView(BaseView):
         planning_school_eduinfo.planning_school_id = planning_school_id
         planning_school_communication.id = None
         planning_school_eduinfo.id = None
-        # if isinstance(planning_school_eduinfo.att_class_type,  bool):
-        #     planning_school_eduinfo.att_class_type= str( planning_school_eduinfo.att_class_type )
 
         origin = await self.planning_school_rule.get_planning_school_by_id(planning_school.id)
         log_con = compare_modify_fields(planning_school, origin)
@@ -441,7 +429,6 @@ class PlanningSchoolView(BaseView):
             change_module=ChangeModule.CREATE_SCHOOL.value,
             change_detail="提交全部信息 开办",
             action_target_id=str(planning_school_id),
-            # change_data=str(log_con)[0:1000],
             change_data=JsonUtils.dict_to_json_str(log_con),
 
         ))
@@ -454,8 +441,6 @@ class PlanningSchoolView(BaseView):
                          page_request=Depends(PageRequest)):
         print(page_request, )
         items = []
-        # exit(1)
-        # return page_search
         paging_result = await self.planning_school_rule.query_planning_schools(planning_school_name)
         return paging_result
 
@@ -469,7 +454,6 @@ class PlanningSchoolView(BaseView):
             return {}
         if isinstance(resultra, str):
             return {resultra}
-        # print(new_students_key_info)
         return resultra
         pass
 
@@ -484,7 +468,6 @@ class PlanningSchoolView(BaseView):
         if isinstance(resultra, str):
             return {resultra}
 
-        # print(new_students_key_info)
         return resultra
         pass
 
@@ -499,7 +482,6 @@ class PlanningSchoolView(BaseView):
         if isinstance(resultra, str):
             return {resultra}
 
-        # print(new_students_key_info)
         return resultra
         pass
 
@@ -521,7 +503,6 @@ class PlanningSchoolView(BaseView):
         if isinstance(res2, str):
             return {res2}
 
-        # print(new_students_key_info)
         return res2
         pass
 
@@ -541,7 +522,6 @@ class PlanningSchoolView(BaseView):
         if isinstance(res2, str):
             return {res2}
 
-        # print(new_students_key_info)
         return res2
         pass
 
@@ -560,7 +540,6 @@ class PlanningSchoolView(BaseView):
         if isinstance(res2, str):
             return {res2}
 
-        # print(new_students_key_info)
         return res2
         pass
 
@@ -582,12 +561,9 @@ class PlanningSchoolView(BaseView):
                                                        examples=['教育部门']),
                    founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
                                                        examples=['县级教育部门']),
-
                    page_request=Depends(PageRequest)):
         print(page_request, )
         items = []
-        # exit(1)
-        # return page_search
         paging_result = await self.planning_school_rule.query_planning_school_with_page(page_request,
                                                                                         planning_school_name,
                                                                                         planning_school_no,
@@ -596,15 +572,12 @@ class PlanningSchoolView(BaseView):
                                                                                         borough, status, founder_type,
                                                                                         founder_type_lv2,
                                                                                         founder_type_lv3
-
                                                                                         )
         return paging_result
 
     # 工作流申请详情
     async def get_planning_school_workflow_info(self,
-
                                                 apply_id: int = Query(..., description="流程ID", example='1'),
-
                                                 ):
         relationinfo = tinfo = ''
         # 转发去 工作流获取详细
@@ -626,7 +599,6 @@ class PlanningSchoolView(BaseView):
     async def post_planning_school_export(self,
                                           # students_query=Depends(NewStudentsQuery),
                                           page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
-
                                           ) -> Task:
         print('入参接收', page_search)
 
