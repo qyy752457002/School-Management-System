@@ -51,6 +51,7 @@ class PlanningSchoolExecutor(TaskExecutor):
 
 
             for item in data:
+                itemd= dict()
 
                 if isinstance(item, dict):
                     data_import: PlanningSchoolOptional = PlanningSchoolOptional(**item)
@@ -80,10 +81,11 @@ class PlanningSchoolExecutor(TaskExecutor):
                 logger.debug('得到的结果视图模型', f"{res}",  )
 
                 # 解析 拆分到第二个模型
-                data_import.id =    0
+                # item.id =    0
 
-                data_import.planning_school_id =   int(res.id)
-                resc =  PlanningSchoolCommunications(**data_import.__dict__)
+                # item.planning_school_id =   int(res.id)
+                itemd.update({'planning_school_id': int(res.id)})
+                resc =  PlanningSchoolCommunications(**itemd)
                 resc.id= 0
                 newid = str(res.id)
                 print(resc, '模型23', res.id, type(res.id))
