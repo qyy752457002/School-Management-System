@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from fastapi import Query
 from fastapi.params import Body
+from mini_framework.storage.view_model import FileStorageModel
 from pydantic import BaseModel, Field, model_validator
 
 from models.student_transaction import AuditAction
@@ -324,6 +325,11 @@ class PlanningSchoolTransactionAudit(BaseModel):
 
 class PlanningSchoolImportReq(BaseModel, ):
     file_name: str = Body(..., description="文件名")
-    bucket: str|None = Body( '',alias='bucket_name', description="")
+    bucket_name: str|None = Body( default='',alias='bucket_name', description="")
     scene: str |None= Body('', description="")
+
+class PlanningSchoolFileStorageModel(FileStorageModel):
+    scene: str |None= Body('', description="")
+
+    pass
 

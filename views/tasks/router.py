@@ -3,7 +3,7 @@ from mini_framework.web.router import root_router
 
 from views.models.class_division_records import ClassDivisionRecordsSearchRes
 from views.models.institutions import InstitutionTask, InstitutionPageSearch
-from views.models.planning_school import PlanningSchoolTask, PlanningSchoolPageSearch
+from views.models.planning_school import PlanningSchoolTask, PlanningSchoolPageSearch, PlanningSchoolFileStorageModel
 from views.models.school import SchoolTask, SchoolPageSearch
 from views.models.students import NewStudentTask, NewStudentsQuery
 from views.models.teachers import TeacherFileStorageModel, CurrentTeacherQuery
@@ -89,7 +89,7 @@ def init_task_router():
         topic="planning_school_import",
         name="规划校上传和导入",
         executor_cls=PlanningSchoolExecutor,
-        payload_cls=PlanningSchoolTask,
+        payload_cls=PlanningSchoolFileStorageModel,
         payload_is_list=False,
         description="规划校上传和导入",
     )

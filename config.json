@@ -179,14 +179,6 @@
         "description": "教师导出",
         "executor_cls_model": "views.tasks.new_teacher_task.TeacherExportExecutor",
         "payload_cls_model": "views.models.teachers.CurrentTeacherQuery"
-      },
-      "teacher_save_import": {
-        "topic": "teacher_save_import",
-        "name": "",
-        "consumer_group_id": "service",
-        "description": "",
-        "executor_cls_model": "views.tasks.new_teacher_task.TeacherSaveImportExecutor",
-        "payload_cls_model": "views.models.teachers.TeacherFileStorageModel"
       }
     }
   }

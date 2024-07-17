@@ -13,7 +13,6 @@ from views.models.planning_school import PlanningSchool, PlanningSchoolOptional,
     PlanningSchoolImport
 from views.models.planning_school_communications import PlanningSchoolCommunications
 
-
 class PlanningSchoolExecutor(TaskExecutor):
     def __init__(self):
         self.planning_school_rule = get_injector(PlanningSchoolRule)
@@ -23,11 +22,13 @@ class PlanningSchoolExecutor(TaskExecutor):
 
         super().__init__()
 
-    async def execute(self, context: 'Context'):
-        task: Task = context.task
-        print('入参task',task)
+    async def execute(self, context: 'Task'):
+
+        print('入参 context',context)
         # 读取 文件内容  再解析到 各个的 插入 库
         try:
+            task: Task = context
+            print('入参task',task)
 
             info = task.payload
             print('开始执行task',info)
@@ -43,7 +44,7 @@ class PlanningSchoolExecutor(TaskExecutor):
             else:
                 # 得到的是 3个参数   下载到本地
 
-                data =await self._storage_rule.get_file_data(info.file_name, info.bucket,info.scene,file_direct_url=None)
+                data =await self._storage_rule.get_file_data(info.file_name, info.virtual_bucket_name,info.scene,file_direct_url=None)
                 logger.debug('根据URL解析数据', f"{data}",  )
                 pass
 
@@ -102,6 +103,7 @@ class PlanningSchoolExecutor(TaskExecutor):
             traceback.print_exc()
             print(e,'异常')
             logger.debug( f"任务   执行 failed", traceback.format_exception(e))
+            logger.error(e)
 
             # logger.error(f"任务   create failed")
 

@@ -6,6 +6,7 @@ from typing import List
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task.task import Task
 from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.storage.view_model import FileStorageModel
 from mini_framework.utils.json import JsonUtils
 from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model
@@ -25,7 +26,8 @@ from views.common.common_view import compare_modify_fields, get_extend_params, g
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
-    PlanningSchoolBaseInfoOptional, PlanningSchoolTask, PlanningSchoolTransactionAudit, PlanningSchoolImportReq
+    PlanningSchoolBaseInfoOptional, PlanningSchoolTask, PlanningSchoolTransactionAudit, PlanningSchoolImportReq, \
+    PlanningSchoolFileStorageModel
 from views.models.planning_school_communications import PlanningSchoolCommunications
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
 from views.models.school import School
@@ -375,13 +377,18 @@ class PlanningSchoolView(BaseView):
 
                                           ) -> Task:
         file_name = file.file_name
+        print('入参',file)
+        task_model = PlanningSchoolFileStorageModel(file_name=file_name,
+                                             virtual_bucket_name= file.bucket_name,
+                                             file_size= '51363',
+                                                    scene=file.scene
+                                                    )
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="planning_school_import",
             # 文件 要对应的 视图模型
             # payload=PlanningSchoolTask(file_name=filename, bucket=bucket, scene=scene),
-            payload=PlanningSchoolTask(file_name=file_name, scene=ImportScene.PLANNING_SCHOOL.value,
-                                       bucket= file.bucket, ),
+            payload= task_model,
 
             operator=request_context_manager.current().current_login_account.account_id
         )
