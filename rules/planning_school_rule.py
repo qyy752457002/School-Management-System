@@ -33,7 +33,8 @@ from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, convert_snowid_to_strings, convert_snowid_in_model
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus, \
-    PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit, PlanningSchoolBaseInfoOptional, PlanningSchoolPageSearch
+    PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit, PlanningSchoolBaseInfoOptional, PlanningSchoolPageSearch, \
+    PlanningSchoolOptional
 from views.models.planning_school import PlanningSchoolBaseInfo
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 
@@ -51,6 +52,12 @@ class PlanningSchoolRule(object):
     task_dao: TaskDAO
     planning_school_communication_dao: PlanningSchoolCommunicationDAO
     planning_school_eduinfo_dao: PlanningSchoolEduinfoDAO
+    other_mapper = {"school_name": "planning_school_name",
+                    "school_code": "planning_school_no",
+                    "school_edu_level": "planning_school_edu_level",
+                    "school_category": "planning_school_category",
+                    "school_org_type": "planning_school_org_type",
+                    }
 
 
 
@@ -79,7 +86,7 @@ class PlanningSchoolRule(object):
         planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""])
         return planning_school
 
-    async def add_planning_school(self, planning_school: PlanningSchoolModel):
+    async def add_planning_school(self, planning_school: PlanningSchoolModel|PlanningSchoolOptional):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_planning_school_name(
             planning_school.planning_school_name)
         if exists_planning_school:

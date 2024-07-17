@@ -9,6 +9,7 @@ from rules.planning_school_communication_rule import PlanningSchoolCommunication
 from rules.planning_school_rule import PlanningSchoolRule
 from rules.storage_rule import StorageRule
 from rules.system_rule import SystemRule
+from views.common.common_view import map_keys
 from views.models.planning_school import PlanningSchool, PlanningSchoolOptional, PlanningSchoolPageSearch, \
     PlanningSchoolImport
 from views.models.planning_school_communications import PlanningSchoolCommunications
@@ -38,7 +39,7 @@ class PlanningSchoolExecutor(TaskExecutor):
                 # 得到的是下载链接  下载到本地
                 fileinfo =await self.system_rule.get_download_url_by_id(info.file_name)
                 logger.debug('根据ID下载文件', f"{fileinfo}",  )
-                data =await self._storage_rule.get_file_data(info.file_name, info.bucket_name,info.scene,file_direct_url=fileinfo)
+                data =await self._storage_rule.get_file_data(info.file_name, '',info.scene,file_direct_url=fileinfo)
                 logger.debug('根据URL解析数据', f"{data}",  )
                 pass
             else:
@@ -65,10 +66,15 @@ class PlanningSchoolExecutor(TaskExecutor):
                     if data_import.school_type != '学校':
                         continue
                     else:
+                        itemd = data_import.dict()
+                        itemd = map_keys(itemd, self.planning_school_rule.other_mapper)
+                        data_import = PlanningSchoolOptional(**itemd)
+
                         pass
 
                 else:
                     raise ValueError("Invalid payload type")
+                # 这需要转换模型  后面会校验 导致没有规划校名程报错
                 res = await self.planning_school_rule.add_planning_school(data_import)
                 print('得到的结果视图模型 ', res, '模型1')
                 logger.debug('得到的结果视图模型', f"{res}",  )
