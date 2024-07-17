@@ -92,7 +92,7 @@ class StudentsBaseInfoDao(DAOBase):
                                                                                                 PlanningSchool.id == School.planning_school_id,
                                                                                                 isouter=True).join(
             Major, Major.id == Classes.major_for_vocational, isouter=True).where(
-            StudentBaseInfo.student_id ==int(students_id) )
+            StudentBaseInfo.student_id == int(students_id))
         result_list = await session.execute(query)
         column_names = query.columns.keys()
         # ret = result.scalar_one_or_none()
@@ -113,7 +113,7 @@ class StudentsBaseInfoDao(DAOBase):
         """
         session = await self.slave_db()
         result = await session.execute(
-            select(StudentBaseInfo).where(StudentBaseInfo.student_base_id ==int(student_base_id) ))
+            select(StudentBaseInfo).where(StudentBaseInfo.student_base_id == int(student_base_id)))
         return result.scalar_one_or_none()
 
     async def delete_students_base_info(self, students: Student):
@@ -152,13 +152,14 @@ class StudentsBaseInfoDao(DAOBase):
                                                                                  School.id == StudentBaseInfo.school_id,
                                                                                  isouter=True).join(SchoolCommunication,
                                                                                                     School.id == SchoolCommunication.school_id,
-                                                                                                    isouter=True).join(PlanningSchool,
-                                                                                                                       School.planning_school_id == PlanningSchool.id,
-                                                                                                                       isouter=True).join(Classes,
-                                                                                                                                          Classes.id == StudentBaseInfo.class_id,
-                                                                                                                                          isouter=True).join(Grade,
-                                                                                                                                                             Grade.id == StudentBaseInfo.grade_id,
-                                                                                                                                                             isouter=True).order_by(desc(Student.student_id))
+                                                                                                    isouter=True).join(
+            PlanningSchool,
+            School.planning_school_id == PlanningSchool.id,
+            isouter=True).join(Classes,
+                               Classes.id == StudentBaseInfo.class_id,
+                               isouter=True).join(Grade,
+                                                  Grade.id == StudentBaseInfo.grade_id,
+                                                  isouter=True).order_by(desc(Student.student_id))
         query = query.where(Student.is_deleted == False)
 
         if query_model.student_name:
@@ -172,9 +173,9 @@ class StudentsBaseInfoDao(DAOBase):
         if query_model.school:
             query = query.where(StudentBaseInfo.school == query_model.school)
         if query_model.school_id:
-            query = query.where(StudentBaseInfo.school_id == int(query_model.school_id) )
+            query = query.where(StudentBaseInfo.school_id == int(query_model.school_id))
         if query_model.class_id:
-            query = query.where(StudentBaseInfo.class_id ==int(query_model.class_id) )
+            query = query.where(StudentBaseInfo.class_id == int(query_model.class_id))
         if query_model.enrollment_date:
             query = query.where(StudentBaseInfo.enrollment_date == query_model.enrollment_date)
         if query_model.county:
@@ -210,7 +211,7 @@ class StudentsBaseInfoDao(DAOBase):
                     # query = query.where(StudentBaseInfo.enrollment_date == enrollment_date_range[0])
                 # query = query.where(Student.enrollment_date_range.in_(approval_status))
             else:
-                query = query.where(StudentBaseInfo.enrollment_date >=query_model.enrollment_date_range)
+                query = query.where(StudentBaseInfo.enrollment_date >= query_model.enrollment_date_range)
 
                 # query = query.where(Student.approval_status == query_model.approval_status)
         paging = await self.query_page(query, page_request)

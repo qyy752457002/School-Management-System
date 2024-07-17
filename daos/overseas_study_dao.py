@@ -25,7 +25,6 @@ class OverseasStudyDAO(DAOBase):
         session = await self.master_db()
         return await self.delete(session, overseas_study)
 
-
     async def get_overseas_study_by_overseas_study_id(self, overseas_study_id):
         session = await self.slave_db()
         result = await session.execute(
@@ -44,8 +43,6 @@ class OverseasStudyDAO(DAOBase):
         query = update(OverseasStudy).where(OverseasStudy.overseas_study_id == overseas_study.overseas_study_id).values(
             **update_contents)
         return await self.update(session, query, overseas_study, update_contents, is_commit=is_commit)
-
-
 
     async def get_all_overseas_study(self, teacher_id):
         session = await self.slave_db()

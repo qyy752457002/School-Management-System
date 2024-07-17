@@ -10,22 +10,24 @@ from models.planning_school import PlanningSchool
 class PlanningSchoolDAO(DAOBase):
 
     async def get_planning_school_by_id(self, planning_school_id):
-        planning_school_id= int(planning_school_id)
+        planning_school_id = int(planning_school_id)
         session = await self.slave_db()
         result = await session.execute(select(PlanningSchool).where(PlanningSchool.id == planning_school_id))
         return result.scalar_one_or_none()
 
     async def get_planning_school_by_process_instance_id(self, planning_school_id):
-        planning_school_id= int(planning_school_id)
+        planning_school_id = int(planning_school_id)
 
         session = await self.slave_db()
-        result = await session.execute(select(PlanningSchool).where(PlanningSchool.process_instance_id == planning_school_id))
+        result = await session.execute(
+            select(PlanningSchool).where(PlanningSchool.process_instance_id == planning_school_id))
         return result.scalar()
 
     async def get_planning_school_by_planning_school_name(self, planning_school_name):
         session = await self.slave_db()
         result = await session.execute(
-            select(PlanningSchool).where(PlanningSchool.planning_school_name == planning_school_name).where(PlanningSchool.is_deleted == False))
+            select(PlanningSchool).where(PlanningSchool.planning_school_name == planning_school_name).where(
+                PlanningSchool.is_deleted == False))
         return result.first()
 
     async def add_planning_school(self, planning_school):
@@ -35,7 +37,7 @@ class PlanningSchoolDAO(DAOBase):
         await session.refresh(planning_school)
         return planning_school
 
-    async def update_planning_school(self, planning_school,ctype=1):
+    async def update_planning_school(self, planning_school, ctype=1):
         session = await self.master_db()
         # session.add(planning_school)
         if ctype == 1:
@@ -70,7 +72,6 @@ class PlanningSchoolDAO(DAOBase):
                 historical_evolution=planning_school.historical_evolution,
             )
 
-
         await session.execute(update_stmt)
         await session.commit()
         return planning_school
@@ -83,9 +84,9 @@ class PlanningSchoolDAO(DAOBase):
 
     async def softdelete_planning_school(self, planning_school):
         session = await self.master_db()
-        deleted_status= 1
+        deleted_status = 1
         update_stmt = update(PlanningSchool).where(PlanningSchool.id == planning_school.id).values(
-            is_deleted= deleted_status,
+            is_deleted=deleted_status,
         )
         await session.execute(update_stmt)
         # await session.delete(planning_school)
@@ -102,10 +103,11 @@ class PlanningSchoolDAO(DAOBase):
         result = await session.execute(select(func.count()).select_from(PlanningSchool))
         return result.scalar()
 
-    async def query_planning_school_with_page(self, page_request: PageRequest, planning_school_name,planning_school_no,planning_school_code,
-                                              block,planning_school_level,borough,status,founder_type,
+    async def query_planning_school_with_page(self, page_request: PageRequest, planning_school_name, planning_school_no,
+                                              planning_school_code,
+                                              block, planning_school_level, borough, status, founder_type,
                                               founder_type_lv2,
-                                              founder_type_lv3 ) -> Paging:
+                                              founder_type_lv3) -> Paging:
         query = select(PlanningSchool).where(PlanningSchool.is_deleted == False).order_by(desc(PlanningSchool.id))
 
         if planning_school_name:
@@ -124,37 +126,35 @@ class PlanningSchoolDAO(DAOBase):
         if status:
             query = query.where(PlanningSchool.status == status)
 
-        if len(founder_type_lv3)>0:
+        if len(founder_type_lv3) > 0:
             query = query.where(PlanningSchool.founder_type_lv3.in_(founder_type_lv3))
-
 
         paging = await self.query_page(query, page_request)
         return paging
 
-    async def update_planning_school_status(self, planning_school,status):
+    async def update_planning_school_status(self, planning_school, status):
         session = await self.master_db()
-        next_status= 1
+        next_status = 1
         if status == 1:
-            next_status= '正常'
+            next_status = '正常'
         else:
-            next_status= '已关闭'
+            next_status = '已关闭'
 
         update_stmt = update(PlanningSchool).where(PlanningSchool.id == planning_school.id).values(
-            status= next_status,
+            status=next_status,
         )
         await session.execute(update_stmt)
         # await session.delete(planning_school)
         await session.commit()
         return planning_school
 
-
     async def update_planning_school_byargs(self, planning_school: PlanningSchool, *args, is_commit: bool = True):
         planning_school.id = int(planning_school.id)
-        if hasattr(planning_school, 'process_instance_id') and  planning_school.process_instance_id:
+        if hasattr(planning_school, 'process_instance_id') and planning_school.process_instance_id:
             planning_school.process_instance_id = int(planning_school.process_instance_id)
-        session =await self.master_db()
+        session = await self.master_db()
         update_contents = get_update_contents(planning_school, *args)
-        #id unset
+        # id unset
         if 'id' in update_contents.keys():
             update_contents.pop('id')
         query = update(PlanningSchool).where(PlanningSchool.id == planning_school.id).values(**update_contents)

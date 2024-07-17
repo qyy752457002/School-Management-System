@@ -12,7 +12,8 @@ from models.institution import Institution as Institutions
 from rules.school_rule import SchoolRule
 from rules.storage_rule import StorageRule
 from rules.system_rule import SystemRule
-from views.models.institutions import Institutions as InstitutionsModel
+from views.models.institutions import Institutions as InstitutionsModel, InstitutionsImport
+
 
 class InstitutionExecutor(TaskExecutor):
     def __init__(self):
@@ -21,24 +22,38 @@ class InstitutionExecutor(TaskExecutor):
         self.system_rule = get_injector(SystemRule)
         super().__init__()
 
-    async def execute(self, context: 'Context'):
-        task: Task = context.task
+    async def execute(self, context: 'Task'):
+        task: Task = context
         print(task)
         # 读取 文件内容  再解析到 各个的 插入 库
         try:
             print('开始执行task')
             info = task.payload
             data= [ ]
-            fileinfo =await self.system_rule.get_download_url_by_id(info.file_name)
-            data =await self._storage_rule.get_file_data(info.file_name, info.bucket_name,info.scene)
+            if info.file_name.isdecimal():
+                # 得到的是下载链接  下载到本地
+                fileinfo =await self.system_rule.get_download_url_by_id(info.file_name)
+                logger.debug('根据ID下载文件', f"{fileinfo}",  )
+                data =await self._storage_rule.get_file_data(info.file_name, info.bucket_name,info.scene,file_direct_url=fileinfo)
+                logger.debug('根据URL解析数据', f"{data}",  )
+                pass
+            else:
+                # 得到的是 3个参数   下载到本地
+
+                data =await self._storage_rule.get_file_data(info.file_name, info.virtual_bucket_name,info.scene,file_direct_url=None)
+                logger.debug('根据URL解析数据', f"{data}",  )
+                pass
+
             # data =await self._storage_rule.get_file_data(info.file_name, info.bucket,info.scene)
             for item in data:
                 if isinstance(item, dict):
+                    # db模型
                     institution_import: Institutions = Institutions(**item)
                 elif isinstance(item, Institutions):
                     institution_import: Institutions = item
-                elif isinstance(item, InstitutionsModel):
-                    institution_import: InstitutionsModel = item
+                elif isinstance(item, InstitutionsImport):
+                    # 视图模型
+                    institution_import: InstitutionsImport = item
                 else:
                     raise ValueError("Invalid payload type")
                 res = await self.institution_rule.add_school(institution_import)
@@ -49,6 +64,7 @@ class InstitutionExecutor(TaskExecutor):
         except Exception as e:
             print(e,'异常')
             logger.error(f"Institution   create failed")
+            logger.error(e)
 
 
 # 导出  todo
