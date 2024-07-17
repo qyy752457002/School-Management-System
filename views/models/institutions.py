@@ -158,6 +158,14 @@ class InstitutionPageSearch(BaseModel):
     school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
     institution_category: InstitutionType = Query(None, title='单位分类',examples=['institution/administration'])
 
+class InstitutionsImport(BaseModel):
+    school_name: str = Field(...,alias='institution_name', title='单位名称',  examples=['文化部'])
+    institution_category: InstitutionType|str = Field(InstitutionType.INSTITUTION, title='单位类型',  examples=['institution/administration'])
+    borough: str = Field("",    title="行政管辖区", description=" ", ),
+    block: str = Field("",   title="地域管辖区", description="", ),
+    membership_no: str = Field( '',     title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
+    social_credit_code: str|None = Field( None,   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['6'])
+    create_school_date: str = Field( '',   title='成立时间',  description=" 成立年月",examples=['2020-10-23'])
 
 class InstitutionsAdd(BaseModel):
     #   title  实际根据title匹配

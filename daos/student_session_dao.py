@@ -23,7 +23,8 @@ class StudentSessionDao(DAOBase):
         """
         session = await self.master_db()
         update_contents = get_update_contents(student_session, *args)
-        query = update(StudentSession).where(StudentSession.session_id == student_session.session_id).values(**update_contents)
+        query = update(StudentSession).where(StudentSession.session_id == student_session.session_id).values(
+            **update_contents)
         return await self.update(session, query, student_session, update_contents, is_commit=is_commit)
 
     async def get_student_session_by_id(self, session_id):
@@ -39,7 +40,7 @@ class StudentSessionDao(DAOBase):
         获取类别
         """
         session = await self.slave_db()
-        query= select(StudentSession)
+        query = select(StudentSession)
         for key, value in kwargs.items():
             query = query.where(getattr(StudentSession, key) == value)
 
@@ -63,9 +64,8 @@ class StudentSessionDao(DAOBase):
         result = await session.execute(select(func.count()).select_from(StudentSession))
         return result.scalar()
 
-
-    async def query_session_with_page(self, page_request: PageRequest, status, session_name,session_alias ) -> Paging:
-        query = select(StudentSession). order_by(desc(StudentSession.session_id))
+    async def query_session_with_page(self, page_request: PageRequest, status, session_name, session_alias) -> Paging:
+        query = select(StudentSession).order_by(desc(StudentSession.session_id))
 
         if status:
             query = query.where(StudentSession.session_status == status)
