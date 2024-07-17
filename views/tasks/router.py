@@ -29,7 +29,7 @@ def init_task_router():
         topic="institution_import",
         name="事业单位导入任务",
         executor_cls=InstitutionExecutor,
-        payload_cls=InstitutionTask,
+        payload_cls=PlanningSchoolFileStorageModel,
         payload_is_list=False,
         description="事业单位导入任务",
     )

@@ -378,11 +378,7 @@ class PlanningSchoolView(BaseView):
                                           ) -> Task:
         file_name = file.file_name
         print('入参',file)
-        task_model = PlanningSchoolFileStorageModel(file_name=file_name,
-                                             virtual_bucket_name= file.bucket_name,
-                                             file_size= '51363',
-                                                    scene=file.scene
-                                                    )
+        task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name= file.bucket_name,  file_size= '51363',  scene=file.scene  )
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="planning_school_import",

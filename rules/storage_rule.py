@@ -12,7 +12,7 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model
 
 from views.common import common_view
 from views.models.classes import Classes
-from views.models.institutions import Institutions, InstitutionsValid
+from views.models.institutions import Institutions, InstitutionsValid, InstitutionsImport
 from views.models.planning_school import PlanningSchool, PlanningSchoolImport
 from views.models.school import School
 from views.models.students import NewStudents, StudentsFamilyInfoCreate
@@ -115,7 +115,7 @@ class StorageRule(object):
             header=1 # 0 表示第一行是标题 1表示第二行才开始标题
 
         if sence == ImportScene.INSTITUTION.value:
-            SampleModel = Institutions
+            SampleModel = InstitutionsImport
             sheetname = 'Sheet1'
             header=1 # 0 表示第一行是标题 1表示第二行才开始标题
 

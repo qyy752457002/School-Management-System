@@ -35,7 +35,7 @@ from rules.enum_value_rule import EnumValueRule
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, convert_snowid_in_model, convert_snowid_to_strings
 from views.models.extend_params import ExtendParams
-from views.models.institutions import InstitutionKeyInfo, Institutions
+from views.models.institutions import InstitutionKeyInfo, Institutions, InstitutionsImport
 # from rules.planning_school_rule import PlanningSchoolRule
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolTransactionAudit, PlanningSchoolKeyInfo
 from views.models.school import School as SchoolModel, SchoolKeyAddInfo, SchoolKeyInfo, SchoolPageSearch, \
@@ -83,7 +83,7 @@ class SchoolRule(object):
         school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""])
         return school
 
-    async def add_school(self, school:SchoolKeyAddInfo| SchoolModel|Institutions|SchoolBaseInfoOptional):
+    async def add_school(self, school:SchoolKeyAddInfo| SchoolModel|Institutions|SchoolBaseInfoOptional|InstitutionsImport):
         exists_school = await self.school_dao.get_school_by_school_name(
             school.school_name)
         if exists_school:

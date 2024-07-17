@@ -21,7 +21,7 @@ from views.common.common_view import compare_modify_fields, get_extend_params, c
     convert_query_to_none
 from views.models.operation_record import OperationTarget, OperationType, ChangeModule, OperationRecord
 from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolTransactionAudit, \
-    PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolImportReq
+    PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolImportReq, PlanningSchoolFileStorageModel
 from views.models.school import School, SchoolKeyInfo, SchoolPageSearch, SchoolBaseInfo
 # from fastapi import Field
 from fastapi import Query, Depends, Body
@@ -398,21 +398,18 @@ class InstitutionView(BaseView):
     # 导入 事业单位      上传文件获取 桶底值
 
     async def post_institution_import(self,
-                                      # file_name: str = Body(..., description="文件名"),
                                       file:PlanningSchoolImportReq
-
-                                      # bucket: str = Query(..., description="文件名"),
-                                      # scene: str = Query('', description="文件名"),
                                       ) -> Task:
         file_name= file.file_name
-
+        task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name= file.bucket_name,  file_size= '51363',  scene=file.scene  )
 
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="institution_import",
             # 文件 要对应的 视图模型
             # payload=InstitutionTask(file_name=file_name, bucket='', scene='institution_import'),
-            payload=InstitutionTask(file_name=file_name, scene= ImportScene.INSTITUTION.value, bucket='institution_import' ),
+            payload= task_model,
+
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
