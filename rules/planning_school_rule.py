@@ -620,6 +620,7 @@ class PlanningSchoolRule(object):
         founder_type_lv3 =await enum_value_rule.query_enum_values(FOUNDER_TYPE_LV3_ENUM_KEY,None,return_keys='enum_value')
         print('区域',districts, '')
         enum_mapper = frontend_enum_mapping
+        #todo 这4个 目前 城乡类型  教学点类型 经济属性 民族属性
 
         for item in paging_result.items:
             # item.approval_status =  item.approval_status.value
