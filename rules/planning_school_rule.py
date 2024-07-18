@@ -16,6 +16,7 @@ from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from objprint import objprint
 from sqlalchemy import select
 from business_exceptions.planning_school import PlanningSchoolNotFoundError, \
     PlanningSchoolNotFoundByProcessInstanceIdError
@@ -500,7 +501,7 @@ class PlanningSchoolRule(object):
         return False
 
     async def planning_school_export(self, task: Task):
-        bucket = 'student'
+        bucket = 'school'
         print(bucket,'桶')
 
         export_params: PlanningSchoolPageSearch = (
@@ -508,10 +509,17 @@ class PlanningSchoolRule(object):
         )
         page_request = PageRequest(page=1, per_page=100)
         random_file_name = f"planning_school_export_{shortuuid.uuid()}.xlsx"
-        temp_file_path = os.path.join(os.path.dirname(__file__), 'tmp')
-        if not os.path.exists(temp_file_path):
-            os.makedirs(temp_file_path)
-        temp_file_path = os.path.join(temp_file_path, random_file_name)
+        # 获取当前脚本所在目录的绝对路径
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        # 获取当前脚本所在目录的父目录
+        parent_dir = os.path.dirname(script_dir)
+
+        # 构建与 script_dir 并列的 temp 目录的路径
+        temp_dir_path = os.path.join(parent_dir, 'temp')
+
+        # 确保 temp 目录存在，如果不存在则创建它
+        os.makedirs(temp_dir_path, exist_ok=True)
+        temp_file_path = os.path.join(temp_dir_path, random_file_name)
         while True:
             # todo  这里的参数需要 解包
             paging = await self.planning_school_dao.query_planning_school_with_page(
@@ -519,14 +527,16 @@ class PlanningSchoolRule(object):
                 export_params.block,export_params.planning_school_level,export_params.borough,export_params.status,export_params.founder_type,
                 export_params.founder_type_lv2,export_params.founder_type_lv3
             )
+
             paging_result = PaginatedResponse.from_paging(
-                paging, PlanningSchoolPageSearch, {"hash_password": "password"}
+                paging, PlanningSchoolOptional, {"hash_password": "password"}
             )
             # 处理每个里面的状态 1. 0
             for item in paging_result.items:
-                item.approval_status =  item.approval_status.value
+                # item.approval_status =  item.approval_status.value
+                pass
 
-            # logger.info('分页的结果',len(paging_result.items))
+            logger.info('分页的结果条数',len(paging_result.items))
             excel_writer = ExcelWriter()
             excel_writer.add_data("Sheet1", paging_result.items)
             excel_writer.set_data(temp_file_path)
@@ -554,14 +564,18 @@ class PlanningSchoolRule(object):
             task_result.result_bucket = file_storage_resp.virtual_bucket_name
             task_result.result_file_id = file_storage_resp.file_id
             task_result.last_updated = datetime.now()
+            task_result.result_id = shortuuid.uuid()
             task_result.state = TaskState.succeeded
             task_result.result_extra = {"file_size": file_storage.file_size}
             if not task_result.result_file_id:
                 task_result.result_file_id =  0
             print('拼接数据task_result ',task_result)
+            print(f"任务结果 {task_result}")
 
-            resadd = await self.task_dao.add_task_result(task_result)
-            print('task_result写入结果',resadd)
+            resadd = await self.task_dao.add_task_result(task_result,True)
+            print('task_result写入结果',resadd,f"task_result写入结果 {resadd}")
+            # print(dir(task_result),dir(resadd))
+            # objprint(task_result,resadd)
         except Exception as e:
             logger.debug('保存文件记录和插入taskresult 失败')
 

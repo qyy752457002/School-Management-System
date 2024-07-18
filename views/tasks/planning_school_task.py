@@ -140,9 +140,11 @@ class PlanningSchoolExportExecutor(TaskExecutor):
             task.result_file = task_result.result_file
             task.result_bucket = task_result.result_bucket
             logger.debug("导入规划校的结果" ,task)
+            print('导出结果',task)
         except Exception as e:
             traceback.print_exc()
             logger.debug( f"任务   exe failed", traceback.format_exception(e))
+            print(e,'异常')
 
 
 
