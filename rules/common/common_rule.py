@@ -10,9 +10,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 
 from business_exceptions.school import SchoolNotFoundError
-from daos.campus_dao import CampusDAO
-from daos.school_dao import SchoolDAO
-from models.campus import Campus
+
 from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import workflow_service_config
 from views.models.campus import Campus as CampusModel
@@ -26,6 +24,7 @@ from daos.enum_value_dao import EnumValueDAO
 
 from typing import Type, List, Dict
 from pydantic import BaseModel
+from datetime import datetime
 
 
 async def send_request(apiname, datadict, method='get', is_need_query_param=False):
@@ -90,7 +89,9 @@ async def excel_fields_to_enum(data: dict, import_type) -> Dict:
                            "main_teaching_level": "main_teaching_level_type", "teaching_discipline": "subject_category",
                            "language": "language", "language_proficiency_level": "proficiency",
                            "language_certificate_name": "language_certificate_names",
-                           "contact_address": "contact_address", "current_post_type": "position_type"}
+                           "contact_address": "contact_address", "current_post_type": "position_type",
+                           "birth_place": "contact_address", "enterprise_work_experience": "seniority",
+                           "recruitment_method": "staff_source"}
     teacher_learn_experience = {"type_of_institution": "type_of_institution", "study_mode": "learning_method",
                                 "country_or_region_of_education": "nationality",
                                 "degree_name": "highest_education"}
@@ -157,7 +158,10 @@ async def excel_fields_to_enum(data: dict, import_type) -> Dict:
                 elif value == "否":
                     data[key] = False
             if key in fields:
-                if key == "contact_address":
+                address_list = ["contact_address", "birth_place"]
+                if key == "teaching_discipline":
+                    continue
+                if key in address_list:
                     data[key] = await get_address_by_description(value)
                 else:
                     data[key] = await get_enum_value(value, fields[key])
@@ -169,13 +173,15 @@ async def get_enum_value(description: str, enum_name: str):
     values = []
     parts = description.split('-')
     level = len(parts)
-    for i in range(level - 1, -1, -1):
+    parent_id = 0
+    for i in range(level):
         last_part = parts[i]
-        enum_name = f"{enum_name}_lv{i + 1}"
+        enum_name_db = f"{enum_name}_lv{i + 1}"
         enum_value_rule = get_injector(EnumValueRule)
-        enum_value = await enum_value_rule.get_enum_value_by_description_and_name(last_part, enum_name)
+        enum_value, parent_id = await enum_value_rule.get_enum_value_by_description_and_name(last_part, enum_name_db,
+                                                                                             parent_id)
         values.append(enum_value)
-    value = ",".join(reversed(values))
+    value = ",".join(values)
     return value
 
 

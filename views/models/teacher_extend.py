@@ -149,9 +149,9 @@ class TeacherWorkExperienceModel(BaseModel):
     单位性质类别：institution_nature_category
     """
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    employment_institution_name: str = Field(..., title="工作单位", description="任职单位名称")
-    start_date: date = Field(..., title="工作起始日期", description="开始时间")
-    end_date: date = Field(..., title="工作结束日期", description="结束时间")
+    employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
+    start_date: date = Field(..., title="任职开始年月", description="开始时间")
+    end_date: date = Field(..., title="任职结束年月", description="结束时间")
     on_duty_position: str = Field("", title="任职岗位", description="在职岗位")
     institution_nature_category: str = Field("", title="单位性质类别", description="单位性质类别")
 
@@ -180,9 +180,9 @@ class TeacherWorkExperienceUpdateModel(BaseModel):
     teacher_work_experience_id: int | str = Field(..., title="teacher_work_experience_id",
                                                   description="teacher_work_experience_id")
     teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
-    employment_institution_name: str = Field(..., title="工作单位", description="任职单位名称")
-    start_date: date = Field(..., title="工作起始日期", description="开始时间")
-    end_date: date = Field(..., title="工作结束日期", description="结束时间")
+    employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
+    start_date: date = Field(..., title="任职开始年月", description="开始时间")
+    end_date: date = Field(..., title="任职结束年月", description="结束时间")
     on_duty_position: str = Field(..., title="任职岗位", description="在职岗位")
     institution_nature_category: str = Field("", title="单位性质类别", description="单位性质类别")
 
@@ -204,9 +204,9 @@ class TeacherWorkExperienceComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
     teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
-    employment_institution_name: str = Field(..., title="工作单位", description="任职单位名称")
-    start_date: date = Field(..., title="工作起始日期", description="开始时间")
-    end_date: date = Field(..., title="工作结束日期", description="结束时间")
+    employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
+    start_date: date = Field(..., title="任职开始年月", description="开始时间")
+    end_date: date = Field(..., title="任职结束年月", description="结束时间")
     on_duty_position: str = Field("", title="任职岗位", description="在职岗位")
     institution_nature_category: str = Field("", title="单位性质类别", description="单位性质类别")
 
@@ -246,7 +246,7 @@ class TeacherWorkExperienceResultModel(TeacherWorkExperienceComModel):
 #     is_concurrent_other_positions: YesOrNo = Field("N", title="是否兼任其他岗位", description="是否兼任其他岗位")
 #     concurrent_position_category: Optional[str] = Field(..., title="兼任岗位类别", description="兼任岗位类别")
 #     concurrent_position_level: Optional[str] = Field(..., title="兼任岗位登记", description="兼任岗位登记")
-#     employment_institution_name: str = Field(..., title="工作单位", description="任职单位名称")
+#     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
 #     appointment_start_date: date = Field(..., title="开始年月", description="聘任开始时间")
 #     start_date: date = Field(..., title="任职开始年月", description="任职开始年月")
 

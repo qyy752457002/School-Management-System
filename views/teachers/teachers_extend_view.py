@@ -3,6 +3,10 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
 from fastapi import Query, Depends
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
+from mini_framework.web.request_context import request_context_manager
+from mini_framework.async_task.app.app_factory import app
+from mini_framework.async_task.task.task import Task
+from rules.teachers_rule import TeachersRule
 
 from views.models.teacher_extend import TeacherLearnExperienceModel, TeacherLearnExperienceUpdateModel
 from rules.teacher_learn_experience_rule import TeacherLearnExperienceRule
@@ -43,7 +47,6 @@ from rules.annual_review_rule import AnnualReviewRule
 from views.models.teacher_extend import ResearchAchievementsModel, ResearchAchievementsUpdateModel, \
     ResearchAchievementsQueryModel, ResearchAchievementsQueryReModel
 from rules.research_achievements_rule import ResearchAchievementsRule
-
 
 
 class TeacherLearnExperienceView(BaseView):
@@ -675,3 +678,22 @@ class ResearchAchievementsView(BaseView):
     #     paging_result = await self.research_achievements_rule.query_research_achievements_with_page(
     #         research_achievements, page_request)
     #     return paging_result
+
+
+class TeacherExtendImportView(BaseView):
+    def __init__(self):
+        super().__init__()
+        self.teacher_extend_experience_rule = get_injector(TeacherLearnExperienceRule)
+        self.teacher_rule = get_injector(TeachersRule)
+
+    async def post_teacher_work_experience_import(self, file_id: int | str = Query(..., title="文件id",
+                                                                                   example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(
+            task_type="teacher_save_import",
+            payload=filestorage,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task

@@ -59,8 +59,10 @@ class TeacherSaveImportExecutor(TaskExecutor):
                 account_export: TeacherFileStorageModel = task.payload
             else:
                 raise ValueError("Invalid payload type")
-            await self.teacher_import_rule.import_teachers_save(task)
-            # task_result = await self.teacher_rule.import_teachers(task)
+            file_storage_resp = await self.teacher_import_rule.import_teachers_save(task)
+            task.result_file = file_storage_resp.file_name
+            task.result_bucket = file_storage_resp.virtual_bucket_name
+
         except Exception as e:
             logger.error(f"Teacher import failed")
             logger.error(e)

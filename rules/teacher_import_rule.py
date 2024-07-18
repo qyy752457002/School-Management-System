@@ -94,7 +94,7 @@ class TeacherImportRule:
                     item["department"] = str(organization.id)
                 # 这里保证生成模型
                 item["org_id"] = item["department"]
-                teacher_data = {key: item[key] for key in TeachersSaveImportCreatModel.__fields__.keys() if key in item}
+                teacher_data = {key: item[key] for key in TeachersSaveImportCreatModel.__fields__.keys()}
                 teacher_model = TeachersSaveImportCreatModel(**teacher_data)
                 user_id = task.operator
                 try:
@@ -103,9 +103,12 @@ class TeacherImportRule:
                     teacher_id = int(teachers_work.teacher_id)
                     teacher_base_id = int(teacher_base_id)
                     if teacher_id:
+                        # info_data = {key: item[key] for key in TeacherInfoSubmit.__fields__.keys() if key in item}
+                        # info_data["teacher_id"] = teacher_id
+                        # info_data["teacher_base_id"] = teacher_base_id
+                        item["teacher_id"] = teacher_id
+                        item["teacher_base_id"] = teacher_base_id
                         info_data = {key: item[key] for key in TeacherInfoImportSubmit.__fields__.keys() if key in item}
-                        info_data["teacher_id"] = teacher_id
-                        info_data["teacher_base_id"] = teacher_base_id
                         data_dict = await excel_fields_to_enum(info_data, "import_teacher")
                         info_model = TeacherInfoImportSubmit(**data_dict)
                         await self.teachers_info_rule.update_teachers_info_import(info_model, user_id)
@@ -222,19 +225,16 @@ class TeacherImportRule:
             file_storage_resp = await storage_manager.add_file(
                 self.file_storage_dao, file_storage
             )
-
-            task_result = TaskResult()
-            task_result.task_id = task.task_id
-            task_result.result_file = file_storage_resp.file_name
-            task_result.result_bucket = file_storage_resp.virtual_bucket_name
-            task_result.result_file_id = file_storage_resp.file_id
-            task_result.last_updated = datetime.now()
-            task_result.state = TaskState.succeeded
-            task_result.result_id = shortuuid.uuid()
-            task_result.result_extra = {"file_size": file_storage.file_size}
-
-            await self.task_dao.add_task_result(task_result, is_commit=True)
-            return task_result
+            # task_result = TaskResult()
+            # task_result.task_id = task.task_id
+            # task_result.result_file = file_storage_resp.file_name
+            # task_result.result_bucket = file_storage_resp.bucket_name
+            # task_result.result_file_id = file_storage_resp.file_id
+            # task_result.last_updated = datetime.now()
+            # task_result.state = TaskState.succeeded
+            # task_result.result_extra = {"file_size": file_storage.file_size}
+            # await self.task_dao.add_task_result(task_result)
+            return file_storage_resp
 
 
         except Exception as e:
@@ -284,84 +284,3 @@ class TeacherImportRule:
         await self.task_dao.add_task_result(task_result)
         return task_result
 
-    async def import_teachers_test(self,file_id):
-        try:
-            local_file_path = "教职工基础信息导入模版2.xlsx"
-            logger.info("Test开始注册模型")
-            reader = ExcelReader()
-            reader.set_data(local_file_path)
-            reader.register_model("数据", CombinedModel, header=1)
-            logger.info("Test开始注册模型")
-            # reader.register_model("Sheet1", TeachersCreatModel)
-            # reader.register_model("Sheet1", TeacherInfoCreateModel)
-            logger.info("Test开始读取模型")
-            data = reader.execute()["数据"]
-            if not isinstance(data, list):
-                raise ValueError("数据格式错误")
-            results = []
-            # 两个一起写
-            for idx, item in enumerate(data):
-                item = item.dict()
-                result_dict = item.copy()
-                result_dict["failed_msg"] = "成功"
-                result = TeacherImportResultModel(**result_dict)
-                # school = await self.school_dao.get_school_by_school_name(item["teacher_employer"])
-                # if school:
-                #     school = school._asdict()['School']
-                #     item["teacher_employer"] = school.id
-                # else:
-                #     raise SchoolNotFoundError()
-                # organization = await self.organization_dao.get_organization_by_name_and_school_id(
-                #     item["department"], item["teacher_employer"])
-                # if organization:
-                #     item["department"] = str(organization.id)
-                # 这里保证生成模型
-                item["org_id"] = item["department"]
-                # teacher_data = {key: item[key] for key in TeachersSaveImportCreatModel.__fields__.keys() if key in item}
-                # teacher_model = TeachersSaveImportCreatModel(**teacher_data)
-                user_id = "hkjghfdsdcx"
-                try:
-                    # teachers_work, teacher_base_id = await self.teacher_rule.add_teachers_import_save(teacher_model,
-                    #                                                                                   user_id)
-                    teacher_id = 789012353646
-                    teacher_base_id = 987465138645
-                    if teacher_id:
-
-                        info_data = {key: item[key] for key in TeacherInfoImportSubmit.__fields__.keys() if key in item}
-                        info_data["teacher_id"] = teacher_id
-                        info_data["teacher_base_id"] = teacher_base_id
-                        data_dict = await excel_fields_to_enum(info_data, "import_teacher")
-                        info_model = TeacherInfoImportSubmit(**data_dict)
-                        await self.teachers_info_rule.update_teachers_info_import(info_model, user_id)
-                except Exception as ex:
-                    result.failed_msg = str(ex)
-                    results.append(result)
-                    logger.info(f"Failed to add teacher at index {idx}: {ex}")
-                    print(ex, '表内数据异常')
-                    raise ex
-            local_results_path = f"/tmp/教职工基础信息导入模版2.xlsx"
-            excel_writer = ExcelWriter()
-            excel_writer.add_data("Sheet1", results)
-            excel_writer.set_data(local_results_path)
-            excel_writer.execute()
-            #
-            # random_file_name = shortuuid.uuid()
-            # file_storage = storage_manager.put_file_to_object(
-            #     source_file.virtual_bucket_name, f"{random_file_name}.xlsx", local_results_path
-            # )
-            # file_storage_resp = await storage_manager.add_file(
-            #     self.file_storage_dao, file_storage
-            # )
-            # task_result = TaskResult()
-            # task_result.task_id = task.task_id
-            # task_result.result_file = file_storage_resp.file_name
-            # task_result.result_bucket = file_storage_resp.bucket_name
-            # task_result.result_file_id = file_storage_resp.file_id
-            # task_result.last_updated = datetime.now()
-            # task_result.state = TaskState.succeeded
-            # task_result.result_extra = {"file_size": file_storage.file_size}
-            # await self.task_dao.add_task_result(task_result)
-            # return task_result
-        except Exception as e:
-            print(e, '异常')
-            raise e

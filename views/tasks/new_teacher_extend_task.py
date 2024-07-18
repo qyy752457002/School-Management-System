@@ -5,13 +5,13 @@ from mini_framework.utils.logging import logger
 
 from rules.teacher_work_experience_rule import TeacherWorkExperienceRule
 from views.models.teachers import TeacherFileStorageModel
-from rules.teacher_extend_import_rule import TeacherImportExtendRule
+from rules.teacher_extend_import_rule import TeacherExtendImportRule
 
 
 class TeacherWorkExperienceImportExecutor(TaskExecutor):
     def __init__(self):
         self.teacher_work_experience_rule = get_injector(TeacherWorkExperienceRule)
-        self.teacher_import_extend_rule = get_injector(TeacherImportExtendRule)
+        self.teacher_extend_import_rule = get_injector(TeacherExtendImportRule)
         super().__init__()
 
     async def execute(self, context: "Context"):
@@ -28,7 +28,8 @@ class TeacherWorkExperienceImportExecutor(TaskExecutor):
             else:
                 raise ValueError("Invalid payload type")
             logger.info("Test3")
-            await self.teacher_work_experience_rule.teacher_work_experience(task)
+            await self.teacher_extend_import_rule.import_teacher_work_experience(task)
+
         except Exception as e:
             logger.error(f"Teacher work experience import failed")
             logger.error(e)

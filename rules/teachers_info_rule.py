@@ -216,13 +216,13 @@ class TeachersInfoRule(object):
                 operator_name=user_id,
                 process_instance_id=0)
             await self.operation_record_rule.add_operation_record(teacher_base_info_log)
-        organization = OrganizationMembers()
-        organization.id = None
-        organization.org_id = teachers_info.org_id
-        organization.teacher_id = teachers_info.teacher_id
-        organization.member_type = None
-        organization.identity = None
-        await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
+        # organization = OrganizationMembers()
+        # organization.id = None
+        # organization.org_id = teachers_info.org_id
+        # organization.teacher_id = teachers_info.teacher_id
+        # organization.member_type = None
+        # organization.identity = None
+        # await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
         return teachers_info_db
 
     async def update_teachers_info_import(self, teachers_info: TeacherInfoImportSubmit, user_id):
@@ -230,6 +230,12 @@ class TeachersInfoRule(object):
         exists_teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_info.teacher_base_id)
         if not exists_teachers_info:
             raise TeacherInfoNotFoundError()
+        need_update_list = []
+        for key, value in teachers_info.dict().items():
+            if value:
+                need_update_list.append(key)
+        teachers_info.org_id = int(teachers_info.org_id)
+        teachers_info_db = await self.teachers_info_dao.update_teachers_info(teachers_info, *need_update_list)
         teacher_entry_approval_db = await self.teachers_info_dao.get_teacher_approval(teachers_info.teacher_id)
         teacher_entry_approval = orm_model_to_view_model(teacher_entry_approval_db, NewTeacherApprovalCreate,
                                                          exclude=[""])
@@ -258,13 +264,13 @@ class TeachersInfoRule(object):
             await self.teacher_submitted(teacher_id)
             teachers_rule = get_injector(TeachersRule)
             await teachers_rule.teacher_progressing(teacher_id)
-        organization = OrganizationMembers()
-        organization.id = None
-        organization.org_id = teachers_info.org_id
-        organization.teacher_id = teachers_info.teacher_id
-        organization.member_type = None
-        organization.identity = None
-        await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
+        # organization = OrganizationMembers()
+        # organization.id = None
+        # organization.org_id = int(teachers_info.org_id)
+        # organization.teacher_id = int(teachers_info.teacher_id)
+        # organization.member_type = None
+        # organization.identity = None
+        # await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
         return True
 
     async def update_teachers_info_save(self, teachers_info, user_id):
