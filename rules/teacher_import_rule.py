@@ -131,40 +131,19 @@ class TeacherImportRule:
             file_storage_resp = await storage_manager.add_file(
                 self.file_storage_dao, file_storage
             )
-            task_result = TaskResult()
-            task_result.task_id = task.task_id
-            task_result.result_file = file_storage_resp.file_name
-            task_result.result_bucket = file_storage_resp.bucket_name
-            task_result.result_file_id = file_storage_resp.file_id
-            task_result.last_updated = datetime.now()
-            task_result.state = TaskState.succeeded
-            task_result.result_extra = {"file_size": file_storage.file_size}
-            await self.task_dao.add_task_result(task_result)
-            return task_result
+            # task_result = TaskResult()
+            # task_result.task_id = task.task_id
+            # task_result.result_file = file_storage_resp.file_name
+            # task_result.result_bucket = file_storage_resp.virtual_bucket_name
+            # task_result.result_file_id = file_storage_resp.file_id
+            # task_result.last_updated = datetime.now()
+            # task_result.state = TaskState.succeeded
+            # task_result.result_extra = {"file_size": file_storage.file_size}
+            # await self.task_dao.add_task_result(task_result)
+            return file_storage_resp
         except Exception as e:
             print(e, '异常')
             raise e
-
-            # for idx, item in enumerate(data):
-            #     item = item.dict()
-            #     teacher_data = {key: item[key] for key in TeachersCreatModel.__fields__.keys() if key in item}
-            #     logger.info(teacher_data)
-            #     teacher_model = TeachersCreatModel(**teacher_data)
-            #     logger.info(type(teacher_data))
-            #
-            #     result_dict = teacher_data.copy()
-            #     result_dict["failed_msg"] = "成功"
-            #     result = TeacherCreateResultModel(**result_dict)
-            #     user_id = "asdfasdf"
-            #     try:
-            #         await self.add_teachers(teacher_model, user_id)
-            #
-            #     except Exception as ex:
-            #         result.failed_msg = str(ex)
-            #         logger.info(f"Failed to add teacher at index {idx}: {ex}")
-            #         print(ex, '表内数据异常')
-            #         raise ex
-            #     results.append(result)
 
     async def import_teachers_save(self, task: Task):
         try:
