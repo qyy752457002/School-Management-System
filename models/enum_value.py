@@ -8344,7 +8344,6 @@ class EnumValue(BaseDBModel):
             EnumValue(id=6174, enum_name="institution_nature_category_lv1", enum_value="other", description="其他",
                       sort_number=0, parent_id="0", is_enabled=True, created_uid=0, updated_uid=0,
                       created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-            # 学校分类  课程分类  授课方式 证件类型 户口性质 宗教 健康状况=health_status_lv1 血型  关系  面貌 =political_status_lv1 毕业状态
 
             EnumValue(id=6175, enum_name="kg_level", enum_value="1", description="一星", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=6176, enum_name="kg_level", enum_value="2", description="二星", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
@@ -8423,9 +8422,34 @@ class EnumValue(BaseDBModel):
             EnumValue(id=6236, enum_name="teach_method", enum_value="Lab", description="实验", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=6236, enum_name="teach_method", enum_value="Internship", description="实习", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=6236, enum_name="teach_method", enum_value="Other", description="其他", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
-            
+            EnumValue(id=6236,enum_name="id_type",description="居民身份证",enum_value="resident_id_card",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="id_type",description="军官证",enum_value="military_officer_id",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="id_type",description="士兵证",enum_value="soldier_id",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="id_type",description="文职干部证",enum_value="civilian_officer_id",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="id_type",description="部队离退休证",enum_value="military_retiree_id",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="id_type",description="香港特区护照/身份证明",enum_value="hong_kong_passport_id",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="id_type",description="澳门特区护照/身份证明",enum_value="macau_passport_id",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="id_type",description="台湾居民来往大陆通行证",enum_value="taiwan_resident_travel_permit",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="id_type",description="境外永久居住证",enum_value="overseas_permanent_residence_permit",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="id_type",description="护照",enum_value="passport",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="id_type",description="出生证明",enum_value="birth_certificate",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="id_type",description="户口薄",enum_value="household_register",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="id_type",description="其他",enum_value="other",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="household_status",description="未落常住户口",enum_value="unregistered_resident_household",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="household_status",description="非农业家庭户口",enum_value="non_agricultural_family_household",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="household_status",description="农业家庭户口",enum_value="agricultural_family_household",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="household_status",description="非农业集体户口",enum_value="non_agricultural_collective_household",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="household_status",description="农业集体户口",enum_value="agricultural_collective_household",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="household_status",description="自理口粮户口",enum_value="self_provisioned_food_household",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="household_status",description="寄住户口",enum_value="lodging_household",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="household_status",description="暂住户口",enum_value="temporary_residence_household",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="household_status",description="其他户口",enum_value="other_household",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="household_status",description="农业户口",enum_value="agricultural_household",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6236,enum_name="household_status",description="非农业户口",enum_value="non_agricultural_household",parent_id="",sort_number=0,is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
 
 
+
+            # 学校分类  课程分类  授课方式 证件类型 户口性质 宗教 健康状况=health_status_lv1 血型  关系  面貌 =political_status_lv1 毕业状态
 
             # 死亡这一栏 todo  家庭成员职业  STUDENT_APPROVALATATUS等后面5个
 
