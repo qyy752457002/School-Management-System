@@ -8275,7 +8275,11 @@ class EnumValue(BaseDBModel):
                       updated_uid=0, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
             EnumValue(id=6147, enum_name="political_status_lv1", enum_value="Masses", description="群众", sort_number=0,
                       parent_id="0", is_enabled=True, created_uid=0, updated_uid=0, created_at=datetime.now(),
-                      updated_at=datetime.now(), is_deleted=False)
+                      updated_at=datetime.now(), is_deleted=False),
+            EnumValue(id=6148, enum_name="planningschool_status", enum_value="draft", description="草稿", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6149, enum_name="planningschool_status", enum_value="opening", description="开办中", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6150, enum_name="planningschool_status", enum_value="normal", description="正常", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6151, enum_name="planningschool_status", enum_value="closed", description="关闭", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
 
 
 

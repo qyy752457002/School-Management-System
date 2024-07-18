@@ -28,6 +28,9 @@ class SchoolStatus(Enum):
     OPENING = "opening"
     NORMAL = "normal"
     CLOSED = "closed"
+    @classmethod
+    def to_list(cls):
+        return [cls.DRAFT, cls.OPENING]
 
 
 class PlanningSchoolStatus(str, Enum):
