@@ -23,6 +23,7 @@ INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE:Final = 'i_institution_keyinfo_change'
 FOUNDER_TYPE_ENUM_KEY:Final = 'founder_type'
 FOUNDER_TYPE_LV2_ENUM_KEY:Final = 'founder_type_lv2'
 FOUNDER_TYPE_LV3_ENUM_KEY:Final = 'founder_type_lv3'
+SCHOOL_ORG_FORM_ENUM_KEY:Final = 'school_org_form'
 
 
 class InstitutionType(str, Enum):
