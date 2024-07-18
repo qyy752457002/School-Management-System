@@ -18,6 +18,7 @@ from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task.task import Task
 from views.models.teachers import NewTeacherTask
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
+from rules.teacher_import_rule import TeacherImportRule
 
 
 class NewTeachersView(BaseView):
@@ -26,6 +27,7 @@ class NewTeachersView(BaseView):
         self.teacher_rule = get_injector(TeachersRule)
         self.teacher_info_rule = get_injector(TeachersInfoRule)
         self.teacher_work_flow_instance_rule = get_injector(TeacherWorkFlowRule)
+        self.teacher_import_rule = get_injector(TeacherImportRule)
 
     # 新增教职工登记信息
     async def post_newteacher(self, teachers: TeachersCreatModel):
@@ -303,3 +305,8 @@ class NewTeachersView(BaseView):
 #                                            ):
 #     params = {"teacher_main_status": "unemployed", "teacher_sub_status": "unsubmitted"}
 #     await self.teacher_work_flow_instance_rule.update_work_flow_by_param(process_instance_id, params)
+
+# 测试导入
+    async def post_teacher_import_test(self, file_id: int = Query(..., title="文件id", description="文件id")):
+        await self.teacher_import_rule.import_teachers_test(file_id)
+

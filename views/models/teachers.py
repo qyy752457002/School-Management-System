@@ -74,6 +74,8 @@ class IdentityType(str, Enum):
                 cls.BIRTH_CERTIFICATE, cls.HOUSEHOLD_REGISTER, cls.OTHER]
 
 
+
+
 class Teachers(BaseModel):
     """
     教师ID:teacher_id
@@ -1382,8 +1384,7 @@ class TeacherInfoImportSubmit(BaseModel):
     招聘方式：recruitment_method
     教职工号：teacher_number
     """
-    teacher_base_id: int = Field(-1, title="教师ID", description="教师ID")
-    teacher_id: int = Field(..., title="教师ID", description="教师ID")
+
     ethnicity: Optional[str] = Field(None, title="民族", description="民族", example="汉族")
     nationality: str = Field(..., title="国家/地区", description="国家地区", example="中国")
     political_status: Optional[str] = Field(None, title="政治面貌", description="政治面貌", example="党员")
@@ -1401,28 +1402,28 @@ class TeacherInfoImportSubmit(BaseModel):
     enter_school_time: date = Field(..., title="进本校年月", description="进本校时间", example="2010-01-01")
     source_of_staff: str = Field(..., title="教职工来源", description="教职工来源", example="招聘")
     staff_category: str = Field(..., title="教职工类别", description="教职工类别", example="教师")
-    in_post: bool = Field(..., title="是否在编", description="是否在编")
+    in_post: str = Field(..., title="是否在编", description="是否在编")
     employment_form: str = Field(..., title="用人形式", description="用人形式", example="合同")
     contract_signing_status: str = Field(..., title="签订合同情况", description="合同签订情况", example="已签")
     current_post_type: str = Field("", title="现任岗位类型", description="现任岗位类型", example="教师")
     current_post_level: str = Field("", title="现任岗位等级", description="现岗位等级", example="一级")
     current_technical_position: str = Field("", title="现任专业技术职务", description="现妆业技术职务", example="教师")
-    full_time_special_education_major_graduate: bool = Field(..., title="是否全日制特殊教育专业毕业",
+    full_time_special_education_major_graduate: str = Field(..., title="是否全日制特殊教育专业毕业",
                                                              description="是否全日制特殊教育专业毕业", )
-    received_preschool_education_training: bool = Field(..., title="是否受过学前教育培训",
+    received_preschool_education_training: str = Field(..., title="是否受过学前教育培训",
                                                         description="是否受过学前教育培训")
-    full_time_normal_major_graduate: bool = Field(..., title="是否全日制师范类专业毕业",
+    full_time_normal_major_graduate: str = Field(..., title="是否全日制师范类专业毕业",
                                                   description="是否全日制师范类专业毕业")
-    received_special_education_training: bool = Field(..., title="是否受过特教专业培养培训",
+    received_special_education_training: str = Field(..., title="是否受过特教专业培养培训",
                                                       description="是否受过特教专业培训")
-    has_special_education_certificate: bool = Field(..., title="是否有特殊教育从业证书", description="是否有特教证书")
+    has_special_education_certificate: str = Field(..., title="是否有特殊教育从业证书", description="是否有特教证书")
 
     information_technology_application_ability: str = Field(..., title="信息技术应用能力",
                                                             description="信息技术应用能力", example="优秀")
 
-    free_normal_college_student: bool = Field(..., title="是否属于免费（公费）师范生", description="是否免费师范生")
+    free_normal_college_student: str = Field(..., title="是否属于免费（公费）师范生", description="是否免费师范生")
 
-    participated_in_basic_service_project: bool = Field(..., title="是否参加基层服务项目",
+    participated_in_basic_service_project: str = Field(..., title="是否参加基层服务项目",
                                                         description="是否参加基层服务项目")
     basic_service_start_date: Optional[date] = Field(None, title="参加基层服务项目起始年月",
                                                      description="基层服务起始日期",
@@ -1430,13 +1431,13 @@ class TeacherInfoImportSubmit(BaseModel):
     basic_service_end_date: Optional[date] = Field(None, title="参加基层服务项目结束年月",
                                                    description="基层服务结束日期",
                                                    example="2010-01-01")
-    special_education_teacher: bool = Field(..., title="是否特级教师", description="是否特教")
-    dual_teacher: bool = Field(..., title="是否双师型", description="是否双师型")
-    has_occupational_skill_level_certificate: bool = Field(..., title="是否具备职业技能等级证书",
+    special_education_teacher: str = Field(..., title="是否特级教师", description="是否特教")
+    dual_teacher: str = Field(..., title="是否双师型", description="是否双师型")
+    has_occupational_skill_level_certificate: str = Field(..., title="是否具备职业技能等级证书",
                                                            description="是否具备职业技能等级证书", )
     enterprise_work_experience: str = Field(..., title="企业工作（实践）时长", description="企业工作时长", example="3年")
-    county_level_backbone: bool = Field(..., title="是否县级及以上骨干教师", description="是否县级以上骨干")
-    psychological_health_education_teacher: bool = Field(..., title="是否心理健康教育教师",
+    county_level_backbone: str = Field(..., title="是否县级及以上骨干教师", description="是否县级以上骨干")
+    psychological_health_education_teacher: str = Field(..., title="是否心理健康教育教师",
                                                          description="是否心理健康教育教师")
     recruitment_method: str = Field(..., title="招聘方式", description="招聘方式", example="招聘")
     teacher_number: str = Field("", title="教职工号", description="教职工号", example="123456789012345678")
@@ -1459,7 +1460,7 @@ class TeacherInfoImportSubmit(BaseModel):
     email: str = Field("", title="电子信箱", description="电子信箱", example="电子信箱")
     highest_education_level: str = Field("", title="最高学历层次", description="最高学历层次", example="最高学历层次")
     highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
-    is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
+    is_major_graduate: str | None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
 
     @model_validator(mode='after')

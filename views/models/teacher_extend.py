@@ -3,6 +3,7 @@ from datetime import date
 from fastapi import Query
 from models.public_enum import YesOrNo
 from typing import Optional, List, Any
+from views.models.teachers import IdentityType
 
 
 class TeacherLearnExperienceModel(BaseModel):
@@ -49,14 +50,6 @@ class TeacherLearnExperienceModel(BaseModel):
             else:
                 pass
         return data
-
-
-class TeacherLearnExperienceComModel(TeacherLearnExperienceModel):
-    pass
-
-
-class TeacherLearnExperienceResultModel(TeacherLearnExperienceModel):
-    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
 class TeacherLearnExperienceUpdateModel(BaseModel):
@@ -107,6 +100,45 @@ class TeacherLearnExperienceUpdateModel(BaseModel):
         return data
 
 
+class TeacherLearnExperienceComModel(BaseModel):
+    """
+    这个模型是导入excel注册时候用的
+    """
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+
+    education_obtained: str = Field(..., title="获的学历", description="获的学历")
+    country_or_region_of_education: str = Field(..., title="获得学历国家/地区", description="获得学历国家/地区")
+    institution_of_education_obtained: str = Field(..., title="获得学历的院校机构", description="获得学历的院校机构")
+    major_learned: str = Field(..., title="所学妆业", description="所学专业")
+    is_major_normal: str = Field(False, title="是否师范类专业", description="是否师范类专业")
+    admission_date: Optional[date] = Field(None, title="入学年月", description="入学时间")
+    graduation_date: Optional[date] = Field(None, title="结束学业年月", description="毕业时间")
+    degree_level: str = Field(..., title="学位层次", description="学位层次")
+    degree_name: str = Field(..., title="学位名称", description="学位名称")
+    country_or_region_of_degree_obtained: str = Field(..., title="获取学位过家地区", description="获取学位过家地区")
+    institution_of_degree_obtained: str = Field(..., title="获得学位院校机构", description="获得学位院校机构")
+    degree_award_date: date = Field(..., title="学位授予时间", description="学位授予时间")
+    study_mode: str = Field(..., title="学习形式", description="学习方式")
+    type_of_institution: str = Field("", title="在学单位类别", description="在学单位类别")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
+
+class TeacherLearnExperienceResultModel(TeacherLearnExperienceComModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
+
 class TeacherWorkExperienceModel(BaseModel):
     """
     教师ID：teacher_id
@@ -133,14 +165,6 @@ class TeacherWorkExperienceModel(BaseModel):
             else:
                 pass
         return data
-
-
-class TeacherWorkExperienceComModel(TeacherWorkExperienceModel):
-    pass
-
-
-class TeacherWorkExperienceResultModel(TeacherWorkExperienceModel):
-    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
 class TeacherWorkExperienceUpdateModel(BaseModel):
@@ -174,6 +198,32 @@ class TeacherWorkExperienceUpdateModel(BaseModel):
             else:
                 pass
         return data
+
+
+class TeacherWorkExperienceComModel(BaseModel):
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    employment_institution_name: str = Field(..., title="工作单位", description="任职单位名称")
+    start_date: date = Field(..., title="工作起始日期", description="开始时间")
+    end_date: date = Field(..., title="工作结束日期", description="结束时间")
+    on_duty_position: str = Field("", title="任职岗位", description="在职岗位")
+    institution_nature_category: str = Field("", title="单位性质类别", description="单位性质类别")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
+
+class TeacherWorkExperienceResultModel(TeacherWorkExperienceComModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
 # class TeacherJobAppointmentsModel(BaseModel):
@@ -212,6 +262,7 @@ class TeacherJobAppointmentsModel(BaseModel):
     聘任开始时间：appointment_start_date
     结束时间：end_date
     """
+
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     position_category: str = Field(..., title="岗位类别", description="岗位类别")
     position_level: str = Field(..., title="岗位等级", description="岗位等级")
@@ -232,14 +283,6 @@ class TeacherJobAppointmentsModel(BaseModel):
             else:
                 pass
         return data
-
-
-class TeacherJobAppointmentsComModel(TeacherJobAppointmentsModel):
-    pass
-
-
-class TeacherJobAppointmentsResultModel(TeacherJobAppointmentsModel):
-    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
 class TeacherJobAppointmentsUpdateModel(BaseModel):
@@ -281,32 +324,35 @@ class TeacherJobAppointmentsUpdateModel(BaseModel):
         return data
 
 
-# class TeacherJobAppointmentsUpdateModel(BaseModel):
-#     """
-#     teacher_job_appointments：teacher_job_appointments_id
-#     教师ID：teacher_id
-#     岗位类别：position_category
-#     岗位等级：position_level
-#     校级职务：school_level_position
-#     是否兼任其他岗位：is_concurrent_other_positions
-#     兼任岗位类别：concurrent_position_category
-#     兼任岗位登记：concurrent_position_registration
-#     任职单位名称：employment_institution_name
-#     聘任开始时间：appointment_start_date
-#     结束时间：end_date
-#     """
-#     teacher_job_appointments_id: int = Field(..., title="teacher_job_appointments_id",
-#                                              description="teacher_job_appointments_id")
-#     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-#     position_category: str = Field(..., title="岗位类别", description="岗位类别")
-#     position_level: str = Field(..., title="岗位等级", description="岗位等级")
-#     school_level_position: str = Field(..., title="校级职务", description="校级职务")
-#     is_concurrent_other_positions: YesOrNo = Field("N", title="是否兼任其他岗位", description="是否兼任其他岗位")
-#     concurrent_position_category: Optional[str] = Field(..., title="兼任岗位类别", description="兼任岗位类别")
-#     concurrent_position_level: Optional[str] = Field(..., title="兼任岗位登记", description="兼任岗位登记")
-#     employment_institution_name: str = Field(..., title="工作单位", description="任职单位名称")
-#     appointment_start_date: date = Field(..., title="开始年月", description="聘任开始时间")
-#     start_date: date = Field(..., title="任职开始年月", description="任职开始年月")
+class TeacherJobAppointmentsComModel(BaseModel):
+    # todo 兼任岗位和等级结构需要更新
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+
+    position_category: str = Field(..., title="岗位类别", description="岗位类别")
+    position_level: str = Field(..., title="岗位等级", description="岗位等级")
+    school_level_position: str = Field(..., title="校级职务", description="校级职务")
+    is_concurrent_other_positions: str = Field(False, title="是否兼任其他岗位", description="是否兼任其他岗位")
+    concurrent_position: Optional[str] = Field(default=None, title="兼任岗位类别", description="兼任岗位类别")
+    concurrent_position_level: Optional[str] = Field("", title="兼任岗位等级", description="兼任岗位等级")
+    appointment_start_date: date = Field(..., title="聘任开始年月", description="聘任开始时间")
+    start_date: Optional[date] = Field(None, title="任职开始年月", description="任职开始年月")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
+
+class TeacherJobAppointmentsResultModel(TeacherJobAppointmentsComModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
 class TeacherProfessionalTitlesModel(BaseModel):
@@ -333,14 +379,6 @@ class TeacherProfessionalTitlesModel(BaseModel):
             else:
                 pass
         return data
-
-
-class TeacherProfessionalTitlesComModel(TeacherProfessionalTitlesModel):
-    pass
-
-
-class TeacherProfessionalTitlesResultModel(TeacherProfessionalTitlesModel):
-    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
 class TeacherProfessionalTitlesUpdateModel(BaseModel):
@@ -372,6 +410,32 @@ class TeacherProfessionalTitlesUpdateModel(BaseModel):
             else:
                 pass
         return data
+
+
+class TeacherProfessionalTitlesComModel(BaseModel):
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+
+    current_professional_title: str = Field(..., title="聘任专业技术职务", description="现专业技术职务")
+    employing_institution_name: str = Field("", title="聘任单位名称", description="聘任单位名称")
+    employment_start_date: date = Field(..., title="开始年月", description="聘任开始时间")
+    employment_end_date: Optional[date] = Field(None, title="结束年月", description="聘任结束时间")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
+
+class TeacherProfessionalTitlesResultModel(TeacherProfessionalTitlesComModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
 class TeacherQualificationsModel(BaseModel):
@@ -408,11 +472,33 @@ class TeacherQualificationsModel(BaseModel):
         return data
 
 
-class TeacherQualificationsComModel(TeacherQualificationsModel):
-    pass
+class TeacherQualificationsComModel(BaseModel):
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+
+    teacher_qualification_type: str = Field(..., title="种类", description="教师资格证种类")
+    qualification_number: str = Field(..., title="证书编号", description="资格证号码")
+    teaching_subject: str = Field(..., title="任教学科", description="任教学科")
+    certificate_issue_date: date = Field(..., title="颁发日期", description="证书颁发时间")
+    issuing_authority: str = Field("", title="颁发机构", description="颁发机构")
+    first_registration_date: Optional[date] = Field(None, title="首次注册日期", description="首次注册日期")
+    regular_registration_date: Optional[date] = Field(None, title="定期注册日期", description="定期注册日期")
+    regular_registration_conclusion: str = Field("", title="定期注册结论", description="定期注册结论")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
-class TeacherQualificationsResultModel(TeacherQualificationsModel):
+class TeacherQualificationsResultModel(TeacherQualificationsComModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
@@ -491,11 +577,34 @@ class TeacherSkillCertificatesModel(BaseModel):
         return data
 
 
-class TeacherSkillCertificatesComModel(TeacherSkillCertificatesModel):
-    pass
+class TeacherSkillCertificatesComModel(BaseModel):
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+
+    language: str = Field(..., title="语种", description="语种")
+    proficiency_level: str = Field(..., title="掌握程度", description="掌握程度")
+    other_skill_name: str = Field("", title="其他技能名称", description="其他技能名称")
+    other_skill_level: str = Field("", title="其他技能掌握程度", description="其他技能程度")
+    certificate_type: str = Field("", title="证书类型", description="证书类型")
+    language_certificate_name: str = Field("", title="语言证书名称", description="语言证书名称")
+    issue_year_month: Optional[date] = Field(None, title="发证年月", description="发证年月")
+    issuing_authority: str = Field("", title="发证单位", description="发证单位")
+    certificate_number: str = Field("", title="证书编号", description="证书编号")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
-class TeacherSkillCertificatesResultModel(TeacherSkillCertificatesModel):
+class TeacherSkillCertificatesResultModel(TeacherSkillCertificatesComModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
@@ -590,11 +699,45 @@ class TeacherEthicRecordsModel(BaseModel):
         return data
 
 
-class TeacherEthicRecordsComModel(TeacherEthicRecordsModel):
-    pass
+class TeacherEthicRecordsRewardsComModel(BaseModel):
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
-class TeacherEthicRecordsResultModel(TeacherEthicRecordsModel):
+class TeacherEthicRecordsRewardsResultModel(TeacherEthicRecordsRewardsComModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
+
+class TeacherEthicRecordsDisciplinaryComModel(BaseModel):
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
+
+class TeacherEthicRecordsDisciplinaryResultModel(TeacherEthicRecordsDisciplinaryComModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
@@ -653,6 +796,7 @@ class TeacherEthicRecordsUpdateModel(BaseModel):
         return data
 
 
+# 教育教学
 class EducationalTeachingModel(BaseModel):
     """
     教师ID：teacher_id
@@ -694,11 +838,37 @@ class EducationalTeachingModel(BaseModel):
         return data
 
 
-class EducationalTeachingComModel(EducationalTeachingModel):
-    pass
+class EducationalTeachingComModel(BaseModel):
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+
+    academic_year: str = Field(..., title="学年", description="学年")
+    semester: str = Field(..., title="学期", description="学期")
+    teaching_stage: str = Field(..., title="任教阶段", description="任教阶段")
+    course_category: str = Field(..., title="任课课程类别", description="任课课程类别")
+    subject_category: str = Field(..., title="任课学科类别", description="任课学科类别")
+    course_name: str = Field(..., title="任课课程", description="任课课程")
+    average_weekly_teaching_hours: str = Field(..., title="平均每周教学课时", description="平均每周教学课时")
+    other_responsibilities: str = Field("", title="承担其他工作", description="承担其他工作")
+    average_weekly_other_duties_hours: str = Field(..., title="平均每周其他工作折合课时",
+                                                   description="平均每周其他工作折合课时")
+    concurrent_job: str = Field(..., title="兼任工作", description="兼任工作")
+    concurrent_job_name: str = Field("", title="兼任工作名称", description="兼任工作名称")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
-class EducationalTeachingResultModel(EducationalTeachingModel):
+class EducationalTeachingResultModel(EducationalTeachingComModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
@@ -780,13 +950,32 @@ class DomesticTrainingModel(BaseModel):
         return data
 
 
-class DomesticTrainingComModel(DomesticTrainingModel):
-    pass
+class DomesticTrainingComModel(BaseModel):
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
 
+    training_year: str = Field(..., title="培训年度", description="培训年度")
+    training_type: str = Field(..., title="培训类别", description="培训类型")
+    training_project: str = Field(..., title="项目名称", description="培训项目")
+    training_institution: str = Field("", title="机构名称", description="培训机构")
+    training_mode: str = Field(..., title="培训方式", description="培训方式")
+    training_hours: str = Field(..., title="获得学时", description="培训学时")
+    training_credits: str = Field("", title="培训学分", description="培训学分")
 
-class DomesticTrainingResultModel(DomesticTrainingModel):
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
+class DomesticTrainingResultModel(DomesticTrainingComModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
-
 
 class DomesticTrainingUpdateModel(BaseModel):
     """
@@ -854,11 +1043,31 @@ class OverseasStudyModel(BaseModel):
         return data
 
 
-class OverseasStudyComModel(OverseasStudyModel):
-    pass
+class OverseasStudyComModel(BaseModel):
+
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    start_date: date = Field(..., title="开始日期", description="开始日期")
+    end_date: date = Field(..., title="结束日期", description="结束日期")
+    country_region: str = Field(..., title="国家/地区", description="国家地区")
+    training_institution_name: str = Field("", title="研修机构名称", description="研修机构名称")
+    project_name: str = Field(..., title="项目名称", description="项目名称")
+    organizing_institution_name: str = Field("", title="项目组织单位名称", description="项目组织单位名称")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
-class OverseasStudyResultModel(OverseasStudyModel):
+class OverseasStudyResultModel(OverseasStudyComModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
@@ -919,10 +1128,25 @@ class TalentProgramModel(BaseModel):
 
 
 class TalentProgramComModel(TalentProgramModel):
-    pass
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    talent_project_name: str = Field("", title="入选人才项目名称", description="人才项目名称")
+    selected_year: str = Field("", title="年份", description="入选年份")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
-class TalentProgramResultModel(TalentProgramModel):
+class TalentProgramResultModel(TalentProgramComModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
@@ -976,11 +1200,28 @@ class AnnualReviewModel(BaseModel):
         return data
 
 
-class AnnualReviewComModel(AnnualReviewModel):
-    pass
+class AnnualReviewComModel(BaseModel):
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    
+    assessment_year: str = Field(..., title="考核年度", description="考核年度")
+    assessment_result: str = Field(..., title="考核结果", description="考核结果")
+    assessment_institution_name: str = Field("", title="考核单位名称", description="考核单位名称")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
-class AnnualReviewResultModel(AnnualReviewModel):
+class AnnualReviewResultModel(AnnualReviewComModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
@@ -1105,12 +1346,161 @@ class ResearchAchievementsModel(BaseModel):
         return data
 
 
-class ResearchAchievementsComModel(ResearchAchievementsModel):
-    pass
+class ResearchAchievementsProjectComModel(BaseModel):
+
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
 
 
-class ResearchAchievementsResultModel(ResearchAchievementsModel):
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
+
+class ResearchAchievementsProjectResultModel(ResearchAchievementsProjectComModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
+
+class ResearchAchievementsBookComModel(BaseModel):
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
+
+class ResearchAchievementsBookResultModel(ResearchAchievementsBookComModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+    
+
+class ResearchAchievementsPaperComModel(BaseModel):
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
+
+class ResearchAchievementsPaperResultModel(ResearchAchievementsPaperComModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+    
+    
+class ResearchAchievementsRewardComModel(BaseModel):
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
+
+class ResearchAchievementsRewardResultModel(ResearchAchievementsRewardComModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+    
+
+class ResearchAchievementsArtworkComModel(BaseModel):
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
+
+class ResearchAchievementsArtworkResultModel(ResearchAchievementsArtworkComModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
+
+class ResearchAchievementsPatentComModel(BaseModel):
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
+
+class ResearchAchievementsPatentResultModel(ResearchAchievementsPatentComModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
+
+class ResearchAchievementsMedicineComModel(BaseModel):
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
+
+class ResearchAchievementsMedicineResultModel(ResearchAchievementsMedicineComModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
+
 
 
 class ResearchAchievementsUpdateModel(BaseModel):

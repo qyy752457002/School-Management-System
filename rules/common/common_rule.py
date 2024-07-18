@@ -91,9 +91,63 @@ async def excel_fields_to_enum(data: dict, import_type) -> Dict:
                            "language": "language", "language_proficiency_level": "proficiency",
                            "language_certificate_name": "language_certificate_names",
                            "contact_address": "contact_address", "current_post_type": "position_type"}
-    teacher_learn_experience = {}
+    teacher_learn_experience = {"type_of_institution": "type_of_institution", "study_mode": "learning_method",
+                                "country_or_region_of_education": "nationality",
+                                "degree_name": "highest_education"}
+    teacher_work_experience = {"on_duty_position": "position_type",
+                               "institution_nature_category": "institution_nature_category"}
+    teacher_job_appointments = {"position_level": "position_level", "position_category": "job_category", }
+    teacher_professional_titles = {"current_professional_title": "technical_position"}
+    teacher_qualifications = {"teacher_qualification_type": "teacher_certificate_type"}
+    teacher_skill_certificates = {"language": "language", "proficiency_level": "proficiency",
+                                  "other_skill_level": "proficiency", "certificate_type": "certificate_type"}
+    teacher_ethic_records_rewards = {}
+    teacher_ethic_records_disciplinary = {}
+    educational_teaching = {"semester": "semester", "teaching_stage": "main_teaching_level_type", }
+    talent_programs = {}
+    domestic_training = {}
+    overseas_study = {}
+    annual_review = {}
 
-    model_map = {"import_teacher": teacher_info_fields, "import_teacher_learn_experience": teacher_learn_experience}
+    # 科研成果——项目
+    research_achievements_project = {}
+    # 科研成果——著作
+    research_achievements_book = {}
+    # 科研成果——论文
+    research_achievements_paper = {}
+    # 科研成果——奖励
+    research_achievements_reward = {}
+    # 科研成果——文艺作品
+    research_achievements_artwork = {}
+    # 科研成果——专利
+    research_achievements_patent = {}
+    # 科研成果——竞赛奖励
+    research_achievements_competition = {}
+    # 科研成果——医药
+    research_achievements_medicine = {}
+
+    model_map = {"import_teacher": teacher_info_fields, "import_teacher_learn_experience": teacher_learn_experience,
+                 "import_teacher_job_appointments": teacher_job_appointments,
+                 "import_teacher_work_experience": teacher_work_experience,
+                 "import_teacher_professional_titles": teacher_professional_titles,
+                 "import_teacher_qualifications": teacher_qualifications,
+                 "import_teacher_skill_certificates": teacher_skill_certificates,
+                 "import_teacher_ethic_records_rewards": teacher_ethic_records_rewards,
+                 "import_teacher_ethic_records_disciplinary": teacher_ethic_records_disciplinary,
+                 "import_educational_teaching": educational_teaching,
+                 "import_talent_programs": talent_programs,
+                 "import_domestic_training": domestic_training,
+                 "import_overseas_study": overseas_study,
+                 "import_annual_review": annual_review,
+                 "import_research_achievements_project": research_achievements_project,
+                 "import_research_achievements_book": research_achievements_book,
+                 "import_research_achievements_paper": research_achievements_paper,
+                 "import_research_achievements_reward": research_achievements_reward,
+                 "import_research_achievements_artwork": research_achievements_artwork,
+                 "import_research_achievements_patent": research_achievements_patent,
+                 "import_research_achievements_competition": research_achievements_competition,
+                 "import_research_achievements_medicine": research_achievements_medicine
+                 }
     fields = model_map.get(import_type)
     for key, value in data.items():
         if value:
