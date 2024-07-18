@@ -7,13 +7,7 @@ from mini_framework.databases.entities import BaseDBModel
 
 
 class EnumValue(BaseDBModel):
-    """
-    enum_name : str = Field(..., title="",description="枚举类型的名称",examples=['国家'])
-    enum_value : str = Field(..., title="", description="枚举的具体值",examples=['韩国','中国'])
-    description : str = Field(..., title="", description="枚举值的描述或标签",examples=[''])
-    sort_number: int = Field(..., title="", description="排序序号",examples=[ 2])
-    parent_id: str = Field(None, title="", description="父级ID",examples=[''])
-    """
+
     __tablename__ = 'lfun_enum_value'
     __table_args__ = {'comment': '枚举表模型'}
 
@@ -4324,8 +4318,8 @@ class EnumValue(BaseDBModel):
             EnumValue(id=4288, enum_name="school_system_lv2", enum_value="three_year", description="三学制", sort_number=0,parent_id="101",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=4289, enum_name="urban_rural_nature", enum_value="urbanArea", description="城镇", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=4290, enum_name="urban_rural_nature", enum_value="townDistrict", description="镇区", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
-            EnumValue(id=4291, enum_name="urban_rural_nature_lv2", enum_value="urbanArea", description="城区", sort_number=0,parent_id="100",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
-            EnumValue(id=4292, enum_name="urban_rural_nature_lv2", enum_value="townDistrict_center", description="镇中心区", sort_number=0,parent_id="101",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=4291, enum_name="urban_rural_nature_lv2", enum_value="urbanArea", description="城区", sort_number=0,parent_id="urbanArea",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=4292, enum_name="urban_rural_nature_lv2", enum_value="townDistrict_center", description="镇中心区", sort_number=0,parent_id="townDistrict",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=4293, enum_name="transaction_type", enum_value="leave_level", description="留级", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=4294, enum_name="transaction_type", enum_value="down_level", description="降级", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=4295, enum_name="transaction_type", enum_value="dump_level", description="跳级", sort_number=0,parent_id="",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
@@ -8279,7 +8273,7 @@ class EnumValue(BaseDBModel):
             EnumValue(id=6148, enum_name="planningschool_status", enum_value="draft", description="草稿", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=6149, enum_name="planningschool_status", enum_value="opening", description="开设中", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=6150, enum_name="planningschool_status", enum_value="normal", description="正常", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
-            EnumValue(id=6151, enum_name="planningschool_status", enum_value="closed", description="关闭", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+            EnumValue(id=6151, enum_name="planningschool_status", enum_value="closed", description="已关闭", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=6152, enum_name="institution_nature_category_lv1", enum_value="government", description="机关",
                       sort_number=0, parent_id="0", is_enabled=True, created_uid=0, updated_uid=0,
                       created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
@@ -8349,8 +8343,8 @@ class EnumValue(BaseDBModel):
                       updated_uid=0, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
             EnumValue(id=6174, enum_name="institution_nature_category_lv1", enum_value="other", description="其他",
                       sort_number=0, parent_id="0", is_enabled=True, created_uid=0, updated_uid=0,
-                      created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False)
-            EnumValue(id=6151, enum_name="planningschool_status", enum_value="closed", description="已关闭", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
+                      created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
+
             EnumValue(id=6152, enum_name="kg_level", enum_value="1", description="一星", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=6153, enum_name="kg_level", enum_value="2", description="二星", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
             EnumValue(id=6154, enum_name="kg_level", enum_value="3", description="三星", sort_number=0,parent_id="0",is_enabled=True,created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False),
