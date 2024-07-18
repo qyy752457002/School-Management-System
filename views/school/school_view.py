@@ -19,7 +19,7 @@ from views.common.common_view import compare_modify_fields, get_extend_params, c
 from views.models.extend_params import ExtendParams
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, \
-    PlanningSchoolTransactionAudit, PlanningSchoolImportReq
+    PlanningSchoolTransactionAudit, PlanningSchoolImportReq, PlanningSchoolFileStorageModel
 from views.models.school_communications import SchoolCommunications
 from views.models.school_eduinfo import SchoolEduInfo
 from views.models.school import School, SchoolBaseInfo, SchoolKeyInfo, SchoolKeyAddInfo, SchoolBaseInfoOptional, \
@@ -479,12 +479,16 @@ class SchoolView(BaseView):
                                  # scene: str = Query('', description="文件名"),
                                  ) -> Task:
         file_name= file.file_name
+        task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name=file.bucket_name,file_size='51363', scene= ImportScene.SCHOOL.value)
+
 
         task = Task(
             #todo sourcefile无法记录3个参数  故 暂时用3个参数来实现  需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="school_import",
             # 文件 要对应的 视图模型
-            payload=SchoolTask(file_name=file_name, scene= ImportScene.SCHOOL.value, bucket='school_import' ),
+            # payload=SchoolTask(file_name=file_name, scene= ImportScene.SCHOOL.value, bucket='school_import' ),
+            payload=task_model,
+
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)

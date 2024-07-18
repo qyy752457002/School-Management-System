@@ -47,7 +47,7 @@ from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
 from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, \
     PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, DISTRICT_ENUM_KEY, \
     PROVINCE_ENUM_KEY, CITY_ENUM_KEY, PLANNING_SCHOOL_STATUS_ENUM_KEY, FOUNDER_TYPE_ENUM_KEY, FOUNDER_TYPE_LV2_ENUM_KEY, \
-    FOUNDER_TYPE_LV3_ENUM_KEY
+    FOUNDER_TYPE_LV3_ENUM_KEY, SCHOOL_ORG_FORM_ENUM_KEY
 
 
 @dataclass_inject
@@ -618,9 +618,10 @@ class PlanningSchoolRule(object):
         founder_type =await enum_value_rule.query_enum_values(FOUNDER_TYPE_ENUM_KEY,None,return_keys='enum_value')
         founder_type_lv2 =await enum_value_rule.query_enum_values(FOUNDER_TYPE_LV2_ENUM_KEY,None,return_keys='enum_value')
         founder_type_lv3 =await enum_value_rule.query_enum_values(FOUNDER_TYPE_LV3_ENUM_KEY,None,return_keys='enum_value')
+        school_org_form =await enum_value_rule.query_enum_values(SCHOOL_ORG_FORM_ENUM_KEY,None,return_keys='enum_value')
         print('区域',districts, '')
         enum_mapper = frontend_enum_mapping
-        #todo 这4个 目前 城乡类型  教学点类型 经济属性 民族属性
+        #todo 这4个 目前 城乡类型 逗号3级   教学点类型 经济属性 民族属性
 
         for item in paging_result.items:
             # item.approval_status =  item.approval_status.value
@@ -641,10 +642,12 @@ class PlanningSchoolRule(object):
             item.founder_type_lv2 = founder_type_lv2[item.founder_type_lv2].description if item.founder_type_lv2 in founder_type_lv2 else  item.founder_type_lv2
             item.founder_type_lv3 = founder_type_lv3[item.founder_type_lv3].description if item.founder_type_lv3 in founder_type_lv3 else  item.founder_type_lv3
             # print('枚举映射',item)
+            if item.planning_school_org_form:
+                item.planning_school_org_form = school_org_form[item.planning_school_org_form].description if item.planning_school_org_form in school_org_form else  item.planning_school_org_form
 
             pass
         # return item
-#     枚举初始化的方法
+    #     枚举初始化的方法
     async def init_enum_value_rule(self):
         enum_value_rule = get_injector(EnumValueRule)
         self.districts =await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY,Constant.CURRENT_CITY,return_keys='description')

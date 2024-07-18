@@ -24,6 +24,7 @@ class PlanningSchoolExecutor(TaskExecutor):
         self._storage_rule: StorageRule = get_injector(StorageRule)
         self.system_rule = get_injector(SystemRule)
         self.planning_school_communication_rule = get_injector(PlanningSchoolCommunicationRule)
+        # todo 是否要在初始导入时就插入教育信息  或者未来其他地方教育信息时要自动检测进行插入
 
         super().__init__()
 

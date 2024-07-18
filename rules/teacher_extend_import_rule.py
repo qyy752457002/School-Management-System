@@ -36,16 +36,17 @@ class TeacherExtendImportRule:
     task_dao: TaskDAO
     teacher_dao: TeachersDao
 
-    async def import_teacher_work_experience(self, task: Task):
+    async def teacher_work_experience_import(self, task):
         try:
-            if not isinstance(task.payload, TeacherFileStorageModel):
-                raise ValueError("参数错误")
-            source_file = task.payload
-            local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
+            # if not isinstance(task.payload, TeacherFileStorageModel):
+            #     raise ValueError("参数错误")
+            # source_file = task.payload
+            # local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
+            local_file_path = "rules/tmp/教职工工作经历导入模版1.xlsx"
             logger.info("Test开始注册模型")
-            storage_manager.download_file(
-                source_file.virtual_bucket_name, source_file.file_name, local_file_path
-            )
+            # storage_manager.download_file(
+            #     source_file.virtual_bucket_name, source_file.file_name, local_file_path
+            # )
             reader = ExcelReader()
             reader.set_data(local_file_path)
             reader.register_model("数据", TeacherWorkExperienceComModel, header=1)
@@ -61,7 +62,7 @@ class TeacherExtendImportRule:
                 result = TeacherWorkExperienceResultModel(**result_dict)
                 teacher_id_number = item.get("teacher_id_number")
                 teacher_id_type = item.get("teacher_id_type")
-                teacher_id_type = IdentityType.from_chinese(teacher_id_type)
+                teacher_id_type = IdentityType.from_chinese(teacher_id_type).value
                 teacher_name = item.get("teacher_name")
                 try:
                     teacher_db = await self.teacher_dao.get_teacher_by_params(teacher_id_number, teacher_id_type,
@@ -69,11 +70,11 @@ class TeacherExtendImportRule:
                     if not teacher_db:
                         raise TeacherNotFoundError()
                     item["teacher_id"] = teacher_db.teacher_id
-                    teacher_work_experience_data = {key: item[key] for key in
-                                                    TeacherWorkExperienceModel.__fields__.keys()}
-                    data_dict = await excel_fields_to_enum(teacher_work_experience_data,
+                    data_dict = await excel_fields_to_enum(item,
                                                            "import_teacher_work_experience")
-                    teacher_work_experience_model = TeacherWorkExperienceModel(**data_dict)
+                    teacher_work_experience_data = {key: data_dict[key] for key in
+                                                    TeacherWorkExperienceModel.__fields__.keys()}
+                    teacher_work_experience_model = TeacherWorkExperienceModel(**teacher_work_experience_data)
                     teacher_work_experience_rule = get_injector(TeacherWorkExperienceRule)
                     await teacher_work_experience_rule.add_teacher_work_experience(teacher_work_experience_model)
                 except Exception as ex:
@@ -82,22 +83,22 @@ class TeacherExtendImportRule:
                     logger.info(f"Failed to add teacher at index {idx}: {ex}")
                     print(ex, '表内数据异常')
                     raise ex
-            local_results_path = f"/tmp/{source_file.file_name}"
-            excel_writer = ExcelWriter()
-            excel_writer.add_data("Sheet1", results)
-            excel_writer.set_data(local_results_path)
-            excel_writer.execute()
-            random_file_name = shortuuid.uuid()
-            file_storage = storage_manager.put_file_to_object(
-                source_file.virtual_bucket_name, f"{random_file_name}.xlsx", local_results_path
-            )
-            file_storage_resp = await storage_manager.add_file(
-                self.file_storage_dao, file_storage
-            )
-            return file_storage_resp
+            # local_results_path = f"/tmp/{source_file.file_name}"
+            # excel_writer = ExcelWriter()
+            # excel_writer.add_data("Sheet1", results)
+            # excel_writer.set_data(local_results_path)
+            # excel_writer.execute()
+            # random_file_name = shortuuid.uuid()
+            # file_storage = storage_manager.put_file_to_object(
+            #     source_file.virtual_bucket_name, f"{random_file_name}.xlsx", local_results_path
+            # )
+            # file_storage_resp = await storage_manager.add_file(
+            #     self.file_storage_dao, file_storage
+            # )
+            # return file_storage_resp
         except Exception as e:
             print(e, '异常')
             raise e
 
-
-
+    async def importt_teacher_work_experience(self, task):
+        pass
