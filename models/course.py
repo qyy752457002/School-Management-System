@@ -72,7 +72,7 @@ class Course(BaseDBModel):
             Course(id=14 ,school_id=0,
                    course_no="24",grade_id=0,
                    course_name="音乐",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False,district='',school_type='小学,初中,普通高中'),
-            Course(id=16 ,school_id=0,
+            Course(id=15 ,school_id=0,
                     course_no="25",grade_id=0,
                     course_name="美术",created_uid=0,updated_uid=0,created_at=datetime.now(),updated_at=datetime.now(),is_deleted=False,district='',school_type='小学,初中,普通高中'),
             Course(id=16 ,school_id=0,

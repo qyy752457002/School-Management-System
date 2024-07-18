@@ -69,6 +69,14 @@ class TeachersDao(DAOBase):
         result = await session.execute(query)
         return result.scalar_one_or_none()
 
+    async def get_teacher_by_params(self, teacher_id_number, teacher_id_type, teacher_name):
+        session = await self.slave_db()
+        query = select(Teacher).where(Teacher.teacher_id_number == teacher_id_number,
+                                      Teacher.teacher_id_type == teacher_id_type,
+                                      Teacher.teacher_name == teacher_name,
+                                      Teacher.is_deleted == False)
+        result = await session.execute(query)
+        return result.scalar_one_or_none()
 
     async def get_teachers_info_by_prams(self, teacher_id_number, teacher_id_type, teacher_name, teacher_gender):
         session = await self.slave_db()
