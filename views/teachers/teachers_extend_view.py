@@ -7,6 +7,7 @@ from mini_framework.web.request_context import request_context_manager
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task.task import Task
 from rules.teachers_rule import TeachersRule
+from rules.teacher_extend_import_rule import TeacherExtendImportRule
 
 from views.models.teacher_extend import TeacherLearnExperienceModel, TeacherLearnExperienceUpdateModel
 from rules.teacher_learn_experience_rule import TeacherLearnExperienceRule
@@ -683,17 +684,18 @@ class ResearchAchievementsView(BaseView):
 class TeacherExtendImportView(BaseView):
     def __init__(self):
         super().__init__()
-        self.teacher_extend_experience_rule = get_injector(TeacherLearnExperienceRule)
+        self.teacher_extend_experience_rule = get_injector(TeacherExtendImportRule)
         self.teacher_rule = get_injector(TeachersRule)
 
     async def post_teacher_work_experience_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                    example=123)) -> Task:
-        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(
-            task_type="teacher_save_import",
-            payload=filestorage,
-            operator=request_context_manager.current().current_login_account.account_id
-        )
-        task = await app.task_topic.send(task)
-        print('发生任务成功')
-        return task
+        # filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        # task = Task(
+        #     task_type="teacher_save_import",
+        #     payload=filestorage,
+        #     operator=request_context_manager.current().current_login_account.account_id
+        # )
+        # task = await app.task_topic.send(task)
+        # print('发生任务成功')
+        await self.teacher_extend_experience_rule.teacher_work_experience_import(file_id)
+        return True
