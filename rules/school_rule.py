@@ -33,7 +33,9 @@ from models.student_transaction import AuditAction
 from rules.common.common_rule import send_request
 from rules.enum_value_rule import EnumValueRule
 from rules.system_rule import SystemRule
-from views.common.common_view import workflow_service_config, convert_snowid_in_model, convert_snowid_to_strings
+from views.common.common_view import workflow_service_config, convert_snowid_in_model, convert_snowid_to_strings, \
+    frontend_enum_mapping
+from views.common.constant import Constant
 from views.models.extend_params import ExtendParams
 from views.models.institutions import InstitutionKeyInfo, Institutions, InstitutionsImport
 # from rules.planning_school_rule import PlanningSchoolRule
@@ -45,7 +47,7 @@ from views.models.school import SchoolBaseInfo
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus
 from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, SCHOOL_OPEN_WORKFLOW_CODE, \
     PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, SCHOOL_CLOSE_WORKFLOW_CODE, PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, \
-    SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE
+    SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, DISTRICT_ENUM_KEY
 
 
 @dataclass_inject
@@ -56,6 +58,8 @@ class SchoolRule(object):
     system_rule: SystemRule
     file_storage_dao: FileStorageDAO
     task_dao: TaskDAO
+    districts= None
+    enum_mapper=None
     # 定义映射关系 orm到视图的映射关系
     other_mapper = {"school_name": "institution_name",
                     "school_no": "institution_code",
@@ -713,3 +717,23 @@ class SchoolRule(object):
         if tinfo and tinfo.status == PlanningSchoolStatus.CLOSED.value:
             return False
         return True
+    #     枚举初始化的方法
+    async def init_enum_value_rule(self):
+        enum_value_rule = get_injector(EnumValueRule)
+        self.districts =await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY,Constant.CURRENT_CITY,return_keys='description')
+        print('区域',self.districts)
+        self.enum_mapper =   {value: key for key, value in frontend_enum_mapping.items()}
+        print('枚举映射',self.enum_mapper)
+        return self
+    async def convert_planning_school_to_import_format(self,item):
+        item.block = self.districts[item.block].enum_value if item.block in self.districts else  item.block
+        item.borough = self.districts[item.borough].enum_value if item.borough in self.districts else  item.borough
+        item.planning_school_edu_level = self.enum_mapper[item.planning_school_edu_level] if item.planning_school_edu_level in self.enum_mapper.keys() else  item.planning_school_edu_level
+        value= item.planning_school_category
+        if value and isinstance(value, str) and value.find('-')!=-1:
+            temp = value.split('-')
+            item.planning_school_category =  temp[1]  if len(temp)>1  else value
+
+        item.planning_school_category = self.enum_mapper[item.planning_school_category] if item.planning_school_category in self.enum_mapper.keys() else  item.planning_school_category
+        item.planning_school_org_type = self.enum_mapper[item.planning_school_org_type] if item.planning_school_org_type in self.enum_mapper.keys() else  item.planning_school_org_type
+        pass

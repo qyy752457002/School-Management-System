@@ -647,7 +647,7 @@ class PlanningSchoolRule(object):
 
             pass
         # return item
-#     枚举初始化的方法
+    #     枚举初始化的方法
     async def init_enum_value_rule(self):
         enum_value_rule = get_injector(EnumValueRule)
         self.districts =await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY,Constant.CURRENT_CITY,return_keys='description')

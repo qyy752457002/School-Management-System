@@ -32,7 +32,7 @@ from rules.planning_school_rule import PlanningSchoolRule
 from rules.planning_school_communication_rule import PlanningSchoolCommunicationRule
 
 from rules.planning_school_eduinfo_rule import PlanningSchoolEduinfoRule
-from views.models.system import ProcessCodeType
+from views.models.system import ProcessCodeType, ImportScene
 
 
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
@@ -342,8 +342,7 @@ class PlanningSchoolView(BaseView):
                                           ) -> Task:
         file_name = file.file_name
         print('入参', file)
-        task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name=file.bucket_name,
-                                                    file_size='51363', scene=file.scene)
+        task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name=file.bucket_name,file_size='51363', scene= ImportScene.PLANNING_SCHOOL.value)
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="planning_school_import",
