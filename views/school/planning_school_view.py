@@ -39,6 +39,10 @@ from views.models.system import ProcessCodeType, ImportScene
 class CustomValidationError:
     pass
 
+"""
+规划下  学校 事业 班级 新生 学生家庭 
+学校  规划校 事业  在校生 新生 分班记录 
+"""
 
 class PlanningSchoolView(BaseView):
     def __init__(self):
