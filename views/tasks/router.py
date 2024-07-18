@@ -15,13 +15,11 @@ from views.tasks.new_teacher_task import TeacherImportExecutor, TeacherExportExe
 from views.tasks.newstudent_class_division_task import NewStudentClassDivisionExportExecutor
 from views.tasks.planning_school_task import PlanningSchoolExecutor, PlanningSchoolExportExecutor
 from views.tasks.school_task import SchoolExecutor, SchoolExportExecutor
+from views.tasks.new_teacher_extend_task import TeacherWorkExperienceImportExecutor
 
 
 def init_task_router():
-
-
     from mini_framework.async_task.router import task_router
-
 
     task_router.register(
         code="institution_import",
@@ -160,6 +158,16 @@ def init_task_router():
         topic="teacher_save_import",
         name="教师保存导入",
         executor_cls=TeacherSaveImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+    task_router.register(
+        code="teacher_work_experience_import",
+        consumer_group_id="service",
+        topic="teacher_work_experience_import",
+        name="教师工作经历导入",
+        executor_cls=TeacherWorkExperienceImportExecutor,
         payload_cls=TeacherFileStorageModel,
         payload_is_list=False,
         description="",

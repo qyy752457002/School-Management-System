@@ -1,5 +1,6 @@
 from mini_framework.async_task.consumers import TaskExecutor
-from mini_framework.async_task.task.task_context import Task, Context
+from mini_framework.async_task.task.task import Task
+from mini_framework.async_task.task.task_context import Context
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.logging import logger
 
@@ -15,9 +16,10 @@ class TeacherImportExecutor(TaskExecutor):
         self.teacher_import_rule = get_injector(TeacherImportRule)
         super().__init__()
 
-    async def execute(self, context: Context):
+    async def execute(self, context: "Context"):
         try:
-            task = context.task
+            task = context
+            operator = task.operator
             logger.info("Test")
             logger.info("Teacher import begins")
             task: Task = task
@@ -31,8 +33,6 @@ class TeacherImportExecutor(TaskExecutor):
                 raise ValueError("Invalid payload type")
             logger.info("Test3")
             await self.teacher_import_rule.import_teachers(task)
-            # task_result = await self.teacher_rule.import_teachers(task)
-            # logger.info(f"Teacher import to {task_result.result_file}")
         except Exception as e:
             logger.error(f"Teacher import failed")
             logger.error(e)
@@ -45,9 +45,9 @@ class TeacherSaveImportExecutor(TaskExecutor):
         self.teacher_import_rule = get_injector(TeacherImportRule)
         super().__init__()
 
-    async def execute(self, context: Context):
+    async def execute(self, context: "Context"):
         try:
-            task = context.task
+            task = context
             operator = task.operator
             logger.info("Test")
             logger.info("Teacher_save import begins")
@@ -59,8 +59,10 @@ class TeacherSaveImportExecutor(TaskExecutor):
                 account_export: TeacherFileStorageModel = task.payload
             else:
                 raise ValueError("Invalid payload type")
-            await self.teacher_import_rule.import_teachers_save(task)
-            # task_result = await self.teacher_rule.import_teachers(task)
+            file_storage_resp = await self.teacher_import_rule.import_teachers_save(task)
+            task.result_file = file_storage_resp.file_name
+            task.result_bucket = file_storage_resp.virtual_bucket_name
+
         except Exception as e:
             logger.error(f"Teacher import failed")
             logger.error(e)

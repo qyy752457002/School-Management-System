@@ -39,6 +39,7 @@ from views.common.common_view import compare_modify_fields
 from models.teachers_info import TeacherInfo
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
+from rules.system_rule import SystemRule
 
 from models.public_enum import Gender
 import os
@@ -68,6 +69,10 @@ class TeachersRule(object):
             raise TeacherNotFoundError()
         # 可选 ,
         teachers = orm_model_to_view_model(teacher_db, TeachersModel, exclude=["hash_password"])
+        if teachers.teacher_avatar:
+            sysrule = get_injector(SystemRule)
+            fileurl = await sysrule.get_download_url_by_id(teachers.teacher_avatar)
+            teachers.teacher_avatar_url = fileurl
         return teachers
 
     # async def get_teachers_by_username(self, username):
@@ -325,7 +330,6 @@ class TeachersRule(object):
             teacher.teacher_main_status = "unemployed"
             teacher.teacher_sub_status = "unsubmitted"
             teacher.is_approval = False
-
             await self.teachers_dao.update_teachers(teacher, "teacher_main_status", "teacher_sub_status",
                                                     "is_approval")
             return "该老师入职审批已拒绝"
