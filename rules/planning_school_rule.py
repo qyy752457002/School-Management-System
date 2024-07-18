@@ -20,6 +20,7 @@ from objprint import objprint
 from sqlalchemy import select
 from business_exceptions.planning_school import PlanningSchoolNotFoundError, \
     PlanningSchoolNotFoundByProcessInstanceIdError
+from daos.enum_value_dao import EnumValueDAO
 from daos.planning_school_communication_dao import PlanningSchoolCommunicationDAO
 from daos.planning_school_dao import PlanningSchoolDAO
 from daos.planning_school_eduinfo_dao import PlanningSchoolEduinfoDAO
@@ -32,7 +33,9 @@ from rules.school_communication_rule import SchoolCommunicationRule
 from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
-from views.common.common_view import workflow_service_config, convert_snowid_to_strings, convert_snowid_in_model
+from views.common.common_view import workflow_service_config, convert_snowid_to_strings, convert_snowid_in_model, \
+    frontend_enum_mapping
+from views.common.constant import Constant
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus, \
     PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit, PlanningSchoolBaseInfoOptional, PlanningSchoolPageSearch, \
     PlanningSchoolOptional
@@ -42,12 +45,13 @@ from mini_framework.databases.conn_managers.db_manager import db_connection_mana
 from views.models.planning_school_communications import PlanningSchoolCommunications
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
 from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, \
-    PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE
+    PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, DISTRICT_ENUM_KEY
 
 
 @dataclass_inject
 class PlanningSchoolRule(object):
     planning_school_dao: PlanningSchoolDAO
+    enum_value_dao: EnumValueDAO
     system_rule: SystemRule
     file_storage_dao: FileStorageDAO
     task_dao: TaskDAO
@@ -532,9 +536,8 @@ class PlanningSchoolRule(object):
                 paging, PlanningSchoolOptional, {"hash_password": "password"}
             )
             # 处理每个里面的状态 1. 0
-            for item in paging_result.items:
-                # item.approval_status =  item.approval_status.value
-                pass
+            await self.convert_planning_school_to_export_format(paging_result)
+
 
             logger.info('分页的结果条数',len(paging_result.items))
             excel_writer = ExcelWriter()
@@ -598,3 +601,28 @@ class PlanningSchoolRule(object):
         if tinfo and  tinfo.status == PlanningSchoolStatus.CLOSED.value:
             return  False
         return True
+
+    #     定义方法吧一行记录转化为适合导出展示的格式
+    async def convert_planning_school_to_export_format(self,paging_result):
+        # 获取区县的枚举
+        enum_value_rule = EnumValueRule()
+        # borough_enum = self.enum_value_dao.to_list()
+        districts =await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY,Constant.CURRENT_CITY,return_keys='enum_value')
+        print('区域',districts, '')
+        enum_mapper = frontend_enum_mapping
+
+        for item in paging_result.items:
+            # item.approval_status =  item.approval_status.value
+            delattr(item, 'id')
+            delattr(item, 'created_uid')
+            item.block = districts[item.block].description if item.block in districts else  item.block
+            item.borough = districts[item.borough].description if item.borough in districts else  item.borough
+            item.planning_school_edu_level = enum_mapper[item.planning_school_edu_level] if item.planning_school_edu_level in enum_mapper.keys() else  item.planning_school_edu_level
+            item.planning_school_category = enum_mapper[item.planning_school_category] if item.planning_school_category in enum_mapper.keys() else  item.planning_school_category
+            item.planning_school_operation_type = enum_mapper[item.planning_school_operation_type] if item.planning_school_operation_type in enum_mapper.keys() else  item.planning_school_operation_type
+            item.planning_school_org_type = enum_mapper[item.planning_school_org_type] if item.planning_school_org_type in enum_mapper.keys() else  item.planning_school_org_type
+            item.planning_school_level = enum_mapper[item.planning_school_level] if item.planning_school_level in enum_mapper.keys() else  item.planning_school_level
+            # item.status = PlanningSchoolStatus[item.status] if item.status in enum_mapper.keys() else  item.status
+            pass
+        # return item
+

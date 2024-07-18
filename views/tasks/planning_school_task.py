@@ -69,6 +69,7 @@ class PlanningSchoolExecutor(TaskExecutor):
                     else:
                         itemd = data_import.dict()
                         itemd = map_keys(itemd, self.planning_school_rule.other_mapper)
+                        # todo 需要进行 映射转换  选择的是汉字  根据映射转换英文枚举写入
                         data_import = PlanningSchoolOptional(**itemd)
 
                         pass
