@@ -47,7 +47,9 @@ from views.models.school import SchoolBaseInfo
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus
 from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, SCHOOL_OPEN_WORKFLOW_CODE, \
     PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, SCHOOL_CLOSE_WORKFLOW_CODE, PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, \
-    SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, DISTRICT_ENUM_KEY
+    SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, DISTRICT_ENUM_KEY, PROVINCE_ENUM_KEY, CITY_ENUM_KEY, \
+    PLANNING_SCHOOL_STATUS_ENUM_KEY, FOUNDER_TYPE_LV2_ENUM_KEY, SCHOOL_ORG_FORM_ENUM_KEY, FOUNDER_TYPE_LV3_ENUM_KEY, \
+    FOUNDER_TYPE_ENUM_KEY
 
 
 @dataclass_inject
@@ -629,7 +631,8 @@ class SchoolRule(object):
         return False
 
     async def school_export(self, task: Task):
-        bucket = 'student'
+        bucket = 'school'
+
         print(bucket, '桶')
 
         export_params: SchoolPageSearch = (
@@ -637,10 +640,17 @@ class SchoolRule(object):
         )
         page_request = PageRequest(page=1, per_page=100)
         random_file_name = f"school_export_{shortuuid.uuid()}.xlsx"
-        temp_file_path = os.path.join(os.path.dirname(__file__), 'tmp')
-        if not os.path.exists(temp_file_path):
-            os.makedirs(temp_file_path)
-        temp_file_path = os.path.join(temp_file_path, random_file_name)
+        # 获取当前脚本所在目录的绝对路径
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        # 获取当前脚本所在目录的父目录
+        parent_dir = os.path.dirname(script_dir)
+
+        # 构建与 script_dir 并列的 temp 目录的路径
+        temp_dir_path = os.path.join(parent_dir, 'temp')
+
+        # 确保 temp 目录存在，如果不存在则创建它
+        os.makedirs(temp_dir_path, exist_ok=True)
+        temp_file_path = os.path.join(temp_dir_path, random_file_name)
         while True:
             # todo  这里的参数需要 解包
             paging = await self.school_dao.query_school_with_page(
@@ -652,11 +662,12 @@ class SchoolRule(object):
                 export_params.city, export_params.institution_category,
             )
             paging_result = PaginatedResponse.from_paging(
-                paging, SchoolPageSearch, {"hash_password": "password"}
+                paging, SchoolBaseInfoOptional, {"hash_password": "password"}
             )
             # 处理每个里面的状态 1. 0
-            for item in paging_result.items:
-                item.approval_status = item.approval_status.value
+            await self.convert_school_to_export_format(paging_result)
+            logger.info('分页的结果条数',len(paging_result.items))
+
 
             # logger.info('分页的结果',len(paging_result.items))
             excel_writer = ExcelWriter()
@@ -686,13 +697,16 @@ class SchoolRule(object):
             task_result.result_bucket = file_storage_resp.virtual_bucket_name
             task_result.result_file_id = file_storage_resp.file_id
             task_result.last_updated = datetime.now()
+            task_result.result_id = shortuuid.uuid()
+
             task_result.state = TaskState.succeeded
             task_result.result_extra = {"file_size": file_storage.file_size}
             if not task_result.result_file_id:
                 task_result.result_file_id = 0
             print('拼接数据task_result ', task_result)
 
-            resadd = await self.task_dao.add_task_result(task_result)
+            resadd = await self.task_dao.add_task_result(task_result,True)
+
             print('task_result写入结果', resadd)
         except Exception as e:
             logger.debug('保存文件记录和插入taskresult 失败')
@@ -725,7 +739,7 @@ class SchoolRule(object):
         self.enum_mapper =   {value: key for key, value in frontend_enum_mapping.items()}
         print('枚举映射',self.enum_mapper)
         return self
-    async def convert_planning_school_to_import_format(self,item):
+    async def convert_school_to_import_format(self,item):
         item.block = self.districts[item.block].enum_value if item.block in self.districts else  item.block
         item.borough = self.districts[item.borough].enum_value if item.borough in self.districts else  item.borough
         item.planning_school_edu_level = self.enum_mapper[item.planning_school_edu_level] if item.planning_school_edu_level in self.enum_mapper.keys() else  item.planning_school_edu_level
@@ -737,3 +751,42 @@ class SchoolRule(object):
         item.planning_school_category = self.enum_mapper[item.planning_school_category] if item.planning_school_category in self.enum_mapper.keys() else  item.planning_school_category
         item.planning_school_org_type = self.enum_mapper[item.planning_school_org_type] if item.planning_school_org_type in self.enum_mapper.keys() else  item.planning_school_org_type
         pass
+    #     定义方法吧一行记录转化为适合导出展示的格式
+    async def convert_school_to_export_format(self,paging_result):
+        # 获取区县的枚举
+        enum_value_rule = get_injector(EnumValueRule)
+        provinces =await enum_value_rule.query_enum_values(PROVINCE_ENUM_KEY,None,return_keys='enum_value')
+        citys =await enum_value_rule.query_enum_values(CITY_ENUM_KEY, None,return_keys='enum_value')
+        districts =await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY,Constant.CURRENT_CITY,return_keys='enum_value')
+        planningschool_status =await enum_value_rule.query_enum_values(PLANNING_SCHOOL_STATUS_ENUM_KEY,None,return_keys='enum_value')
+        founder_type =await enum_value_rule.query_enum_values(FOUNDER_TYPE_ENUM_KEY,None,return_keys='enum_value')
+        founder_type_lv2 =await enum_value_rule.query_enum_values(FOUNDER_TYPE_LV2_ENUM_KEY,None,return_keys='enum_value')
+        founder_type_lv3 =await enum_value_rule.query_enum_values(FOUNDER_TYPE_LV3_ENUM_KEY,None,return_keys='enum_value')
+        school_org_form =await enum_value_rule.query_enum_values(SCHOOL_ORG_FORM_ENUM_KEY,None,return_keys='enum_value')
+        print('区域',districts, '')
+        enum_mapper = frontend_enum_mapping
+        #todo 这4个 目前 城乡类型 逗号3级   教学点类型 经济属性 民族属性
+
+        for item in paging_result.items:
+            # item.approval_status =  item.approval_status.value
+            delattr(item, 'id')
+            delattr(item, 'created_uid')
+            item.province = provinces[item.province].description if item.province in provinces else  item.province
+            item.city = citys[item.city].description if item.city in citys else  item.city
+            item.block = districts[item.block].description if item.block in districts else  item.block
+            item.borough = districts[item.borough].description if item.borough in districts else  item.borough
+            item.planning_school_edu_level = enum_mapper[item.planning_school_edu_level] if item.planning_school_edu_level in enum_mapper.keys() else  item.planning_school_edu_level
+            item.planning_school_category = enum_mapper[item.planning_school_category] if item.planning_school_category in enum_mapper.keys() else  item.planning_school_category
+            item.planning_school_operation_type = enum_mapper[item.planning_school_operation_type] if item.planning_school_operation_type in enum_mapper.keys() else  item.planning_school_operation_type
+            item.planning_school_org_type = enum_mapper[item.planning_school_org_type] if item.planning_school_org_type in enum_mapper.keys() else  item.planning_school_org_type
+            item.planning_school_level = enum_mapper[item.planning_school_level] if item.planning_school_level in enum_mapper.keys() else  item.planning_school_level
+            # item.status = PlanningSchoolStatus[item.status] if item.status in enum_mapper.keys() else  item.status
+            item.status = planningschool_status[item.status].description if item.status in planningschool_status else  item.status
+            item.founder_type = founder_type[item.founder_type].description if item.founder_type in founder_type else  item.founder_type
+            item.founder_type_lv2 = founder_type_lv2[item.founder_type_lv2].description if item.founder_type_lv2 in founder_type_lv2 else  item.founder_type_lv2
+            item.founder_type_lv3 = founder_type_lv3[item.founder_type_lv3].description if item.founder_type_lv3 in founder_type_lv3 else  item.founder_type_lv3
+            # print('枚举映射',item)
+            if item.planning_school_org_form:
+                item.planning_school_org_form = school_org_form[item.planning_school_org_form].description if item.planning_school_org_form in school_org_form else  item.planning_school_org_form
+
+            pass

@@ -81,7 +81,7 @@ class SchoolExecutor(TaskExecutor):
                         # itemd = map_keys(itemd, self.school_rule.other_mapper)
                         # todo 需要进行 映射转换  选择的是汉字  根据映射转换英文枚举写入
                         data_import = SchoolBaseInfoOptional(**itemd)
-                        await psr.convert_planning_school_to_import_format(data_import)
+                        await psr.convert_school_to_import_format(data_import)
 
                         pass
                 else:
@@ -125,8 +125,14 @@ class SchoolExportExecutor(TaskExecutor):
         print("test")
         print(dict(task))
         task: Task = task
-        logger.info("负载" ,task.payload)
+        try:
+            logger.info("负载" ,task.payload)
 
-        task_result = await self.school_rule.school_export(task)
-        task.result_file = task_result.result_file
-        task.result_bucket = task_result.result_bucket
+            task_result = await self.school_rule.school_export(task)
+            task.result_file = task_result.result_file
+            task.result_bucket = task_result.result_bucket
+        except Exception as e:
+            logger.error(f"任务   create failed")
+            traceback.print_exc()
+            logger.debug( f"任务   exe failed", traceback.format_exception(e))
+            print(e,'异常')
