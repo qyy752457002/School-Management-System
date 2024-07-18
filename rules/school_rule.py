@@ -35,7 +35,7 @@ from rules.enum_value_rule import EnumValueRule
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, convert_snowid_in_model, convert_snowid_to_strings
 from views.models.extend_params import ExtendParams
-from views.models.institutions import InstitutionKeyInfo, Institutions
+from views.models.institutions import InstitutionKeyInfo, Institutions, InstitutionsImport
 # from rules.planning_school_rule import PlanningSchoolRule
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolTransactionAudit, PlanningSchoolKeyInfo
 from views.models.school import School as SchoolModel, SchoolKeyAddInfo, SchoolKeyInfo, SchoolPageSearch, \
@@ -57,23 +57,23 @@ class SchoolRule(object):
     file_storage_dao: FileStorageDAO
     task_dao: TaskDAO
     # 定义映射关系 orm到视图的映射关系
-    other_mapper={"school_name": "institution_name",
-                  "school_no": "institution_code",
-                  "school_en_name": "institution_en_name",
-                  "school_org_type": "institution_type",
-                  "create_school_date": "create_date",
-                  }
+    other_mapper = {"school_name": "institution_name",
+                    "school_no": "institution_code",
+                    "school_en_name": "institution_en_name",
+                    "school_org_type": "institution_type",
+                    "create_school_date": "create_date",
+                    }
 
-    async def get_school_by_id(self, school_id,extra_model=None):
+    async def get_school_by_id(self, school_id, extra_model=None):
         # other_mapper={ }
         school_db = await self.school_dao.get_school_by_id(school_id)
         if not school_db:
             return None
         if extra_model:
-            school = orm_model_to_view_model(school_db, extra_model,other_mapper=self.other_mapper)
+            school = orm_model_to_view_model(school_db, extra_model, other_mapper=self.other_mapper)
         else:
             school = orm_model_to_view_model(school_db, SchoolModel)
-        convert_snowid_in_model(school,['planning_school_id'])
+        convert_snowid_in_model(school, ['planning_school_id'])
 
         return school
 
@@ -83,33 +83,32 @@ class SchoolRule(object):
         school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""])
         return school
 
-    async def add_school(self, school:SchoolKeyAddInfo| SchoolModel|Institutions|SchoolBaseInfoOptional):
+    async def add_school(self,
+                         school: SchoolKeyAddInfo | SchoolModel | Institutions | SchoolBaseInfoOptional | InstitutionsImport):
         exists_school = await self.school_dao.get_school_by_school_name(
             school.school_name)
         if exists_school:
             raise Exception(f"学校{school.school_name}已存在")
-        school_db = view_model_to_orm_model(school, School,    exclude=["id"])
+        school_db = view_model_to_orm_model(school, School, exclude=["id"])
 
-        school_db.status =  PlanningSchoolStatus.DRAFT.value
+        school_db.status = PlanningSchoolStatus.DRAFT.value
         school_db.created_uid = 0
         school_db.updated_uid = 0
         school_db.id = SnowflakeIdGenerator(1, 1).generate_id()
-        if school.planning_school_id and  school.planning_school_id>0 :
+        if school.planning_school_id and school.planning_school_id > 0:
             # rule互相应用有问题  用dao
-            p_exists_school_model = await self.p_school_dao.get_planning_school_by_id(  school.planning_school_id)
+            p_exists_school_model = await self.p_school_dao.get_planning_school_by_id(school.planning_school_id)
             if not p_exists_school_model:
                 raise PlanningSchoolNotFoundError()
-            print(p_exists_school_model,999)
+            print(p_exists_school_model, 999)
 
             p_exists_school = orm_model_to_view_model(p_exists_school_model, PlanningSchoolModel)
             print(p_exists_school)
 
-
-        # await school_rule.add_school_from_planning_school(exists_planning_school)
-        #     p_exists_school = await p_school_rule.get_planning_school_by_id(
-        #         school.planning_school_id)
+            # await school_rule.add_school_from_planning_school(exists_planning_school)
+            #     p_exists_school = await p_school_rule.get_planning_school_by_id(
+            #         school.planning_school_id)
             if p_exists_school:
-
                 # 办学者
                 # school_db.school_type = p_exists_school.planning_school_type
                 school_db.school_edu_level = p_exists_school.planning_school_edu_level
@@ -127,10 +126,9 @@ class SchoolRule(object):
                 # school_db.urban_rural_nature = p_exists_school.planning_school_urban_rural_nature
 
         school_db = await self.school_dao.add_school(school_db)
-        school = orm_model_to_view_model(school_db, SchoolKeyAddInfo, exclude=["created_at",'updated_at'])
-        convert_snowid_in_model(school,['planning_school_id'])
+        school = orm_model_to_view_model(school_db, SchoolKeyAddInfo, exclude=["created_at", 'updated_at'])
+        convert_snowid_in_model(school, ['planning_school_id'])
         return school
-
 
     async def add_school_from_planning_school(self, planning_school: PlanningSchool):
         # todo 这里的值转换 用 数据库db类型直接赋值  模型转容易报错   另 其他2个表的写入  检查是否原有的  防止重复新增
@@ -148,7 +146,7 @@ class SchoolRule(object):
         dicta['school_level'] = planning_school.planning_school_level
         dicta['school_code'] = planning_school.planning_school_code
 
-        school = SchoolKeyAddInfo(** dicta)
+        school = SchoolKeyAddInfo(**dicta)
         # school = orm_model_to_view_model(planning_school, SchoolKeyAddInfo, exclude=["id"])
         # school.school_name = planning_school.planning_school_name
         # school.planning_school_id = planning_school.id
@@ -162,14 +160,14 @@ class SchoolRule(object):
 
         res = await self.add_school(school)
 
-
         return res
+
     # 废弃 未使用
-    async def update_school(self, school,ctype=1):
+    async def update_school(self, school, ctype=1):
         exists_school = await self.school_dao.get_school_by_id(school.id)
         if not exists_school:
             raise Exception(f"学校{school.id}不存在")
-        if ctype==1:
+        if ctype == 1:
             school_db = School()
             school_db.id = school.id
             school_db.school_no = school.school_no
@@ -185,34 +183,36 @@ class SchoolRule(object):
         else:
             school_db = School()
             school_db.id = school.id
-            school_db.school_name=school.school_name
-            school_db.school_short_name=school.school_short_name
-            school_db.school_code=school.school_code
-            school_db.create_school_date=school.create_school_date
-            school_db.founder_type=school.founder_type
-            school_db.founder_name=school.founder_name
-            school_db.urban_rural_nature=school.urban_rural_nature
-            school_db.school_edu_level=school.school_edu_level
-            school_db.school_org_form=school.school_org_form
-            school_db.school_category=school.school_category
-            school_db.school_operation_type=school.school_operation_type
-            school_db.department_unit_number=school.department_unit_number
-            school_db.sy_zones=school.sy_zones
-            school_db.historical_evolution=school.historical_evolution
+            school_db.school_name = school.school_name
+            school_db.school_short_name = school.school_short_name
+            school_db.school_code = school.school_code
+            school_db.create_school_date = school.create_school_date
+            school_db.founder_type = school.founder_type
+            school_db.founder_name = school.founder_name
+            school_db.urban_rural_nature = school.urban_rural_nature
+            school_db.school_edu_level = school.school_edu_level
+            school_db.school_org_form = school.school_org_form
+            school_db.school_category = school.school_category
+            school_db.school_operation_type = school.school_operation_type
+            school_db.department_unit_number = school.department_unit_number
+            school_db.sy_zones = school.sy_zones
+            school_db.historical_evolution = school.historical_evolution
 
-
-        school_db = await self.school_dao.update_school(school_db,ctype)
+        school_db = await self.school_dao.update_school(school_db, ctype)
         # 更新不用转换   因为得到的对象不熟全属性
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""])
         return school_db
 
-    async def update_school_byargs(self, school,):
+    async def update_school_byargs(self, school, ):
         exists_school = await self.school_dao.get_school_by_id(school.id)
         if not exists_school:
             raise Exception(f"单位{school.id}不存在")
-        if exists_school.status== PlanningSchoolStatus.DRAFT.value:
-            exists_school.status= PlanningSchoolStatus.OPENING.value
-            school.status= PlanningSchoolStatus.OPENING.value
+        if exists_school.status == PlanningSchoolStatus.DRAFT.value:
+            if hasattr(school, 'status'):
+                # school.status= PlanningSchoolStatus.OPENING.value
+                pass
+
+            exists_school.status = PlanningSchoolStatus.OPENING.value
         else:
             pass
 
@@ -222,15 +222,13 @@ class SchoolRule(object):
                 continue
             if value:
                 need_update_list.append(key)
-            
 
         school_db = await self.school_dao.update_school_byargs(school, *need_update_list)
 
         # 更新不用转换   因为得到的对象不熟全属性
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""])
-        school_db= deepcopy(school_db)
-        convert_snowid_in_model(school_db,['id'])
-
+        school_db = deepcopy(school_db)
+        convert_snowid_in_model(school_db, ['id'])
 
         return school_db
 
@@ -239,7 +237,7 @@ class SchoolRule(object):
         if not exists_school:
             raise Exception(f"单位{school_id}不存在")
         school_db = await self.school_dao.delete_school(exists_school)
-        school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""],)
+        school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""], )
         return school
 
     async def softdelete_school(self, school_id):
@@ -256,54 +254,57 @@ class SchoolRule(object):
     async def get_school_count(self):
         return await self.school_dao.get_school_count()
 
-    async def query_school_with_page(self, page_request: PageRequest,   school_name=None,school_no=None,school_code=None,
-                                     block=None,school_level=None,borough=None,status=None,founder_type=None,
+    async def query_school_with_page(self, page_request: PageRequest, school_name=None, school_no=None,
+                                     school_code=None,
+                                     block=None, school_level=None, borough=None, status=None, founder_type=None,
                                      founder_type_lv2=None,
-                                     founder_type_lv3=None,planning_school_id=None,province=None,city=None ,institution_category=None,social_credit_code=None,school_org_type=None,extra_model =None):
+                                     founder_type_lv3=None, planning_school_id=None, province=None, city=None,
+                                     institution_category=None, social_credit_code=None, school_org_type=None,
+                                     extra_model=None):
         #  根据举办者类型  1及 -3级  处理为条件   1  2ji全部转换为 3级  最后in 3级查询
         enum_value_rule = get_injector(EnumValueRule)
         if founder_type:
             if len(founder_type) > 0:
 
-                founder_type_lv2_res= await enum_value_rule.get_next_level_enum_values('founder_type'  ,founder_type)
+                founder_type_lv2_res = await enum_value_rule.get_next_level_enum_values('founder_type', founder_type)
                 for item in founder_type_lv2_res:
                     founder_type_lv2.append(item.enum_value)
 
-
             # query = query.where(PlanningSchool.founder_type_lv2 == founder_type_lv2)
-        if founder_type_lv2 and  len(founder_type_lv2)>0:
-            founder_type_lv3_res= await enum_value_rule.get_next_level_enum_values('founder_type_lv2'  ,founder_type_lv2)
+        if founder_type_lv2 and len(founder_type_lv2) > 0:
+            founder_type_lv3_res = await enum_value_rule.get_next_level_enum_values('founder_type_lv2',
+                                                                                    founder_type_lv2)
             for item in founder_type_lv3_res:
                 founder_type_lv3.append(item.enum_value)
 
-        paging = await self.school_dao.query_school_with_page(page_request,  school_name,school_no,school_code,
-                                                                block,school_level,borough,status,founder_type,
-                                                                founder_type_lv2,
-                                                                founder_type_lv3,planning_school_id,province,city,institution_category,social_credit_code,school_org_type
-                                                                                )
+        paging = await self.school_dao.query_school_with_page(page_request, school_name, school_no, school_code,
+                                                              block, school_level, borough, status, founder_type,
+                                                              founder_type_lv2,
+                                                              founder_type_lv3, planning_school_id, province, city,
+                                                              institution_category, social_credit_code, school_org_type
+                                                              )
         # 字段映射的示例写法   , {"hash_password": "password"}
         if extra_model:
             # paging.data = [extra_model(**item) for item in paging.data]
-            paging_result = PaginatedResponse.from_paging(paging, extra_model,other_mapper=self.other_mapper)
+            paging_result = PaginatedResponse.from_paging(paging, extra_model, other_mapper=self.other_mapper)
 
         else:
             paging_result = PaginatedResponse.from_paging(paging, SchoolModel)
-        convert_snowid_to_strings(paging_result,['planning_school_id'])
+        convert_snowid_to_strings(paging_result, ['planning_school_id'])
 
         return paging_result
 
-
-    async def update_school_status(self, school_id, status,action=None):
+    async def update_school_status(self, school_id, status, action=None):
         exists_school = await self.school_dao.get_school_by_id(school_id)
         if not exists_school:
             raise Exception(f"单位{school_id}不存在")
         # 判断运来的状态 进行后续的更新
-        if status== PlanningSchoolStatus.NORMAL.value and exists_school.status== PlanningSchoolStatus.OPENING.value:
+        if status == PlanningSchoolStatus.NORMAL.value and exists_school.status == PlanningSchoolStatus.OPENING.value:
             # 开办
-            exists_school.status= PlanningSchoolStatus.NORMAL.value
-        elif status== PlanningSchoolStatus.CLOSED.value and exists_school.status== PlanningSchoolStatus.NORMAL.value:
+            exists_school.status = PlanningSchoolStatus.NORMAL.value
+        elif status == PlanningSchoolStatus.CLOSED.value and exists_school.status == PlanningSchoolStatus.NORMAL.value:
             # 关闭
-            exists_school.status= PlanningSchoolStatus.CLOSED.value
+            exists_school.status = PlanningSchoolStatus.CLOSED.value
         else:
             # exists_school.status= PlanningSchoolStatus.OPENING.value
             raise Exception(f"单位当前状态不支持您的操作")
@@ -312,16 +313,15 @@ class SchoolRule(object):
         need_update_list.append('status')
 
         # print(exists_school.status,2222222)
-        school_db = await self.school_dao.update_school_byargs(exists_school,*need_update_list)
-
+        school_db = await self.school_dao.update_school_byargs(exists_school, *need_update_list)
 
         # school_db = await self.school_dao.update_school_status(exists_school,status)
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""],)
         return school_db
 
-
     # 搜索使用
-    async def query_schools(self,school_name,extend_params:ExtendParams|None,school_id=None,block=None,borough=None,institution_category=None,extra_model =None):
+    async def query_schools(self, school_name, extend_params: ExtendParams | None, school_id=None, block=None,
+                            borough=None, institution_category=None, extra_model=None):
         # block,borough
         session = await db_connection_manager.get_async_session("default", True)
         query = select(School)
@@ -336,40 +336,40 @@ class SchoolRule(object):
                 if isinstance(school_name, list):
                     query = query.where(School.school_name.in_(school_name))
             else:
-                query = query.where(School.school_name.like(f'%{school_name}%') )
+                query = query.where(School.school_name.like(f'%{school_name}%'))
         if school_id:
             if ',' in school_id:
                 school_id = school_id.split(',')
                 if isinstance(school_id, list):
                     query = query.where(School.id.in_(school_id))
             else:
-                query = query.where(School.id==school_id  )
+                query = query.where(School.id == school_id)
         if block:
             if ',' in block:
                 block = block.split(',')
                 if isinstance(block, list):
                     query = query.where(School.block.in_(block))
             else:
-                query = query.where(School.block.like(f'%{block}%') )
+                query = query.where(School.block.like(f'%{block}%'))
         if borough:
             if ',' in borough:
                 borough = borough.split(',')
                 if isinstance(borough, list):
                     query = query.where(School.borough.in_(borough))
             else:
-                query = query.where(School.borough.like(f'%{borough}%') )
+                query = query.where(School.borough.like(f'%{borough}%'))
         # print(extend_params,3333333333)
         if extend_params:
             if extend_params.school_id:
-                query = query.where(School.id == int(extend_params.school_id)  )
+                query = query.where(School.id == int(extend_params.school_id))
             if extend_params.planning_school_id:
-                query = query.where(School.planning_school_id == int(extend_params.planning_school_id)  )
+                query = query.where(School.planning_school_id == int(extend_params.planning_school_id))
 
             if extend_params.county_name:
                 # 区的转换   or todo
                 # enuminfo = await self.enum_value_dao.get_enum_value_by_value(extend_params.county_id, 'country' )
-                query = query.filter( or_( School.block == extend_params.county_name , School.borough == extend_params.county_name))
-
+                query = query.filter(
+                    or_(School.block == extend_params.county_name, School.borough == extend_params.county_name))
 
                 # if enuminfo:
                 pass
@@ -377,13 +377,13 @@ class SchoolRule(object):
                 pass
 
         result = await session.execute(query)
-        res= result.scalars().all()
+        res = result.scalars().all()
 
         lst = []
         for row in res:
             if extra_model:
 
-                planning_school = orm_model_to_view_model(row, extra_model,other_mapper=self.other_mapper)
+                planning_school = orm_model_to_view_model(row, extra_model, other_mapper=self.other_mapper)
             else:
                 planning_school = orm_model_to_view_model(row, SchoolModel)
 
@@ -396,107 +396,105 @@ class SchoolRule(object):
         return lst
 
     # 向工作流中心发送申请
-    async def add_school_work_flow(self, school_flow: SchoolModel,):
+    async def add_school_work_flow(self, school_flow: SchoolModel, ):
         # school_flow.id=0
-        httpreq= HTTPRequest()
-        url= workflow_service_config.workflow_config.get("url")
-        data= school_flow
-        datadict =  data.__dict__
+        httpreq = HTTPRequest()
+        url = workflow_service_config.workflow_config.get("url")
+        data = school_flow
+        datadict = data.__dict__
         datadict['process_code'] = SCHOOL_OPEN_WORKFLOW_CODE
-        datadict['teacher_id'] =  0
-        datadict['applicant_name'] =  'tester'
+        datadict['teacher_id'] = 0
+        datadict['applicant_name'] = 'tester'
         datadict['school_code'] = school_flow.school_code
         datadict['school_name'] = school_flow.school_name
-        datadict['founder_type_lv3'] =   school_flow.founder_type_lv3
-        datadict['block'] =   school_flow.block
-        datadict['borough'] =   school_flow.borough
-        datadict['school_level'] =   school_flow.school_level
-        datadict['school_no'] =   school_flow.school_no
-        datadict['apply_user'] =  'tester'
+        datadict['founder_type_lv3'] = school_flow.founder_type_lv3
+        datadict['block'] = school_flow.block
+        datadict['borough'] = school_flow.borough
+        datadict['school_level'] = school_flow.school_level
+        datadict['school_no'] = school_flow.school_no
+        datadict['apply_user'] = 'tester'
         dicta = school_flow.__dict__
         dicta['school_id'] = school_flow.id
 
-        datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
+        datadict['json_data'] = json.dumps(dicta, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
-        url=url+apiname
+        url = url + apiname
         headerdict = {
             "accept": "application/json",
             "Content-Type": "application/json"
         }
         # 如果是query 需要拼接参数
         # url+=  ('?' +urlencode(datadict))
-        print('参数', url, datadict,headerdict)
-        response= None
+        print('参数', url, datadict, headerdict)
+        response = None
         try:
-            response = await httpreq.post_json(url,datadict,headerdict)
-            print('请求工作流结果',response)
+            response = await httpreq.post_json(url, datadict, headerdict)
+            print('请求工作流结果', response)
         except Exception as e:
             print(e)
         return response
 
-
-    async def add_school_close_work_flow(self, school_flow: PlanningSchoolModel,action_reason,related_license_upload):
+    async def add_school_close_work_flow(self, school_flow: PlanningSchoolModel, action_reason, related_license_upload):
         # school_flow.id=0
-        data= school_flow
-        datadict =  data.__dict__
+        data = school_flow
+        datadict = data.__dict__
         datadict['process_code'] = SCHOOL_CLOSE_WORKFLOW_CODE
-        datadict['teacher_id'] =  0
-        datadict['applicant_name'] =  'tester'
+        datadict['teacher_id'] = 0
+        datadict['applicant_name'] = 'tester'
         datadict['school_code'] = school_flow.school_code
         datadict['school_name'] = school_flow.school_name
-        datadict['founder_type_lv3'] =   school_flow.founder_type_lv3
-        datadict['block'] =   school_flow.block
-        datadict['borough'] =   school_flow.borough
-        datadict['school_level'] =   school_flow.school_level
-        datadict['school_no'] =   school_flow.school_no
+        datadict['founder_type_lv3'] = school_flow.founder_type_lv3
+        datadict['block'] = school_flow.block
+        datadict['borough'] = school_flow.borough
+        datadict['school_level'] = school_flow.school_level
+        datadict['school_no'] = school_flow.school_no
 
-        datadict['apply_user'] =  'tester'
+        datadict['apply_user'] = 'tester'
         dicta = school_flow.__dict__
-        dicta['action_reason']= action_reason
-        dicta['related_license_upload']= related_license_upload
+        dicta['action_reason'] = action_reason
+        dicta['related_license_upload'] = related_license_upload
         dicta['school_id'] = school_flow.id
 
-        datadict['json_data'] =  json.dumps(dicta, ensure_ascii=False)
+        datadict['json_data'] = json.dumps(dicta, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
 
-        response= None
+        response = None
         try:
-            response = await send_request(apiname,datadict,'post')
-            print('请求工作流结果',response)
+            response = await send_request(apiname, datadict, 'post')
+            print('请求工作流结果', response)
         except Exception as e:
             print(e)
         return response
 
-    async def req_workflow_audit(self,audit_info:PlanningSchoolTransactionAudit,action):
+    async def req_workflow_audit(self, audit_info: PlanningSchoolTransactionAudit, action):
 
         # 发起审批流的 处理
 
         datadict = dict()
-        if audit_info.process_instance_id>0:
-            node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  audit_info.process_instance_id)
-            audit_info.node_id=node_id['node_instance_id']
-
+        if audit_info.process_instance_id > 0:
+            node_id = await self.system_rule.get_work_flow_current_node_by_process_instance_id(
+                audit_info.process_instance_id)
+            audit_info.node_id = node_id['node_instance_id']
 
         # 节点实例id
-        datadict['node_instance_id'] =  audit_info.node_id
+        datadict['node_instance_id'] = audit_info.node_id
 
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
         # from urllib.parse import urlencode
         # apiname += ('?' + urlencode(datadict))
 
-
         # 如果是query 需要拼接参数
 
         # 字典参数
-        datadict ={"user_id":"11","action":"approved",**datadict}
-        if audit_info.transaction_audit_action== AuditAction.PASS.value:
+        datadict = {"user_id": "11", "action": "approved", **datadict}
+        if audit_info.transaction_audit_action == AuditAction.PASS.value:
             datadict['action'] = 'approved'
-        if audit_info.transaction_audit_action== AuditAction.REFUSE.value:
+        if audit_info.transaction_audit_action == AuditAction.REFUSE.value:
             datadict['action'] = 'rejected'
 
-        response = await send_request(apiname,datadict,'post',True)
-        print(response,'接口响应')
-        if audit_info.transaction_audit_action== AuditAction.PASS.value:
+        response = await send_request(apiname, datadict, 'post', True)
+        print(response, '接口响应')
+        if audit_info.transaction_audit_action == AuditAction.PASS.value:
             # 成功则写入数据
             # transrule = get_injector(StudentTransactionRule)
             # await transrule.deal_student_transaction(student_edu_info)
@@ -505,22 +503,20 @@ class SchoolRule(object):
 
         await self.set_transaction_end(audit_info.process_instance_id, audit_info.transaction_audit_action)
 
-
-
         return response
         pass
 
-    async def deal_school(self,process_instance_id ,action, ):
+    async def deal_school(self, process_instance_id, action, ):
         #  读取流程实例ID
         school = await self.school_dao.get_school_by_process_instance_id(process_instance_id)
         if not school:
-            print('未查到学校信息',process_instance_id)
+            print('未查到学校信息', process_instance_id)
             return
-        if action=='open':
-            res = await self.update_school_status(school.id,  PlanningSchoolStatus.NORMAL.value, 'open')
-        if action=='close':
-            res = await self.update_school_status(school.id,  PlanningSchoolStatus.CLOSED.value, 'close')
-        if action=='keyinfo_change':
+        if action == 'open':
+            res = await self.update_school_status(school.id, PlanningSchoolStatus.NORMAL.value, 'open')
+        if action == 'close':
+            res = await self.update_school_status(school.id, PlanningSchoolStatus.CLOSED.value, 'close')
+        if action == 'keyinfo_change':
             # todo 把基本信息变更 改进去
             # res = await self.update_school_status(school.id,  PlanningSchoolStatus.CLOSED.value, 'close')
             # 读取流程的原始信息  更新到数据库
@@ -529,111 +525,108 @@ class SchoolRule(object):
             if not result.get('json_data'):
                 # return {'工作流数据异常 无法解析'}
                 pass
-            json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
+            json_data = JsonUtils.json_str_to_dict(result.get('json_data'))
             print(json_data)
             planning_school_orm = SchoolKeyInfo(**json_data)
-            planning_school_orm.id= school.id
+            planning_school_orm.id = school.id
 
-            res = await self.update_school_byargs(  planning_school_orm)
+            res = await self.update_school_byargs(planning_school_orm)
             pass
 
         # res = await self.update_school_status(school_id,  PlanningSchoolStatus.NORMAL.value, 'open')
 
         pass
 
-    async def add_school_keyinfo_change_work_flow(self, school_flow: SchoolKeyInfo,process_code=None):
+    async def add_school_keyinfo_change_work_flow(self, school_flow: SchoolKeyInfo, process_code=None):
         # school_flow.id=0
-        httpreq= HTTPRequest()
-        url= workflow_service_config.workflow_config.get("url")
-        data= school_flow
-        datadict =  data.__dict__
+        httpreq = HTTPRequest()
+        url = workflow_service_config.workflow_config.get("url")
+        data = school_flow
+        datadict = data.__dict__
         datadict['process_code'] = SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE
         if process_code:
             datadict['process_code'] = process_code
-        datadict['teacher_id'] =  0
-        datadict['applicant_name'] =  'tester'
+        datadict['teacher_id'] = 0
+        datadict['applicant_name'] = 'tester'
         datadict['school_no'] = school_flow.school_no
 
         datadict['school_name'] = school_flow.school_name
-        datadict['school_edu_level'] =   school_flow.school_edu_level
-        datadict['block'] =   school_flow.block
-        datadict['borough'] =   school_flow.borough
-        datadict['school_level'] =   school_flow.school_level
-        datadict['school_category'] =   school_flow.school_category
-        datadict['school_operation_type'] =   school_flow.school_operation_type
-        datadict['school_org_type'] =   school_flow.school_org_type
+        datadict['school_edu_level'] = school_flow.school_edu_level
+        datadict['block'] = school_flow.block
+        datadict['borough'] = school_flow.borough
+        datadict['school_level'] = school_flow.school_level
+        datadict['school_category'] = school_flow.school_category
+        datadict['school_operation_type'] = school_flow.school_operation_type
+        datadict['school_org_type'] = school_flow.school_org_type
 
-        datadict['apply_user'] =  'tester'
+        datadict['apply_user'] = 'tester'
         mapa = school_flow.__dict__
         mapa['school_id'] = school_flow.id
-        datadict['json_data'] =  json.dumps(mapa, ensure_ascii=False)
+        datadict['json_data'] = json.dumps(mapa, ensure_ascii=False)
         apiname = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'
-        url=url+apiname
+        url = url + apiname
         headerdict = {
             "accept": "application/json",
             "Content-Type": "application/json"
         }
         # 如果是query 需要拼接参数
         # url+=  ('?' +urlencode(datadict))
-        print('参数', url, datadict,headerdict)
-        response= None
+        print('参数', url, datadict, headerdict)
+        response = None
         try:
-            response = await httpreq.post_json(url,datadict,headerdict)
-            print('请求工作流结果',response)
+            response = await httpreq.post_json(url, datadict, headerdict)
+            print('请求工作流结果', response)
         except Exception as e:
             print(e)
         return response
 
-    async def req_workflow_cancel(self,node_id,process_instance_id=None):
+    async def req_workflow_cancel(self, node_id, process_instance_id=None):
 
         # 发起审批流的 处理
         datadict = dict()
         # 节点实例id    自动获取
-        if process_instance_id>0:
-            node_id=await self.system_rule.get_work_flow_current_node_by_process_instance_id(  process_instance_id)
-            node_id=node_id['node_instance_id']
+        if process_instance_id > 0:
+            node_id = await self.system_rule.get_work_flow_current_node_by_process_instance_id(process_instance_id)
+            node_id = node_id['node_instance_id']
 
-        datadict['node_instance_id'] =  node_id
+        datadict['node_instance_id'] = node_id
 
         apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
         # 字典参数
         # datadict ={"user_id":"11","action":"revoke"}
-        datadict ={"user_id":"11","action":"revoke",**datadict}
+        datadict = {"user_id": "11", "action": "revoke", **datadict}
 
-        response= await send_request(apiname,datadict,'post',True)
+        response = await send_request(apiname, datadict, 'post', True)
 
-        print(response,'接口响应')
+        print(response, '接口响应')
         # 终态的处理
 
         await self.set_transaction_end(process_instance_id, AuditAction.CANCEL)
 
-
         return response
         pass
 
-
-    async def set_transaction_end(self,process_instance_id,status):
-        tinfo=await self.school_dao.get_school_by_process_instance_id(process_instance_id)
+    async def set_transaction_end(self, process_instance_id, status):
+        tinfo = await self.school_dao.get_school_by_process_instance_id(process_instance_id)
         if tinfo:
-            tinfo.workflow_status=status.value
+            tinfo.workflow_status = status.value
             await self.update_school_byargs(tinfo)
 
-
         pass
-    async def is_can_not_add_workflow(self, student_id,is_all_status_allow=False):
-        tinfo=await self.get_school_by_id(student_id)
+
+    async def is_can_not_add_workflow(self, student_id, is_all_status_allow=False):
+        tinfo = await self.get_school_by_id(student_id)
         if not is_all_status_allow:
-            if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
+            if tinfo and tinfo.status == PlanningSchoolStatus.DRAFT.value:
                 return True
         # 检查是否有占用
-        if tinfo and  tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
+        if tinfo and tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
             return True
         return False
 
-
     async def school_export(self, task: Task):
         bucket = 'student'
-        print(bucket,'桶')
+        print(bucket, '桶')
 
         export_params: SchoolPageSearch = (
             task.payload if task.payload is SchoolPageSearch() else SchoolPageSearch()
@@ -647,17 +640,19 @@ class SchoolRule(object):
         while True:
             # todo  这里的参数需要 解包
             paging = await self.school_dao.query_school_with_page(
-                page_request, export_params.school_name,export_params.school_no,export_params.school_code,
-                export_params.block,export_params.school_level,export_params.borough,export_params.status,export_params.founder_type,
+                page_request, export_params.school_name, export_params.school_no, export_params.school_code,
+                export_params.block, export_params.school_level, export_params.borough, export_params.status,
+                export_params.founder_type,
                 export_params.founder_type_lv2,
-                export_params.founder_type_lv3 ,export_params.planning_school_id,export_params.province,export_params.city,export_params.institution_category,
+                export_params.founder_type_lv3, export_params.planning_school_id, export_params.province,
+                export_params.city, export_params.institution_category,
             )
             paging_result = PaginatedResponse.from_paging(
                 paging, SchoolPageSearch, {"hash_password": "password"}
             )
             # 处理每个里面的状态 1. 0
             for item in paging_result.items:
-                item.approval_status =  item.approval_status.value
+                item.approval_status = item.approval_status.value
 
             # logger.info('分页的结果',len(paging_result.items))
             excel_writer = ExcelWriter()
@@ -669,8 +664,8 @@ class SchoolRule(object):
                 break
             page_request.page += 1
         #     保存文件时可能报错
-        print('临时文件路径',temp_file_path)
-        file_storage =  storage_manager.put_file_to_object(
+        print('临时文件路径', temp_file_path)
+        file_storage = storage_manager.put_file_to_object(
             bucket, f"{random_file_name}.xlsx", temp_file_path
         )
         # 这里会写入 task result 提示 缺乏 result file id  导致报错
@@ -679,7 +674,7 @@ class SchoolRule(object):
             file_storage_resp = await storage_manager.add_file(
                 self.file_storage_dao, file_storage
             )
-            print('file_storage_resp ',file_storage_resp)
+            print('file_storage_resp ', file_storage_resp)
 
             task_result = TaskResult()
             task_result.task_id = task.task_id
@@ -690,11 +685,11 @@ class SchoolRule(object):
             task_result.state = TaskState.succeeded
             task_result.result_extra = {"file_size": file_storage.file_size}
             if not task_result.result_file_id:
-                task_result.result_file_id =  0
-            print('拼接数据task_result ',task_result)
+                task_result.result_file_id = 0
+            print('拼接数据task_result ', task_result)
 
             resadd = await self.task_dao.add_task_result(task_result)
-            print('task_result写入结果',resadd)
+            print('task_result写入结果', resadd)
         except Exception as e:
             logger.debug('保存文件记录和插入taskresult 失败')
 
@@ -702,3 +697,19 @@ class SchoolRule(object):
             task_result = TaskResult()
 
         return task_result
+
+    async def is_can_change_keyinfo(self, student_id, ):
+        tinfo = await self.get_school_by_id(student_id)
+        print('当前信息', tinfo)
+        if tinfo and tinfo.status == PlanningSchoolStatus.DRAFT.value:
+            return True
+        if tinfo and tinfo.status != PlanningSchoolStatus.NORMAL.value:
+            # return  True
+
+            # 检查是否有占用 如果有待处理的流程ID 则锁定
+            if tinfo and tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
+                return False
+            return True
+        if tinfo and tinfo.status == PlanningSchoolStatus.CLOSED.value:
+            return False
+        return True

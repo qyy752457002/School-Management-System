@@ -43,7 +43,6 @@ class OrganizationDAO(DAOBase):
         result = await session.execute(select(Organization).where(Organization.org_name == org_name).where(
             Organization.school_id == school_id).where(Organization.is_deleted == False))
         return result.scalar_one_or_none()
-
     async def query_organization_with_page(self, page_request: PageRequest, parent_id, school_id):
         query = select(Organization).where(Organization.is_deleted == False)
         if parent_id:

@@ -21,14 +21,14 @@ class SchoolEduinfoDAO(DAOBase):
 
     async def add_school_eduinfo(self, school_eduinfo):
         if hasattr(school_eduinfo, 'school_id'):
-            school_eduinfo.school_id =  int(school_eduinfo.school_id)
+            school_eduinfo.school_id = int(school_eduinfo.school_id)
         session = await self.master_db()
         session.add(school_eduinfo)
         await session.commit()
         await session.refresh(school_eduinfo)
         return school_eduinfo
 
-    async def update_school_eduinfo(self, school_eduinfo,ctype=1):
+    async def update_school_eduinfo(self, school_eduinfo, ctype=1):
         session = await self.master_db()
         # session.add(school_eduinfo)
         if ctype == 1:
@@ -63,23 +63,20 @@ class SchoolEduinfoDAO(DAOBase):
                 historical_evolution=school_eduinfo.historical_evolution,
             )
 
-
         await session.execute(update_stmt)
         await session.commit()
         return school_eduinfo
 
-
     async def softdelete_school_eduinfo(self, school_eduinfo):
         session = await self.master_db()
-        deleted_status= 1
+        deleted_status = 1
         update_stmt = update(SchoolEduinfo).where(SchoolEduinfo.id == school_eduinfo.id).values(
-            deleted= deleted_status,
+            deleted=deleted_status,
         )
         await session.execute(update_stmt)
         # await session.delete(school_eduinfo)
         await session.commit()
         return school_eduinfo
-
 
     async def get_school_eduinfo_count(self):
         session = await self.slave_db()
@@ -87,7 +84,7 @@ class SchoolEduinfoDAO(DAOBase):
         return result.scalar()
 
     async def query_school_eduinfo_with_page(self, school_eduinfo_name, school_eduinfo_id, school_eduinfo_no,
-                                              page_request: PageRequest) -> Paging:
+                                             page_request: PageRequest) -> Paging:
         query = select(SchoolEduinfo)
         if school_eduinfo_name:
             # query = query.where(SchoolEduinfo.school_eduinfo_name == school_eduinfo_name)
@@ -99,15 +96,16 @@ class SchoolEduinfoDAO(DAOBase):
             pass
         paging = await self.query_page(query, page_request)
         return paging
+
     async def update_school_eduinfo_byargs(self, school_eduinfo: SchoolEduinfo, *args, is_commit: bool = True):
-        session =await self.master_db()
+        session = await self.master_db()
         update_contents = get_update_contents(school_eduinfo, *args)
-        if school_eduinfo.school_id>0:
+        if school_eduinfo.school_id > 0:
             # update_contents['planning_school_id'] = planning_school_eduinfo.planning_school_id
-            query = update(SchoolEduinfo).where(SchoolEduinfo.school_id == school_eduinfo.school_id).values(**update_contents)
+            query = update(SchoolEduinfo).where(SchoolEduinfo.school_id == school_eduinfo.school_id).values(
+                **update_contents)
 
         else:
 
             query = update(SchoolEduinfo).where(SchoolEduinfo.id == school_eduinfo.id).values(**update_contents)
         return await self.update(session, query, school_eduinfo, update_contents, is_commit=is_commit)
-

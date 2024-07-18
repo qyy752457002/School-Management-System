@@ -39,20 +39,28 @@ class StudentInnerTransactionDAO(DAOBase):
                                                         page_request: PageRequest):
         query = select(
             # StudentInnerTransaction,
-                       StudentInnerTransaction.id, StudentInnerTransaction.student_id, StudentInnerTransaction.school_id, StudentInnerTransaction.class_id, StudentInnerTransaction.transaction_type, StudentInnerTransaction.transaction_reason, StudentInnerTransaction.transaction_remark, StudentInnerTransaction.transaction_time, StudentInnerTransaction.transaction_user, StudentInnerTransaction.transaction_user_id, StudentInnerTransaction.created_uid, StudentInnerTransaction.updated_uid, StudentInnerTransaction.created_at, StudentInnerTransaction.updated_at, Student.approval_status, StudentInnerTransaction.is_deleted,
-                       School.school_name,
-                       Classes.class_name,
-                       PlanningSchool.borough,
-                       Student.student_name,
-                       Student.student_gender,
-                       Student.approval_status,
-                       StudentBaseInfo.edu_number,
-                       ).select_from(StudentInnerTransaction).join(School,
-                                                                   StudentInnerTransaction.school_id == School.id,isouter=True).join(
-            PlanningSchool, School.planning_school_id == PlanningSchool.id,isouter=True).join(Student,
-                                                                                 StudentInnerTransaction.student_id == Student.student_id,isouter=True).join(
-            StudentBaseInfo, StudentBaseInfo.student_id == Student.student_id,isouter=True).join(Classes,
-                                                                                    StudentInnerTransaction.class_id == Classes.id,isouter=True)
+            StudentInnerTransaction.id, StudentInnerTransaction.student_id, StudentInnerTransaction.school_id,
+            StudentInnerTransaction.class_id, StudentInnerTransaction.transaction_type,
+            StudentInnerTransaction.transaction_reason, StudentInnerTransaction.transaction_remark,
+            StudentInnerTransaction.transaction_time, StudentInnerTransaction.transaction_user,
+            StudentInnerTransaction.transaction_user_id, StudentInnerTransaction.created_uid,
+            StudentInnerTransaction.updated_uid, StudentInnerTransaction.created_at, StudentInnerTransaction.updated_at,
+            Student.approval_status, StudentInnerTransaction.is_deleted,
+            School.school_name,
+            Classes.class_name,
+            PlanningSchool.borough,
+            Student.student_name,
+            Student.student_gender,
+            Student.approval_status,
+            StudentBaseInfo.edu_number,
+        ).select_from(StudentInnerTransaction).join(School,
+                                                    StudentInnerTransaction.school_id == School.id, isouter=True).join(
+            PlanningSchool, School.planning_school_id == PlanningSchool.id, isouter=True).join(Student,
+                                                                                               StudentInnerTransaction.student_id == Student.student_id,
+                                                                                               isouter=True).join(
+            StudentBaseInfo, StudentBaseInfo.student_id == Student.student_id, isouter=True).join(Classes,
+                                                                                                  StudentInnerTransaction.class_id == Classes.id,
+                                                                                                  isouter=True)
 
         ### �˴���д��ѯ����
         if student_inner_transaction_search.student_name:

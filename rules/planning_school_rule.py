@@ -33,7 +33,8 @@ from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, convert_snowid_to_strings, convert_snowid_in_model
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus, \
-    PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit, PlanningSchoolBaseInfoOptional, PlanningSchoolPageSearch
+    PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit, PlanningSchoolBaseInfoOptional, PlanningSchoolPageSearch, \
+    PlanningSchoolOptional
 from views.models.planning_school import PlanningSchoolBaseInfo
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 
@@ -51,6 +52,12 @@ class PlanningSchoolRule(object):
     task_dao: TaskDAO
     planning_school_communication_dao: PlanningSchoolCommunicationDAO
     planning_school_eduinfo_dao: PlanningSchoolEduinfoDAO
+    other_mapper = {"school_name": "planning_school_name",
+                    "school_code": "planning_school_no",
+                    "school_edu_level": "planning_school_edu_level",
+                    "school_category": "planning_school_category",
+                    "school_org_type": "planning_school_org_type",
+                    }
 
 
 
@@ -79,7 +86,7 @@ class PlanningSchoolRule(object):
         planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""])
         return planning_school
 
-    async def add_planning_school(self, planning_school: PlanningSchoolModel):
+    async def add_planning_school(self, planning_school: PlanningSchoolModel|PlanningSchoolOptional):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_planning_school_name(
             planning_school.planning_school_name)
         if exists_planning_school:
@@ -209,8 +216,10 @@ class PlanningSchoolRule(object):
             raise PlanningSchoolNotFoundError()
 
         if exists_planning_school.status== PlanningSchoolStatus.DRAFT.value:
-            planning_school.status= PlanningSchoolStatus.OPENING.value
-            planning_school.status= PlanningSchoolStatus.OPENING.value
+            if hasattr(planning_school,'status'):
+
+                # planning_school.status= PlanningSchoolStatus.OPENING.value
+                pass
         else:
             pass
         if not need_update_list:
@@ -482,9 +491,10 @@ class PlanningSchoolRule(object):
         tinfo=await self.get_planning_school_by_id(student_id)
         print('当前信息',tinfo)
         if not is_all_status_allow:
+            # 如果 是草稿态 则锁定
             if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
                 return  True
-        # 检查是否有占用
+        # 检查是否有占用 如果有待处理的流程ID 则锁定
         if tinfo and  tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
             return True
         return False
@@ -559,3 +569,18 @@ class PlanningSchoolRule(object):
             task_result = TaskResult()
 
         return task_result
+    async def is_can_change_keyinfo(self, student_id,is_all_status_allow=False):
+        tinfo=await self.get_planning_school_by_id(student_id)
+        print('当前信息',tinfo)
+        if tinfo and  tinfo.status == PlanningSchoolStatus.DRAFT.value:
+            return  True
+        if tinfo and  tinfo.status != PlanningSchoolStatus.NORMAL.value:
+            # return  True
+
+            # 检查是否有占用 如果有待处理的流程ID 则锁定
+            if tinfo and  tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
+                return False
+            return True
+        if tinfo and  tinfo.status == PlanningSchoolStatus.CLOSED.value:
+            return  False
+        return True

@@ -83,6 +83,7 @@ class EnumValueDAO(DAOBase):
         return result.scalar()
 
     async def query_enum_value_with_page(self, page_request: PageRequest, enum_value_name, parent_code) -> Paging:
+        # 根据排序正序 ID倒序
         query = select(EnumValue).order_by(asc(EnumValue.sort_number)).order_by(asc(EnumValue.id))
         if enum_value_name:
             if ',' in enum_value_name:
