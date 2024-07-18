@@ -121,7 +121,8 @@ class StorageRule(object):
 
 
         if sence ==ImportScene.SCHOOL.value:
-            SampleModel = School
+            # 模版一样 用类型来区分级别
+            SampleModel = PlanningSchoolImport
             sheetname = 'Sheet1'
             header=1 # 0 表示第一行是标题 1表示第二行才开始标题
 
