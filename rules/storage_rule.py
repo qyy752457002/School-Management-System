@@ -175,6 +175,10 @@ class TestExcelReader:
         # os.remove(self.filename)  # 清理创建的临时文件
         if self.sheetname in result.keys():
             result = result[self.sheetname]
+            #     逐行检查  提出尾部换行符
+            # for item in result :
+            #     if result[i].__dict__['__root__']['__root__'][]
+
         return result
         #
         # self.assertEqual(len(result['Sheet1']), 2)

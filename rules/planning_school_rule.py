@@ -63,6 +63,9 @@ class PlanningSchoolRule(object):
                     "school_category": "planning_school_category",
                     "school_org_type": "planning_school_org_type",
                     }
+    districts= None
+    enum_mapper=None
+
 
 
 
@@ -605,8 +608,7 @@ class PlanningSchoolRule(object):
     #     定义方法吧一行记录转化为适合导出展示的格式
     async def convert_planning_school_to_export_format(self,paging_result):
         # 获取区县的枚举
-        enum_value_rule = EnumValueRule()
-        # borough_enum = self.enum_value_dao.to_list()
+        enum_value_rule = get_injector(EnumValueRule)
         districts =await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY,Constant.CURRENT_CITY,return_keys='enum_value')
         print('区域',districts, '')
         enum_mapper = frontend_enum_mapping
@@ -625,4 +627,25 @@ class PlanningSchoolRule(object):
             # item.status = PlanningSchoolStatus[item.status] if item.status in enum_mapper.keys() else  item.status
             pass
         # return item
+#     枚举初始化的方法
+    async def init_enum_value_rule(self):
+        enum_value_rule = get_injector(EnumValueRule)
+        self.districts =await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY,Constant.CURRENT_CITY,return_keys='description')
+        print('区域',self.districts)
+        self.enum_mapper =   {value: key for key, value in frontend_enum_mapping.items()}
+        print('枚举映射',self.enum_mapper)
+        return self
+
+    async def convert_planning_school_to_import_format(self,item):
+        item.block = self.districts[item.block].enum_value if item.block in self.districts else  item.block
+        item.borough = self.districts[item.borough].enum_value if item.borough in self.districts else  item.borough
+        item.planning_school_edu_level = self.enum_mapper[item.planning_school_edu_level] if item.planning_school_edu_level in self.enum_mapper.keys() else  item.planning_school_edu_level
+        value= item.planning_school_category
+        if value and isinstance(value, str) and value.find('-')!=-1:
+            temp = value.split('-')
+            item.planning_school_category =  temp[1]  if len(temp)>1  else value
+
+        item.planning_school_category = self.enum_mapper[item.planning_school_category] if item.planning_school_category in self.enum_mapper.keys() else  item.planning_school_category
+        item.planning_school_org_type = self.enum_mapper[item.planning_school_org_type] if item.planning_school_org_type in self.enum_mapper.keys() else  item.planning_school_org_type
+        pass
 

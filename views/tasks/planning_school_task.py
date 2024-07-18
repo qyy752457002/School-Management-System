@@ -5,14 +5,18 @@ from mini_framework.async_task.task.task_context import Task, Context
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.logging import logger
 
+from rules.enum_value_rule import EnumValueRule
 from rules.planning_school_communication_rule import PlanningSchoolCommunicationRule
 from rules.planning_school_rule import PlanningSchoolRule
 from rules.storage_rule import StorageRule
 from rules.system_rule import SystemRule
-from views.common.common_view import map_keys
+from views.common.common_view import map_keys, frontend_enum_mapping
+from views.common.constant import Constant
 from views.models.planning_school import PlanningSchool, PlanningSchoolOptional, PlanningSchoolPageSearch, \
     PlanningSchoolImport
 from views.models.planning_school_communications import PlanningSchoolCommunications
+from views.models.system import DISTRICT_ENUM_KEY
+
 
 class PlanningSchoolExecutor(TaskExecutor):
     def __init__(self):
@@ -48,6 +52,9 @@ class PlanningSchoolExecutor(TaskExecutor):
                 data =await self._storage_rule.get_file_data(info.file_name, info.virtual_bucket_name,info.scene,file_direct_url=None)
                 logger.debug('根据URL解析数据', f"{data}",  )
                 pass
+            # 枚举值等的查询
+            psr = await self.planning_school_rule.init_enum_value_rule()
+
 
 
             for item in data:
@@ -68,9 +75,15 @@ class PlanningSchoolExecutor(TaskExecutor):
                         continue
                     else:
                         itemd = data_import.dict()
+                        # 检查每个值如果有右侧换行符 去掉
+                        for key, value in itemd.items():
+                            if value and isinstance(value, str) and value.endswith('\n'):
+                                itemd[key] = value.rstrip('\n')
+
                         itemd = map_keys(itemd, self.planning_school_rule.other_mapper)
                         # todo 需要进行 映射转换  选择的是汉字  根据映射转换英文枚举写入
                         data_import = PlanningSchoolOptional(**itemd)
+                        await psr.convert_planning_school_to_import_format(data_import)
 
                         pass
 
