@@ -134,7 +134,6 @@ class ClassesRule(object):
 
             for item in paging_result.items:
                 if item.grade_type in grade_enums:
-
                     item.grade_type_name = grade_enums[item.grade_type].description
                 else:
                     item.grade_type_name = item.grade_type
