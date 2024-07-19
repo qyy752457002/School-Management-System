@@ -1,9 +1,60 @@
 from pydantic import BaseModel, Field, model_validator, ValidationError, field_validator
 from datetime import date
 from fastapi import Query
+from business_exceptions.teacher import PunishReasonError, PunishDateError, EthicsConclusionError, EthicsDateError
 from models.public_enum import YesOrNo
 from typing import Optional, List, Any
 from views.models.teachers import IdentityType
+from enum import Enum
+
+
+class PunishType(str, Enum):
+    """
+    惩罚类型
+      {
+    label: '警告',
+    value: 'warning',
+  },
+  {
+    label: '记过',
+    value: 'record',
+  },
+  {
+    label: '批评',
+    value: 'criticism',
+  },
+  {
+    label: '留校察看',
+    value: 'leave_school_watch',
+  },
+  {
+    label: '劝退',
+    value: 'advice_to_leave',
+  },
+  {
+    label: '开除学籍',
+    value: 'expel_from_school',
+  },
+    """
+    WARNING = "warning"
+    RECORD = "record"
+    CRITICISM = "criticism"
+    LEAVE_SCHOOL_WATCH = "leave_school_watch"
+    ADVICE_TO_LEAVE = "advice_to_leave"
+    EXPEL_FROM_SCHOOL = "expel_from_school"
+
+
+class TeacherEthicType(str, Enum):
+    """
+    师德：ethic
+    处分：punish
+    """
+    ETHIC = "ethic"
+    PUNISH = "punish"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.ETHIC, cls.PUNISH]
 
 
 class TeacherLearnExperienceModel(BaseModel):
@@ -25,19 +76,19 @@ class TeacherLearnExperienceModel(BaseModel):
     在学单位类别：type_of_institution
     """
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    education_obtained: str = Field(..., title="获的学历", description="获的学历")
-    country_or_region_of_education: str = Field(..., title="获得学历国家/地区", description="获得学历国家/地区")
-    institution_of_education_obtained: str = Field(..., title="获得学历的院校机构", description="获得学历的院校机构")
-    major_learned: str = Field(..., title="所学妆业", description="所学专业")
+    education_obtained: str = Field(..., title="获得学历", description="获得学历")
+    country_or_region_of_education: str = Field(..., title="获得学历国家/（地区）", description="获得学历国家/（地区）")
+    institution_of_education_obtained: str = Field(..., title="获得学历院校/机构", description="获得学历的院校机构")
+    major_learned: str = Field(..., title="所学专业", description="所学专业")
     is_major_normal: bool = Field(False, title="是否师范类专业", description="是否师范类专业")
     admission_date: Optional[date] = Field(None, title="入学年月", description="入学时间")
     graduation_date: Optional[date] = Field(None, title="结束学业年月", description="毕业时间")
     degree_level: str = Field(..., title="学位层次", description="学位层次")
     degree_name: str = Field(..., title="学位名称", description="学位名称")
-    country_or_region_of_degree_obtained: str = Field(..., title="获取学位过家地区", description="获取学位过家地区")
-    institution_of_degree_obtained: str = Field(..., title="获得学位院校机构", description="获得学位院校机构")
-    degree_award_date: date = Field(..., title="学位授予时间", description="学位授予时间")
-    study_mode: str = Field(..., title="学习形式", description="学习方式")
+    country_or_region_of_degree_obtained: str = Field(..., title="获得学位国家/（地区）", description="获取学位过家地区")
+    institution_of_degree_obtained: str = Field(..., title="获得学位院校/机构", description="获得学位院校机构")
+    degree_award_date: date = Field(..., title="学位授予年月", description="学位授予时间")
+    study_mode: str = Field(..., title="学习方式", description="学习方式")
     type_of_institution: str = Field("", title="在学单位类别", description="在学单位类别")
 
     @model_validator(mode='before')
@@ -71,19 +122,19 @@ class TeacherLearnExperienceUpdateModel(BaseModel):
     """
     teacher_learn_experience_id: int | str = Field(..., title="教师学习经历ID", description="教师学习经历ID")
     teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
-    education_obtained: str = Field(..., title="获的学历", description="获的学历")
-    country_or_region_of_education: str = Field(..., title="获得学历国家/地区", description="获得学历国家/地区")
-    institution_of_education_obtained: str = Field(..., title="获得学历的院校机构", description="获得学历的院校机构")
-    major_learned: str = Field(..., title="所学妆业", description="所学妆业")
+    education_obtained: str = Field(..., title="获得学历", description="获得学历")
+    country_or_region_of_education: str = Field(..., title="获得学历国家/（地区）", description="获得学历国家/（地区）")
+    institution_of_education_obtained: str = Field(..., title="获得学历院校/机构", description="获得学历的院校机构")
+    major_learned: str = Field(..., title="所学专业", description="所学妆业")
     is_major_normal: bool = Field(False, title="是否师范类专业", description="是否师范类专业")
     admission_date: Optional[date] = Field(None, title="入学年月", description="入学时间")
     graduation_date: Optional[date] = Field(None, title="结束学业年月", description="毕业时间")
     degree_level: str = Field(..., title="学位层次", description="学位层次")
     degree_name: str = Field(..., title="学位名称", description="学位名称")
-    country_or_region_of_degree_obtained: str = Field(..., title="获取学位过家地区", description="获取学位过家地区")
-    institution_of_degree_obtained: str = Field(..., title="获得学位院校机构", description="获得学位院校机构")
-    degree_award_date: date = Field(..., title="学位授予时间", description="学位授予时间")
-    study_mode: str = Field(..., title="学习形式", description="学习方式")
+    country_or_region_of_degree_obtained: str = Field(..., title="获得学位国家/（地区）", description="获取学位过家地区")
+    institution_of_degree_obtained: str = Field(..., title="获得学位院校/机构", description="获得学位院校机构")
+    degree_award_date: date = Field(..., title="学位授予年月", description="学位授予时间")
+    study_mode: str = Field(..., title="学习方式", description="学习方式")
     type_of_institution: str = Field("", title="在学单位类别", description="在学单位类别")
 
     @model_validator(mode='before')
@@ -105,22 +156,22 @@ class TeacherLearnExperienceComModel(BaseModel):
     这个模型是导入excel注册时候用的
     """
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
-    education_obtained: str = Field(..., title="获的学历", description="获的学历")
-    country_or_region_of_education: str = Field(..., title="获得学历国家/地区", description="获得学历国家/地区")
-    institution_of_education_obtained: str = Field(..., title="获得学历的院校机构", description="获得学历的院校机构")
-    major_learned: str = Field(..., title="所学妆业", description="所学专业")
+    education_obtained: str = Field(..., title="获得学历", description="获得学历")
+    country_or_region_of_education: str = Field(..., title="获得学历国家/（地区）", description="获得学历国家/（地区）")
+    institution_of_education_obtained: str = Field(..., title="获得学历院校/机构", description="获得学历的院校机构")
+    major_learned: str = Field(..., title="所学专业", description="所学专业")
     is_major_normal: str = Field(False, title="是否师范类专业", description="是否师范类专业")
     admission_date: Optional[date] = Field(None, title="入学年月", description="入学时间")
     graduation_date: Optional[date] = Field(None, title="结束学业年月", description="毕业时间")
     degree_level: str = Field(..., title="学位层次", description="学位层次")
     degree_name: str = Field(..., title="学位名称", description="学位名称")
-    country_or_region_of_degree_obtained: str = Field(..., title="获取学位过家地区", description="获取学位过家地区")
-    institution_of_degree_obtained: str = Field(..., title="获得学位院校机构", description="获得学位院校机构")
-    degree_award_date: date = Field(..., title="学位授予时间", description="学位授予时间")
-    study_mode: str = Field(..., title="学习形式", description="学习方式")
+    country_or_region_of_degree_obtained: str = Field(..., title="获得学位国家/（地区）", description="获取学位过家地区")
+    institution_of_degree_obtained: str = Field(..., title="获得学位院校/机构", description="获得学位院校机构")
+    degree_award_date: date = Field(..., title="学位授予年月", description="学位授予时间")
+    study_mode: str = Field(..., title="学习方式", description="学习方式")
     type_of_institution: str = Field("", title="在学单位类别", description="在学单位类别")
 
     @model_validator(mode='before')
@@ -202,8 +253,8 @@ class TeacherWorkExperienceUpdateModel(BaseModel):
 
 class TeacherWorkExperienceComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
     start_date: date = Field(..., title="任职开始年月", description="开始时间")
     end_date: date = Field(..., title="任职结束年月", description="结束时间")
@@ -327,8 +378,8 @@ class TeacherJobAppointmentsUpdateModel(BaseModel):
 class TeacherJobAppointmentsComModel(BaseModel):
     # todo 兼任岗位和等级结构需要更新
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
     position_category: str = Field(..., title="岗位类别", description="岗位类别")
     position_level: str = Field(..., title="岗位等级", description="岗位等级")
@@ -366,7 +417,7 @@ class TeacherProfessionalTitlesModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     current_professional_title: str = Field(..., title="聘任专业技术职务", description="现专业技术职务")
     employing_institution_name: str = Field("", title="聘任单位名称", description="聘任单位名称")
-    employment_start_date: date = Field(..., title="开始年月", description="聘任开始时间")
+    employment_start_date: date = Field(..., title="聘任开始年月", description="聘任开始时间")
     employment_end_date: Optional[date] = Field(None, title="结束年月", description="聘任结束时间")
 
     @model_validator(mode='before')
@@ -395,7 +446,7 @@ class TeacherProfessionalTitlesUpdateModel(BaseModel):
     teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     current_professional_title: str = Field(..., title="聘任专业技术职务", description="现专业技术职务")
     employing_institution_name: str = Field("", title="聘任单位名称", description="聘任单位名称")
-    employment_start_date: date = Field(..., title="开始年月", description="聘任开始时间")
+    employment_start_date: date = Field(..., title="聘任开始年月", description="聘任开始时间")
     employment_end_date: Optional[date] = Field(None, title="结束年月", description="聘任结束时间")
 
     @model_validator(mode='before')
@@ -414,12 +465,12 @@ class TeacherProfessionalTitlesUpdateModel(BaseModel):
 
 class TeacherProfessionalTitlesComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
     current_professional_title: str = Field(..., title="聘任专业技术职务", description="现专业技术职务")
     employing_institution_name: str = Field("", title="聘任单位名称", description="聘任单位名称")
-    employment_start_date: date = Field(..., title="开始年月", description="聘任开始时间")
+    employment_start_date: date = Field(..., title="聘任开始年月", description="聘任开始时间")
     employment_end_date: Optional[date] = Field(None, title="结束年月", description="聘任结束时间")
 
     @model_validator(mode='before')
@@ -451,10 +502,10 @@ class TeacherQualificationsModel(BaseModel):
     定期注册结论：regular_registration_conclusion
     """
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    teacher_qualification_type: str = Field(..., title="种类", description="教师资格证种类")
-    qualification_number: str = Field(..., title="证书编号", description="资格证号码")
+    teacher_qualification_type: str = Field(..., title="教师资格证种类", description="教师资格证种类")
+    qualification_number: str = Field(..., title="教师资格证号码", description="资格证号码")
     teaching_subject: str = Field(..., title="任教学科", description="任教学科")
-    certificate_issue_date: date = Field(..., title="颁发日期", description="证书颁发时间")
+    certificate_issue_date: date = Field(..., title="证书颁发日期", description="证书颁发时间")
     issuing_authority: str = Field("", title="颁发机构", description="颁发机构")
     first_registration_date: Optional[date] = Field(None, title="首次注册日期", description="首次注册日期")
     regular_registration_date: Optional[date] = Field(None, title="定期注册日期", description="定期注册日期")
@@ -474,13 +525,13 @@ class TeacherQualificationsModel(BaseModel):
 
 class TeacherQualificationsComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
-    teacher_qualification_type: str = Field(..., title="种类", description="教师资格证种类")
-    qualification_number: str = Field(..., title="证书编号", description="资格证号码")
+    teacher_qualification_type: str = Field(..., title="教师资格证种类", description="教师资格证种类")
+    qualification_number: str = Field(..., title="教师资格证号码", description="资格证号码")
     teaching_subject: str = Field(..., title="任教学科", description="任教学科")
-    certificate_issue_date: date = Field(..., title="颁发日期", description="证书颁发时间")
+    certificate_issue_date: date = Field(..., title="证书颁发日期", description="证书颁发时间")
     issuing_authority: str = Field("", title="颁发机构", description="颁发机构")
     first_registration_date: Optional[date] = Field(None, title="首次注册日期", description="首次注册日期")
     regular_registration_date: Optional[date] = Field(None, title="定期注册日期", description="定期注册日期")
@@ -518,10 +569,10 @@ class TeacherQualificationsUpdateModel(BaseModel):
     teacher_qualifications_id: int | str = Field(..., title="teacher_qualifications_id",
                                                  description="teacher_qualifications_id")
     teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
-    teacher_qualification_type: str = Field(..., title="种类", description="教师资格证种类")
-    qualification_number: str = Field(..., title="证书编号", description="资格证号码")
+    teacher_qualification_type: str = Field(..., title="教师资格证种类", description="教师资格证种类")
+    qualification_number: str = Field(..., title="教师资格证号码", description="资格证号码")
     teaching_subject: str = Field(..., title="任教学科", description="任教学科")
-    certificate_issue_date: date = Field(..., title="颁发日期", description="证书颁发时间")
+    certificate_issue_date: date = Field(..., title="证书颁发日期", description="证书颁发时间")
     issuing_authority: str = Field("", title="颁发机构", description="颁发机构")
     first_registration_date: Optional[date] = Field(None, title="首次注册日期", description="首次注册日期")
     regular_registration_date: Optional[date] = Field(None, title="定期注册日期", description="定期注册日期")
@@ -560,7 +611,7 @@ class TeacherSkillCertificatesModel(BaseModel):
     other_skill_name: str = Field("", title="其他技能名称", description="其他技能名称")
     other_skill_level: str = Field("", title="其他技能掌握程度", description="其他技能程度")
     certificate_type: str = Field("", title="证书类型", description="证书类型")
-    language_certificate_name: str = Field("", title="语言证书名称", description="语言证书名称")
+    language_certificate_name: str = Field("", title="证书名称", description="语言证书名称")
     issue_year_month: Optional[date] = Field(None, title="发证年月", description="发证年月")
     issuing_authority: str = Field("", title="发证单位", description="发证单位")
     certificate_number: str = Field("", title="证书编号", description="证书编号")
@@ -579,15 +630,15 @@ class TeacherSkillCertificatesModel(BaseModel):
 
 class TeacherSkillCertificatesComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
     language: str = Field(..., title="语种", description="语种")
     proficiency_level: str = Field(..., title="掌握程度", description="掌握程度")
     other_skill_name: str = Field("", title="其他技能名称", description="其他技能名称")
     other_skill_level: str = Field("", title="其他技能掌握程度", description="其他技能程度")
     certificate_type: str = Field("", title="证书类型", description="证书类型")
-    language_certificate_name: str = Field("", title="语言证书名称", description="语言证书名称")
+    language_certificate_name: str = Field("", title="证书名称", description="语言证书名称")
     issue_year_month: Optional[date] = Field(None, title="发证年月", description="发证年月")
     issuing_authority: str = Field("", title="发证单位", description="发证单位")
     certificate_number: str = Field("", title="证书编号", description="证书编号")
@@ -630,7 +681,7 @@ class TeacherSkillCertificatesUpdateModel(BaseModel):
     other_skill_name: str = Field("", title="其他技能名称", description="其他技能名称")
     other_skill_level: str = Field("", title="其他技能掌握程度", description="其他技能程度")
     certificate_type: str = Field("", title="证书类型", description="证书类型")
-    language_certificate_name: str = Field("", title="语言证书名称", description="语言证书名称")
+    language_certificate_name: str = Field("", title="证书名称", description="语言证书名称")
     issue_year_month: Optional[date] = Field(None, title="发证年月", description="发证年月")
     issuing_authority: str = Field("", title="发证单位", description="发证单位")
     certificate_number: str = Field("", title="证书编号", description="证书编号")
@@ -670,22 +721,24 @@ class TeacherEthicRecordsModel(BaseModel):
     处分撤销原因：disciplinary_revocation_reason
     """
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
-    ethics_assessment_date: date = Field(..., title="师德考核时间（年月）", description="师德考核时间")
-    ethics_assessment_conclusion: str = Field(..., title="考核结论", description="师德考核结论")
-    assessment_institution_name: str = Field("", title="考核单位名称", description="考核单位名称")
+    ethics_assessment_date: Optional[date] | None = Field(None, title="师德考核时间", description="师德考核时间")
+    ethics_assessment_conclusion: str = Field("", title="师德考核结论", description="师德考核结论")
+    assessment_institution_name: str = Field("", title="师德考核单位名称", description="考核单位名称")
     honor_level: str = Field("", title="荣誉级别", description="荣誉级别")
-    honor_title: str = Field("", title="获得荣誉称号", description="荣誉称号")
-    honor_date: Optional[date] = Field(None, title="荣誉发生日期", description="荣誉日期")
+    honor_title: str = Field("", title="获取荣誉称号", description="荣誉称号")
+    honor_date: Optional[date] = Field(None, title="获取荣誉日期", description="荣誉日期")
     awarding_institution_name: str = Field("", title="荣誉授予单位名称", description="荣誉授予单位名称")
     honor_record_description: str = Field("", title="荣誉记录描述", description="荣誉记录描述")
-    disciplinary_category: str = Field(..., title="处分类别", description="处分类别")
-    disciplinary_reason: str = Field(..., title="处分原因", description="处分原因")
-    disciplinary_date: date = Field(..., title="处分日期", description="处分日期")
+    disciplinary_category: str = Field("", title="处分类别", description="处分类别")
+    disciplinary_reason: Optional[date] | None = Field(None, title="处分原因", description="处分原因")
+    disciplinary_date: Optional[date] | None = Field(None, title="处分日期", description="处分日期")
     disciplinary_institution_name: str = Field("", title="处分单位名称", description="处分单位名称")
     disciplinary_record_description: str = Field("", title="处分记录描述", description="处分记录描述")
-    disciplinary_occurrence_date: date = Field(..., title="处分发生日期（年月日）", description="处分发生日期")
-    disciplinary_revocation_date: date = Field(..., title="处分撤销日期", description="处分撤销日期")
+    disciplinary_occurrence_date: Optional[date] | None = Field(None, title="处分发生日期（年月日）",
+                                                                description="处分发生日期")
+    disciplinary_revocation_date: Optional[date] | None = Field(None, title="处分撤销日期", description="处分撤销日期")
     disciplinary_revocation_reason: str = Field("", title="处分撤销原因", description="处分撤销原因")
+    ethic_type: TeacherEthicType = Field(..., title="师德类型", description="师德类型")
 
     @model_validator(mode='before')
     @classmethod
@@ -698,11 +751,36 @@ class TeacherEthicRecordsModel(BaseModel):
                 pass
         return data
 
+    @model_validator(mode='after')
+    def check_disciplinary_category(self):
+        if self.ethic_type == TeacherEthicType.ETHIC.value:
+            if self.ethics_assessment_date is None:
+                raise EthicsDateError()
+            if self.ethics_assessment_conclusion == "":
+                raise EthicsConclusionError()
+        elif self.ethic_type == TeacherEthicType.PUNISH.value:
+            if self.disciplinary_reason == "":
+                raise PunishReasonError()
+            if self.disciplinary_date is None:
+                raise PunishDateError()
+        else:
+            pass
+        return self
+
 
 class TeacherEthicRecordsRewardsComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
+
+    ethics_assessment_date: date = Field(..., title="师德考核时间", description="师德考核时间")
+    ethics_assessment_conclusion: str = Field(..., title="师德考核结论", description="师德考核结论")
+    assessment_institution_name: str = Field("", title="师德考核单位名称", description="考核单位名称")
+    honor_level: str = Field("", title="荣誉级别", description="荣誉级别")
+    honor_title: str = Field("", title="获取荣誉称号", description="荣誉称号")
+    honor_date: Optional[date] = Field(None, title="获取荣誉日期", description="荣誉日期")
+    awarding_institution_name: str = Field("", title="荣誉授予单位名称", description="荣誉授予单位名称")
+    honor_record_description: str = Field("", title="荣誉记录描述", description="荣誉记录描述")
 
     @model_validator(mode='before')
     @classmethod
@@ -722,8 +800,18 @@ class TeacherEthicRecordsRewardsResultModel(TeacherEthicRecordsRewardsComModel):
 
 class TeacherEthicRecordsDisciplinaryComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
+
+    disciplinary_category: str = Field(..., title="处分类别", description="处分类别")
+    disciplinary_reason: str = Field(..., title="处分原因", description="处分原因")
+    disciplinary_date: date = Field(..., title="处分日期", description="处分日期")
+    disciplinary_institution_name: str = Field("", title="处分单位名称", description="处分单位名称")
+    disciplinary_record_description: str = Field("", title="处分记录描述", description="处分记录描述")
+    disciplinary_occurrence_date: Optional[date] | None = Field(None, title="处分发生日期（年月日）",
+                                                                description="处分发生日期")
+    disciplinary_revocation_date: Optional[date] | None = Field(None, title="处分撤销日期", description="处分撤销日期")
+    disciplinary_revocation_reason: str = Field("", title="处分撤销原因", description="处分撤销原因")
 
     @model_validator(mode='before')
     @classmethod
@@ -765,22 +853,24 @@ class TeacherEthicRecordsUpdateModel(BaseModel):
     teacher_ethic_records_id: int | str = Field(..., title="teacher_ethic_records_id",
                                                 description="teacher_ethic_records_id")
     teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
-    ethics_assessment_date: date = Field(..., title="师德考核时间（年月）", description="师德考核时间")
-    ethics_assessment_conclusion: str = Field(..., title="考核结论", description="师德考核结论")
-    assessment_institution_name: str = Field("", title="考核单位名称", description="考核单位名称")
+    ethics_assessment_date: Optional[date] | None = Field(None, title="师德考核时间", description="师德考核时间")
+    ethics_assessment_conclusion: str = Field("", title="师德考核结论", description="师德考核结论")
+    assessment_institution_name: str = Field("", title="师德考核单位名称", description="考核单位名称")
     honor_level: str = Field("", title="荣誉级别", description="荣誉级别")
-    honor_title: str = Field("", title="荣誉称号", description="荣誉称号")
-    honor_date: Optional[date] = Field(None, title="荣誉日期", description="荣誉日期")
+    honor_title: str = Field("", title="获取荣誉称号", description="荣誉称号")
+    honor_date: Optional[date] = Field(None, title="获取荣誉日期", description="荣誉日期")
     awarding_institution_name: str = Field("", title="荣誉授予单位名称", description="荣誉授予单位名称")
     honor_record_description: str = Field("", title="荣誉记录描述", description="荣誉记录描述")
-    disciplinary_category: str = Field(..., title="处分类别", description="处分类别")
-    disciplinary_reason: str = Field(..., title="处分原因", description="处分原因")
-    disciplinary_date: date = Field(..., title="处分日期", description="处分日期")
+    disciplinary_category: str = Field("", title="处分类别", description="处分类别")
+    disciplinary_reason: Optional[date] | None = Field(None, title="处分原因", description="处分原因")
+    disciplinary_date: Optional[date] | None = Field(None, title="处分日期", description="处分日期")
     disciplinary_institution_name: str = Field("", title="处分单位名称", description="处分单位名称")
     disciplinary_record_description: str = Field("", title="处分记录描述", description="处分记录描述")
-    disciplinary_occurrence_date: date = Field(..., title="处分发生日期（年月日）", description="处分发生日期")
-    disciplinary_revocation_date: date = Field(..., title="处分撤销日期", description="处分撤销日期")
+    disciplinary_occurrence_date: Optional[date] | None = Field(None, title="处分发生日期（年月日）",
+                                                                description="处分发生日期")
+    disciplinary_revocation_date: Optional[date] | None = Field(None, title="处分撤销日期", description="处分撤销日期")
     disciplinary_revocation_reason: str = Field("", title="处分撤销原因", description="处分撤销原因")
+    ethic_type: TeacherEthicType = Field(..., title="师德类型", description="师德类型")
 
     @model_validator(mode='before')
     @classmethod
@@ -840,8 +930,8 @@ class EducationalTeachingModel(BaseModel):
 
 class EducationalTeachingComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
     academic_year: str = Field(..., title="学年", description="学年")
     semester: str = Field(..., title="学期", description="学期")
@@ -932,11 +1022,11 @@ class DomesticTrainingModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     training_year: str = Field(..., title="培训年度", description="培训年度")
     training_type: str = Field(..., title="培训类别", description="培训类型")
-    training_project: str = Field(..., title="项目名称", description="培训项目")
-    training_institution: str = Field("", title="机构名称", description="培训机构")
+    training_project: str = Field(..., title="培训项目名称", description="培训项目")
+    training_institution: str = Field("", title="培训机构名称", description="培训机构")
     training_mode: str = Field(..., title="培训方式", description="培训方式")
-    training_hours: str = Field(..., title="获得学时", description="培训学时")
-    training_credits: str = Field("", title="培训学分", description="培训学分")
+    training_hours: str = Field(..., title="培训获得学时", description="培训学时")
+    training_credits: str = Field("", title="培训获得学分", description="培训学分")
 
     @model_validator(mode='before')
     @classmethod
@@ -952,16 +1042,16 @@ class DomesticTrainingModel(BaseModel):
 
 class DomesticTrainingComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
     training_year: str = Field(..., title="培训年度", description="培训年度")
     training_type: str = Field(..., title="培训类别", description="培训类型")
-    training_project: str = Field(..., title="项目名称", description="培训项目")
-    training_institution: str = Field("", title="机构名称", description="培训机构")
+    training_project: str = Field(..., title="培训项目名称", description="培训项目")
+    training_institution: str = Field("", title="培训机构名称", description="培训机构")
     training_mode: str = Field(..., title="培训方式", description="培训方式")
-    training_hours: str = Field(..., title="获得学时", description="培训学时")
-    training_credits: str = Field("", title="培训学分", description="培训学分")
+    training_hours: str = Field(..., title="培训获得学时", description="培训学时")
+    training_credits: str = Field("", title="培训获得学分", description="培训学分")
 
     @model_validator(mode='before')
     @classmethod
@@ -974,8 +1064,10 @@ class DomesticTrainingComModel(BaseModel):
                 pass
         return data
 
+
 class DomesticTrainingResultModel(DomesticTrainingComModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
+
 
 class DomesticTrainingUpdateModel(BaseModel):
     """
@@ -993,11 +1085,11 @@ class DomesticTrainingUpdateModel(BaseModel):
     teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     training_year: str = Field(..., title="培训年度", description="培训年度")
     training_type: str = Field(..., title="培训类别", description="培训类型")
-    training_project: str = Field(..., title="项目名称", description="培训项目")
-    training_institution: str = Field("", title="机构名称", description="培训机构")
+    training_project: str = Field(..., title="培训项目名称", description="培训项目")
+    training_institution: str = Field("", title="培训机构名称", description="培训机构")
     training_mode: str = Field(..., title="培训方式", description="培训方式")
-    training_hours: str = Field(..., title="获得学时", description="培训学时")
-    training_credits: str = Field("", title="培训学分", description="培训学分")
+    training_hours: str = Field(..., title="培训获得学时", description="培训学时")
+    training_credits: str = Field("", title="培训获得学分", description="培训学分")
 
     @model_validator(mode='before')
     @classmethod
@@ -1026,8 +1118,8 @@ class OverseasStudyModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     start_date: date = Field(..., title="开始日期", description="开始日期")
     end_date: date = Field(..., title="结束日期", description="结束日期")
-    country_region: str = Field(..., title="国家/地区", description="国家地区")
-    training_institution_name: str = Field("", title="研修机构名称", description="研修机构名称")
+    country_region: str = Field(..., title="国家（地区）", description="国家地区")
+    training_institution_name: str = Field("", title="研修（访学）机构名称", description="研修机构名称")
     project_name: str = Field(..., title="项目名称", description="项目名称")
     organizing_institution_name: str = Field("", title="项目组织单位名称", description="项目组织单位名称")
 
@@ -1044,14 +1136,13 @@ class OverseasStudyModel(BaseModel):
 
 
 class OverseasStudyComModel(BaseModel):
-
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
     start_date: date = Field(..., title="开始日期", description="开始日期")
     end_date: date = Field(..., title="结束日期", description="结束日期")
-    country_region: str = Field(..., title="国家/地区", description="国家地区")
-    training_institution_name: str = Field("", title="研修机构名称", description="研修机构名称")
+    country_region: str = Field(..., title="国家（地区）", description="国家地区")
+    training_institution_name: str = Field("", title="研修（访学）机构名称", description="研修机构名称")
     project_name: str = Field(..., title="项目名称", description="项目名称")
     organizing_institution_name: str = Field("", title="项目组织单位名称", description="项目组织单位名称")
 
@@ -1086,8 +1177,8 @@ class OverseasStudyUpdateModel(BaseModel):
     teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     start_date: date = Field(..., title="开始日期", description="开始日期")
     end_date: date = Field(..., title="结束日期", description="结束日期")
-    country_region: str = Field(..., title="国家/地区", description="国家地区")
-    training_institution_name: str = Field("", title="研修机构名称", description="研修机构名称")
+    country_region: str = Field(..., title="国家（地区）", description="国家地区")
+    training_institution_name: str = Field("", title="研修（访学）机构名称", description="研修机构名称")
     project_name: str = Field(..., title="项目名称", description="项目名称")
     organizing_institution_name: str = Field("", title="项目组织单位名称", description="项目组织单位名称")
 
@@ -1129,8 +1220,8 @@ class TalentProgramModel(BaseModel):
 
 class TalentProgramComModel(TalentProgramModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
     talent_project_name: str = Field("", title="入选人才项目名称", description="人才项目名称")
     selected_year: str = Field("", title="年份", description="入选年份")
 
@@ -1202,9 +1293,9 @@ class AnnualReviewModel(BaseModel):
 
 class AnnualReviewComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
-    
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
+
     assessment_year: str = Field(..., title="考核年度", description="考核年度")
     assessment_result: str = Field(..., title="考核结果", description="考核结果")
     assessment_institution_name: str = Field("", title="考核单位名称", description="考核单位名称")
@@ -1296,17 +1387,17 @@ class ResearchAchievementsModel(BaseModel):
     """
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Field(..., title="科研成果类型", description="科研成果种类")
-    type: str = Field("", title="类型", description="类型")
-    representative_or_project: Optional[bool] = Field(None, title="是否代表性成果和项目",
+    type: str = Field("", title="项目类型", description="类型")
+    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
                                                       description="是否代表性成果或项目")
-    name: str = Field("", title="名称", description="名称")
+    name: str = Field("", title="项目名称", description="名称")
     disciplinary_field: str = Field("", title="学科领域", description="学科领域")
     role: str = Field("", title="本人角色", description="本人角色")
     research_date: Optional[date] = Field(None, title="日期", description="日期")
     approval_number: str = Field("", title="批准号", description="批准号")
     funding_amount: str = Field("", title="经费额度", description="经费额度")
     start_year_month: Optional[date] = Field(None, title="开始年月", description="开始年月")
-    end_date: Optional[date] = Field(None, title="结束日期", description="结束日期")
+    end_date: Optional[date] = Field(None, title="结束年月", description="结束日期")
     ranking: str = Field("", title="本人排名", description="本人排名")
     entrusting_unit: str = Field("", title="委托单位", description="委托单位")
     source: str = Field("", title="来源", description="来源")
@@ -1333,6 +1424,9 @@ class ResearchAchievementsModel(BaseModel):
     validity_period: Optional[date] = Field(None, title="有效期", description="有效期")
     standard_number: str = Field("", title="标准号", description="标准号")
     publishing_organization: str = Field("", title="发布单位", description="发布单位")
+    report_name: str = Field("", title="报告题目", description="报告名称")
+    report_time: Optional[date] = Field(None, title="报告时间", description="报告时间")
+    publish_date: Optional[date] = Field(None, title="发布时间", description="发布时间")
 
     @model_validator(mode='before')
     @classmethod
@@ -1347,11 +1441,23 @@ class ResearchAchievementsModel(BaseModel):
 
 
 class ResearchAchievementsProjectComModel(BaseModel):
-
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
+    type: str = Field("", title="项目类型", description="类型")
+    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
+                                                      description="是否代表性成果或项目")
+    name: str = Field(..., title="项目名称", description="名称")
+    approval_number: str = Field("", title="批准号", description="批准号")
+    disciplinary_field: str = Field("", title="学科领域", description="学科领域")
+    funding_amount: str = Field("", title="经费额度", description="经费额度")
+    start_year_month: Optional[date] = Field(None, title="开始年月", description="开始年月")
+    end_date: Optional[date] = Field(None, title="结束年月", description="结束日期")
+    role: str = Field("", title="本人角色", description="本人角色")
+    ranking: str = Field("", title="本人排名", description="本人排名")
+    entrusting_unit: str = Field("", title="委托单位", description="委托单位")
+    source: str = Field("", title="来源", description="来源")
 
     @model_validator(mode='before')
     @classmethod
@@ -1371,9 +1477,20 @@ class ResearchAchievementsProjectResultModel(ResearchAchievementsProjectComModel
 
 class ResearchAchievementsBookComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
+    name: str = Field("", title="名称", description="名称")
+    self_written_words: int = Field(0, title="本人撰写字数", description="本人撰写字数")
+    total_words: int = Field(0, title="总字数", description="总字数")
+    role: str = Field("", title="著作中本人角色", description="本人角色")
+    publication_number: str = Field("", title="出版号", description="出版号")
+    publisher_name: str = Field("", title="出版社名称", description="出版社名称")
+    research_date: Optional[date] = Field(None, title="日期", description="日期")
+    disciplinary_field: str = Field("", title="学科领域", description="学科领域")
+    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
+                                                      description="是否代表性成果或项目")
+    type: str = Field("", title="类型", description="类型")
 
     @model_validator(mode='before')
     @classmethod
@@ -1389,12 +1506,25 @@ class ResearchAchievementsBookComModel(BaseModel):
 
 class ResearchAchievementsBookResultModel(ResearchAchievementsBookComModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
-    
+
 
 class ResearchAchievementsPaperComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
+
+    name: str = Field("", title="名称", description="名称")
+    journal_name: str = Field("", title="发表刊物名称", description="发表刊物名称")
+    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
+                                                      description="是否代表性成果或项目")
+    research_date: Optional[date] = Field(None, title="日期", description="日期")
+    volume_number: int = Field(0, title="卷号", description="卷号")
+    issue_number: int = Field(0, title="期号", description="期号")
+    start_page: int = Field(0, title="起始页码", description="起始页码")
+    end_page: int = Field(0, title="结束页码", description="结束页码")
+    disciplinary_field: str = Field("", title="学科领域", description="学科领域")
+    role: str = Field("", title="本人角色", description="本人角色")
+    indexing_status: str = Field("", title="论文收录情况", description="论文收录情况")
 
 
     @model_validator(mode='before')
@@ -1411,12 +1541,23 @@ class ResearchAchievementsPaperComModel(BaseModel):
 
 class ResearchAchievementsPaperResultModel(ResearchAchievementsPaperComModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
-    
-    
+
+
 class ResearchAchievementsRewardComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
+
+    authorized_country: str = Field("", title="授奖国家（地区）", description="授权国家")
+    authorized_organization: str = Field("", title="授奖单位", description="授权单位")
+    personal_rank: str = Field("", title="本人排名", description="本人排名")
+    other_level: str = Field("", title="其他等级", description="其他等级")
+    research_level: str = Field("", title="等级", description="等级")
+    name: str = Field("", title="名称", description="名称")
+    research_date: Optional[date] = Field(None, title="日期", description="日期")
+    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
+                                                      description="是否代表性成果或项目")
+    type: str = Field("", title="类型", description="类型")
 
 
     @model_validator(mode='before')
@@ -1433,12 +1574,22 @@ class ResearchAchievementsRewardComModel(BaseModel):
 
 class ResearchAchievementsRewardResultModel(ResearchAchievementsRewardComModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
-    
+
 
 class ResearchAchievementsArtworkComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
+
+    type: str = Field("", title="类型", description="类型")
+    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
+                                                      description="是否代表性成果或项目")
+    name: str = Field("", title="作品名称", description="名称")
+    role: str = Field("", title="本人角色", description="本人角色")
+    research_date: Optional[date] = Field(None, title="日期", description="日期")
+    completion_location: str = Field("", title="完成地点", description="完成地点")
+    work_description: str = Field("", title="本人承担工作描述", description="本人工作描述")
+
 
 
     @model_validator(mode='before')
@@ -1459,9 +1610,20 @@ class ResearchAchievementsArtworkResultModel(ResearchAchievementsArtworkComModel
 
 class ResearchAchievementsPatentComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
+    type: str = Field("", title="类型", description="类型")
+    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
+                                                      description="是否代表性成果或项目")
+    name: str = Field("", title="作品名称", description="名称")
+    disciplinary_field: str = Field("", title="学科领域", description="学科领域")
+    research_date: Optional[date] = Field(None, title="批准日期", description="日期")
+    role: str = Field("", title="本人角色", description="本人角色")
+    patent_number: str = Field("", title="专利号（登记号）", description="专利号")
+    entrusting_party: str = Field("", title="委托方", description="委托方")
+    report_name: str = Field("", title="报告题目", description="报告名称")
+    report_time: Optional[date] = Field(None, title="报告时间", description="报告时间")
 
     @model_validator(mode='before')
     @classmethod
@@ -1481,9 +1643,19 @@ class ResearchAchievementsPatentResultModel(ResearchAchievementsPatentComModel):
 
 class ResearchAchievementsMedicineComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
-    teacher_id_type: str = Field("", title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field("", title="教师身份证号", description="证件号")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
+    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
+                                                      description="是否代表性成果或项目")
+    name: str = Field("", title="名称", description="名称")
+    certificate_number: str = Field("", title="证书（批件）号", description="证书号")
+    role: str = Field("", title="本人角色", description="本人角色")
+    publishing_organization: str = Field(..., title="发布单位", description="发布单位")
+    validity_period: Optional[date] = Field(None, title="有效期", description="有效期")
+    research_date: Optional[date] = Field(None, title="颁布或批准时间", description="日期")
+    standard_number: str = Field("", title="标准号", description="标准号")
+    publish_date: Optional[date] = Field(None, title="发布时间", description="发布时间")
 
     @model_validator(mode='before')
     @classmethod
@@ -1500,7 +1672,32 @@ class ResearchAchievementsMedicineComModel(BaseModel):
 class ResearchAchievementsMedicineResultModel(ResearchAchievementsMedicineComModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
+class ResearchAchievementsCompetitionComModel(BaseModel):
+    teacher_name: str = Field(..., title="教师姓名", description="教师名称")
+    teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
+    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
+    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
+                                                      description="是否代表性成果或项目")
+    name: str = Field("", title="名称", description="名称")
+    role: str = Field("", title="本人角色", description="本人角色")
+    work_description: str = Field("", title="本人承担工作描述", description="本人工作描述")
+    research_date: Optional[date] = Field(None, title="日期", description="日期")
+    research_level: str = Field("", title="等级", description="等级")
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_id_number"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
+
+class ResearchAchievementsCompetitionResultModel(ResearchAchievementsCompetitionComModel):
+    failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
 
 class ResearchAchievementsUpdateModel(BaseModel):
@@ -1549,17 +1746,17 @@ class ResearchAchievementsUpdateModel(BaseModel):
                                                 description="research_achievements_id")
     teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Field(..., title="科研成果类型", description="科研成果种类")
-    type: str = Field("", title="类型", description="类型")
-    representative_or_project: Optional[bool] = Field(None, title="是否代表性成果和项目",
+    type: str = Field("", title="项目类型", description="类型")
+    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
                                                       description="是否代表性成果或项目")
-    name: str = Field("", title="名称", description="名称")
+    name: str = Field("", title="项目名称", description="名称")
     disciplinary_field: str = Field("", title="学科领域", description="学科领域")
     role: str = Field("", title="本人角色", description="本人角色")
     research_date: Optional[date] = Field(None, title="日期", description="日期")
     approval_number: str = Field("", title="批准号", description="批准号")
     funding_amount: str = Field("", title="经费额度", description="经费额度")
     start_year_month: Optional[date] = Field(None, title="开始年月", description="开始年月")
-    end_date: Optional[date] = Field(None, title="结束日期", description="结束日期")
+    end_date: Optional[date] = Field(None, title="结束年月", description="结束日期")
     ranking: str = Field("", title="本人排名", description="本人排名")
     entrusting_unit: str = Field("", title="委托单位", description="委托单位")
     source: str = Field("", title="来源", description="来源")
@@ -1586,6 +1783,9 @@ class ResearchAchievementsUpdateModel(BaseModel):
     validity_period: Optional[date] = Field(None, title="有效期", description="有效期")
     standard_number: str = Field("", title="标准号", description="标准号")
     publishing_organization: str = Field("", title="发布单位", description="发布单位")
+    report_name: str = Field("", title="报告题目", description="报告名称")
+    report_time: Optional[date] = Field(None, title="报告时间", description="报告时间")
+    publish_date: Optional[date] = Field(None, title="发布时间", description="发布时间")
 
     @model_validator(mode='before')
     @classmethod
@@ -1615,7 +1815,7 @@ class ResearchAchievementsQueryModel(BaseModel):
     teacher_id: int = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Query("", title="姓名", description="姓名", example="张三")
     type: str = Query("", title="类型", description="类型", example="类型")
-    representative_or_project: Optional[bool] = Query(False, title="是否代表性成果和项目",
+    representative_or_project: Optional[bool] = Query(False, title="是否是代表性成果或项目",
                                                       description="是否代表性成果或项目")
     name: str = Query("", title="名称", description="名称", example="名称")
     disciplinary_field: str = Query("", title="学科领域", description="学科领域", example="学科领域")
@@ -1649,7 +1849,7 @@ class ResearchAchievementsQueryReModel(BaseModel):
     teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
     research_achievement_type: str = Query("", title="姓名", description="姓名", example="张三")
     type: str = Query("", title="类型", description="类型", example="类型")
-    representative_or_project: Optional[bool] = Query(False, title="是否代表性成果和项目",
+    representative_or_project: Optional[bool] = Query(False, title="是否是代表性成果或项目",
                                                       description="是否代表性成果或项目")
     name: str = Query("", title="名称", description="名称", example="名称")
     disciplinary_field: str = Query("", title="学科领域", description="学科领域", example="学科领域")

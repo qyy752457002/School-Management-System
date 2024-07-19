@@ -689,13 +689,13 @@ class TeacherExtendImportView(BaseView):
 
     async def post_teacher_work_experience_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                    example=123)) -> Task:
-        # filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        # task = Task(
-        #     task_type="teacher_save_import",
-        #     payload=filestorage,
-        #     operator=request_context_manager.current().current_login_account.account_id
-        # )
-        # task = await app.task_topic.send(task)
-        # print('发生任务成功')
-        await self.teacher_extend_experience_rule.teacher_work_experience_import(file_id)
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(
+            task_type="teacher_work_experience_import",
+            payload=filestorage,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        # await self.teacher_extend_experience_rule.teacher_work_experience_import(file_id)
         return True
