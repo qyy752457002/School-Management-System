@@ -12,6 +12,7 @@ from daos.school_dao import SchoolDAO
 from daos.student_session_dao import StudentSessionDao
 from models.classes import Classes
 from rules.enum_value_rule import EnumValueRule
+from rules.import_common_abstract_rule import ImportCommonAbstractRule
 from rules.teachers_rule import TeachersRule
 from views.common.common_view import convert_snowid_in_model, convert_snowid_to_strings
 from views.models.classes import Classes as ClassesModel
@@ -20,7 +21,7 @@ from views.models.system import DISTRICT_ENUM_KEY, GRADE_ENUM_KEY, MAJOR_LV3_ENU
 
 
 @dataclass_inject
-class ClassesRule(object):
+class ClassesRule(object,ImportCommonAbstractRule):
     classes_dao: ClassesDAO
     school_dao: SchoolDAO
     session_dao: StudentSessionDao
@@ -29,6 +30,12 @@ class ClassesRule(object):
 
     async def get_classes_by_id(self, classes_id):
         classes_db = await self.classes_dao.get_classes_by_id(classes_id)
+        # 可选 , exclude=[""]
+        classes = orm_model_to_view_model(classes_db, ClassesModel)
+        return classes
+
+    async def get_classes_by_name(self, classes_id):
+        classes_db = await self.classes_dao.get_classes_by_classes_name(classes_id)
         # 可选 , exclude=[""]
         classes = orm_model_to_view_model(classes_db, ClassesModel)
         return classes
@@ -140,3 +147,25 @@ class ClassesRule(object):
         convert_snowid_to_strings(paging_result,["id", "school_id",'grade_id','session_id','teacher_id','care_teacher_id'])
 
         return paging_result
+
+    async def convert_import_format_to_view_model(self,item:Classes):
+        # 学校转id
+        item.block = self.districts[item.block].enum_value if item.block in self.districts else  item.block
+        item.borough = self.districts[item.borough].enum_value if item.borough in self.districts else  item.borough
+        if hasattr(item,'school_name'):
+            school =await self.school_dao.get_school_by_school_name(item.school_name)
+            item.school_id = school.id if school else None
+        if hasattr(item,'session_name'):
+            session =await self.session_dao.get_student_session_by_param(session_name=item.session_name)
+            item.session_id = session.id if session else None
+
+        if hasattr(item,'grade_no'):
+            grade =await self.grade_dao.get_grade_by_grade_name(item.grade_no)
+            item.grade_id = grade.id if grade else None
+        #     证件类型转英文 中小学班级类型
+        if hasattr(item,'teacher_card_type'):
+            item.teacher_card_type = self.id_types.get(item.teacher_card_type, item.teacher_card_type)
+
+        if hasattr(item,'class_type'):
+            item.class_type = self.class_systems.get(item.class_type, item.class_type)
+        pass

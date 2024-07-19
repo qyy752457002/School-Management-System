@@ -51,7 +51,7 @@ class ClassExecutor(TaskExecutor):
                 logger.debug('根据URL解析数据', f"{data}",  )
                 pass
             # 枚举值等的查询 todo 这个初始的 和转换需要涉及每个都有 考虑调整为数组 批量处理
-            psr = await self.class_rule.init_enum_value_rule()
+            psr = await self.class_rule.init_enum_value()
 
 
             for item in data:
@@ -73,8 +73,10 @@ class ClassExecutor(TaskExecutor):
                     # itemd = map_keys(itemd, self.institution_rule.other_mapper)
                     # todo 需要进行 映射转换  选择的是汉字  根据映射转换英文枚举写入
                     data_import = Classes(**itemd)
-                    # todo 这个转换函数 也需要加
-                    await psr.convert_school_to_import_format(data_import)
+                    # todo 这个转换函数 也需要加 下面方法改为装饰器
+
+                    await psr.convert_import_format_to_view_model(data_import)
+
 
                 else:
                     raise ValueError("Invalid payload type")
