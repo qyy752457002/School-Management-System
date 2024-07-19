@@ -818,12 +818,12 @@ class TeacherExtendImportView(BaseView):
 
     async def post_research_achievements_project_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                          example=123)) -> Task:
-        # filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        # task = Task(task_type="research_achievements_project_import", payload=filestorage,
-        #             operator=request_context_manager.current().current_login_account.account_id)
-        # task = await app.task_topic.send(task)
-        # print("发生任务成功")
-        await self.teacher_extend_experience_rule.research_achievements_project_import(file_id)
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="research_achievements_project_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.research_achievements_project_import(file_id)
         return task
 
     async def post_research_achievements_book_import(self, file_id: int | str = Query(..., title="文件id",

@@ -51,7 +51,7 @@ class ResearchAchievements(BaseDBModel):
 
     research_achievements_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, comment="research_achievementsID")
     teacher_id: Mapped[int] = mapped_column(BigInteger, nullable=False, comment="教师ID")
-    research_achievement_type: Mapped[str] = mapped_column(String(64), nullable=False, comment="科研成果种类")
+    research_achievement_type: Mapped[str] = mapped_column(String(255), nullable=False, comment="科研成果种类")
     type: Mapped[str] = mapped_column(String(64), nullable=True, comment="类型")
     representative_or_project: Mapped[bool] = mapped_column(nullable=True, comment="是否代表性成果或项目")
     name: Mapped[str] = mapped_column(String(64), nullable=True, comment="名称")

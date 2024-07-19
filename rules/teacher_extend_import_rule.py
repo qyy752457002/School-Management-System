@@ -919,12 +919,12 @@ class TeacherExtendImportRule:
 
     async def research_achievements_project_import(self, task):
         try:
-            # if not isinstance(task.payload, TeacherFileStorageModel):
-            #     raise ValueError("Invalid payload type")
-            # source_file = task.payload
-            # local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
-            # storage_manager.download_file(source_file.virtual_bucket_name, source_file.file_name, local_file_path)
-            local_file_path = "rules/tmp/教职工科研项目导入模版1.xlsx"
+            if not isinstance(task.payload, TeacherFileStorageModel):
+                raise ValueError("Invalid payload type")
+            source_file = task.payload
+            local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
+            storage_manager.download_file(source_file.virtual_bucket_name, source_file.file_name, local_file_path)
+            # local_file_path = "rules/tmp/教职工科研项目导入模版1.xlsx"
             reader = ExcelReader()
             reader.set_data(local_file_path)
             logger.info("Test开始注册模型")
@@ -990,7 +990,7 @@ class TeacherExtendImportRule:
             source_file = task.payload
             local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
             storage_manager.download_file(source_file.virtual_bucket_name, source_file.file_name, local_file_path)
-            # local_file_path = "rules/tmp/教职工学习经历导入模版1.xlsx"
+            # local_file_path = "rules/tmp/教职工著作信息导入模版1.xlsx"
             reader = ExcelReader()
             reader.set_data(local_file_path)
             logger.info("Test开始注册模型")
@@ -1053,7 +1053,7 @@ class TeacherExtendImportRule:
             source_file = task.payload
             local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
             storage_manager.download_file(source_file.virtual_bucket_name, source_file.file_name, local_file_path)
-            # local_file_path = "rules/tmp/教职工学习经历导入模版1.xlsx"
+            # local_file_path = "rules/tmp/教职工论文导入模版1.xlsx"
             reader = ExcelReader()
             reader.set_data(local_file_path)
             logger.info("Test开始注册模型")
@@ -1117,7 +1117,7 @@ class TeacherExtendImportRule:
             source_file = task.payload
             local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
             storage_manager.download_file(source_file.virtual_bucket_name, source_file.file_name, local_file_path)
-            # local_file_path = "rules/tmp/教职工学习经历导入模版1.xlsx"
+            # local_file_path = "rules/tmp/教职工奖励导入模版1.xlsx"
             reader = ExcelReader()
             reader.set_data(local_file_path)
             logger.info("Test开始注册模型")
@@ -1183,7 +1183,7 @@ class TeacherExtendImportRule:
             source_file = task.payload
             local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
             storage_manager.download_file(source_file.virtual_bucket_name, source_file.file_name, local_file_path)
-            # local_file_path = "rules/tmp/教职工学习经历导入模版1.xlsx"
+            # local_file_path = "rules/tmp/教职工文艺作品导入模版1.xlsx"
             reader = ExcelReader()
             reader.set_data(local_file_path)
             logger.info("Test开始注册模型")
@@ -1249,7 +1249,7 @@ class TeacherExtendImportRule:
             source_file = task.payload
             local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
             storage_manager.download_file(source_file.virtual_bucket_name, source_file.file_name, local_file_path)
-            # local_file_path = "rules/tmp/教职工学习经历导入模版1.xlsx"
+            # local_file_path = "rules/tmp/教职工专利或软件著作权导入模版1.xlsx"
             reader = ExcelReader()
             reader.set_data(local_file_path)
             logger.info("Test开始注册模型")
@@ -1315,7 +1315,7 @@ class TeacherExtendImportRule:
             source_file = task.payload
             local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
             storage_manager.download_file(source_file.virtual_bucket_name, source_file.file_name, local_file_path)
-            # local_file_path = "rules/tmp/教职工学习经历导入模版1.xlsx"
+            # local_file_path = "rules/tmp/教职工竞赛奖励导入模版1.xlsx"
             reader = ExcelReader()
             reader.set_data(local_file_path)
             logger.info("Test开始注册模型")
@@ -1381,7 +1381,7 @@ class TeacherExtendImportRule:
             source_file = task.payload
             local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
             storage_manager.download_file(source_file.virtual_bucket_name, source_file.file_name, local_file_path)
-            # local_file_path = "rules/tmp/教职工学习经历导入模版1.xlsx"
+            # local_file_path = "rules/tmp/教职工医药导入模版1.xlsx"
             reader = ExcelReader()
             reader.set_data(local_file_path)
             logger.info("Test开始注册模型")
