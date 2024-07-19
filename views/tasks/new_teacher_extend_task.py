@@ -31,6 +31,7 @@ class TeacherWorkExperienceImportExecutor(TaskExecutor):
             file_storage_resp=await self.teacher_extend_import_rule.teacher_work_experience_import(task)
             task.result_file = file_storage_resp.file_name
             task.result_bucket = file_storage_resp.virtual_bucket_name
+            logger.info("成功")
 
         except Exception as e:
             logger.error(f"Teacher work experience import failed")

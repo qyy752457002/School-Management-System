@@ -36,17 +36,17 @@ class TeacherExtendImportRule:
     task_dao: TaskDAO
     teacher_dao: TeachersDao
 
-    async def teacher_work_experience_import(self, task):
+    async def teacher_work_experience_import(self, task: Task):
         try:
-            # if not isinstance(task.payload, TeacherFileStorageModel):
-            #     raise ValueError("参数错误")
-            # source_file = task.payload
-            # local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
-            local_file_path = "rules/tmp/教职工工作经历导入模版1.xlsx"
+            if not isinstance(task.payload, TeacherFileStorageModel):
+                raise ValueError("参数错误")
+            source_file = task.payload
+            local_file_path = "/tmp/" + source_file.file_name.replace("/", "-")
+            # local_file_path = "rules/tmp/教职工工作经历导入模版1.xlsx"
             logger.info("Test开始注册模型")
-            # storage_manager.download_file(
-            #     source_file.virtual_bucket_name, source_file.file_name, local_file_path
-            # )
+            storage_manager.download_file(
+                source_file.virtual_bucket_name, source_file.file_name, local_file_path
+            )
             reader = ExcelReader()
             reader.set_data(local_file_path)
             reader.register_model("数据", TeacherWorkExperienceComModel, header=1)
@@ -83,22 +83,21 @@ class TeacherExtendImportRule:
                     logger.info(f"Failed to add teacher at index {idx}: {ex}")
                     print(ex, '表内数据异常')
                     raise ex
-            # local_results_path = f"/tmp/{source_file.file_name}"
-            # excel_writer = ExcelWriter()
-            # excel_writer.add_data("Sheet1", results)
-            # excel_writer.set_data(local_results_path)
-            # excel_writer.execute()
-            # random_file_name = shortuuid.uuid()
-            # file_storage = storage_manager.put_file_to_object(
-            #     source_file.virtual_bucket_name, f"{random_file_name}.xlsx", local_results_path
-            # )
-            # file_storage_resp = await storage_manager.add_file(
-            #     self.file_storage_dao, file_storage
-            # )
-            # return file_storage_resp
+            local_results_path = f"/tmp/{source_file.file_name}"
+            excel_writer = ExcelWriter()
+            excel_writer.add_data("Sheet1", results)
+            excel_writer.set_data(local_results_path)
+            excel_writer.execute()
+            random_file_name = shortuuid.uuid()
+            file_storage = storage_manager.put_file_to_object(
+                source_file.virtual_bucket_name, f"{random_file_name}.xlsx", local_results_path
+            )
+            file_storage_resp = await storage_manager.add_file(
+                self.file_storage_dao, file_storage
+            )
+            return file_storage_resp
         except Exception as e:
             print(e, '异常')
             raise e
 
-    async def importt_teacher_work_experience(self, task):
-        pass
+
