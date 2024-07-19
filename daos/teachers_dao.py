@@ -74,7 +74,8 @@ class TeachersDao(DAOBase):
         query = select(Teacher).where(Teacher.teacher_id_number == teacher_id_number,
                                       Teacher.teacher_id_type == teacher_id_type,
                                       Teacher.teacher_name == teacher_name,
-                                      Teacher.is_deleted == False)
+                                      Teacher.is_deleted == False, Teacher.teacher_main_status == 'employed',
+                                      Teacher.is_approval == False)
         result = await session.execute(query)
         return result.scalar_one_or_none()
 

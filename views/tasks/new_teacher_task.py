@@ -32,7 +32,9 @@ class TeacherImportExecutor(TaskExecutor):
             else:
                 raise ValueError("Invalid payload type")
             logger.info("Test3")
-            await self.teacher_import_rule.import_teachers(task)
+            file_storage_resp = await self.teacher_import_rule.import_teachers(task)
+            task.result_file = file_storage_resp.file_name
+            task.result_bucket = file_storage_resp.virtual_bucket_name
         except Exception as e:
             logger.error(f"Teacher import failed")
             logger.error(e)
