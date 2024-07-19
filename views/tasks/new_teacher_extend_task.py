@@ -3,14 +3,13 @@ from mini_framework.async_task.task.task_context import Task, Context
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.logging import logger
 
-from rules.teacher_work_experience_rule import TeacherWorkExperienceRule
+
 from views.models.teachers import TeacherFileStorageModel
 from rules.teacher_extend_import_rule import TeacherExtendImportRule
 
 
 class TeacherWorkExperienceImportExecutor(TaskExecutor):
     def __init__(self):
-        self.teacher_work_experience_rule = get_injector(TeacherWorkExperienceRule)
         self.teacher_extend_import_rule = get_injector(TeacherExtendImportRule)
         super().__init__()
 

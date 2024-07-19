@@ -2,11 +2,8 @@ from views.models.teachers import IdentityType
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from datetime import datetime
-from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherImportSaveResultModel, \
-    TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
-    NewTeacherApprovalCreate, TeachersSaveImportCreatModel, TeacherImportResultModel, \
-    TeachersSaveImportRegisterCreatModel, TeacherInfoImportSubmit
-from business_exceptions.school import SchoolNotFoundError
+from views.models.teachers import TeacherFileStorageModel
+
 from views.models.teacher_extend import TeacherWorkExperienceModel, TeacherWorkExperienceComModel, \
     TeacherWorkExperienceResultModel
 
