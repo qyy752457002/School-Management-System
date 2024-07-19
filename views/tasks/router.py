@@ -67,7 +67,7 @@ def init_task_router():
         topic="school_import",
         name="学校导入",
         executor_cls=SchoolExecutor,
-        payload_cls=SchoolTask,
+        payload_cls=PlanningSchoolFileStorageModel,
         payload_is_list=False,
         description="学校导入",
     )
