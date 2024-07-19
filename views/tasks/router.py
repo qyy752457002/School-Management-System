@@ -15,7 +15,16 @@ from views.tasks.new_teacher_task import TeacherImportExecutor, TeacherExportExe
 from views.tasks.newstudent_class_division_task import NewStudentClassDivisionExportExecutor
 from views.tasks.planning_school_task import PlanningSchoolExecutor, PlanningSchoolExportExecutor
 from views.tasks.school_task import SchoolExecutor, SchoolExportExecutor
-from views.tasks.new_teacher_extend_task import TeacherWorkExperienceImportExecutor
+from views.tasks.new_teacher_extend_task import TeacherWorkExperienceImportExecutor, \
+    TeacherLearnExperienceImportExecutor, TeacherJobAppointmentsImportExecutor, TeacherProfessionalTitlesImportExecutor, \
+    TeacherQualificationsImportExecutor, TeacherSkillCertificatesImportExecutor, \
+    TeacherEthicRecordsRewardsImportExecutor, TeacherEthicRecordsDisciplinaryImportExecutor
+from views.tasks.new_teacher_extend_task import EducationalTeachingImportExecutor, TalentProgramsImportExecutor, \
+    DomesticTrainingImportExecutor, OverseasStudyImportExecutor, AnnualReviewImportExecutor, \
+    ResearchAchievementsProjectImportExecutor, ResearchAchievementsBookImportExecutor, \
+    ResearchAchievementsPaperImportExecutor, ResearchAchievementsRewardImportExecutor, \
+    ResearchAchievementsArtworkImportExecutor, ResearchAchievementsPatentImportExecutor, \
+    ResearchAchievementsCompetitionImportExecutor, ResearchAchievementsMedicineImportExecutor
 
 
 def init_task_router():
@@ -168,6 +177,224 @@ def init_task_router():
         topic="teacher_work_experience_import",
         name="教师工作经历导入",
         executor_cls=TeacherWorkExperienceImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+    task_router.register(
+        code="teacher_learn_experience_import",
+        consumer_group_id="service",
+        topic="teacher_learn_experience_import",
+        name="teacher_learn_experience导入",
+        executor_cls=TeacherLearnExperienceImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+    task_router.register(
+        code="teacher_job_appointments_import",
+        consumer_group_id="service",
+        topic="teacher_job_appointments_import",
+        name="teacher_job_appointments导入",
+        executor_cls=TeacherJobAppointmentsImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="teacher_professional_titles_import",
+        consumer_group_id="service",
+        topic="teacher_professional_titles_import",
+        name="teacher_professional_titles导入",
+        executor_cls=TeacherProfessionalTitlesImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="teacher_qualifications_import",
+        consumer_group_id="service",
+        topic="teacher_qualifications_import",
+        name="teacher_qualifications导入",
+        executor_cls=TeacherQualificationsImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="teacher_skill_certificates_import",
+        consumer_group_id="service",
+        topic="teacher_skill_certificates_import",
+        name="teacher_skill_certificates导入",
+        executor_cls=TeacherSkillCertificatesImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="teacher_ethic_records_rewards_import",
+        consumer_group_id="service",
+        topic="teacher_ethic_records_rewards_import",
+        name="teacher_ethic_records_rewards导入",
+        executor_cls=TeacherEthicRecordsRewardsImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="teacher_ethic_records_disciplinary_import",
+        consumer_group_id="service",
+        topic="teacher_ethic_records_disciplinary_import",
+        name="teacher_ethic_records_disciplinary导入",
+        executor_cls=TeacherEthicRecordsDisciplinaryImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="educational_teaching_import",
+        consumer_group_id="service",
+        topic="educational_teaching_import",
+        name="educational_teaching导入",
+        executor_cls=EducationalTeachingImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="talent_programs_import",
+        consumer_group_id="service",
+        topic="talent_programs_import",
+        name="talent_programs导入",
+        executor_cls=TalentProgramsImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="domestic_training_import",
+        consumer_group_id="service",
+        topic="domestic_training_import",
+        name="domestic_training导入",
+        executor_cls=DomesticTrainingImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="overseas_study_import",
+        consumer_group_id="service",
+        topic="overseas_study_import",
+        name="overseas_study导入",
+        executor_cls=OverseasStudyImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="annual_review_import",
+        consumer_group_id="service",
+        topic="annual_review_import",
+        name="annual_review导入",
+        executor_cls=AnnualReviewImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="research_achievements_project_import",
+        consumer_group_id="service",
+        topic="research_achievements_project_import",
+        name="research_achievements_project导入",
+        executor_cls=ResearchAchievementsProjectImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="research_achievements_book_import",
+        consumer_group_id="service",
+        topic="research_achievements_book_import",
+        name="research_achievements_book导入",
+        executor_cls=ResearchAchievementsBookImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="research_achievements_paper_import",
+        consumer_group_id="service",
+        topic="research_achievements_paper_import",
+        name="research_achievements_paper导入",
+        executor_cls=ResearchAchievementsPaperImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="research_achievements_reward_import",
+        consumer_group_id="service",
+        topic="research_achievements_reward_import",
+        name="research_achievements_reward导入",
+        executor_cls=ResearchAchievementsRewardImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="research_achievements_artwork_import",
+        consumer_group_id="service",
+        topic="research_achievements_artwork_import",
+        name="research_achievements_artwork导入",
+        executor_cls=ResearchAchievementsArtworkImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="research_achievements_patent_import",
+        consumer_group_id="service",
+        topic="research_achievements_patent_import",
+        name="research_achievements_patent导入",
+        executor_cls=ResearchAchievementsPatentImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="research_achievements_competition_import",
+        consumer_group_id="service",
+        topic="research_achievements_competition_import",
+        name="research_achievements_competition导入",
+        executor_cls=ResearchAchievementsCompetitionImportExecutor,
+        payload_cls=TeacherFileStorageModel,
+        payload_is_list=False,
+        description="",
+    )
+
+    task_router.register(
+        code="research_achievements_medicine_import",
+        consumer_group_id="service",
+        topic="research_achievements_medicine_import",
+        name="research_achievements_medicine导入",
+        executor_cls=ResearchAchievementsMedicineImportExecutor,
         payload_cls=TeacherFileStorageModel,
         payload_is_list=False,
         description="",

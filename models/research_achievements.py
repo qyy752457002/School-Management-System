@@ -85,7 +85,7 @@ class ResearchAchievements(BaseDBModel):
     patent_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="专利号")
     entrusting_party: Mapped[str] = mapped_column(String(64), nullable=True, comment="委托方")
     certificate_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="证书号")
-    validity_period: Mapped[date] = mapped_column(Date, nullable=True, comment="有效期")
+    validity_period: Mapped[str] = mapped_column(String(64), nullable=True, comment="有效期")
     standard_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="标准号")
     report_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="报告名称")
     report_date: Mapped[date] = mapped_column(Date, nullable=True, comment="报告日期")

@@ -116,7 +116,7 @@ async def excel_fields_to_enum(data: dict, import_type) -> Dict:
     annual_review = {"assessment_result": "assessment_result"}
 
     # 科研成果——项目
-    research_achievements_project = {"type": "project_type", "role": "project_role", "source": "project_source", }
+    research_achievements_project = {"type": "project_type", "role": "project_role", "source": "project_source",}
     # 科研成果——著作
     research_achievements_book = {"type": "book_type", "role": "book_role"}
     # 科研成果——论文
@@ -127,7 +127,7 @@ async def excel_fields_to_enum(data: dict, import_type) -> Dict:
     # 科研成果——文艺作品
     research_achievements_artwork = {"role": "artwork_role", "type": "artwork_type"}
     # 科研成果——专利
-    research_achievements_patent = {"type": "patent_type"}
+    research_achievements_patent = {"type": "patent_type","role": "patent_role"}
     # 科研成果——竞赛奖励
     research_achievements_competition = {"role": "competition_role"}
     # 科研成果——医药

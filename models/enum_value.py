@@ -9087,7 +9087,18 @@ class EnumValue(BaseDBModel):
                       created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
             EnumValue(id=6548, enum_name="competition_role_lv1", enum_value="other", description="其他", sort_number=0,
                       parent_id="0", is_enabled=True, created_uid=0, updated_uid=0, created_at=datetime.now(),
+                      updated_at=datetime.now(), is_deleted=False),
+            EnumValue(id=6549, enum_name="patent_role_lv1", enum_value="patent_achievement_leader", description="专利成果负责人",
+                      sort_number=0, parent_id="0", is_enabled=True, created_uid=0, updated_uid=0,
+                      created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
+            EnumValue(id=6550, enum_name="patent_role_lv1", enum_value="patent_achievement_participant", description="专利成果参加人",
+                      sort_number=0, parent_id="0", is_enabled=True, created_uid=0, updated_uid=0,
+                      created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
+            EnumValue(id=6551, enum_name="patent_role_lv1", enum_value="patent_other", description="其他", sort_number=0,
+                      parent_id="0", is_enabled=True, created_uid=0, updated_uid=0, created_at=datetime.now(),
                       updated_at=datetime.now(), is_deleted=False)
+
+
 
 
             # 学校分类  课程分类  授课方式 证件类型 户口性质 宗教 健康状况=health_status_lv1 血型  关系  面貌 =political_status_lv1 毕业状态
