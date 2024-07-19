@@ -22,7 +22,7 @@ from views.models.planning_school import PlanningSchoolStatus
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from daos.planning_school_dao import PlanningSchoolDAO
 from views.models.school import School as SchoolModel
-from views.models.system import DISTRICT_ENUM_KEY, ID_TYPE_ENUM_KEY, CLASS_SYSTEM_ENUM_KEY
+from views.models.system import DISTRICT_ENUM_KEY, ID_TYPE_ENUM_KEY, CLASS_SYSTEM_ENUM_KEY, ENROLLMENT_METHOD_ENUM_KEY
 
 
 @dataclass_inject
@@ -31,6 +31,7 @@ class ImportCommonAbstractRule(ABC):
     p_school_dao: SchoolDAO
     id_types= {}
     class_systems= None
+    enrollment_methods= {}
 
     async def convert_import_format_to_view_model(self, data):
         # 默认实现细节...
@@ -40,6 +41,7 @@ class ImportCommonAbstractRule(ABC):
         enum_value_rule = get_injector(EnumValueRule)
         self.id_types =await enum_value_rule.query_enum_values(ID_TYPE_ENUM_KEY, None,return_keys='description')
         self.class_systems =await enum_value_rule.query_enum_values(CLASS_SYSTEM_ENUM_KEY, None,return_keys='description')
+        self.enrollment_methods =await enum_value_rule.query_enum_values(ENROLLMENT_METHOD_ENUM_KEY, None,return_keys='description')
         return self
 
 

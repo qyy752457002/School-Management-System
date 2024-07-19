@@ -21,7 +21,7 @@ from views.models.system import DISTRICT_ENUM_KEY, GRADE_ENUM_KEY, MAJOR_LV3_ENU
 
 
 @dataclass_inject
-class ClassesRule(object,ImportCommonAbstractRule):
+class ClassesRule(ImportCommonAbstractRule,object):
     classes_dao: ClassesDAO
     school_dao: SchoolDAO
     session_dao: StudentSessionDao
@@ -150,8 +150,8 @@ class ClassesRule(object,ImportCommonAbstractRule):
 
     async def convert_import_format_to_view_model(self,item:Classes):
         # 学校转id
-        item.block = self.districts[item.block].enum_value if item.block in self.districts else  item.block
-        item.borough = self.districts[item.borough].enum_value if item.borough in self.districts else  item.borough
+        # item.block = self.districts[item.block].enum_value if item.block in self.districts else  item.block
+        # item.borough = self.districts[item.borough].enum_value if item.borough in self.districts else  item.borough
         if hasattr(item,'school_name'):
             school =await self.school_dao.get_school_by_school_name(item.school_name)
             item.school_id = school.id if school else None

@@ -17,7 +17,7 @@ from rules.operation_record import OperationRecordRule
 from views.common.common_view import compare_modify_fields, get_client_ip
 from views.models.class_division_records import ClassDivisionRecordsSearchRes
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
-from views.models.planning_school import PlanningSchoolImportReq
+from views.models.planning_school import PlanningSchoolImportReq, PlanningSchoolFileStorageModel
 from views.models.students import NewStudents, NewStudentsQuery, NewStudentsQueryRe, StudentsKeyinfo, StudentsBaseInfo, \
     StudentsFamilyInfo, NewStudentTask
 # from fastapi import Field
@@ -138,13 +138,15 @@ class NewsStudentsView(BaseView):
                                  # scene: str = Query('', description="文件名"),
                                  ) -> Task:
         file_name= file.file_name
+        task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name=file.bucket_name,file_size='51363', scene= ImportScene.NEWSTUDENT.value)
         
         task = Task(
             #todo sourcefile无法记录3个参数  故 暂时用3个参数来实现  需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="new_student_import",
             # 文件 要对应的 视图模型
+            payload=task_model,
             # payload=NewStudentTask(file_name=filename, bucket=bucket, scene=scene),
-            payload=NewStudentTask(file_name=file_name, scene= ImportScene.NEWSTUDENT.value, bucket='new_student_import' ),
+            # payload=NewStudentTask(file_name=file_name, scene= ImportScene.NEWSTUDENT.value, bucket='new_student_import' ),
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
