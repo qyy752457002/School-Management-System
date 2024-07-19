@@ -30,7 +30,7 @@ from views.models.institutions import Institutions as InstitutionModel, Institut
 from views.models.planning_school import PlanningSchoolTransactionAudit, PlanningSchoolStatus
 from views.models.system import SCHOOL_OPEN_WORKFLOW_CODE, INSTITUTION_OPEN_WORKFLOW_CODE, SCHOOL_CLOSE_WORKFLOW_CODE, \
     INSTITUTION_CLOSE_WORKFLOW_CODE, SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE
-from views.models.school import School as SchoolModel, SchoolKeyAddInfo, SchoolKeyInfo
+from views.models.school import School as SchoolModel, SchoolKeyAddInfo, SchoolKeyInfo, SchoolBaseInfoOptional
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus
 
 
@@ -196,7 +196,7 @@ class InstitutionRule(SchoolRule):
 
 
     async def institution_export(self, task: Task):
-        bucket = 'student'
+        bucket = 'school'
         print(bucket,'桶')
 
         export_params: InstitutionPageSearch = (
@@ -204,10 +204,17 @@ class InstitutionRule(SchoolRule):
         )
         page_request = PageRequest(page=1, per_page=100)
         random_file_name = f"institution_export{shortuuid.uuid()}.xlsx"
-        temp_file_path = os.path.join(os.path.dirname(__file__), 'tmp')
-        if not os.path.exists(temp_file_path):
-            os.makedirs(temp_file_path)
-        temp_file_path = os.path.join(temp_file_path, random_file_name)
+        # 获取当前脚本所在目录的绝对路径
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        # 获取当前脚本所在目录的父目录
+        parent_dir = os.path.dirname(script_dir)
+
+        # 构建与 script_dir 并列的 temp 目录的路径
+        temp_dir_path = os.path.join(parent_dir, 'temp')
+
+        # 确保 temp 目录存在，如果不存在则创建它
+        os.makedirs(temp_dir_path, exist_ok=True)
+        temp_file_path = os.path.join(temp_dir_path, random_file_name)
         while True:
             # todo  这里的参数需要 解包
             paging = await self.school_dao.query_school_with_page(
@@ -217,13 +224,11 @@ class InstitutionRule(SchoolRule):
                 export_params.founder_type_lv3 ,export_params.planning_school_id,export_params.province,export_params.city,export_params.institution_category,
             )
             paging_result = PaginatedResponse.from_paging(
-                paging, InstitutionPageSearch, {"hash_password": "password"}
+                paging, SchoolBaseInfoOptional, {"hash_password": "password"}
             )
             # 处理每个里面的状态 1. 0
-            for item in paging_result.items:
-                item.approval_status =  item.approval_status.value
-
-            # logger.info('分页的结果',len(paging_result.items))
+            await self.convert_school_to_export_format(paging_result)
+            logger.info('分页的结果条数',len(paging_result.items))
             excel_writer = ExcelWriter()
             excel_writer.add_data("Sheet1", paging_result.items)
             excel_writer.set_data(temp_file_path)
@@ -251,13 +256,14 @@ class InstitutionRule(SchoolRule):
             task_result.result_bucket = file_storage_resp.virtual_bucket_name
             task_result.result_file_id = file_storage_resp.file_id
             task_result.last_updated = datetime.now()
+            task_result.result_id = shortuuid.uuid()
             task_result.state = TaskState.succeeded
             task_result.result_extra = {"file_size": file_storage.file_size}
             if not task_result.result_file_id:
                 task_result.result_file_id =  0
             print('拼接数据task_result ',task_result)
 
-            resadd = await self.task_dao.add_task_result(task_result)
+            resadd = await self.task_dao.add_task_result(task_result,True)
             print('task_result写入结果',resadd)
         except Exception as e:
             logger.debug('保存文件记录和插入taskresult 失败')
