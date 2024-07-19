@@ -16,7 +16,7 @@ class EnumValue(BaseDBModel):
     enum_value: Mapped[str] = mapped_column(String(255), nullable=True,default='', comment="枚举的具体值")
     description: Mapped[str] = mapped_column(String(255), nullable=True,default='', comment="枚举值的描述或标签")
     sort_number: Mapped[int] = mapped_column(nullable=True,default=0, comment="排序序号")
-    parent_id: Mapped[str] = mapped_column(String(60), nullable=True,default='', comment="父级ID")
+    parent_id: Mapped[str] = mapped_column(String(255), nullable=True,default='', comment="父级ID")
     is_enabled: Mapped[bool] = mapped_column( nullable=False , comment="是否启用",default=True)
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)
     updated_uid: Mapped[int] = mapped_column( nullable=True , comment="操作人",default=0)
