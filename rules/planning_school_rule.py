@@ -16,7 +16,7 @@ from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
-from objprint import objprint
+
 from sqlalchemy import select
 from business_exceptions.planning_school import PlanningSchoolNotFoundError, \
     PlanningSchoolNotFoundByProcessInstanceIdError

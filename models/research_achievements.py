@@ -87,6 +87,9 @@ class ResearchAchievements(BaseDBModel):
     certificate_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="证书号")
     validity_period: Mapped[date] = mapped_column(Date, nullable=True, comment="有效期")
     standard_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="标准号")
+    report_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="报告名称")
+    report_date: Mapped[date] = mapped_column(Date, nullable=True, comment="报告日期")
+    publish_date: Mapped[date] = mapped_column(Date, nullable=True, comment="发布日期")
     publishing_organization: Mapped[str] = mapped_column(String(64), nullable=True, comment="发布单位")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
     
