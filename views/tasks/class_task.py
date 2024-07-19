@@ -89,7 +89,7 @@ class ClassExecutor(TaskExecutor):
 
             # logger.error(f"任务   create failed")
 
-# 导出  todo
+# 导出
 class ClassExportExecutor(TaskExecutor):
     def __init__(self):
         self.school_rule = get_injector(SchoolRule)
