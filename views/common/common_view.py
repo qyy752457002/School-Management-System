@@ -171,6 +171,20 @@ class WorkflowServiceConfig:
 
 workflow_service_config = WorkflowServiceConfig()
 
+@singleton
+class OrgcenterServiceConfig:
+    def __init__(self):
+        from mini_framework.configurations import config_injection
+        manager = config_injection.get_config_manager()
+        # 读取 配置
+        orgcenter_service_dict = manager.get_domain_config("orgcenter_service")
+        if not orgcenter_service_dict:
+            raise ValueError('orgcenter_service configuration is required')
+        self.orgcenter_config = orgcenter_service_dict
+
+
+orgcenter_service_config = OrgcenterServiceConfig()
+
 
 def convert_dates_to_strings(stuinfoadddict):
     for key, value in stuinfoadddict.items():

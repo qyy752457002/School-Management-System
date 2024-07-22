@@ -12,7 +12,7 @@ from sqlalchemy import select
 from business_exceptions.school import SchoolNotFoundError
 
 from rules.enum_value_rule import EnumValueRule
-from views.common.common_view import workflow_service_config
+from views.common.common_view import workflow_service_config, orgcenter_service_config
 from views.models.campus import Campus as CampusModel
 
 from views.models.campus import CampusBaseInfo
@@ -195,3 +195,31 @@ async def get_address_by_description(description: str):
     enum_value_rule = get_injector(EnumValueRule)
     enum_value = await enum_value_rule.get_address_by_description(description)
     return enum_value
+
+async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_param=False):
+    # 发起审批流的 处理
+    httpreq = HTTPRequest()
+    url = orgcenter_service_config.orgcenter_config.get("url")
+
+    url = url + apiname
+    headerdict = {
+        "accept": "application/json",
+        "Content-Type": "application/json"
+    }
+    # 如果是query 需要拼接参数
+    if method == 'get' or is_need_query_param:
+        from urllib.parse import urlencode
+        url += ('?' + urlencode(datadict))
+
+    print('参数', url, datadict, headerdict)
+    if method == 'get':
+        response = await httpreq.get_json(url, headerdict)
+    else:
+        response = await httpreq.post_json(url, datadict, headerdict)
+    print(response, '接口响应')
+    if response is None:
+        return {}
+    if isinstance(response, str):
+        return {response}
+    return response
+    pass
