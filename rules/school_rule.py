@@ -742,14 +742,17 @@ class SchoolRule(object):
     async def convert_school_to_import_format(self,item):
         item.block = self.districts[item.block].enum_value if item.block in self.districts else  item.block
         item.borough = self.districts[item.borough].enum_value if item.borough in self.districts else  item.borough
-        item.planning_school_edu_level = self.enum_mapper[item.planning_school_edu_level] if item.planning_school_edu_level in self.enum_mapper.keys() else  item.planning_school_edu_level
-        value= item.planning_school_category
-        if value and isinstance(value, str) and value.find('-')!=-1:
-            temp = value.split('-')
-            item.planning_school_category =  temp[1]  if len(temp)>1  else value
+        if hasattr(item,'planning_school_edu_level'):
+            item.planning_school_edu_level = self.enum_mapper[item.planning_school_edu_level] if item.planning_school_edu_level in self.enum_mapper.keys() else  item.planning_school_edu_level
+        if hasattr(item,'planning_school_category'):
+            value= item.planning_school_category
+            if value and isinstance(value, str) and value.find('-')!=-1:
+                temp = value.split('-')
+                item.planning_school_category =  temp[1]  if len(temp)>1  else value
 
-        item.planning_school_category = self.enum_mapper[item.planning_school_category] if item.planning_school_category in self.enum_mapper.keys() else  item.planning_school_category
-        item.planning_school_org_type = self.enum_mapper[item.planning_school_org_type] if item.planning_school_org_type in self.enum_mapper.keys() else  item.planning_school_org_type
+            item.planning_school_category = self.enum_mapper[item.planning_school_category] if item.planning_school_category in self.enum_mapper.keys() else  item.planning_school_category
+        if hasattr(item,'planning_school_org_type'):
+            item.planning_school_org_type = self.enum_mapper[item.planning_school_org_type] if item.planning_school_org_type in self.enum_mapper.keys() else  item.planning_school_org_type
         pass
     #     定义方法吧一行记录转化为适合导出展示的格式
     async def convert_school_to_export_format(self,paging_result):

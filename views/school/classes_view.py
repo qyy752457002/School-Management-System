@@ -11,7 +11,7 @@ from views.models.grades import Grades
 
 from fastapi import Query, Depends
 from rules.classes_rule import ClassesRule
-from views.models.planning_school import PlanningSchoolImportReq
+from views.models.planning_school import PlanningSchoolImportReq, PlanningSchoolFileStorageModel
 from views.models.school import SchoolTask
 from views.models.system import ImportScene
 
@@ -71,11 +71,14 @@ class ClassesView(BaseView):
                                  file:PlanningSchoolImportReq
                                  ) -> Task:
         file_name= file.file_name
+        task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name=file.bucket_name,file_size='51363', scene= ImportScene.CLASS.value)
+
 
         task = Task(
             task_type="class_import",
             # 文件 要对应的 视图模型
-            payload=SchoolTask(file_name=file_name, scene= ImportScene.CLASS.value, bucket='class_import' ),
+            payload=task_model,
+            # payload=SchoolTask(file_name=file_name, scene= ImportScene.CLASS.value, bucket='class_import' ),
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)

@@ -140,6 +140,11 @@
     "description": "",
     "url": "https://school-workflow-dev.f123.pub"
   },
+  "orgcenter_service": {
+    "name": "orgcenter_service",
+    "description": "",
+    "url": "https://org-center.f123.pub"
+  },
   "transaction_service": {
     "retry": {
       "max_attempts": 3,

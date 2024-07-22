@@ -419,8 +419,8 @@ class InstitutionView(BaseView):
                                       file: PlanningSchoolImportReq
                                       ) -> Task:
         file_name = file.file_name
-        task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name=file.bucket_name,
-                                                    file_size='51363', scene=file.scene)
+        task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name=file.bucket_name,file_size='51363', scene= ImportScene.INSTITUTION.value)
+
 
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
