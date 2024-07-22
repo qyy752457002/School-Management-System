@@ -112,6 +112,36 @@ class Teachers(BaseModel):
                 pass
         return data
 
+class EducateUserModel(BaseModel):
+    """
+    往组织中心加用户
+    """
+    avatar: str = Field("", title="头像", description="头像")
+    birthDate: str = Field("", title="出生日期", description="出生日期")
+    createdTime: str = Field("", title="创建时间", description="创建时间")
+    currentUnit: str = Field("", title="所在单位", description="当前单位")
+    departmentId: str = Field("", title="部门ID", description="部门ID")
+    departmentNames: str = Field("", title="部门名称", description="部门名称")
+    email: str = Field("", title="邮箱", description="邮箱")
+    gender: str = Field("", title="性别", description="性别")
+    idCardNumber: str = Field("", title="身份证号", description="身份证号")
+    idCardType: str = Field("", title="证件类型", description="证件类型")
+    identity: str = Field("", title="身份", description="身份")
+    identityNames: str = Field("", title="身份名称", description="身份名称")
+    identityType: str = Field("", title="身份类型", description="身份类型")
+    identityTypeNames: str = Field("", title="身份类型名称", description="身份类型名称")
+    mainUnitName: str = Field("", title="主单位名称", description="主单位名称")
+    name: str = Field("", title="登录账号", description="登录账号")
+    owner: str = Field("", title="所有组织", description="所有组织")
+    phoneNumber: str = Field("", title="手机号", description="手机号")
+    realName: str = Field("", title="真实姓名", description="真实姓名")
+    sourceApp: str = Field("", title="来源应用", description="来源应用")
+    updatedTime: str = Field("", title="更新时间", description="更新时间")
+    userCode: str = Field("", title="用户编码", description="用户编码")
+    userId: str = Field("", title="用户ID", description="用户ID")
+    userStatus: str = Field("", title="用户状态", description="用户状态")
+
+
 
 class TeachersSchool(BaseModel):
     """这个模型的作用是在老师关键信息变更审批时，除了把老师更新信息送到工作流（不是在本地查），还需要将当时的状态和就职单位名字送上工作流"""

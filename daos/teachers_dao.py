@@ -33,6 +33,13 @@ class TeachersDao(DAOBase):
             select(Teacher).where(Teacher.teacher_id == teachers_id, Teacher.is_deleted == False))
         return result.scalar_one_or_none()
 
+    async def get_teachers_arg_by_id(self, teachers_id):
+        session = await self.slave_db()
+        query = select(Teacher).where(Teacher.teacher_id == teachers_id, Teacher.teacher_main_status == "employed",
+                                      Teacher.is_deleted == False)
+        result = await session.execute(query)
+        return result.scalar_one_or_none()
+
     # 根据身份证号获取教师信息
 
     async def get_teachers_by_teacher_id_number(self, teacher_id_number):

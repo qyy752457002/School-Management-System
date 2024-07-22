@@ -103,7 +103,7 @@ class TeacherExtendImportRule:
     task_dao: TaskDAO
     teacher_dao: TeachersDao
 
-    async def teacher_work_experience_import(self, task):
+    async def teacher_work_experience_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("参数错误")
@@ -168,7 +168,7 @@ class TeacherExtendImportRule:
             print(e, '异常')
             raise e
 
-    async def teacher_learn_experience_import(self, task):
+    async def teacher_learn_experience_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -229,7 +229,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def teacher_job_appointments_import(self, task):
+    async def teacher_job_appointments_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -291,7 +291,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def teacher_professional_titles_import(self, task):
+    async def teacher_professional_titles_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -355,7 +355,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def teacher_qualifications_import(self, task):
+    async def teacher_qualifications_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -417,7 +417,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def teacher_skill_certificates_import(self, task):
+    async def teacher_skill_certificates_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -480,7 +480,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def teacher_ethic_records_rewards_import(self, task):
+    async def teacher_ethic_records_rewards_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -545,7 +545,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def teacher_ethic_records_disciplinary_import(self, task):
+    async def teacher_ethic_records_disciplinary_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -611,7 +611,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def educational_teaching_import(self, task):
+    async def educational_teaching_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -673,7 +673,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def talent_programs_import(self, task):
+    async def talent_programs_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -734,7 +734,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def domestic_training_import(self, task):
+    async def domestic_training_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -795,7 +795,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def overseas_study_import(self, task):
+    async def overseas_study_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -856,7 +856,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def annual_review_import(self, task):
+    async def annual_review_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -917,7 +917,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def research_achievements_project_import(self, task):
+    async def research_achievements_project_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -983,7 +983,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def research_achievements_book_import(self, task):
+    async def research_achievements_book_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -1046,7 +1046,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def research_achievements_paper_import(self, task):
+    async def research_achievements_paper_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -1110,7 +1110,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def research_achievements_reward_import(self, task):
+    async def research_achievements_reward_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -1176,7 +1176,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def research_achievements_artwork_import(self, task):
+    async def research_achievements_artwork_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -1242,7 +1242,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def research_achievements_patent_import(self, task):
+    async def research_achievements_patent_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -1308,7 +1308,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def research_achievements_competition_import(self, task):
+    async def research_achievements_competition_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
@@ -1374,7 +1374,7 @@ class TeacherExtendImportRule:
             print(e, "异常")
             raise e
 
-    async def research_achievements_medicine_import(self, task):
+    async def research_achievements_medicine_import(self, task: Task):
         try:
             if not isinstance(task.payload, TeacherFileStorageModel):
                 raise ValueError("Invalid payload type")
