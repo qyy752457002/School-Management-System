@@ -36,7 +36,7 @@ class DomesticTrainingRule(object):
         if not exists_domestic_training:
             raise DomesticTrainingNotFoundError()
         domestic_training_db = await self.domestic_training_dao.delete_domestic_training(exists_domestic_training)
-        domestic_training = orm_model_to_view_model(domestic_training_db, DomesticTrainingModel, exclude=[""])
+        domestic_training = orm_model_to_view_model(domestic_training_db, DomesticTrainingUpdateModel, exclude=[""])
         return domestic_training
 
     async def update_domestic_training(self, domestic_training: DomesticTrainingUpdateModel):

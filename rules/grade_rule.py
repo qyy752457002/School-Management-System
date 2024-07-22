@@ -47,7 +47,8 @@ class GradeRule(object):
         grade_res = orm_model_to_view_model(grade_db_res, GradeModel, exclude=[""])
 
         #  市级添加  自动传递到 区级 自动到 校
-        if grade.city:
+        auto_gen= False
+        if auto_gen and  grade.city:
             # 区的转换   or todo
             districts =await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY,grade.city)
             print('区域',districts, '')
@@ -77,7 +78,7 @@ class GradeRule(object):
 
         print(need_update_list,222,grade)
         grade_db = await self.grade_dao.update_grade_byargs(grade,*need_update_list)
-        grade = orm_model_to_view_model(grade_db, GradeModel, exclude=[""])
+        # gradev = orm_model_to_view_model(grade_db, GradeModel,  )
         convert_snowid_in_model(grade, ["id", "school_id",])
         return grade
 

@@ -96,8 +96,8 @@ class ClassDivisionRecordsDAO(DAOBase):
 
     async def update_class_division_records(self, class_division_records, *args, is_commit=True):
         session = await self.master_db()
-        if  class_division_records.id:
-            class_division_records.id= int(class_division_records.id)
+        if class_division_records.id:
+            class_division_records.id = int(class_division_records.id)
         update_contents = get_update_contents(class_division_records, *args)
         query = update(ClassDivisionRecords).where(ClassDivisionRecords.id == int(class_division_records.id)).values(
             **update_contents)

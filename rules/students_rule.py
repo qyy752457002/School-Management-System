@@ -1,10 +1,11 @@
+import copy
 import os
 import pprint
 from datetime import datetime, date
 
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
-from mini_framework.async_task.task import Task, TaskState
+from mini_framework.async_task.task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter
 from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
@@ -16,14 +17,17 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.async_task.data_access.task_dao import TaskDAO
 
 from business_exceptions.common import IdCardError, EnrollNumberError, EduNumberError
+from daos.class_dao import ClassesDAO
 from daos.school_dao import SchoolDAO
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
-from models.students import Student
+from models.students import Student, StudentApprovalAtatus
+from rules.import_common_abstract_rule import ImportCommonAbstractRule
 from rules.storage_rule import StorageRule
+from rules.system_rule import SystemRule
 from views.common.common_view import check_id_number, convert_snowid_in_model
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel, StudentsKeyinfoDetail, StudentsKeyinfo, \
-    NewStudentTransferIn, NewStudentsQuery, NewStudentsQueryRe
+    NewStudentTransferIn, NewStudentsQuery, NewStudentsQueryRe, NewStudentImport
 from views.models.students import NewStudents
 from business_exceptions.student import StudentNotFoundError, StudentExistsError
 
@@ -32,9 +36,10 @@ from mini_framework.utils.logging import logger
 
 
 @dataclass_inject
-class StudentsRule(object):
+class StudentsRule(ImportCommonAbstractRule,object):
     students_dao: StudentsDao
     school_dao: SchoolDAO
+    class_dao: ClassesDAO
     students_baseinfo_dao: StudentsBaseInfoDao
     file_storage_dao: FileStorageDAO
     # students_base_info_dao: StudentsBaseInfoDao
@@ -49,28 +54,12 @@ class StudentsRule(object):
         students = orm_model_to_view_model(students_db, StudentsKeyinfoDetail, exclude=[""])
         # 照片等  处理URL 72
         if students.photo and students.photo.isnumeric():
-            fileinfo = await self.file_storage_dao.get_file_by_id( int(students.photo))
-            if fileinfo:
-                # 获取行的数据
-                fileinfo = fileinfo._asdict()['FileStorage']
-                print(fileinfo)  # 使用 _asdict() 方法转换为字典
-                if hasattr(fileinfo, 'file_name'):
+            sysrule = get_injector(SystemRule)
+            fileurl = await sysrule.get_download_url_by_id(students.photo)
+            students.photo_url =  fileurl
+            logger.info(f"photo url:{students.photo}")
 
-                    file_storage=FileStorageModel(file_name=fileinfo.file_name,bucket_name=fileinfo.bucket_name,file_size=fileinfo.file_size, )
-                    try:
-                        students.photo= storage_manager.query_get_object_url_with_token(file_storage)
-                    except Exception as e:
-                        print(e)
-                        if hasattr(e, 'user_message'):
-
-                            students.photo=  e.user_message
-
-                        pass
-                    pprint.pprint(students.photo)
-
-            else:
-                print('文件not found ')
-                pass
+            pass
 
 
         # 查其他的信息
@@ -100,10 +89,11 @@ class StudentsRule(object):
                 students.borough = baseinfo.borough
                 students.loc_area_pro = baseinfo.loc_area_pro
                 students.loc_area = baseinfo.loc_area
+        convert_snowid_in_model(students, ["id",'student_id','school_id','class_id','session_id'])
 
         return students
 
-    async def add_students(self, students: NewStudents):
+    async def add_students(self, students: NewStudents|NewStudentImport):
         """
         新增学生关键信息
         """
@@ -191,10 +181,19 @@ class StudentsRule(object):
         if not exists_students:
             raise StudentNotFoundError()
         need_update_list = []
+        # 针对日期 字符串型  转换为datetime或者date
+        if isinstance(students.birthday, tuple) or (isinstance(students.birthday, str)  ):
+            # 使用 strptime 函数将字符串转换为 datetime 对象
+            students.birthday = datetime.strptime( students.birthday,  "%Y-%m-%d %H:%M:%S")
+            # date_object = datetime.strptime(date_string, "%Y-%m-%d")
+            # students.birthday = students.birthday.date()
+            print(students.birthday)
         for key, value in students.dict().items():
             if value:
                 need_update_list.append(key)
         students = await self.students_dao.update_students(students, *need_update_list)
+        students = copy.deepcopy(students)
+        convert_snowid_in_model(students)
         return students
 
     async def delete_students(self, students_id):
@@ -263,23 +262,33 @@ class StudentsRule(object):
             bucket, f"{random_file_name}.xlsx", temp_file_path
         )
         # 这里会写入 task result 提示 缺乏 result file id  导致报错
-        file_storage_resp = await storage_manager.add_file(
-            self.file_storage_dao, file_storage
-        )
-        print('file_storage_resp ',file_storage_resp)
+        try:
 
-        task_result = TaskResult()
-        task_result.task_id = task.task_id
-        task_result.result_file = file_storage_resp.file_name
-        task_result.result_bucket = file_storage_resp.bucket_name
-        task_result.result_file_id = file_storage_resp.file_id
-        task_result.last_updated = datetime.now()
-        task_result.state = TaskState.succeeded
-        task_result.result_extra = {"file_size": file_storage.file_size}
-        print('拼接数据task_result ',task_result)
+            file_storage_resp = await storage_manager.add_file(
+                self.file_storage_dao, file_storage
+            )
+            print('file_storage_resp ',file_storage_resp)
 
-        resadd = await self.task_dao.add_task_result(task_result)
-        print('task_result写入结果',resadd)
+            task_result = TaskResult()
+            task_result.task_id = task.task_id
+            task_result.result_file = file_storage_resp.file_name
+            task_result.result_bucket = file_storage_resp.virtual_bucket_name
+            task_result.result_file_id = file_storage_resp.file_id
+            task_result.last_updated = datetime.now()
+            task_result.state = TaskState.succeeded
+            task_result.result_extra = {"file_size": file_storage.file_size}
+            if not task_result.result_file_id:
+                task_result.result_file_id =  0
+            print('拼接数据task_result ',task_result)
+
+            resadd = await self.task_dao.add_task_result(task_result)
+            print('task_result写入结果',resadd)
+        except Exception as e:
+            logger.debug('保存文件记录和插入taskresult 失败')
+
+            logger.error(e)
+            task_result = TaskResult()
+
         return task_result
 
 
@@ -299,3 +308,43 @@ class StudentsRule(object):
                 student_edu_info.edu_number = school_info.edu_number
 
         return student_edu_info
+
+    async def update_student_formaladmission(self, student_id):
+        """
+        编辑学生关键信息  StudentApprovalAtatus.FORMAL_ADMISSION.value
+        """
+        # 判断student_id存在逗号,  则分割为列表
+        if ',' in student_id:
+            student_id = student_id.split(',')
+
+        students = await self.students_dao.update_student_formaladmission( student_id, StudentApprovalAtatus.FORMAL.value )
+        # if not exists_students:
+        #     raise StudentNotFoundError()
+        # need_update_list = []
+        # for key, value in students.dict().items():
+        #     if value:
+        #         need_update_list.append(key)
+        # students = await self.students_dao.update_students(students, *need_update_list)
+        return students
+    async def convert_import_format_to_view_model(self,item:NewStudentImport):
+        # 学校转id
+        # item.block = self.districts[item.block].enum_value if item.block in self.districts else  item.block
+        # item.borough = self.districts[item.borough].enum_value if item.borough in self.districts else  item.borough
+        if hasattr(item,'school_name'):
+            school =await self.school_dao.get_school_by_school_name(item.school_name)
+            item.school_id = school.id if school else None
+
+        if hasattr(item,'class_name'):
+            class_info =await self.class_dao.get_classes_by_classes_name(item.class_name)
+            item.class_id = class_info.id if class_info else None
+        #     证件类型转英文 中小学班级类型
+        if hasattr(item,'teacher_card_type'):
+            item.teacher_card_type = self.id_types.get(item.teacher_card_type, item.teacher_card_type)
+
+        if hasattr(item,'class_type'):
+            item.class_type = self.class_systems.get(item.class_type, item.class_type)
+        #     enrollment_method
+        if hasattr(item,'enrollment_method'):
+            item.enrollment_method = self.enrollment_methods.get(item.enrollment_method, item.enrollment_method)
+        #  todo   residence_nature student_gender ethnicity political_status blood_type 都需要转枚举值
+        pass

@@ -1,4 +1,7 @@
+from mini_framework.async_task.app.app_factory import app
+from mini_framework.async_task.task.task import Task
 from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 
@@ -8,6 +11,10 @@ from views.models.grades import Grades
 
 from fastapi import Query, Depends
 from rules.classes_rule import ClassesRule
+from views.models.planning_school import PlanningSchoolImportReq, PlanningSchoolFileStorageModel
+from views.models.school import SchoolTask
+from views.models.system import ImportScene
+
 
 class ClassesView(BaseView):
     def __init__(self):
@@ -57,3 +64,23 @@ class ClassesView(BaseView):
         res = await self.classes_rule.update_classes(classes)
 
         return res
+
+
+    # 班级导入
+    async def post_class_import(self,
+                                 file:PlanningSchoolImportReq
+                                 ) -> Task:
+        file_name= file.file_name
+        task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name=file.bucket_name,file_size='51363', scene= ImportScene.CLASS.value)
+
+
+        task = Task(
+            task_type="class_import",
+            # 文件 要对应的 视图模型
+            payload=task_model,
+            # payload=SchoolTask(file_name=file_name, scene= ImportScene.CLASS.value, bucket='class_import' ),
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task

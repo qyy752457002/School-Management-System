@@ -14,13 +14,17 @@ class WorkFlowInstanceStatus(str, Enum):
     """
     REVOKED = "revoked"
     PENDING = "pending"
-    PROCESSING = "processing"
+    PROGRESSING = "progressing"
     APPROVED = "approved"
     REJECTED = "rejected"
+    TQUERY = "t_query"
+    TLAUNCH = "t_launch"
+    TAPPROVAL = "t_approval"
+
 
     @classmethod
     def to_list(cls):
-        return [cls.REVOKED, cls.PENDING, cls.PROCESSING, cls.APPROVED, cls.REJECTED]
+        return [cls.REVOKED, cls.PENDING, cls.PROGRESSING, cls.APPROVED, cls.REJECTED, cls.TQUERY, ]
 
 
 class WorkFlowInstanceCreateModel(BaseModel):

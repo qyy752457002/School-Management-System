@@ -5,8 +5,9 @@ from time import strptime
 from typing import List
 from datetime import datetime as datetimealias
 
+from fastapi.params import Body
 from mini_framework.async_task.app.app_factory import app
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.task.task import Task
 from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
@@ -14,19 +15,22 @@ from starlette.requests import Request
 from rules.class_division_records_rule import ClassDivisionRecordsRule
 from rules.operation_record import OperationRecordRule
 from views.common.common_view import compare_modify_fields, get_client_ip
+from views.models.class_division_records import ClassDivisionRecordsSearchRes
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
+from views.models.planning_school import PlanningSchoolImportReq, PlanningSchoolFileStorageModel
 from views.models.students import NewStudents, NewStudentsQuery, NewStudentsQueryRe, StudentsKeyinfo, StudentsBaseInfo, \
     StudentsFamilyInfo, NewStudentTask
 # from fastapi import Field
 from mini_framework.web.views import BaseView
 
+from views.models.system import ImportScene
 from views.models.teachers import NewTeacher, TeacherInfo
 from fastapi import Query, Depends, BackgroundTasks
 
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
-from models.students import Student
+from models.students import Student, StudentApprovalAtatus
 from rules.students_rule import StudentsRule
 from rules.students_base_info_rule import StudentsBaseInfoRule
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
@@ -74,6 +78,7 @@ class NewsStudentsView(BaseView):
                                                                   example="1")):
         """新生查询关键信息"""
         res = await self.students_rule.get_students_by_id(student_id)
+
         return res
 
     async def put_newstudentkeyinfo(self, new_students_key_info: StudentsKeyinfo,request:Request):
@@ -116,25 +121,32 @@ class NewsStudentsView(BaseView):
         return res_base_info
 
     # todo 仅仅修改一个状态就行
-
-    async def patch_formaladmission(self, student_id: List[str] = Query(..., description="学生id", min_length=1,
-                                                                        max_length=20, example=["SC2032633"]),
+    # 正式录取接口
+    async def patch_formaladmission(self, student_id: str  = Query(..., description="学生id",  example=["123,569,987"]),
                                     ):
         print(student_id)
-        return student_id
+        res = await self.students_rule.update_student_formaladmission(student_id, )
+        return res
 
 
     # 导入   任务队列的
     async def post_new_student_import(self,
-                                 filename: str = Query(..., description="文件名"),
-                                 bucket: str = Query(..., description="文件名"),
-                                 scene: str = Query('', description="文件名"),
+                                      # file_name: str = Body(..., description="文件名"),
+                                      file:PlanningSchoolImportReq
+
+                                 # bucket: str = Query(..., description="文件名"),
+                                 # scene: str = Query('', description="文件名"),
                                  ) -> Task:
+        file_name= file.file_name
+        task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name=file.bucket_name,file_size='51363', scene= ImportScene.NEWSTUDENT.value)
+        
         task = Task(
             #todo sourcefile无法记录3个参数  故 暂时用3个参数来实现  需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="new_student_import",
             # 文件 要对应的 视图模型
-            payload=NewStudentTask(file_name=filename, bucket=bucket, scene=scene),
+            payload=task_model,
+            # payload=NewStudentTask(file_name=filename, bucket=bucket, scene=scene),
+            # payload=NewStudentTask(file_name=file_name, scene= ImportScene.NEWSTUDENT.value, bucket='new_student_import' ),
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
@@ -348,3 +360,54 @@ class NewsStudentsFamilyInfoView(BaseView):
         """
         res = await self.students_family_info_rule.get_all_students_family_info(student_id)
         return res
+
+
+
+    # 新生导出
+
+    async def post_new_student_export(self,
+                                      students_query=Depends(NewStudentsQuery),
+
+                                      ) -> Task:
+        students_query.approval_status =   [StudentApprovalAtatus.ENROLLMENT  ]
+
+        task = Task(
+            task_type="student_export",
+            payload=students_query,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
+    #分班导出
+    async def post_newstudent_classdivision_export(self,
+                                                   students_query=Depends(ClassDivisionRecordsSearchRes),
+
+                                                   ) -> Task:
+        # students_query.approval_status =   [StudentApprovalAtatus.ENROLLMENT  ]
+
+        task = Task(
+            task_type="newstudent_classdivision_export",
+            payload=students_query,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
+
+    # 学生家庭成员导入
+    async def post_newstudent_familyinfo_import(self,
+                                      file:PlanningSchoolImportReq
+
+                                      ) -> Task:
+        file_name= file.file_name
+
+        task = Task(
+            task_type="newstudent_familyinfo_import",
+            # 文件 要对应的 视图模型
+            payload=NewStudentTask(file_name=file_name, scene= ImportScene.NEWSTUDENT_FAMILYINFO.value, bucket='newstudent_familyinfo_import' ),
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task

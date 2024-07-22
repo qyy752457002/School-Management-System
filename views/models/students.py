@@ -207,6 +207,7 @@ class StudentsKeyinfoDetail(BaseModel):
     id_type: str = Field('', title="证件类别", description="证件类别")
     id_number: str = Field('', title="证件号码", description="证件号码")
     photo: str|None = Field('', title="照片", description="照片")
+    photo_url: str|None = Field('', title="照片url", description="照片url")
     province: str|None = Field('', title=" ", description="",examples=[''],min_length=0,max_length=30)
     city: str|None = Field('', title=" ", description="",examples=[''],min_length=0,max_length=30)
     school_name: str = Field('', title="学校名称", description="学校名称",examples=['XX小学'])
@@ -539,13 +540,13 @@ class StudentsFamilyInfo(BaseModel):
     name: str = Field(..., title="姓名", description="姓名")
     gender: Gender = Field(..., title="性别", description="性别")
     relationship: Relationship = Field(..., title="关系", description="关系")
-    is_guardian: YesOrNo = Field(..., title="是否监护人", description="是否监护人")
+    is_guardian: bool|None = Field(..., title="是否监护人", description="是否监护人")
     identification_type: str = Field(..., title="身份证件类型", description="证件类型")
     identification_number: str = Field(..., title="证件号码", description="证件号码")
     birthday: date = Field(..., title="出生日期", description="出生日期")
     phone_number: str = Field(..., title="手机号码", description="手机号码")
     ethnicity: str = Field(..., title="民族", description="民族")
-    health_status: HealthStatus = Field(..., title="健康状态", description="健康状态")
+    health_status: str|None|list = Field(..., title="健康状态", description="健康状态")
     nationality: str = Field(..., title="国籍", description="国籍")
     political_status: str = Field("", title="政治面貌", description="政治面貌")
     contact_address: str = Field(..., title="联系地址", description="联系地址")
@@ -591,13 +592,13 @@ class StudentsFamilyInfoCreate(BaseModel):
     name: str = Field(..., title="姓名", description="姓名")
     gender: Gender = Field(..., title="性别", description="性别")
     relationship: Relationship = Field(..., title="关系", description="关系")
-    is_guardian: YesOrNo = Field(..., title="是否监护人", description="是否监护人")
+    is_guardian: bool|None = Field(..., title="是否监护人", description="是否监护人")
     identification_type: str = Field(..., title="身份证件类型", description="证件类型")
     identification_number: str = Field(..., title="证件号码", description="证件号码")
     birthday: date = Field(..., title="出生日期", description="出生日期")
     phone_number: str = Field(..., title="手机号码", description="手机号码")
     ethnicity: str = Field(..., title="民族", description="民族")
-    health_status: HealthStatus = Field(..., title="健康状态", description="健康状态")
+    health_status: str|None|list = Field(..., title="健康状态", description="健康状态")
     nationality: str = Field(..., title="国籍", description="国籍")
     political_status: str = Field("", title="政治面貌", description="政治面貌")
     contact_address: str = Field(..., title="联系地址", description="联系地址")
@@ -818,3 +819,57 @@ class NewStudentTask(BaseModel):
     file_name: str = Field('', title="",description="",examples=[' '])
     bucket: str = Field('', title="",description="",examples=[' '])
     scene: str = Field('', title="",description="",examples=[' '])
+
+
+class NewStudentImport(BaseModel):
+    """
+曾用名
+通信地址(详细)
+照片
+"""
+    student_name: str = Field(..., title="姓名", description="学生姓名")
+    edu_number: Optional[str] = Query('', title="学籍号", description="学籍号")
+    id_type: str = Field("", title="身份证件类型", description="证件类别")
+    id_number: str = Field("", title="身份证件号", description="证件号码")
+    class_name: str|None = Field(None, title="班级", description="")
+    nationality: str = Field(..., title="国籍", description="国籍")
+    enrollment_method: str|None = Field("", title="就读方式", description="就读方式")
+    residence_nature: str = Field('', title="户口性质", description="户口性质")
+    residence_address: str|None = Field("", title="户口所在地(详细)", description="户口所在地（详细）")
+    residence_district: str|None= Field("", title="户口所在地", description="户口所在地new")
+    student_gender: Gender|str = Field(..., title="性别", description="性别")
+    ethnicity: str = Field("", title="民族", description="民族")
+    birthday: date|str = Field(..., title="出生日期", description="生日")
+    left_behind_children: bool|str = Field(None, title="是否留守儿童", description="是否留守儿童")
+    communication_address: str = Field("", title="通信地址", description="通信地址")
+    birth_place: str|None = Field("", title="出生地", description="出生地")
+    political_status: str = Field("", title="政治面貌", description="政治面貌")
+    disabled_person: bool = Field(None, title="是否残疾人", description="是否残疾人")
+    native_place_district: str = Field('', title="籍贯", description="籍贯")
+    contact_number: str = Field("", title="联系电话", description="联系电话")
+    blood_type: str = Field("", title="血型", description="血型")
+    photo: str|None = Field("", title="照片", description="照片")
+    only_child: bool|str = Field( None, title="独生子女标志", description="是否独生子女")
+    admission_date: date |datetime|None|str= Field(date(1970, 1, 1), title="入学年月", description="入学年月new")
+    floating_population: bool|str = Field(False, title="是否流动人口", description="是否流动人口")
+    postal_code: str = Field("", title="邮政编码", description="邮政编码")
+    # 下面是id字段 供转换后 匹配给模型用
+    student_id: int|str = Field(0, title="", description="id")
+    school_id: int|str = Field(0, title="", description="学校id")
+    session_id: int|str = Field(0, title="", description="届别id")
+    class_id: Optional[int|str ] = Query(0, title="", description="班级ID")
+
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        return data

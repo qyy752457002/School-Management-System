@@ -12,8 +12,41 @@ from id_validator import validator
 
 from views.models.system import UnitType
 
+from enum import Enum
 
-def compare_modify_fields( view_model,orm_model):
+
+frontend_enum_mapping = {'preSchoolEducation': '学前教育', 'kindergarten': '幼儿园', 'attachedKindergartenClass': '附设幼儿班',
+                         'primaryEducation': '初等教育', 'primarySchool': '小学', 'primarySchoolTeachingPoint': '小学教学点',
+                         'attachedPrimarySchoolClass': '附设小学班', 'adultPrimarySchool': '成人小学',
+                         'staffPrimarySchool': '职工小学', 'migrantWorkerPrimarySchool': '农民工小学',
+                         'primarySchoolClass': '小学班', 'literacyClass': '扫盲班', 'secondaryEducation': '中等教育',
+                         'ordinaryJuniorHigh': '普通初中', 'vocationalJuniorHigh': '职业初中',
+                         'attachedVocationalJuniorHighClass': '附设职业初中班', 'adultEmployeeJuniorHigh': '成人职工初中',
+                         'adultFarmerJuniorHigh': '成人农民初中', 'adultJuniorHigh': '成人初中', 'ordinaryHighSchool': '普通高中',
+                         'comprehensiveHighSchool': '完全中学', 'seniorHighSchool': '高级中学',
+                         'twelveYearSystemSchool': '十二年一贯制学校', 'attachedOrdinaryHighSchoolClass': '附设普通高中班',
+                         'adultHighSchool': '成人高中', 'adultEmployeeHighSchool': '成人职工高中',
+                         'adultFarmerHighSchool': '成人农民高中', 'secondaryVocationalSchool': '中等职业学校',
+                         'adjustedSecondaryVocationalSchool': '调整后中等职业学校', 'secondaryTechnicalSchool': '中等技术学校',
+                         'secondaryNormalSchool': '中等师范学校', 'adultSecondaryProfessionalSchool': '成人中等专业学校',
+                         'vocationalHighSchool': '职业高中学校', 'technicalSchool': '技工学校',
+                         'attachedVocationalClass': '附设中职班', 'otherVocationalInstitutions': '其他中职机构',
+                         'workStudySchool': '工读学校', 'specialEducation': '特殊教育', 'specialEducationSchool': '特殊教育学校',
+                         'schoolForBlind': '盲人学校', 'schoolForDeaf': '聋人学校', 'schoolForIntellectuallyDisabled': '培智学校',
+                         'otherSpecialEducationSchools': '其他特教学校', 'attachedSpecialEducationClasses': '附设特教班',
+                         'otherEducation': '其他教育', 'jinxingInstitution': '进修机构', 'researchInstitution': '研究机构',
+                         'educationResearchInstitute': '教育研究院', 'practiceInstitution': '实践机构',
+                         'practiceBase': '实践基地', 'trainingInstitution': '培训机构', 'PublicOwnership': '公办',
+                         'PrivateOwnership': '民办', '1': '一星', '2': '二星', '3': '三星', '4': '四星', '5': '五星',
+                         'resident_id_card': '居民身份证', 'military_officer_id': '军官证', 'soldier_id': '士兵证',
+                         'civilian_officer_id': '文职干部证', 'military_retiree_id': '部队离退休证',
+                         'hong_kong_passport_id': '香港特区护照/身份证明', 'macau_passport_id': '澳门特区护照/身份证明',
+                         'taiwan_resident_travel_permit': '台湾居民来往大陆通行证',
+                         'overseas_permanent_residence_permit': '境外永久居住证', 'passport': '护照',
+                         'birth_certificate': '出生证明', 'household_register': '户口薄', 'other': '其他', 'male': '男',
+                         'female': '女'}
+
+def compare_modify_fields(view_model, orm_model):
     """
     比较两个对象  返回需要更新的字段
     :param view_model:
@@ -28,32 +61,49 @@ def compare_modify_fields( view_model,orm_model):
     od = orm_model.__dict__
     vd = convert_dates_to_strings(vd)
     od = convert_dates_to_strings(od)
+    # 定义要转换的值的map
+    key_map = frontend_enum_mapping
+
     for key, value in vd.items():
+        if key == 'id':
+            continue
         if value:
-            if key in od  and od[key] != value:
-                print(key,value,od[key])
+            if key in od and od[key] != value:
+                print(key, value, od[key])
                 # changeitems.append(key)
-                key_cn=''
+                key_cn = ''
                 if key in view_model.model_fields.keys():
                     key_cn = view_model.model_fields[key].title
                     if not key_cn:
-                        key_cn =view_model.model_fields[key].description
-                if not key_cn and  key in orm_model.model_fields.keys():
+                        key_cn = view_model.model_fields[key].description
+                if not key_cn and key in orm_model.model_fields.keys():
                     key_cn = orm_model.model_fields[key].title
                     if not key_cn:
-                        key_cn =orm_model.model_fields[key].description
+                        key_cn = orm_model.model_fields[key].description
 
-                valueold= od[key]
-                if isinstance(valueold,date):
-                    valueold=valueold.strftime('%Y-%m-%d')
-                if isinstance(value,date):
-                    value=value.strftime('%Y-%m-%d')
-                changeitems[key_cn] ={"before":  valueold,"after":value }
+                valueold = od[key]
+                if isinstance(valueold, date):
+                    valueold = valueold.strftime('%Y-%m-%d')
+                if isinstance(value, date):
+                    value = value.strftime('%Y-%m-%d')
+
+                if valueold in key_map.keys():
+                    valueold = key_map[valueold]
+                if value in key_map.keys():
+                    value = key_map[value]
+
+                # 枚举类型的转换
+                if isinstance(valueold, Enum):
+                    valueold = valueold.value
+                if isinstance(value, Enum):
+                    value = value.value
+                changeitems[key_cn] = {"before": valueold, "after": value}
                 # pass
-    print('比叫变更域',changeitems)
+    print('比叫变更域', changeitems)
     return changeitems
 
-def page_none_deal( paging):
+
+def page_none_deal(paging):
     """
     比较两个对象  返回需要更新的字段
     :param planning_school:
@@ -68,7 +118,6 @@ def page_none_deal( paging):
 
     # print(paging.items)
 
-
     return paging
 
 
@@ -76,12 +125,14 @@ def check_id_number(id_number: str):
     is_valid = validator.is_valid(id_number)
     print(is_valid, )
     return is_valid
+
+
 async def get_extend_params(request):
     headers = request.headers
     obj = ExtendParams()
 
-    if 'Extendparams'  in headers:
-        extparam= headers['Extendparams']
+    if 'Extendparams' in headers:
+        extparam = headers['Extendparams']
         if isinstance(extparam, str):
             extparam = eval(extparam)
         obj = ExtendParams(**extparam)
@@ -90,13 +141,13 @@ async def get_extend_params(request):
 
         if obj.county_id:
             # 区的转换   or todo
-            enuminfo = await (  EnumValueDAO()).get_enum_value_by_value(obj.county_id, 'country' )
+            enuminfo = await (EnumValueDAO()).get_enum_value_by_value(obj.county_id, 'country')
             if enuminfo:
                 obj.county_name = enuminfo.description
     print('Extendparams', obj)
 
-
     return obj
+
 
 def get_client_ip(request):
     client_ip = request.headers.get("X-Forwarded-For", request.client.host)
@@ -104,6 +155,7 @@ def get_client_ip(request):
         client_ip = client_ip.split(',')[0].strip()
 
     return client_ip
+
 
 @singleton
 class WorkflowServiceConfig:
@@ -114,33 +166,35 @@ class WorkflowServiceConfig:
         workflow_service_dict = manager.get_domain_config("workflow_service")
         if not workflow_service_dict:
             raise ValueError('workflow_service configuration is required')
-        self.workflow_config =  workflow_service_dict
-
+        self.workflow_config = workflow_service_dict
 
 
 workflow_service_config = WorkflowServiceConfig()
-
 
 
 def convert_dates_to_strings(stuinfoadddict):
     for key, value in stuinfoadddict.items():
         if isinstance(value, (date, datetime)):
             stuinfoadddict[key] = value.strftime("%Y-%m-%d %H:%M:%S")
-        if isinstance(value,Query) or isinstance(value,tuple):
+        if isinstance(value, Query) or isinstance(value, tuple):
             stuinfoadddict[key] = None
         # if isinstance(value,InstanceState):
         #     stuinfoadddict[key] = value.value
     return stuinfoadddict
-def convert_snowid_to_strings(paging_result,extra_colums=None):
+
+
+def convert_snowid_to_strings(paging_result, extra_colums=None):
     """
     将传入的 items 中每个元素的 id 属性转换为字符串类型。
 
     :param items: 包含可迭代对象的列表或元组，其中每个对象都有 'id' 属性。
     """
-    items=paging_result.items
+    items = paging_result.items
     for item in items:
-        convert_snowid_in_model(item,extra_colums)
-def convert_snowid_in_model(item,extra_colums=None):
+        convert_snowid_in_model(item, extra_colums)
+
+
+def convert_snowid_in_model(item, extra_colums=None):
     """
     将传入的 items 中每个元素的 id 属性转换为字符串类型。
 
@@ -153,8 +207,11 @@ def convert_snowid_in_model(item,extra_colums=None):
         for col in extra_colums:
             if hasattr(item, col) and isinstance(getattr(item, col), int):
                 setattr(item, col, str(getattr(item, col)))
+
+
 import json
 from sqlalchemy.orm import class_mapper
+
 
 def serialize(model):
     """
@@ -164,6 +221,7 @@ def serialize(model):
     columns = [c.key for c in class_mapper(model.__class__).columns]
     return dict((c, getattr(model, c)) for c in columns)
 
+
 # 假设你有一个SQLAlchemy模型实例
 # model_instance = MyModel()
 
@@ -172,6 +230,7 @@ def serialize(model):
 
 # 将字典转换为JSON
 # model_json = json.dumps(model_dict)
+
 
 # 函数来处理键名映射  对于josn里的  每个 根据映射提换键名
 def map_keys(data, key_map):
@@ -185,3 +244,49 @@ def map_keys(data, key_map):
         return [map_keys(item, key_map) for item in data]  # 处理列表中的每个元素
     else:
         return data  # 如果是基本类型，直接返回
+
+
+import requests
+
+
+def download_file(url, local_filepath):
+    """
+    从指定的URL下载文件并保存到本地路径。
+
+    :param url: 要下载的文件的URL
+    :param local_filepath: 本地文件保存路径
+    :return: None
+    """
+    try:
+        # 发送GET请求下载文件
+        response = requests.get(url, stream=True)  # 使用stream=True可以处理大文件
+
+        # 检查请求是否成功
+        if response.status_code == 200:
+            # 打开本地文件路径以写入二进制内容
+            with open(local_filepath, 'wb') as file:
+                # 将下载的内容写入文件
+                for chunk in response.iter_content(chunk_size=8192):  # 逐块写入文件，可以有效处理大文件
+                    file.write(chunk)
+            print(f'文件已保存到 {local_filepath}')
+        else:
+            print(f'请求失败，状态码：{response.status_code}')
+    except requests.exceptions.RequestException as e:
+        print(f'请求异常：{e}')
+
+
+# 使用函数
+# download_file('http://example.com/file.pdf', 'path/to/your/local/file.pdf')
+# 定义函数 针对 对象里每个属性 如果类型是 pydantic的QUERY 则设置为None
+def convert_query_to_none(obj):
+    """
+    将pydantic的Query类型属性设置为None。
+
+    :param obj: 要转换的对象
+    :return: 转换后的对象
+    """
+    for field_name, field in obj.__fields__.items():
+        field = getattr(obj, field_name)
+        if isinstance(field, Query) or isinstance(field, tuple):
+            setattr(obj, field_name, None)
+    return obj

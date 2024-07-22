@@ -68,7 +68,7 @@ doc_upload: str = Field('',   description=" 附件",examples=[''])
     transfer_time: Mapped[str] = mapped_column(String(255), nullable=True, comment="转入/出时间", default='')
     transfer_reason: Mapped[str] = mapped_column(String(255), nullable=True, comment="转学原因", default='')
     doc_upload: Mapped[str] = mapped_column(String(255), nullable=True, comment="附件", default='')
-    process_instance_id: Mapped[int] = mapped_column(  nullable=True, comment="流程ID", default=0)
+    process_instance_id: Mapped[int] = mapped_column(BigInteger,  nullable=True, comment="流程ID", default=0)
 
     student_id: Mapped[int] = mapped_column(BigInteger,nullable=True, comment="学生ID", default=0)
     student_no: Mapped[str] = mapped_column(String(255), nullable=True, comment="学号", default='')

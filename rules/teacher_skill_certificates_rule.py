@@ -42,7 +42,7 @@ class TeacherSkillCertificatesRule(object):
         teacher_skill_certificates_db = await self.teacher_skill_certificates_dao.delete_teacher_skill_certificates(
             exists_teacher_skill_certificates)
         teacher_skill_certificates = orm_model_to_view_model(teacher_skill_certificates_db,
-                                                             TeacherSkillCertificatesModel, exclude=[""])
+                                                             TeacherSkillCertificatesUpdateModel, exclude=[""])
         return teacher_skill_certificates
 
     async def update_teacher_skill_certificates(self, teacher_skill_certificates: TeacherSkillCertificatesUpdateModel):

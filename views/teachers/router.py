@@ -6,7 +6,7 @@ from views.teachers.teachers_view import TeachersView
 from views.teachers.newteachers_view import NewTeachersView
 from views.teachers.teachers_extend_view import TeacherLearnExperienceView, TeacherWorkExperienceView, \
     TeacherJobAppointmentsView, TeacherProfessionalTitlesView, TeacherQualificationsView, TeacherSkillCertificatesView, \
-    TeacherEthicRecordsView,EducationalTeachingView
+    TeacherEthicRecordsView,EducationalTeachingView,TeacherExtendImportView
 from views.teachers.teachers_extend_view import DomesticTrainingView,OverseasStudyView,TalentProgramView,AnnualReviewView,ResearchAchievementsView
 from views.teachers.teacher_work_flow_define import WorkFlowDefineView
 from views.teachers.teacher_transaction_view import TeacherTransactionView
@@ -39,6 +39,7 @@ def routers():
     router.include_api_view_class(TeacherBorrowView, "/v1/teacher-transaction", description="教师借动管理")
     router.include_api_view_class(TransferDetailsView, "/v1/teacher-transaction", description="教师调动管理")
     router.include_api_view_class(TeacherRetireView, "/v1/teacher-transaction", description="教师退休管理")
+    router.include_api_view_class(TeacherExtendImportView, "/v1/teacher-extend-import", description="教师扩展信息导入")
 
 
     return router

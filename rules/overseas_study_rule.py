@@ -33,7 +33,7 @@ class OverseasStudyRule(object):
         if not exists_overseas_study:
             raise OverseasStudyNotFoundError()
         overseas_study_db = await self.overseas_study_dao.delete_overseas_study(exists_overseas_study)
-        overseas_study = orm_model_to_view_model(overseas_study_db, OverseasStudyModel, exclude=[""])
+        overseas_study = orm_model_to_view_model(overseas_study_db, OverseasStudyUpdateModel, exclude=[""])
         return overseas_study
 
     async def update_overseas_study(self, overseas_study: OverseasStudyUpdateModel):

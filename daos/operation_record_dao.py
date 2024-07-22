@@ -4,7 +4,7 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.operation_record import OperationRecord
-from views.models.teachers import  TeacherChangeLogQueryModel
+from views.models.teachers import TeacherChangeLogQueryModel
 
 
 class OperationRecordDAO(DAOBase):
@@ -67,7 +67,6 @@ class OperationRecordDAO(DAOBase):
             query = query.where(OperationRecord.change_module == query_model.change_module)
         paging = await self.query_page(query, page_request)
         return paging
-
 
     async def update_operation_record(self, operation_record, *args, is_commit=True):
         session = await self.master_db()

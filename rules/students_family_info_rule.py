@@ -32,12 +32,16 @@ class StudentsFamilyInfoRule(object):
         """
         新增学生家庭信息
         """
+        # 处理前段传的健康状态是list转为str
+        if isinstance(students_family_info.health_status, list):
+            students_family_info.health_status = ",".join(students_family_info.health_status)
         exits_student = await self.students_dao.get_students_by_id(students_family_info.student_id)
         if not exits_student:
             raise StudentNotFoundError()
         #  去重  根据 姓名  性别  关系
-        kdict = {"name": students_family_info.name, "gender":  students_family_info.gender, "relationship":  students_family_info.relationship}
-        exist = await self.students_family_info_dao.get_student_family_info_by_param( **kdict)
+        kdict = {"name": students_family_info.name, "gender": students_family_info.gender,
+                 "relationship": students_family_info.relationship}
+        exist = await self.students_family_info_dao.get_student_family_info_by_param(**kdict)
 
         # print(exist)
 
@@ -49,7 +53,8 @@ class StudentsFamilyInfoRule(object):
         students_family_info_db.student_family_info_id = SnowflakeIdGenerator(1, 1).generate_id()
         students_family_info_db = await self.students_family_info_dao.add_students_family_info(students_family_info_db)
         students_family_info = orm_model_to_view_model(students_family_info_db, StudentsFamilyInfoModel, exclude=[""])
-        convert_snowid_in_model(students_family_info,["id",'student_id','school_id','class_id','session_id','student_family_info_id'])
+        convert_snowid_in_model(students_family_info,
+                                ["id", 'student_id', 'school_id', 'class_id', 'session_id', 'student_family_info_id'])
         return students_family_info
 
     async def update_students_family_info(self, students_family_info):
@@ -66,7 +71,8 @@ class StudentsFamilyInfoRule(object):
                 need_update_list.append(key)
         students_family_info = await self.students_family_info_dao.update_students_family_info(students_family_info,
                                                                                                *need_update_list)
-        convert_snowid_in_model(students_family_info,["id",'student_id','school_id','class_id','session_id','student_family_info_id'])
+        convert_snowid_in_model(students_family_info,
+                                ["id", 'student_id', 'school_id', 'class_id', 'session_id', 'student_family_info_id'])
 
         return students_family_info
 
@@ -81,8 +87,9 @@ class StudentsFamilyInfoRule(object):
         students_family_info_db = await self.students_family_info_dao.delete_students_family_info(
             exists_students_family_info)
         students_family_info = orm_model_to_view_model(students_family_info_db, StudentsFamilyInfoModel, exclude=[""])
-        convert_snowid_in_model(students_family_info,["id",'student_id','school_id','class_id','session_id','student_family_info_id'])
-        
+        convert_snowid_in_model(students_family_info,
+                                ["id", 'student_id', 'school_id', 'class_id', 'session_id', 'student_family_info_id'])
+
         return students_family_info
 
     async def get_all_students_family_info(self, student_id):

@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, or_, asc
+from sqlalchemy import select, func, or_, asc, and_
 
 from mini_framework.databases.entities.dao_base import DAOBase
 from mini_framework.databases.queries.pages import Paging
@@ -30,6 +30,16 @@ class EnumValueDAO(DAOBase):
             query = query.where(EnumValue.parent_id == parent_id)
         result = await session.execute(query)
         return result.first()
+
+    async def get_enum_value_by_description_and_name(self, description, enum_name, parent_id=None):
+        session = await self.slave_db()
+        cond1 = EnumValue.description == description
+        cond2 = EnumValue.enum_name == enum_name
+        query = select(EnumValue).where(and_(cond1, cond2))
+        if parent_id:
+            query = query.where(EnumValue.parent_id == parent_id)
+        result = await session.execute(query)
+        return result.scalar_one_or_none()
 
     async def get_enum_description_by_enum_value_name(self, enum_value, is_pro=False, is_city=False, is_area=False):
         session = await self.slave_db()
@@ -73,6 +83,7 @@ class EnumValueDAO(DAOBase):
         return result.scalar()
 
     async def query_enum_value_with_page(self, page_request: PageRequest, enum_value_name, parent_code) -> Paging:
+        # 根据排序正序 ID倒序
         query = select(EnumValue).order_by(asc(EnumValue.sort_number)).order_by(asc(EnumValue.id))
         if enum_value_name:
             if ',' in enum_value_name:

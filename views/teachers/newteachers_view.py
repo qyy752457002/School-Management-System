@@ -10,14 +10,15 @@ from mini_framework.web.views import BaseView
 from rules.teachers_rule import TeachersRule
 from views.models.teachers import Teachers, TeacherInfo, TeachersCreatModel, CurrentTeacherInfoSaveModel, \
     TeacherInfoSaveModel, TeacherInfoSubmit, CombinedModel, TeacherFileStorageModel, CurrentTeacherQuery, \
-    TeacherApprovalQuery, NewTeacherRe, TeacherChangeLogQueryModel
+    TeacherApprovalQuery, TeacherChangeLogQueryModel
 from rules.teachers_info_rule import TeachersInfoRule
 from mini_framework.web.request_context import request_context_manager
 
 from mini_framework.async_task.app.app_factory import app
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.task.task import Task
 from views.models.teachers import NewTeacherTask
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
+from rules.teacher_import_rule import TeacherImportRule
 
 
 class NewTeachersView(BaseView):
@@ -26,6 +27,7 @@ class NewTeachersView(BaseView):
         self.teacher_rule = get_injector(TeachersRule)
         self.teacher_info_rule = get_injector(TeachersInfoRule)
         self.teacher_work_flow_instance_rule = get_injector(TeacherWorkFlowRule)
+        self.teacher_import_rule = get_injector(TeacherImportRule)
 
     # 新增教职工登记信息
     async def post_newteacher(self, teachers: TeachersCreatModel):
@@ -43,6 +45,7 @@ class NewTeachersView(BaseView):
         """
         user_id = "asdfasdf"
         teacher_id = int(teacher_id)
+
         await self.teacher_rule.delete_teachers(teacher_id, user_id)
         return str(teacher_id)
 
@@ -208,58 +211,61 @@ class NewTeachersView(BaseView):
         task = Task(
             task_type="teacher_import",
             payload=filestorage,
-            operator="123456"
-            # operator=request_context_manager.current().current_login_account.account_id
+            # operator="123456"
+            operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)
         print('发生任务成功')
         return task
 
 
-async def post_new_teacher_save_import(self, filestorage: TeacherFileStorageModel) -> Task:
-    task = Task(
-        task_type="teacher_save_import",
-        payload=filestorage,
-        operator=request_context_manager.current().current_login_account.account_id
-    )
-    task = await app.task_topic.send(task)
-    print('发生任务成功')
-    return task
+    async def post_new_teacher_save_import(self,  file_id: int | str = Query(..., title="文件id",
+                                                                       example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(
+            task_type="teacher_save_import",
+            payload=filestorage,
+            # operator="123456"
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
 
 
-async def post_new_teacher_export(self, teacher_query: CurrentTeacherQuery) -> Task:
-    task = Task(
-        task_type="teacher_export",
-        payload=teacher_query,
-        operator=request_context_manager.current().current_login_account.account_id
-    )
-    task = await app.task_topic.send(task)
-    print('发生任务成功')
-    return task
+    async def post_new_teacher_export(self, teacher_query: CurrentTeacherQuery) -> Task:
+        task = Task(
+            task_type="teacher_export",
+            payload=teacher_query,
+            operator=request_context_manager.current().current_login_account.account_id
+        )
+        task = await app.task_topic.send(task)
+        print('发生任务成功')
+        return task
 
 
-async def page_new_teacher_launch(self, teacher_approval_query=Depends(TeacherApprovalQuery),
-                                  page_request=Depends(PageRequest)):
-    """
-    分页查询
-    """
-    type = 'launch'
-    user_id = "asdfasdf"
-    paging_result = await self.teacher_rule.query_teacher_approval_with_page(type, teacher_approval_query,
-                                                                             page_request, user_id)
-    return paging_result
+    async def page_new_teacher_launch(self, teacher_approval_query=Depends(TeacherApprovalQuery),
+                                      page_request=Depends(PageRequest)):
+        """
+        分页查询
+        """
+        type = 'launch'
+        user_id = "asdfasdf"
+        paging_result = await self.teacher_rule.query_teacher_approval_with_page(type, teacher_approval_query,
+                                                                                 page_request, user_id)
+        return paging_result
 
 
-async def page_new_teacher_approval(self, teacher_approval_query=Depends(TeacherApprovalQuery),
-                                    page_request=Depends(PageRequest)):
-    """
-    分页查询
-    """
-    type = 'approval'
-    user_id = "asdfasdf"
-    paging_result = await self.teacher_rule.query_teacher_approval_with_page(type, teacher_approval_query,
-                                                                             page_request, user_id)
-    return paging_result
+    async def page_new_teacher_approval(self, teacher_approval_query=Depends(TeacherApprovalQuery),
+                                        page_request=Depends(PageRequest)):
+        """
+        分页查询
+        """
+        type = 'approval'
+        user_id = "asdfasdf"
+        paging_result = await self.teacher_rule.query_teacher_approval_with_page(type, teacher_approval_query,
+                                                                                 page_request, user_id)
+        return paging_result
 
 # 下面都是测试工作流的
 
@@ -299,3 +305,8 @@ async def page_new_teacher_approval(self, teacher_approval_query=Depends(Teacher
 #                                            ):
 #     params = {"teacher_main_status": "unemployed", "teacher_sub_status": "unsubmitted"}
 #     await self.teacher_work_flow_instance_rule.update_work_flow_by_param(process_instance_id, params)
+
+# 测试导入
+    async def post_teacher_import_test(self, file_id: int = Query(..., title="文件id", description="文件id")):
+        await self.teacher_import_rule.import_teachers_test(file_id)
+

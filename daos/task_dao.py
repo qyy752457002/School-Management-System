@@ -1,4 +1,4 @@
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.task.task import Task
 from mini_framework.web.std_models.page import PageRequest
 from sqlalchemy import select
 

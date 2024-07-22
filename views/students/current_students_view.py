@@ -4,7 +4,7 @@ import json
 
 from fastapi.params import Body
 from mini_framework.async_task.app.app_factory import app
-from mini_framework.async_task.task import Task
+from mini_framework.async_task.task.task import Task
 from mini_framework.utils.json import JsonUtils
 from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
@@ -12,9 +12,11 @@ from starlette.requests import Request
 
 from business_exceptions.student import StudentExistsThisSchoolError, StudentTransactionExistsError
 from models.student_transaction import AuditAction, TransactionDirection, AuditFlowStatus
+from models.students import StudentApprovalAtatus
 from rules.classes_rule import ClassesRule
 from rules.graduation_student_rule import GraduationStudentRule
 from rules.operation_record import OperationRecordRule
+from rules.school_rule import SchoolRule
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
 from rules.students_key_info_change_rule import StudentsKeyInfoChangeRule
@@ -22,7 +24,7 @@ from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_client_ip, convert_dates_to_strings
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
-    StudentEduInfo, StudentTransactionAudit, StudentEduInfoOut
+    StudentEduInfo, StudentTransactionAudit, StudentEduInfoOut, StudentTransactionPageSearch
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, \
     NewStudentTransferIn, StudentGraduation, StudentsKeyinfoChange, StudentsKeyinfoChangeAudit, NewStudentsQuery
 from fastapi import Query, Depends
@@ -34,6 +36,7 @@ from rules.students_rule import StudentsRule
 from rules.student_session_rule import StudentSessionRule
 from rules.students_family_info_rule import StudentsFamilyInfoRule
 from views.models.students import StudentSession, StudentsUpdateFamilyInfo
+from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE
 
 
 class CurrentStudentsView(BaseView):
@@ -41,6 +44,7 @@ class CurrentStudentsView(BaseView):
         super().__init__()
         self.operation_record_rule = get_injector(OperationRecordRule)
         self.system_rule = get_injector(SystemRule)
+        self.school_rule = get_injector(SchoolRule)
         self.students_rule = get_injector(StudentsRule)
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
         self.student_session_rule = get_injector(StudentSessionRule)
@@ -106,15 +110,20 @@ class CurrentStudentsView(BaseView):
         items = []
         # exit(1)
         # return page_search
-        paging_result = await self.student_transaction_rule.query_student_transaction_with_page(page_request,
-                                                                                                audit_status,
-                                                                                                student_name,
-                                                                                                student_gender,
-                                                                                                school_id,
-                                                                                                apply_user,
-                                                                                                edu_no
+        process_code=  STUDENT_TRANSFER_WORKFLOW_CODE
 
-                                                                                                )
+        req = StudentTransactionPageSearch(audit_status=audit_status,student_name=student_name,
+                                           student_gender=student_gender,
+                                           school_id=school_id,
+                                           apply_user=apply_user,
+                                           edu_no=edu_no
+                                           )
+        if school_id:
+            school_info=await self.school_rule.get_school_by_id(school_id)
+            req.school_name = school_info.school_name
+            delattr(req, 'school_id')
+        paging_result = await self.system_rule.query_workflow_with_page(req, page_request, '', process_code, )
+
         return paging_result
     # 转学申请详情
     async def get_student_transaction_info(self,
@@ -132,8 +141,6 @@ class CurrentStudentsView(BaseView):
         json_data =  JsonUtils.json_str_to_dict(  result.get('json_data'))
         if 'original_dict' in json_data.keys() and  json_data['original_dict']:
             result={**json_data['original_dict'],**result}
-
-
         return result
 
     # 在校生转入
@@ -497,11 +504,12 @@ class CurrentStudentsView(BaseView):
 
 
         return res
-
+    # 在校生导出
     async def post_current_student_export(self,
         students_query=Depends(NewStudentsQuery),
 
                                           ) -> Task:
+        students_query.approval_status =   [StudentApprovalAtatus.ASSIGNMENT  ]
         task = Task(
             task_type="student_export",
             payload=students_query,

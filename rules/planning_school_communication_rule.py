@@ -2,13 +2,14 @@
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
-from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from business_exceptions.planning_school_communication import PlanningSchoolCommunicationNotFoundError
 from daos.planning_school_communication_dao import PlanningSchoolCommunicationDAO
 from models.planning_school_communication import PlanningSchoolCommunication
+from rules.system_rule import SystemRule
 from views.common.common_view import convert_snowid_in_model
 from views.models.planning_school_communications import PlanningSchoolCommunications  as PlanningSchoolCommunicationModel
 
@@ -34,10 +35,11 @@ class PlanningSchoolCommunicationRule(object):
         else:
             planning_school = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel)
             # 图片转换地址
-            url= planning_school_communication_db.related_license_upload
-
-
-
+            if planning_school.related_license_upload:
+                # planning_school.related_license_upload = planning_school_communication_db.related_license_upload
+                sysrule = get_injector(SystemRule)
+                fileurl = await sysrule.get_download_url_by_id(planning_school.related_license_upload)
+                planning_school.related_license_upload_url =  fileurl
 
             # raise PlanningSchoolCommunicationNotFoundError(f"规划校通信信息{planning_school_communication_id}不存在")
         # planning_school_communication_db = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel)
@@ -68,9 +70,9 @@ class PlanningSchoolCommunicationRule(object):
         planning_school_communication_db.id = SnowflakeIdGenerator(1, 1).generate_id()
         print(planning_school_communication_db,'模型2db')
 
-        planning_school_communication_db = await self.planning_school_communication_dao.add_planning_school_communication(planning_school_communication_db)
-        # planning_school = orm_model_to_view_model(planning_school_communication_db, PlanningSchoolCommunicationModel, exclude=["created_at",'updated_at'])
-        return planning_school_communication_db
+        planning_school_communication_db_res = await self.planning_school_communication_dao.add_planning_school_communication(planning_school_communication_db)
+        planning_school = orm_model_to_view_model(planning_school_communication_db_res, PlanningSchoolCommunicationModel, exclude=["created_at",'updated_at'])
+        return planning_school
 
     async def update_planning_school_communication(self, planning_school,ctype=1):
         exists_planning_school = await self.planning_school_communication_dao.get_planning_school_communication_by_id(planning_school.id)

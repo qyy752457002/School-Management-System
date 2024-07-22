@@ -24,6 +24,7 @@ class SchoolCommunications(BaseModel):
     loc_area_pro: str = Field(None, title="", description="园所所在地(省级)",examples=['FSDFSD'])
     detailed_address: str = Field(None, title="", description="园所详细地址",examples=['FSDFSD'])
     related_license_upload: str = Field(None, title="", description="相关证照上传",examples=[''])
+    related_license_upload_url: str|None = Field(None, title="", description="相关证照上传",examples=[''])
     school_web_url: str = Field(None, title="", description="校园网域名",examples=['WW.SS.CC'])
     @model_validator(mode="before")
     @classmethod

@@ -14,12 +14,16 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
 from daos.permission_menu_dao import PermissionMenuDAO
 from daos.roles_dao import RolesDAO
+from drop.work_flow_node_define import WorkFlowNodeDefine
 from models.permission_menu import PermissionMenu
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from views.common.common_view import workflow_service_config, convert_snowid_in_model
 
 from views.models.sub_system import SubSystem as SubSystemModel
 from views.models.permission_menu import PermissionMenu as PermissionMenuModel
+from views.models.system import PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, SCHOOL_CLOSE_WORKFLOW_CODE, \
+    INSTITUTION_CLOSE_WORKFLOW_CODE
+
 
 @dataclass_inject
 class SystemRule(object):
@@ -72,68 +76,65 @@ class SystemRule(object):
     async def get_system_count(self):
         return await self.system_dao.get_subsystem_count()
 
-    async def query_system_with_page(self, page_request: PageRequest,role_id,unit_type, edu_type, system_type,  ):
-        paging = await self.permission_menu_dao.query_permission_menu_with_page(page_request, unit_type, edu_type, system_type, role_id)
+    async def query_system_with_page(self, page_request: PageRequest, role_id, unit_type, edu_type, system_type, ):
+        paging = await self.permission_menu_dao.query_permission_menu_with_page(page_request, unit_type, edu_type,
+                                                                                system_type, role_id)
         # 字段映射的示例写法   , {"hash_password": "password"} SubSystemSearchRes
         # print(paging)
-        paging_result = PaginatedResponse.from_paging(paging, PermissionMenuModel,other_mapper={
+        paging_result = PaginatedResponse.from_paging(paging, PermissionMenuModel, other_mapper={
             "menu_name": "power_name",
             "menu_path": "power_url",
             "menu_code": "power_code",
             "menu_type": "power_type",
         })
-        title= ''
-        if paging_result and hasattr(  paging_result,'items'):
-            ids = [ ]
+        title = ''
+        if paging_result and hasattr(paging_result, 'items'):
+            ids = []
             for item in paging_result.items:
                 ids.append(item.id)
                 if title == '':
                     role = await self.roles_dao.get_roles_by_id(item.id)
                     title = role.app_name
 
-
                 # item.children= await self.query_system_with_kwargs(role_id,unit_type, edu_type, system_type,item.id)
                 # print(ids,item)
 
+        return paging_result, title
 
-        return paging_result,title
-
-    async def query_system_with_kwargs(self, role_id,unit_type, edu_type, system_type,parent_id ='' ):
-        paging = await self.permission_menu_dao.query_permission_menu_with_args( unit_type, edu_type, system_type, role_id,parent_id)
+    async def query_system_with_kwargs(self, role_id, unit_type, edu_type, system_type, parent_id=''):
+        paging = await self.permission_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
+                                                                                role_id, parent_id)
         # 字段映射的示例写法   , {"hash_password": "password"} SubSystemSearchRes
         # print(paging)
         # paging_result = PaginatedResponse.from_paging(paging,
         res = dict()
-        ids  = [ ]
+        ids = []
         title = ''
         for item in paging:
             ids.append(item['id'])
             if title == '':
-                title= item['app_name']
+                title = item['app_name']
 
-
-
-            system = orm_model_to_view_model(item, PermissionMenuModel,other_mapper={
+            system = orm_model_to_view_model(item, PermissionMenuModel, other_mapper={
                 "menu_name": "power_name",
                 "menu_path": "power_url",
                 "menu_code": "power_code",
                 "menu_type": "power_type",
             })
-            convert_snowid_in_model(system,["id",'permission_id'])
-            res[ item['id']] = system
+            res[item['id']] = system
             # res.append(system)
             print(system)
         #     读取二级菜单
-        paging2 = await self.permission_menu_dao.query_permission_menu_with_args( unit_type, edu_type, system_type, role_id,ids)
-        print(paging2,res.keys())
-        ids_3  = [ ]
+        paging2 = await self.permission_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
+                                                                                 role_id, ids)
+        print(paging2, res.keys())
+        ids_3 = []
 
         for item in paging2:
             ids_3.append(item['id'])
 
             if int(item['parent_id']) in res.keys():
-
-                system = orm_model_to_view_model(item, PermissionMenuModel,other_mapper={
+                system = orm_model_to_view_model(item, PermissionMenuModel, other_mapper={
                     "menu_name": "power_name",
                     "menu_path": "power_url",
                     "menu_code": "power_code",
@@ -144,14 +145,14 @@ class SystemRule(object):
                 res[int(item['parent_id'])].children.append(system)
 
         # print(list(paging))
-        paging2 = await self.permission_menu_dao.query_permission_menu_with_args( unit_type, edu_type, system_type, role_id,ids_3)
-        for _,pm in res.items():
+        paging3 = await self.permission_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
+                                                                                 role_id, ids_3)
+        for _, pm in res.items():
             for item in pm.children:
-                print(item.id ,item.children )
-                for value in paging2:
-                    if int(value['parent_id'])== item.id :
-
-                        system = orm_model_to_view_model(value, PermissionMenuModel,other_mapper={
+                print(item.id, item.children)
+                for value in paging3:
+                    if int(value['parent_id']) == int(item.id):
+                        system = orm_model_to_view_model(value, PermissionMenuModel, other_mapper={
                             "menu_name": "power_name",
                             "menu_path": "power_url",
                             "menu_code": "power_code",
@@ -162,20 +163,38 @@ class SystemRule(object):
                         item.children.append(system)
 
         # print(dict(paging))
-        return res,title
+        return res, title
 
     # 通用型 工作流获取方法
-    async def query_workflow_with_page(self, query_model, page_request: PageRequest, user_id=None,process_code=None,result_model=None):
+    async def query_workflow_with_page(self, query_model, page_request: PageRequest, user_id=None, process_code=None,
+                                       result_model=None):
         params = {"applicant_name": user_id, "process_code": process_code, }
         # params= {**params,**query_model.dict()}
-        print('params--',params)
-        paging=None
+        print('params--', params)
+        paging = None
         try:
             paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                           result_model, params)
+            # 针对如果是 关闭的 审核列表  遍历处理里面的 每个图片信息 取获取转换一个URL附上
+            if paging and hasattr(paging, 'items'):
+                for item in paging.items:
+                    if process_code == PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE or process_code == SCHOOL_CLOSE_WORKFLOW_CODE or process_code == INSTITUTION_CLOSE_WORKFLOW_CODE:
+                        if isinstance(item, dict)  :
+                            item['related_license_upload_url']=None
+                            if 'related_license_upload' in item.keys() and item['related_license_upload'] and  len(item['related_license_upload'])>0:
+                                print('item', item['related_license_upload'])
+
+                                item['related_license_upload_url'] = await self.get_download_url_by_id(
+                                    item['related_license_upload'])
+                        elif isinstance(item, object) :
+                            item.related_license_upload_url = None
+                            if   item.related_license_upload:
+                                item.related_license_upload_url = await self.get_download_url_by_id(
+                                item.related_license_upload)
+
             return paging
         except Exception as e:
-            print('异常',e,)
+            print('异常', e, )
             traceback.print_exc()
             # return None
             return e
@@ -198,8 +217,6 @@ class SystemRule(object):
         # result = JsonUtils.json_str_to_dict(result)
         return result
 
-
-
     async def get_work_flow_current_node_by_process_instance_id(self, process_instance_id):
         httpreq = HTTPRequest()
         url = workflow_service_config.workflow_config.get("url")
@@ -218,26 +235,26 @@ class SystemRule(object):
     # 根据ID获取下载地址的方法
     async def get_download_url_by_id(self, id):
 
-        url=''
+        url = ''
         if id and id.isnumeric():
-            fileinfo = await self.file_storage_dao.get_file_by_id( int(id))
+            fileinfo = await self.file_storage_dao.get_file_by_id(int(id))
             if fileinfo:
                 # 获取行的数据
                 fileinfo = fileinfo._asdict()['FileStorage']
                 print(fileinfo)  # 使用 _asdict() 方法转换为字典
                 if hasattr(fileinfo, 'file_name'):
 
-                    file_storage=FileStorageModel(file_name=fileinfo.file_name,bucket_name=fileinfo.bucket_name,file_size=fileinfo.file_size, )
+                    file_storage = FileStorageModel(file_name=fileinfo.file_name, virtual_bucket_name=fileinfo.virtual_bucket_name,
+                                                    file_size=fileinfo.file_size, )
                     try:
                         url = storage_manager.query_get_object_url_with_token(file_storage)
-                        print('获取的结果',url)
+                        print('获取的结果', url)
                     except Exception as e:
-                        print('error',e)
+                        print('error', e)
                         if hasattr(e, 'user_message'):
+                            id = e.user_message
 
-                            id=  e.user_message
-
-                        return e
+                        return url
 
                         pass
                     pprint.pprint(id)

@@ -26,7 +26,7 @@ def routers():
     router.include_api_view_class(PlanningSchoolView, "/v1/planningschool",   description="规划校管理")
 
     router.include_api_view_class(InstitutionView, "/v1/institution",   description="行政事业单位管理")
-    router.include_api_view_class(CampusView, "/v1/campus",   description="校区管理")
+    # router.include_api_view_class(CampusView, "/v1/campus",   description="校区管理")
 
     router.include_api_view_class(ClassesView, "/v1/classes",   description="班级管理")
 

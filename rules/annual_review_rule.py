@@ -34,7 +34,7 @@ class AnnualReviewRule(object):
         if not exists_annual_review:
             raise AnnualReviewNotFoundError()
         annual_review_db = await self.annual_review_dao.delete_annual_review(exists_annual_review)
-        annual_review = orm_model_to_view_model(annual_review_db, AnnualReviewModel, exclude=[""])
+        annual_review = orm_model_to_view_model(annual_review_db, AnnualReviewUpdateModel, exclude=[""])
         return annual_review
 
     async def update_annual_review(self, annual_review: AnnualReviewUpdateModel):

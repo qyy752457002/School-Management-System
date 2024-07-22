@@ -29,7 +29,7 @@ class Institutions(BaseModel):
     adm_leader_position: str = Field(...,   title='行政负责人职务',  description=" 行政负责人职务",examples=['FSDFSD'])
     department_unit_number: str = Field(...,   title='属地管理行政部门单位号',  description=" 属地管理行政部门单位号",examples=['DFG454353454'])
     sy_zones: str = Field(...,   title='属地管理行政部门所在地地区',  description=" 属地管理行政部门所在地地区",examples=['铁西区'])
-    social_credit_code: str|None = Field(...,   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656'])
+    social_credit_code: str|None = Field(...,   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['3'])
     postal_code: str = Field(...,   title='邮政编码',  description=" 邮政编码",examples=['4587236'])
     detailed_address: str = Field(...,   title='详细地址',  description=" 详细地址",examples=['FSDFSDFSDF234E23'])
     related_license_upload: str = Field(...,   title='相关证照上传',  description=" 相关证照上传",examples=[''])
@@ -95,7 +95,7 @@ class InstitutionOptional(BaseModel):
     adm_leader_position: str |None = Field("",   title='行政负责人职务',  description=" 行政负责人职务",examples=['FSDFSD'])
     department_unit_number: str |None = Field("",   title='属地管理行政部门单位号',  description=" 属地管理行政部门单位号",examples=['DFG454353454'])
     sy_zones: str |None = Field("",   title='属地管理行政部门所在地地区',  description=" 属地管理行政部门所在地地区",examples=['铁西区'])
-    social_credit_code: str |None = Field("",   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656'])
+    social_credit_code: str |None = Field("",   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['4'])
     postal_code: str |None = Field("",   title='邮政编码',  description=" 邮政编码",examples=['4587236'])
     detailed_address: str |None = Field("",   title='详细地址',  description=" 详细地址",examples=['FSDFSDFSDF234E23'])
     related_license_upload: str |None = Field("",   title='相关证照上传',  description=" 相关证照上传",examples=[''])
@@ -132,30 +132,40 @@ class InstitutionOptional(BaseModel):
 
 
 class InstitutionPageSearch(BaseModel):
-    social_credit_code: str|None = Field( '',   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656']),
-    block: str = Query("", title=" ", description="地域管辖区", ),
-    school_code: str = Query("", title=" ", description="", ),
-    school_level: str = Query("", title=" ", description="", ),
-    planning_school_code: str = Query("", title="", description=" 园所标识码", ),
-    planning_school_level: str = Query("", title="", description=" 学校星级", ),
-    planning_school_name: str = Query("", title="学校名称", description="1-20字符", ),
+    social_credit_code: str|None = Field( '',   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['5'])
+    block: str = Query("", title=" ", description="地域管辖区", )
+    school_code: str = Query("", title=" ", description="", )
+    school_level: str = Query("", title=" ", description="", )
+    planning_school_code: str = Query("", title="", description=" 园所标识码", )
+    planning_school_level: str = Query("", title="", description=" 学校星级", )
+    planning_school_name: str = Query("", title="学校名称", description="1-20字符", )
     planning_school_no: str = Query("", title="学校编号", description="学校编号/园所代码",
-                                    max_length=50, ),
-    borough: str = Query("", title="  ", description=" 行政管辖区", ),
-    status: PlanningSchoolStatus|None = Query("", title="", description=" 状态", examples=['正常']),
+                                    max_length=50, )
+    borough: str = Query("", title="  ", description=" 行政管辖区", )
+    status: PlanningSchoolStatus|None = Query("", title="", description=" 状态", examples=['正常'])
 
     founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
-                                                          examples=['地方']),
+                                                          examples=['地方'])
     founder_type_lv2: List[str] = Query([], title="", description="举办者类型二级",
-                                        examples=['教育部门']),
+                                        examples=['教育部门'])
     founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
-                                        examples=['县级教育部门']),
-    school_no: str|None = Query("", title=" ", description="", ),
-    school_name: str|None = Query("", title=" ", description="", ),
-    province: str |None= Query("", title=" ", description="", ),
-    city: str|None = Query("", title=" ", description="", ),
-    planning_school_id: int|None = Query(0, title=" ", description="", ),
-    school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办']),
+                                        examples=['县级教育部门'])
+    school_no: str|None = Query("", title=" ", description="", )
+    school_name: str|None = Query("", title=" ", description="", )
+    province: str |None= Query("", title=" ", description="", )
+    city: str|None = Query("", title=" ", description="", )
+    planning_school_id: int|None = Query(0, title=" ", description="", )
+    school_org_type: str = Query('', title="", description=" 学校办别",examples=['民办'])
+    institution_category: InstitutionType = Query(None, title='单位分类',examples=['institution/administration'])
+
+class InstitutionsImport(BaseModel):
+    school_name: str = Field(...,alias='institution_name', title='单位名称',  examples=['文化部'])
+    institution_category: InstitutionType|str = Field(InstitutionType.INSTITUTION, title='单位类型',  examples=['institution/administration'])
+    borough: str = Field("",    title="行政管辖区", description=" ", ),
+    block: str = Field("",   title="地域管辖区", description="", ),
+    membership_no: str = Field( '',     title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
+    social_credit_code: str|None = Field( None,   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['6'])
+    create_school_date: str = Field( '',   title='成立时间',  description=" 成立年月",examples=['2020-10-23'])
 
 class InstitutionsAdd(BaseModel):
     #   title  实际根据title匹配
@@ -175,12 +185,10 @@ class InstitutionKeyInfo(BaseModel):
     school_name: str = Field(...,alias='institution_name', title='单位名称',  examples=['文化部'])
     school_no: str = Field(..., alias='institution_code',  title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
     membership_no: str |None = Field(...,   title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
-    block: str |None = Field("", title=" ", description="地域管辖区", ),
-    borough: str |None = Field("", title="  ", description=" 行政管辖区", ),
+    block: str |None = Field("", title=" ", description="地域管辖区", )
+    borough: str |None = Field("", title="  ", description=" 行政管辖区", )
     status: str |None = Field(PlanningSchoolStatus.DRAFT,   title='状态',  description=" 状态",examples=[''])
-    social_credit_code: str|None = Field( '',   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656']),
-
-    # school_no:str= Query(None, title="学校编号", description="学校编号/园所代码",min_length=1,max_length=20,example='SC2032633')
+    social_credit_code: str|None = Field( None,   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['6'])
     planning_school_id: int|str|None = Field(None, title="", description="规划校id",examples=['1'])
     workflow_status: str |None = Field("",   title='',  description=" ",examples=[''])
     process_instance_id:int|None= Field(0, title="", description="", example='1')
@@ -221,7 +229,7 @@ class InstitutionBaseInfo(BaseModel):
     sy_zones: str |None = Field("",   title='属地管理行政部门所在地地区',  description=" 属地管理行政部门所在地地区",examples=['铁西区'])
 
     school_no: str |None = Field("",alias="institution_code",   title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
-    social_credit_code: str|None = Field("",   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['DK156512656'])
+    social_credit_code: str|None = Field("",   title='统一社会信用代码',  description=" 统一社会信用代码",examples=['7'])
 
     create_school_date: str |None = Field("", alias='create_date',  title='成立年月',  description=" 成立年月",examples=['2020-10-23'])
 

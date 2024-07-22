@@ -4,6 +4,7 @@ from fastapi import Query
 from pydantic import BaseModel, Field, model_validator
 
 from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
+from views.models.system import InstitutionType
 
 
 class School(BaseModel):
@@ -178,7 +179,8 @@ class SchoolKeyInfo(BaseModel):
             if isinstance(data[_change], str):
                 data[_change] = int(data[_change])
             elif isinstance(data[_change], int):
-                data[_change] = str(data[_change])
+                # data[_change] = str(data[_change])
+                pass
             else:
                 pass
         return data
@@ -206,7 +208,8 @@ class SchoolKeyAddInfo(BaseModel):
             if isinstance(data[_change], str):
                 data[_change] = int(data[_change])
             elif isinstance(data[_change], int):
-                data[_change] = str(data[_change])
+                # data[_change] = str(data[_change])
+                pass
             else:
                 pass
         return data
@@ -218,28 +221,30 @@ class SchoolTask(BaseModel):
 
 class SchoolPageSearch(BaseModel):
     # process_code: str = Query("", title=" ", description="", ),
-    block: str = Query("", title=" ", description="地域管辖区", ),
-    school_code: str = Query("", title=" ", description="", ),
-    school_level: str = Query("", title=" ", description="", ),
-    planning_school_code: str = Query("", title="", description=" 园所标识码", ),
-    planning_school_level: str = Query("", title="", description=" 学校星级", ),
-    planning_school_name: str = Query("", title="学校名称", description="1-20字符", ),
-    planning_school_no: str = Query("", title="学校编号", description="学校编号/园所代码",
-                                    max_length=50, ),
-    borough: str = Query("", title="  ", description=" 行政管辖区", ),
-    status: PlanningSchoolStatus|None = Query("", title="", description=" 状态", examples=['正常']),
+    block: str|None = Query("", title=" ", description="地域管辖区", )
+    school_code: str |None= Query("", title=" ", description="", )
+    school_level: str |None= Query("", title=" ", description="", )
+    planning_school_code: str|None = Query("", title="", description=" 园所标识码", )
+    planning_school_level: str |None= Query("", title="", description=" 学校星级", )
+    planning_school_name: str|None = Query("", title="学校名称", description="1-20字符", )
+    planning_school_no: str|None = Query("", title="学校编号", description="学校编号/园所代码",
+                                    max_length=50, )
+    borough: str |None= Query("", title="  ", description=" 行政管辖区", )
+    status: PlanningSchoolStatus|None = Query("", title="", description=" 状态", examples=['正常'])
 
-    founder_type: List[PlanningSchoolFounderType] = Query([], title="", description="举办者类型",
-                                                          examples=['地方']),
-    founder_type_lv2: List[str] = Query([], title="", description="举办者类型二级",
-                                        examples=['教育部门']),
-    founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
-                                        examples=['县级教育部门']),
-    school_no: str|None = Query("", title=" ", description="", ),
-    school_name: str|None = Query("", title=" ", description="", ),
-    province: str |None= Query("", title=" ", description="", ),
-    city: str|None = Query("", title=" ", description="", ),
-    planning_school_id: int|str|None = Query(0, title=" ", description="", ),
+    founder_type: List[PlanningSchoolFounderType]|None = Query([], title="", description="举办者类型",
+                                                          examples=['地方'])
+    founder_type_lv2: List[str]|None = Query([], title="", description="举办者类型二级",
+                                        examples=['教育部门'])
+    founder_type_lv3: List[str]|None = Query([], title="", description="举办者类型三级",
+                                        examples=['县级教育部门'])
+    school_no: str|None = Query("", title=" ", description="", )
+    school_name: str|None = Query("", title=" ", description="", )
+    province: str |None= Query("", title=" ", description="", )
+    city: str|None = Query("", title=" ", description="", )
+    planning_school_id: int|str|None = Query(0, title=" ", description="", )
+
+    institution_category: InstitutionType|None = Query(None, title='单位分类',examples=['institution/administration'])
     @model_validator(mode="before")
     @classmethod
     def check_id_before(self, data: dict):

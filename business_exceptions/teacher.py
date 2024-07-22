@@ -116,3 +116,21 @@ class QueryError(MiniHTTPException):
     def __init__(self):
         super().__init__(404, "QUERY_ERROR", "Query error.", "查询为空")
 
+class TeacherStatusError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "TEACHER_STATUS_ERROR", "teacher_status error.", "教师非在职状态，不可执行此操作")
+
+class PunishReasonError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "PUNISH_REASON_ERROR", "Punish reason error.", "处分原因不能为空")
+
+class PunishDateError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "PUNISH_DATE_ERROR", "Punish date error.", "处分日期不能为空")
+
+class EthicsDateError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "ETHICS_DATE_ERROR", "Ethics date error.", "师德考核日期不能为空")
+class EthicsConclusionError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(404, "ETHICS_CONCLUSION_ERROR", "Ethics conclusion error.", "师德考核结论不能为空")

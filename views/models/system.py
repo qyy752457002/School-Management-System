@@ -7,6 +7,9 @@ from pydantic import BaseModel, Field
 GRADE_ENUM_KEY:Final = 'grade'
 MAJOR_LV3_ENUM_KEY:Final = 'major_lv3'
 DISTRICT_ENUM_KEY:Final = 'country'
+PROVINCE_ENUM_KEY:Final = 'province'
+CITY_ENUM_KEY:Final = 'city'
+PLANNING_SCHOOL_STATUS_ENUM_KEY:Final = 'planningschool_status'
 STUDENT_TRANSFER_WORKFLOW_CODE:Final = 's_transfer_in_inner'
 PLANNING_SCHOOL_OPEN_WORKFLOW_CODE:Final = 'p_school_open'
 PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE:Final = 'p_school_close'
@@ -17,6 +20,13 @@ SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE:Final = 's_school_keyinfo_change'
 INSTITUTION_OPEN_WORKFLOW_CODE:Final = 'i_institution_open'
 INSTITUTION_CLOSE_WORKFLOW_CODE:Final = 'i_institution_close'
 INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE:Final = 'i_institution_keyinfo_change'
+FOUNDER_TYPE_ENUM_KEY:Final = 'founder_type'
+FOUNDER_TYPE_LV2_ENUM_KEY:Final = 'founder_type_lv2'
+FOUNDER_TYPE_LV3_ENUM_KEY:Final = 'founder_type_lv3'
+SCHOOL_ORG_FORM_ENUM_KEY:Final = 'school_org_form'
+ID_TYPE_ENUM_KEY:Final = 'id_type'
+CLASS_SYSTEM_ENUM_KEY:Final = 'class_system'
+ENROLLMENT_METHOD_ENUM_KEY:Final = 'enrollment_method'
 
 
 class InstitutionType(str, Enum):
@@ -98,12 +108,13 @@ class ImportScene(str, Enum):
     TEACHERS_EXTEND = "teachers_extend"
     INSTITUTION = "institution"
     NEWSTUDENT = "new_student"
+    NEWSTUDENT_FAMILYINFO = "new_student_familyinfo"
     CLASS = "class"
 
     @classmethod
     def to_list(cls):
         return [cls.PLANNING_SCHOOL, cls.SCHOOL, cls.NEW_TEACHERS, cls.TEACHERS_BASIC, cls.TEACHERS_SHORTCUT,
-                cls.TEACHERS_EXTEND, cls.INSTITUTION, cls.NEWSTUDENT, cls.CLASS
+                cls.TEACHERS_EXTEND, cls.INSTITUTION, cls.NEWSTUDENT, cls.CLASS,cls.NEWSTUDENT_FAMILYINFO
                 ]
 class SystemConfig(BaseModel):
     """
