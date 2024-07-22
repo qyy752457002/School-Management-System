@@ -43,6 +43,10 @@ class StudentsBaseInfoRule(object):
             students_base_info.loc_area = schoolcominfo.loc_area
             students_base_info.loc_area_pro = schoolcominfo.loc_area_pro
         convert_snowid_in_model(students_base_info, ["id",'student_id','school_id','class_id','session_id','student_base_id','grade_id'])
+        if int(students_base_info.class_id)== 0    :
+            students_base_info.class_id=None
+        if int(students_base_info.grade_id)== 0 :
+            students_base_info.grade_id=None
 
         return students_base_info
 

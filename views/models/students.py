@@ -469,6 +469,8 @@ class NewBaseInfoCreate(BaseModel):
 class NewBaseInfoUpdate(BaseModel):
     student_base_id: int|str = Field(..., title="学生信息id", description="学生信息id")
     student_id: int|str = Field(..., title="学生id", description="学生id")
+    grade_id: int|str = Field( 0, title="", description="")
+    class_id: int|str = Field(0, title="", description="")
     native_place_district: str = Field(..., title="籍贯", description="籍贯")
     ethnicity: str = Field("", title="民族", description="民族")
     blood_type: str = Field("", title="血型", description="血型")
@@ -503,7 +505,7 @@ class NewBaseInfoUpdate(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def check_id_before(self, data: dict):
-        _change_list= ["id",'student_id','school_id','class_id','session_id','student_base_id']
+        _change_list= ["id",'student_id','school_id','class_id','grade_id','session_id','student_base_id']
         for _change in _change_list:
             if _change not in data:
                 continue
