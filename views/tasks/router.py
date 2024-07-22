@@ -47,7 +47,7 @@ def init_task_router():
         topic="new_student_import",
         name="新生导入",
         executor_cls=NewStudentExecutor,
-        payload_cls=NewStudentTask,
+        payload_cls=PlanningSchoolFileStorageModel,
         payload_is_list=False,
         description="新生导入",
     )
@@ -128,7 +128,7 @@ def init_task_router():
         topic="class_import",
         name="班级导入",
         executor_cls=ClassExecutor,
-        payload_cls=SchoolTask,
+        payload_cls=PlanningSchoolFileStorageModel,
         payload_is_list=False,
         description="班级导入",
     )

@@ -127,3 +127,48 @@ class ClassesSearchRes(BaseModel):
             else:
                 pass
         return data
+
+
+class ClassesImport(BaseModel):
+    """
+     字段对照模板
+
+    """
+    school_name: str|None = Field(None, title="学校名称", description="", examples=[''])
+    class_name: str|None = Field(None, title="班级别名", description="班级名称", examples=['一年级'])
+    class_number: str |None= Field(None,title='班号', description="班号", examples=[''])
+    session_name: str = Field('', title="班级届别", description="届别名称", examples=[''])
+    # 模版里的表头 有问题 这里用模版的
+    class_index: str = Field('',title='班级', description="班级序号", examples=['一班'])
+    grade_no: str = Field(None, title="当前年级", description="年级编号", examples=['一年级'])
+    teacher_name: str|None = Field(None,title='班主任姓名', description="班主任姓名", examples=['fsdfdsfsdxxx'])
+    teacher_phone: str = Field(None,title='班主任联系电话', description="班主任电话", examples=['fsdfdsfsdxxx'])
+    teacher_card_type: str = Field(None,title='身份证件类型', description="班主任证件类型", examples=['idcard'])
+    teacher_id_card: str = Field(None,title='身份证件号', description="班主任身份证", examples=['fsdfdsfsdxxx'])
+    teacher_job_number: str = Field(None,title='班主任工号', description="班主任工号", examples=['fsdfdsfsdxxx'])
+    monitor: str = Field(None, title='班长姓名',description="班长", examples=['fsdfdsfsdxxx'])
+    monitor_student_number: str = Field(None,title='班长学号', description="班长学号", examples=['S11000236001'])
+    class_type: str|None = Field(None,title='中小学班级类型', description="中小学班级类型", examples=['小学教学点班'])
+    is_bilingual_class: str|bool = Field(None,title='是否为少数民族双语教学班', description="是否少数民族双语教学班", examples=[''])
+    bilingual_teaching_mode: str = Field(None,title='双语教学模式码', description="双语教学模式", examples=['fsdfdsfsdxxx'])
+    ethnic_language: str = Field(None,title='少数民族语言', description="少数民族语言", examples=['fsdfdsfsdxxx'])
+
+    id: int |str= Query(None, title="", description="id", example='1'),
+
+    school_id: int|str = Field(None, title="学校ID", description="学校ID", examples=['1'])
+    grade_id: int|str = Field(None, title="年级ID", description="年级ID", examples=['2'])
+
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id", "school_id",'grade_id','session_id','teacher_id','care_teacher_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data

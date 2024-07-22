@@ -24,6 +24,9 @@ FOUNDER_TYPE_ENUM_KEY:Final = 'founder_type'
 FOUNDER_TYPE_LV2_ENUM_KEY:Final = 'founder_type_lv2'
 FOUNDER_TYPE_LV3_ENUM_KEY:Final = 'founder_type_lv3'
 SCHOOL_ORG_FORM_ENUM_KEY:Final = 'school_org_form'
+ID_TYPE_ENUM_KEY:Final = 'id_type'
+CLASS_SYSTEM_ENUM_KEY:Final = 'class_system'
+ENROLLMENT_METHOD_ENUM_KEY:Final = 'enrollment_method'
 
 
 class InstitutionType(str, Enum):

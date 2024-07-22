@@ -17,15 +17,17 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.async_task.data_access.task_dao import TaskDAO
 
 from business_exceptions.common import IdCardError, EnrollNumberError, EduNumberError
+from daos.class_dao import ClassesDAO
 from daos.school_dao import SchoolDAO
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.students import Student, StudentApprovalAtatus
+from rules.import_common_abstract_rule import ImportCommonAbstractRule
 from rules.storage_rule import StorageRule
 from rules.system_rule import SystemRule
 from views.common.common_view import check_id_number, convert_snowid_in_model
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel, StudentsKeyinfoDetail, StudentsKeyinfo, \
-    NewStudentTransferIn, NewStudentsQuery, NewStudentsQueryRe
+    NewStudentTransferIn, NewStudentsQuery, NewStudentsQueryRe, NewStudentImport
 from views.models.students import NewStudents
 from business_exceptions.student import StudentNotFoundError, StudentExistsError
 
@@ -34,9 +36,10 @@ from mini_framework.utils.logging import logger
 
 
 @dataclass_inject
-class StudentsRule(object):
+class StudentsRule(ImportCommonAbstractRule,object):
     students_dao: StudentsDao
     school_dao: SchoolDAO
+    class_dao: ClassesDAO
     students_baseinfo_dao: StudentsBaseInfoDao
     file_storage_dao: FileStorageDAO
     # students_base_info_dao: StudentsBaseInfoDao
@@ -90,7 +93,7 @@ class StudentsRule(object):
 
         return students
 
-    async def add_students(self, students: NewStudents):
+    async def add_students(self, students: NewStudents|NewStudentImport):
         """
         新增学生关键信息
         """
@@ -323,3 +326,25 @@ class StudentsRule(object):
         #         need_update_list.append(key)
         # students = await self.students_dao.update_students(students, *need_update_list)
         return students
+    async def convert_import_format_to_view_model(self,item:NewStudentImport):
+        # 学校转id
+        # item.block = self.districts[item.block].enum_value if item.block in self.districts else  item.block
+        # item.borough = self.districts[item.borough].enum_value if item.borough in self.districts else  item.borough
+        if hasattr(item,'school_name'):
+            school =await self.school_dao.get_school_by_school_name(item.school_name)
+            item.school_id = school.id if school else None
+
+        if hasattr(item,'class_name'):
+            class_info =await self.class_dao.get_classes_by_classes_name(item.class_name)
+            item.class_id = class_info.id if class_info else None
+        #     证件类型转英文 中小学班级类型
+        if hasattr(item,'teacher_card_type'):
+            item.teacher_card_type = self.id_types.get(item.teacher_card_type, item.teacher_card_type)
+
+        if hasattr(item,'class_type'):
+            item.class_type = self.class_systems.get(item.class_type, item.class_type)
+        #     enrollment_method
+        if hasattr(item,'enrollment_method'):
+            item.enrollment_method = self.enrollment_methods.get(item.enrollment_method, item.enrollment_method)
+        #  todo   residence_nature student_gender ethnicity political_status blood_type 都需要转枚举值
+        pass
