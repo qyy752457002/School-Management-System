@@ -224,7 +224,7 @@ class TeachersSaveImportRegisterCreatTestModel(BaseModel):
     teacher_name: str = Field(..., title="姓名", description="教师名称")
     teacher_gender: str = Field(..., title="性别", description="教师性别")
     teacher_id_type: str = Field("", title="证件类型", description="证件类型")
-    teacher_id_number: int = Field("", title="身份证件号", description="证件号")
+    teacher_id_number: int|str = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
     teacher_employer: str = Field(..., title="单位", description="单位部门", )
     mobile: int = Field("", title="手机号", description="手机号")
