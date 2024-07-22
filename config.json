@@ -136,6 +136,11 @@
     "description": "",
     "url": "http://127.0.0.1:8081"
   },
+  "orgcenter_service": {
+    "name": "orgcenter_service",
+    "description": "",
+    "url": "https://org-center.f123.pub"
+  },
   "transaction_service": {
     "retry": {
       "max_attempts": 3,
