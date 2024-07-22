@@ -14,7 +14,7 @@ from starlette.requests import Request
 
 from rules.class_division_records_rule import ClassDivisionRecordsRule
 from rules.operation_record import OperationRecordRule
-from views.common.common_view import compare_modify_fields, get_client_ip
+from views.common.common_view import compare_modify_fields, get_client_ip, convert_query_to_none
 from views.models.class_division_records import ClassDivisionRecordsSearchRes
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchoolImportReq, PlanningSchoolFileStorageModel
@@ -116,6 +116,8 @@ class NewsStudentsView(BaseView):
         """
         新生流出
         """
+        new_students_flow_out = convert_query_to_none(new_students_flow_out)
+
         res_base_info = await self.students_base_info_rule.update_students_base_info(
             new_students_flow_out)  # 修改基本信息中的流出时间等
         return res_base_info
