@@ -5,8 +5,7 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.logging import logger
 
 from rules.teachers_rule import TeachersRule
-from models.teachers import Teacher
-from views.models.teachers import TeachersCreatModel, TeacherFileStorageModel, CurrentTeacherQuery
+from views.models.teachers import  TeacherFileStorageModel, CurrentTeacherQuery
 from rules.teacher_import_rule import TeacherImportRule
 
 
