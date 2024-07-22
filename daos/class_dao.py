@@ -111,6 +111,7 @@ class ClassesDAO(DAOBase):
                         Classes.class_number, Classes.year_established,
                         Classes.session_id,
                         Classes.created_at,
+                        Classes.class_index,
                         Classes.education_stage, Classes.school_system,
                         Classes.class_type, Classes.is_bilingual_class, Classes.major_for_vocational,
                         Classes.bilingual_teaching_mode, Classes.ethnic_language, Classes.is_att_class,
