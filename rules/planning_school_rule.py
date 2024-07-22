@@ -677,7 +677,7 @@ class PlanningSchoolRule(object):
         datadict = dict_data
 
 
-        response = await send_orgcenter_request(apiname,datadict,'post',True)
+        response = await send_orgcenter_request(apiname,datadict,'post',False)
         print(response,'接口响应')
         try:
             print(response)
