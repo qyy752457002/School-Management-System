@@ -35,8 +35,16 @@ class TeachersDao(DAOBase):
 
     async def get_teachers_arg_by_id(self, teachers_id):
         session = await self.slave_db()
-        query = select(Teacher).where(Teacher.teacher_id == teachers_id, Teacher.teacher_main_status == "employed",
-                                      Teacher.is_deleted == False)
+        query = select(Teacher.teacher_avatar.label("avatar"),
+                       Teacher.teacher_date_of_birth.label("birthDate"),
+                        Teacher.teacher_name.label("realName"),
+                       Teacher.teacher_id_type.label("idCardType"),
+                       Teacher.teacher_id_number.label("idCardNumber"),
+                       Teacher.teacher_employer.label("currentUnit"),
+
+                       ).outerjoin(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id)
+        query = query.where(Teacher.teacher_id == teachers_id,
+                            Teacher.is_deleted == False)
         result = await session.execute(query)
         return result.scalar_one_or_none()
 
