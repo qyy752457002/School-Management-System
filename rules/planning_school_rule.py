@@ -34,7 +34,7 @@ from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, convert_snowid_to_strings, convert_snowid_in_model, \
-    frontend_enum_mapping
+    frontend_enum_mapping, convert_dates_to_strings
 from views.common.constant import Constant
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus, \
     PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit, PlanningSchoolBaseInfoOptional, PlanningSchoolPageSearch, \
@@ -195,8 +195,9 @@ class PlanningSchoolRule(object):
         need_update_list.append('status')
 
         print(exists_planning_school.status,2222222)
-        planning_school_db = await self.planning_school_dao.update_planning_school_byargs(exists_planning_school,*need_update_list,is_commit=True)
         if action=='open':
+            #todo 自动同步到 组织中心的处理  包含 规划校 对接过去     学校后面也加对接过去
+            await self.send_planning_school_to_org_center(exists_planning_school)
             # 自动新增 学校信息的处理 1.学校信息 2.学校联系方式 3.学校教育信息
             school_rule = get_injector(SchoolRule)
             school_communication_rule = get_injector(SchoolCommunicationRule)
@@ -216,11 +217,12 @@ class PlanningSchoolRule(object):
 
 
             await school_eduinfo_rule.add_school_eduinfo_from_planning_school(res_edu,school_res)
-            #todo 自动同步到 组织中心的处理  包含 规划校 对接过去     学校后面也加对接过去
-            await self.send_planning_school_to_org_center(exists_planning_school)
+
 
 
         # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
+        planning_school_db = await self.planning_school_dao.update_planning_school_byargs(exists_planning_school,*need_update_list,is_commit=True)
+
         return planning_school_db
 
     async def update_planning_school_byargs(self, planning_school,need_update_list=None):
@@ -367,6 +369,10 @@ class PlanningSchoolRule(object):
         return response
 
     async def req_workflow_audit(self,audit_info:PlanningSchoolTransactionAudit,action):
+        if audit_info.transaction_audit_action== AuditAction.PASS.value:
+            # 成功则写入数据
+            res2 = await self.deal_planning_school(audit_info.process_instance_id, action)
+            pass
 
         # 发起审批流的 处理
 
@@ -391,12 +397,7 @@ class PlanningSchoolRule(object):
         response = await send_request(apiname,datadict,'post',True)
         print(response,'接口响应')
         try:
-            if audit_info.transaction_audit_action== AuditAction.PASS.value:
-                # 成功则写入数据
-                # transrule = get_injector(StudentTransactionRule)
-                # await transrule.deal_student_transaction(student_edu_info)
-                res2 = await self.deal_planning_school(audit_info.process_instance_id, action)
-                pass
+
             # 终态的处理 这个要改为另一个方式
 
             await self.set_transaction_end(audit_info.process_instance_id, audit_info.transaction_audit_action)
@@ -704,6 +705,8 @@ class PlanningSchoolRule(object):
         apiname = '/api/add-educate-unit'
         # 字典参数
         datadict = dict_data
+        datadict=convert_dates_to_strings(datadict)
+        print(datadict,'字典参数')
 
 
         response = await send_orgcenter_request(apiname,datadict,'post',False)
