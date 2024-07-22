@@ -139,7 +139,6 @@ class TeachersInfoRule(object):
                 operator_name=user_id,
                 process_instance_id=work_flow_instance["process_instance_id"])
             await self.operation_record_rule.add_operation_record(teacher_entry_save_to_submit_log)
-
         organization = OrganizationMembers()
         organization.id = None
         organization.org_id = teachers_info.org_id
@@ -216,13 +215,13 @@ class TeachersInfoRule(object):
                 operator_name=user_id,
                 process_instance_id=0)
             await self.operation_record_rule.add_operation_record(teacher_base_info_log)
-        # organization = OrganizationMembers()
-        # organization.id = None
-        # organization.org_id = teachers_info.org_id
-        # organization.teacher_id = teachers_info.teacher_id
-        # organization.member_type = None
-        # organization.identity = None
-        # await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
+        organization = OrganizationMembers()
+        organization.id = None
+        organization.org_id = teachers_info.org_id
+        organization.teacher_id = teachers_info.teacher_id
+        organization.member_type = None
+        organization.identity = None
+        await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
         return teachers_info_db
 
     async def update_teachers_info_import(self, teachers_info: TeacherInfoImportSubmit, user_id):
@@ -264,13 +263,13 @@ class TeachersInfoRule(object):
             await self.teacher_submitted(teacher_id)
             teachers_rule = get_injector(TeachersRule)
             await teachers_rule.teacher_progressing(teacher_id)
-        # organization = OrganizationMembers()
-        # organization.id = None
-        # organization.org_id = int(teachers_info.org_id)
-        # organization.teacher_id = int(teachers_info.teacher_id)
-        # organization.member_type = None
-        # organization.identity = None
-        # await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
+        organization = OrganizationMembers()
+        organization.id = None
+        organization.org_id = int(teachers_info.org_id)
+        organization.teacher_id = int(teachers_info.teacher_id)
+        organization.member_type = None
+        organization.identity = None
+        await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
         return True
 
     async def update_teachers_info_save(self, teachers_info, user_id):

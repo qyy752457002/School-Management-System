@@ -14,6 +14,7 @@ from business_exceptions.school import SchoolNotFoundError
 from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import workflow_service_config, orgcenter_service_config
 from views.models.campus import Campus as CampusModel
+from models.public_enum import IdentityType
 
 from views.models.campus import CampusBaseInfo
 from views.models.planning_school import PlanningSchoolStatus
@@ -116,7 +117,7 @@ async def excel_fields_to_enum(data: dict, import_type) -> Dict:
     annual_review = {"assessment_result": "assessment_result"}
 
     # 科研成果——项目
-    research_achievements_project = {"type": "project_type", "role": "project_role", "source": "project_source",}
+    research_achievements_project = {"type": "project_type", "role": "project_role", "source": "project_source", }
     # 科研成果——著作
     research_achievements_book = {"type": "book_type", "role": "book_role"}
     # 科研成果——论文
@@ -127,7 +128,7 @@ async def excel_fields_to_enum(data: dict, import_type) -> Dict:
     # 科研成果——文艺作品
     research_achievements_artwork = {"role": "artwork_role", "type": "artwork_type"}
     # 科研成果——专利
-    research_achievements_patent = {"type": "patent_type","role": "patent_role"}
+    research_achievements_patent = {"type": "patent_type", "role": "patent_role"}
     # 科研成果——竞赛奖励
     research_achievements_competition = {"role": "competition_role"}
     # 科研成果——医药
@@ -196,6 +197,7 @@ async def get_address_by_description(description: str):
     enum_value = await enum_value_rule.get_address_by_description(description)
     return enum_value
 
+
 async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_param=False):
     # 发起审批流的 处理
     httpreq = HTTPRequest()
@@ -223,3 +225,33 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
         return {response}
     return response
     pass
+
+
+async def get_identity_by_job(school_operation_type: List, identity_type, post_type=None):
+    identity_type = identity_type
+    identity = ""
+    student_map = {}
+
+    staff_map = {"preSchoolEducation_kindergarten": "kindergarten_student",
+                 "primaryEducation_primarySchool": "primary_school_student",
+                 "secondaryEducation_ordinaryJuniorHigh": "middle_school_student", "": "high_school_student",
+                 "": "vocational_student"}
+    if identity_type == IdentityType.STUDENT.value:
+        for i in range(len(school_operation_type), 0, -1):
+            key = '_'.join(school_operation_type[:i])
+            if key in staff_map:
+                identity = staff_map.get(key)
+                break
+    elif identity_type == IdentityType.STAFF.value:
+        if post_type:
+            if post_type == "1,101" and "preSchoolEducation_kindergarten" in school_operation_type:
+                identity = "staff_kindergarten_teacher"
+            elif post_type == "1,101" and "preSchoolEducation_kindergarten" in school_operation_type:
+
+                identity = "staff_primary_school_teacher"
+                identity = "staff_middle_school_teacher"
+                identity = "staff_high_school_teacher"
+                identity = "staff_vocational_school_teacher"
+                identity = "staff_nine_year_school_teacher"
+                identity = "staff_twelve_year_school_teacher"
+    return identity_type, identity

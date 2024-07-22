@@ -12,7 +12,7 @@ from views.models.teachers import Teachers as TeachersModel
 from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherImportSaveResultModel, \
     TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
     NewTeacherApprovalCreate, TeachersSaveImportCreatModel, TeacherImportResultModel, \
-    TeachersSaveImportRegisterCreatModel, TeacherInfoImportSubmit
+    TeachersSaveImportRegisterCreatModel, TeacherInfoImportSubmit,TeachersSaveImportRegisterCreatTestModel
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from business_exceptions.school import SchoolNotFoundError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
@@ -158,10 +158,11 @@ class TeacherImportRule:
             reader = ExcelReader()
             reader.set_data(local_file_path)
             logger.info("Test开始注册模型")
-            reader.register_model("数据", TeachersSaveImportRegisterCreatModel, header=1)
+            # reader.register_model("数据", TeachersSaveImportRegisterCreatModel, header=1)
+            reader.register_model("沈阳一小", TeachersSaveImportRegisterCreatTestModel, header=0)
             # reader.register_model("Sheet1", TeacherInfoCreateModel)
             logger.info("Test开始读取模型")
-            data = reader.execute()["数据"]
+            data = reader.execute()["沈阳一小"]
             if not isinstance(data, list):
                 raise ValueError("数据格式错误")
             results = []
