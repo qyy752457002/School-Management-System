@@ -1,6 +1,7 @@
+import copy
 import json
 import os
-from datetime import datetime
+from datetime import datetime, date
 
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
@@ -693,7 +694,11 @@ class PlanningSchoolRule(object):
         item.planning_school_org_type = self.enum_mapper[item.planning_school_org_type] if item.planning_school_org_type in self.enum_mapper.keys() else  item.planning_school_org_type
         pass
     #发送规划校到组织中心的方法
-    async def send_planning_school_to_org_center(self,exists_planning_school):
+    async def send_planning_school_to_org_center(self,exists_planning_school_origin):
+        exists_planning_school= copy.deepcopy(exists_planning_school_origin)
+        if isinstance(exists_planning_school.updated_at, (date, datetime)):
+            exists_planning_school.updated_at =exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
+
         # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer
         planning_school_communication = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(exists_planning_school.id)
         cn_exists_planning_school = await self.convert_planning_school_to_export_format(exists_planning_school )
@@ -705,6 +710,11 @@ class PlanningSchoolRule(object):
         apiname = '/api/add-educate-unit'
         # 字典参数
         datadict = dict_data
+        if isinstance(datadict['createdTime'], (date, datetime)):
+            datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
+
+        # if isinstance(datadict['createdTime'], (date, datetime)):
+        #     datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
         datadict=convert_dates_to_strings(datadict)
         print(datadict,'字典参数')
 
