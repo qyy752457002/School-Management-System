@@ -1,3 +1,4 @@
+import math
 from datetime import date, datetime
 
 from fastapi.params import Query
@@ -301,6 +302,9 @@ def convert_query_to_none(obj):
     """
     for field_name, field in obj.__fields__.items():
         field = getattr(obj, field_name)
-        if isinstance(field, Query) or isinstance(field, tuple):
+        if isinstance(field, Query) or isinstance(field, tuple)  :
             setattr(obj, field_name, None)
+        if isinstance(field, float):
+            if math.isnan(field):
+                setattr(obj, field_name, None)
     return obj
