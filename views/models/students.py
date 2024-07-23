@@ -879,9 +879,6 @@ class NewStudentImport(BaseModel):
         return data
 class StudentsFamilyInfoImport(BaseModel):
     """
-
-
-
     """
     student_name: str = Field(..., title="学生姓名", description="学生姓名")
     id_type: str|None = Field("", title="身份证件类型", description="证件类别")
@@ -892,7 +889,7 @@ class StudentsFamilyInfoImport(BaseModel):
     gender: Gender|None|float = Field(None, title="性别", description="性别")
     relationship: Relationship|None|float = Field(None, title="关系", description="关系")
     is_guardian: bool|None|float = Field(None, title="是否监护人", description="是否监护人")
-    identification_type: str|None|float = Field(None, title="身份证件类型", description="证件类型")
+    identification_type: str|None|float = Field(None, title="家庭成员身份证件类型", description="证件类型")
     identification_number: str|None|float = Field(None, title="身份证号", description="证件号码")
     birthday: date|None|float = Field(None, title="出生日期", description="出生日期")
     phone_number: str|None|float = Field(None, title="手机号码", description="手机号码")
@@ -920,7 +917,7 @@ class StudentsFamilyInfoImport(BaseModel):
         if data.get("gender") is not None:
             data["gender"] = Gender.from_chinese(data["gender"])
         if data.get("relationship") is not None:
-            data["relationship"] = Gender.from_chinese(data["relationship"])
+            data["relationship"] = Relationship.from_chinese(data["relationship"])
         if data.get("is_guardian") is not None and isinstance(data["is_guardian"], str):
             data["is_guardian"] = data["is_guardian"]=='是'
         return data
