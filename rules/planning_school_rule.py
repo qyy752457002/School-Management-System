@@ -49,6 +49,7 @@ from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_
     PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, DISTRICT_ENUM_KEY, \
     PROVINCE_ENUM_KEY, CITY_ENUM_KEY, PLANNING_SCHOOL_STATUS_ENUM_KEY, FOUNDER_TYPE_ENUM_KEY, FOUNDER_TYPE_LV2_ENUM_KEY, \
     FOUNDER_TYPE_LV3_ENUM_KEY, SCHOOL_ORG_FORM_ENUM_KEY
+from views.models.teachers import EducateUserModel
 
 
 @dataclass_inject
@@ -199,6 +200,7 @@ class PlanningSchoolRule(object):
         if action=='open':
             #todo 自动同步到 组织中心的处理  包含 规划校 对接过去     学校后面也加对接过去
             await self.send_planning_school_to_org_center(exists_planning_school)
+            await self.send_admin_to_org_center(exists_planning_school)
             # 自动新增 学校信息的处理 1.学校信息 2.学校联系方式 3.学校教育信息
             school_rule = get_injector(SchoolRule)
             school_communication_rule = get_injector(SchoolCommunicationRule)
@@ -735,3 +737,31 @@ class PlanningSchoolRule(object):
         return None
 
 
+    async def send_admin_to_org_center(self, exists_planning_school_origin):
+        # teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id)
+        # data_dict = to_dict(teacher_db)
+        # print(data_dict)
+        dict_data = EducateUserModel(**exists_planning_school_origin,currentUnit=exists_planning_school_origin.planning_school_name,
+                                     createdTime= exists_planning_school_origin.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                                     updatedTime=exists_planning_school_origin.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
+                                     name=exists_planning_school_origin.admin,
+                                     userCode=exists_planning_school_origin.admin,
+                                     userId=exists_planning_school_origin.admin_phone,
+                                     phoneNumber=exists_planning_school_origin.admin_phone,
+                                     )
+        dict_data = dict_data.dict()
+        params_data = JsonUtils.dict_to_json_str(dict_data)
+        api_name = '/api/add-educate-user'
+        # 字典参数
+        datadict = params_data
+        print(datadict, '参数')
+        response = await send_orgcenter_request(api_name, datadict, 'post', False)
+        print(response, '接口响应')
+        try:
+            print(response)
+            return response
+        except Exception as e:
+            print(e)
+            raise e
+            return response
+        return None
