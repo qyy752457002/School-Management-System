@@ -371,3 +371,11 @@ class StudentsRule(ImportCommonAbstractRule,object):
             if student_info:
                 item.student_id = student_info.student_id
         pass
+    async def is_can_update_student(self, student_id,is_all_status_allow=False):
+        tinfo=await self.get_students_by_id(student_id)
+        print('当前信息',tinfo)
+
+        # 检查是否有占用 如果有待处理的流程ID 则锁定
+        if tinfo and  tinfo.approval_status == StudentApprovalAtatus.OUT.value:
+            return False
+        return True

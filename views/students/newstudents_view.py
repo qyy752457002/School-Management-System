@@ -12,6 +12,7 @@ from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
+from business_exceptions.student import StudentStatusError
 from rules.class_division_records_rule import ClassDivisionRecordsRule
 from rules.operation_record import OperationRecordRule
 from views.common.common_view import compare_modify_fields, get_client_ip, convert_query_to_none
@@ -85,6 +86,9 @@ class NewsStudentsView(BaseView):
         """"
         新生编辑关键信息
         """
+        check = await self.students_rule.is_can_update_student(new_students_key_info.student_id)
+        if not check:
+            raise StudentStatusError()
 
         origin = await self.students_rule.get_students_by_id(new_students_key_info.student_id)
         log_con = compare_modify_fields(new_students_key_info, origin)
@@ -117,9 +121,13 @@ class NewsStudentsView(BaseView):
         新生流出
         """
         new_students_flow_out = convert_query_to_none(new_students_flow_out)
+        check = await self.students_rule.is_can_update_student(new_students_flow_out.student_id)
+        if not check:
+            raise StudentStatusError()
+            # return "该学生状态不允许流出"
 
-        res_base_info = await self.students_base_info_rule.update_students_base_info(
-            new_students_flow_out)  # 修改基本信息中的流出时间等
+        res_base_info = await self.students_base_info_rule.update_students_base_info( new_students_flow_out)  # 修改基本信息中的流出时间等
+        res_base_info2 = await self.students_rule.update_students( NewStudentsQueryRe(student_id=new_students_flow_out.student_id,approval_status=StudentApprovalAtatus.OUT.value))  # 修改基本信息中的流出时间等
         return res_base_info
 
     # todo 仅仅修改一个状态就行
@@ -180,6 +188,9 @@ class NewsStudentsInfoView(BaseView):
         """
         新生新增基本信息
         """
+        check = await self.students_rule.is_can_update_student(new_students_base_info.student_id)
+        if not check:
+            raise StudentStatusError()
         res = await self.students_base_info_rule.add_students_base_info(new_students_base_info)
         return res
 
@@ -187,6 +198,9 @@ class NewsStudentsInfoView(BaseView):
         """
         新生编辑基本信息
         """
+        check = await self.students_rule.is_can_update_student(new_students_base_info.student_id)
+        if not check:
+            raise StudentStatusError()
 
         origin = await self.students_base_info_rule.get_students_base_info_by_student_id(
             new_students_base_info.student_id)
