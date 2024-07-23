@@ -11,11 +11,12 @@ from mini_framework.storage.view_model import FileStorageResponseModel, FileStor
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model
 
 from views.common import common_view
+from views.common.common_view import convert_query_to_none
 from views.models.classes import Classes, ClassesImport
 from views.models.institutions import Institutions, InstitutionsValid, InstitutionsImport
 from views.models.planning_school import PlanningSchool, PlanningSchoolImport
 from views.models.school import School
-from views.models.students import NewStudents, StudentsFamilyInfoCreate
+from views.models.students import NewStudents, StudentsFamilyInfoCreate, NewStudentImport
 from views.models.system import ImportScene
 from views.models.teachers import TeachersCreatModel
 from mini_framework.utils.logging import logger
@@ -132,7 +133,7 @@ class StorageRule(object):
             header=1 # 0 表示第一行是标题 1表示第二行才开始标题
 
         if sence ==ImportScene.NEWSTUDENT.value:
-            SampleModel = NewStudents
+            SampleModel = NewStudentImport
             sheetname = 'Sheet1'
             header=1 # 0 表示第一行是标题 1表示第二行才开始标题
 
@@ -177,8 +178,10 @@ class TestExcelReader:
         if self.sheetname in result.keys():
             result = result[self.sheetname]
             #     逐行检查  提出尾部换行符
-            # for item in result :
-            #     if result[i].__dict__['__root__']['__root__'][]
+            for changeitems in result :
+                convert_query_to_none(changeitems)
+
+                # if result[i].__dict__['__root__']['__root__'][]
 
         return result
         #
