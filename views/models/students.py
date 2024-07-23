@@ -541,18 +541,18 @@ class StudentsFamilyInfo(BaseModel):
     student_id: int|str = Field(..., title="学生id", description="学生id")
     name: str = Field(..., title="姓名", description="姓名")
     gender: Gender = Field(..., title="性别", description="性别")
-    relationship: Relationship = Field(..., title="关系", description="关系")
+    relationship: Relationship|None = Field(..., title="关系", description="关系")
     is_guardian: bool|None = Field(..., title="是否监护人", description="是否监护人")
     identification_type: str = Field(..., title="身份证件类型", description="证件类型")
     identification_number: str = Field(..., title="证件号码", description="证件号码")
-    birthday: date = Field(..., title="出生日期", description="出生日期")
+    birthday: date |None= Field(..., title="出生日期", description="出生日期")
     phone_number: str = Field(..., title="手机号码", description="手机号码")
     ethnicity: str = Field(..., title="民族", description="民族")
     health_status: str|None|list = Field(..., title="健康状态", description="健康状态")
     nationality: str = Field(..., title="国籍", description="国籍")
     political_status: str = Field("", title="政治面貌", description="政治面貌")
-    contact_address: str = Field(..., title="联系地址", description="联系地址")
-    workplace: str = Field("", title="工作单位", description="工作单位")
+    contact_address: str|None = Field(..., title="联系地址", description="联系地址")
+    workplace: str|None = Field("", title="工作单位", description="工作单位")
     family_member_occupation: str = Field("", title="家庭成员职业", description="家庭成员职业")
     @model_validator(mode="before")
     @classmethod
@@ -876,4 +876,50 @@ class NewStudentImport(BaseModel):
                 pass
             else:
                 pass
+        return data
+class StudentsFamilyInfoImport(BaseModel):
+    """
+    """
+    student_name: str = Field(..., title="学生姓名", description="学生姓名")
+    id_type: str|None = Field("", title="身份证件类型", description="证件类别")
+    id_number: str|int |None= Field("", title="学生身份证号", description="证件号码")
+
+    student_id: int|str|None|float = Field(None, title="学生id", description="学生id")
+    name: str|None|float = Field(None, title="家庭成员姓名", description="姓名")
+    gender: Gender|None|float = Field(None, title="性别", description="性别")
+    relationship: Relationship|None|float = Field(None, title="关系", description="关系")
+    is_guardian: bool|None|float = Field(None, title="是否监护人", description="是否监护人")
+    identification_type: str|None|float = Field(None, title="家庭成员身份证件类型", description="证件类型")
+    identification_number: str|None|float = Field(None, title="身份证号", description="证件号码")
+    birthday: date|None|float = Field(None, title="出生日期", description="出生日期")
+    phone_number: str|None|float = Field(None, title="手机号码", description="手机号码")
+    ethnicity: str|None|float = Field(None, title="民族", description="民族")
+    health_status: str|None|list|float = Field(None, title="健康状况", description="健康状态")
+    nationality: str|None|float = Field(None, title="国籍/地区", description="国籍")
+    political_status: str |None|float= Field("", title="政治面貌", description="政治面貌")
+    contact_address: str |None|float= Field(None, title="户口所在地详细地址", description="联系地址")
+    workplace: str|None|float = Field("", title="工作单位", description="工作单位")
+    family_member_occupation: str|None|float = Field("", title="职业", description="家庭成员职业")
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id",'student_id','school_id','class_id','session_id']
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                pass
+            else:
+                pass
+        # 检查 性别 转换为 枚举
+        if data.get("phone_number") is not None:
+            data["phone_number"] = str(data["phone_number"])
+        if data.get("gender") is not None:
+            data["gender"] = Gender.from_chinese(data["gender"])
+        if data.get("relationship") is not None:
+            data["relationship"] = Relationship.from_chinese(data["relationship"])
+        if data.get("is_guardian") is not None and isinstance(data["is_guardian"], str):
+            data["is_guardian"] = data["is_guardian"]=='是'
         return data

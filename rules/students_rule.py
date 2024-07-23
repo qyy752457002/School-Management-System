@@ -365,4 +365,9 @@ class StudentsRule(ImportCommonAbstractRule,object):
         if hasattr(item,'student_gender') and item.student_gender is not None:
             item.student_gender = Gender.from_chinese(item.student_gender)
         # print('转换后',item)
+        # 下面是根据学生信息获取ID
+        if hasattr(item,'id_number') and item.id_number:
+            student_info = await self.students_dao.get_students_by_param(id_number = item.id_number)
+            if student_info:
+                item.student_id = student_info.student_id
         pass

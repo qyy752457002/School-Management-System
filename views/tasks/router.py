@@ -66,7 +66,7 @@ def init_task_router():
         topic="newstudent_familyinfo_import",
         name="新生家庭成员信息导入",
         executor_cls=NewStudentFamilyInfoImportExecutor,
-        payload_cls=NewStudentTask,
+        payload_cls=PlanningSchoolFileStorageModel,
         payload_is_list=False,
         description="新生家庭成员信息导入",
     )
