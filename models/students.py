@@ -63,6 +63,13 @@ class Relationship(str, Enum):
     def to_list(cls):
         return [cls.FATHER, cls.MOTHER, cls.GRANDFATHER, cls.GRANDMOTHER, cls.PATERNAL_GRANDFATHER,
                 cls.PATERNAL_GRANDMOTHER]
+    @classmethod
+    def to_dict(cls):
+        return {"父亲": cls.FATHER, "母亲": cls.MOTHER, "爷爷": cls.GRANDFATHER, "奶奶": cls.GRANDMOTHER, "外公": cls.PATERNAL_GRANDFATHER, "外婆": cls.PATERNAL_GRANDMOTHER}
+
+    @classmethod
+    def from_chinese(cls, chinese):
+        return cls.to_dict().get(chinese, None)
 
 
 class Registration(str, Enum):

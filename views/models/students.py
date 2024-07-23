@@ -916,4 +916,11 @@ class StudentsFamilyInfoImport(BaseModel):
                 pass
             else:
                 pass
+        # 检查 性别 转换为 枚举
+        if data.get("gender") is not None:
+            data["gender"] = Gender.from_chinese(data["gender"])
+        if data.get("relationship") is not None:
+            data["relationship"] = Gender.from_chinese(data["relationship"])
+        if data.get("is_guardian") is not None and isinstance(data["is_guardian"], str):
+            data["is_guardian"] = data["is_guardian"]=='是'
         return data
