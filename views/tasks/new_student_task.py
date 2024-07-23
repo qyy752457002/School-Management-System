@@ -64,12 +64,13 @@ class NewStudentExecutor(BaseExecutor):
                 else:
                     raise ValueError("Invalid payload type")
                 students = data_import
+                print(data_import)
                 res = await self.new_student_rule.add_students(data_import)
                 students.student_id = res.student_id
                 special_date = datetime.datetime.now()
                 # todo 更多的字段 转换到base里 需要写入
 
-                vm2 = NewBaseInfoCreate(student_id=students.student_id, school_id=students.school_id,
+                vm2 = NewBaseInfoCreate(
                                         registration_date=special_date.strftime("%Y-%m-%d"),**data_import.__dict__)
                 res2 = await self.students_base_info_rule.add_students_base_info(vm2)
                 print('插入数据res', res)

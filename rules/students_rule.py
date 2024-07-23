@@ -21,6 +21,7 @@ from daos.class_dao import ClassesDAO
 from daos.school_dao import SchoolDAO
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
+from models.public_enum import Gender
 from models.students import Student, StudentApprovalAtatus
 from rules.import_common_abstract_rule import ImportCommonAbstractRule
 from rules.storage_rule import StorageRule
@@ -357,4 +358,11 @@ class StudentsRule(ImportCommonAbstractRule,object):
             item.id_number = str(item.id_number)
         if hasattr(item,'photo') and item.photo:
             item.photo = str(item.photo)
+        if hasattr(item,'photo') and item.photo is None:
+            item.photo =  ''
+        if hasattr(item,'enrollment_number') and item.enrollment_number is None:
+            item.enrollment_number =  ''
+        if hasattr(item,'student_gender') and item.student_gender is not None:
+            item.student_gender = Gender.from_chinese(item.student_gender)
+        # print('转换后',item)
         pass
