@@ -140,7 +140,7 @@ class TeachersInfoRule(object):
                 process_instance_id=work_flow_instance["process_instance_id"])
             await self.operation_record_rule.add_operation_record(teacher_entry_save_to_submit_log)
         organization = OrganizationMembers()
-        organization.id = None
+        organization.id = SnowflakeIdGenerator(1, 1).generate_id()
         organization.org_id = teachers_info.org_id
         organization.teacher_id = teachers_info.teacher_id
         organization.member_type = None
@@ -216,7 +216,7 @@ class TeachersInfoRule(object):
                 process_instance_id=0)
             await self.operation_record_rule.add_operation_record(teacher_base_info_log)
         organization = OrganizationMembers()
-        organization.id = None
+        organization.id = SnowflakeIdGenerator(1, 1).generate_id()
         organization.org_id = teachers_info.org_id
         organization.teacher_id = teachers_info.teacher_id
         organization.member_type = None
@@ -264,7 +264,7 @@ class TeachersInfoRule(object):
             teachers_rule = get_injector(TeachersRule)
             await teachers_rule.teacher_progressing(teacher_id)
         organization = OrganizationMembers()
-        organization.id = None
+        organization.id = SnowflakeIdGenerator(1, 1).generate_id()
         organization.org_id = int(teachers_info.org_id)
         organization.teacher_id = int(teachers_info.teacher_id)
         organization.member_type = None
@@ -305,7 +305,7 @@ class TeachersInfoRule(object):
         # await self.teacher_work_flow_rule.add_teacher_work_flow(teacher_entry_approval, params)
 
         organization = OrganizationMembers()
-        organization.id = None
+        organization.id = SnowflakeIdGenerator(1, 1).generate_id()
         organization.org_id = teachers_info.org_id
         organization.teacher_id = teachers_info.teacher_id
         organization.member_type = None
