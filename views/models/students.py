@@ -414,7 +414,6 @@ class NewBaseInfoCreate(BaseModel):
     health_condition: str |None= Field('', title="健康状况", description="健康状况")
     health_status: str|None = Field('', title="健康状况", description="健康状况")
 
-# disabled_person: YesOrNo = Field("N", title="是否残疾人", description="是否残疾人")
     disabled_person: bool |None= Field(None, title="是否残疾人", description="是否残疾人")
 
     religious_belief: str|None = Field("", title="宗教信仰", description="宗教信仰")
@@ -713,8 +712,8 @@ class GraduationStudents(BaseModel):
 
 class NewStudentsFlowOut(BaseModel):
     student_id: int|str = Query(..., description="学生id", examples=["1"]),
-    flow_out_time: str = Query(..., description="流出时间", min_length=1, max_length=20, examples=["2020-10-10"]),
-    flow_out_reason: str = Query('', description="流出原因", min_length=1, max_length=20, examples=["家庭搬迁"]),
+    flow_out_time: str = Query(..., description="流出时间",   examples=["2020-10-10"]),
+    flow_out_reason: str = Query('', description="流出原因",   max_length=64, examples=["家庭搬迁"]),
     @model_validator(mode="before")
     @classmethod
     def check_id_before(self, data: dict):
