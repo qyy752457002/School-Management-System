@@ -21,6 +21,7 @@ from daos.class_dao import ClassesDAO
 from daos.school_dao import SchoolDAO
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
+from models.public_enum import Gender
 from models.students import Student, StudentApprovalAtatus
 from rules.import_common_abstract_rule import ImportCommonAbstractRule
 from rules.storage_rule import StorageRule
@@ -97,6 +98,10 @@ class StudentsRule(ImportCommonAbstractRule,object):
         """
         新增学生关键信息
         """
+        # db里的生日只能日期型 兜底的给str转日期
+        if isinstance(students.birthday, tuple) or (isinstance(students.birthday, str) and len(students.birthday) == 0) or students.birthday is None:
+            students.birthday = date(1970, 1, 1)
+        print(students)
         students_db = view_model_to_orm_model(students, Student, exclude=["student_id"])
         # 校验身份证号
         if  students.id_type=='resident_id_card':
@@ -104,10 +109,11 @@ class StudentsRule(ImportCommonAbstractRule,object):
             if not idstatus:
                 raise IdCardError()
         # 报名号 去重  学籍号去重
-        if students.enrollment_number:
+        if hasattr(students, 'enrollment_number') and  students.enrollment_number:
             if await self.students_dao.get_students_by_param(enrollment_number=students.enrollment_number,is_deleted=False):
                 raise EnrollNumberError()
         students_db.student_id = SnowflakeIdGenerator(1, 1).generate_id()
+
         students_db = await self.students_dao.add_students(students_db)
         print(students_db)
         students = orm_model_to_view_model(students_db, StudentsKeyinfoModel, exclude=[""])
@@ -334,7 +340,7 @@ class StudentsRule(ImportCommonAbstractRule,object):
             school =await self.school_dao.get_school_by_school_name(item.school_name)
             item.school_id = school.id if school else None
 
-        if hasattr(item,'class_name'):
+        if hasattr(item,'class_name') and item.class_name:
             class_info =await self.class_dao.get_classes_by_classes_name(item.class_name)
             item.class_id = class_info.id if class_info else None
         #     证件类型转英文 中小学班级类型
@@ -347,4 +353,16 @@ class StudentsRule(ImportCommonAbstractRule,object):
         if hasattr(item,'enrollment_method'):
             item.enrollment_method = self.enrollment_methods.get(item.enrollment_method, item.enrollment_method)
         #  todo   residence_nature student_gender ethnicity political_status blood_type 都需要转枚举值
+        # 字段转格式的  id_number, photo, approval_status, is_deleted  傻萝卜, None, 'enrollment', False
+        if hasattr(item,'id_number') and item.id_number:
+            item.id_number = str(item.id_number)
+        if hasattr(item,'photo') and item.photo:
+            item.photo = str(item.photo)
+        if hasattr(item,'photo') and item.photo is None:
+            item.photo =  ''
+        if hasattr(item,'enrollment_number') and item.enrollment_number is None:
+            item.enrollment_number =  ''
+        if hasattr(item,'student_gender') and item.student_gender is not None:
+            item.student_gender = Gender.from_chinese(item.student_gender)
+        # print('转换后',item)
         pass

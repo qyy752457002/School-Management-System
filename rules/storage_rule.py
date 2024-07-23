@@ -103,8 +103,9 @@ class StorageRule(object):
             logger.debug( resp)
             pass
         else:
+            print(bucket,filename,local_filepath)
 
-            resp =  storage_manager.download_file( bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
+            resp =  storage_manager.download_file( virtual_bucket_key=bucket, remote_filename=filename,local_filepath=local_filepath)
             logger.debug('下载文件的res')
             logger.debug( resp)
         if sence == ImportScene.PLANNING_SCHOOL.value:
