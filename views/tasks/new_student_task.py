@@ -76,6 +76,7 @@ class NewStudentExecutor(BaseExecutor):
             logger.info(f"任务   created")
         except Exception as e:
             print(e, '异常')
+            traceback.print_exc()
             logger.error(f"任务   create failed")
 
 class NewStudentFamilyInfoImportExecutor(TaskExecutor):
@@ -119,6 +120,7 @@ class NewStudentFamilyInfoImportExecutor(TaskExecutor):
             logger.info(f"任务   created")
         except Exception as e:
             print(e, '异常')
+            traceback.print_exc()
             logger.error(f"任务   create failed")
 
 
