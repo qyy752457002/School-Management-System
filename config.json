@@ -13,7 +13,7 @@
         "port": 54321,
         "user": "schooloms",
         "password": "J16s10Wp08yfEskmVAJH",
-        "database": "school_oms_dev"
+        "database": "school_oms_test"
       },
       "slaves": [
         {
@@ -21,14 +21,14 @@
           "port": 54321,
           "user": "schooloms",
           "password": "J16s10Wp08yfEskmVAJH",
-          "database": "school_oms_dev"
+          "database": "school_oms_test"
         },
         {
           "host": "10.0.0.42",
           "port": 54321,
           "user": "schooloms",
           "password": "J16s10Wp08yfEskmVAJH",
-          "database": "school_oms_dev"
+          "database": "school_oms_test"
         }
       ]
     }

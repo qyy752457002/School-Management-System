@@ -698,4 +698,200 @@ class TeacherExtendImportView(BaseView):
         task = await app.task_topic.send(task)
         print('发生任务成功')
         # await self.teacher_extend_experience_rule.teacher_work_experience_import(file_id)
-        return True
+        return task
+
+    async def post_teacher_learn_experience_import(self, file_id: int | str = Query(..., title="文件id",
+                                                                                    example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="teacher_learn_experience_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        # await self.teacher_extend_experience_rule.teacher_learn_experience_import(file_id)
+        print("发生任务成功")
+        return task
+
+    async def post_teacher_job_appointments_import(self, file_id: int | str = Query(..., title="文件id",
+                                                                                    example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="teacher_job_appointments_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.teacher_job_appointments_import(file_id)
+        return task
+
+    async def post_teacher_professional_titles_import(self, file_id: int | str = Query(..., title="文件id",
+                                                                                       example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="teacher_professional_titles_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.teacher_professional_titles_import(file_id)
+        return task
+
+    async def post_teacher_qualifications_import(self,
+                                                 file_id: int | str = Query(..., title="文件id", example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="teacher_qualifications_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.teacher_qualifications_import(file_id)
+        return task
+
+    async def post_teacher_skill_certificates_import(self, file_id: int | str = Query(..., title="文件id",
+                                                                                      example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="teacher_skill_certificates_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.teacher_skill_certificates_import(file_id)
+        return task
+
+    async def post_teacher_ethic_records_rewards_import(self, file_id: int | str = Query(..., title="文件id",
+                                                                                         example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="teacher_ethic_records_rewards_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.teacher_ethic_records_rewards_import(file_id)
+        return task
+
+    async def post_teacher_ethic_records_disciplinary_import(self, file_id: int | str = Query(..., title="文件id",
+                                                                                              example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="teacher_ethic_records_disciplinary_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.teacher_ethic_records_disciplinary_import(file_id)
+        return task
+
+    async def post_educational_teaching_import(self,
+                                               file_id: int | str = Query(..., title="文件id", example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="educational_teaching_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        await self.teacher_extend_experience_rule.educational_teaching_import(file_id)
+        return task
+
+    async def post_talent_programs_import(self, file_id: int | str = Query(..., title="文件id", example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="talent_programs_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.talent_programs_import(file_id)
+        return task
+
+    async def post_domestic_training_import(self, file_id: int | str = Query(..., title="文件id", example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="domestic_training_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.domestic_training_import(file_id)
+        return task
+
+    async def post_overseas_study_import(self, file_id: int | str = Query(..., title="文件id", example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="overseas_study_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.overseas_study_import(file_id)
+        return task
+
+    async def post_annual_review_import(self, file_id: int | str = Query(..., title="文件id", example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="annual_review_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.annual_review_import(file_id)
+        return task
+
+    async def post_research_achievements_project_import(self, file_id: int | str = Query(..., title="文件id",
+                                                                                         example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="research_achievements_project_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.research_achievements_project_import(file_id)
+        return task
+
+    async def post_research_achievements_book_import(self, file_id: int | str = Query(..., title="文件id",
+                                                                                      example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="research_achievements_book_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.research_achievements_book_import(file_id)
+        return task
+
+    async def post_research_achievements_paper_import(self, file_id: int | str = Query(..., title="文件id",
+                                                                                       example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="research_achievements_paper_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.research_achievements_paper_import(file_id)
+        return task
+
+    async def post_research_achievements_reward_import(self, file_id: int | str = Query(..., title="文件id",
+                                                                                        example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="research_achievements_reward_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.research_achievements_reward_import(file_id)
+        return task
+
+    async def post_research_achievements_artwork_import(self, file_id: int | str = Query(..., title="文件id",
+                                                                                         example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="research_achievements_artwork_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.research_achievements_artwork_import(file_id)
+        return task
+
+    async def post_research_achievements_patent_import(self, file_id: int | str = Query(..., title="文件id",
+                                                                                        example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="research_achievements_patent_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.research_achievements_patent_import(file_id)
+        return task
+
+    async def post_research_achievements_competition_import(self, file_id: int | str = Query(..., title="文件id",
+                                                                                             example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="research_achievements_competition_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.research_achievements_competition_import(file_id)
+        return task
+
+    async def post_research_achievements_medicine_import(self, file_id: int | str = Query(..., title="文件id",
+                                                                                          example=123)) -> Task:
+        filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
+        task = Task(task_type="research_achievements_medicine_import", payload=filestorage,
+                    operator=request_context_manager.current().current_login_account.account_id)
+        task = await app.task_topic.send(task)
+        print("发生任务成功")
+        # await self.teacher_extend_experience_rule.research_achievements_medicine_import(file_id)
+        return task

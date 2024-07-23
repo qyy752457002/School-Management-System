@@ -11,12 +11,12 @@ from views.common.common_view import check_id_number
 from views.models.teachers import Teachers as TeachersModel
 from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherImportSaveResultModel, \
     TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
-    NewTeacherApprovalCreate, TeachersSaveImportCreatModel, TeacherImportResultModel
+    NewTeacherApprovalCreate, TeachersSaveImportCreatModel, TeacherImportResultModel, EducateUserModel
 from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
 from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
 from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, TeacherChangeLogQueryModel, \
     CurrentTeacherInfoSaveModel, TeacherRe, TeacherAdd, CombinedModel, TeacherInfoSubmit, TeachersSchool
-
+from mini_framework.databases.entities import BaseDBModel, to_dict
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
 from mini_framework.async_task.data_access.task_dao import TaskDAO
@@ -40,6 +40,9 @@ from models.teachers_info import TeacherInfo
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from rules.system_rule import SystemRule
+
+from rules.common.common_rule import send_orgcenter_request
+from mini_framework.utils.json import JsonUtils
 
 from models.public_enum import Gender
 import os
@@ -396,7 +399,8 @@ class TeachersRule(object):
     async def query_teacher_approval_with_page(self, type, query_model: TeacherApprovalQuery,
                                                page_request: PageRequest, user_id):
         if type == "launch":
-            params = {"applicant_name": user_id, "process_code": "t_entry", "teacher_sub_status": "submitted"}
+            # params = {"applicant_name": user_id, "process_code": "t_entry", "teacher_sub_status": "submitted"}
+            params = {"process_code": "t_entry", "teacher_sub_status": "submitted"}
             paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                           TeacherApprovalQueryRe,
                                                                                           params)
@@ -468,3 +472,25 @@ class TeachersRule(object):
                                              virtual_bucket_name=fileinfo.virtual_bucket_name,
                                              file_size=fileinfo.file_size)
         return task_model
+
+    async def send_teacher_to_org_center(self, teacher_id):
+        teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id)
+        # data_dict = to_dict(teacher_db)
+        # print(data_dict)
+        dict_data = orm_model_to_view_model(teacher_db, EducateUserModel, exclude=[""])
+        dict_data = dict_data.dict()
+        params_data = JsonUtils.dict_to_json_str(dict_data)
+        api_name = '/api/add-educate-user'
+        # 字典参数
+        datadict = params_data
+        print(datadict, '参数')
+        response = await send_orgcenter_request(api_name, datadict, 'post', False)
+        print(response, '接口响应')
+        try:
+            print(response)
+            return response
+        except Exception as e:
+            print(e)
+            raise e
+            return response
+        return None

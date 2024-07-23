@@ -34,8 +34,8 @@ from models.students import Student, StudentApprovalAtatus
 from rules.students_rule import StudentsRule
 from rules.students_base_info_rule import StudentsBaseInfoRule
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
-from views.models.students import NewStudents, NewBaseInfoCreate,NewBaseInfoUpdate,StudentsFamilyInfoCreate
-from views.models.students import NewStudentsFlowOut,StudentsUpdateFamilyInfo
+from views.models.students import NewStudents, NewBaseInfoCreate, NewBaseInfoUpdate, StudentsFamilyInfoCreate
+from views.models.students import NewStudentsFlowOut, StudentsUpdateFamilyInfo
 from datetime import date
 from rules.students_base_info_rule import StudentsBaseInfoRule
 from rules.students_family_info_rule import StudentsFamilyInfoRule
@@ -49,16 +49,16 @@ class NewsStudentsView(BaseView):
         self.class_division_records_rule = get_injector(ClassDivisionRecordsRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
 
-
     async def post_newstudent(self, students: NewStudents):
         """
         新增新生信息
         """
         res = await self.students_rule.add_students(students)
-        students.student_id =  res.student_id
-        special_date =   datetime.datetime.now()
+        students.student_id = res.student_id
+        special_date = datetime.datetime.now()
 
-        vm2 = NewBaseInfoCreate(student_id=students.student_id,school_id=students.school_id,registration_date=  special_date.strftime("%Y-%m-%d"))
+        vm2 = NewBaseInfoCreate(student_id=students.student_id, school_id=students.school_id,
+                                registration_date=special_date.strftime("%Y-%m-%d"))
         res2 = await self.students_base_info_rule.add_students_base_info(vm2)
 
         return res
@@ -81,7 +81,7 @@ class NewsStudentsView(BaseView):
 
         return res
 
-    async def put_newstudentkeyinfo(self, new_students_key_info: StudentsKeyinfo,request:Request):
+    async def put_newstudentkeyinfo(self, new_students_key_info: StudentsKeyinfo, request: Request):
         """"
         新生编辑关键信息
         """
@@ -102,7 +102,7 @@ class NewsStudentsView(BaseView):
             action_target_id=str(new_students_key_info.student_id),
             change_data=json_string,
 
-            ))
+        ))
         return res
 
     async def delete_newstudentkeyinfo(self, student_id: str = Query(..., title="", description="学生id", )):
@@ -124,26 +124,26 @@ class NewsStudentsView(BaseView):
 
     # todo 仅仅修改一个状态就行
     # 正式录取接口
-    async def patch_formaladmission(self, student_id: str  = Query(..., description="学生id",  example=["123,569,987"]),
+    async def patch_formaladmission(self, student_id: str = Query(..., description="学生id", example=["123,569,987"]),
                                     ):
         print(student_id)
         res = await self.students_rule.update_student_formaladmission(student_id, )
         return res
 
-
     # 导入   任务队列的
     async def post_new_student_import(self,
                                       # file_name: str = Body(..., description="文件名"),
-                                      file:PlanningSchoolImportReq
+                                      file: PlanningSchoolImportReq
 
-                                 # bucket: str = Query(..., description="文件名"),
-                                 # scene: str = Query('', description="文件名"),
-                                 ) -> Task:
-        file_name= file.file_name
-        task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name=file.bucket_name,file_size='51363', scene= ImportScene.NEWSTUDENT.value)
-        
+                                      # bucket: str = Query(..., description="文件名"),
+                                      # scene: str = Query('', description="文件名"),
+                                      ) -> Task:
+        file_name = file.file_name
+        task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name=file.bucket_name,
+                                                    file_size='51363', scene=ImportScene.NEWSTUDENT.value)
+
         task = Task(
-            #todo sourcefile无法记录3个参数  故 暂时用3个参数来实现  需要 在cofnig里有配置   对应task类里也要有这个 键
+            # todo sourcefile无法记录3个参数  故 暂时用3个参数来实现  需要 在cofnig里有配置   对应task类里也要有这个 键
             task_type="new_student_import",
             # 文件 要对应的 视图模型
             payload=task_model,
@@ -154,6 +154,7 @@ class NewsStudentsView(BaseView):
         task = await app.task_topic.send(task)
         print('发生任务成功')
         return task
+
 
 class NewsStudentsInfoView(BaseView):
     """
@@ -166,7 +167,6 @@ class NewsStudentsInfoView(BaseView):
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
         self.class_division_records_rule = get_injector(ClassDivisionRecordsRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
-
 
     async def get_newstudentbaseinfo(self, student_id: str = Query(..., title="学生ID", description="学生ID",
                                                                    example="1")):
@@ -183,15 +183,16 @@ class NewsStudentsInfoView(BaseView):
         res = await self.students_base_info_rule.add_students_base_info(new_students_base_info)
         return res
 
-    async def put_newstudentbaseinfo(self, new_students_base_info: NewBaseInfoUpdate,request:Request):
+    async def put_newstudentbaseinfo(self, new_students_base_info: NewBaseInfoUpdate, request: Request):
         """
         新生编辑基本信息
         """
 
-        origin = await self.students_base_info_rule.get_students_base_info_by_student_id(new_students_base_info.student_id)
+        origin = await self.students_base_info_rule.get_students_base_info_by_student_id(
+            new_students_base_info.student_id)
         log_con = compare_modify_fields(new_students_base_info, origin)
         # 如果日期是字符串型 转换为date
-        if isinstance(new_students_base_info.admission_date,str):
+        if isinstance(new_students_base_info.admission_date, str):
             # 先截取10位长度
             new_students_base_info.admission_date = new_students_base_info.admission_date[:10]
             # 创建一个date对象
@@ -200,7 +201,6 @@ class NewsStudentsInfoView(BaseView):
 
             # 然后，如果您需要一个 date 对象，可以通过 datetime 对象的 date 方法获取
             new_students_base_info.admission_date = datetime_object.date()
-
 
         res = await self.students_base_info_rule.update_students_base_info(new_students_base_info)
 
@@ -213,20 +213,20 @@ class NewsStudentsInfoView(BaseView):
             action_target_id=str(new_students_base_info.student_id),
             change_data=json_string,
 
-            ))
+        ))
         return res
 
     # 修改分班
     async def patch_newstudent_classdivision(self,
-                                             class_id: int|str  = Query(..., title="", description="班级ID",),
-                                             student_id:  str  = Query(..., title="", description="学生ID/逗号分割",),
+                                             class_id: int | str = Query(..., title="", description="班级ID", ),
+                                             student_id: str = Query(..., title="", description="学生ID/逗号分割", ),
 
                                              ):
         """
         分班 捕获异常
         """
         try:
-            res=None
+            res = None
             if class_id:
                 class_id = int(class_id)
             # 学生班级和学生状态
@@ -234,62 +234,71 @@ class NewsStudentsInfoView(BaseView):
             # 分班记录
             res_div = await self.class_division_records_rule.add_class_division_records(class_id, student_id)
             # 更新学生的 班级和 学校信息
-            student_ids= student_id
+            student_ids = student_id
             if ',' in student_ids:
                 student_ids = student_ids.split(',')
             else:
                 student_ids = [student_ids]
             for student_id in student_ids:
-                baseinfo =  StudentsBaseInfo(student_id=student_id,class_id=class_id,school_id=res_div.school_id,grade_id=res_div.grade_id)
+                baseinfo = StudentsBaseInfo(student_id=student_id, class_id=class_id, school_id=res_div.school_id,
+                                            grade_id=res_div.grade_id)
 
                 res3 = await self.students_base_info_rule.update_students_base_info(baseinfo)
 
         except ValueError as e:
             traceback.print_exc()
-            return  e
+            return e
         except Exception as e:
             print(e)
             traceback.print_exc()
 
-            return  e
+            return e
 
         return res
+
     # 摇号分班  未使用
     async def patch_newstudent_lottery_classdivision(self,
                                                      background_tasks: BackgroundTasks,
 
-                                             school_id: int |str = Query(..., title="", description="学校ID",),
-                                             grade_id: int |str = Query(..., title="", description="年级ID",),
+                                                     school_id: int | str = Query(..., title="",
+                                                                                  description="学校ID", ),
+                                                     grade_id: int | str = Query(..., title="", description="年级ID", ),
 
-                                             ):
+                                                     ):
         """
         """
-        background_tasks.add_task(self.lottery_class_division, (school_id,grade_id), message="some notification")
+        background_tasks.add_task(self.lottery_class_division, (school_id, grade_id), message="some notification")
         return {"message": "Notification sent in the background"}
 
     #
-    def lottery_class_division(self,args , message=""):
-        print(args,message)
+    def lottery_class_division(self, args, message=""):
+        print(args, message)
         with open("log.txt", mode="a") as log:
             log.write(message)
 
-
     # 分页查询
     async def page_newstudent_classdivision(self,
-                                            enrollment_number: str = Query( '', title="", description="报名号",min_length=1, max_length=30, example=''),
-                                            school_id: int|str  = Query( 0, title="", description="学校ID",  example=''),
-                                            id_type: str = Query( '', title="", description="身份证件类型",min_length=1, max_length=30, example=''),
-                                            student_name: str = Query( '', title="", description="姓名",min_length=1, max_length=30, example=''),
-                                            created_at: str = Query( '', title="", description="分班时间",min_length=1, max_length=30, example=''),
-                                            student_gender: str = Query( '', title="", description="性别",min_length=1, max_length=30, example=''),
-                                            class_id: int|str = Query( 0, title="", description="班级",  example=''),
-                                            status: str = Query( '', title="", description="状态",min_length=1, max_length=30, example=''),
-                              page_request=Depends(PageRequest)):
+                                            enrollment_number: str = Query('', title="", description="报名号",
+                                                                           min_length=1, max_length=30, example=''),
+                                            school_id: int | str = Query(0, title="", description="学校ID", example=''),
+                                            id_type: str = Query('', title="", description="身份证件类型", min_length=1,
+                                                                 max_length=30, example=''),
+                                            student_name: str = Query('', title="", description="姓名", min_length=1,
+                                                                      max_length=30, example=''),
+                                            created_at: str = Query('', title="", description="分班时间", min_length=1,
+                                                                    max_length=30, example=''),
+                                            student_gender: str = Query('', title="", description="性别", min_length=1,
+                                                                        max_length=30, example=''),
+                                            class_id: int | str = Query(0, title="", description="班级", example=''),
+                                            status: str = Query('', title="", description="状态", min_length=1,
+                                                                max_length=30, example=''),
+                                            page_request=Depends(PageRequest)):
         """
         分页查询
         """
         paging_result = await self.class_division_records_rule.query_class_division_records_with_page(
-                                                                                              page_request,school_id,id_type,student_name,created_at,student_gender,class_id,status,enrollment_number,)
+            page_request, school_id, id_type, student_name, created_at, student_gender, class_id, status,
+            enrollment_number, )
         return paging_result
 
     async def delete_newstudentbaseinfo(self,
@@ -305,10 +314,8 @@ class NewsStudentsFamilyInfoView(BaseView):
     def __init__(self):
         super().__init__()
         self.students_rule = get_injector(StudentsRule)
-        self.students_family_info_rule=get_injector(StudentsFamilyInfoRule)
+        self.students_family_info_rule = get_injector(StudentsFamilyInfoRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
-
-
 
     async def post_newstudentfamilyinfo(self, new_students_family_info: StudentsFamilyInfoCreate):
         """
@@ -318,11 +325,12 @@ class NewsStudentsFamilyInfoView(BaseView):
 
         return res
 
-    async def put_newstudentfamilyinfo(self, new_students_family_info: StudentsUpdateFamilyInfo,request: Request):
+    async def put_newstudentfamilyinfo(self, new_students_family_info: StudentsUpdateFamilyInfo, request: Request):
         """
         新生编辑家庭信息  变更日志
         """
-        origin = await self.students_family_info_rule.get_students_family_info_by_id(new_students_family_info.student_family_info_id)
+        origin = await self.students_family_info_rule.get_students_family_info_by_id(
+            new_students_family_info.student_family_info_id)
         log_con = compare_modify_fields(new_students_family_info, origin)
         res = await self.students_family_info_rule.update_students_family_info(new_students_family_info)
         json_string = json.dumps(log_con, ensure_ascii=False)
@@ -335,12 +343,12 @@ class NewsStudentsFamilyInfoView(BaseView):
             action_target_id=str(new_students_family_info.student_id),
             change_data=json_string,
 
-            ))
+        ))
         return res
 
     async def delete_newstudentfamilyinfo(self,
                                           student_family_info_id: str = Query(..., title="学生家庭成员ID",
-                                                                  description="学生家庭成员ID", )):
+                                                                              description="学生家庭成员ID", )):
         """
         新生删除家庭信息
         """
@@ -348,7 +356,8 @@ class NewsStudentsFamilyInfoView(BaseView):
         return str(student_family_info_id)
 
     async def get_newstudentfamilyinfo(self,
-                                       student_family_info_id: str = Query(..., title="学生家庭成员ID", description="学生家庭成员ID", )):
+                                       student_family_info_id: str = Query(..., title="学生家庭成员ID",
+                                                                           description="学生家庭成员ID", )):
         """
         查询单条家庭信息
         """
@@ -363,15 +372,13 @@ class NewsStudentsFamilyInfoView(BaseView):
         res = await self.students_family_info_rule.get_all_students_family_info(student_id)
         return res
 
-
-
     # 新生导出
 
     async def post_new_student_export(self,
                                       students_query=Depends(NewStudentsQuery),
 
                                       ) -> Task:
-        students_query.approval_status =   [StudentApprovalAtatus.ENROLLMENT  ]
+        students_query.approval_status = [StudentApprovalAtatus.ENROLLMENT]
 
         task = Task(
             task_type="student_export",
@@ -381,7 +388,8 @@ class NewsStudentsFamilyInfoView(BaseView):
         task = await app.task_topic.send(task)
         print('发生任务成功')
         return task
-    #分班导出
+
+    # 分班导出
     async def post_newstudent_classdivision_export(self,
                                                    students_query=Depends(ClassDivisionRecordsSearchRes),
 
@@ -399,15 +407,16 @@ class NewsStudentsFamilyInfoView(BaseView):
 
     # 学生家庭成员导入
     async def post_newstudent_familyinfo_import(self,
-                                      file:PlanningSchoolImportReq
-
-                                      ) -> Task:
-        file_name= file.file_name
-
+                                                file: PlanningSchoolImportReq
+                                                ) -> Task:
+        file_name = file.file_name
+        task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name=file.bucket_name,
+                                                    file_size='51363', scene=ImportScene.NEWSTUDENT_FAMILYINFO.value)
         task = Task(
             task_type="newstudent_familyinfo_import",
             # 文件 要对应的 视图模型
-            payload=NewStudentTask(file_name=file_name, scene= ImportScene.NEWSTUDENT_FAMILYINFO.value, bucket='newstudent_familyinfo_import' ),
+            payload=task_model,
+            # payload=NewStudentTask(file_name=file_name, scene= ImportScene.NEWSTUDENT_FAMILYINFO.value, bucket='newstudent_familyinfo_import' ),
             operator=request_context_manager.current().current_login_account.account_id
         )
         task = await app.task_topic.send(task)

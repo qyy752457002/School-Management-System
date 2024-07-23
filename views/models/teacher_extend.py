@@ -157,7 +157,7 @@ class TeacherLearnExperienceComModel(BaseModel):
     """
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
     teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
+    teacher_id_number: str = Field(..., title="教师身份证件号", description="证件号")
 
     education_obtained: str = Field(..., title="获得学历", description="获得学历")
     country_or_region_of_education: str = Field(..., title="获得学历国家/（地区）", description="获得学历国家/（地区）")
@@ -254,7 +254,7 @@ class TeacherWorkExperienceUpdateModel(BaseModel):
 class TeacherWorkExperienceComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
     teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
+    teacher_id_number: str = Field(..., title="教师身份证件号", description="证件号")
     employment_institution_name: str = Field(..., title="任职单位名称", description="任职单位名称")
     start_date: date = Field(..., title="任职开始年月", description="开始时间")
     end_date: date = Field(..., title="任职结束年月", description="结束时间")
@@ -379,7 +379,7 @@ class TeacherJobAppointmentsComModel(BaseModel):
     # todo 兼任岗位和等级结构需要更新
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
     teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
+    teacher_id_number: str = Field(..., title="教师身份证件号", description="证件号")
 
     position_category: str = Field(..., title="岗位类别", description="岗位类别")
     position_level: str = Field(..., title="岗位等级", description="岗位等级")
@@ -444,10 +444,10 @@ class TeacherProfessionalTitlesUpdateModel(BaseModel):
     teacher_professional_titles_id: int | str = Field(..., title="teacher_professional_titles_id",
                                                       description="teacher_professional_titles_id")
     teacher_id: int | str = Field(..., title="教师ID", description="教师ID")
-    current_professional_title: str = Field(..., title="聘任专业技术职务", description="现专业技术职务")
+    current_professional_title: str = Field(..., title="聘任专业技术职位", description="现专业技术职务")
     employing_institution_name: str = Field("", title="聘任单位名称", description="聘任单位名称")
     employment_start_date: date = Field(..., title="聘任开始年月", description="聘任开始时间")
-    employment_end_date: Optional[date] = Field(None, title="结束年月", description="聘任结束时间")
+    employment_end_date: Optional[date] = Field(None, title="聘任结束年月", description="聘任结束时间")
 
     @model_validator(mode='before')
     @classmethod
@@ -466,12 +466,12 @@ class TeacherProfessionalTitlesUpdateModel(BaseModel):
 class TeacherProfessionalTitlesComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
     teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
-    teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
+    teacher_id_number: str = Field(..., title="教师身份证件号", description="证件号")
 
-    current_professional_title: str = Field(..., title="聘任专业技术职务", description="现专业技术职务")
+    current_professional_title: str = Field(..., title="聘任专业技术职位", description="现专业技术职务")
     employing_institution_name: str = Field("", title="聘任单位名称", description="聘任单位名称")
     employment_start_date: date = Field(..., title="聘任开始年月", description="聘任开始时间")
-    employment_end_date: Optional[date] = Field(None, title="结束年月", description="聘任结束时间")
+    employment_end_date: Optional[date] = Field(None, title="聘任结束年月", description="聘任结束时间")
 
     @model_validator(mode='before')
     @classmethod
@@ -540,7 +540,7 @@ class TeacherQualificationsComModel(BaseModel):
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
-        _change_list = ["teacher_id_number"]
+        _change_list = ["teacher_id_number", "qualification_number"]
         for _change in _change_list:
             if _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
@@ -646,7 +646,7 @@ class TeacherSkillCertificatesComModel(BaseModel):
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
-        _change_list = ["teacher_id_number"]
+        _change_list = ["teacher_id_number", "certificate_number"]
         for _change in _change_list:
             if _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
@@ -730,7 +730,7 @@ class TeacherEthicRecordsModel(BaseModel):
     awarding_institution_name: str = Field("", title="荣誉授予单位名称", description="荣誉授予单位名称")
     honor_record_description: str = Field("", title="荣誉记录描述", description="荣誉记录描述")
     disciplinary_category: str = Field("", title="处分类别", description="处分类别")
-    disciplinary_reason: Optional[date] | None = Field(None, title="处分原因", description="处分原因")
+    disciplinary_reason: str = Field("", title="处分原因", description="处分原因")
     disciplinary_date: Optional[date] | None = Field(None, title="处分日期", description="处分日期")
     disciplinary_institution_name: str = Field("", title="处分单位名称", description="处分单位名称")
     disciplinary_record_description: str = Field("", title="处分记录描述", description="处分记录描述")
@@ -766,6 +766,7 @@ class TeacherEthicRecordsModel(BaseModel):
         else:
             pass
         return self
+
 
 
 class TeacherEthicRecordsRewardsComModel(BaseModel):
@@ -862,7 +863,7 @@ class TeacherEthicRecordsUpdateModel(BaseModel):
     awarding_institution_name: str = Field("", title="荣誉授予单位名称", description="荣誉授予单位名称")
     honor_record_description: str = Field("", title="荣誉记录描述", description="荣誉记录描述")
     disciplinary_category: str = Field("", title="处分类别", description="处分类别")
-    disciplinary_reason: Optional[date] | None = Field(None, title="处分原因", description="处分原因")
+    disciplinary_reason: str = Field("", title="处分原因", description="处分原因")
     disciplinary_date: Optional[date] | None = Field(None, title="处分日期", description="处分日期")
     disciplinary_institution_name: str = Field("", title="处分单位名称", description="处分单位名称")
     disciplinary_record_description: str = Field("", title="处分记录描述", description="处分记录描述")
@@ -1056,7 +1057,7 @@ class DomesticTrainingComModel(BaseModel):
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
-        _change_list = ["teacher_id_number"]
+        _change_list = ["teacher_id_number", "training_year", "training_hours", "training_credits"]
         for _change in _change_list:
             if _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
@@ -1218,17 +1219,17 @@ class TalentProgramModel(BaseModel):
         return data
 
 
-class TalentProgramComModel(TalentProgramModel):
+class TalentProgramComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
     teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
     talent_project_name: str = Field("", title="入选人才项目名称", description="人才项目名称")
-    selected_year: str = Field("", title="年份", description="入选年份")
+    selected_year: str = Field("", title="入选年份", description="入选年份")
 
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
-        _change_list = ["teacher_id_number"]
+        _change_list = ["teacher_id_number", "selected_year"]
         for _change in _change_list:
             if _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
@@ -1303,7 +1304,7 @@ class AnnualReviewComModel(BaseModel):
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
-        _change_list = ["teacher_id_number"]
+        _change_list = ["teacher_id_number", "assessment_year"]
         for _change in _change_list:
             if _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
@@ -1421,7 +1422,7 @@ class ResearchAchievementsModel(BaseModel):
     patent_number: str = Field("", title="专利号", description="专利号")
     entrusting_party: str = Field("", title="委托方", description="委托方")
     certificate_number: str = Field("", title="证书号", description="证书号")
-    validity_period: Optional[date] = Field(None, title="有效期", description="有效期")
+    validity_period: str = Field("", title="有效期", description="有效期")
     standard_number: str = Field("", title="标准号", description="标准号")
     publishing_organization: str = Field("", title="发布单位", description="发布单位")
     report_name: str = Field("", title="报告题目", description="报告名称")
@@ -1446,7 +1447,7 @@ class ResearchAchievementsProjectComModel(BaseModel):
     teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
     type: str = Field("", title="项目类型", description="类型")
-    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
+    representative_or_project: str = Field("", title="是否是代表性成果或项目",
                                                       description="是否代表性成果或项目")
     name: str = Field(..., title="项目名称", description="名称")
     approval_number: str = Field("", title="批准号", description="批准号")
@@ -1468,6 +1469,7 @@ class ResearchAchievementsProjectComModel(BaseModel):
                 data[_change] = str(data[_change])
             else:
                 pass
+        data["approval_number"] = str(data["approval_number"])
         return data
 
 
@@ -1488,14 +1490,14 @@ class ResearchAchievementsBookComModel(BaseModel):
     publisher_name: str = Field("", title="出版社名称", description="出版社名称")
     research_date: Optional[date] = Field(None, title="日期", description="日期")
     disciplinary_field: str = Field("", title="学科领域", description="学科领域")
-    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
+    representative_or_project: str = Field("", title="是否是代表性成果或项目",
                                                       description="是否代表性成果或项目")
     type: str = Field("", title="类型", description="类型")
 
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
-        _change_list = ["teacher_id_number"]
+        _change_list = ["teacher_id_number", "publication_number"]
         for _change in _change_list:
             if _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
@@ -1515,7 +1517,7 @@ class ResearchAchievementsPaperComModel(BaseModel):
 
     name: str = Field("", title="名称", description="名称")
     journal_name: str = Field("", title="发表刊物名称", description="发表刊物名称")
-    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
+    representative_or_project: str = Field("", title="是否是代表性成果或项目",
                                                       description="是否代表性成果或项目")
     research_date: Optional[date] = Field(None, title="日期", description="日期")
     volume_number: int = Field(0, title="卷号", description="卷号")
@@ -1525,7 +1527,6 @@ class ResearchAchievementsPaperComModel(BaseModel):
     disciplinary_field: str = Field("", title="学科领域", description="学科领域")
     role: str = Field("", title="本人角色", description="本人角色")
     indexing_status: str = Field("", title="论文收录情况", description="论文收录情况")
-
 
     @model_validator(mode='before')
     @classmethod
@@ -1555,10 +1556,9 @@ class ResearchAchievementsRewardComModel(BaseModel):
     research_level: str = Field("", title="等级", description="等级")
     name: str = Field("", title="名称", description="名称")
     research_date: Optional[date] = Field(None, title="日期", description="日期")
-    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
+    representative_or_project: str = Field("", title="是否是代表性成果或项目",
                                                       description="是否代表性成果或项目")
     type: str = Field("", title="类型", description="类型")
-
 
     @model_validator(mode='before')
     @classmethod
@@ -1582,15 +1582,13 @@ class ResearchAchievementsArtworkComModel(BaseModel):
     teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
     type: str = Field("", title="类型", description="类型")
-    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
+    representative_or_project: str = Field("", title="是否是代表性成果或项目",
                                                       description="是否代表性成果或项目")
     name: str = Field("", title="作品名称", description="名称")
     role: str = Field("", title="本人角色", description="本人角色")
     research_date: Optional[date] = Field(None, title="日期", description="日期")
     completion_location: str = Field("", title="完成地点", description="完成地点")
     work_description: str = Field("", title="本人承担工作描述", description="本人工作描述")
-
-
 
     @model_validator(mode='before')
     @classmethod
@@ -1614,7 +1612,7 @@ class ResearchAchievementsPatentComModel(BaseModel):
     teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
     type: str = Field("", title="类型", description="类型")
-    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
+    representative_or_project: str = Field("", title="是否是代表性成果或项目",
                                                       description="是否代表性成果或项目")
     name: str = Field("", title="作品名称", description="名称")
     disciplinary_field: str = Field("", title="学科领域", description="学科领域")
@@ -1628,7 +1626,7 @@ class ResearchAchievementsPatentComModel(BaseModel):
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
-        _change_list = ["teacher_id_number"]
+        _change_list = ["teacher_id_number", "patent_number"]
         for _change in _change_list:
             if _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
@@ -1646,13 +1644,13 @@ class ResearchAchievementsMedicineComModel(BaseModel):
     teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
-    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
+    representative_or_project: str = Field("", title="是否是代表性成果或项目",
                                                       description="是否代表性成果或项目")
     name: str = Field("", title="名称", description="名称")
     certificate_number: str = Field("", title="证书（批件）号", description="证书号")
     role: str = Field("", title="本人角色", description="本人角色")
     publishing_organization: str = Field(..., title="发布单位", description="发布单位")
-    validity_period: Optional[date] = Field(None, title="有效期", description="有效期")
+    validity_period: str = Field("", title="有效期", description="有效期")
     research_date: Optional[date] = Field(None, title="颁布或批准时间", description="日期")
     standard_number: str = Field("", title="标准号", description="标准号")
     publish_date: Optional[date] = Field(None, title="发布时间", description="发布时间")
@@ -1660,7 +1658,7 @@ class ResearchAchievementsMedicineComModel(BaseModel):
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
-        _change_list = ["teacher_id_number"]
+        _change_list = ["teacher_id_number", "certificate_number", "standard_number"]
         for _change in _change_list:
             if _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
@@ -1672,18 +1670,20 @@ class ResearchAchievementsMedicineComModel(BaseModel):
 class ResearchAchievementsMedicineResultModel(ResearchAchievementsMedicineComModel):
     failed_msg: str = Field(..., title="错误信息", description="错误信息", key="failed_msg")
 
+
 class ResearchAchievementsCompetitionComModel(BaseModel):
     teacher_name: str = Field(..., title="教师姓名", description="教师名称")
     teacher_id_type: str = Field(..., title="身份证件类型", description="证件类型")
     teacher_id_number: str = Field(..., title="教师身份证号", description="证件号")
 
-    representative_or_project: Optional[bool] = Field(None, title="是否是代表性成果或项目",
+    representative_or_project: str = Field("", title="是否是代表性成果或项目",
                                                       description="是否代表性成果或项目")
     name: str = Field("", title="名称", description="名称")
     role: str = Field("", title="本人角色", description="本人角色")
     work_description: str = Field("", title="本人承担工作描述", description="本人工作描述")
     research_date: Optional[date] = Field(None, title="日期", description="日期")
     research_level: str = Field("", title="等级", description="等级")
+
     @model_validator(mode='before')
     @classmethod
     def check_id_before(self, data: dict):
@@ -1780,7 +1780,7 @@ class ResearchAchievementsUpdateModel(BaseModel):
     patent_number: str = Field("", title="专利号", description="专利号")
     entrusting_party: str = Field("", title="委托方", description="委托方")
     certificate_number: str = Field("", title="证书号", description="证书号")
-    validity_period: Optional[date] = Field(None, title="有效期", description="有效期")
+    validity_period: str = Field("", title="有效期", description="有效期")
     standard_number: str = Field("", title="标准号", description="标准号")
     publishing_organization: str = Field("", title="发布单位", description="发布单位")
     report_name: str = Field("", title="报告题目", description="报告名称")

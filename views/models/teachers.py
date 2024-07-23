@@ -9,7 +9,6 @@ from business_exceptions.teacher import EthnicityNoneError, PoliticalStatusNoneE
 from mini_framework.storage.view_model import FileStorageModel
 from views.models.operation_record import ChangeModule
 
-
 from enum import Enum
 
 
@@ -75,8 +74,6 @@ class IdentityType(str, Enum):
                 cls.BIRTH_CERTIFICATE, cls.HOUSEHOLD_REGISTER, cls.OTHER]
 
 
-
-
 class Teachers(BaseModel):
     """
     教师ID:teacher_id
@@ -110,6 +107,49 @@ class Teachers(BaseModel):
                 data[_change] = str(data[_change])
             else:
                 pass
+        return data
+
+
+class EducateUserModel(BaseModel):
+    """
+    往组织中心加用户
+    """
+    avatar: str = Field("", title="头像", description="头像")
+    birthDate: date | None = Field(None, title="出生日期", description="出生日期")
+    createdTime: str = Field("", title="创建时间", description="创建时间")
+    currentUnit: str = Field("", title="所在单位", description="当前单位")
+    departmentId: str = Field("", title="部门ID", description="部门ID")
+    departmentNames: str = Field("", title="部门名称", description="部门名称")
+    email: str = Field("", title="邮箱", description="邮箱")
+    gender: str = Field("", title="性别", description="性别")
+    idCardNumber: str = Field("", title="身份证号", description="身份证号")
+    idCardType: str = Field("", title="证件类型", description="证件类型")
+    identity: str = Field("", title="身份", description="身份")
+    identityNames: str = Field("", title="身份名称", description="身份名称")
+    identityType: str = Field("", title="身份类型", description="身份类型")
+    identityTypeNames: str = Field("", title="身份类型名称", description="身份类型名称")
+    mainUnitName: str = Field("", title="主单位名称", description="主单位名称")
+    name: str = Field("", title="登录账号", description="登录账号")
+    owner: str = Field("", title="所属组织", description="所属组织")
+    phoneNumber: str = Field("", title="手机号", description="手机号")
+    realName: str = Field("", title="真实姓名", description="真实姓名")
+    sourceApp: str = Field("", title="来源应用", description="来源应用")
+    updatedTime: str = Field("", title="更新时间", description="更新时间")
+    userCode: str = Field("", title="用户编码", description="用户编码")
+    userId: str = Field("", title="用户ID", description="用户ID")
+    userStatus: str = Field("", title="用户状态", description="用户状态")
+
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["currentUnit", "departmentId", "userId", ]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        data["userCode"] = data["idCardNumber"]
+        data["phoneNumber"] = data["name"]
         return data
 
 
@@ -170,6 +210,27 @@ class TeachersSaveImportRegisterCreatModel(BaseModel):
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
     teacher_employer: str = Field(..., title="任职单位", description="单位部门", )
     mobile: int = Field("", title="手机号", description="手机号")
+
+class TeachersSaveImportRegisterCreatTestModel(BaseModel):
+    """
+    姓名：teacher_name
+    性别：teacher_gender
+    证件类型：teacher_id_type
+    证件号：teacher_id_number
+    出生日期：teacher_date_of_birth
+    单位部门：teacher_employer
+    头像：teacher_avatar
+    """
+    teacher_name: str = Field(..., title="姓名", description="教师名称")
+    teacher_gender: str = Field(..., title="性别", description="教师性别")
+    teacher_id_type: str = Field("", title="证件类型", description="证件类型")
+    teacher_id_number: int|str = Field("", title="身份证件号", description="证件号")
+    teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
+    teacher_employer: str = Field(..., title="单位", description="单位部门", )
+    mobile: int = Field("", title="手机号", description="手机号")
+    identity: str = Field("", title="身份", description="身份")
+    identity_type: str = Field("", title="身份类型", description="身份类型")
+
 
 
 class TeachersSaveImportCreatModel(BaseModel):
@@ -1581,6 +1642,7 @@ class NewTeacherApprovalCreate(BaseModel):
     teacher_avatar: str = Field("", title="头像", description="头像")
     mobile: str = Field("", title="手机号", description="手机号")
     identity: str = Field("", title="身份", description="身份")
+    identity_type: str = Field("", title="身份类型", description="身份类型")
     teacher_main_status: Optional[str] = Field("", title="主要状态", description="主要状态", example="unemployed")
     teacher_sub_status: Optional[str] = Field("", title="次要状态", description="次要状态", example="unemployed")
 

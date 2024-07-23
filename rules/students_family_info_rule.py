@@ -39,7 +39,7 @@ class StudentsFamilyInfoRule(object):
         if not exits_student:
             raise StudentNotFoundError()
         #  去重  根据 姓名  性别  关系
-        kdict = {"name": students_family_info.name, "gender": students_family_info.gender,
+        kdict = {"name": students_family_info.name, "gender": students_family_info.gender,"student_id": students_family_info.student_id,
                  "relationship": students_family_info.relationship}
         exist = await self.students_family_info_dao.get_student_family_info_by_param(**kdict)
 

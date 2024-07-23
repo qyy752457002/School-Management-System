@@ -8,6 +8,7 @@ from models.teachers_info import TeacherInfo
 from views.models.teacher_transaction import TeacherTransactionQuery
 from views.models.teachers import TeacherApprovalQuery
 from models.school import School
+from models.organization import Organization
 
 
 class TeachersDao(DAOBase):
@@ -32,6 +33,27 @@ class TeachersDao(DAOBase):
         result = await session.execute(
             select(Teacher).where(Teacher.teacher_id == teachers_id, Teacher.is_deleted == False))
         return result.scalar_one_or_none()
+
+    async def get_teachers_arg_by_id(self, teachers_id):
+        session = await self.slave_db()
+        query = select(Teacher.teacher_avatar.label("avatar"),
+                       Teacher.teacher_date_of_birth.label("birthDate"),
+                       Teacher.teacher_name.label("realName"),
+                       Teacher.teacher_id_type.label("idCardType"),
+                       Teacher.teacher_id_number.label("idCardNumber"),
+                       Teacher.teacher_employer.label("currentUnit"),
+                       TeacherInfo.org_id.label("departmentId"),
+                       Organization.org_name.label("departmentNames"),
+                       Teacher.teacher_gender.label("gender"),
+                       Teacher.identity.label("identity"),
+                       Teacher.mobile.label("name"),
+                       Teacher.teacher_id.label("userId"),
+                       ).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id).join(Organization,
+                                                                                              TeacherInfo.org_id == Organization.id)
+        query = query.where(Teacher.teacher_id == teachers_id,
+                            Teacher.is_deleted == False)
+        result = await session.execute(query)
+        return  result.first()
 
     # 根据身份证号获取教师信息
 
