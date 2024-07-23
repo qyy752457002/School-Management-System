@@ -141,8 +141,8 @@ class TeachersInfoRule(object):
             await self.operation_record_rule.add_operation_record(teacher_entry_save_to_submit_log)
         organization = OrganizationMembers()
         organization.id = SnowflakeIdGenerator(1, 1).generate_id()
-        organization.org_id = teachers_info.org_id
-        organization.teacher_id = teachers_info.teacher_id
+        organization.org_id = int(teachers_info.org_id)
+        organization.teacher_id = int(teachers_info.teacher_id)
         organization.member_type = None
         organization.identity = None
         if teachers_info.org_id:
@@ -217,8 +217,8 @@ class TeachersInfoRule(object):
             await self.operation_record_rule.add_operation_record(teacher_base_info_log)
         organization = OrganizationMembers()
         organization.id = SnowflakeIdGenerator(1, 1).generate_id()
-        organization.org_id = teachers_info.org_id
-        organization.teacher_id = teachers_info.teacher_id
+        organization.org_id = int(teachers_info.org_id)
+        organization.teacher_id = int(teachers_info.teacher_id)
         organization.member_type = None
         organization.identity = None
         await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
@@ -306,8 +306,8 @@ class TeachersInfoRule(object):
 
         organization = OrganizationMembers()
         organization.id = SnowflakeIdGenerator(1, 1).generate_id()
-        organization.org_id = teachers_info.org_id
-        organization.teacher_id = teachers_info.teacher_id
+        organization.org_id = int(teachers_info.org_id)
+        organization.teacher_id = int(teachers_info.teacher_id)
         organization.member_type = None
         organization.identity = None
         await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
