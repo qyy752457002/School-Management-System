@@ -234,8 +234,9 @@ async def get_identity_by_job(school_operation_type: List, identity_type, post_t
 
     staff_map = {"preSchoolEducation_kindergarten": "kindergarten_student",
                  "primaryEducation_primarySchool": "primary_school_student",
-                 "secondaryEducation_ordinaryJuniorHigh": "middle_school_student", "": "high_school_student",
-                 "": "vocational_student"}
+                 "secondaryEducation_ordinaryJuniorHigh": "middle_school_student",# 初级中学还需要修改
+                 "secondaryEducation_ordinaryHighSchool": "high_school_student",
+                 "secondaryEducation_secondaryVocationalSchool": "vocational_student"}
     if identity_type == IdentityType.STUDENT.value:
         for i in range(len(school_operation_type), 0, -1):
             key = '_'.join(school_operation_type[:i])

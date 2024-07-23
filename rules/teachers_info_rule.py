@@ -311,7 +311,7 @@ class TeachersInfoRule(object):
         organization.member_type = None
         organization.identity = None
         await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
-        return teachers_info
+        return True
 
     # 删除单个教职工基本信息
     async def delete_teachers_info(self, teachers_info_id):
