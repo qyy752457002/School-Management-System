@@ -40,6 +40,7 @@ class Teacher(BaseDBModel):
     teacher_sub_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="子状态",
                                                     default="unsubmitted")
     identity: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份", default='')
+    identity_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份类型", default='')
     mobile: Mapped[str] = mapped_column(String(64), nullable=True, default="", comment="手机号")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
     is_approval: Mapped[bool] = mapped_column(default=False, comment="是否在审批中")

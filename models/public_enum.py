@@ -52,3 +52,21 @@ class IDtype(str, Enum):
     def to_list(cls):
         return [cls.RESIDENT_IDENTITY_CARD, cls.WGR_YJJL_SFZ, cls.GA_ND_TXZ, cls.ID_CARD_TYPE_PASSPORT,
                 cls.ID_CARD_TYPE_OTHER]
+
+class IdentityType(str, Enum):
+    """
+    学生 - Student
+    教职工 - Staff
+    管理者 - Manager
+    家长 - Parent
+    第三方 - Third Party
+    """
+    STUDENT = "student_identity"
+    STAFF = "staff_identity"
+    MANAGER = "manager_identity"
+    PARENT = "parent_identity"
+    THIRD_PARTY = "third_party_identity"
+    @classmethod
+    def to_list(cls):
+        return [cls.STUDENT, cls.STAFF, cls.MANAGER, cls.PARENT, cls.THIRD_PARTY]
+

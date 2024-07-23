@@ -111,7 +111,7 @@ class OrganizationMembersRule(object):
 
         exists_organization_members = await self.organization_members_dao.delete_organization_members_by_teacher_id(organization.teacher_id)
 
-        organization_members_db = view_model_to_orm_model(organization, OrganizationMembersModel,    exclude=["id"])
+        organization_members_db = view_model_to_orm_model(organization, OrganizationMembersModel,)
         # school_db.status =  PlanningSchoolStatus.DRAFT.value
         organization_members_db.created_uid = 0
         organization_members_db.updated_uid = 0

@@ -13,7 +13,7 @@ from rules.students_family_info_rule import StudentsFamilyInfoRule
 from rules.students_rule import StudentsRule
 from rules.system_rule import SystemRule
 from views.models.students import NewStudents, NewBaseInfoCreate, NewStudentsQuery, StudentsFamilyInfoCreate, \
-    NewStudentImport
+    NewStudentImport, StudentsFamilyInfoImport
 from views.tasks.base_task import BaseExecutor
 
 
@@ -64,21 +64,23 @@ class NewStudentExecutor(BaseExecutor):
                 else:
                     raise ValueError("Invalid payload type")
                 students = data_import
+                print(data_import)
                 res = await self.new_student_rule.add_students(data_import)
                 students.student_id = res.student_id
                 special_date = datetime.datetime.now()
                 # todo 更多的字段 转换到base里 需要写入
 
-                vm2 = NewBaseInfoCreate(student_id=students.student_id, school_id=students.school_id,
+                vm2 = NewBaseInfoCreate(
                                         registration_date=special_date.strftime("%Y-%m-%d"),**data_import.__dict__)
                 res2 = await self.students_base_info_rule.add_students_base_info(vm2)
                 print('插入数据res', res)
             logger.info(f"任务   created")
         except Exception as e:
             print(e, '异常')
+            traceback.print_exc()
             logger.error(f"任务   create failed")
 
-class NewStudentFamilyInfoImportExecutor(TaskExecutor):
+class NewStudentFamilyInfoImportExecutor(BaseExecutor):
     """
     导入新生家庭成员信息
     """
@@ -90,24 +92,40 @@ class NewStudentFamilyInfoImportExecutor(TaskExecutor):
         self._storage_rule: StorageRule = get_injector(StorageRule)
         super().__init__()
 
-    async def execute(self, context: 'Context'):
-        task: Task = context.task
+    async def execute(self, context: 'Task'):
+        task: Task = context
         print(task)
         # 读取 文件内容  再解析到 各个的 插入 库
         try:
             print('开始执行task')
 
-            info = task.payload
             data = []
-            fileinfo =await self.system_rule.get_download_url_by_id(info.file_name)
-            data =await self._storage_rule.get_file_data(info.file_name, info.bucket_name,info.scene)
-            # data = await self._storage_rule.get_file_data(info.file_name, info.bucket, info.scene)
+
+            info = task.payload
+            data =await self.parse_payload_to_data(info)
+
+            psr = await self.new_student_rule.init_enum_value()
 
             for item in data:
                 if isinstance(item, dict):
                     data_import: StudentsFamilyInfoCreate = StudentsFamilyInfoCreate(**item)
                 elif isinstance(item, StudentsFamilyInfoCreate):
                     data_import: StudentsFamilyInfoCreate = item
+                elif isinstance(item, StudentsFamilyInfoImport):
+                    # 视图模型
+                    data_import: StudentsFamilyInfoImport = item
+                    itemd = data_import.dict()
+                    # 检查每个值如果有右侧换行符 去掉
+                    for key, value in itemd.items():
+                        if value and isinstance(value, str) and value.endswith('\n'):
+                            itemd[key] = value.rstrip('\n')
+
+                    # itemd = map_keys(itemd, self.institution_rule.other_mapper)
+                    # todo 需要进行 映射转换  选择的是汉字  根据映射转换英文枚举写入
+                    data_import = StudentsFamilyInfoImport(**itemd)
+                    # todo 这个转换函数 也需要加 下面方法改为装饰器
+
+                    await psr.convert_import_format_to_view_model(data_import)
                 else:
                     raise ValueError("Invalid payload type")
                 students = data_import
@@ -119,6 +137,7 @@ class NewStudentFamilyInfoImportExecutor(TaskExecutor):
             logger.info(f"任务   created")
         except Exception as e:
             print(e, '异常')
+            traceback.print_exc()
             logger.error(f"任务   create failed")
 
 

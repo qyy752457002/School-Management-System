@@ -218,9 +218,8 @@ class NewTeachersView(BaseView):
         print('发生任务成功')
         return task
 
-
-    async def post_new_teacher_save_import(self,  file_id: int | str = Query(..., title="文件id",
-                                                                       example=123)) -> Task:
+    async def post_new_teacher_save_import(self, file_id: int | str = Query(..., title="文件id",
+                                                                            example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
         task = Task(
             task_type="teacher_save_import",
@@ -232,7 +231,6 @@ class NewTeachersView(BaseView):
         print('发生任务成功')
         return task
 
-
     async def post_new_teacher_export(self, teacher_query: CurrentTeacherQuery) -> Task:
         task = Task(
             task_type="teacher_export",
@@ -242,7 +240,6 @@ class NewTeachersView(BaseView):
         task = await app.task_topic.send(task)
         print('发生任务成功')
         return task
-
 
     async def page_new_teacher_launch(self, teacher_approval_query=Depends(TeacherApprovalQuery),
                                       page_request=Depends(PageRequest)):
@@ -255,7 +252,6 @@ class NewTeachersView(BaseView):
                                                                                  page_request, user_id)
         return paging_result
 
-
     async def page_new_teacher_approval(self, teacher_approval_query=Depends(TeacherApprovalQuery),
                                         page_request=Depends(PageRequest)):
         """
@@ -267,46 +263,52 @@ class NewTeachersView(BaseView):
                                                                                  page_request, user_id)
         return paging_result
 
-# 下面都是测试工作流的
+    # 下面都是测试工作流的
 
-#
-# async def get_teacher_work_flow_current_node(self, process_instance_id: int = Query(..., title="流程实例id",
-#                                                                                     description="流程实例id")):
-#     res = await self.teacher_work_flow_instance_rule.get_teacher_work_flow_current_node(process_instance_id)
-#     return res
-#
-# async def post_teacher_work_flow(self, teachers: TeachersCreatModel):
-#     parameters = {"process_code": "t_transfer_out", "applicant_name": "张三"}
-#     res = await self.teacher_work_flow_instance_rule.add_teacher_work_flow(teachers, parameters)
-#     return res
-#
-# async def page_query_new_entry_teacher(self, query_model=Depends(NewTeacher), page_request=Depends(PageRequest)):
-#     """
-#     分页查询
-#     """
-#     parameters = {"process_code": "t_transfer_out"}
-#     query_re_model = NewTeacher
-#     paging_result = await self.teacher_work_flow_instance_rule.query_work_flow_instance_with_page(page_request,
-#                                                                                                   query_model,query_re_model, parameters)
-#     return paging_result
-# async def delete_teacher_save_work_flow_instance(self, teacher_id: int = Query(..., title="教师id",
-#                                                                                description="教师id")):
-#     res = await self.teacher_work_flow_instance_rule.delete_teacher_save_work_flow_instance(teacher_id)
-#     return res
-#
-# async def post_process_work_flow_node_instance(self, node_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
-#                                                           example=123), reason: str = Query("", title="reason",
-#                                                                                             description="审核理由")):
-#     parameters = {"user_id": "1243ewrwe", "action": "approved", "description": reason}
-#     res=await self.teacher_work_flow_instance_rule.process_transaction_work_flow(node_instance_id, parameters)
+    #
+    # async def get_teacher_work_flow_current_node(self, process_instance_id: int = Query(..., title="流程实例id",
+    #                                                                                     description="流程实例id")):
+    #     res = await self.teacher_work_flow_instance_rule.get_teacher_work_flow_current_node(process_instance_id)
+    #     return res
+    #
+    # async def post_teacher_work_flow(self, teachers: TeachersCreatModel):
+    #     parameters = {"process_code": "t_transfer_out", "applicant_name": "张三"}
+    #     res = await self.teacher_work_flow_instance_rule.add_teacher_work_flow(teachers, parameters)
+    #     return res
+    #
+    # async def page_query_new_entry_teacher(self, query_model=Depends(NewTeacher), page_request=Depends(PageRequest)):
+    #     """
+    #     分页查询
+    #     """
+    #     parameters = {"process_code": "t_transfer_out"}
+    #     query_re_model = NewTeacher
+    #     paging_result = await self.teacher_work_flow_instance_rule.query_work_flow_instance_with_page(page_request,
+    #                                                                                                   query_model,query_re_model, parameters)
+    #     return paging_result
+    # async def delete_teacher_save_work_flow_instance(self, teacher_id: int = Query(..., title="教师id",
+    #                                                                                description="教师id")):
+    #     res = await self.teacher_work_flow_instance_rule.delete_teacher_save_work_flow_instance(teacher_id)
+    #     return res
+    #
+    # async def post_process_work_flow_node_instance(self, node_instance_id: int = Query(..., title="流程实例id", description="流程实例id",
+    #                                                           example=123), reason: str = Query("", title="reason",
+    #                                                                                             description="审核理由")):
+    #     parameters = {"user_id": "1243ewrwe", "action": "approved", "description": reason}
+    #     res=await self.teacher_work_flow_instance_rule.process_transaction_work_flow(node_instance_id, parameters)
 
-# async def patch_work_flow_status_by_params(self, process_instance_id: int = Query(..., title="流程实例id",
-#                                                                                   description="流程实例id"),
-#                                            ):
-#     params = {"teacher_main_status": "unemployed", "teacher_sub_status": "unsubmitted"}
-#     await self.teacher_work_flow_instance_rule.update_work_flow_by_param(process_instance_id, params)
+    # async def patch_work_flow_status_by_params(self, process_instance_id: int = Query(..., title="流程实例id",
+    #                                                                                   description="流程实例id"),
+    #                                            ):
+    #     params = {"teacher_main_status": "unemployed", "teacher_sub_status": "unsubmitted"}
+    #     await self.teacher_work_flow_instance_rule.update_work_flow_by_param(process_instance_id, params)
 
-# 测试导入
+    # 测试导入
     async def post_teacher_import_test(self, file_id: int = Query(..., title="文件id", description="文件id")):
         await self.teacher_import_rule.import_teachers_test(file_id)
 
+    async def get_teachers_arg_by_id_test(self,
+                                          teacher_id: int | str = Query(..., title="教师编号", description="教师编号",
+                                                                       example=123)):
+        teacher_id = int(teacher_id)
+        res = await self.teacher_rule.send_teacher_to_org_center(teacher_id)
+        return res

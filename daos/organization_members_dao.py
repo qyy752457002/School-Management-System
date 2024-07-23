@@ -102,5 +102,5 @@ class OrganizationMembersDAO(DAOBase):
         session = await self.master_db()
         update_contents = {"is_deleted": True}
         query = update(OrganizationMembers).where(OrganizationMembers.teacher_id == int(teacher_id)).values(
-            is_deleted=True)
+            **update_contents)
         return await self.update(session, query, OrganizationMembers, update_contents, is_commit=is_commit)
