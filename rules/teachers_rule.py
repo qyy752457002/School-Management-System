@@ -480,8 +480,6 @@ class TeachersRule(object):
         dict_data = orm_model_to_view_model(teacher_db, EducateUserModel, exclude=[""])
         dict_data = dict_data.dict()
         params_data = JsonUtils.dict_to_json_str(dict_data)
-
-
         api_name = '/api/add-educate-user'
         # 字典参数
         datadict = params_data
