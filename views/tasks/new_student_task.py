@@ -93,7 +93,7 @@ class NewStudentFamilyInfoImportExecutor(BaseExecutor):
         super().__init__()
 
     async def execute(self, context: 'Task'):
-        task: Task = context.task
+        task: Task = context
         print(task)
         # 读取 文件内容  再解析到 各个的 插入 库
         try:

@@ -914,6 +914,8 @@ class StudentsFamilyInfoImport(BaseModel):
             else:
                 pass
         # 检查 性别 转换为 枚举
+        if data.get("phone_number") is not None:
+            data["phone_number"] = str(data["phone_number"])
         if data.get("gender") is not None:
             data["gender"] = Gender.from_chinese(data["gender"])
         if data.get("relationship") is not None:
