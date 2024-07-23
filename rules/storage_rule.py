@@ -16,7 +16,7 @@ from views.models.classes import Classes, ClassesImport
 from views.models.institutions import Institutions, InstitutionsValid, InstitutionsImport
 from views.models.planning_school import PlanningSchool, PlanningSchoolImport
 from views.models.school import School
-from views.models.students import NewStudents, StudentsFamilyInfoCreate, NewStudentImport
+from views.models.students import NewStudents, StudentsFamilyInfoCreate, NewStudentImport, StudentsFamilyInfoImport
 from views.models.system import ImportScene
 from views.models.teachers import TeachersCreatModel
 from mini_framework.utils.logging import logger
@@ -142,7 +142,7 @@ class StorageRule(object):
             SampleModel = TeachersCreatModel
             sheetname = 'Sheet1'
         if sence == ImportScene.NEWSTUDENT_FAMILYINFO.value:
-            SampleModel = StudentsFamilyInfoCreate
+            SampleModel = StudentsFamilyInfoImport
             sheetname = 'Sheet1'
             header=1 # 0 表示第一行是标题 1表示第二行才开始标题
 
