@@ -353,7 +353,7 @@ class StudentsRule(ImportCommonAbstractRule,object):
         if hasattr(item,'enrollment_method'):
             item.enrollment_method = self.enrollment_methods.get(item.enrollment_method, item.enrollment_method)
         #  todo   residence_nature student_gender ethnicity political_status blood_type 都需要转枚举值
-        # 字段转格式的  id_number, photo, approval_status, is_deleted  210112201602195737, None, 'enrollment', False
+        # 字段转格式的  id_number, photo, approval_status, is_deleted  傻萝卜, None, 'enrollment', False
         if hasattr(item,'id_number') and item.id_number:
             item.id_number = str(item.id_number)
         if hasattr(item,'photo') and item.photo:
