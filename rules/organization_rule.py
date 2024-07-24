@@ -14,6 +14,7 @@ from business_exceptions.organization import OrganizationNotFoundError, Organiza
 from business_exceptions.school import SchoolNotFoundError
 # from daos.organization_dao import CampusDAO
 from daos.organization_dao import OrganizationDAO
+from rules.common.common_rule import send_orgcenter_request
 # from models.organization import Campus
 from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
@@ -60,7 +61,7 @@ class OrganizationRule(object):
         organization_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
         organization_db = await self.organization_dao.add_organization(organization_db)
-        organization = orm_model_to_view_model(organization_db, Organization, exclude=["created_at",'updated_at'])
+        organization = orm_model_to_view_model(organization_db, Organization, exclude=["created_at",])
         convert_snowid_in_model(organization, ["id", "school_id",'parent_id',])
         # todo 发送组织中心
         await self.send_org_to_org_center(organization)
@@ -212,10 +213,11 @@ class OrganizationRule(object):
         return organization_id
     async def send_org_to_org_center(self,exists_planning_school_origin):
         exists_planning_school= copy.deepcopy(exists_planning_school_origin)
-        if isinstance(exists_planning_school.updated_at, (date, datetime)):
+        if hasattr(exists_planning_school, 'updated_at') and  isinstance(exists_planning_school.updated_at, (date, datetime)):
             exists_planning_school.updated_at =exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
 
         # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer
+        return 
 
 
         # planning_school_communication = await self.school_communication_dao.get_school_communication_by_school_id(exists_planning_school.id)
