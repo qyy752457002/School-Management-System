@@ -170,6 +170,7 @@ class InstitutionRule(SchoolRule):
         if action=='open':
             res = await self.update_school_status(school.id,  PlanningSchoolStatus.NORMAL.value, 'open')
             await self.send_school_to_org_center(school)
+            await self.send_admin_to_org_center(school)
         if action=='close':
             res = await self.update_school_status(school.id,  PlanningSchoolStatus.CLOSED.value, 'close')
         if action=='keyinfo_change':

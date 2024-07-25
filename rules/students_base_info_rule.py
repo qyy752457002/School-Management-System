@@ -1,3 +1,4 @@
+from mini_framework.utils.json import JsonUtils
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -10,12 +11,14 @@ from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.student_session import StudentSessionstatus
 from models.students_base_info import StudentBaseInfo
+from rules.common.common_rule import send_orgcenter_request
 from views.common.common_view import page_none_deal, convert_snowid_to_strings, convert_snowid_in_model
 from views.models.students import StudentsKeyinfo as StudentsKeyinfoModel
 from views.models.students import NewBaseInfoCreate,NewBaseInfoUpdate,StudentsBaseInfo
 from views.models.students import StudentsBaseInfo as StudentsBaseInfoModel
 from views.models.students import NewStudentsQuery, NewStudentsQueryRe
 from business_exceptions.student import StudentNotFoundError, StudentExistsError, StudentSessionNotFoundError
+from views.models.teachers import EducateUserModel
 
 
 @dataclass_inject
@@ -91,6 +94,10 @@ class StudentsBaseInfoRule(object):
 
         students_base_info_db = await self.students_base_info_dao.add_students_base_info(students_base_info_db)
         students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfo, exclude=[""])
+
+        await self.send_student_to_org_center(students_base_info,exits_student)
+
+
         return students_base_info
 
     async def update_students_base_info(self, students_base_info):
@@ -151,3 +158,31 @@ class StudentsBaseInfoRule(object):
 
 
 
+    async def send_student_to_org_center(self, exists_planning_school_origin,exits_student):
+        # teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id)
+        # data_dict = to_dict(teacher_db)
+        # print(data_dict)
+        dict_data = EducateUserModel(**exists_planning_school_origin,currentUnit=exists_planning_school_origin.school,
+                                     # createdTime= exists_planning_school_origin.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                                     # updatedTime=exists_planning_school_origin.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
+                                     name=exits_student.student_name,
+                                     userCode=exists_planning_school_origin.student_number,
+                                     userId=exists_planning_school_origin.student_id,
+                                     phoneNumber= '',
+                                     )
+        dict_data = dict_data.dict()
+        params_data = JsonUtils.dict_to_json_str(dict_data)
+        api_name = '/api/add-educate-user'
+        # 字典参数
+        datadict = params_data
+        print(datadict, '参数')
+        response = await send_orgcenter_request(api_name, datadict, 'post', False)
+        print(response, '接口响应')
+        try:
+            print(response)
+            return response
+        except Exception as e:
+            print(e)
+            raise e
+            return response
+        return None

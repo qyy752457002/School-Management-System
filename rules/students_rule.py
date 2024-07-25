@@ -34,6 +34,7 @@ from business_exceptions.student import StudentNotFoundError, StudentExistsError
 
 from mini_framework.utils.logging import logger
 
+from views.models.teachers import EducateUserModel
 
 @dataclass_inject
 class StudentsRule(ImportCommonAbstractRule, object):
@@ -117,7 +118,11 @@ class StudentsRule(ImportCommonAbstractRule, object):
         print(students_db)
         students = orm_model_to_view_model(students_db, StudentsKeyinfoModel, exclude=[""])
         print(students)
-        convert_snowid_in_model(students, ["id", 'student_id', 'school_id', 'class_id', 'session_id'])
+        convert_snowid_in_model(students, ["id",'student_id','school_id','class_id','session_id'])
+        # await self.send_student_to_org_center(students)
+
+
+
         return students
 
     async def add_student_new_student_transferin(self, students):

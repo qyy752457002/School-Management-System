@@ -52,6 +52,7 @@ from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, SCHOOL_OPEN_
     SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, DISTRICT_ENUM_KEY, PROVINCE_ENUM_KEY, CITY_ENUM_KEY, \
     PLANNING_SCHOOL_STATUS_ENUM_KEY, FOUNDER_TYPE_LV2_ENUM_KEY, SCHOOL_ORG_FORM_ENUM_KEY, FOUNDER_TYPE_LV3_ENUM_KEY, \
     FOUNDER_TYPE_ENUM_KEY
+from views.models.teachers import EducateUserModel
 
 
 @dataclass_inject
@@ -523,6 +524,7 @@ class SchoolRule(object):
         if action == 'open':
             res = await self.update_school_status(school.id, PlanningSchoolStatus.NORMAL.value, 'open')
             await self.send_school_to_org_center(school)
+            await self.send_admin_to_org_center(school)
 
         if action == 'close':
             res = await self.update_school_status(school.id, PlanningSchoolStatus.CLOSED.value, 'close')
@@ -867,4 +869,32 @@ class SchoolRule(object):
             raise e
             return response
 
+        return None
+    async def send_admin_to_org_center(self, exists_planning_school_origin):
+        # teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id)
+        # data_dict = to_dict(teacher_db)
+        # print(data_dict)
+        dict_data = EducateUserModel(**exists_planning_school_origin,currentUnit=exists_planning_school_origin.school_name,
+                                     createdTime= exists_planning_school_origin.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                                     updatedTime=exists_planning_school_origin.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
+                                     name=exists_planning_school_origin.admin,
+                                     userCode=exists_planning_school_origin.admin,
+                                     userId=exists_planning_school_origin.admin_phone,
+                                     phoneNumber=exists_planning_school_origin.admin_phone,
+                                     )
+        dict_data = dict_data.dict()
+        params_data = JsonUtils.dict_to_json_str(dict_data)
+        api_name = '/api/add-educate-user'
+        # 字典参数
+        datadict = params_data
+        print(datadict, '参数')
+        response = await send_orgcenter_request(api_name, datadict, 'post', False)
+        print(response, '接口响应')
+        try:
+            print(response)
+            return response
+        except Exception as e:
+            print(e)
+            raise e
+            return response
         return None
