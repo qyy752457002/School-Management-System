@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from fastapi import Query
 from pydantic import BaseModel, Field, model_validator
@@ -21,8 +21,8 @@ class Organization(BaseModel):
     org_code: str|None = Field(None, title="", description=" ",examples=[''])
     parent_id: int|str = Field(None, title="", description="父级ID",examples=['0'])
     member_cnt: int = Field(None, title="", description="人数",examples=['0'])
-    created_at: str|None = Field(None, title="", description=" ",examples=[''])
-    updated_at: str|None = Field(None, title="", description=" ",examples=[''])
+    created_at: str|None|date|datetime = Field(None, title="", description=" ",examples=[''])
+    updated_at: str|None|date|datetime = Field(None, title="", description=" ",examples=[''])
 
     @model_validator(mode="before")
     @classmethod
