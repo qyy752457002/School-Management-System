@@ -16,6 +16,7 @@ class Organization(BaseDBModel):
     org_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="组织分类 行政类等")
 
     org_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="组织或者部门名称 例如行政部")
+    org_code: Mapped[str] = mapped_column(String(64), nullable=True, comment="组织或者部门编号 学校内唯一")
     parent_id: Mapped[int] = mapped_column(BigInteger, comment="父级ID",default=0,nullable=True)
     school_id: Mapped[int] = mapped_column(BigInteger, comment="学校ID",default=0,nullable=True)
     member_cnt: Mapped[int] = mapped_column( comment="人数",default=0,nullable=True)
