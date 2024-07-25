@@ -64,7 +64,7 @@ class OrganizationRule(object):
         organization_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
         organization_db = await self.organization_dao.add_organization(organization_db)
-        organization = orm_model_to_view_model(organization_db, Organization, exclude=["created_at",'updated_at'])
+        organization = orm_model_to_view_model(organization_db, Organization, exclude=["created_at",])
         convert_snowid_in_model(organization, ["id", "school_id",'parent_id',])
         # todo 发送组织中心
         await self.send_org_to_org_center(organization)
@@ -216,10 +216,11 @@ class OrganizationRule(object):
         return organization_id
     async def send_org_to_org_center(self,exists_planning_school_origin:Organization):
         exists_planning_school= copy.deepcopy(exists_planning_school_origin)
-        if isinstance(exists_planning_school.updated_at, (date, datetime)):
+        if hasattr(exists_planning_school, 'updated_at') and  isinstance(exists_planning_school.updated_at, (date, datetime)):
             exists_planning_school.updated_at =exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
 
         # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer
+        return 
 
 
         school = await self.school_dao.get_school_by_id(exists_planning_school.school_id)
