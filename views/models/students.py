@@ -348,6 +348,7 @@ class StudentsBaseInfo(BaseModel):
     class_id: int | None | str = Field(0, title="", description="")
     school_id: int | None | str = Field(0, title="", description="")
 
+    student_number: str|None = Field("", title="", description="")
     name_pinyin: str = Field("", title="姓名拼音", description="姓名拼音")
     session: str = Field("", title="届别", description="届别")
     grade: str = Field("", title="年级", description="年级")

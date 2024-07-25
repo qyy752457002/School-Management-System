@@ -12,7 +12,7 @@
  Target Server Version : 120001 (120001)
  File Encoding         : 65001
 
- Date: 25/07/2024 13:37:04
+ Date: 25/07/2024 17:12:35
 */
 
 
@@ -67,11 +67,15 @@ INSERT INTO "public"."lfun_role" VALUES (7, 'unit', 'k12', 'school', '中小学�
 INSERT INTO "public"."lfun_role" VALUES (10, 'teacher', '', '', '教职工信息管理系统', NULL, 0, 0, 0, 1, 1, '2024-06-04 10:43:11.182057', '2024-06-04 10:43:11.182057', 'f');
 INSERT INTO "public"."lfun_role" VALUES (3, 'unit', 'vocational', 'city', '职高信息管理系统', NULL, 0, 0, 0, 1, 1, '2024-06-04 10:43:11.182057', '2024-06-04 10:43:11.182057', 'f');
 INSERT INTO "public"."lfun_role" VALUES (9, 'unit', 'vocational', 'school', '职高信息管理系统', NULL, 0, 0, 0, 1, 1, '2024-06-04 10:43:11.182057', '2024-06-04 10:43:11.182057', 'f');
-INSERT INTO "public"."lfun_role" VALUES (16, 'unit', 'administration', NULL, '行政单位系统', NULL, 0, 0, 0, 1, 1, '2024-06-04 10:43:11.182057', '2024-06-04 10:43:11.182057', 'f');
-INSERT INTO "public"."lfun_role" VALUES (15, 'unit', 'institute', NULL, '事业单位系统', NULL, 0, 0, 0, 1, 1, '2024-06-04 10:43:11.182057', '2024-06-04 10:43:11.182057', 'f');
 INSERT INTO "public"."lfun_role" VALUES (14, 'unit', 'institute', 'county', '机构信息管理系统', NULL, 0, 0, 0, 1, 1, '2024-06-04 10:43:11.182057', '2024-06-04 10:43:11.182057', 'f');
 INSERT INTO "public"."lfun_role" VALUES (13, 'unit', 'institute', 'city', '机构信息管理系统', NULL, 0, 0, 0, 1, 1, '2024-06-04 10:43:11.182057', '2024-06-04 10:43:11.182057', 'f');
 INSERT INTO "public"."lfun_role" VALUES (12, 'unit', 'institute', 'school', '机构信息管理系统', NULL, 0, 0, 0, 1, 1, '2024-06-04 10:43:11.182057', '2024-06-04 10:43:11.182057', 'f');
+INSERT INTO "public"."lfun_role" VALUES (15, 'unit', 'institute', 'city', '事业单位系统', NULL, 0, 0, 0, 1, 1, '2024-06-04 10:43:11.182057', '2024-06-04 10:43:11.182057', 'f');
+INSERT INTO "public"."lfun_role" VALUES (16, 'unit', 'administration', 'city', '行政单位系统', NULL, 0, 0, 0, 1, 1, '2024-06-04 10:43:11.182057', '2024-06-04 10:43:11.182057', 'f');
+INSERT INTO "public"."lfun_role" VALUES (17, 'unit', 'institute', 'school', '事业单位系统', NULL, 0, 0, 0, 1, 1, '2024-06-04 10:43:11.182057', '2024-06-04 10:43:11.182057', 'f');
+INSERT INTO "public"."lfun_role" VALUES (18, 'unit', 'institute', 'county', '事业单位系统', NULL, 0, 0, 0, 1, 1, '2024-06-04 10:43:11.182057', '2024-06-04 10:43:11.182057', 'f');
+INSERT INTO "public"."lfun_role" VALUES (19, 'unit', 'administration', 'county', '行政单位系统', NULL, 0, 0, 0, 1, 1, '2024-06-04 10:43:11.182057', '2024-06-04 10:43:11.182057', 'f');
+INSERT INTO "public"."lfun_role" VALUES (20, 'unit', 'administration', 'school', '行政单位系统', NULL, 0, 0, 0, 1, 1, '2024-06-04 10:43:11.182057', '2024-06-04 10:43:11.182057', 'f');
 
 -- ----------------------------
 -- Primary Key structure for table lfun_role

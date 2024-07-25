@@ -12,7 +12,7 @@
  Target Server Version : 120001 (120001)
  File Encoding         : 65001
 
- Date: 25/07/2024 13:37:23
+ Date: 25/07/2024 17:12:27
 */
 
 
@@ -148,13 +148,13 @@ INSERT INTO "public"."lfun_permission_menu" VALUES (82, '行政单位管理', '/
 INSERT INTO "public"."lfun_permission_menu" VALUES (87, '开设审核', '/institution-audit/open', '', 'menu', '', '', '86', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'institution-audit-open', 0);
 INSERT INTO "public"."lfun_permission_menu" VALUES (88, '关闭审核', '/institution-audit/close', '', 'menu', '', '', '86', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'institution-audit-close', 0);
 INSERT INTO "public"."lfun_permission_menu" VALUES (89, '关键信息变更审核', '/institution-audit/changekeyinfo', '', 'menu', '', '', '86', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'institution-audit-changekeyinfo', 0);
-INSERT INTO "public"."lfun_permission_menu" VALUES (86, '信息审核', '', '', 'menu', '', '', '81', 1, 0, 0, '2024-07-25 13:15:14.000000', '2024-07-25 13:15:12.000000', 'f', 'institution-audit', 0);
-INSERT INTO "public"."lfun_permission_menu" VALUES (90, '组织管理', '/org', '', 'menu', '', '', '81', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'org', 0);
-INSERT INTO "public"."lfun_permission_menu" VALUES (91, '机构信息审核', '', '', 'menu', '', '', '82', 1, 0, 0, '2024-07-25 13:15:14.000000', '2024-07-25 13:15:12.000000', 'f', 'institution-audit', 0);
 INSERT INTO "public"."lfun_permission_menu" VALUES (92, '开设审核', '/institution-audit/open', '', 'menu', '', '', '91', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'institution-audit-open', 0);
 INSERT INTO "public"."lfun_permission_menu" VALUES (93, '关闭审核', '/institution-audit/close', '', 'menu', '', '', '91', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'institution-audit-close', 0);
 INSERT INTO "public"."lfun_permission_menu" VALUES (94, '关键信息变更审核', '/institution-audit/changekeyinfo', '', 'menu', '', '', '91', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'institution-audit-changekeyinfo', 0);
-INSERT INTO "public"."lfun_permission_menu" VALUES (95, '组织管理', '/org', '', 'menu', '', '', '82', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'org', 0);
+INSERT INTO "public"."lfun_permission_menu" VALUES (86, '信息审核', '', '', 'menu', '', '', '0', 1, 0, 0, '2024-07-25 13:15:14.000000', '2024-07-25 13:15:12.000000', 'f', 'institution-audit', 0);
+INSERT INTO "public"."lfun_permission_menu" VALUES (90, '组织管理', '/org', '', 'menu', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'org', 0);
+INSERT INTO "public"."lfun_permission_menu" VALUES (95, '组织管理', '/org', '', 'menu', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'org', 0);
+INSERT INTO "public"."lfun_permission_menu" VALUES (91, '机构信息审核', '', '', 'menu', '', '', '0', 1, 0, 0, '2024-07-25 13:15:14.000000', '2024-07-25 13:15:12.000000', 'f', 'institution-audit', 0);
 
 -- ----------------------------
 -- Primary Key structure for table lfun_permission_menu
