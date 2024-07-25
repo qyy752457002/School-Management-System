@@ -44,6 +44,8 @@ class StudentFamilyInfo(BaseDBModel):
     political_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="政治面貌")
     contact_address: Mapped[str] = mapped_column(String(64), nullable=True, comment="联系地址")
     workplace: Mapped[str] = mapped_column(String(64), nullable=True, comment="工作单位")
+    identity: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份",default='')
+    identity_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份类型",default='')
     # 职业(family_member_occupation)
     family_member_occupation: Mapped[str] = mapped_column(String(128), nullable=True,default='', comment="家庭成员职业")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")

@@ -18,8 +18,12 @@ class Organization(BaseModel):
 
     org_type: str = Field(None, title="", description="组织分类 行政类等",examples=['行政类'])
     org_name: str = Field(None, title="", description="组织或者部门名称 例如行政部",examples=['行政部'])
+    org_code: str|None = Field(None, title="", description=" ",examples=[''])
     parent_id: int|str = Field(None, title="", description="父级ID",examples=['0'])
     member_cnt: int = Field(None, title="", description="人数",examples=['0'])
+    created_at: str|None = Field(None, title="", description=" ",examples=[''])
+    updated_at: str|None = Field(None, title="", description=" ",examples=[''])
+
     @model_validator(mode="before")
     @classmethod
     def check_id_before(self, data: dict):

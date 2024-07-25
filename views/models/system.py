@@ -29,6 +29,30 @@ CLASS_SYSTEM_ENUM_KEY:Final = 'class_system'
 ENROLLMENT_METHOD_ENUM_KEY:Final = 'enrollment_method'
 
 
+class OrgCenterApiResultObject( ):
+    """
+    """
+    status = ""
+    msg  = ""
+    data  = ""
+    origin_data  = ""
+    @classmethod
+    def is_error(cls):
+        if cls.status ==  OrgCenterApiStatus.ERROR.value:
+            print('同步组织中心失败')
+        return None
+
+
+
+class OrgCenterApiStatus(str, Enum):
+    """
+    """
+    ERROR = "error"
+    SUCCESS  = "success"
+    @classmethod
+    def to_list(cls):
+        return [cls.ERROR, cls.SUCCESS, ]
+
 class InstitutionType(str, Enum):
     """
     """

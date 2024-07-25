@@ -348,6 +348,7 @@ class StudentsBaseInfo(BaseModel):
     class_id: int | None | str = Field(0, title="", description="")
     school_id: int | None | str = Field(0, title="", description="")
 
+    student_number: str|None = Field("", title="", description="")
     name_pinyin: str = Field("", title="姓名拼音", description="姓名拼音")
     session: str = Field("", title="届别", description="届别")
     grade: str = Field("", title="年级", description="年级")
@@ -389,6 +390,8 @@ class StudentsBaseInfo(BaseModel):
     borough: str = Field("", title="", description="", max_length=50)
     loc_area: str = Field("", title="", description="", max_length=50)
     edu_number: str = Field('', title="", description="学籍号码")
+    identity: str|None = Field('', title="", description="")
+    identity_type: str|None = Field('', title="", description="")
 
     loc_area_pro: str = Field("", title="", description="", max_length=50)
     residence_address: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
@@ -567,6 +570,8 @@ class StudentsFamilyInfo(BaseModel):
     contact_address: str | None = Field(..., title="联系地址", description="联系地址")
     workplace: str | None = Field("", title="工作单位", description="工作单位")
     family_member_occupation: str = Field("", title="家庭成员职业", description="家庭成员职业")
+    identity: str|None = Field('', title="", description="")
+    identity_type: str|None = Field('', title="", description="")
 
     @model_validator(mode="before")
     @classmethod

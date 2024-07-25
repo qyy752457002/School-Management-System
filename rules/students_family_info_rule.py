@@ -4,13 +4,15 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
+from daos.school_dao import SchoolDAO
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_family_info_dao import StudentsFamilyInfoDao
 from daos.students_dao import StudentsDao
+from models.students import Student
 from models.students_family_info import StudentFamilyInfo
 from rules.common.common_rule import send_orgcenter_request
 from views.common.common_view import convert_snowid_in_model
-from views.models.students import StudentsFamilyInfo as StudentsFamilyInfoModel
+from views.models.students import StudentsFamilyInfo as StudentsFamilyInfoModel, StudentsFamilyInfo
 from business_exceptions.student import StudentFamilyInfoNotFoundError, StudentNotFoundError, \
     StudentFamilyInfoExistsError
 from views.models.students import StudentsFamilyInfoCreate
@@ -22,7 +24,7 @@ class StudentsFamilyInfoRule(object):
     students_family_info_dao: StudentsFamilyInfoDao
     students_dao: StudentsDao
     students_base_info_dao: StudentsBaseInfoDao
-
+    school_dao: SchoolDAO
     async def get_students_family_info_by_id(self, student_family_info_id):
         """
         获取单个学生家庭信息
@@ -61,6 +63,7 @@ class StudentsFamilyInfoRule(object):
         students_family_info = orm_model_to_view_model(students_family_info_db, StudentsFamilyInfoModel, exclude=[""])
         convert_snowid_in_model(students_family_info,
                                 ["id", 'student_id', 'school_id', 'class_id', 'session_id', 'student_family_info_id'])
+        # 家长身份 使用统一方法 todo
         await self.send_student_familyinfo_to_org_center(students_family_info, exits_student)
 
 
@@ -114,17 +117,33 @@ class StudentsFamilyInfoRule(object):
             student_family_info.append(student_family_info_model)
 
         return student_family_info
-    async def send_student_familyinfo_to_org_center(self, exists_planning_school_origin,exits_student):
-        baseinfo = await self.students_base_info_dao.get_students_base_info_by_student_id(exits_student.student_id)
+    async def send_student_familyinfo_to_org_center(self, exists_planning_school_origin:StudentsFamilyInfo,exits_student:Student):
+        student_baseinfo=baseinfo = await self.students_base_info_dao.get_students_base_info_by_student_id(exits_student.student_id)
         # data_dict = to_dict(teacher_db)
         # print(data_dict)
-        dict_data = EducateUserModel(**exists_planning_school_origin,currentUnit=baseinfo.school,
+        school = await self.school_dao.get_school_by_id(student_baseinfo.school_id)
+        dict_data = EducateUserModel(**exists_planning_school_origin.__dict__,currentUnit=baseinfo.school,
                                      # createdTime= exists_planning_school_origin.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      # updatedTime=exists_planning_school_origin.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      name=exists_planning_school_origin.name,
                                      userCode=exists_planning_school_origin.identification_number,
                                      userId=exists_planning_school_origin.student_family_info_id,
                                      phoneNumber= exists_planning_school_origin.phone_number,
+                                     # name=exits_student.student_name,
+                                     # userCode=student_baseinfo.student_number,
+                                     # userId=student_baseinfo.student_id,
+                                     # phoneNumber= '',
+                                     departmentId=student_baseinfo.class_id,
+                                     departmentName=student_baseinfo.class_id,
+                                     gender= exists_planning_school_origin.gender,
+                                     idcard=exists_planning_school_origin.identification_number,
+                                     idcardType=exists_planning_school_origin.identification_type,
+                                     realName=exists_planning_school_origin.name,
+                                     # 组织和主单位
+                                     owner=school.school_no,
+                                     mainUnitName=school.school_no,
+                                     identity=exists_planning_school_origin.identity,
+                                     identityTypeNames=exists_planning_school_origin.identity_type,
                                      )
         dict_data = dict_data.dict()
         params_data = JsonUtils.dict_to_json_str(dict_data)
