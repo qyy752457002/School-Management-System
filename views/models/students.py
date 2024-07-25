@@ -570,6 +570,8 @@ class StudentsFamilyInfo(BaseModel):
     contact_address: str | None = Field(..., title="联系地址", description="联系地址")
     workplace: str | None = Field("", title="工作单位", description="工作单位")
     family_member_occupation: str = Field("", title="家庭成员职业", description="家庭成员职业")
+    identity: str|None = Field('', title="", description="")
+    identity_type: str|None = Field('', title="", description="")
 
     @model_validator(mode="before")
     @classmethod
