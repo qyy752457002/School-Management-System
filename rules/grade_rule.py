@@ -1,4 +1,5 @@
-from datetime import datetime
+import copy
+from datetime import datetime, date
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
@@ -8,9 +9,11 @@ from sqlalchemy import select
 from business_exceptions.grade import GradeAlreadyExistError, GradeNotFoundError
 from daos.enum_value_dao import EnumValueDAO
 from daos.grade_dao import GradeDAO
+from daos.school_dao import SchoolDAO
 from models.grade import Grade
+from rules.common.common_rule import send_orgcenter_request
 from rules.enum_value_rule import EnumValueRule
-from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
+from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model, convert_dates_to_strings
 from views.models.grades import Grades as GradeModel
 from views.models.system import GRADE_ENUM_KEY, DISTRICT_ENUM_KEY
 
@@ -18,7 +21,7 @@ from views.models.system import GRADE_ENUM_KEY, DISTRICT_ENUM_KEY
 @dataclass_inject
 class GradeRule(object):
     grade_dao: GradeDAO
-
+    school_dao: SchoolDAO
     async def get_grade_by_id(self, grade_id):
         grade_db = await self.grade_dao.get_grade_by_id(grade_id)
         # 可选 , exclude=[""]
@@ -61,6 +64,8 @@ class GradeRule(object):
 
                 await self.grade_dao.add_grade(grade_db)
         convert_snowid_in_model(grade_res, ["id", "school_id",])
+        # 发送组织中心
+        await self.send_org_to_org_center(grade_db )
         return grade_res
 
     async def update_grade(self, grade):
@@ -139,4 +144,73 @@ class GradeRule(object):
             convert_snowid_in_model(item, ["id", "school_id",])
             lst.append(item)
         return lst
+    async def send_org_to_org_center(self, exists_planning_school_origin: Grade):
+        exists_planning_school = copy.deepcopy(exists_planning_school_origin)
+        if hasattr(exists_planning_school, 'updated_at') and isinstance(exists_planning_school.updated_at,
+                                                                        (date, datetime)):
+            exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
+
+        school = await self.school_dao.get_school_by_id(exists_planning_school.school_id)
+        dict_data = {
+            "contactEmail": "j.vyevxiloyy@qq.com",
+            "createdTime": '',
+            "displayName": exists_planning_school.grade_name,
+            "educateUnit": school.school_name,
+            "educateUnitObj": {
+                "administrativeDivisionCity": "",
+                "administrativeDivisionCounty": "",
+                "administrativeDivisionProvince": "",
+                "createdTime": school.created_at,
+                "departmentObjs": [],
+                "locationAddress": "",
+                "locationCity": "",
+                "locationCounty": "",
+                "locationProvince": "",
+                "owner": "",
+                "unitCode": school.school_no,
+                "unitId": "",
+                "unitName": school.school_name,
+                "unitType": "",
+                "updatedTime": school.updated_at
+            },
+            "isDeleted": False,
+            "isEnabled": True,
+            "isTopGroup": True,
+            "key": "sit",
+            "manager": "",
+            "name": exists_planning_school.grade_name,
+            "newCode": exists_planning_school.grade_no,
+            "newType": "organization",  # 组织类型 特殊参数必须穿这个
+            "owner": school.school_no,
+            "parentId": '',
+            "parentName": "",
+            "tags": [
+                ""
+            ],
+            "title": exists_planning_school.grade_name,
+            "type": "",
+            "updatedTime": ''
+        }
+
+        apiname = '/api/add-group'
+        # 字典参数
+        datadict = dict_data
+        if isinstance(datadict['createdTime'], (date, datetime)):
+            datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
+
+        datadict = convert_dates_to_strings(datadict)
+        print(datadict, '字典参数')
+
+        response = await send_orgcenter_request(apiname, datadict, 'post', False)
+        print(response, '接口响应')
+        try:
+            print(response)
+
+            return response
+        except Exception as e:
+            print(e)
+            raise e
+            return response
+
+        return None
 
