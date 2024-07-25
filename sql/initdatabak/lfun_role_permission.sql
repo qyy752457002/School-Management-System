@@ -1,7 +1,7 @@
 /*
- Navicat Premium Data Transfer
+ Navicat PostgreSQL Dump SQL
 
- Source Server         : 10.0.0.42_54321_schooloms
+ Source Server         : 10.0.0.42
  Source Server Type    : PostgreSQL
  Source Server Version : 120001 (120001)
  Source Host           : 10.0.0.42:54321
@@ -12,7 +12,7 @@
  Target Server Version : 120001 (120001)
  File Encoding         : 65001
 
- Date: 16/07/2024 11:31:08
+ Date: 25/07/2024 13:37:13
 */
 
 
@@ -53,16 +53,14 @@ INSERT INTO "public"."lfun_role_permission" VALUES (2, 1, 2, 1, 0, 0, '2024-06-0
 INSERT INTO "public"."lfun_role_permission" VALUES (3, 1, 3, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (4, 1, 4, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (5, 1, 5, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (6, 1, 6, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (6, 1, 6, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (7, 4, 2, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (9, 4, 4, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (10, 4, 5, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (11, 4, 6, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (12, 5, 2, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (13, 5, 3, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (14, 5, 4, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (15, 5, 5, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (16, 5, 6, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (21, 2, 7, 0, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (17, 2, 8, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (18, 2, 9, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
@@ -203,8 +201,8 @@ INSERT INTO "public"."lfun_role_permission" VALUES (179, 5, 84, 1, 0, 0, '2024-0
 INSERT INTO "public"."lfun_role_permission" VALUES (180, 1, 85, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (181, 4, 85, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (182, 5, 85, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (77, 5, 47, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (75, 1, 47, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (77, 5, 47, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (75, 1, 47, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (8, 4, 3, 2, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (189, 2, 81, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (190, 6, 81, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
@@ -221,8 +219,8 @@ INSERT INTO "public"."lfun_role_permission" VALUES (200, 7, 84, 1, 0, 0, '2024-0
 INSERT INTO "public"."lfun_role_permission" VALUES (201, 2, 85, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (202, 6, 85, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (203, 7, 85, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (80, 6, 48, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (78, 2, 48, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (80, 6, 48, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (78, 2, 48, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (23, 7, 9, 2, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (210, 3, 81, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (211, 8, 81, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
@@ -239,8 +237,8 @@ INSERT INTO "public"."lfun_role_permission" VALUES (221, 9, 84, 1, 0, 0, '2024-0
 INSERT INTO "public"."lfun_role_permission" VALUES (222, 3, 85, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (223, 8, 85, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (224, 9, 85, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (82, 8, 49, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (81, 3, 49, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (82, 8, 49, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (81, 3, 49, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (43, 9, 12, 2, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (228, 12, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (229, 13, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
@@ -264,28 +262,42 @@ INSERT INTO "public"."lfun_role_permission" VALUES (246, 12, 85, 1, 0, 0, '2024-
 INSERT INTO "public"."lfun_role_permission" VALUES (247, 13, 85, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (248, 14, 85, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (225, 12, 47, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (206, 9, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (205, 8, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (204, 3, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (185, 7, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (184, 6, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (183, 2, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (164, 5, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (163, 4, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (162, 1, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (209, 9, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (208, 8, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (207, 3, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (188, 7, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (187, 6, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (186, 2, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (167, 5, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (166, 4, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (165, 1, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (227, 14, 47, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
-INSERT INTO "public"."lfun_role_permission" VALUES (226, 13, 47, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 't', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (206, 9, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (205, 8, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (204, 3, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (185, 7, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (184, 6, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (183, 2, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (164, 5, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (163, 4, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (162, 1, 79, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (209, 9, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (208, 8, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (207, 3, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (188, 7, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (187, 6, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (186, 2, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (167, 5, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (166, 4, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (165, 1, 80, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (227, 14, 47, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (226, 13, 47, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (249, 2, 20, 1, 0, 0, '2024-07-16 11:07:09.000000', '2024-07-16 11:07:13.000000', 'f', NULL);
 INSERT INTO "public"."lfun_role_permission" VALUES (250, 2, 50, 1, 0, 0, '2024-07-25 11:28:50.000000', '2024-07-18 11:28:53.000000', 'f', NULL);
+INSERT INTO "public"."lfun_role_permission" VALUES (16, 5, 6, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (11, 4, 6, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (251, 15, 81, 1, 0, 0, '2024-07-25 11:28:50.000000', '2024-07-18 11:28:53.000000', 'f', NULL);
+INSERT INTO "public"."lfun_role_permission" VALUES (252, 15, 86, 1, 0, 0, '2024-07-25 11:28:50.000000', '2024-07-18 11:28:53.000000', 'f', NULL);
+INSERT INTO "public"."lfun_role_permission" VALUES (253, 15, 87, 1, 0, 0, '2024-07-25 11:28:50.000000', '2024-07-18 11:28:53.000000', 'f', NULL);
+INSERT INTO "public"."lfun_role_permission" VALUES (254, 15, 88, 1, 0, 0, '2024-07-25 11:28:50.000000', '2024-07-18 11:28:53.000000', 'f', NULL);
+INSERT INTO "public"."lfun_role_permission" VALUES (255, 15, 89, 1, 0, 0, '2024-07-25 11:28:50.000000', '2024-07-18 11:28:53.000000', 'f', NULL);
+INSERT INTO "public"."lfun_role_permission" VALUES (256, 15, 90, 1, 0, 0, '2024-07-25 11:28:50.000000', '2024-07-18 11:28:53.000000', 'f', NULL);
+INSERT INTO "public"."lfun_role_permission" VALUES (257, 16, 82, 1, 0, 0, '2024-07-25 11:28:50.000000', '2024-07-18 11:28:53.000000', 'f', NULL);
+INSERT INTO "public"."lfun_role_permission" VALUES (258, 16, 91, 1, 0, 0, '2024-07-25 11:28:50.000000', '2024-07-18 11:28:53.000000', 'f', NULL);
+INSERT INTO "public"."lfun_role_permission" VALUES (259, 16, 92, 1, 0, 0, '2024-07-25 11:28:50.000000', '2024-07-18 11:28:53.000000', 'f', NULL);
+INSERT INTO "public"."lfun_role_permission" VALUES (260, 16, 93, 1, 0, 0, '2024-07-25 11:28:50.000000', '2024-07-18 11:28:53.000000', 'f', NULL);
+INSERT INTO "public"."lfun_role_permission" VALUES (261, 16, 94, 1, 0, 0, '2024-07-25 11:28:50.000000', '2024-07-18 11:28:53.000000', 'f', NULL);
+INSERT INTO "public"."lfun_role_permission" VALUES (262, 16, 95, 1, 0, 0, '2024-07-25 11:28:50.000000', '2024-07-18 11:28:53.000000', 'f', NULL);
 
 -- ----------------------------
 -- Primary Key structure for table lfun_role_permission
