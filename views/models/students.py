@@ -390,6 +390,8 @@ class StudentsBaseInfo(BaseModel):
     borough: str = Field("", title="", description="", max_length=50)
     loc_area: str = Field("", title="", description="", max_length=50)
     edu_number: str = Field('', title="", description="学籍号码")
+    identity: str|None = Field('', title="", description="")
+    identity_type: str|None = Field('', title="", description="")
 
     loc_area_pro: str = Field("", title="", description="", max_length=50)
     residence_address: str = Field("", title="户口所在地（详细）", description="户口所在地（详细）")
