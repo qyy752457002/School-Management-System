@@ -148,8 +148,8 @@ class EducateUserModel(BaseModel):
                 data[_change] = str(data[_change])
             else:
                 pass
-        data["userCode"] = data["idCardNumber"]
-        data["phoneNumber"] = data["name"]
+        data["userCode"] = data["idCardNumber"] if data.get("idCardNumber") else None
+        data["phoneNumber"] = data["name"]  if data.get("name") else None
         return data
 
 

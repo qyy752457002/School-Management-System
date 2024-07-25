@@ -47,9 +47,12 @@ class GradesView(BaseView):
                    ):
         print(page_request)
         obj= await get_extend_params(request)
+        if school_id is  not None:
+            school_id = int(school_id)
+        else:
 
-        if obj.school_id:
-            school_id = int(obj.school_id)
+            if obj.school_id:
+                school_id = int(obj.school_id)
         if obj.city:
             city = str(obj.city)
         if obj.county_id:

@@ -48,7 +48,7 @@ from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
 from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, \
     PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, DISTRICT_ENUM_KEY, \
     PROVINCE_ENUM_KEY, CITY_ENUM_KEY, PLANNING_SCHOOL_STATUS_ENUM_KEY, FOUNDER_TYPE_ENUM_KEY, FOUNDER_TYPE_LV2_ENUM_KEY, \
-    FOUNDER_TYPE_LV3_ENUM_KEY, SCHOOL_ORG_FORM_ENUM_KEY
+    FOUNDER_TYPE_LV3_ENUM_KEY, SCHOOL_ORG_FORM_ENUM_KEY, OrgCenterApiStatus
 from views.models.teachers import EducateUserModel
 
 
@@ -786,7 +786,7 @@ class PlanningSchoolRule(object):
         # teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id)
         # data_dict = to_dict(teacher_db)
         # print(data_dict)
-        dict_data = EducateUserModel(**exists_planning_school_origin,
+        dict_data = EducateUserModel(**exists_planning_school_origin.__dict__,
                                      currentUnit=exists_planning_school_origin.planning_school_name,
                                      createdTime=exists_planning_school_origin.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      updatedTime=exists_planning_school_origin.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
@@ -798,9 +798,15 @@ class PlanningSchoolRule(object):
         dict_data = dict_data.dict()
         params_data = JsonUtils.dict_to_json_str(dict_data)
         api_name = '/api/add-educate-user'
-        # 字典参数
+        # 字典参数 把键按照字典序排序
+
+
         datadict = params_data
-        print(datadict, '参数')
+        datadict = dict(sorted(datadict.items()))
+        # 字典升序
+
+
+        print( '参数',datadict)
         response = await send_orgcenter_request(api_name, datadict, 'post', False)
         print(response, '接口响应')
         try:
@@ -849,6 +855,8 @@ class PlanningSchoolRule(object):
         print(response, '接口响应')
         try:
             print(response)
+            if response['status']== OrgCenterApiStatus.ERROR.value:
+                print('同步组织中心失败')
 
             return response
         except Exception as e:
