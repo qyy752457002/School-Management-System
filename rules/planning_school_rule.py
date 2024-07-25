@@ -200,6 +200,7 @@ class PlanningSchoolRule(object):
         if action=='open':
             #todo 自动同步到 组织中心的处理  包含 规划校 对接过去     学校后面也加对接过去
             await self.send_planning_school_to_org_center(exists_planning_school)
+            # todo 自动添加一个组织
             await self.send_admin_to_org_center(exists_planning_school)
             # 自动新增 学校信息的处理 1.学校信息 2.学校联系方式 3.学校教育信息
             school_rule = get_injector(SchoolRule)
