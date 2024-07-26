@@ -760,7 +760,9 @@ class PlanningSchoolRule(object):
                      'locationCounty': planning_school_communication.loc_area,
                      'locationProvince': planning_school_communication.loc_area_pro,
                      'owner': exists_planning_school.planning_school_no,
-                     'unitCode': exists_planning_school.planning_school_no, 'unitId': '',
+                     # 'unitCode': exists_planning_school.planning_school_no+shortuuid.uuid(),
+                     'unitCode': exists_planning_school.planning_school_no ,
+                     'unitId': '',
                      'unitName': exists_planning_school.planning_school_name,
                      'unitType': 'school',
                      'updatedTime':exists_planning_school.updated_at,
@@ -800,19 +802,21 @@ class PlanningSchoolRule(object):
                                      currentUnit=exists_planning_school_origin.planning_school_name,
                                      createdTime=exists_planning_school_origin.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      updatedTime=exists_planning_school_origin.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
-                                     name=exists_planning_school_origin.admin,
+                                     # 账号和组织
+                                     name=exists_planning_school_origin.admin_phone,
+                                     owner=exists_planning_school_origin.planning_school_no,
                                      userCode=exists_planning_school_origin.admin,
                                      userId=exists_planning_school_origin.admin_phone,
                                      phoneNumber=exists_planning_school_origin.admin_phone,
                                      )
-        dict_data = dict_data.dict()
-        params_data = JsonUtils.dict_to_json_str(dict_data)
+        dict_data = dict_data.__dict__
+        # params_data = JsonUtils.dict_to_json_str(dict_data)
         api_name = '/api/add-educate-user'
         # 字典参数 把键按照字典序排序
 
 
-        datadict = params_data
-        datadict = dict(sorted(datadict.items()))
+        datadict = dict_data
+        # datadict = dict(sorted(datadict.items()))
         # 字典升序
 
 
@@ -821,7 +825,7 @@ class PlanningSchoolRule(object):
         response = await send_orgcenter_request(api_name, datadict, 'post', False)
         print(response, '接口响应')
         try:
-            print(response)
+            print('发起请求 人员管理员到组织中心res',response)
             return response
         except Exception as e:
             print(e)
@@ -852,6 +856,7 @@ class PlanningSchoolRule(object):
                      'updatedTime':exists_planning_school.updated_at,
                      "appHomeUrl": "http://tgiibjya.nr/xxhsh",
                      "appName": exists_planning_school.planning_school_name,
+
                      "appNames": [
                          exists_planning_school.planning_school_name,
                      ],
