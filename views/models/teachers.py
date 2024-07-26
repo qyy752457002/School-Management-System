@@ -150,6 +150,7 @@ class EducateUserModel(BaseModel):
                 pass
         data["userCode"] = data["idCardNumber"]
         data["phoneNumber"] = data["name"]
+        data["owner"]= data["currentUnit"]
         return data
 
 
@@ -1525,6 +1526,7 @@ class TeacherInfoImportSubmit(BaseModel):
     highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
     is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
+
 
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):

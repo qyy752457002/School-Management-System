@@ -40,10 +40,14 @@ from models.teachers_info import TeacherInfo
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from rules.system_rule import SystemRule
-
+from rules.common.common_rule import get_identity_by_job
+from daos.school_dao import SchoolDAO
 from rules.common.common_rule import send_orgcenter_request
+from views.models.school import School as SchoolModel
 from mini_framework.utils.json import JsonUtils
 
+from views.models.organization import OrganizationMembers
+from rules.organization_memebers_rule import OrganizationMembersRule
 from models.public_enum import Gender
 import os
 
@@ -64,6 +68,7 @@ class TeachersRule(object):
     operation_record_rule: OperationRecordRule
     operation_record_dao: OperationRecordDAO
     school_dao: SchoolDAO
+    organization_members_rule: OrganizationMembersRule
 
     async def get_teachers_by_id(self, teachers_id):
         teachers_id = int(teachers_id)
@@ -319,6 +324,9 @@ class TeachersRule(object):
             await self.teacher_work_flow_rule.update_work_flow_by_param(process_instance_id, params)
             await self.teachers_dao.update_teachers(teachers_db, "teacher_main_status", "teacher_sub_status",
                                                     "is_approval")
+            # todo 先在组织中成员中，再发送到组织中心
+            await self.add_teacher_organization_members(int(teachers_id))
+            await self.send_teacher_to_org_center(int(teachers_id))
             return "该老师入职审批已通过"
 
     async def entry_rejected(self, teachers_id, process_instance_id, user_id, reason):
@@ -474,9 +482,9 @@ class TeachersRule(object):
         return task_model
 
     async def send_teacher_to_org_center(self, teacher_id):
-        teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id)
-        # data_dict = to_dict(teacher_db)
-        # print(data_dict)
+        teacher_info = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teacher_id)
+        org_id = teacher_info.org_id
+        teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id, org_id)
         dict_data = orm_model_to_view_model(teacher_db, EducateUserModel, exclude=[""])
         dict_data = dict_data.dict()
         params_data = JsonUtils.dict_to_json_str(dict_data)
@@ -484,13 +492,46 @@ class TeachersRule(object):
         # 字典参数
         datadict = params_data
         print(datadict, '参数')
-        response = await send_orgcenter_request(api_name, datadict, 'post', False)
-        print(response, '接口响应')
-        try:
-            print(response)
-            return response
-        except Exception as e:
-            print(e)
-            raise e
-            return response
+        # response = await send_orgcenter_request(api_name, datadict, 'post', False)
+        # print(response, '接口响应')
+        # try:
+        #     print(response)
+        #     return response
+        # except Exception as e:
+        #     print(e)
+        #     raise e
+        #     return response
         return None
+
+    async def get_teacher_identity(self, teacher_id):
+        current_post_type = ""
+        teacher_db = await self.teachers_dao.get_teachers_by_id(teacher_id)
+        teacher_employer = teacher_db.teacher_employer
+        teacher_info_db = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teacher_id)
+        if teacher_info_db:
+            current_post_type = teacher_info_db.current_post_type
+        school = await self.school_dao.get_school_by_id(int(teacher_employer))
+        school_operation_type = []
+        if school:
+            school = orm_model_to_view_model(school, SchoolModel)
+            if school.school_edu_level:
+                school_operation_type.append(school.school_edu_level)
+            if school.school_category:
+                school_operation_type.append(school.school_category)
+            if school.school_operation_type:
+                school_operation_type.append(school.school_operation_type)
+        identity_type, identity = await get_identity_by_job(school_operation_type, current_post_type)
+        return identity_type, identity
+
+    async def add_teacher_organization_members(self, teacher_id):
+        identity_type, identity = await self.get_teacher_identity(teacher_id)
+        teacher_info_db = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teacher_id)
+        org_id = teacher_info_db.org_id
+        organization = OrganizationMembers()
+        organization.id = SnowflakeIdGenerator(1, 1).generate_id()
+        organization.org_id = int(org_id)
+        organization.teacher_id = int(teacher_id)
+        organization.member_type = identity_type
+        organization.identity = identity
+        await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
+        return
