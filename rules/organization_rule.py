@@ -210,11 +210,15 @@ class OrganizationRule(object):
         # return
 
         school = await self.school_dao.get_school_by_id(exists_planning_school.school_id)
+        if school is None:
+            print('学校未找到 跳过发送组织', exists_planning_school.school_id)
+            return
         # cn_exists_planning_school = await self.convert_school_to_export_format(exists_planning_school )
         dict_data = {
             "contactEmail": "j.vyevxiloyy@qq.com",
             "createdTime": exists_planning_school.created_at,
             "displayName": exists_planning_school.org_name,
+            # todo  参数调试
             "educateUnit": school.school_name,
             "educateUnitObj": {
                 "administrativeDivisionCity": "",
