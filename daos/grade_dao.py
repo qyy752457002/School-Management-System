@@ -105,3 +105,4 @@ class GradeDAO(DAOBase):
         )
         await session.execute(query)
         await session.commit()
+        # await session.refresh()

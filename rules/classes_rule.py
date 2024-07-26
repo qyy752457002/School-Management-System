@@ -1,4 +1,5 @@
 import copy
+import pprint
 from datetime import date, datetime
 
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
@@ -91,12 +92,15 @@ class ClassesRule(ImportCommonAbstractRule,object):
         classes_db = view_model_to_orm_model(classes, Classes, exclude=["id"],other_mapper={
 
         })
+        # 更新时间赋值当前的时间
+        classes_db.updated_at = datetime.now()
+
         classes_db.id = SnowflakeIdGenerator(1, 1).generate_id()
         classes_db = await self.classes_dao.add_classes(classes_db)
         classes = orm_model_to_view_model(classes_db, ClassesModel, exclude=["created_at", 'updated_at'])
-        await self.grade_dao.increment_class_number(classes.school_id,classes.grade_id)
         # 组织中心对接过去
         await self.send_org_to_org_center(classes_db)
+        await self.grade_dao.increment_class_number(classes.school_id,classes.grade_id)
 
         return classes
 
@@ -175,11 +179,16 @@ class ClassesRule(ImportCommonAbstractRule,object):
         pass
     async def send_org_to_org_center(self, exists_planning_school_origin: Classes):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
+        print(111,exists_planning_school)
+        pprint.pprint(exists_planning_school)
         if hasattr(exists_planning_school, 'updated_at') and isinstance(exists_planning_school.updated_at,
                                                                         (date, datetime)):
             exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
 
         school = await self.school_dao.get_school_by_id(exists_planning_school.school_id)
+        if school is None:
+            print('学校未找到 跳过发送组织', exists_planning_school.school_id)
+            return
         dict_data = {
             "contactEmail": "j.vyevxiloyy@qq.com",
             "createdTime": '',
