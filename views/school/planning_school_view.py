@@ -452,12 +452,16 @@ class PlanningSchoolView(BaseView):
                                audit_info: PlanningSchoolTransactionAudit
                                ):
         print('前端入参', audit_info)
-        resultra = await self.planning_school_rule.req_workflow_audit(audit_info, 'open')
-        if resultra is None:
-            return {}
-        if isinstance(resultra, str):
-            return {resultra}
-        return resultra
+        try:
+            resultra = await self.planning_school_rule.req_workflow_audit(audit_info, 'open')
+            if resultra is None:
+                return {}
+            if isinstance(resultra, str):
+                return {resultra}
+            return resultra
+        except Exception as e:
+            print(e)
+            return {e}
         pass
 
     # 学校关闭审核

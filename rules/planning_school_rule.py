@@ -19,6 +19,8 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject, get_i
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
 from sqlalchemy import select
+
+from business_exceptions.common import OrgCenterApiError
 from business_exceptions.planning_school import PlanningSchoolNotFoundError, \
     PlanningSchoolNotFoundByProcessInstanceIdError
 from daos.enum_value_dao import EnumValueDAO
@@ -199,8 +201,8 @@ class PlanningSchoolRule(object):
 
         print(exists_planning_school.status, 2222222)
         if action == 'open':
-            # todo 自动添加一个组织
-            await self.send_unit_orgnization_to_org_center(exists_planning_school)
+            #  自动添加一个组织 todo 组织中心的有报错
+            # await self.send_unit_orgnization_to_org_center(exists_planning_school)
             # todo 自动同步到 组织中心的处理  包含 规划校 对接过去     学校后面也加对接过去
             await self.send_planning_school_to_org_center(exists_planning_school)
 
@@ -211,6 +213,7 @@ class PlanningSchoolRule(object):
             school_eduinfo_rule = get_injector(SchoolEduinfoRule)
             planning_school = orm_model_to_view_model(exists_planning_school, PlanningSchoolModel,
                                                       exclude=["created_at", 'updated_at', ])
+            print('自动创建分校')
 
             school_res = await school_rule.add_school_from_planning_school(planning_school)
             # school_res = await self.school_rule.add_school_from_planning_school(res)
@@ -218,6 +221,7 @@ class PlanningSchoolRule(object):
                 planning_school_id)
             res_comm = orm_model_to_view_model(exists_planning_school_com, PlanningSchoolCommunications,
                                                exclude=["created_at", 'updated_at', ])
+            print('自动创建分校的通信信息')
 
             await school_communication_rule.add_school_communication_from_planning_school(res_comm, school_res)
             # planning_school_edu = orm_model_to_view_model(res_edu, PlanningSchoolEduInfo, exclude=["created_at",'updated_at',])
@@ -225,10 +229,12 @@ class PlanningSchoolRule(object):
                 planning_school_id)
             res_edu = orm_model_to_view_model(exists_planning_school_edu, PlanningSchoolEduInfo,
                                               exclude=["created_at", 'updated_at', ])
+            print('自动创建分校的教育信息')
 
             await school_eduinfo_rule.add_school_eduinfo_from_planning_school(res_edu, school_res)
 
         # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
+        print('更新规划校主体信息')
         planning_school_db = await self.planning_school_dao.update_planning_school_byargs(exists_planning_school,
                                                                                           *need_update_list,
                                                                                           is_commit=True)
@@ -379,34 +385,36 @@ class PlanningSchoolRule(object):
         return response
 
     async def req_workflow_audit(self, audit_info: PlanningSchoolTransactionAudit, action):
-        if audit_info.transaction_audit_action == AuditAction.PASS.value:
-            # 成功则写入数据
-            res2 = await self.deal_planning_school(audit_info.process_instance_id, action)
-            pass
 
-        # 发起审批流的 处理
-
-        datadict = audit_info.__dict__
-        audit_info.process_instance_id = int(audit_info.process_instance_id)
-        if audit_info.process_instance_id > 0:
-            node_id = await self.system_rule.get_work_flow_current_node_by_process_instance_id(
-                audit_info.process_instance_id)
-            audit_info.node_id = node_id['node_instance_id']
-
-        # 节点实例id
-        datadict['node_instance_id'] = audit_info.node_id
-
-        apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
-        # 字典参数
-        datadict = {"user_id": "11", "action": "approved", **datadict}
-        if audit_info.transaction_audit_action == AuditAction.PASS.value:
-            datadict['action'] = 'approved'
-        if audit_info.transaction_audit_action == AuditAction.REFUSE.value:
-            datadict['action'] = 'rejected'
-
-        response = await send_request(apiname, datadict, 'post', True)
-        print(response, '接口响应')
         try:
+            if audit_info.transaction_audit_action == AuditAction.PASS.value:
+                # 成功则写入数据
+                res2 = await self.deal_planning_school(audit_info.process_instance_id, action)
+                pass
+
+            # 发起审批流的 处理
+
+            datadict = audit_info.__dict__
+            audit_info.process_instance_id = int(audit_info.process_instance_id)
+            if audit_info.process_instance_id > 0:
+                node_id = await self.system_rule.get_work_flow_current_node_by_process_instance_id(
+                    audit_info.process_instance_id)
+                audit_info.node_id = node_id['node_instance_id']
+
+            # 节点实例id
+            datadict['node_instance_id'] = audit_info.node_id
+
+            apiname = '/api/school/v1/teacher-workflow/process-work-flow-node-instance'
+            # 字典参数
+            datadict = {"user_id": "11", "action": "approved", **datadict}
+            if audit_info.transaction_audit_action == AuditAction.PASS.value:
+                datadict['action'] = 'approved'
+            if audit_info.transaction_audit_action == AuditAction.REFUSE.value:
+                datadict['action'] = 'rejected'
+            print('审批流发起请求')
+
+            response = await send_request(apiname, datadict, 'post', True)
+            print(response, '接口响应')
 
             # 终态的处理 这个要改为另一个方式
 
@@ -752,7 +760,9 @@ class PlanningSchoolRule(object):
                      'locationCounty': planning_school_communication.loc_area,
                      'locationProvince': planning_school_communication.loc_area_pro,
                      'owner': exists_planning_school.planning_school_no,
-                     'unitCode': exists_planning_school.planning_school_no, 'unitId': '',
+                     'unitCode': exists_planning_school.planning_school_no+shortuuid.uuid(),
+                     # 'unitCode': exists_planning_school.planning_school_no ,
+                     'unitId': '',
                      'unitName': exists_planning_school.planning_school_name,
                      'unitType': 'school',
                      'updatedTime':exists_planning_school.updated_at,
@@ -768,11 +778,13 @@ class PlanningSchoolRule(object):
         #     datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
         datadict = convert_dates_to_strings(datadict)
         print(datadict, '字典参数')
+        print('发起请求单位到组织中心')
 
         response = await send_orgcenter_request(apiname, datadict, 'post', False)
         print(response, '接口响应')
         try:
             print(response)
+            print('发起请求单位到组织中心suc')
 
             return response
         except Exception as e:
@@ -790,27 +802,30 @@ class PlanningSchoolRule(object):
                                      currentUnit=exists_planning_school_origin.planning_school_name,
                                      createdTime=exists_planning_school_origin.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      updatedTime=exists_planning_school_origin.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
-                                     name=exists_planning_school_origin.admin,
-                                     userCode=exists_planning_school_origin.admin,
-                                     userId=exists_planning_school_origin.admin_phone,
+                                     # 账号和组织 syyxorg
+                                     name=exists_planning_school_origin.admin_phone,
+                                     # owner=exists_planning_school_origin.planning_school_no,
+                                     owner= 'syyxorg',
+                                     userCode=exists_planning_school_origin.admin+shortuuid.uuid(),
+                                     userId=exists_planning_school_origin.admin_phone+shortuuid.uuid(),
                                      phoneNumber=exists_planning_school_origin.admin_phone,
                                      )
-        dict_data = dict_data.dict()
-        params_data = JsonUtils.dict_to_json_str(dict_data)
+        dict_data = dict_data.__dict__
+        # params_data = JsonUtils.dict_to_json_str(dict_data)
         api_name = '/api/add-educate-user'
         # 字典参数 把键按照字典序排序
 
-
-        datadict = params_data
-        datadict = dict(sorted(datadict.items()))
+        datadict = dict_data
+        # datadict = dict(sorted(datadict.items()))
         # 字典升序
 
 
         print( '参数',datadict)
+        print('发起请求 人员管理员到组织中心')
         response = await send_orgcenter_request(api_name, datadict, 'post', False)
         print(response, '接口响应')
         try:
-            print(response)
+            print('发起请求 人员管理员到组织中心res',response)
             return response
         except Exception as e:
             print(e)
@@ -823,7 +838,7 @@ class PlanningSchoolRule(object):
         if isinstance(exists_planning_school.updated_at, (date, datetime)):
             exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
 
-        # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer
+        # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer  orgType组织类型 -必填 administrative_unit|public_institutions|school|developer
         planning_school_communication = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(
             exists_planning_school.id)
         cn_exists_planning_school = await self.convert_planning_school_to_export_format(exists_planning_school)
@@ -838,9 +853,34 @@ class PlanningSchoolRule(object):
                      'unitCode': exists_planning_school.planning_school_no, 'unitId': '',
                      'unitName': exists_planning_school.planning_school_name,
                      'unitType': 'school',
-                     'updatedTime':exists_planning_school.updated_at}
-        # todo URL修改
-        apiname = '/api/add-educate-unit'
+                     'updatedTime':exists_planning_school.updated_at,
+                     "appHomeUrl": "http://tgiibjya.nr/xxhsh",
+                     "appName": exists_planning_school.planning_school_name,
+
+                     "appNames": [
+                         exists_planning_school.planning_school_name,
+                     ],
+
+                     "certPublicKey": "",
+                     "clientId": "",
+                     "clientSecret": "",
+                     "code": exists_planning_school.planning_school_no,
+                     "defaultApplication":   exists_planning_school.planning_school_name,
+                     "defaultAvatar": "",
+                     "defaultPassword": "",
+                     "displayName": exists_planning_school.planning_school_name,
+
+                     "logo": "",
+
+                     "orgType": "school",
+                     "overview": "",
+                     "status": "",
+                     "unitCount": "",
+
+
+                     }
+        #  URL修改
+        apiname = '/api/add-org'
         # 字典参数
         datadict = dict_data
         if isinstance(datadict['createdTime'], (date, datetime)):
@@ -850,13 +890,17 @@ class PlanningSchoolRule(object):
         #     datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
         datadict = convert_dates_to_strings(datadict)
         print(datadict, '字典参数')
+        print('发起请求组织到组织中心')
 
         response = await send_orgcenter_request(apiname, datadict, 'post', False)
         print(response, '接口响应')
         try:
             print(response)
-            if response['status']== OrgCenterApiStatus.ERROR.value:
+            is_check_force= True
+            if response['status']== OrgCenterApiStatus.ERROR.value and is_check_force:
                 print('同步组织中心失败')
+                raise OrgCenterApiError( )
+            print('组织添加suc')
 
             return response
         except Exception as e:
