@@ -194,6 +194,8 @@ class SchoolView(BaseView):
         return res
 
     async def page(self,
+                   request:Request,
+
                    page_request=Depends(PageRequest),
                    block: str = Query("", title=" ", description="地域管辖区", ),
                    school_code: str = Query("", title="", description=" 园所标识码", ),
@@ -221,6 +223,7 @@ class SchoolView(BaseView):
                    ):
         print(page_request)
         items = []
+        obj= await get_extend_params(request)
         if not institution_category:
             # institution_category = [InstitutionType.SCHOOL, ]
             pass
@@ -231,7 +234,7 @@ class SchoolView(BaseView):
                                                                       founder_type,
                                                                       founder_type_lv2,
                                                                       founder_type_lv3, planning_school_id, province,
-                                                                      city,institution_category=institution_category)
+                                                                      city,institution_category=institution_category,extend_params=obj)
         return paging_result
 
     # 开办

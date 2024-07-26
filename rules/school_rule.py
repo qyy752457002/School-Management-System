@@ -261,7 +261,7 @@ class SchoolRule(object):
                                      founder_type_lv2=None,
                                      founder_type_lv3=None, planning_school_id=None, province=None, city=None,
                                      institution_category=None, social_credit_code=None, school_org_type=None,
-                                     extra_model=None):
+                                     extra_model=None,extend_params:ExtendParams=None):
         #  根据举办者类型  1及 -3级  处理为条件   1  2ji全部转换为 3级  最后in 3级查询
         enum_value_rule = get_injector(EnumValueRule)
         if founder_type:
@@ -282,7 +282,8 @@ class SchoolRule(object):
                                                               block, school_level, borough, status, founder_type,
                                                               founder_type_lv2,
                                                               founder_type_lv3, planning_school_id, province, city,
-                                                              institution_category, social_credit_code, school_org_type
+                                                              institution_category, social_credit_code, school_org_type,
+                                                              extend_params=extend_params
                                                               )
         # 字段映射的示例写法   , {"hash_password": "password"}
         if extra_model:
