@@ -155,18 +155,9 @@ class SchoolRule(object):
         dicta['school_org_type'] = planning_school.planning_school_org_type
         dicta['school_level'] = planning_school.planning_school_level
         dicta['school_code'] = planning_school.planning_school_code
+        dicta['is_master'] =  True
 
         school = SchoolKeyAddInfo(**dicta)
-        # school = orm_model_to_view_model(planning_school, SchoolKeyAddInfo, exclude=["id"])
-        # school.school_name = planning_school.planning_school_name
-        # school.planning_school_id = planning_school.id
-        # school.school_no = planning_school.planning_school_no
-        # school.school_edu_level = planning_school.planning_school_edu_level
-        # school.school_category = planning_school.planning_school_category
-        # school.school_operation_type = planning_school.planning_school_operation_type
-        # school.school_org_type = planning_school.planning_school_org_type
-        # school.school_level = planning_school.planning_school_level
-        # school.school_code = planning_school.planning_school_code
 
         res = await self.add_school(school)
 

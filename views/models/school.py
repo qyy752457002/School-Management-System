@@ -49,7 +49,7 @@ class School(BaseModel):
     location_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
     urban_ethnic_nature: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
-
+    is_master: str|None|bool = Field(None, title="", description=" ",examples=[''])
     @model_validator(mode="before")
     @classmethod
     def check_id_before(self, data: dict):
@@ -197,6 +197,7 @@ class SchoolKeyAddInfo(BaseModel):
     school_operation_type: str|None = Field('', title="", description=" 办学类型三级",examples=['附设小学班'])
     school_org_type: str = Field('', title="", description=" 学校办别",examples=['民办'])
     school_level: str|None = Field(None, title="", description=" 学校星级",examples=['5'])
+    is_master: str|None|bool = Field(None, title="", description=" ",examples=[''])
     school_code: str = Field('', title="", description=" 园所标识码",examples=['SC562369322SG'])
     @model_validator(mode="before")
     @classmethod
