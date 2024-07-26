@@ -201,8 +201,8 @@ class PlanningSchoolRule(object):
 
         print(exists_planning_school.status, 2222222)
         if action == 'open':
-            # todo 自动添加一个组织
-            await self.send_unit_orgnization_to_org_center(exists_planning_school)
+            #  自动添加一个组织 todo 组织中心的有报错
+            # await self.send_unit_orgnization_to_org_center(exists_planning_school)
             # todo 自动同步到 组织中心的处理  包含 规划校 对接过去     学校后面也加对接过去
             await self.send_planning_school_to_org_center(exists_planning_school)
 
@@ -760,8 +760,8 @@ class PlanningSchoolRule(object):
                      'locationCounty': planning_school_communication.loc_area,
                      'locationProvince': planning_school_communication.loc_area_pro,
                      'owner': exists_planning_school.planning_school_no,
-                     # 'unitCode': exists_planning_school.planning_school_no+shortuuid.uuid(),
-                     'unitCode': exists_planning_school.planning_school_no ,
+                     'unitCode': exists_planning_school.planning_school_no+shortuuid.uuid(),
+                     # 'unitCode': exists_planning_school.planning_school_no ,
                      'unitId': '',
                      'unitName': exists_planning_school.planning_school_name,
                      'unitType': 'school',
@@ -802,18 +802,18 @@ class PlanningSchoolRule(object):
                                      currentUnit=exists_planning_school_origin.planning_school_name,
                                      createdTime=exists_planning_school_origin.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      updatedTime=exists_planning_school_origin.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
-                                     # 账号和组织
+                                     # 账号和组织 syyxorg
                                      name=exists_planning_school_origin.admin_phone,
-                                     owner=exists_planning_school_origin.planning_school_no,
-                                     userCode=exists_planning_school_origin.admin,
-                                     userId=exists_planning_school_origin.admin_phone,
+                                     # owner=exists_planning_school_origin.planning_school_no,
+                                     owner= 'syyxorg',
+                                     userCode=exists_planning_school_origin.admin+shortuuid.uuid(),
+                                     userId=exists_planning_school_origin.admin_phone+shortuuid.uuid(),
                                      phoneNumber=exists_planning_school_origin.admin_phone,
                                      )
         dict_data = dict_data.__dict__
         # params_data = JsonUtils.dict_to_json_str(dict_data)
         api_name = '/api/add-educate-user'
         # 字典参数 把键按照字典序排序
-
 
         datadict = dict_data
         # datadict = dict(sorted(datadict.items()))
