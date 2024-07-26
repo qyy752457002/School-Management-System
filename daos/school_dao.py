@@ -145,6 +145,10 @@ class SchoolDAO(DAOBase):
                 block= extend_params.county_id
                 # query = query.where(PlanningSchool.city == extend_params.city)
             pass
+        if extend_params is not None and planning_school_id is None:
+            if extend_params.school_id:
+                planning_school_id= extend_params.school_id
+            pass
 
         if school_org_type:
             query = query.where(School.school_org_type == school_org_type)
