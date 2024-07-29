@@ -981,7 +981,7 @@ class PlanningSchoolRule(object):
             # "updatedTime": exists_planning_school.updated_at
         }
 
-        apiname = '/api/add-group'
+        apiname = '/api/add-group-organization'
         # 字典参数
         datadict = dict_data
         # if isinstance(datadict['createdTime'], (date, datetime)):
