@@ -806,10 +806,10 @@ class PlanningSchoolRule(object):
                                      updatedTime=exists_planning_school_origin.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      # 账号和组织 syyxorg
                                      name=exists_planning_school_origin.admin_phone,
-                                     # owner=exists_planning_school_origin.planning_school_no,
-                                     owner= 'syyxorg',
-                                     userCode=exists_planning_school_origin.admin+shortuuid.uuid(),
-                                     userId=exists_planning_school_origin.admin_phone+shortuuid.uuid(),
+                                     owner=exists_planning_school_origin.planning_school_no,
+                                     # owner= exists_planning_school_origin.planning_school_name,
+                                     userCode=exists_planning_school_origin.admin ,
+                                     # userId=exists_planning_school_origin.admin_phone+shortuuid.uuid(),
                                      phoneNumber=exists_planning_school_origin.admin_phone,
                                      )
         dict_data = dict_data.__dict__
@@ -879,7 +879,7 @@ class PlanningSchoolRule(object):
                      "overview": "",
                      "status": "",
                      "unitCount": "",
-                     "unitId": exists_planning_school.planning_school_no,
+                     # "unitCode": exists_planning_school.planning_school_no,
 
                      }
         #  URL修改
