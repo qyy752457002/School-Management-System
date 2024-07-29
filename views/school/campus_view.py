@@ -31,7 +31,7 @@ class CampusView(BaseView):
         self.operation_record_rule = get_injector(OperationRecordRule)
 
     async def get(self,
-                  campus_id: int = Query(..., description="校区id", example='1'),
+                  campus_id: int |str= Query(..., description="校区id", example='1'),
 
                   ):
         campus = await self.campus_rule.get_campus_by_id(campus_id)
@@ -62,22 +62,7 @@ class CampusView(BaseView):
 
         res = await self.campus_rule.update_campus(campus_keyinfo)
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(campus_keyinfo.id),
-            operator='admin',
-            module=ChangeModule.KEYINFO.value,
-            target=OperationType.CAMPUS.value,
 
-            action_type=OperationType.MODIFY.value,
-            ip='127.0.0.1',
-            change_data=str(res2)[0:1000],
-            change_field='关键信息',
-            change_item='关键信息',
-            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason='修改基本信息',
-            doc_upload='',
-            status='1',
-            account='', ))
 
         return res
 
@@ -87,22 +72,7 @@ class CampusView(BaseView):
         print(campus_id)
         res = await self.campus_rule.softdelete_campus(campus_id)
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(campus_id),
-            operator='admin',
-            module=ChangeModule.KEYINFO.value,
-            target=OperationType.CAMPUS.value,
 
-            action_type=OperationType.DELETE.value,
-            ip='127.0.0.1',
-            change_data=str(res)[0:1000],
-            change_field='关键信息',
-            change_item='关键信息',
-            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason='修改基本信息',
-            doc_upload='',
-            status='1',
-            account='', ))
 
         return res
 
@@ -113,22 +83,7 @@ class CampusView(BaseView):
         log_con = compare_modify_fields(campus_baseinfo, origin)
         res = await self.campus_rule.update_campus(campus_baseinfo, 2)
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(campus_baseinfo.id),
-            operator='admin',
-            module=ChangeModule.BASEINFO.value,
-            target=OperationType.CAMPUS.value,
 
-            action_type=OperationType.MODIFY.value,
-            ip='127.0.0.1',
-            change_data=str(log_con)[0:1000],
-            change_field='关键信息',
-            change_item='关键信息',
-            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason='修改基本信息',
-            doc_upload='',
-            status='1',
-            account='', ))
         return res
 
     async def page(self,
@@ -170,22 +125,7 @@ class CampusView(BaseView):
         # print(campus)
         res = await self.campus_rule.update_campus_status(campus_id, PlanningSchoolStatus.NORMAL.value)
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(campus_id),
-            operator='admin',
-            module=ChangeModule.BASEINFO.value,
-            target=OperationType.CAMPUS.value,
 
-            action_type=OperationType.MODIFY.value,
-            ip='127.0.0.1',
-            change_data=str(campus_id)[0:1000],
-            change_field='关键信息',
-            change_item='关键信息',
-            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason='修改基本信息',
-            doc_upload='',
-            status='1',
-            account='', ))
 
         return res
 
@@ -195,22 +135,7 @@ class CampusView(BaseView):
         # print(campus)
         res = await self.campus_rule.update_campus_status(campus_id, PlanningSchoolStatus.CLOSED.value)
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(campus_id),
-            operator='admin',
-            module=ChangeModule.BASEINFO.value,
-            target=OperationType.CAMPUS.value,
 
-            action_type=OperationType.MODIFY.value,
-            ip='127.0.0.1',
-            change_data=str(campus_id)[0:1000],
-            change_field='关键信息',
-            change_item='关键信息',
-            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason='修改基本信息',
-            doc_upload='',
-            status='1',
-            account='', ))
 
         return res
 
@@ -226,7 +151,7 @@ class CampusView(BaseView):
                   # campus: CampusBaseInfo,
                   # campus_communication: CampusCommunications,
                   # campus_eduinfo: CampusEduInfo,
-                  campus_id: int = Query(..., title="", description="校区id", example='38'),
+                  campus_id: int |str= Query(..., title="", description="校区id", example='38'),
 
                   ):
         # print(planning_campus)
@@ -237,29 +162,14 @@ class CampusView(BaseView):
         res = await self.campus_rule.update_campus_byargs(campus)
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(campus_id),
-            operator='admin',
-            module=ChangeModule.BASEINFO.value,
-            target=OperationType.CAMPUS.value,
 
-            action_type=OperationType.MODIFY.value,
-            ip='127.0.0.1',
-            change_data=str(log_con)[0:1000],
-            change_field='关键信息',
-            change_item='关键信息',
-            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason='修改基本信息',
-            doc_upload='',
-            status='1',
-            account='', ))
 
         return res
 
     # 正式开办  传全部  插入或者更新
     async def put_open(self,
                        campus: CampusKeyAddInfo,
-                       campus_id: int = Query(..., title="", description="校区id", example='38'),
+                       campus_id: int|str = Query(..., title="", description="校区id", example='38'),
 
                        ):
         # print(planning_school)
@@ -283,22 +193,7 @@ class CampusView(BaseView):
         res2 = await self.patch_open(str(campus_id))
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
-        res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
-            action_target_id=str(campus_id),
-            operator='admin',
-            module=ChangeModule.BASEINFO.value,
-            target=OperationType.PLANNING_SCHOOL.value,
 
-            action_type=OperationType.MODIFY.value,
-            ip='127.0.0.1',
-            change_data=str(log_con)[0:1000],
-            change_field='关键信息',
-            change_item='关键信息',
-            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            action_reason='修改基本信息',
-            doc_upload='',
-            status='1',
-            account='', ))
 
         return res2
 

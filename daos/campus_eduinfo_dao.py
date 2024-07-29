@@ -11,11 +11,14 @@ class CampusEduinfoDAO(DAOBase):
 
     async def get_campus_eduinfo_by_id(self, campus_eduinfo_id):
         session = await self.slave_db()
+        campus_eduinfo_id= int(campus_eduinfo_id)
+
         result = await session.execute(select(CampusEduinfo).where(CampusEduinfo.id == campus_eduinfo_id))
         return result.scalar_one_or_none()
 
     async def get_campus_eduinfo_by_campus_id(self, campus_eduinfo_id):
         session = await self.slave_db()
+        campus_eduinfo_id= int(campus_eduinfo_id)
         result = await session.execute(select(CampusEduinfo).where(CampusEduinfo.campus_id == campus_eduinfo_id))
         return result.scalar_one_or_none()
 

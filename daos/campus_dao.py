@@ -11,6 +11,7 @@ class CampusDAO(DAOBase):
 
     async def get_campus_by_id(self, campus_id):
         session = await self.slave_db()
+        campus_id= int(campus_id)
         result = await session.execute(select(Campus).where(Campus.id == campus_id))
         return result.scalar_one_or_none()
 
