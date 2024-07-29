@@ -209,7 +209,7 @@ class PlanningSchoolRule(object):
             await self.send_unit_orgnization_to_org_center(exists_planning_school)
             # 添加组织结构 部门
             org = Organization(org_name=exists_planning_school.planning_school_name,
-                               school_id = exists_planning_school.planning_school_id,
+                               school_id = exists_planning_school.id,
                                org_type='校',
                                parent_id=0,
                                org_code=exists_planning_school.planning_school_code,
@@ -992,10 +992,10 @@ class PlanningSchoolRule(object):
         # if isinstance(datadict['createdTime'], (date, datetime)):
         #     datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
         datadict = convert_dates_to_strings(datadict)
-        print(datadict, '字典参数')
+        print('调用添加部门  字典参数',datadict, )
 
         response = await send_orgcenter_request(apiname, datadict, 'post', False)
-        print(response, '接口响应')
+        print( '调用添加部门 接口响应',response,)
         try:
             print(response)
 
