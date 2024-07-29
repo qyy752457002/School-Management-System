@@ -3,6 +3,7 @@ from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
 from datetime import date
 
+
 class TeacherEthicRecords(BaseDBModel):
     """
     teacher_ethic_records：teacher_ethic_records_id
@@ -28,8 +29,9 @@ class TeacherEthicRecords(BaseDBModel):
     __tablename__ = 'lfun_teacher_ethic_records'
     __table_args__ = {'comment': 'teacher_ethic_records信息表'}
 
-    teacher_ethic_records_id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="teacher_ethic_recordsID")
-    teacher_id: Mapped[int] = mapped_column(BigInteger,nullable=False, comment="教师ID")
+    teacher_ethic_records_id: Mapped[int] = mapped_column(BigInteger, primary_key=True,
+                                                          comment="teacher_ethic_recordsID")
+    teacher_id: Mapped[int] = mapped_column(BigInteger, nullable=False, comment="教师ID")
     ethics_assessment_date: Mapped[date] = mapped_column(Date, nullable=True, comment="师德考核时间")
     ethics_assessment_conclusion: Mapped[str] = mapped_column(String(64), nullable=True, comment="师德考核结论")
     assessment_institution_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="考核单位名称")
@@ -46,8 +48,7 @@ class TeacherEthicRecords(BaseDBModel):
     disciplinary_occurrence_date: Mapped[date] = mapped_column(Date, nullable=True, comment="处分发生日期")
     disciplinary_revocation_date: Mapped[date] = mapped_column(Date, nullable=True, comment="处分撤销日期")
     disciplinary_revocation_reason: Mapped[str] = mapped_column(String(64), nullable=True, comment="处分撤销原因")
-    is_deleted: Mapped[bool] = mapped_column(nullable=True, comment="是否删除")
+    is_deleted: Mapped[bool] = mapped_column(default=False, nullable=True, comment="是否删除")
     ethic_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="师德类型")
     approval_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="审批状态",
                                                  default="submitting")
-    
