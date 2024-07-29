@@ -201,10 +201,11 @@ class PlanningSchoolRule(object):
 
         print(exists_planning_school.status, 2222222)
         if action == 'open':
-            #  自动添加一个组织 todo 组织中心的有报错
-            # await self.send_unit_orgnization_to_org_center(exists_planning_school)
-            # todo 自动同步到 组织中心的处理  包含 规划校 对接过去     学校后面也加对接过去
+
+            #   自动同步到 组织中心的处理  包含 规划校 对接过去 先加单位 再加组织 后续的    学校单位作为组织的成员 加入到组织里
             await self.send_planning_school_to_org_center(exists_planning_school)
+            #  自动添加一个组织 todo 组织中心的有报错
+            await self.send_unit_orgnization_to_org_center(exists_planning_school)
 
             await self.send_admin_to_org_center(exists_planning_school)
             # 自动新增 学校信息的处理 1.学校信息 2.学校联系方式 3.学校教育信息
@@ -759,9 +760,10 @@ class PlanningSchoolRule(object):
                      'locationCity': exists_planning_school.city,
                      'locationCounty': planning_school_communication.loc_area,
                      'locationProvince': planning_school_communication.loc_area_pro,
-                     'owner': exists_planning_school.planning_school_no,
-                     'unitCode': exists_planning_school.planning_school_no+shortuuid.uuid(),
-                     # 'unitCode': exists_planning_school.planning_school_no ,
+                     # 所属组织这个可以不要
+                     # 'owner': exists_planning_school.planning_school_no,
+                     # 'unitCode': exists_planning_school.planning_school_no+shortuuid.uuid(),
+                     'unitCode': exists_planning_school.planning_school_no ,
                      'unitId': '',
                      'unitName': exists_planning_school.planning_school_name,
                      'unitType': 'school',
@@ -798,16 +800,17 @@ class PlanningSchoolRule(object):
         # teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id)
         # data_dict = to_dict(teacher_db)
         # print(data_dict)
+        # todo  身份类型的 读取
         dict_data = EducateUserModel(**exists_planning_school_origin.__dict__,
                                      currentUnit=exists_planning_school_origin.planning_school_name,
                                      createdTime=exists_planning_school_origin.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      updatedTime=exists_planning_school_origin.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      # 账号和组织 syyxorg
                                      name=exists_planning_school_origin.admin_phone,
-                                     # owner=exists_planning_school_origin.planning_school_no,
-                                     owner= 'syyxorg',
-                                     userCode=exists_planning_school_origin.admin+shortuuid.uuid(),
-                                     userId=exists_planning_school_origin.admin_phone+shortuuid.uuid(),
+                                     owner=exists_planning_school_origin.planning_school_no,
+                                     # owner= exists_planning_school_origin.planning_school_name,
+                                     userCode=exists_planning_school_origin.admin ,
+                                     # userId=exists_planning_school_origin.admin_phone+shortuuid.uuid(),
                                      phoneNumber=exists_planning_school_origin.admin_phone,
                                      )
         dict_data = dict_data.__dict__
@@ -850,22 +853,23 @@ class PlanningSchoolRule(object):
                      'locationCity': exists_planning_school.city,
                      'locationCounty': planning_school_communication.loc_area,
                      'locationProvince': planning_school_communication.loc_area_pro, 'owner': '',
-                     'unitCode': exists_planning_school.planning_school_no, 'unitId': '',
+                     'unitCode': exists_planning_school.planning_school_no,
+                     # 'unitId': '',
                      'unitName': exists_planning_school.planning_school_name,
                      'unitType': 'school',
                      'updatedTime':exists_planning_school.updated_at,
-                     "appHomeUrl": "http://tgiibjya.nr/xxhsh",
-                     "appName": exists_planning_school.planning_school_name,
+                     # "appHomeUrl": "http://tgiibjya.nr/xxhsh",
+                     # "appName": exists_planning_school.planning_school_name,
 
-                     "appNames": [
-                         exists_planning_school.planning_school_name,
-                     ],
+                     # "appNames": [
+                     #     exists_planning_school.planning_school_name,
+                     # ],
 
                      "certPublicKey": "",
                      "clientId": "",
                      "clientSecret": "",
                      "code": exists_planning_school.planning_school_no,
-                     "defaultApplication":   exists_planning_school.planning_school_name,
+                     # "defaultApplication":   exists_planning_school.planning_school_name,
                      "defaultAvatar": "",
                      "defaultPassword": "",
                      "displayName": exists_planning_school.planning_school_name,
@@ -876,7 +880,7 @@ class PlanningSchoolRule(object):
                      "overview": "",
                      "status": "",
                      "unitCount": "",
-
+                     # "unitId": exists_planning_school.planning_school_no,
 
                      }
         #  URL修改
