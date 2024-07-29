@@ -761,7 +761,7 @@ class PlanningSchoolRule(object):
                      'locationCounty': planning_school_communication.loc_area,
                      'locationProvince': planning_school_communication.loc_area_pro,
                      # 所属组织这个可以不要
-                     'owner': exists_planning_school.planning_school_no,
+                     # 'owner': exists_planning_school.planning_school_no,
                      # 'unitCode': exists_planning_school.planning_school_no+shortuuid.uuid(),
                      'unitCode': exists_planning_school.planning_school_no ,
                      'unitId': '',
@@ -800,6 +800,7 @@ class PlanningSchoolRule(object):
         # teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id)
         # data_dict = to_dict(teacher_db)
         # print(data_dict)
+        # todo  身份类型的 读取
         dict_data = EducateUserModel(**exists_planning_school_origin.__dict__,
                                      currentUnit=exists_planning_school_origin.planning_school_name,
                                      createdTime=exists_planning_school_origin.created_at.strftime("%Y-%m-%d %H:%M:%S"),
@@ -879,7 +880,7 @@ class PlanningSchoolRule(object):
                      "overview": "",
                      "status": "",
                      "unitCount": "",
-                     # "unitCode": exists_planning_school.planning_school_no,
+                     # "unitId": exists_planning_school.planning_school_no,
 
                      }
         #  URL修改
