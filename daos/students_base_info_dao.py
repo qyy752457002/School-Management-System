@@ -43,7 +43,7 @@ class StudentsBaseInfoDao(DAOBase):
         """
         session = await self.master_db()
         # update_contents = get_update_contents(students_base_info, *args)
-        if ',' in student_ids:
+        if isinstance(student_ids, str) and  ',' in student_ids:
             student_ids = student_ids.split(',')
         else:
             student_ids = [student_ids]

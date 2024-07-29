@@ -68,7 +68,7 @@ class ClassDivisionRecordsImport(BaseModel):
     student_no: str = Field('', title="", description="学生编号",examples=['1'])
     school_no: str = Field('', title="", description="",examples=['1'])
     grade_no: str  = Field('', title="", description="",examples=['1'])
-    class_no: str = Field('', title="", description="",examples=['1'])
+    class_standard_name: str = Field('', title="", description="",examples=['1'])
 
     school_id: int|str = Field(0, title="学校ID", description="学校ID",examples=['1'])
     grade_id: int |str= Field(0, title="年级ID", description="年级ID",examples=['1'])

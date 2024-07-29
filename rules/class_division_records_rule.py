@@ -21,6 +21,7 @@ from daos.class_dao import ClassesDAO
 from daos.class_division_records_dao import ClassDivisionRecordsDAO
 from daos.grade_dao import GradeDAO
 from daos.school_dao import SchoolDAO
+from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.class_division_records import ClassDivisionRecords
 from rules.students_base_info_rule import StudentsBaseInfoRule
@@ -41,7 +42,7 @@ class ClassDivisionRecordsRule(object):
     school_dao: SchoolDAO
     garde_dao: GradeDAO
     file_storage_dao: FileStorageDAO
-    # students_base_info_dao: StudentsBaseInfoDao
+    students_base_info_dao: StudentsBaseInfoDao
     task_dao: TaskDAO
 
     async def get_class_division_records_by_id(self, class_division_records_id):
@@ -53,7 +54,7 @@ class ClassDivisionRecordsRule(object):
     async def add_class_division_records(self, class_id, student_ids):
         class_id = int(class_id)
         class_division_records=[]
-        if ',' in student_ids:
+        if isinstance(student_ids, str) and  ',' in student_ids:
             student_ids = student_ids.split(',')
         else:
             student_ids = [student_ids]
@@ -222,23 +223,30 @@ class ClassDivisionRecordsRule(object):
         classes  = await self.class_dao.get_all_class()
         dic = {}
         for row in schools:
-            dic[getattr(row, 'id')] = row
+            dic[getattr(row, 'school_no')] = row
         schools= dic
         dic = {}
         for row in grades:
-            dic[getattr(row, 'id')] = row
+            dic[getattr(row, 'grade_no')] = row
         grades= dic
         dic = {}
         for row in classes:
-            dic[getattr(row, 'id')] = row
+            dic[getattr(row, 'class_standard_name')] = row
         classes= dic
         students_base_info_rule= get_injector(StudentsBaseInfoRule )
-        class_division_records_rule= get_injector(StudentsBaseInfoRule )
+        print(class_division_records)
         for class_division_records_item in class_division_records:
-            class_division_records_item.school_id =  schools[class_division_records_item.school_no].getattr('id') if class_division_records_item.school_no in schools.keys() else None
-            class_division_records_item.grade_id =  grades[class_division_records_item.grade_no].getattr('id') if class_division_records_item.grade_no in grades.keys() else None
-            class_division_records_item.class_id =  classes[class_division_records_item.class_no].getattr('id') if class_division_records_item.class_no in classes.keys() else None
-            student= await self.student_dao.get_students_by_param( student_number = class_division_records_item.student_no)
+            class_division_records_item.school_id =  schools[class_division_records_item.school_no].id if class_division_records_item.school_no in schools.keys() else None
+            class_division_records_item.grade_id =  grades[class_division_records_item.grade_no].id if class_division_records_item.grade_no in grades.keys() else None
+            class_division_records_item.class_id =  classes[class_division_records_item.class_standard_name].id if class_division_records_item.class_standard_name in classes.keys() else None
+            # student= await self.student_dao.get_students_by_param( student_number = class_division_records_item.student_no)
+            student= await self.students_base_info_dao.get_students_base_info_by_param( student_number = class_division_records_item.student_no)
+            if student is None:
+                print('学生未找到 跳过')
+                continue
+            if class_division_records_item.class_id is None:
+                print('班级参数有误 跳过' ,class_division_records_item.class_standard_name  , classes)
+                continue
             class_division_records_item.student_id = student.student_id
 
             # 学生班级和学生状态
@@ -248,7 +256,7 @@ class ClassDivisionRecordsRule(object):
             # 更新学生的 班级和 学校信息
             student_ids =  class_division_records_item.student_id
             class_id= class_division_records_item.class_id
-            if ',' in student_ids:
+            if isinstance(student_ids,str) and  ',' in student_ids:
                 student_ids = student_ids.split(',')
             else:
                 student_ids = [student_ids]
