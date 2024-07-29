@@ -850,22 +850,23 @@ class PlanningSchoolRule(object):
                      'locationCity': exists_planning_school.city,
                      'locationCounty': planning_school_communication.loc_area,
                      'locationProvince': planning_school_communication.loc_area_pro, 'owner': '',
-                     'unitCode': exists_planning_school.planning_school_no, 'unitId': '',
+                     'unitCode': exists_planning_school.planning_school_no,
+                     # 'unitId': '',
                      'unitName': exists_planning_school.planning_school_name,
                      'unitType': 'school',
                      'updatedTime':exists_planning_school.updated_at,
-                     "appHomeUrl": "http://tgiibjya.nr/xxhsh",
-                     "appName": exists_planning_school.planning_school_name,
+                     # "appHomeUrl": "http://tgiibjya.nr/xxhsh",
+                     # "appName": exists_planning_school.planning_school_name,
 
-                     "appNames": [
-                         exists_planning_school.planning_school_name,
-                     ],
+                     # "appNames": [
+                     #     exists_planning_school.planning_school_name,
+                     # ],
 
                      "certPublicKey": "",
                      "clientId": "",
                      "clientSecret": "",
                      "code": exists_planning_school.planning_school_no,
-                     "defaultApplication":   exists_planning_school.planning_school_name,
+                     # "defaultApplication":   exists_planning_school.planning_school_name,
                      "defaultAvatar": "",
                      "defaultPassword": "",
                      "displayName": exists_planning_school.planning_school_name,
@@ -876,7 +877,7 @@ class PlanningSchoolRule(object):
                      "overview": "",
                      "status": "",
                      "unitCount": "",
-
+                     "unitId": "25"
 
                      }
         #  URL修改
