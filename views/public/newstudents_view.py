@@ -16,7 +16,7 @@ from business_exceptions.student import StudentStatusError
 from rules.class_division_records_rule import ClassDivisionRecordsRule
 from rules.operation_record import OperationRecordRule
 from views.common.common_view import compare_modify_fields, get_client_ip, convert_query_to_none
-from views.models.class_division_records import ClassDivisionRecordsSearchRes
+from views.models.class_division_records import ClassDivisionRecordsSearchRes, ClassDivisionRecordsImport
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchoolImportReq, PlanningSchoolFileStorageModel
 from views.models.students import NewStudents, NewStudentsQuery, NewStudentsQueryRe, StudentsKeyinfo, StudentsBaseInfo, \
@@ -55,35 +55,24 @@ class NewsStudentsInfoView(BaseView):
         self.class_division_records_rule = get_injector(ClassDivisionRecordsRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
     # 供阳光分班结果同步
-    async def sync_shine_newstudent_classdivision(self,
-                                            enrollment_number: str = Query('', title="", description="报名号",
-                                                                           min_length=1, max_length=30, example=''),
-                                            school_id: int | str = Query(0, title="", description="学校ID", example=''),
-                                            id_type: str = Query('', title="", description="身份证件类型", min_length=1,
-                                                                 max_length=30, example=''),
-                                            student_name: str = Query('', title="", description="姓名", min_length=1,
-                                                                      max_length=30, example=''),
-                                            created_at: str = Query('', title="", description="分班时间", min_length=1,
-                                                                    max_length=30, example=''),
-                                            student_gender: str = Query('', title="", description="性别", min_length=1,
-                                                                        max_length=30, example=''),
-                                            class_id: int | str = Query(0, title="", description="班级", example=''),
-                                            status: str = Query('', title="", description="状态", min_length=1,
-                                                                max_length=30, example=''),
-                                            page_request=Depends(PageRequest)):
+    async def post_newstudent_classdivision(self,
+                                                  class_division_records:List[ClassDivisionRecordsImport],
+
+                                            ):
         """
-        分页查询
+
         """
-        paging_result = await self.class_division_records_rule.query_class_division_records_with_page(
-            page_request, school_id, id_type, student_name, created_at, student_gender, class_id, status,
-            enrollment_number, )
+        paging_result=None
+        paging_result = await self.deal_newstudent_classdivision(class_division_records)
+
+        # for class_division_record in class_division_records:
+
         return paging_result
 
 
     # 修改分班
-    async def patch_newstudent_classdivision(self,
-                                             class_id: int | str = Query(..., title="", description="班级ID", ),
-                                             student_id: str = Query(..., title="", description="学生ID/逗号分割", ),
+    async def deal_newstudent_classdivision(self,
+                                             class_division_records
 
                                              ):
         """
@@ -91,23 +80,9 @@ class NewsStudentsInfoView(BaseView):
         """
         try:
             res = None
-            if class_id:
-                class_id = int(class_id)
-            # 学生班级和学生状态
-            res = await self.students_base_info_rule.update_students_class_division(class_id, student_id)
-            # 分班记录
-            res_div = await self.class_division_records_rule.add_class_division_records(class_id, student_id)
-            # 更新学生的 班级和 学校信息
-            student_ids = student_id
-            if ',' in student_ids:
-                student_ids = student_ids.split(',')
-            else:
-                student_ids = [student_ids]
-            for student_id in student_ids:
-                baseinfo = StudentsBaseInfo(student_id=student_id, class_id=class_id, school_id=res_div.school_id,
-                                            grade_id=res_div.grade_id)
+            # 根据编码转换ID 等操作
+            res = await self.class_division_records_rule.add_class_division_records_and_update_student_baseinfo(class_division_records )
 
-                res3 = await self.students_base_info_rule.update_students_base_info(baseinfo)
 
         except ValueError as e:
             traceback.print_exc()
@@ -121,30 +96,6 @@ class NewsStudentsInfoView(BaseView):
         return res
 
 
-    # 分页查询
-    async def page_newstudent_classdivision(self,
-                                            enrollment_number: str = Query('', title="", description="报名号",
-                                                                           min_length=1, max_length=30, example=''),
-                                            school_id: int | str = Query(0, title="", description="学校ID", example=''),
-                                            id_type: str = Query('', title="", description="身份证件类型", min_length=1,
-                                                                 max_length=30, example=''),
-                                            student_name: str = Query('', title="", description="姓名", min_length=1,
-                                                                      max_length=30, example=''),
-                                            created_at: str = Query('', title="", description="分班时间", min_length=1,
-                                                                    max_length=30, example=''),
-                                            student_gender: str = Query('', title="", description="性别", min_length=1,
-                                                                        max_length=30, example=''),
-                                            class_id: int | str = Query(0, title="", description="班级", example=''),
-                                            status: str = Query('', title="", description="状态", min_length=1,
-                                                                max_length=30, example=''),
-                                            page_request=Depends(PageRequest)):
-        """
-        分页查询
-        """
-        paging_result = await self.class_division_records_rule.query_class_division_records_with_page(
-            page_request, school_id, id_type, student_name, created_at, student_gender, class_id, status,
-            enrollment_number, )
-        return paging_result
 
 
 

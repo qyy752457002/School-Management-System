@@ -1,6 +1,7 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import os
 from datetime import datetime
+from typing import List
 
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
@@ -19,10 +20,12 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.class_dao import ClassesDAO
 from daos.class_division_records_dao import ClassDivisionRecordsDAO
 from daos.grade_dao import GradeDAO
+from daos.school_dao import SchoolDAO
 from daos.students_dao import StudentsDao
 from models.class_division_records import ClassDivisionRecords
 from views.common.common_view import page_none_deal, convert_snowid_to_strings
-from views.models.class_division_records import ClassDivisionRecords as ClassDivisionRecordsModel
+from views.models.class_division_records import ClassDivisionRecords as ClassDivisionRecordsModel, \
+    ClassDivisionRecordsImport
 from views.models.class_division_records import ClassDivisionRecordsSearchRes
 from views.models.classes import Classes
 from views.models.grades import Grades
@@ -34,6 +37,7 @@ class ClassDivisionRecordsRule(object):
     class_division_records_dao: ClassDivisionRecordsDAO
     student_dao: StudentsDao
     class_dao: ClassesDAO
+    school_dao: SchoolDAO
     garde_dao: GradeDAO
     file_storage_dao: FileStorageDAO
     # students_base_info_dao: StudentsBaseInfoDao
@@ -207,3 +211,41 @@ class ClassDivisionRecordsRule(object):
             task_result = TaskResult()
 
         return task_result
+
+
+    async def add_class_division_records_and_update_student_baseinfo(self,    class_division_records:List[ClassDivisionRecordsImport] ):
+
+        # 根据编码转换ID 等操作
+        schools = await self.school_dao.get_all_schools()
+        grades = await self.garde_dao.get_all_grades()
+        classes  = await self.class_dao.get_all_class()
+        for class_division_records_item in class_division_records:
+            class_division_records_item.school_id = get_id_by_code(schools, class_division_records_item.school_id)
+            class_division_records_item.grade_id = get_id_by_code(grades, class_division_records_item.grade_id)
+            class_division_records_item.class_id = get_id_by_code(classes, class_division_records_item.class_id)
+            class_division_records_item.student_id =  self.student_dao.get_students_by_param( student_number = class_division_records_item.student_no)
+
+
+
+        if class_id:
+            class_id = int(class_id)
+            # 学生班级和学生状态
+        res = await self.students_base_info_rule.update_students_class_division(class_id, student_id)
+        # 分班记录
+        res_div = await self.class_division_records_rule.add_class_division_records(class_id, student_id)
+        # 更新学生的 班级和 学校信息
+        student_ids = student_id
+        if ',' in student_ids:
+            student_ids = student_ids.split(',')
+        else:
+            student_ids = [student_ids]
+        for student_id in student_ids:
+            baseinfo = StudentsBaseInfo(student_id=student_id, class_id=class_id, school_id=res_div.school_id,
+                                        grade_id=res_div.grade_id)
+
+            res3 = await self.students_base_info_rule.update_students_base_info(baseinfo)
+
+
+
+
+        return class_division_records
