@@ -7,6 +7,7 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.json import JsonUtils
 from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
+from starlette.requests import Request
 
 from business_exceptions.planning_school import PlanningSchoolValidateError, \
     PlanningSchoolStatusError
@@ -17,7 +18,7 @@ from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, convert_dates_to_strings, \
-    serialize, convert_query_to_none, convert_snowid_in_model
+    serialize, convert_query_to_none, convert_snowid_in_model, get_extend_params
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
@@ -452,12 +453,16 @@ class PlanningSchoolView(BaseView):
                                audit_info: PlanningSchoolTransactionAudit
                                ):
         print('前端入参', audit_info)
-        resultra = await self.planning_school_rule.req_workflow_audit(audit_info, 'open')
-        if resultra is None:
-            return {}
-        if isinstance(resultra, str):
-            return {resultra}
-        return resultra
+        try:
+            resultra = await self.planning_school_rule.req_workflow_audit(audit_info, 'open')
+            if resultra is None:
+                return {}
+            if isinstance(resultra, str):
+                return {resultra}
+            return resultra
+        except Exception as e:
+            print(e)
+            return {e}
         pass
 
     # 学校关闭审核
@@ -549,6 +554,7 @@ class PlanningSchoolView(BaseView):
     # 原始的获取规划校分页接口 再用
     async def page(self,
                    # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
+                   request:Request,
                    block: str = Query("", title=" ", description="地域管辖区", ),
                    planning_school_code: str = Query("", title="", description=" 园所标识码", ),
                    planning_school_level: str = Query("", title="", description=" 学校星级", ),
@@ -567,6 +573,8 @@ class PlanningSchoolView(BaseView):
                    page_request=Depends(PageRequest)):
         print(page_request, )
         items = []
+        obj= await get_extend_params(request)
+
         paging_result = await self.planning_school_rule.query_planning_school_with_page(page_request,
                                                                                         planning_school_name,
                                                                                         planning_school_no,
@@ -574,7 +582,7 @@ class PlanningSchoolView(BaseView):
                                                                                         block, planning_school_level,
                                                                                         borough, status, founder_type,
                                                                                         founder_type_lv2,
-                                                                                        founder_type_lv3
+                                                                                        founder_type_lv3,obj
                                                                                         )
         return paging_result
 

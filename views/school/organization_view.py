@@ -60,4 +60,3 @@ class OrganizationView(BaseView):
         res = await self.organization_rule.update_organization(orginization)
 
         return res
-#     todo  成员的curd

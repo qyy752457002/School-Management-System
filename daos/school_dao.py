@@ -7,6 +7,7 @@ from mini_framework.web.std_models.page import PageRequest
 from models.planning_school import PlanningSchool
 from models.school import School
 from models.school_communication import SchoolCommunication
+from views.models.extend_params import ExtendParams
 from views.models.system import InstitutionType
 from views.models.school_and_teacher_sync import SchoolSyncQueryModel
 
@@ -117,7 +118,7 @@ class SchoolDAO(DAOBase):
                                      block, school_level, borough, status, founder_type,
                                      founder_type_lv2,
                                      founder_type_lv3, planning_school_id, province, city, institution_category,
-                                     social_credit_code, school_org_type) -> Paging:
+                                     social_credit_code, school_org_type,extend_params: ExtendParams = None) -> Paging:
 
         query = (select(
             School.id, School.planning_school_id, School.institution_category, School.school_name, School.school_no,
@@ -140,6 +141,15 @@ class SchoolDAO(DAOBase):
         .join(SchoolCommunication, SchoolCommunication.school_id == School.id, isouter=True).order_by(
             desc(School.id)))
         query = query.where(School.is_deleted == False)
+        if extend_params is not None and len(block)==0 and len(borough)==0:
+            if extend_params.county_id:
+                block= extend_params.county_id
+                # query = query.where(PlanningSchool.city == extend_params.city)
+            pass
+        if extend_params is not None and planning_school_id is None:
+            if extend_params.school_id:
+                planning_school_id= extend_params.school_id
+            pass
 
         if school_org_type:
             query = query.where(School.school_org_type == school_org_type)

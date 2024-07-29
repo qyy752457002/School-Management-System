@@ -1,5 +1,6 @@
-# from mini_framework.databases.entities.toolkit import orm_model_to_view_model
-from copy import deepcopy
+import copy
+import pprint
+from datetime import date, datetime
 
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
@@ -11,10 +12,11 @@ from daos.grade_dao import GradeDAO
 from daos.school_dao import SchoolDAO
 from daos.student_session_dao import StudentSessionDao
 from models.classes import Classes
+from rules.common.common_rule import send_orgcenter_request
 from rules.enum_value_rule import EnumValueRule
 from rules.import_common_abstract_rule import ImportCommonAbstractRule
 from rules.teachers_rule import TeachersRule
-from views.common.common_view import convert_snowid_in_model, convert_snowid_to_strings
+from views.common.common_view import convert_snowid_in_model, convert_snowid_to_strings, convert_dates_to_strings
 from views.models.classes import Classes as ClassesModel
 from views.models.classes import ClassesSearchRes
 from views.models.system import DISTRICT_ENUM_KEY, GRADE_ENUM_KEY, MAJOR_LV3_ENUM_KEY
@@ -90,10 +92,16 @@ class ClassesRule(ImportCommonAbstractRule,object):
         classes_db = view_model_to_orm_model(classes, Classes, exclude=["id"],other_mapper={
 
         })
+        # 更新时间赋值当前的时间
+        classes_db.updated_at = datetime.now()
+
         classes_db.id = SnowflakeIdGenerator(1, 1).generate_id()
         classes_db = await self.classes_dao.add_classes(classes_db)
         classes = orm_model_to_view_model(classes_db, ClassesModel, exclude=["created_at", 'updated_at'])
+        # 组织中心对接过去
+        await self.send_org_to_org_center(classes_db)
         await self.grade_dao.increment_class_number(classes.school_id,classes.grade_id)
+
         return classes
 
     async def update_classes(self, classes, ctype=1):
@@ -169,3 +177,77 @@ class ClassesRule(ImportCommonAbstractRule,object):
         if hasattr(item,'class_type'):
             item.class_type = self.class_systems.get(item.class_type, item.class_type)
         pass
+    async def send_org_to_org_center(self, exists_planning_school_origin: Classes):
+        exists_planning_school = copy.deepcopy(exists_planning_school_origin)
+        print(111,exists_planning_school)
+        pprint.pprint(exists_planning_school)
+        if hasattr(exists_planning_school, 'updated_at') and isinstance(exists_planning_school.updated_at,
+                                                                        (date, datetime)):
+            exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
+
+        school = await self.school_dao.get_school_by_id(exists_planning_school.school_id)
+        if school is None:
+            print('学校未找到 跳过发送组织', exists_planning_school.school_id)
+            return
+        dict_data = {
+            "contactEmail": "j.vyevxiloyy@qq.com",
+            "createdTime": '',
+            "displayName": exists_planning_school.class_standard_name,
+            "educateUnit": school.school_name,
+            "educateUnitObj": {
+                "administrativeDivisionCity": "",
+                "administrativeDivisionCounty": "",
+                "administrativeDivisionProvince": "",
+                "createdTime": school.created_at,
+                "departmentObjs": [],
+                "locationAddress": "",
+                "locationCity": "",
+                "locationCounty": "",
+                "locationProvince": "",
+                "owner": "",
+                "unitCode": school.school_no,
+                "unitId": "",
+                "unitName": school.school_name,
+                "unitType": "",
+                "updatedTime": school.updated_at
+            },
+            "isDeleted": False,
+            "isEnabled": True,
+            "isTopGroup": True,
+            "key": "sit",
+            "manager": "",
+            "name": exists_planning_school.class_standard_name,
+            "newCode": exists_planning_school.class_number,
+            "newType": "organization",  # 组织类型 特殊参数必须穿这个
+            "owner": school.school_no,
+            "parentId": '',
+            "parentName": "",
+            "tags": [
+                ""
+            ],
+            "title": exists_planning_school.class_standard_name,
+            "type": "",
+            "updatedTime": ''
+        }
+
+        apiname = '/api/add-group'
+        # 字典参数
+        datadict = dict_data
+        if isinstance(datadict['createdTime'], (date, datetime)):
+            datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
+
+        datadict = convert_dates_to_strings(datadict)
+        print(datadict, '字典参数')
+
+        response = await send_orgcenter_request(apiname, datadict, 'post', False)
+        print(response, '接口响应')
+        try:
+            print(response)
+
+            return response
+        except Exception as e:
+            print(e)
+            raise e
+            return response
+
+        return None

@@ -5,6 +5,7 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.planning_school import PlanningSchool
+from views.models.extend_params import ExtendParams
 
 
 class PlanningSchoolDAO(DAOBase):
@@ -107,8 +108,13 @@ class PlanningSchoolDAO(DAOBase):
                                               planning_school_code,
                                               block, planning_school_level, borough, status, founder_type,
                                               founder_type_lv2,
-                                              founder_type_lv3) -> Paging:
+                                              founder_type_lv3,extend_params:ExtendParams=None) -> Paging:
         query = select(PlanningSchool).where(PlanningSchool.is_deleted == False).order_by(desc(PlanningSchool.id))
+        if extend_params is not None and len(block)==0 and len(borough)==0:
+            if extend_params.county_id:
+                block= extend_params.county_id
+                # query = query.where(PlanningSchool.city == extend_params.city)
+            pass
 
         if planning_school_name:
             query = query.where(PlanningSchool.planning_school_name == planning_school_name)

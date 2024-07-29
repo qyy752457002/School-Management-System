@@ -17,7 +17,7 @@ class ExtendParams(BaseModel):
     school_id: int = Field(None, title="", description="学校ID",examples=['19'])
     planning_school_id: int = Field(None, title="", description="",examples=['19'])
     # 当区 时有区ID  实际上是code
-    county_id: int = Field(None, title="", description="区编码",examples=['19'])
+    county_id: int|str = Field(None, title="", description="区编码",examples=['19'])
     county_name: int = Field(None, title="", description="区名称",examples=['19'])
     # 市  有市ID
     city: str = Field(None, title="", description="城市 市端这里是沈阳的编码",examples=[''])

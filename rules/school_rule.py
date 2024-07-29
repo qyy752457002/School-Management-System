@@ -1,8 +1,9 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+import copy
 import json
 import os
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, date
 
 from mini_framework.async_task.data_access.models import TaskResult
 from mini_framework.async_task.data_access.task_dao import TaskDAO
@@ -26,15 +27,16 @@ from sqlalchemy import select, or_
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from daos.enum_value_dao import EnumValueDAO
 from daos.planning_school_dao import PlanningSchoolDAO
+from daos.school_communication_dao import SchoolCommunicationDAO
 from daos.school_dao import SchoolDAO
 from models.planning_school import PlanningSchool
 from models.school import School
 from models.student_transaction import AuditAction
-from rules.common.common_rule import send_request
+from rules.common.common_rule import send_request, send_orgcenter_request
 from rules.enum_value_rule import EnumValueRule
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, convert_snowid_in_model, convert_snowid_to_strings, \
-    frontend_enum_mapping
+    frontend_enum_mapping, convert_dates_to_strings
 from views.common.constant import Constant
 from views.models.extend_params import ExtendParams
 from views.models.institutions import InstitutionKeyInfo, Institutions, InstitutionsImport
@@ -50,18 +52,20 @@ from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, SCHOOL_OPEN_
     SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, DISTRICT_ENUM_KEY, PROVINCE_ENUM_KEY, CITY_ENUM_KEY, \
     PLANNING_SCHOOL_STATUS_ENUM_KEY, FOUNDER_TYPE_LV2_ENUM_KEY, SCHOOL_ORG_FORM_ENUM_KEY, FOUNDER_TYPE_LV3_ENUM_KEY, \
     FOUNDER_TYPE_ENUM_KEY
+from views.models.teachers import EducateUserModel
 
 
 @dataclass_inject
 class SchoolRule(object):
     school_dao: SchoolDAO
+    school_communication_dao: SchoolCommunicationDAO
     p_school_dao: PlanningSchoolDAO
     enum_value_dao: EnumValueDAO
     system_rule: SystemRule
     file_storage_dao: FileStorageDAO
     task_dao: TaskDAO
-    districts= None
-    enum_mapper=None
+    districts = None
+    enum_mapper = None
     # 定义映射关系 orm到视图的映射关系
     other_mapper = {"school_name": "institution_name",
                     "school_no": "institution_code",
@@ -151,18 +155,9 @@ class SchoolRule(object):
         dicta['school_org_type'] = planning_school.planning_school_org_type
         dicta['school_level'] = planning_school.planning_school_level
         dicta['school_code'] = planning_school.planning_school_code
+        dicta['is_master'] =  True
 
         school = SchoolKeyAddInfo(**dicta)
-        # school = orm_model_to_view_model(planning_school, SchoolKeyAddInfo, exclude=["id"])
-        # school.school_name = planning_school.planning_school_name
-        # school.planning_school_id = planning_school.id
-        # school.school_no = planning_school.planning_school_no
-        # school.school_edu_level = planning_school.planning_school_edu_level
-        # school.school_category = planning_school.planning_school_category
-        # school.school_operation_type = planning_school.planning_school_operation_type
-        # school.school_org_type = planning_school.planning_school_org_type
-        # school.school_level = planning_school.planning_school_level
-        # school.school_code = planning_school.planning_school_code
 
         res = await self.add_school(school)
 
@@ -266,7 +261,7 @@ class SchoolRule(object):
                                      founder_type_lv2=None,
                                      founder_type_lv3=None, planning_school_id=None, province=None, city=None,
                                      institution_category=None, social_credit_code=None, school_org_type=None,
-                                     extra_model=None):
+                                     extra_model=None,extend_params:ExtendParams=None):
         #  根据举办者类型  1及 -3级  处理为条件   1  2ji全部转换为 3级  最后in 3级查询
         enum_value_rule = get_injector(EnumValueRule)
         if founder_type:
@@ -287,7 +282,8 @@ class SchoolRule(object):
                                                               block, school_level, borough, status, founder_type,
                                                               founder_type_lv2,
                                                               founder_type_lv3, planning_school_id, province, city,
-                                                              institution_category, social_credit_code, school_org_type
+                                                              institution_category, social_credit_code, school_org_type,
+                                                              extend_params=extend_params
                                                               )
         # 字段映射的示例写法   , {"hash_password": "password"}
         if extra_model:
@@ -473,6 +469,9 @@ class SchoolRule(object):
         return response
 
     async def req_workflow_audit(self, audit_info: PlanningSchoolTransactionAudit, action):
+        if audit_info.transaction_audit_action == AuditAction.PASS.value:
+            # 成功则写入数据
+            res2 = await self.deal_school(audit_info.process_instance_id, action)
 
         # 发起审批流的 处理
 
@@ -500,11 +499,7 @@ class SchoolRule(object):
 
         response = await send_request(apiname, datadict, 'post', True)
         print(response, '接口响应')
-        if audit_info.transaction_audit_action == AuditAction.PASS.value:
-            # 成功则写入数据
-            # transrule = get_injector(StudentTransactionRule)
-            # await transrule.deal_student_transaction(student_edu_info)
-            res2 = await self.deal_school(audit_info.process_instance_id, action)
+
         # 终态的处理
 
         await self.set_transaction_end(audit_info.process_instance_id, audit_info.transaction_audit_action)
@@ -520,6 +515,10 @@ class SchoolRule(object):
             return
         if action == 'open':
             res = await self.update_school_status(school.id, PlanningSchoolStatus.NORMAL.value, 'open')
+            await self.send_unit_orgnization_to_org_center(school)
+            await self.send_school_to_org_center(school)
+            await self.send_admin_to_org_center(school)
+
         if action == 'close':
             res = await self.update_school_status(school.id, PlanningSchoolStatus.CLOSED.value, 'close')
         if action == 'keyinfo_change':
@@ -666,8 +665,7 @@ class SchoolRule(object):
             )
             # 处理每个里面的状态 1. 0
             await self.convert_school_to_export_format(paging_result)
-            logger.info('分页的结果条数',len(paging_result.items))
-
+            logger.info('分页的结果条数', len(paging_result.items))
 
             # logger.info('分页的结果',len(paging_result.items))
             excel_writer = ExcelWriter()
@@ -705,7 +703,7 @@ class SchoolRule(object):
                 task_result.result_file_id = 0
             print('拼接数据task_result ', task_result)
 
-            resadd = await self.task_dao.add_task_result(task_result,True)
+            resadd = await self.task_dao.add_task_result(task_result, True)
 
             print('task_result写入结果', resadd)
         except Exception as e:
@@ -731,65 +729,252 @@ class SchoolRule(object):
         if tinfo and tinfo.status == PlanningSchoolStatus.CLOSED.value:
             return False
         return True
+
     #     枚举初始化的方法
     async def init_enum_value_rule(self):
         enum_value_rule = get_injector(EnumValueRule)
-        self.districts =await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY,Constant.CURRENT_CITY,return_keys='description')
-        print('区域',self.districts)
-        self.enum_mapper =   {value: key for key, value in frontend_enum_mapping.items()}
-        print('枚举映射',self.enum_mapper)
+        self.districts = await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY, Constant.CURRENT_CITY,
+                                                                 return_keys='description')
+        print('区域', self.districts)
+        self.enum_mapper = {value: key for key, value in frontend_enum_mapping.items()}
+        print('枚举映射', self.enum_mapper)
         return self
-    async def convert_school_to_import_format(self,item):
-        item.block = self.districts[item.block].enum_value if item.block in self.districts else  item.block
-        item.borough = self.districts[item.borough].enum_value if item.borough in self.districts else  item.borough
-        if hasattr(item,'planning_school_edu_level'):
-            item.planning_school_edu_level = self.enum_mapper[item.planning_school_edu_level] if item.planning_school_edu_level in self.enum_mapper.keys() else  item.planning_school_edu_level
-        if hasattr(item,'planning_school_category'):
-            value= item.planning_school_category
-            if value and isinstance(value, str) and value.find('-')!=-1:
-                temp = value.split('-')
-                item.planning_school_category =  temp[1]  if len(temp)>1  else value
 
-            item.planning_school_category = self.enum_mapper[item.planning_school_category] if item.planning_school_category in self.enum_mapper.keys() else  item.planning_school_category
-        if hasattr(item,'planning_school_org_type'):
-            item.planning_school_org_type = self.enum_mapper[item.planning_school_org_type] if item.planning_school_org_type in self.enum_mapper.keys() else  item.planning_school_org_type
+    async def convert_school_to_import_format(self, item):
+        item.block = self.districts[item.block].enum_value if item.block in self.districts else item.block
+        item.borough = self.districts[item.borough].enum_value if item.borough in self.districts else item.borough
+        if hasattr(item, 'planning_school_edu_level'):
+            item.planning_school_edu_level = self.enum_mapper[
+                item.planning_school_edu_level] if item.planning_school_edu_level in self.enum_mapper.keys() else item.planning_school_edu_level
+        if hasattr(item, 'planning_school_category'):
+            value = item.planning_school_category
+            if value and isinstance(value, str) and value.find('-') != -1:
+                temp = value.split('-')
+                item.planning_school_category = temp[1] if len(temp) > 1 else value
+
+            item.planning_school_category = self.enum_mapper[
+                item.planning_school_category] if item.planning_school_category in self.enum_mapper.keys() else item.planning_school_category
+        if hasattr(item, 'planning_school_org_type'):
+            item.planning_school_org_type = self.enum_mapper[
+                item.planning_school_org_type] if item.planning_school_org_type in self.enum_mapper.keys() else item.planning_school_org_type
         pass
+
     #     定义方法吧一行记录转化为适合导出展示的格式
-    async def convert_school_to_export_format(self,paging_result):
+    async def convert_school_to_export_format(self, paging_result):
         # 获取区县的枚举
         enum_value_rule = get_injector(EnumValueRule)
-        provinces =await enum_value_rule.query_enum_values(PROVINCE_ENUM_KEY,None,return_keys='enum_value')
-        citys =await enum_value_rule.query_enum_values(CITY_ENUM_KEY, None,return_keys='enum_value')
-        districts =await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY,Constant.CURRENT_CITY,return_keys='enum_value')
-        planningschool_status =await enum_value_rule.query_enum_values(PLANNING_SCHOOL_STATUS_ENUM_KEY,None,return_keys='enum_value')
-        founder_type =await enum_value_rule.query_enum_values(FOUNDER_TYPE_ENUM_KEY,None,return_keys='enum_value')
-        founder_type_lv2 =await enum_value_rule.query_enum_values(FOUNDER_TYPE_LV2_ENUM_KEY,None,return_keys='enum_value')
-        founder_type_lv3 =await enum_value_rule.query_enum_values(FOUNDER_TYPE_LV3_ENUM_KEY,None,return_keys='enum_value')
-        school_org_form =await enum_value_rule.query_enum_values(SCHOOL_ORG_FORM_ENUM_KEY,None,return_keys='enum_value')
-        print('区域',districts, '')
+        provinces = await enum_value_rule.query_enum_values(PROVINCE_ENUM_KEY, None, return_keys='enum_value')
+        citys = await enum_value_rule.query_enum_values(CITY_ENUM_KEY, None, return_keys='enum_value')
+        districts = await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY, Constant.CURRENT_CITY,
+                                                            return_keys='enum_value')
+        planningschool_status = await enum_value_rule.query_enum_values(PLANNING_SCHOOL_STATUS_ENUM_KEY, None,
+                                                                        return_keys='enum_value')
+        founder_type = await enum_value_rule.query_enum_values(FOUNDER_TYPE_ENUM_KEY, None, return_keys='enum_value')
+        founder_type_lv2 = await enum_value_rule.query_enum_values(FOUNDER_TYPE_LV2_ENUM_KEY, None,
+                                                                   return_keys='enum_value')
+        founder_type_lv3 = await enum_value_rule.query_enum_values(FOUNDER_TYPE_LV3_ENUM_KEY, None,
+                                                                   return_keys='enum_value')
+        school_org_form = await enum_value_rule.query_enum_values(SCHOOL_ORG_FORM_ENUM_KEY, None,
+                                                                  return_keys='enum_value')
+        print('区域', districts, '')
         enum_mapper = frontend_enum_mapping
-        #todo 这4个 目前 城乡类型 逗号3级   教学点类型 经济属性 民族属性
+        # todo 这4个 目前 城乡类型 逗号3级   教学点类型 经济属性 民族属性
+        if hasattr(paging_result, 'items'):
+            # print('paging_result.items',paging_result.items)
+            for item in paging_result.items:
+                # item.approval_status =  item.approval_status.value
+                delattr(item, 'id')
+                delattr(item, 'created_uid')
+                if hasattr(item, 'province'):
+                    item.province = provinces[
+                        item.province].description if item.province in provinces else item.province
+                if hasattr(item, 'city'):
+                    item.city = citys[item.city].description if item.city in citys else item.city
+                item.block = districts[item.block].description if item.block in districts else item.block
+                item.borough = districts[item.borough].description if item.borough in districts else item.borough
+                item.school_edu_level = enum_mapper[
+                    item.school_edu_level] if item.school_edu_level in enum_mapper.keys() else item.school_edu_level
+                item.school_category = enum_mapper[
+                    item.school_category] if item.school_category in enum_mapper.keys() else item.school_category
+                item.school_operation_type = enum_mapper[
+                    item.school_operation_type] if item.school_operation_type in enum_mapper.keys() else item.school_operation_type
+                item.school_org_type = enum_mapper[
+                    item.school_org_type] if item.school_org_type in enum_mapper.keys() else item.school_org_type
+                item.school_level = enum_mapper[
+                    item.school_level] if item.school_level in enum_mapper.keys() else item.school_level
+                # item.status = PlanningSchoolStatus[item.status] if item.status in enum_mapper.keys() else  item.status
+                item.status = planningschool_status[
+                    item.status].description if item.status in planningschool_status else item.status
+                item.founder_type = founder_type[
+                    item.founder_type].description if item.founder_type in founder_type else item.founder_type
+                item.founder_type_lv2 = founder_type_lv2[
+                    item.founder_type_lv2].description if item.founder_type_lv2 in founder_type_lv2 else item.founder_type_lv2
+                item.founder_type_lv3 = founder_type_lv3[
+                    item.founder_type_lv3].description if item.founder_type_lv3 in founder_type_lv3 else item.founder_type_lv3
+                # print('枚举映射',item)
+                if item.school_org_form:
+                    item.school_org_form = school_org_form[
+                        item.school_org_form].description if item.school_org_form in school_org_form else item.school_org_form
 
-        for item in paging_result.items:
-            # item.approval_status =  item.approval_status.value
+                pass
+        else:
+            item = paging_result
             delattr(item, 'id')
             delattr(item, 'created_uid')
-            item.province = provinces[item.province].description if item.province in provinces else  item.province
-            item.city = citys[item.city].description if item.city in citys else  item.city
-            item.block = districts[item.block].description if item.block in districts else  item.block
-            item.borough = districts[item.borough].description if item.borough in districts else  item.borough
-            item.planning_school_edu_level = enum_mapper[item.planning_school_edu_level] if item.planning_school_edu_level in enum_mapper.keys() else  item.planning_school_edu_level
-            item.planning_school_category = enum_mapper[item.planning_school_category] if item.planning_school_category in enum_mapper.keys() else  item.planning_school_category
-            item.planning_school_operation_type = enum_mapper[item.planning_school_operation_type] if item.planning_school_operation_type in enum_mapper.keys() else  item.planning_school_operation_type
-            item.planning_school_org_type = enum_mapper[item.planning_school_org_type] if item.planning_school_org_type in enum_mapper.keys() else  item.planning_school_org_type
-            item.planning_school_level = enum_mapper[item.planning_school_level] if item.planning_school_level in enum_mapper.keys() else  item.planning_school_level
+            if hasattr(item, 'province'):
+                item.province = provinces[item.province].description if item.province in provinces else item.province
+            if hasattr(item, 'city'):
+                item.city = citys[item.city].description if item.city in citys else item.city
+            item.block = districts[item.block].description if item.block in districts else item.block
+            item.borough = districts[item.borough].description if item.borough in districts else item.borough
+            item.school_edu_level = enum_mapper[
+                item.school_edu_level] if item.school_edu_level in enum_mapper.keys() else item.school_edu_level
+            item.school_category = enum_mapper[
+                item.school_category] if item.school_category in enum_mapper.keys() else item.school_category
+            item.school_operation_type = enum_mapper[
+                item.school_operation_type] if item.school_operation_type in enum_mapper.keys() else item.school_operation_type
+            item.school_org_type = enum_mapper[
+                item.school_org_type] if item.school_org_type in enum_mapper.keys() else item.school_org_type
+            item.school_level = enum_mapper[
+                item.school_level] if item.school_level in enum_mapper.keys() else item.school_level
             # item.status = PlanningSchoolStatus[item.status] if item.status in enum_mapper.keys() else  item.status
-            item.status = planningschool_status[item.status].description if item.status in planningschool_status else  item.status
-            item.founder_type = founder_type[item.founder_type].description if item.founder_type in founder_type else  item.founder_type
-            item.founder_type_lv2 = founder_type_lv2[item.founder_type_lv2].description if item.founder_type_lv2 in founder_type_lv2 else  item.founder_type_lv2
-            item.founder_type_lv3 = founder_type_lv3[item.founder_type_lv3].description if item.founder_type_lv3 in founder_type_lv3 else  item.founder_type_lv3
+            item.status = planningschool_status[
+                item.status].description if item.status in planningschool_status else item.status
+            item.founder_type = founder_type[
+                item.founder_type].description if item.founder_type in founder_type else item.founder_type
+            item.founder_type_lv2 = founder_type_lv2[
+                item.founder_type_lv2].description if item.founder_type_lv2 in founder_type_lv2 else item.founder_type_lv2
+            item.founder_type_lv3 = founder_type_lv3[
+                item.founder_type_lv3].description if item.founder_type_lv3 in founder_type_lv3 else item.founder_type_lv3
             # print('枚举映射',item)
-            if item.planning_school_org_form:
-                item.planning_school_org_form = school_org_form[item.planning_school_org_form].description if item.planning_school_org_form in school_org_form else  item.planning_school_org_form
+            if item.school_org_form:
+                item.school_org_form = school_org_form[
+                    item.school_org_form].description if item.school_org_form in school_org_form else item.school_org_form
+            # return paging_result
 
-            pass
+        # 发送规划校到组织中心的方法
+
+    async def send_school_to_org_center(self, exists_planning_school_origin):
+        exists_planning_school = copy.deepcopy(exists_planning_school_origin)
+        if isinstance(exists_planning_school.updated_at, (date, datetime)):
+            exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
+
+        # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer
+        planning_school_communication = await self.school_communication_dao.get_school_communication_by_school_id(
+            exists_planning_school.id)
+        cn_exists_planning_school = await self.convert_school_to_export_format(exists_planning_school)
+        # todo 多组织 是否支持逗号分隔
+        dict_data = {'administrativeDivisionCity': '',
+                    'administrativeDivisionCounty': exists_planning_school.block,
+                    'administrativeDivisionProvince': planning_school_communication.loc_area_pro,
+                    'createdTime': exists_planning_school.create_planning_school_date,
+                    'locationAddress': planning_school_communication.detailed_address,
+                    'locationCity': '',
+                    'locationCounty': planning_school_communication.loc_area,
+                    'locationProvince': planning_school_communication.loc_area_pro, 'owner': exists_planning_school.school_no,
+                    'unitCode': exists_planning_school.school_no, 'unitId': '',
+                    'unitName': exists_planning_school.school_name,
+                    'unitType': 'school',
+                    'updatedTime': exists_planning_school.updated_at
+
+                     }
+
+        apiname = '/api/add-educate-unit'
+        # 字典参数
+        datadict = dict_data
+        if isinstance(datadict['createdTime'], (date, datetime)):
+            datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
+
+        # if isinstance(datadict['createdTime'], (date, datetime)):
+        #     datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
+        datadict = convert_dates_to_strings(datadict)
+        print(datadict, '字典参数')
+
+        response = await send_orgcenter_request(apiname, datadict, 'post', False)
+        print(response, '接口响应')
+        try:
+            print(response)
+
+            return response
+        except Exception as e:
+            print(e)
+            raise e
+            return response
+
+        return None
+
+    async def send_admin_to_org_center(self, exists_planning_school_origin):
+        # teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id)
+        # data_dict = to_dict(teacher_db)
+        # print(data_dict)
+        dict_data = EducateUserModel(**exists_planning_school_origin,
+                                     currentUnit=exists_planning_school_origin.school_name,
+                                     createdTime=exists_planning_school_origin.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                                     updatedTime=exists_planning_school_origin.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
+                                     name=exists_planning_school_origin.admin,
+                                     userCode=exists_planning_school_origin.admin,
+                                     userId=exists_planning_school_origin.admin_phone,
+                                     phoneNumber=exists_planning_school_origin.admin_phone,
+                                     )
+        dict_data = dict_data.dict()
+        params_data = JsonUtils.dict_to_json_str(dict_data)
+        api_name = '/api/add-educate-user'
+        # 字典参数
+        datadict = params_data
+        print(datadict, '参数')
+        response = await send_orgcenter_request(api_name, datadict, 'post', False)
+        print(response, '接口响应')
+        try:
+            print(response)
+            return response
+        except Exception as e:
+            print(e)
+            raise e
+            return response
+        return None
+
+    async def send_unit_orgnization_to_org_center(self, exists_planning_school_origin: School):
+        exists_planning_school = copy.deepcopy(exists_planning_school_origin)
+        if isinstance(exists_planning_school.updated_at, (date, datetime)):
+            exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
+
+        # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer
+        planning_school_communication = await self.school_communication_dao.get_school_communication_by_school_id(
+            exists_planning_school.id)
+        cn_exists_planning_school = await self.convert_school_to_export_format(exists_planning_school)
+        dict_data = {'administrativeDivisionCity': '',
+                     'administrativeDivisionCounty': exists_planning_school.block,
+                     'administrativeDivisionProvince': planning_school_communication.loc_area_pro,
+                     'createdTime': exists_planning_school.create_planning_school_date,
+                     'locationAddress': planning_school_communication.detailed_address,
+                     'locationCity': '',
+                     'locationCounty': planning_school_communication.loc_area,
+                     'locationProvince': planning_school_communication.loc_area_pro, 'owner': '',
+                     'unitCode': exists_planning_school.school_no, 'unitId': '',
+                     'unitName': exists_planning_school.school_name,
+                     'unitType': 'school',
+                     'updatedTime': exists_planning_school.updated_at}
+        # todo URL修改
+        apiname = '/api/add-educate-unit'
+        # 字典参数
+        datadict = dict_data
+        if isinstance(datadict['createdTime'], (date, datetime)):
+            datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
+
+        # if isinstance(datadict['createdTime'], (date, datetime)):
+        #     datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
+        datadict = convert_dates_to_strings(datadict)
+        print(datadict, '字典参数')
+
+        response = await send_orgcenter_request(apiname, datadict, 'post', False)
+        print(response, '接口响应')
+        try:
+            print(response)
+
+            return response
+        except Exception as e:
+            print(e)
+            raise e
+            return response
+
+        return None

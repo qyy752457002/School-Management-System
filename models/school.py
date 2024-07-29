@@ -68,6 +68,7 @@ class School(BaseDBModel):
 
     process_instance_id: Mapped[int] = mapped_column(BigInteger, nullable=True, default=0, comment="流程ID")
     workflow_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="工作流审核状态", default='')
+    is_master: Mapped[bool] = mapped_column( nullable=True  , comment="是否主分校",default=False)
 
     created_uid: Mapped[int] = mapped_column(nullable=True, comment="创建人", default=0)
     updated_uid: Mapped[int] = mapped_column(nullable=True, comment="操作人", default=0)

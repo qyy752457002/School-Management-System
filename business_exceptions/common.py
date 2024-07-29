@@ -11,3 +11,7 @@ class EnrollNumberError(MiniHTTPException):
 class BizDataEmptyError(MiniHTTPException):
     def __init__(self):
         super().__init__(400, "BIZDATA_CANNOT_NULL", "BizData can not be null .", "业务数据不能为空")
+class OrgCenterApiError(MiniHTTPException):
+    def __init__(self,):
+        # msgtult = msg if len(msg)>0 else "组织中心api响应失败"
+        super().__init__(400, "ORG_CENTER_API_ERROR",  "OrgCenterApiError.", "组织中心api响应失败")

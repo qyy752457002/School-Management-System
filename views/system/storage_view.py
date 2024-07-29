@@ -9,6 +9,7 @@ from mini_framework.web.views import BaseView
 
 from rules.storage_rule import StorageRule
 from rules.system_rule import SystemRule
+from views.common.common_view import convert_query_to_none
 
 
 class StorageView(BaseView):
@@ -50,20 +51,19 @@ class StorageView(BaseView):
             res =await self._storage_rule.get_file_data('',  '',sence,file_direct_url=fileinfo)
             logger.debug('根据URL解析数据', f"{data}",  )
 
-            # res = await self._storage_rule.get_file_data(filename, bucket,sence)
-            print('解析的结构',res )
+            # print('解析文件得到的data ',res )
             # 存在ID的tuple 过滤掉
             data = [ ]
             for i,value  in  enumerate(res):
                 if hasattr(value,'id') and  isinstance(value.id, (Query,tuple)):
                     value.id = 0
                     pass
-                print('数据的数下',value.__fields__)
+                print('数据的属性',value.__fields__)
                 # 使用视图模型
                 print('类的map',value.__class__,)
                 # 获取模型的属性和title
                 fields_dict = {i:field.title for i,field in value.__class__.__fields__.items()}
-                print('map22',fields_dict)
+                print('获取模型的属性和title',fields_dict)
                 logger.debug( f"数据的栏位", value.__fields__,value.__class__, fields_dict)
 
                 changeitems= value.__dict__
@@ -82,10 +82,15 @@ class StorageView(BaseView):
                 for i in needdel:
                     del changeitems[i]
                 changeitems= { **cndict}
+
                 data.append(changeitems)
+                # 遍历打印字典里的每个值的类型
+                for k, v in changeitems.items():
+                    # print(f"{k}的类型是{type(v)} {v}")
+                    pass
                 logger.debug( f"解析到的预览数据",changeitems)
 
-                print(data)
+                # print('最终data预览',data)
             return {"data":data}
 
         except Exception as e:
