@@ -1,5 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 import hashlib
 
@@ -13,6 +14,7 @@ from daos.campus_dao import CampusDAO
 from daos.school_dao import SchoolDAO
 from models.campus import Campus
 from rules.enum_value_rule import EnumValueRule
+from views.common.common_view import convert_snowid_in_model
 from views.models.campus import Campus as CampusModel
 
 from views.models.campus import CampusBaseInfo
@@ -55,6 +57,8 @@ class CampusRule(object):
         campus_db.status =PlanningSchoolStatus.OPENING.value
         campus_db.created_uid = 0
         campus_db.updated_uid = 0
+        campus_db.id = SnowflakeIdGenerator(1, 1).generate_id()
+
 
 
         if campus.school_id>0 :
@@ -81,6 +85,8 @@ class CampusRule(object):
 
         campus_db = await self.campus_dao.add_campus(campus_db)
         campus = orm_model_to_view_model(campus_db, CampusModel, exclude=["created_at",'updated_at'])
+        convert_snowid_in_model(campus, ['planning_school_id','school_id'])
+
         return campus
 
     async def update_campus(self, campus,ctype=1):
