@@ -150,7 +150,7 @@ class PlanningSchoolRule(object):
                                               planning_school_code,
                                               block, planning_school_level, borough, status, founder_type,
                                               founder_type_lv2,
-                                              founder_type_lv3):
+                                              founder_type_lv3,extend_params= None):
         # todo 根据举办者类型  1及 -3级  处理为条件   1  2ji全部转换为 3级  最后in 3级查询
         enum_value_rule = get_injector(EnumValueRule)
         if founder_type:
@@ -173,7 +173,7 @@ class PlanningSchoolRule(object):
                                                                                 block, planning_school_level, borough,
                                                                                 status, founder_type,
                                                                                 founder_type_lv2,
-                                                                                founder_type_lv3)
+                                                                                founder_type_lv3,extend_params)
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, PlanningSchoolModel)
         # str
