@@ -1,4 +1,5 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
@@ -44,6 +45,7 @@ class CampusCommunicationRule(object):
         campus_communication_db.status = '正常'
         campus_communication_db.created_uid = 0
         campus_communication_db.updated_uid = 0
+        campus_communication_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
         # campus_communication_db = view_model_to_orm_model(campus, CampusCommunication,    exclude=["id"])
 
