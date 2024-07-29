@@ -11,7 +11,7 @@ class CampusDAO(DAOBase):
 
     async def get_campus_by_id(self, campus_id):
         session = await self.slave_db()
-        campus_id= int(campus_id)
+        campus_id = int(campus_id)
         result = await session.execute(select(Campus).where(Campus.id == campus_id))
         return result.scalar_one_or_none()
 
@@ -34,7 +34,7 @@ class CampusDAO(DAOBase):
         query = update(Campus).where(Campus.id == campus.id).values(**update_contents)
         return await self.update(session, query, campus, update_contents, is_commit=is_commit)
 
-    async def update_campus(self, campus,ctype=1):
+    async def update_campus(self, campus, ctype=1):
         session = await self.master_db()
         # session.add(campus)
         if ctype == 1:
@@ -69,7 +69,6 @@ class CampusDAO(DAOBase):
                 historical_evolution=campus.historical_evolution,
             )
 
-
         await session.execute(update_stmt)
         await session.commit()
         return campus
@@ -80,9 +79,10 @@ class CampusDAO(DAOBase):
 
     async def softdelete_campus(self, campus):
         session = await self.master_db()
-        deleted_status= 1
+        campus.id = int(campus.id)
+        deleted_status = 1
         update_stmt = update(Campus).where(Campus.id == campus.id).values(
-            is_deleted= deleted_status,
+            is_deleted=deleted_status,
         )
         await session.execute(update_stmt)
         # await session.delete(campus)
@@ -99,10 +99,10 @@ class CampusDAO(DAOBase):
         result = await session.execute(select(func.count()).select_from(Campus))
         return result.scalar()
 
-    async def query_campus_with_page(self, page_request: PageRequest, campus_name,campus_no,campus_code,
-                                     block,campus_level,borough,status,founder_type,
+    async def query_campus_with_page(self, page_request: PageRequest, campus_name, campus_no, campus_code,
+                                     block, campus_level, borough, status, founder_type,
                                      founder_type_lv2,
-                                     founder_type_lv3 ,school_id) -> Paging:
+                                     founder_type_lv3, school_id) -> Paging:
         query = select(Campus).order_by(desc(Campus.id))
         query = query.where(Campus.is_deleted == False)
 
@@ -125,23 +125,22 @@ class CampusDAO(DAOBase):
         if status:
             query = query.where(Campus.status == status)
 
-        if len(founder_type_lv3)>0:
+        if len(founder_type_lv3) > 0:
             query = query.where(Campus.founder_type_lv3.in_(founder_type_lv3))
-
 
         paging = await self.query_page(query, page_request)
         return paging
 
-    async def update_campus_status(self, campus,status):
+    async def update_campus_status(self, campus, status):
         session = await self.master_db()
-        next_status= 1
+        next_status = 1
         if status == 1:
-            next_status= '正常'
+            next_status = '正常'
         else:
-            next_status= '已关闭'
+            next_status = '已关闭'
 
         update_stmt = update(Campus).where(Campus.id == campus.id).values(
-            status= next_status,
+            status=next_status,
         )
         await session.execute(update_stmt)
         # await session.delete(campus)
