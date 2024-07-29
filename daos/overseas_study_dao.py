@@ -28,7 +28,8 @@ class OverseasStudyDAO(DAOBase):
     async def get_overseas_study_by_overseas_study_id(self, overseas_study_id):
         session = await self.slave_db()
         result = await session.execute(
-            select(OverseasStudy).where(OverseasStudy.overseas_study_id == overseas_study_id))
+            select(OverseasStudy).where(OverseasStudy.overseas_study_id == overseas_study_id,
+                                        OverseasStudy.is_deleted == False))
         return result.scalar_one_or_none()
 
     async def query_overseas_study_with_page(self, pageQueryModel, page_request: PageRequest):
@@ -47,6 +48,6 @@ class OverseasStudyDAO(DAOBase):
     async def get_all_overseas_study(self, teacher_id):
         session = await self.slave_db()
         query = select(OverseasStudy).join(Teacher, OverseasStudy.teacher_id == Teacher.teacher_id).where(
-            OverseasStudy.teacher_id == teacher_id)
+            OverseasStudy.teacher_id == teacher_id, OverseasStudy.is_deleted == False)
         result = await session.execute(query)
         return result.scalars().all()

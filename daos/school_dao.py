@@ -9,6 +9,7 @@ from models.school import School
 from models.school_communication import SchoolCommunication
 from views.models.extend_params import ExtendParams
 from views.models.system import InstitutionType
+from views.models.school_and_teacher_sync import SchoolSyncQueryModel
 
 
 class SchoolDAO(DAOBase):
@@ -137,7 +138,7 @@ class SchoolDAO(DAOBase):
             SchoolCommunication.leg_repr_name).select_from(School).join(PlanningSchool,
                                                                         PlanningSchool.id == School.planning_school_id,
                                                                         isouter=True)
-                 .join(SchoolCommunication, SchoolCommunication.school_id == School.id, isouter=True).order_by(
+        .join(SchoolCommunication, SchoolCommunication.school_id == School.id, isouter=True).order_by(
             desc(School.id)))
         query = query.where(School.is_deleted == False)
         if extend_params is not None and len(block)==0 and len(borough)==0:
@@ -206,3 +207,33 @@ class SchoolDAO(DAOBase):
         # await session.delete(school)
         await session.commit()
         return school
+
+    async def query_sync_school_with_page(self, query_model: SchoolSyncQueryModel,
+                                          page_request: PageRequest) -> Paging:
+        query = select(School.social_credit_code, School.school_name, School.borough, School.block,
+                       School.founder_type, School.founder_type_lv2, School.founder_type_lv3).where(
+            School.is_deleted == False, School.status == "normal", School.social_credit_code != "")
+        if query_model.social_credit_code:
+            query = query.where(School.social_credit_code == query_model.social_credit_code)
+        if query_model.school_name:
+            query = query.where(School.school_name.like(f"%{query_model.school_name}%"))
+        if query_model.borough:
+            query = query.where(School.borough == query_model.borough)
+        if query_model.block:
+            query = query.where(School.block == query_model.block)
+        if query_model.school_edu_level:
+            query = query.where(School.school_edu_level == query_model.school_edu_level)
+        if query_model.school_category:
+            query = query.where(School.school_category == query_model.school_category)
+        if query_model.school_operation_type:
+            query = query.where(School.school_operation_type == query_model.school_operation_type)
+        paging = await self.query_page(query, page_request)
+        return paging
+
+    async def get_sync_school(self, social_credit_code):
+        session = await self.slave_db()
+        query = select(School).where(
+            School.is_deleted == False, School.status == "normal",
+            School.social_credit_code == social_credit_code)
+        result = await session.execute(query)
+        return result.scalar_one_or_none()

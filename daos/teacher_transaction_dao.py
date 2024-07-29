@@ -31,7 +31,7 @@ class TeacherTransactionDAO(DAOBase):
     async def get_teacher_transaction_by_teacher_transaction_id(self, teacher_transaction_id):
         session = await self.slave_db()
         result = await session.execute(
-            select(TeacherTransaction).where(TeacherTransaction.transaction_id == teacher_transaction_id))
+            select(TeacherTransaction).where(TeacherTransaction.transaction_id == teacher_transaction_id,TeacherTransaction.is_deleted == False))
         return result.scalar_one_or_none()
 
     async def get_teacher_transaction_by_teacher_id(self, teacher_id):
@@ -109,6 +109,6 @@ class TeacherTransactionDAO(DAOBase):
     async def get_all_transfer(self, teacher_id):
         session = await self.slave_db()
         query = select(TeacherTransaction).where(
-            TeacherTransaction.teacher_id == teacher_id)
+            TeacherTransaction.teacher_id == teacher_id,TeacherTransaction.is_deleted == False)
         result = await session.execute(query)
         return result.scalars().all()

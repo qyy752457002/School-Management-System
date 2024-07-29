@@ -27,7 +27,8 @@ class AnnualReviewDAO(DAOBase):
 
     async def get_annual_review_by_annual_review_id(self, annual_review_id):
         session = await self.slave_db()
-        result = await session.execute(select(AnnualReview).where(AnnualReview.annual_review_id == annual_review_id))
+        result = await session.execute(select(AnnualReview).where(AnnualReview.annual_review_id == annual_review_id,
+                                                                  AnnualReview.is_deleted == False))
         return result.scalar_one_or_none()
 
     async def query_annual_review_with_page(self, pageQueryModel, page_request: PageRequest):
@@ -46,6 +47,6 @@ class AnnualReviewDAO(DAOBase):
     async def get_all_annual_review(self, teacher_id):
         session = await self.slave_db()
         query = select(AnnualReview).join(Teacher, AnnualReview.teacher_id == Teacher.teacher_id).where(
-            AnnualReview.teacher_id == teacher_id)
+            AnnualReview.teacher_id == teacher_id, AnnualReview.is_deleted == False)
         result = await session.execute(query)
         return result.scalars().all()
