@@ -91,7 +91,6 @@ class CampusCommunicationRule(object):
 
         campus_communication_db = await self.campus_communication_dao.update_campus_communication(campus_communication_db,ctype)
         # 更新不用转换   因为得到的对象不熟全属性
-        # campus = orm_model_to_view_model(campus_communication_db, CampusCommunicationModel, exclude=[""])
         return campus_communication_db
 
     async def softdelete_campus_communication(self, campus_communication_id):
@@ -99,9 +98,7 @@ class CampusCommunicationRule(object):
         if not exists_campus:
             raise Exception(f"校区通信信息{campus_communication_id}不存在")
         campus_communication_db = await self.campus_communication_dao.softdelete_campus_communication(exists_campus)
-        # campus = orm_model_to_view_model(campus_communication_db, CampusCommunicationModel, exclude=[""],)
         return campus_communication_db
-
 
     async def get_campus_communication_count(self):
         return await self.campus_communication_dao.get_campus_communication_count()
@@ -114,13 +111,10 @@ class CampusCommunicationRule(object):
         paging_result = PaginatedResponse.from_paging(paging, CampusCommunicationModel)
         return paging_result
 
-    async def update_campus_communication_byargs(self, campus_communication,ctype=1):
+    async def update_campus_communication_byargs(self, campus_communication,):
         if campus_communication.campus_id>0:
             exists_campus_communication = await self.campus_communication_dao.get_campus_communication_by_campus_id(campus_communication.campus_id)
-
-
         else:
-
             exists_campus_communication = await self.campus_communication_dao.get_campus_communication_by_id(campus_communication.id)
         if not exists_campus_communication:
             raise CampusCommunicationNotFoundError()
@@ -131,6 +125,4 @@ class CampusCommunicationRule(object):
 
         campus_communication_db = await self.campus_communication_dao.update_campus_communication_byargs(campus_communication, *need_update_list)
 
-        # 更新不用转换   因为得到的对象不熟全属性
         return campus_communication_db
-
