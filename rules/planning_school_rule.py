@@ -212,7 +212,7 @@ class PlanningSchoolRule(object):
                                school_id = exists_planning_school.id,
                                org_type='校',
                                parent_id=0,
-                               org_code=exists_planning_school.planning_school_code,
+                               org_code=exists_planning_school.planning_school_no,
                                org_code_type='school',
                                )
 
@@ -943,27 +943,25 @@ class PlanningSchoolRule(object):
         # cn_exists_planning_school = await self.convert_school_to_export_format(exists_planning_school )
         dict_data = {
             "contactEmail": "j.vyevxiloyy@qq.com",
-            "createdTime": exists_planning_school.created_at,
+            # "createdTime": exists_planning_school.created_at,
             "displayName": exists_planning_school.org_name,
             # todo  参数调试
             "educateUnit": school.planning_school_name,
-            "educateUnitObj": {
-                "administrativeDivisionCity": "",
-                "administrativeDivisionCounty": "",
-                "administrativeDivisionProvince": "",
-                "createdTime": school.created_at,
-                "departmentObjs": [],
-                "locationAddress": "",
-                "locationCity": "",
-                "locationCounty": "",
-                "locationProvince": "",
-                "owner": "",
-                "unitCode": school.planning_school_no,
-                "unitId": "",
-                "unitName": school.planning_school_name,
-                "unitType": "",
-                "updatedTime": school.updated_at
-            },
+            # "educateUnitObj": {
+            #     "administrativeDivisionCity": "",
+            #     "administrativeDivisionCounty": "",
+            #     "administrativeDivisionProvince": "",
+            #     "departmentObjs": [],
+            #     "locationAddress": "",
+            #     "locationCity": "",
+            #     "locationCounty": "",
+            #     "locationProvince": "",
+            #     "owner": exists_planning_school_origin.org_code,
+            #     "unitCode": school.planning_school_no,
+            #     "unitId": "",
+            #     "unitName": school.planning_school_name,
+            #     "unitType": "",
+            # },
             "isDeleted": False,
             "isEnabled": True,
             "isTopGroup": exists_planning_school.parent_id == 0,
@@ -980,17 +978,17 @@ class PlanningSchoolRule(object):
             ],
             "title": exists_planning_school.org_name,
             "type": "",
-            "updatedTime": exists_planning_school.updated_at
+            # "updatedTime": exists_planning_school.updated_at
         }
 
         apiname = '/api/add-group'
         # 字典参数
         datadict = dict_data
-        if isinstance(datadict['createdTime'], (date, datetime)):
-            datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
-
         # if isinstance(datadict['createdTime'], (date, datetime)):
         #     datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
+        # 
+        # if isinstance(datadict['updatedTime'], (date, datetime)):
+        #     datadict['updatedTime'] = datadict['updatedTime'].strftime("%Y-%m-%d %H:%M:%S")
         datadict = convert_dates_to_strings(datadict)
         print('调用添加部门  字典参数',datadict, )
 
