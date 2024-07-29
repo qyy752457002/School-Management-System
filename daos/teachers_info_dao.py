@@ -12,6 +12,7 @@ from models.teachers import Teacher
 from views.models.teachers import CurrentTeacherQuery, NewTeacher, TeacherApprovalQuery, TeacherMainStatus
 from models.teacher_entry_approval import TeacherEntryApproval
 from views.models.teachers import CurrentTeacherQuery, NewTeacher
+from views.models.school_and_teacher_sync import SupervisorSyncQueryModel
 
 
 class TeachersInfoDao(DAOBase):
@@ -215,10 +216,12 @@ class TeachersInfoDao(DAOBase):
                    Teacher.teacher_gender, Teacher.teacher_id_type, Teacher.teacher_id_number,
                    Teacher.teacher_date_of_birth, Teacher.teacher_employer, Teacher.teacher_avatar,
                    Teacher.teacher_sub_status, Teacher.teacher_main_status, Teacher.identity, Teacher.mobile,
-                   School.school_name).join(School, Teacher.teacher_employer == School.id,
-                                            ).join(TeacherInfo,
-                                                   Teacher.teacher_id == TeacherInfo.teacher_id,
-                                                   ).where(Teacher.teacher_id == teacher_id))
+                   School.school_name, Teacher.identity, Teacher.identity_type).join(School,
+                                                                                     Teacher.teacher_employer == School.id,
+                                                                                     ).join(TeacherInfo,
+                                                                                            Teacher.teacher_id == TeacherInfo.teacher_id,
+                                                                                            ).where(
+                Teacher.teacher_id == teacher_id))
         result = result.first()
 
         # select(Teacher, TeacherInfo.teacher_base_id, TeacherInfo.highest_education,
@@ -232,3 +235,41 @@ class TeachersInfoDao(DAOBase):
         # return result.scalar_one_or_none()
 
         return result
+
+    async def query_sync_teacher_with_page(self, query_model: SupervisorSyncQueryModel,
+                                           page_request: PageRequest) -> Paging:
+        query = select(Teacher.teacher_name, Teacher.teacher_id_type, Teacher.teacher_id_number, Teacher.mobile,
+                       Teacher.teacher_gender, func.coalesce(TeacherInfo.current_technical_position, ""),
+                       func.coalesce(TeacherInfo.staff_category, ""),
+                       School.school_name, School.borough).join(Teacher,
+                                                                Teacher.teacher_id == TeacherInfo.teacher_id).join(
+            School, School.id == Teacher.teacher_employer).where(
+            Teacher.teacher_main_status == "employed",
+            Teacher.is_deleted == False)
+        if query_model.teacher_name:
+            query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
+        if query_model.school_name:
+            query = query.where(School.school_name.like(f"%{query_model.school_name}%"))
+        if query_model.teacher_id_number:
+            query = query.where(Teacher.teacher_id_number == query_model.teacher_id_number)
+        if query_model.mobile:
+            query = query.where(Teacher.mobile == query_model.mobile)
+        if query_model.teacher_id_type:
+            query = query.where(Teacher.teacher_id_type == query_model.teacher_id_type)
+        if query_model.teacher_gender:
+            query = query.where(Teacher.teacher_employer == query_model.teacher_gender)
+        paging = await self.query_page(query, page_request)
+        return paging
+
+    async def get_sync_teacher(self, teacher_id_number):
+        session = await self.slave_db()
+        query = select(Teacher.teacher_name, Teacher.teacher_id_type, Teacher.teacher_id_number, Teacher.mobile,
+                       Teacher.teacher_gender, func.coalesce(TeacherInfo.current_technical_position, ""),
+                       func.coalesce(TeacherInfo.staff_category, ""),
+                       School.school_name, School.borough).join(
+            Teacher,
+            Teacher.teacher_id == TeacherInfo.teacher_id).join(School, School.id == Teacher.teacher_employer).where(
+            Teacher.teacher_id_number == teacher_id_number, Teacher.teacher_main_status == "employed",
+            Teacher.is_deleted == False)
+        result = await session.execute(query)
+        return result.first()

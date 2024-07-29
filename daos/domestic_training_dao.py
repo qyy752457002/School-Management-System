@@ -25,11 +25,11 @@ class DomesticTrainingDAO(DAOBase):
         session = await self.master_db()
         return await self.delete(session, domestic_training)
 
-
     async def get_domestic_training_by_domestic_training_id(self, domestic_training_id):
         session = await self.slave_db()
         result = await session.execute(
-            select(DomesticTraining).where(DomesticTraining.domestic_training_id == domestic_training_id))
+            select(DomesticTraining).where(DomesticTraining.domestic_training_id == domestic_training_id,
+                                           DomesticTraining.is_deleted == False))
         return result.scalar_one_or_none()
 
     async def query_domestic_training_with_page(self, pageQueryModel, page_request: PageRequest):
@@ -48,6 +48,6 @@ class DomesticTrainingDAO(DAOBase):
     async def get_all_domestic_training(self, teacher_id):
         session = await self.slave_db()
         query = select(DomesticTraining).join(Teacher, DomesticTraining.teacher_id == Teacher.teacher_id).where(
-            DomesticTraining.teacher_id == teacher_id)
+            DomesticTraining.teacher_id == teacher_id, DomesticTraining.is_deleted == False)
         result = await session.execute(query)
         return result.scalars().all()

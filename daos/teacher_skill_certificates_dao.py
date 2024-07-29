@@ -28,7 +28,7 @@ class TeacherSkillCertificatesDAO(DAOBase):
     async def get_teacher_skill_certificates_by_teacher_skill_certificates_id(self, teacher_skill_certificates_id):
         session = await self.slave_db()
         result = await session.execute(select(TeacherSkillCertificates).where(
-            TeacherSkillCertificates.teacher_skill_certificates_id == teacher_skill_certificates_id))
+            TeacherSkillCertificates.teacher_skill_certificates_id == teacher_skill_certificates_id,TeacherSkillCertificates.is_deleted == False))
         return result.scalar_one_or_none()
 
     async def query_teacher_skill_certificates_with_page(self, pageQueryModel, page_request: PageRequest):
@@ -49,6 +49,6 @@ class TeacherSkillCertificatesDAO(DAOBase):
         session = await self.slave_db()
         query = select(TeacherSkillCertificates).join(Teacher,
                                                       TeacherSkillCertificates.teacher_id == Teacher.teacher_id).where(
-            TeacherSkillCertificates.teacher_id == teacher_id)
+            TeacherSkillCertificates.teacher_id == teacher_id,TeacherSkillCertificates.is_deleted == False)
         result = await session.execute(query)
         return result.scalars().all()

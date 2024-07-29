@@ -10,7 +10,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
 
 from business_exceptions.school import SchoolNotFoundError
-
+from views.models.teachers import  EducateUserModel
 from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import workflow_service_config, orgcenter_service_config
 from views.models.campus import Campus as CampusModel
@@ -22,6 +22,8 @@ from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from daos.planning_school_dao import PlanningSchoolDAO
 from views.models.school import School as SchoolModel
 from daos.enum_value_dao import EnumValueDAO
+from mini_framework.utils.json import JsonUtils
+
 
 from typing import Type, List, Dict
 from pydantic import BaseModel
@@ -227,32 +229,74 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
     pass
 
 
-async def get_identity_by_job(school_operation_type: List, identity_type, post_type=None):
-    identity_type = identity_type
+async def get_identity_by_job(school_operation_type: List, post_type=None):
     identity = ""
-    student_map = {}
 
-    staff_map = {"preSchoolEducation_kindergarten": "kindergarten_student",
-                 "primaryEducation_primarySchool": "primary_school_student",
-                 "secondaryEducation_ordinaryJuniorHigh": "middle_school_student",# 初级中学还需要修改
-                 "secondaryEducation_ordinaryHighSchool": "high_school_student",
-                 "secondaryEducation_secondaryVocationalSchool": "vocational_student"}
-    if identity_type == IdentityType.STUDENT.value:
+    staff_student_map = {"preSchoolEducation_kindergarten": "kindergarten_student",
+                         "primaryEducation_primarySchool": "primary_school_student",
+                         "secondaryEducation_ordinaryJuniorHigh": "middle_school_student",  # 初级中学还需要修改
+                         "secondaryEducation_ordinaryHighSchool": "high_school_student",
+                         "secondaryEducation_secondaryVocationalSchool": "vocational_student"}
+    staff_teacher_map = {"preSchoolEducation_kindergarten": "kindergarten_teacher",
+                         "primaryEducation_primarySchool": "primary_school_teacher",
+                         "secondaryEducation_ordinaryJuniorHigh": "middle_school_teacher",  # 初级中学还需要修改
+                         "secondaryEducation_ordinaryHighSchool": "high_school_teacher",
+                         "secondaryEducation_secondaryVocationalSchool": "vocational_teacher",  # 缺少九年一贯制学校专任教师
+                         "secondaryEducation_ordinaryHighSchool_twelveYearSystemSchool": "twelve_year_teacher",
+                         "specialEducation_specialEducationSchool": "special_education_teacher"}
+    staff_map = {"preSchoolEducation_kindergarten": "kindergarten_staff",
+                 "primaryEducation_primarySchool": "primary_school_staff",
+                 "secondaryEducation_ordinaryJuniorHigh": "middle_school_staff",  # 初级中学还需要修改
+                 "secondaryEducation_ordinaryHighSchool": "high_school_staff",
+                 "secondaryEducation_secondaryVocationalSchool": "vocational_staff",  # 缺少九年一贯制学校职工
+                 "secondaryEducation_ordinaryHighSchool_twelveYearSystemSchool": "twelve_year_staff",
+                 "specialEducation_specialEducationSchool": "special_education_staff"}
+    staff_manager_map = {"preSchoolEducation_kindergarten": "kindergarten_principal",
+                         "primaryEducation_primarySchool": "primary_school_principal",
+                         "secondaryEducation_ordinaryJuniorHigh": "middle_school_principal",  # 初级中学还需要修改
+                         "secondaryEducation_ordinaryHighSchool": "high_school_principal",
+                         "secondaryEducation_secondaryVocationalSchool": "vocational_principal",  # 缺少九年一贯制学校校长
+                         "secondaryEducation_ordinaryHighSchool_twelveYearSystemSchool": "twelve_year_principal",
+                         "specialEducation_specialEducationSchool": "special_education_principal"}
+    parent_map = {"preSchoolEducation_kindergarten": "kindergarten_parent",
+                  "primaryEducation_primarySchool": "primary_school_parent",
+                  "secondaryEducation_ordinaryJuniorHigh": "middle_school_parent",  # 初级中学还需要修改
+                  "secondaryEducation_ordinaryHighSchool": "high_school_parent",
+                  "secondaryEducation_secondaryVocationalSchool": "vocational_parent"},
+    parts = post_type.split(',')
+    if parts[0] == "student":
+        identity_type = IdentityType.STUDENT.value
+        for i in range(len(school_operation_type), 0, -1):
+            key = '_'.join(school_operation_type[:i])
+            if key in staff_student_map:
+                identity = staff_student_map.get(key)
+                break
+    elif parts[0].strip() == '1':  # 表示是专任教师
+        identity_type = IdentityType.STAFF.value
+        for i in range(len(school_operation_type), 0, -1):
+            key = '_'.join(school_operation_type[:i])
+            if key in staff_teacher_map:
+                identity = staff_teacher_map.get(key)
+                break
+    elif post_type == "2,21":  # 表示是校园长
+        identity_type = IdentityType.MANAGER.value
+        for i in range(len(school_operation_type), 0, -1):
+            key = '_'.join(school_operation_type[:i])
+            if key in staff_manager_map:
+                identity = staff_manager_map.get(key)
+                break
+    elif parts[0] == "parent":
+        identity_type = IdentityType.PARENT.value
+        for i in range(len(school_operation_type), 0, -1):
+            key = '_'.join(school_operation_type[:i])
+            if key in parent_map:
+                identity = parent_map.get(key)
+                break
+    else:
+        identity_type = IdentityType.STAFF.value
         for i in range(len(school_operation_type), 0, -1):
             key = '_'.join(school_operation_type[:i])
             if key in staff_map:
                 identity = staff_map.get(key)
                 break
-    elif identity_type == IdentityType.STAFF.value:
-        if post_type:
-            if post_type == "1,101" and "preSchoolEducation_kindergarten" in school_operation_type:
-                identity = "staff_kindergarten_teacher"
-            elif post_type == "1,101" and "preSchoolEducation_kindergarten" in school_operation_type:
-
-                identity = "staff_primary_school_teacher"
-                identity = "staff_middle_school_teacher"
-                identity = "staff_high_school_teacher"
-                identity = "staff_vocational_school_teacher"
-                identity = "staff_nine_year_school_teacher"
-                identity = "staff_twelve_year_school_teacher"
     return identity_type, identity

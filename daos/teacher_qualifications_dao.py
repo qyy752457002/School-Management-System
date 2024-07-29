@@ -28,7 +28,8 @@ class TeacherQualificationsDAO(DAOBase):
     async def get_teacher_qualifications_by_teacher_qualifications_id(self, teacher_qualifications_id):
         session = await self.slave_db()
         result = await session.execute(select(TeacherQualifications).where(
-            TeacherQualifications.teacher_qualifications_id == teacher_qualifications_id))
+            TeacherQualifications.teacher_qualifications_id == teacher_qualifications_id,
+            TeacherQualifications.is_deleted == False))
         return result.scalar_one_or_none()
 
     async def query_teacher_qualifications_with_page(self, pageQueryModel, page_request: PageRequest):
@@ -48,7 +49,7 @@ class TeacherQualificationsDAO(DAOBase):
     async def get_all_teacher_qualifications(self, teacher_id):
         session = await self.slave_db()
         query = select(TeacherQualifications).join(Teacher,
-                                                    TeacherQualifications.teacher_id == Teacher.teacher_id).where(
-            TeacherQualifications.teacher_id == teacher_id)
+                                                   TeacherQualifications.teacher_id == Teacher.teacher_id).where(
+            TeacherQualifications.teacher_id == teacher_id, TeacherQualifications.is_deleted == False)
         result = await session.execute(query)
         return result.scalars().all()

@@ -28,7 +28,8 @@ class TeacherProfessionalTitlesDAO(DAOBase):
     async def get_teacher_professional_titles_by_teacher_professional_titles_id(self, teacher_professional_titles_id):
         session = await self.slave_db()
         result = await session.execute(select(TeacherProfessionalTitles).where(
-            TeacherProfessionalTitles.teacher_professional_titles_id == teacher_professional_titles_id))
+            TeacherProfessionalTitles.teacher_professional_titles_id == teacher_professional_titles_id,
+            TeacherProfessionalTitles.is_deleted == False))
         return result.scalar_one_or_none()
 
     async def query_teacher_professional_titles_with_page(self, pageQueryModel, page_request: PageRequest):
@@ -49,6 +50,6 @@ class TeacherProfessionalTitlesDAO(DAOBase):
         session = await self.slave_db()
         query = select(TeacherProfessionalTitles).join(Teacher,
                                                        TeacherProfessionalTitles.teacher_id == Teacher.teacher_id).where(
-            TeacherProfessionalTitles.teacher_id == teacher_id)
+            TeacherProfessionalTitles.teacher_id == teacher_id, TeacherProfessionalTitles.is_deleted == False)
         result = await session.execute(query)
         return result.scalars().all()

@@ -29,7 +29,7 @@ class TeacherJobAppointmentsDAO(DAOBase):
     async def get_teacher_job_appointments_by_teacher_job_appointments_id(self, teacher_job_appointments_id):
         session = await self.slave_db()
         result = await session.execute(select(TeacherJobAppointments).where(
-            TeacherJobAppointments.teacher_job_appointments_id == teacher_job_appointments_id))
+            TeacherJobAppointments.teacher_job_appointments_id == teacher_job_appointments_id,TeacherJobAppointments.is_deleted == False))
         return result.scalar_one_or_none()
 
     async def query_teacher_job_appointments_with_page(self, pageQueryModel, page_request: PageRequest):
@@ -50,7 +50,7 @@ class TeacherJobAppointmentsDAO(DAOBase):
         session = await self.slave_db()
         query = select(TeacherJobAppointments).join(Teacher,
                                                     TeacherJobAppointments.teacher_id == Teacher.teacher_id).where(
-            TeacherJobAppointments.teacher_id == teacher_id)
+            TeacherJobAppointments.teacher_id == teacher_id,TeacherJobAppointments.is_deleted == False)
         result = await session.execute(query)
         return result.scalars().all()
 

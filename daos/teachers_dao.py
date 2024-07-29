@@ -1,5 +1,5 @@
 from sqlalchemy import select, func, update
-
+from sqlalchemy import and_
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
@@ -9,6 +9,7 @@ from views.models.teacher_transaction import TeacherTransactionQuery
 from views.models.teachers import TeacherApprovalQuery
 from models.school import School
 from models.organization import Organization
+from models.organization_members import OrganizationMembers
 
 
 class TeachersDao(DAOBase):
@@ -22,7 +23,6 @@ class TeachersDao(DAOBase):
 
     async def update_teachers(self, teachers, *args, is_commit: bool = True):
         session = await self.master_db()
-        print(dir(teachers))
         update_contents = get_update_contents(teachers, *args)
         query = update(Teacher).where(Teacher.teacher_id == teachers.teacher_id).values(**update_contents)
         return await self.update(session, query, teachers, update_contents, is_commit=is_commit)
@@ -34,7 +34,7 @@ class TeachersDao(DAOBase):
             select(Teacher).where(Teacher.teacher_id == teachers_id, Teacher.is_deleted == False))
         return result.scalar_one_or_none()
 
-    async def get_teachers_arg_by_id(self, teachers_id):
+    async def get_teachers_arg_by_id(self, teachers_id, org_id):
         session = await self.slave_db()
         query = select(Teacher.teacher_avatar.label("avatar"),
                        Teacher.teacher_date_of_birth.label("birthDate"),
@@ -45,15 +45,21 @@ class TeachersDao(DAOBase):
                        TeacherInfo.org_id.label("departmentId"),
                        Organization.org_name.label("departmentNames"),
                        Teacher.teacher_gender.label("gender"),
-                       Teacher.identity.label("identity"),
+                       OrganizationMembers.identity.label("identity"),
+                       OrganizationMembers.member_type.label("identityType"),
                        Teacher.mobile.label("name"),
                        Teacher.teacher_id.label("userId"),
                        ).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id).join(Organization,
-                                                                                              TeacherInfo.org_id == Organization.id)
+                                                                                              TeacherInfo.org_id == Organization.id).join(
+            School, School.id == Teacher.teacher_employer, isouter=True).join(OrganizationMembers, and_(
+            OrganizationMembers.org_id == Organization.id, OrganizationMembers.teacher_id == Teacher.teacher_id
+            ))
         query = query.where(Teacher.teacher_id == teachers_id,
-                            Teacher.is_deleted == False)
+                            Teacher.is_deleted == False,
+                            TeacherInfo.org_id == org_id,
+                            Organization.id == org_id)
         result = await session.execute(query)
-        return  result.first()
+        return result.first()
 
     # 根据身份证号获取教师信息
 

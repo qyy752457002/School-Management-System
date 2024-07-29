@@ -24,8 +24,10 @@ from views.common.common_view import compare_modify_fields
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from rules.teachers_rule import TeachersRule
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
-from rules.common.common_rule import convert_fields_to_str,excel_fields_to_enum
-
+from rules.common.common_rule import convert_fields_to_str, excel_fields_to_enum
+from rules.common.common_rule import get_identity_by_job
+from daos.school_dao import SchoolDAO
+from views.models.school import School as SchoolModel
 
 
 @dataclass_inject
@@ -41,6 +43,7 @@ class TeachersInfoRule(object):
     teacher_work_flow_rule: TeacherWorkFlowRule
     operation_record_rule: OperationRecordRule
     operation_record_dao: OperationRecordDAO
+    school_dao: SchoolDAO
 
     # 查询单个教职工基本信息
     async def get_teachers_info_by_teacher_id(self, teachers_id):
@@ -112,6 +115,7 @@ class TeachersInfoRule(object):
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
         teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
+
         teachers_info = orm_model_to_view_model(teachers_inf_db, TeachersInfoModel, exclude=[""])
         if teacher_main_status == "unemployed":
             await self.teacher_submitted(teachers_info.teacher_id)
@@ -151,10 +155,13 @@ class TeachersInfoRule(object):
 
     async def update_teachers_info(self, teachers_info: TeacherInfoSubmit, user_id):
         teachers_info.teacher_id = int(teachers_info.teacher_id)
+
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
         if not exits_teacher:
             raise TeacherNotFoundError()
+        teacher_employer = exits_teacher.teacher_employer
         teacher_id = teachers_info.teacher_id
+        current_post_type = teachers_info.current_post_type
         exists_teachers_info = await self.teachers_info_dao.get_teachers_info_by_id(teachers_info.teacher_base_id)
         if not exists_teachers_info:
             raise TeacherInfoNotFoundError()
@@ -348,3 +355,7 @@ class TeachersInfoRule(object):
         if teachers.teacher_sub_status != "unsubmitted":
             teachers.teacher_sub_status = "unsubmitted"
         return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
+
+
+
+

@@ -1526,6 +1526,7 @@ class TeacherInfoImportSubmit(BaseModel):
     is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
 
+
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
         if self.nationality == "CN":
