@@ -24,18 +24,20 @@ class SchoolSyncQueryModel(BaseModel):
 
 
 class SchoolSyncQueryReModel(BaseModel):
+    """
+    这是同步查询返回的model
+    """
+
     social_credit_code: str = Field(..., title="", description="统一社会信用代码",
                                     examples=['XH423423876867'])
     school_name: str = Field(..., title="学校名称", description="1-20字符", examples=['XX小学'])
-    supervise_school_name: str = Field(..., title="督导学校名称", description="1-20字符", examples=['XX小学'])
     borough: str = Query(..., title="  ", description=" 行政管辖区", )
     block: str = Query(..., title=" ", description="地域管辖区", )
+    founder_type: str = Field(..., title="", description="举办者类型",examples=['地方'])
+    founder_type_lv2: str = Field(..., title="", description="举办者类型二级",examples=['教育部门'])
+    founder_type_lv3: str = Field(..., title="", description="举办者类型三级",examples=['县级教育部门'])
 
-    @classmethod
-    @model_validator(mode='before')
-    def set_supervise_school_name(self, data: dict):
-        data["supervise_school_name"] = data["school_name"]
-        return data
+
 
 
 class SupervisorSyncQueryModel(BaseModel):

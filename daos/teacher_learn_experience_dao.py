@@ -29,7 +29,7 @@ class TeacherLearnExperienceDAO(DAOBase):
     async def get_teacher_learn_experience_by_teacher_learn_experience_id(self, teacher_learn_experience_id):
         session = await self.slave_db()
         result = await session.execute(select(TeacherLearnExperience).where(
-            TeacherLearnExperience.teacher_learn_experience_id == teacher_learn_experience_id))
+            TeacherLearnExperience.teacher_learn_experience_id == teacher_learn_experience_id,TeacherLearnExperience.is_deleted == False))
         return result.scalar_one_or_none()
 
 
@@ -47,6 +47,6 @@ class TeacherLearnExperienceDAO(DAOBase):
         session = await self.slave_db()
         query = select(TeacherLearnExperience).join(Teacher,
                                                     TeacherLearnExperience.teacher_id == Teacher.teacher_id).where(
-            TeacherLearnExperience.teacher_id == teacher_id)
+            TeacherLearnExperience.teacher_id == teacher_id,TeacherLearnExperience.is_deleted == False)
         result = await session.execute(query)
         return result.scalars().all()

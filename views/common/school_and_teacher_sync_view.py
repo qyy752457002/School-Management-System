@@ -7,7 +7,7 @@ from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from views.models.school_and_teacher_sync import SchoolSyncQueryModel, SupervisorSyncQueryModel, \
     SupervisorSyncQueryReModel
 from rules.common.sync_rule import SyncRule
-from typing import List, Type
+from typing import List
 
 
 class SchoolTeacherView(BaseView):
@@ -17,15 +17,23 @@ class SchoolTeacherView(BaseView):
 
     async def page_school(self, query_model=Depends(SchoolSyncQueryModel),
                           page_request=Depends(PageRequest)) -> PaginatedResponse:
-        pass
+        res = await self.sync_rule.query_sync_school_with_page(query_model, page_request)
+        return res
 
     async def page_teachers(self, query_model=Depends(SupervisorSyncQueryModel),
                             page_request=Depends(PageRequest)) -> PaginatedResponse:
         res = await self.sync_rule.query_sync_teacher_with_page(query_model, page_request)
         return res
 
-    async def get_sync_teacher(self, teacher_id_number_list: List[str] | None = Query([], title="", description="身份证件号",
-                                                                           examples=['3425301994'])) -> List[
+    async def get_sync_teacher(self,
+                               teacher_id_number_list: List[str] | None = Query([], title="", description="身份证件号",
+                                                                                examples=['3425301994'])) -> List[
         SupervisorSyncQueryReModel]:
         res = await self.sync_rule.get_sync_teacher(teacher_id_number_list)
+        return res
+
+    async def get_sync_school(self, social_credit_code_list: List[str] | None = Query([], title="",
+                                                                                      description="统一社会信用代码",
+                                                                                      examples=['3425301994'])) -> List:
+        res = await self.sync_rule.get_sync_school(social_credit_code_list)
         return res

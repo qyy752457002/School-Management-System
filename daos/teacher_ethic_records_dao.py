@@ -45,10 +45,11 @@ class TeacherEthicRecordsDAO(DAOBase):
             **update_contents)
         return await self.update(session, query, teacher_ethic_records, update_contents, is_commit=is_commit)
 
-    async def get_all_teacher_ethic_records(self, teacher_id):
+    async def get_all_teacher_ethic_records(self, teacher_id, ethic_type):
         session = await self.slave_db()
         query = select(TeacherEthicRecords).join(Teacher,
                                                  TeacherEthicRecords.teacher_id == Teacher.teacher_id).where(
-            TeacherEthicRecords.teacher_id == teacher_id)
+            TeacherEthicRecords.teacher_id == teacher_id, TeacherEthicRecords.is_deleted == False,
+            TeacherEthicRecords.ethic_type == ethic_type)
         result = await session.execute(query)
         return result.scalars().all()

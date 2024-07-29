@@ -30,7 +30,8 @@ class ResearchAchievementsDAO(DAOBase):
     async def get_research_achievements_by_research_achievements_id(self, research_achievements_id):
         session = await self.slave_db()
         result = await session.execute(select(ResearchAchievements).where(
-            ResearchAchievements.research_achievements_id == research_achievements_id))
+            ResearchAchievements.research_achievements_id == research_achievements_id,
+            ResearchAchievements.is_deleted == False))
         return result.scalar_one_or_none()
 
     async def query_research_achievements_with_page(self, pageQueryModel, page_request: PageRequest):
@@ -54,7 +55,7 @@ class ResearchAchievementsDAO(DAOBase):
                        ResearchAchievements.representative_or_project, ResearchAchievements.name,
                        ResearchAchievements.disciplinary_field, ResearchAchievements.role).join(Teacher,
                                                                                                 ResearchAchievements.teacher_id == Teacher.teacher_id).where(
-            ResearchAchievements.teacher_id == teacher_id)
+            ResearchAchievements.teacher_id == teacher_id, ResearchAchievements.is_deleted == False)
 
         result = await session.execute(query)
         column_names = query.columns.keys()

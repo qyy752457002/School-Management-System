@@ -40,7 +40,7 @@ class TeachersRetireDao(DAOBase):
         session = await self.slave_db()
         result = await session.execute(
             select(TeacherRetire).join(Teacher, Teacher.teacher_id == TeacherRetire.teacher_id).where(
-                TeacherRetire.teacher_id == teacher_id))
+                TeacherRetire.teacher_id == teacher_id, TeacherRetire.is_deleted == False))
         return result.scalar_one_or_none()
 
     async def query_retire_teacher_with_page(self, query_model: TeacherRetireQuery,
