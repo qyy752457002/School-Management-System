@@ -201,10 +201,11 @@ class PlanningSchoolRule(object):
 
         print(exists_planning_school.status, 2222222)
         if action == 'open':
-            #  自动添加一个组织 todo 组织中心的有报错
-            # await self.send_unit_orgnization_to_org_center(exists_planning_school)
-            # todo 自动同步到 组织中心的处理  包含 规划校 对接过去     学校后面也加对接过去
+
+            #   自动同步到 组织中心的处理  包含 规划校 对接过去 先加单位 再加组织 后续的    学校单位作为组织的成员 加入到组织里
             await self.send_planning_school_to_org_center(exists_planning_school)
+            #  自动添加一个组织 todo 组织中心的有报错
+            await self.send_unit_orgnization_to_org_center(exists_planning_school)
 
             await self.send_admin_to_org_center(exists_planning_school)
             # 自动新增 学校信息的处理 1.学校信息 2.学校联系方式 3.学校教育信息
@@ -759,9 +760,10 @@ class PlanningSchoolRule(object):
                      'locationCity': exists_planning_school.city,
                      'locationCounty': planning_school_communication.loc_area,
                      'locationProvince': planning_school_communication.loc_area_pro,
+                     # 所属组织这个可以不要
                      'owner': exists_planning_school.planning_school_no,
-                     'unitCode': exists_planning_school.planning_school_no+shortuuid.uuid(),
-                     # 'unitCode': exists_planning_school.planning_school_no ,
+                     # 'unitCode': exists_planning_school.planning_school_no+shortuuid.uuid(),
+                     'unitCode': exists_planning_school.planning_school_no ,
                      'unitId': '',
                      'unitName': exists_planning_school.planning_school_name,
                      'unitType': 'school',
@@ -877,7 +879,7 @@ class PlanningSchoolRule(object):
                      "overview": "",
                      "status": "",
                      "unitCount": "",
-                     "unitId": "25"
+                     "unitId": exists_planning_school.planning_school_no,
 
                      }
         #  URL修改
