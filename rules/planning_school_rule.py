@@ -222,7 +222,7 @@ class PlanningSchoolRule(object):
             # 添加 用户和组织关系 就是部门
             await self.send_user_org_relation_to_org_center(exists_planning_school, res_unit, data_org, res_admin)
             # 添加 服务范围
-            await self.send_service_unit_to_org_center(exists_planning_school, res_unit, data_org, res_admin)
+            # await self.send_service_unit_to_org_center(exists_planning_school, res_unit, data_org, res_admin)
 
             # 自动新增 学校信息的处理 1.学校信息 2.学校联系方式 3.学校教育信息
             school_rule = get_injector(SchoolRule)
