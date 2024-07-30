@@ -1,12 +1,8 @@
-# from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import copy
 
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-import hashlib
-
-import shortuuid
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from sqlalchemy import select
@@ -19,10 +15,7 @@ from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import convert_snowid_in_model, convert_snowid_to_strings
 from views.models.campus import Campus as CampusModel
 
-from views.models.campus import CampusBaseInfo
 from views.models.planning_school import PlanningSchoolStatus
-from business_exceptions.planning_school import PlanningSchoolNotFoundError
-from daos.planning_school_dao import PlanningSchoolDAO
 from views.models.school import School as SchoolModel
 
 
