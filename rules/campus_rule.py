@@ -218,6 +218,8 @@ class CampusRule(object):
         need_update_list.append('status')
         need_update_list.append('action_reason')
         need_update_list.append('related_license_upload')
+        exists_campus.action_reason = action_reason
+        exists_campus.related_license_upload = related_license_upload
 
         # print(exists_campus.status,2222222)
         campus_db = await self.campus_dao.update_campus_byargs(exists_campus, *need_update_list)
