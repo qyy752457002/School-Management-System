@@ -17,6 +17,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.async_task.data_access.task_dao import TaskDAO
 
 from business_exceptions.common import IdCardError, EnrollNumberError, EduNumberError
+from business_exceptions.school import SchoolNotFoundError
 from daos.class_dao import ClassesDAO
 from daos.school_dao import SchoolDAO
 from daos.students_base_info_dao import StudentsBaseInfoDao
@@ -112,6 +113,16 @@ class StudentsRule(ImportCommonAbstractRule, object):
             if await self.students_dao.get_students_by_param(enrollment_number=students.enrollment_number,
                                                              is_deleted=False):
                 raise EnrollNumberError()
+        # 证件类型和证件号 唯一
+        exists_students = await self.students_dao.get_students_by_param(id_type=students.id_type,id_number=students.id_number,is_deleted=False,)
+        if  exists_students:
+            raise StudentExistsError()
+        # 校验学校
+        if students.school_id:
+            school = await self.school_dao.get_school_by_id(students.school_id)
+            if not school:
+                raise SchoolNotFoundError()
+
         students_db.student_id = SnowflakeIdGenerator(1, 1).generate_id()
 
         students_db = await self.students_dao.add_students(students_db)
@@ -120,8 +131,6 @@ class StudentsRule(ImportCommonAbstractRule, object):
         print(students)
         convert_snowid_in_model(students, ["id",'student_id','school_id','class_id','session_id'])
         # await self.send_student_to_org_center(students)
-
-
 
         return students
 

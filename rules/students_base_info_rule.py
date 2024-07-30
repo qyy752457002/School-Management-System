@@ -142,11 +142,11 @@ class StudentsBaseInfoRule(object):
         return students_base_info_db
 
     async def query_students_base_info_with_page(self, query_model: NewStudentsQuery,
-                                                 page_request: PageRequest) -> PaginatedResponse:
+                                                 page_request: PageRequest,extend_params=None) -> PaginatedResponse:
         """
         分页查询
         """
-        paging = await self.students_base_info_dao.query_students_with_page(query_model, page_request)
+        paging = await self.students_base_info_dao.query_students_with_page(query_model, page_request,extend_params)
 
         paging_result = PaginatedResponse.from_paging(page_none_deal(paging), NewStudentsQueryRe)
         convert_snowid_to_strings(paging_result, ["id",'student_id','school_id','class_id','session_id'])
@@ -187,7 +187,7 @@ class StudentsBaseInfoRule(object):
                                      # 组织和主单位
                                      owner=school.school_no,
                                      mainUnitName=school.school_no,
-                                     identity=student_baseinfo.identity,
+                                     # identity=student_baseinfo.identity,
                                      identityTypeNames=student_baseinfo.identity_type,
 
                                      )
