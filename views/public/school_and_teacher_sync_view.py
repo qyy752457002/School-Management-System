@@ -5,7 +5,7 @@ from fastapi import Query, Depends, Body
 
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from views.models.school_and_teacher_sync import SchoolSyncQueryModel, SupervisorSyncQueryModel, \
-    SupervisorSyncQueryReModel,SupervisorSyncAddModel
+    SupervisorSyncQueryReModel
 from rules.common.sync_rule import SyncRule
 from typing import List
 
@@ -33,8 +33,8 @@ class SchoolTeacherView(BaseView):
         print(res)
         return res
 
-    async def post_sync_school(self, social_credit_code_list: List[str] | None = Body([], title="",
+    async def post_sync_school(self, unique_code_list: List[str] | None = Body([], title="",
                                                                                       description="统一社会信用代码",
                                                                                       examples=['3425301994'])) -> List:
-        res = await self.sync_rule.get_sync_school(social_credit_code_list)
+        res = await self.sync_rule.get_sync_school(unique_code_list)
         return res
