@@ -830,6 +830,7 @@ class PlanningSchoolRule(object):
                                      departmentNames=data_org['displayName'],
                                      # 部门group的name
                                      departmentId=data_org['name'],
+                                     realName= exists_planning_school_origin.admin
                                      )
         dict_data = dict_data.__dict__
         # params_data = JsonUtils.dict_to_json_str(dict_data)
@@ -956,7 +957,8 @@ class PlanningSchoolRule(object):
             "isTopGroup": exists_planning_school.parent_id == 0,
             "key": "sit",
             "manager": "",
-            "name": exists_planning_school.org_name + "管理员",
+            # "name": exists_planning_school.org_name + "管理员",
+            "name":   "基础信息管理系统",
             "newCode": exists_planning_school.org_code,
             "newType": "organization",  # 组织类型 特殊参数必须穿这个
             "owner": school.planning_school_no,
@@ -1031,10 +1033,10 @@ class PlanningSchoolRule(object):
             "unitId": unitid if unitid is not None else school.planning_school_name,
         }
 
-        apiname = '/api/add-educate-user-department-identity'
-        # 字典参数
-        datadict = dict_data
-        datadict = convert_dates_to_strings(datadict)
+        apiname = '/api/add-educate-user-department-identitys'
+        # 字典参数 todo  调整  参数完善   另 服务范围的接口
+        datadict = [dict_data]
+        # datadict = convert_dates_to_strings(datadict)
         print('调用添加部门用户关系  字典参数', datadict, )
 
         response = await send_orgcenter_request(apiname, datadict, 'post', False)
