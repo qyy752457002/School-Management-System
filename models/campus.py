@@ -8,7 +8,7 @@ from mini_framework.databases.entities import BaseDBModel
 
 class Campus(BaseDBModel):
     """
-    校区
+    校区 action_reason=None,related_license_upload=None
 
 校区负责人姓名
 campus_leader_name
@@ -73,9 +73,8 @@ campus_leader_position
     fax_number: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="传真电话")
     email: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="单位电子信箱")
     detailed_address: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="园所详细地址")
-    related_license_upload: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="相关证照上传")
-
-
+    related_license_upload: Mapped[str] = mapped_column(String(255), nullable=True,default='', comment="相关证照上传")
+    action_reason: Mapped[str] = mapped_column(String(128), nullable=True,default='', comment="")
 
     sy_zones_pro: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="属地管理教育行政部门所在地（省级）")
     primary_campus_system: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="小学学制")

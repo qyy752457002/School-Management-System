@@ -131,9 +131,14 @@ class CampusView(BaseView):
 
     # 关闭
     async def patch_close(self, campus_id: str = Query(..., title="校区编号", description="校区id/园所id", min_length=1,
-                                                       max_length=20, example='1')):
+                                                       max_length=20, example='1'),
+                          action_reason: str = Query(None, description="原因",   max_length=200,
+                                                     example='家庭搬迁'),
+                          related_license_upload: str = Query(None, description="相关证照上传",
+                                                              max_length=128, example=''),
+                          ):
         # print(campus)
-        res = await self.campus_rule.update_campus_status(campus_id, PlanningSchoolStatus.CLOSED.value)
+        res = await self.campus_rule.update_campus_status(campus_id, PlanningSchoolStatus.CLOSED.value,action_reason,related_license_upload)
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
 
         return res
