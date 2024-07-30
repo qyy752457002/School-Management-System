@@ -115,6 +115,8 @@ class EnumValueDAO(DAOBase):
         temodel = select(EnumValue)
         if filterdict:
             for key, value in filterdict.items():
+                if value is None:
+                    continue
                 temodel = temodel.where(getattr(EnumValue, key) == value)
             # result = await session.execute(select(EnumValue).where(getattr(EnumValue, key) == value))
             # return result.scalars().all()
