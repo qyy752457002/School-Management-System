@@ -204,9 +204,9 @@ class PlanningSchoolRule(object):
         print(exists_planning_school.status, 2222222)
         if action == 'open':
             #   自动同步到 组织中心的处理  包含 规划校 对接过去 先加单位 再加组织 后续的    学校单位作为组织的成员 加入到组织里
-            res_unit = await self.send_planning_school_to_org_center(exists_planning_school)
+            res_unit,data_unit  = await self.send_planning_school_to_org_center(exists_planning_school)
             #  自动添加一个组织
-            res_oigna = await self.send_unit_orgnization_to_org_center(exists_planning_school)
+            res_oigna = await self.send_unit_orgnization_to_org_center(exists_planning_school,data_unit)
             # 添加组织结构 部门
             org = Organization(org_name=exists_planning_school.planning_school_name,
                                school_id=exists_planning_school.id,
@@ -729,6 +729,7 @@ class PlanningSchoolRule(object):
             if item.planning_school_org_form:
                 item.planning_school_org_form = school_org_form[
                     item.planning_school_org_form].description if item.planning_school_org_form in school_org_form else item.planning_school_org_form
+            return item
 
         # return item
 
@@ -768,12 +769,12 @@ class PlanningSchoolRule(object):
         planning_school_communication = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(
             exists_planning_school.id)
         cn_exists_planning_school = await self.convert_planning_school_to_export_format(exists_planning_school)
-        dict_data = {'administrativeDivisionCity': exists_planning_school.city,
-                     'administrativeDivisionCounty': exists_planning_school.block,
-                     'administrativeDivisionProvince': exists_planning_school.province,
+        dict_data = {'administrativeDivisionCity': cn_exists_planning_school.city,
+                     'administrativeDivisionCounty': cn_exists_planning_school.block,
+                     'administrativeDivisionProvince': cn_exists_planning_school.province,
                      'createdTime': exists_planning_school.create_planning_school_date,
                      'locationAddress': planning_school_communication.detailed_address,
-                     'locationCity': exists_planning_school.city,
+                     'locationCity': cn_exists_planning_school.city,
                      'locationCounty': planning_school_communication.loc_area,
                      'locationProvince': planning_school_communication.loc_area_pro,
                      # 所属组织这个可以不要
@@ -804,7 +805,7 @@ class PlanningSchoolRule(object):
             print(response)
             print('发起请求单位到组织中心suc')
 
-            return response
+            return response,datadict
         except Exception as e:
             print(e)
             raise e
@@ -857,7 +858,7 @@ class PlanningSchoolRule(object):
             return response
         return None
 
-    async def send_unit_orgnization_to_org_center(self, exists_planning_school_origin):
+    async def send_unit_orgnization_to_org_center(self, exists_planning_school_origin,data_unit):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if isinstance(exists_planning_school.updated_at, (date, datetime)):
             exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
@@ -882,9 +883,9 @@ class PlanningSchoolRule(object):
                      # "appHomeUrl": "http://tgiibjya.nr/xxhsh",
                      # "appName": exists_planning_school.planning_school_name,
 
-                     # "appNames": [
-                     #     exists_planning_school.planning_school_name,
-                     # ],
+                     "educateUnits": [
+                        data_unit
+                     ],
 
                      "certPublicKey": "",
                      "clientId": "",
