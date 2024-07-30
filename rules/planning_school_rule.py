@@ -204,7 +204,7 @@ class PlanningSchoolRule(object):
         if action == 'open':
 
             #   自动同步到 组织中心的处理  包含 规划校 对接过去 先加单位 再加组织 后续的    学校单位作为组织的成员 加入到组织里
-            await self.send_planning_school_to_org_center(exists_planning_school)
+            res_unit = await self.send_planning_school_to_org_center(exists_planning_school)
             #  自动添加一个组织 todo 组织中心的有报错
             await self.send_unit_orgnization_to_org_center(exists_planning_school)
             # 添加组织结构 部门
@@ -216,7 +216,7 @@ class PlanningSchoolRule(object):
                                org_code_type='school',
                                )
 
-            await self.send_org_to_org_center(org)
+            await self.send_org_to_org_center(org,res_unit)
 
             await self.send_admin_to_org_center(exists_planning_school)
             # 自动新增 学校信息的处理 1.学校信息 2.学校联系方式 3.学校教育信息
@@ -927,7 +927,7 @@ class PlanningSchoolRule(object):
             return response
 
         return None
-    async def send_org_to_org_center(self, exists_planning_school_origin: Organization):
+    async def send_org_to_org_center(self, exists_planning_school_origin: Organization,res_unit):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if hasattr(exists_planning_school, 'updated_at') and isinstance(exists_planning_school.updated_at,
                                                                         (date, datetime)):
@@ -941,12 +941,15 @@ class PlanningSchoolRule(object):
             print('学校未找到 跳过发送组织', exists_planning_school.school_id)
             return
         # cn_exists_planning_school = await self.convert_school_to_export_format(exists_planning_school )
+        unitid= None
+        if isinstance(res_unit, dict):
+            unitid = res_unit['data2']
         dict_data = {
             "contactEmail": "j.vyevxiloyy@qq.com",
             # "createdTime": exists_planning_school.created_at,
             "displayName": exists_planning_school.org_name,
             # todo  参数调试  单位ID
-            "educateUnit": school.planning_school_name,
+            "educateUnit":unitid if unitid is not None else school.planning_school_name,
             # "educateUnitObj": {
             #     "administrativeDivisionCity": "",
             #     "administrativeDivisionCounty": "",
