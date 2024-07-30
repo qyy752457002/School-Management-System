@@ -1,4 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+import traceback
+
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
@@ -216,16 +218,23 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
         url += ('?' + urlencode(datadict))
 
     print('参数', url, datadict, headerdict)
-    if method == 'get':
-        response = await httpreq.get_json(url, headerdict)
-    else:
-        response = await httpreq.post_json(url, datadict, headerdict)
-    print(response, '接口响应')
-    if response is None:
+    try:
+        if method == 'get':
+            response = await httpreq.get_json(url, headerdict)
+        else:
+            response = await httpreq.post_json(url, datadict, headerdict)
+        print(response, '接口响应')
+        if response is None:
+            return {}
+        if isinstance(response, str):
+            return {response}
+        return response
+        pass
+    except Exception as e:
+        print('发生异常',e)
+        traceback.print_exc()
         return {}
-    if isinstance(response, str):
-        return {response}
-    return response
+
     pass
 
 
