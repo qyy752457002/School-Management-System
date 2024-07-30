@@ -13,6 +13,7 @@ from views.school.organization_view import OrganizationView
 from views.school.planning_school_view import PlanningSchoolView
 from views.school.school_view import SchoolView
 from views.school.subject_view import SubjectView
+from views.public.school_and_teacher_sync_view import SchoolTeacherView
 
 
 def routers():

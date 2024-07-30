@@ -406,29 +406,33 @@ class TeachersRule(object):
 
     # 审批相关
     async def query_teacher_approval_with_page(self, type, query_model: TeacherApprovalQuery,
-                                               page_request: PageRequest, user_id):
+                                               page_request: PageRequest, extend_param):
         if type == "launch":
             # params = {"applicant_name": user_id, "process_code": "t_entry", "teacher_sub_status": "submitted"}
             params = {"process_code": "t_entry", "teacher_sub_status": "submitted"}
+            params.update(extend_param)
             paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                           TeacherApprovalQueryRe,
                                                                                           params)
         elif type == "approval":
-            params = {"applicant_name": user_id, "process_code": "t_entry", "teacher_sub_status": "submitted"}
+            params = {"process_code": "t_entry", "teacher_sub_status": "submitted"}
+            params.update(extend_param)
             paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                           TeacherApprovalQueryRe,
                                                                                           params)
         return paging
 
     async def query_teacher_info_change_approval(self, type, query_model: TeacherApprovalQuery,
-                                                 page_request: PageRequest, user_id):
+                                                 page_request: PageRequest, extend_param):
         if type == "launch":
-            params = {"applicant_name": user_id, "process_code": "t_keyinfo", "teacher_main_status": "employed"}
+            params = {"process_code": "t_keyinfo", "teacher_main_status": "employed"}
+            params.update(extend_param)
             paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                           TeacherApprovalQueryRe,
                                                                                           params)
         elif type == "approval":
-            params = {"applicant_name": user_id, "process_code": "t_keyinfo", "teacher_main_status": "employed"}
+            params = {"process_code": "t_keyinfo", "teacher_main_status": "employed"}
+            params.update(extend_param)
             paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                           TeacherApprovalQueryRe,
                                                                                           params)

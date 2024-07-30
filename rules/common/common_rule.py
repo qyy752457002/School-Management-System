@@ -1,6 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import traceback
-
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.utils.http import HTTPRequest
 from pydantic import BaseModel
@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import workflow_service_config, orgcenter_service_config
+from typing import List, Type, Dict
 
 
 async def send_request(apiname, datadict, method='get', is_need_query_param=False):

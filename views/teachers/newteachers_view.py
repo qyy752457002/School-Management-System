@@ -73,8 +73,8 @@ class NewTeachersView(BaseView):
             extend_param["teacher_employer"] = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             extend_param["borough"] = ob.county_id
-        extend_param["user_id"]="asdfasdf"
-        paging_result = await self.teacher_info_rule.query_teacher_with_page(new_teacher, page_request,extend_param)
+        extend_param["applicant_name"] = "asdfasdf"
+        paging_result = await self.teacher_info_rule.query_teacher_with_page(new_teacher, page_request, extend_param)
         return paging_result
 
     # 新教职工基本信息的功能
@@ -245,26 +245,38 @@ class NewTeachersView(BaseView):
         print('发生任务成功')
         return task
 
-    async def page_new_teacher_launch(self, teacher_approval_query=Depends(TeacherApprovalQuery),
+    async def page_new_teacher_launch(self,request: Request, teacher_approval_query=Depends(TeacherApprovalQuery),
                                       page_request=Depends(PageRequest)):
         """
         分页查询
         """
+        extend_param = {}
+        ob = await get_extend_params(request)
+        if ob.unit_type == UnitType.SCHOOL.value:
+            extend_param["teacher_employer"] = ob.school_id
+        elif ob.unit_type == UnitType.COUNTRY.value:
+            extend_param["borough"] = ob.county_id
+        extend_param["applicant_name"] = "asdfasdf"
         type = 'launch'
-        user_id = "asdfasdf"
         paging_result = await self.teacher_rule.query_teacher_approval_with_page(type, teacher_approval_query,
-                                                                                 page_request, user_id)
+                                                                                 page_request, extend_param)
         return paging_result
 
-    async def page_new_teacher_approval(self, teacher_approval_query=Depends(TeacherApprovalQuery),
+    async def page_new_teacher_approval(self,request: Request, teacher_approval_query=Depends(TeacherApprovalQuery),
                                         page_request=Depends(PageRequest)):
         """
         分页查询
         """
+        extend_param = {}
+        ob = await get_extend_params(request)
+        if ob.unit_type == UnitType.SCHOOL.value:
+            extend_param["teacher_employer"] = ob.school_id
+        elif ob.unit_type == UnitType.COUNTRY.value:
+            extend_param["borough"] = ob.county_id
+        extend_param["applicant_name"] = "asdfasdf"
         type = 'approval'
-        user_id = "asdfasdf"
         paging_result = await self.teacher_rule.query_teacher_approval_with_page(type, teacher_approval_query,
-                                                                                 page_request, user_id)
+                                                                                 page_request, extend_param)
         return paging_result
 
     # 下面都是测试工作流的

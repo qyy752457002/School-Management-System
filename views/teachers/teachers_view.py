@@ -1,4 +1,4 @@
-from starlette.requests import Request
+from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.views import BaseView
@@ -7,9 +7,11 @@ from starlette.requests import Request
 from rules.teachers_info_rule import TeachersInfoRule
 from rules.teachers_rule import TeachersRule
 from views.common.common_view import get_extend_params
+from views.models.system import UnitType
 from views.models.teachers import Teachers, TeacherInfo, CurrentTeacherQuery, \
     CurrentTeacherInfoSaveModel, TeacherApprovalQuery
 from fastapi import Query, Depends, Body
+
 
 class TeachersView(BaseView):
     def __init__(self):
@@ -40,27 +42,41 @@ class TeachersView(BaseView):
         paging_result = await self.teacher_info_rule.query_current_teacher_with_page(current_teacher, page_request, ob)
         return paging_result
 
-    async def page_teacher_info_change_launch(self, teacher_approval_query=Depends(TeacherApprovalQuery),
+    async def page_teacher_info_change_launch(self, request: Request,
+                                              teacher_approval_query=Depends(TeacherApprovalQuery),
                                               page_request=Depends(PageRequest)):
         """
         分页查询
         """
+        extend_param = {}
+        ob = await get_extend_params(request)
+        if ob.unit_type == UnitType.SCHOOL.value:
+            extend_param["teacher_employer"] = ob.school_id
+        elif ob.unit_type == UnitType.COUNTRY.value:
+            extend_param["borough"] = ob.county_id
+        extend_param["applicant_name"] = "asdfasdf"
         type = 'launch'
-        user_id = "asdfasdf"
         paging_result = await self.teacher_rule.query_teacher_info_change_approval(type, teacher_approval_query,
-                                                                                   page_request, user_id)
+                                                                                   page_request, extend_param)
         return paging_result
 
-    async def page_teacher_info_change_approval(self, teacher_approval_query=Depends(TeacherApprovalQuery),
+    async def page_teacher_info_change_approval(self, request: Request,
+                                                teacher_approval_query=Depends(TeacherApprovalQuery),
                                                 page_request=Depends(PageRequest)):
         """
         分页查询
         """
+        extend_param = {}
+        ob = await get_extend_params(request)
+        if ob.unit_type == UnitType.SCHOOL.value:
+            extend_param["teacher_employer"] = ob.school_id
+        elif ob.unit_type == UnitType.COUNTRY.value:
+            extend_param["borough"] = ob.county_id
+        extend_param["applicant_name"] = "asdfasdf"
         type = 'approval'
-        user_id = "asdfasdf"
         paging_result = await self.teacher_rule.query_teacher_info_change_approval(type, teacher_approval_query,
 
-                                                                                   page_request, user_id)
+                                                                                   page_request, extend_param)
         return paging_result
 
     # 获取教职工基本信息

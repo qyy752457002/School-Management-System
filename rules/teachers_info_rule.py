@@ -330,7 +330,7 @@ class TeachersInfoRule(object):
 
     async def query_teacher_with_page(self, query_model: NewTeacher, page_request: PageRequest, extend_param):
         params = {"process_code": "t_entry", "approval_status": "t_query"}
-        params = params.update(extend_param)
+        params.update(extend_param)
         paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                       NewTeacherRe, params)
         return paging
