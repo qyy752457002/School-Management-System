@@ -51,7 +51,7 @@ class CampusRule(object):
         campus_db = view_model_to_orm_model(campus, Campus, exclude=["id"])
         # school_db.status =  PlanningSchoolStatus.DRAFT.value
         # 校区只有2步  故新增几位开设中 
-        campus_db.status = PlanningSchoolStatus.OPENING.value
+        campus_db.status = PlanningSchoolStatus.NORMAL.value
         campus_db.created_uid = 0
         campus_db.updated_uid = 0
         campus_db.id = SnowflakeIdGenerator(1, 1).generate_id()
