@@ -98,7 +98,13 @@ class TeachersRule(object):
                 raise IdCardError()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         teachers_work = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
-        params = {"process_code": "t_entry", "applicant_name": user_id}
+        school = await self.school_dao.get_school_by_id(teachers.teacher_employer)
+        school_name = ""
+        borough = ""
+        if school:
+            school_name = school.school_name
+            borough = school.borough
+        params = {"process_code": "t_entry", "applicant_name": user_id, "school_name": school_name, "borough": borough}
         await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
             teachers_work.teacher_id)
         work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teachers_work, params)
@@ -145,7 +151,13 @@ class TeachersRule(object):
                 raise IdCardError()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         teachers_work = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
-        params = {"process_code": "t_entry", "applicant_name": user_id}
+        school = await self.school_dao.get_school_by_id(teachers.teacher_employer)
+        school_name = ""
+        borough = ""
+        if school:
+            school_name = school.school_name
+            borough = school.borough
+        params = {"process_code": "t_entry", "applicant_name": user_id, "school_name": school_name, "borough": borough}
         await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
             teachers_work.teacher_id)
         work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teachers_work, params)
@@ -222,10 +234,12 @@ class TeachersRule(object):
             params = {"process_code": "t_keyinfo", "teacher_id": teachers.teacher_id, "applicant_name": user_id}
             school = await self.school_dao.get_school_by_id(teachers.teacher_employer)
             school_name = ""
+            borough = ""
             if school:
                 school_name = school.school_name
+                borough = school.borough
             teachers_school = TeachersSchool(school_name=school_name, teacher_main_status="employed",
-                                             teacher_sub_status="active")
+                                             teacher_sub_status="active", borough=borough)
             model_list = [teachers, teachers_school]
             work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
             await self.teacher_progressing(teachers.teacher_id)

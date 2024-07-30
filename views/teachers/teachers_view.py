@@ -1,18 +1,15 @@
-from views.models.teachers import NewTeacher, TeacherInfo
-from fastapi import Query, Depends, Body
-from mini_framework.web.std_models.page import PageRequest
-from mini_framework.web.std_models.page import PaginatedResponse
-
-from sqlalchemy import select
+from starlette.requests import Request
 from mini_framework.design_patterns.depend_inject import get_injector
-from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
+from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.views import BaseView
-from rules.teachers_rule import TeachersRule
+from starlette.requests import Request
+
 from rules.teachers_info_rule import TeachersInfoRule
-from views.models.teachers import Teachers, TeacherInfo, CurrentTeacherQueryRe, CurrentTeacherQuery, \
+from rules.teachers_rule import TeachersRule
+from views.common.common_view import get_extend_params
+from views.models.teachers import Teachers, TeacherInfo, CurrentTeacherQuery, \
     CurrentTeacherInfoSaveModel, TeacherApprovalQuery
 from fastapi import Query, Depends, Body
-
 
 class TeachersView(BaseView):
     def __init__(self):
@@ -34,11 +31,13 @@ class TeachersView(BaseView):
         new_fields = await self.teacher_rule.update_teachers(teachers, user_id)
         return new_fields
 
-    async def page(self, current_teacher=Depends(CurrentTeacherQuery), page_request=Depends(PageRequest)):
+    async def page(self, request: Request, current_teacher=Depends(CurrentTeacherQuery),
+                   page_request=Depends(PageRequest)):
         """
         老师分页查询
         """
-        paging_result = await self.teacher_info_rule.query_current_teacher_with_page(current_teacher, page_request)
+        ob = await get_extend_params(request)
+        paging_result = await self.teacher_info_rule.query_current_teacher_with_page(current_teacher, page_request, ob)
         return paging_result
 
     async def page_teacher_info_change_launch(self, teacher_approval_query=Depends(TeacherApprovalQuery),

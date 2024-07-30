@@ -1,24 +1,22 @@
-from datetime import datetime, date
-
-from mini_framework.web.views import BaseView
-from views.models.teachers import NewTeacher
 from fastapi import Query, Depends, Body
-
-from mini_framework.design_patterns.depend_inject import get_injector
-from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
-from mini_framework.web.views import BaseView
-from rules.teachers_rule import TeachersRule
-from views.models.teachers import Teachers, TeacherInfo, TeachersCreatModel, CurrentTeacherInfoSaveModel, \
-    TeacherInfoSaveModel, TeacherInfoSubmit, CombinedModel, TeacherFileStorageModel, CurrentTeacherQuery, \
-    TeacherApprovalQuery, TeacherChangeLogQueryModel
-from rules.teachers_info_rule import TeachersInfoRule
-from mini_framework.web.request_context import request_context_manager
-
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task.task import Task
-from views.models.teachers import NewTeacherTask
-from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
+from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.web.request_context import request_context_manager
+from mini_framework.web.std_models.page import PageRequest
+from mini_framework.web.views import BaseView
+from starlette.requests import Request
+
 from rules.teacher_import_rule import TeacherImportRule
+from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
+from rules.teachers_info_rule import TeachersInfoRule
+from rules.teachers_rule import TeachersRule
+from views.common.common_view import get_extend_params
+from views.models.system import UnitType
+from views.models.teachers import NewTeacher
+from views.models.teachers import Teachers, TeachersCreatModel, CurrentTeacherInfoSaveModel, \
+    TeacherInfoSaveModel, TeacherInfoSubmit, CurrentTeacherQuery, \
+    TeacherApprovalQuery, TeacherChangeLogQueryModel
 
 
 class NewTeachersView(BaseView):
@@ -65,12 +63,18 @@ class NewTeachersView(BaseView):
 
     # 分页查询
 
-    async def page(self, new_teacher=Depends(NewTeacher), page_request=Depends(PageRequest)):
+    async def page(self, request: Request, new_teacher=Depends(NewTeacher), page_request=Depends(PageRequest)):
         """
         分页查询
         """
-        user_id = "asdfasdf"
-        paging_result = await self.teacher_info_rule.query_teacher_with_page(new_teacher, page_request, user_id)
+        extend_param = {}
+        ob = await get_extend_params(request)
+        if ob.unit_type == UnitType.SCHOOL.value:
+            extend_param["teacher_employer"] = ob.school_id
+        elif ob.unit_type == UnitType.COUNTRY.value:
+            extend_param["borough"] = ob.county_id
+        extend_param["user_id"]="asdfasdf"
+        paging_result = await self.teacher_info_rule.query_teacher_with_page(new_teacher, page_request,extend_param)
         return paging_result
 
     # 新教职工基本信息的功能
@@ -317,7 +321,7 @@ class NewTeachersView(BaseView):
                                                                                          description="教师编号",
                                                                                          example="7210418530586595328"),
                                                      org_id: int | str = Query(..., title="任职单位",
-                                                                                         description="任职单位编号",
-                                                                                         example="7210061000211566592")):
+                                                                               description="任职单位编号",
+                                                                               example="7210061000211566592")):
         res = await self.teacher_rule.add_teacher_organization_members(org_id, teacher_id)
         return res

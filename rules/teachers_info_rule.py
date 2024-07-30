@@ -328,14 +328,16 @@ class TeachersInfoRule(object):
         teachers_info = orm_model_to_view_model(teachers_info_db, TeachersInfoModel, exclude=[""])
         return teachers_info
 
-    async def query_teacher_with_page(self, query_model: NewTeacher, page_request: PageRequest, user_id):
-        params = {"applicant_name": user_id, "process_code": "t_entry", "approval_status": "t_query"}
+    async def query_teacher_with_page(self, query_model: NewTeacher, page_request: PageRequest, extend_param):
+        params = {"process_code": "t_entry", "approval_status": "t_query"}
+        params = params.update(extend_param)
         paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                       NewTeacherRe, params)
         return paging
 
-    async def query_current_teacher_with_page(self, query_model: CurrentTeacherQuery, page_request: PageRequest):
-        paging = await self.teachers_info_dao.query_current_teacher_with_page(query_model, page_request)
+    async def query_current_teacher_with_page(self, query_model: CurrentTeacherQuery, page_request: PageRequest,extend_params):
+        paging = await self.teachers_info_dao.query_current_teacher_with_page(query_model, page_request,
+                                                                              extend_params)
         paging_result = PaginatedResponse.from_paging(paging, CurrentTeacherQueryRe)
         return paging_result
 
@@ -354,7 +356,3 @@ class TeachersInfoRule(object):
         if teachers.teacher_sub_status != "unsubmitted":
             teachers.teacher_sub_status = "unsubmitted"
         return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
-
-
-
-
