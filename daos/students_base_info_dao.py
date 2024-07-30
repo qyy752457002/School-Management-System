@@ -167,7 +167,7 @@ class StudentsBaseInfoDao(DAOBase):
             if extend_params.county_id:
                 query_model.county= extend_params.county_id
             pass
-        if extend_params is not None and len(query_model.school_id)==0  :
+        if extend_params is not None and query_model.school_id==0  :
             if extend_params.school_id:
                 query_model.school_id= extend_params.school_id
             pass
@@ -189,7 +189,7 @@ class StudentsBaseInfoDao(DAOBase):
         if query_model.enrollment_date:
             query = query.where(StudentBaseInfo.enrollment_date == query_model.enrollment_date)
         if query_model.county:
-            query = query.where(StudentBaseInfo.county == query_model.county)
+            query = query.where(PlanningSchool.block  == query_model.county)
         if query_model.emporary_borrowing_status:
             query = query.where(StudentBaseInfo.emporary_borrowing_status == query_model.emporary_borrowing_status)
         if query_model.edu_number:
