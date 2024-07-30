@@ -384,5 +384,4 @@ class PlanningSchoolImportReq(BaseModel, ):
 
 class PlanningSchoolFileStorageModel(FileStorageModel):
     scene: str | None = Body('', description="")
-
     pass

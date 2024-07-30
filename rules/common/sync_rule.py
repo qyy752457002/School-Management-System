@@ -1,21 +1,16 @@
-from mini_framework.utils.http import HTTPRequest
-from views.models.school_and_teacher_sync import SchoolSyncQueryModel, SupervisorSyncQueryModel, \
-    SupervisorSyncQueryReModel, SchoolSyncQueryReModel
-
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
-from daos.annual_review_dao import AnnualReviewDAO
-from models.annual_review import AnnualReview
-from views.models.teacher_extend import AnnualReviewModel, AnnualReviewUpdateModel
-from daos.teachers_dao import TeachersDao
-from daos.teachers_info_dao import TeachersInfoDao
-from daos.school_dao import SchoolDAO
-from views.models.school import School as SchoolModel
-from daos.school_eduinfo_dao import SchoolEduinfoDAO
-from views.models.school_eduinfo import SchoolEduInfo as SchoolEduInfoModel
-from views.models.school_communications import SchoolCommunications as SchoolCommunicationModel
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model
+
 from daos.school_communication_dao import SchoolCommunicationDAO
+from daos.school_dao import SchoolDAO
+from daos.school_eduinfo_dao import SchoolEduinfoDAO
+from daos.teachers_info_dao import TeachersInfoDao
+from views.models.school import School as SchoolModel
+from views.models.school_and_teacher_sync import SchoolSyncQueryModel, SupervisorSyncQueryModel, \
+    SupervisorSyncQueryReModel, SchoolSyncQueryReModel
+from views.models.school_communications import SchoolCommunications as SchoolCommunicationModel
+from views.models.school_eduinfo import SchoolEduInfo as SchoolEduInfoModel
 
 
 @dataclass_inject

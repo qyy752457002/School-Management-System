@@ -1,11 +1,8 @@
 from typing import List
+from typing import Optional
 
 from fastapi import Query
-from pydantic import BaseModel, Field, model_validator
-
-from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
-from views.models.system import InstitutionType
-from typing import Optional
+from pydantic import BaseModel, Field
 
 
 class SchoolSyncQueryModel(BaseModel):
@@ -15,7 +12,7 @@ class SchoolSyncQueryModel(BaseModel):
     school_name: str = Query("", title="学校名称", description="1-20字符", examples=['XX小学'])
     borough: str | None = Query("", title="  ", description=" 行政管辖区", )
     block: str | None = Query("", title=" ", description="地域管辖区", )
-    social_credit_code: str | None = Query(None, title="", description="统一社会信用代码",
+    social_credit_code: str | None = Query("", title="", description="统一社会信用代码",
                                            examples=['XH423423876867'])
     school_edu_level: str | None = Query('', title="", description="办学类型/教育层次", examples=['学前教育'])
     school_category: str | None = Query('', title="", description=" 办学类型二级/学校（机构）类别", examples=['小学'])
@@ -33,11 +30,9 @@ class SchoolSyncQueryReModel(BaseModel):
     school_name: str = Field(..., title="学校名称", description="1-20字符", examples=['XX小学'])
     borough: str = Query(..., title="  ", description=" 行政管辖区", )
     block: str = Query(..., title=" ", description="地域管辖区", )
-    founder_type: str = Field(..., title="", description="举办者类型",examples=['地方'])
-    founder_type_lv2: str = Field(..., title="", description="举办者类型二级",examples=['教育部门'])
-    founder_type_lv3: str = Field(..., title="", description="举办者类型三级",examples=['县级教育部门'])
-
-
+    founder_type: str = Field(..., title="", description="举办者类型", examples=['地方'])
+    founder_type_lv2: str = Field(..., title="", description="举办者类型二级", examples=['教育部门'])
+    founder_type_lv3: str = Field(..., title="", description="举办者类型三级", examples=['县级教育部门'])
 
 
 class SupervisorSyncQueryModel(BaseModel):
@@ -50,6 +45,11 @@ class SupervisorSyncQueryModel(BaseModel):
     teacher_id_number: Optional[str] = Query("", title="身份证件号", description="身份证件号")
     mobile: Optional[str] = Query("", title="联系电话", description="联系电话")
     teacher_gender: Optional[str] = Query("", title="性别", description="性别")
+
+
+class SupervisorSyncAddModel(BaseModel):
+    teacher_id_number_list: List[str] | None = Field(None, title="", description="身份证件号",
+                                                     examples=['3425301994'])
 
 
 class SupervisorSyncQueryReModel(BaseModel):

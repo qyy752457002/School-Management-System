@@ -3,25 +3,21 @@ from datetime import date, datetime
 
 import shortuuid
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
+from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-
-from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from sqlalchemy import select
 
 from business_exceptions.organization import OrganizationNotFoundError, OrganizationExistError
-from business_exceptions.school import SchoolNotFoundError
 from daos.organization_dao import OrganizationDAO
 from daos.school_dao import SchoolDAO
+from models.organization import Organization as OrganizationModel
 from rules.common.common_rule import send_orgcenter_request
-from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model, convert_dates_to_strings
 from views.models.organization import Organization
-
 from views.models.planning_school import PlanningSchoolStatus
-from views.models.school import School as SchoolModel
-from models.organization import Organization as OrganizationModel
+
 
 @dataclass_inject
 class OrganizationRule(object):

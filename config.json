@@ -108,6 +108,7 @@
       "no_login_urls": [
         "/api/school/openapi.json",
         "/api/school/v1/public",
+        "/api/school/v1/sync",
         "/api/school/docs"
       ]
     }

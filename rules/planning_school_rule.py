@@ -8,16 +8,16 @@ from mini_framework.async_task.data_access.models import TaskResult
 from mini_framework.async_task.data_access.task_dao import TaskDAO
 from mini_framework.async_task.task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter
+from mini_framework.databases.conn_managers.db_manager import db_connection_manager
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.utils.json import JsonUtils
 from mini_framework.utils.logging import logger
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
-
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from sqlalchemy import select
 
 from business_exceptions.common import OrgCenterApiError
@@ -29,7 +29,6 @@ from daos.planning_school_dao import PlanningSchoolDAO
 from daos.planning_school_eduinfo_dao import PlanningSchoolEduinfoDAO
 from models.planning_school import PlanningSchool
 from models.student_transaction import AuditAction
-from rules import enum_value_rule
 from rules.common.common_rule import send_request, send_orgcenter_request
 from rules.enum_value_rule import EnumValueRule
 from rules.school_communication_rule import SchoolCommunicationRule
@@ -40,14 +39,12 @@ from views.common.common_view import workflow_service_config, convert_snowid_to_
     frontend_enum_mapping, convert_dates_to_strings
 from views.common.constant import Constant
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus, \
-    PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit, PlanningSchoolBaseInfoOptional, PlanningSchoolPageSearch, \
+    PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit, PlanningSchoolPageSearch, \
     PlanningSchoolOptional
 from views.models.planning_school import PlanningSchoolBaseInfo
-from mini_framework.databases.conn_managers.db_manager import db_connection_manager
-
 from views.models.planning_school_communications import PlanningSchoolCommunications
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
-from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, \
+from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, \
     PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, DISTRICT_ENUM_KEY, \
     PROVINCE_ENUM_KEY, CITY_ENUM_KEY, PLANNING_SCHOOL_STATUS_ENUM_KEY, FOUNDER_TYPE_ENUM_KEY, FOUNDER_TYPE_LV2_ENUM_KEY, \
     FOUNDER_TYPE_LV3_ENUM_KEY, SCHOOL_ORG_FORM_ENUM_KEY, OrgCenterApiStatus

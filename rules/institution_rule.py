@@ -1,5 +1,4 @@
 import copy
-import hashlib
 import json
 import os
 from datetime import datetime, date
@@ -8,32 +7,22 @@ import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
 from mini_framework.async_task.task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter
+from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.storage.manager import storage_manager
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.utils.json import JsonUtils
 from mini_framework.utils.logging import logger
-from mini_framework.utils.snowflake import SnowflakeIdGenerator
-
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
-from pydantic import BaseModel
 
-from daos.institution_dao import InstitutionDAO
-from models.institution import Institution
-from models.student_transaction import AuditAction
 from rules.common.common_rule import send_request, send_orgcenter_request
 from rules.school_rule import SchoolRule
-from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, map_keys, convert_dates_to_strings
-from views.models.institutions import Institutions as InstitutionModel, Institutions, InstitutionKeyInfo, \
-    InstitutionOptional, InstitutionBaseInfo, InstitutionPageSearch
-from views.models.planning_school import PlanningSchoolTransactionAudit, PlanningSchoolStatus
-from views.models.system import SCHOOL_OPEN_WORKFLOW_CODE, INSTITUTION_OPEN_WORKFLOW_CODE, SCHOOL_CLOSE_WORKFLOW_CODE, \
-    INSTITUTION_CLOSE_WORKFLOW_CODE, SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE, \
-    InstitutionType
-from views.models.school import School as SchoolModel, SchoolKeyAddInfo, SchoolKeyInfo, SchoolBaseInfoOptional
-from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus
+from views.models.institutions import InstitutionKeyInfo, \
+    InstitutionBaseInfo, InstitutionPageSearch
+from views.models.planning_school import PlanningSchoolStatus
+from views.models.school import SchoolBaseInfoOptional
+from views.models.system import INSTITUTION_OPEN_WORKFLOW_CODE, INSTITUTION_CLOSE_WORKFLOW_CODE, \
+    SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, InstitutionType
 
 
 @dataclass_inject

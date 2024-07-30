@@ -1,13 +1,14 @@
 import copy
 from datetime import datetime, date
+
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
-from mini_framework.utils.snowflake import SnowflakeIdGenerator
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from sqlalchemy import select
+
 from business_exceptions.grade import GradeAlreadyExistError, GradeNotFoundError
-from daos.enum_value_dao import EnumValueDAO
 from daos.grade_dao import GradeDAO
 from daos.school_dao import SchoolDAO
 from models.grade import Grade
@@ -15,7 +16,7 @@ from rules.common.common_rule import send_orgcenter_request
 from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model, convert_dates_to_strings
 from views.models.grades import Grades as GradeModel
-from views.models.system import GRADE_ENUM_KEY, DISTRICT_ENUM_KEY
+from views.models.system import DISTRICT_ENUM_KEY
 
 
 @dataclass_inject

@@ -5,7 +5,7 @@ from fastapi import Query, Depends, Body
 
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from views.models.school_and_teacher_sync import SchoolSyncQueryModel, SupervisorSyncQueryModel, \
-    SupervisorSyncQueryReModel
+    SupervisorSyncQueryReModel,SupervisorSyncAddModel
 from rules.common.sync_rule import SyncRule
 from typing import List
 
@@ -25,14 +25,15 @@ class SchoolTeacherView(BaseView):
         res = await self.sync_rule.query_sync_teacher_with_page(query_model, page_request)
         return res
 
-    async def get_sync_teacher(self,
-                               teacher_id_number_list: List[str] | None = Query([], title="", description="身份证件号",
+    async def post_sync_teacher(self,
+                                teacher_id_number_list: List[str] | None = Body(None, title="", description="身份证件号",
                                                                                 examples=['3425301994'])) -> List[
         SupervisorSyncQueryReModel]:
         res = await self.sync_rule.get_sync_teacher(teacher_id_number_list)
+        print(res)
         return res
 
-    async def get_sync_school(self, social_credit_code_list: List[str] | None = Query([], title="",
+    async def post_sync_school(self, social_credit_code_list: List[str] | None = Body([], title="",
                                                                                       description="统一社会信用代码",
                                                                                       examples=['3425301994'])) -> List:
         res = await self.sync_rule.get_sync_school(social_credit_code_list)

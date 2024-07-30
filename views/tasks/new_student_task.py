@@ -35,13 +35,13 @@ class NewStudentExecutor(BaseExecutor):
             print('开始执行task')
 
             info = task.payload
-            data =await self.parse_payload_to_data(info)
+            data = await self.parse_payload_to_data(info)
 
             # 枚举值等的查询 todo 这个初始的 和转换需要涉及每个都有 考虑调整为数组 批量处理
             psr = await self.new_student_rule.init_enum_value()
 
             for item in data:
-                itemd= dict()
+                itemd = dict()
                 if isinstance(item, dict):
                     data_import: NewStudents = NewStudents(**item)
                 elif isinstance(item, NewStudents):
@@ -71,7 +71,7 @@ class NewStudentExecutor(BaseExecutor):
                 # todo 更多的字段 转换到base里 需要写入
 
                 vm2 = NewBaseInfoCreate(
-                                        registration_date=special_date.strftime("%Y-%m-%d"),**data_import.__dict__)
+                    registration_date=special_date.strftime("%Y-%m-%d"), **data_import.__dict__)
                 res2 = await self.students_base_info_rule.add_students_base_info(vm2)
                 print('插入数据res', res)
             logger.info(f"任务   created")
@@ -80,10 +80,12 @@ class NewStudentExecutor(BaseExecutor):
             traceback.print_exc()
             logger.error(f"任务   create failed")
 
+
 class NewStudentFamilyInfoImportExecutor(BaseExecutor):
     """
     导入新生家庭成员信息
     """
+
     def __init__(self):
         self.new_student_rule = get_injector(StudentsRule)
         self.new_student_familyinfo_rule = get_injector(StudentsFamilyInfoRule)
@@ -102,7 +104,7 @@ class NewStudentFamilyInfoImportExecutor(BaseExecutor):
             data = []
 
             info = task.payload
-            data =await self.parse_payload_to_data(info)
+            data = await self.parse_payload_to_data(info)
 
             psr = await self.new_student_rule.init_enum_value()
 
@@ -141,20 +143,19 @@ class NewStudentFamilyInfoImportExecutor(BaseExecutor):
             logger.error(f"任务   create failed")
 
 
-
 # 导出  todo 新生在校生的导出在这里
 class NewStudentExportExecutor(TaskExecutor):
     def __init__(self):
         self.student_rule = get_injector(StudentsRule)
         super().__init__()
 
-    async def execute(self,  task: "Task"):
+    async def execute(self, task: "Task"):
         try:
             # task = context.task  在字段 "result_file_id" 中空值违反了非空约束
             logger.info("Test")
             logger.info(" export begins")
             task: Task = task
-            logger.info("负载" ,task.payload)
+            logger.info("负载", task.payload)
             if isinstance(task.payload, dict):
                 student_export: NewStudentsQuery = NewStudentsQuery(**task.payload)
             elif isinstance(task.payload, NewStudentsQuery):
@@ -166,11 +167,10 @@ class NewStudentExportExecutor(TaskExecutor):
             task.result_bucket = task_result.result_bucket
             logger.info(f" res  {task_result}")
             print('rule的结构', task_result)
-            print('task结果',task)
+            print('task结果', task)
             logger.info(f" import to {task_result.result_file}")
         except Exception as e:
             logger.error(f" export failed")
-            logger.error(e,)
+            logger.error(e, )
             traceback.print_exc()
             raise e
-
