@@ -112,6 +112,11 @@ class StudentsRule(ImportCommonAbstractRule, object):
             if await self.students_dao.get_students_by_param(enrollment_number=students.enrollment_number,
                                                              is_deleted=False):
                 raise EnrollNumberError()
+        # 证件类型和证件号 唯一
+        exists_students = await self.students_dao.get_students_by_param(id_type=students.id_type,id_number=students.id_number,is_deleted=False,)
+        if  exists_students:
+            raise StudentExistsError()
+
         students_db.student_id = SnowflakeIdGenerator(1, 1).generate_id()
 
         students_db = await self.students_dao.add_students(students_db)
@@ -120,8 +125,6 @@ class StudentsRule(ImportCommonAbstractRule, object):
         print(students)
         convert_snowid_in_model(students, ["id",'student_id','school_id','class_id','session_id'])
         # await self.send_student_to_org_center(students)
-
-
 
         return students
 
