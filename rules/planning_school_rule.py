@@ -206,7 +206,7 @@ class PlanningSchoolRule(object):
             #   自动同步到 组织中心的处理  包含 规划校 对接过去 先加单位 再加组织 后续的    学校单位作为组织的成员 加入到组织里
             res_unit = await self.send_planning_school_to_org_center(exists_planning_school)
             #  自动添加一个组织 todo 组织中心的有报错
-            await self.send_unit_orgnization_to_org_center(exists_planning_school)
+            res_oigna = await self.send_unit_orgnization_to_org_center(exists_planning_school)
             # 添加组织结构 部门
             org = Organization(org_name=exists_planning_school.planning_school_name,
                                school_id=exists_planning_school.id,
@@ -221,6 +221,8 @@ class PlanningSchoolRule(object):
             res_admin = await self.send_admin_to_org_center(exists_planning_school, data_org)
 
             await self.send_user_org_relation_to_org_center(exists_planning_school, res_unit, data_org, res_admin)
+            await self.send_service_unit_to_org_center(exists_planning_school, res_unit, data_org, res_admin)
+
             # 自动新增 学校信息的处理 1.学校信息 2.学校联系方式 3.学校教育信息
             school_rule = get_injector(SchoolRule)
             school_communication_rule = get_injector(SchoolCommunicationRule)
@@ -1041,6 +1043,68 @@ class PlanningSchoolRule(object):
 
         response = await send_orgcenter_request(apiname, datadict, 'post', False)
         print('调用添加部门用户关系 接口响应', response, )
+        try:
+            print(response)
+
+            return response, datadict
+        except Exception as e:
+            print(e)
+            raise e
+            return response
+
+        return None
+
+    async def send_service_unit_to_org_center(self, exists_planning_school_origin, res_unit,
+                                                   data_org, res_admin):
+        exists_planning_school = copy.deepcopy(exists_planning_school_origin)
+        if hasattr(exists_planning_school, 'updated_at') and isinstance(exists_planning_school.updated_at,
+                                                                        (date, datetime)):
+            exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
+
+        # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer
+
+        # school = await self.planning_school_dao.get_planning_school_by_id(exists_planning_school.school_id)
+        school = exists_planning_school
+        if school is None:
+            print('学校未找到 跳过发送组织', exists_planning_school)
+            return
+
+        unitid = None
+        userid = None
+        if isinstance(res_unit, dict):
+            unitid = res_unit['data2']
+        if isinstance(res_admin, dict):
+            userid = res_admin['data2']
+        #
+        dict_data = {
+            "administrativeDivisionCity": exists_planning_school.city,
+            "administrativeDivisionCounty": exists_planning_school.block,
+            "administrativeDivisionProvince": exists_planning_school.province,
+            # "createdTime": "1990-04-11 15:22:33",
+            "locationAddress": exists_planning_school.block,
+            "locationCity": exists_planning_school.city,
+            "locationCounty": exists_planning_school.block,
+            "locationProvince": exists_planning_school.province,
+            # 所属组织
+            "owner": exists_planning_school.planning_school_no,
+            # 教育单位的code
+            "unitCode":  exists_planning_school.planning_school_no,
+            # "unitId": "48",
+            # "unitId": unitid if unitid is not None else school.planning_school_name,
+
+            # "unitName": "济效火日把先",
+            "unitType": "school",
+
+        }
+
+        apiname = '/api/add-service-units'
+        # 字典参数 todo  调整  参数完善   另 服务范围的接口
+        datadict = [dict_data]
+        # datadict = convert_dates_to_strings(datadict)
+        print('调用添加服务范围  字典参数', datadict, )
+
+        response = await send_orgcenter_request(apiname, datadict, 'post', False)
+        print('调用添加服务范围 接口响应', response, )
         try:
             print(response)
 
