@@ -945,7 +945,7 @@ class PlanningSchoolRule(object):
             "contactEmail": "j.vyevxiloyy@qq.com",
             # "createdTime": exists_planning_school.created_at,
             "displayName": exists_planning_school.org_name,
-            # todo  参数调试
+            # todo  参数调试  单位ID
             "educateUnit": school.planning_school_name,
             # "educateUnitObj": {
             #     "administrativeDivisionCity": "",
