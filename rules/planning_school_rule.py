@@ -216,9 +216,9 @@ class PlanningSchoolRule(object):
                                org_code_type='school',
                                )
 
-            await self.send_org_to_org_center(org,res_unit)
+            res_org,data_org = await self.send_org_to_org_center(org,res_unit)
 
-            await self.send_admin_to_org_center(exists_planning_school)
+            await self.send_admin_to_org_center(exists_planning_school,data_org)
             # 自动新增 学校信息的处理 1.学校信息 2.学校联系方式 3.学校教育信息
             school_rule = get_injector(SchoolRule)
             school_communication_rule = get_injector(SchoolCommunicationRule)
@@ -807,7 +807,7 @@ class PlanningSchoolRule(object):
 
         return None
 
-    async def send_admin_to_org_center(self, exists_planning_school_origin):
+    async def send_admin_to_org_center(self, exists_planning_school_origin,data_org):
         # teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id)
         # data_dict = to_dict(teacher_db)
         # print(data_dict)
@@ -824,8 +824,10 @@ class PlanningSchoolRule(object):
                                      userCode=exists_planning_school_origin.admin ,
                                      # userId=exists_planning_school_origin.admin_phone+shortuuid.uuid(),
                                      phoneNumber=exists_planning_school_origin.admin_phone,
-                                     departmentNames=exists_planning,
-                                     departmentId=exists
+                                     # 部门group 的显示名字
+                                     departmentNames=data_org['displayName'],
+                                     # 部门group的name
+                                     departmentId=data_org['name'],
                                      )
         dict_data = dict_data.__dict__
         # params_data = JsonUtils.dict_to_json_str(dict_data)
@@ -835,7 +837,6 @@ class PlanningSchoolRule(object):
         datadict = dict_data
         # datadict = dict(sorted(datadict.items()))
         # 字典升序
-
 
         print( '参数',datadict)
         print('发起请求 人员管理员到组织中心')
@@ -1001,7 +1002,7 @@ class PlanningSchoolRule(object):
         try:
             print(response)
 
-            return response
+            return response,datadict
         except Exception as e:
             print(e)
             raise e
