@@ -187,7 +187,7 @@ class StudentsBaseInfoRule(object):
                                      # 组织和主单位
                                      owner=school.school_no,
                                      mainUnitName=school.school_no,
-                                     identity=student_baseinfo.identity,
+                                     # identity=student_baseinfo.identity,
                                      identityTypeNames=student_baseinfo.identity_type,
 
                                      )
