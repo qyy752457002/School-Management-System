@@ -199,7 +199,7 @@ class CampusRule(object):
         convert_snowid_to_strings(paging_result, extra_colums=["id", "campus_id", 'school_id'])
         return paging_result
 
-    async def update_campus_status(self, campus_id, status, action=None):
+    async def update_campus_status(self, campus_id, status, action_reason=None,related_license_upload=None):
         exists_campus = await self.campus_dao.get_campus_by_id(campus_id)
         if not exists_campus:
             raise Exception(f"学校{campus_id}不存在")
@@ -216,6 +216,8 @@ class CampusRule(object):
 
         need_update_list = []
         need_update_list.append('status')
+        need_update_list.append('action_reason')
+        need_update_list.append('related_license_upload')
 
         # print(exists_campus.status,2222222)
         campus_db = await self.campus_dao.update_campus_byargs(exists_campus, *need_update_list)
