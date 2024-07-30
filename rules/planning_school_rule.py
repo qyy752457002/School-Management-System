@@ -205,7 +205,7 @@ class PlanningSchoolRule(object):
         if action == 'open':
             #   自动同步到 组织中心的处理  包含 规划校 对接过去 先加单位 再加组织 后续的    学校单位作为组织的成员 加入到组织里
             res_unit = await self.send_planning_school_to_org_center(exists_planning_school)
-            #  自动添加一个组织 todo 组织中心的有报错
+            #  自动添加一个组织
             res_oigna = await self.send_unit_orgnization_to_org_center(exists_planning_school)
             # 添加组织结构 部门
             org = Organization(org_name=exists_planning_school.planning_school_name,
@@ -217,10 +217,11 @@ class PlanningSchoolRule(object):
                                )
 
             res_org, data_org = await self.send_org_to_org_center(org, res_unit)
-
+            # 添加 管理员 用户
             res_admin = await self.send_admin_to_org_center(exists_planning_school, data_org)
-
+            # 添加 用户和组织关系 就是部门
             await self.send_user_org_relation_to_org_center(exists_planning_school, res_unit, data_org, res_admin)
+            # 添加 服务范围
             await self.send_service_unit_to_org_center(exists_planning_school, res_unit, data_org, res_admin)
 
             # 自动新增 学校信息的处理 1.学校信息 2.学校联系方式 3.学校教育信息
@@ -832,7 +833,7 @@ class PlanningSchoolRule(object):
                                      departmentNames=data_org['displayName'],
                                      # 部门group的name
                                      departmentId=data_org['name'],
-                                     realName= exists_planning_school_origin.admin
+                                     realName=exists_planning_school_origin.admin
                                      )
         dict_data = dict_data.__dict__
         # params_data = JsonUtils.dict_to_json_str(dict_data)
@@ -960,7 +961,7 @@ class PlanningSchoolRule(object):
             "key": "sit",
             "manager": "",
             # "name": exists_planning_school.org_name + "管理员",
-            "name":   "基础信息管理系统",
+            "name": "基础信息管理系统",
             "newCode": exists_planning_school.org_code,
             "newType": "organization",  # 组织类型 特殊参数必须穿这个
             "owner": school.planning_school_no,
@@ -1055,7 +1056,7 @@ class PlanningSchoolRule(object):
         return None
 
     async def send_service_unit_to_org_center(self, exists_planning_school_origin, res_unit,
-                                                   data_org, res_admin):
+                                              data_org, res_admin):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if hasattr(exists_planning_school, 'updated_at') and isinstance(exists_planning_school.updated_at,
                                                                         (date, datetime)):
@@ -1086,9 +1087,10 @@ class PlanningSchoolRule(object):
             "locationCounty": exists_planning_school.block,
             "locationProvince": exists_planning_school.province,
             # 所属组织
-            "owner": exists_planning_school.planning_school_no,
+            # "owner": exists_planning_school.planning_school_no,
+            "owner": exists_planning_school.planning_school_name,
             # 教育单位的code
-            "unitCode":  exists_planning_school.planning_school_no,
+            "unitCode": exists_planning_school.planning_school_no,
             # "unitId": "48",
             # "unitId": unitid if unitid is not None else school.planning_school_name,
 
