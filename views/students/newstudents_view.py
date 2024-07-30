@@ -15,7 +15,7 @@ from starlette.requests import Request
 from business_exceptions.student import StudentStatusError
 from rules.class_division_records_rule import ClassDivisionRecordsRule
 from rules.operation_record import OperationRecordRule
-from views.common.common_view import compare_modify_fields, get_client_ip, convert_query_to_none
+from views.common.common_view import compare_modify_fields, get_client_ip, convert_query_to_none, get_extend_params
 from views.models.class_division_records import ClassDivisionRecordsSearchRes
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchoolImportReq, PlanningSchoolFileStorageModel
@@ -66,13 +66,21 @@ class NewsStudentsView(BaseView):
 
     # 分页查询
     #
-    async def page_newstudent(self, new_students_query=Depends(NewStudentsQuery),
-                              page_request=Depends(PageRequest)):
+    async def page_newstudent(self,
+                              request:Request,
+
+                              new_students_query=Depends(NewStudentsQuery),
+
+
+                              page_request=Depends(PageRequest),
+                              ):
         """
         分页查询
         """
+        obj= await get_extend_params(request)
+
         paging_result = await self.students_base_info_rule.query_students_base_info_with_page(new_students_query,
-                                                                                              page_request)
+                                                                                              page_request,obj)
         return paging_result
 
     async def get_newstudentkeyinfo(self, student_id: str = Query(..., title="", description="学生id",

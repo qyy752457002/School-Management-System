@@ -12,7 +12,7 @@
  Target Server Version : 120001 (120001)
  File Encoding         : 65001
 
- Date: 25/07/2024 17:12:27
+ Date: 29/07/2024 16:08:44
 */
 
 
@@ -155,6 +155,7 @@ INSERT INTO "public"."lfun_permission_menu" VALUES (86, '信息审核', '', '', 
 INSERT INTO "public"."lfun_permission_menu" VALUES (90, '组织管理', '/org', '', 'menu', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'org', 0);
 INSERT INTO "public"."lfun_permission_menu" VALUES (95, '组织管理', '/org', '', 'menu', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'org', 0);
 INSERT INTO "public"."lfun_permission_menu" VALUES (91, '机构信息审核', '', '', 'menu', '', '', '0', 1, 0, 0, '2024-07-25 13:15:14.000000', '2024-07-25 13:15:12.000000', 'f', 'institution-audit', 0);
+INSERT INTO "public"."lfun_permission_menu" VALUES (96, '组织管理', '/org', '', 'menu', '', '', '9', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'org', 0);
 
 -- ----------------------------
 -- Primary Key structure for table lfun_permission_menu

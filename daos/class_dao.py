@@ -200,3 +200,8 @@ class ClassesDAO(DAOBase):
         update_contents = get_update_contents(classes, *args)
         query = update(Classes).where(Classes.id == classes.id).values(**update_contents)
         return await self.update(session, query, classes, update_contents, is_commit=is_commit)
+
+    async def get_all_class(self):
+        session = await self.slave_db()
+        result = await session.execute(select(Classes))
+        return result.scalars().all()

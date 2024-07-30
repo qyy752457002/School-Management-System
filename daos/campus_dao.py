@@ -11,6 +11,7 @@ class CampusDAO(DAOBase):
 
     async def get_campus_by_id(self, campus_id):
         session = await self.slave_db()
+        campus_id = int(campus_id)
         result = await session.execute(select(Campus).where(Campus.id == campus_id))
         return result.scalar_one_or_none()
 
@@ -78,6 +79,7 @@ class CampusDAO(DAOBase):
 
     async def softdelete_campus(self, campus):
         session = await self.master_db()
+        campus.id = int(campus.id)
         deleted_status = 1
         update_stmt = update(Campus).where(Campus.id == campus.id).values(
             is_deleted=deleted_status,
@@ -98,11 +100,10 @@ class CampusDAO(DAOBase):
         return result.scalar()
 
     async def query_campus_with_page(self, page_request: PageRequest, campus_name, campus_no, campus_code,
-                                     block, campus_level, borough, status, founder_type,
-                                     founder_type_lv2,
-                                     founder_type_lv3, school_id) -> Paging:
+                                     block, campus_level, borough, status, founder_type,  founder_type_lv2,  founder_type_lv3, school_id) -> Paging:
         query = select(Campus).order_by(desc(Campus.id))
         query = query.where(Campus.is_deleted == False)
+        print(founder_type,founder_type_lv2)
 
         if campus_name:
             query = query.where(Campus.campus_name == campus_name)
@@ -141,7 +142,6 @@ class CampusDAO(DAOBase):
             status=next_status,
         )
         await session.execute(update_stmt)
-        # await session.delete(campus)
         await session.commit()
         return campus
 
