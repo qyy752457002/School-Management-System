@@ -967,11 +967,12 @@ class PlanningSchoolRule(object):
             "isTopGroup": exists_planning_school.parent_id == 0,
             "key": "sit",
             "manager": "",
-            "name": exists_planning_school.org_name,
+            #
+            "name": exists_planning_school.org_name+"管理员",
             "newCode": exists_planning_school.org_code,
             "newType": "organization",  # 组织类型 特殊参数必须穿这个
             "owner": school.planning_school_no,
-            "parentId": exists_planning_school.parent_id,
+            "parentId": str( exists_planning_school.parent_id),
             "parentName": "",
             "tags": [
                 ""
