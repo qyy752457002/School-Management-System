@@ -202,9 +202,9 @@ class PlanningSchoolRule(object):
         print(exists_planning_school.status, 2222222)
         if action == 'open':
             #   自动同步到 组织中心的处理  包含 规划校 对接过去 先加单位 再加组织 后续的    学校单位作为组织的成员 加入到组织里
-            res_unit,data_unit  = await self.send_planning_school_to_org_center(exists_planning_school)
+            res_unit, data_unit = await self.send_planning_school_to_org_center(exists_planning_school)
             #  自动添加一个组织
-            res_oigna = await self.send_unit_orgnization_to_org_center(exists_planning_school,data_unit)
+            res_oigna = await self.send_unit_orgnization_to_org_center(exists_planning_school, data_unit)
             # 添加组织结构 部门
             org = Organization(org_name=exists_planning_school.planning_school_name,
                                school_id=exists_planning_school.id,
@@ -292,6 +292,7 @@ class PlanningSchoolRule(object):
         result = await session.execute(select(PlanningSchool)
                                        .where(PlanningSchool.planning_school_name.like(f'%{planning_school_name}%'))
                                        .where(PlanningSchool.is_deleted == False)
+                                       .where(PlanningSchool.status == PlanningSchoolStatus.NORMAL.value)
                                        )
         res = result.scalars().all()
         print(res)
@@ -803,7 +804,7 @@ class PlanningSchoolRule(object):
             print(response)
             print('发起请求单位到组织中心suc')
 
-            return response,datadict
+            return response, datadict
         except Exception as e:
             print(e)
             raise e
@@ -856,7 +857,7 @@ class PlanningSchoolRule(object):
             return response
         return None
 
-    async def send_unit_orgnization_to_org_center(self, exists_planning_school_origin,data_unit):
+    async def send_unit_orgnization_to_org_center(self, exists_planning_school_origin, data_unit):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if isinstance(exists_planning_school.updated_at, (date, datetime)):
             exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
@@ -882,7 +883,7 @@ class PlanningSchoolRule(object):
                      # "appName": exists_planning_school.planning_school_name,
 
                      "educateUnits": [
-                        data_unit
+                         data_unit
                      ],
 
                      "certPublicKey": "",
