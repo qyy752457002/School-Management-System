@@ -26,6 +26,7 @@ from daos.school_dao import SchoolDAO
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.class_division_records import ClassDivisionRecords
+from rules.enum_value_rule import EnumValueRule
 from rules.students_base_info_rule import StudentsBaseInfoRule
 from views.common.common_view import page_none_deal, convert_snowid_to_strings
 from views.models.class_division_records import ClassDivisionRecords as ClassDivisionRecordsModel, \
@@ -34,6 +35,7 @@ from views.models.class_division_records import ClassDivisionRecordsSearchRes
 from views.models.classes import Classes
 from views.models.grades import Grades
 from views.models.students import NewStudentsQuery, StudentsBaseInfo
+from views.models.teachers import IdentityType
 
 
 @dataclass_inject
@@ -217,12 +219,14 @@ class ClassDivisionRecordsRule(object):
         return task_result
 
 
-    async def add_class_division_records_and_update_student_baseinfo(self,    class_division_records:List[ClassDivisionRecordsImport] ):
+    async def add_class_division_records_and_update_student_baseinfo(self,    class_division_records:List[ClassDivisionRecordsImport],pre_check=False, ):
 
         # 根据编码转换ID 等操作
         schools = await self.school_dao.get_all_schools()
         grades = await self.garde_dao.get_all_grades()
         classes  = await self.class_dao.get_all_class()
+        enum_value_rule = get_injector(EnumValueRule )
+        id_types =await enum_value_rule.query_enum_values("id_type",None,'enum_value')
         dic = {}
         for row in schools:
             dic[getattr(row, 'school_no')] = row
@@ -271,8 +275,13 @@ class ClassDivisionRecordsRule(object):
 
                 class_division_records_item.class_id =  classes[class_division_records_item.class_standard_name].id if class_division_records_item.class_standard_name in classes.keys() else None
             # student= await self.student_dao.get_students_by_param( student_number = class_division_records_item.student_no)
+            # 校验学生
             if class_division_records_item.id_type is not None and class_division_records_item.id_number is not None:
-                student= await self.student_dao.get_students_by_param( id_type = class_division_records_item.id_type , id_number=class_division_records_item.id_number)
+                if class_division_records_item.id_type in id_types:
+                    student= await self.student_dao.get_students_by_param( id_type = class_division_records_item.id_type , id_number=class_division_records_item.id_number)
+                else:
+                    # 港澳通行证类型的
+                    student= await self.student_dao.get_students_by_param( id_type_in = [IdentityType.HONG_KONG_PASSPORT_ID.value,IdentityType.MACAU_PASSPORT_ID.value] , id_number=class_division_records_item.id_number)
             else:
                 student= await self.students_base_info_dao.get_students_base_info_by_param( student_number = class_division_records_item.student_no)
 
@@ -287,8 +296,10 @@ class ClassDivisionRecordsRule(object):
 
                 continue
             class_division_records_item.student_id = student.student_id
+            if pre_check:
+                continue
 
-            # 学生班级和学生状态
+            # 学生班级和学生状态 处理数据更新 插入分班记录
             res = await students_base_info_rule.update_students_class_division( class_division_records_item.class_id,  class_division_records_item.student_id)
             # 分班记录
             res_div = await self.add_class_division_records(class_division_records_item.class_id,  class_division_records_item.student_id)

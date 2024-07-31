@@ -1086,28 +1086,19 @@ class PlanningSchoolRule(object):
             "administrativeDivisionCity": exists_planning_school.city,
             "administrativeDivisionCounty": exists_planning_school.block,
             "administrativeDivisionProvince": exists_planning_school.province,
-            # "createdTime": "1990-04-11 15:22:33",
             "locationAddress": exists_planning_school.block,
             "locationCity": exists_planning_school.city,
             "locationCounty": exists_planning_school.block,
             "locationProvince": exists_planning_school.province,
             # 所属组织
-            # "owner": exists_planning_school.planning_school_no,
             "owner": exists_planning_school.planning_school_name,
             # 教育单位的code
             "unitCode": exists_planning_school.planning_school_no,
-            # "unitId": "48",
-            # "unitId": unitid if unitid is not None else school.planning_school_name,
-
-            # "unitName": "济效火日把先",
             "unitType": "school",
-
         }
-
         apiname = '/api/add-service-units'
         # 字典参数 todo  调整  参数完善   另 服务范围的接口
         datadict = [dict_data]
-        # datadict = convert_dates_to_strings(datadict)
         print('调用添加服务范围  字典参数', datadict, )
 
         response = await send_orgcenter_request(apiname, datadict, 'post', False)
