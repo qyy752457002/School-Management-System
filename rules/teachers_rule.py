@@ -1,55 +1,42 @@
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-from mini_framework.design_patterns.depend_inject import dataclass_inject
-from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from datetime import datetime
+
+from mini_framework.async_task.data_access.task_dao import TaskDAO
+from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
+from mini_framework.utils.json import JsonUtils
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
+from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
+
 from business_exceptions.common import IdCardError
-from daos.teachers_dao import TeachersDao
+from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
+from daos.operation_record_dao import OperationRecordDAO
 from daos.school_dao import SchoolDAO
+from daos.teacher_approval_log_dao import TeacherApprovalLogDao
+from daos.teacher_change_dao import TeacherChangeLogDAO
+from daos.teacher_entry_dao import TeacherEntryApprovalDao
+from daos.teacher_key_info_approval_dao import TeacherKeyInfoApprovalDao
+from daos.teachers_dao import TeachersDao
 from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers import Teacher
-from views.common.common_view import check_id_number
-from views.models.teachers import Teachers as TeachersModel
-from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherImportSaveResultModel, \
-    TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
-    NewTeacherApprovalCreate, TeachersSaveImportCreatModel, TeacherImportResultModel, EducateUserModel
-from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
-from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
-from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, TeacherChangeLogQueryModel, \
-    CurrentTeacherInfoSaveModel, TeacherRe, TeacherAdd, CombinedModel, TeacherInfoSubmit, TeachersSchool
-from mini_framework.databases.entities import BaseDBModel, to_dict
-import shortuuid
-from mini_framework.async_task.data_access.models import TaskResult
-from mini_framework.async_task.data_access.task_dao import TaskDAO
-from mini_framework.async_task.task.task import Task, TaskState
-from mini_framework.data.tasks.excel_tasks import ExcelWriter, ExcelReader
-from mini_framework.storage.manager import storage_manager
-from mini_framework.utils.logging import logger
-from daos.teacher_entry_dao import TeacherEntryApprovalDao
-from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
-from daos.teacher_key_info_approval_dao import TeacherKeyInfoApprovalDao
-from daos.teacher_change_dao import TeacherChangeLogDAO
-from rules.teacher_change_rule import TeacherChangeRule
-from daos.teacher_approval_log_dao import TeacherApprovalLogDao
-from mini_framework.design_patterns.depend_inject import get_injector
-
-from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
-from rules.operation_record import OperationRecordRule
-from daos.operation_record_dao import OperationRecordDAO
-from views.common.common_view import compare_modify_fields
 from models.teachers_info import TeacherInfo
-from mini_framework.utils.snowflake import SnowflakeIdGenerator
-from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
-from rules.system_rule import SystemRule
 from rules.common.common_rule import get_identity_by_job
-from daos.school_dao import SchoolDAO
-from rules.common.common_rule import send_orgcenter_request
-from views.models.school import School as SchoolModel
-from mini_framework.utils.json import JsonUtils
-
-from views.models.organization import OrganizationMembers
+from rules.operation_record import OperationRecordRule
 from rules.organization_memebers_rule import OrganizationMembersRule
-from models.public_enum import Gender
-import os
+from rules.system_rule import SystemRule
+from rules.teacher_change_rule import TeacherChangeRule
+from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
+from views.common.common_view import check_id_number
+from views.common.common_view import compare_modify_fields
+from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
+from views.models.organization import OrganizationMembers
+from views.models.school import School as SchoolModel
+from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, TeacherChangeLogQueryModel, \
+    CurrentTeacherInfoSaveModel, TeacherRe, TeacherAdd, TeachersSchool
+from views.models.teachers import Teachers as TeachersModel
+from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherFileStorageModel, \
+    NewTeacherApprovalCreate, TeachersSaveImportCreatModel, EducateUserModel
 
 
 @dataclass_inject
@@ -111,7 +98,13 @@ class TeachersRule(object):
                 raise IdCardError()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         teachers_work = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
-        params = {"process_code": "t_entry", "applicant_name": user_id}
+        school = await self.school_dao.get_school_by_id(teachers.teacher_employer)
+        school_name = ""
+        borough = ""
+        if school:
+            school_name = school.school_name
+            borough = school.borough
+        params = {"process_code": "t_entry", "applicant_name": user_id, "school_name": school_name, "borough": borough}
         await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
             teachers_work.teacher_id)
         work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teachers_work, params)
@@ -158,7 +151,13 @@ class TeachersRule(object):
                 raise IdCardError()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         teachers_work = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
-        params = {"process_code": "t_entry", "applicant_name": user_id}
+        school = await self.school_dao.get_school_by_id(teachers.teacher_employer)
+        school_name = ""
+        borough = ""
+        if school:
+            school_name = school.school_name
+            borough = school.borough
+        params = {"process_code": "t_entry", "applicant_name": user_id, "school_name": school_name, "borough": borough}
         await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
             teachers_work.teacher_id)
         work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teachers_work, params)
@@ -235,10 +234,12 @@ class TeachersRule(object):
             params = {"process_code": "t_keyinfo", "teacher_id": teachers.teacher_id, "applicant_name": user_id}
             school = await self.school_dao.get_school_by_id(teachers.teacher_employer)
             school_name = ""
+            borough = ""
             if school:
                 school_name = school.school_name
+                borough = school.borough
             teachers_school = TeachersSchool(school_name=school_name, teacher_main_status="employed",
-                                             teacher_sub_status="active")
+                                             teacher_sub_status="active", borough=borough)
             model_list = [teachers, teachers_school]
             work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
             await self.teacher_progressing(teachers.teacher_id)
@@ -405,29 +406,33 @@ class TeachersRule(object):
 
     # 审批相关
     async def query_teacher_approval_with_page(self, type, query_model: TeacherApprovalQuery,
-                                               page_request: PageRequest, user_id):
+                                               page_request: PageRequest, extend_param):
         if type == "launch":
             # params = {"applicant_name": user_id, "process_code": "t_entry", "teacher_sub_status": "submitted"}
             params = {"process_code": "t_entry", "teacher_sub_status": "submitted"}
+            params.update(extend_param)
             paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                           TeacherApprovalQueryRe,
                                                                                           params)
         elif type == "approval":
-            params = {"applicant_name": user_id, "process_code": "t_entry", "teacher_sub_status": "submitted"}
+            params = {"process_code": "t_entry", "teacher_sub_status": "submitted"}
+            params.update(extend_param)
             paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                           TeacherApprovalQueryRe,
                                                                                           params)
         return paging
 
     async def query_teacher_info_change_approval(self, type, query_model: TeacherApprovalQuery,
-                                                 page_request: PageRequest, user_id):
+                                                 page_request: PageRequest, extend_param):
         if type == "launch":
-            params = {"applicant_name": user_id, "process_code": "t_keyinfo", "teacher_main_status": "employed"}
+            params = {"process_code": "t_keyinfo", "teacher_main_status": "employed"}
+            params.update(extend_param)
             paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                           TeacherApprovalQueryRe,
                                                                                           params)
         elif type == "approval":
-            params = {"applicant_name": user_id, "process_code": "t_keyinfo", "teacher_main_status": "employed"}
+            params = {"process_code": "t_keyinfo", "teacher_main_status": "employed"}
+            params.update(extend_param)
             paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                           TeacherApprovalQueryRe,
                                                                                           params)

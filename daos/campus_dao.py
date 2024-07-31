@@ -1,10 +1,10 @@
-from sqlalchemy import select, func, update, desc
-
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
+from sqlalchemy import select, func, update, desc
 
 from models.campus import Campus
+from views.models.school_and_teacher_sync import SchoolSyncQueryModel
 
 
 class CampusDAO(DAOBase):
@@ -144,3 +144,38 @@ class CampusDAO(DAOBase):
         await session.execute(update_stmt)
         await session.commit()
         return campus
+
+    async def get_sync_campus(self, campus_no):
+        session = await self.slave_db()
+        query = select(Campus).where(
+            Campus.is_deleted == False, Campus.status == "opening",
+            Campus.campus_no == campus_no)
+        result = await session.execute(query)
+        return result.scalar_one_or_none()
+
+    async def query_sync_campus_with_page(self, query_model: SchoolSyncQueryModel,
+                                          page_request: PageRequest) -> Paging:
+        query_campus = select(Campus.campus_no.label("school_no"), Campus.social_credit_code,
+                              Campus.campus_name.label("school_name"),
+                              Campus.borough,
+                              Campus.block, Campus.founder_type, Campus.founder_type_lv2,
+                              Campus.founder_type_lv3).where(
+            Campus.is_deleted == False, Campus.status == "normal")
+        if query_model.social_credit_code:
+            query_campus = query_campus.where(Campus.social_credit_code == query_model.social_credit_code)
+        if query_model.school_name:
+            query_campus = query_campus.where(
+                Campus.campus_name.label("school_name").like(f"%{query_model.school_name}%"))
+        if query_model.borough:
+            query_campus = query_campus.where(Campus.borough == query_model.borough)
+        if query_model.block:
+            query_campus = query_campus.where(Campus.block == query_model.block)
+        if query_model.school_edu_level:
+            query_campus = query_campus.where(Campus.campus_operation_type == query_model.school_edu_level)
+        if query_model.school_category:
+            query_campus = query_campus.where(Campus.campus_operation_type_lv2 == query_model.school_category)
+        if query_model.school_operation_type:
+            query_campus = query_campus.where(Campus.campus_operation_type_lv3 == query_model.school_operation_type)
+
+        paging = await self.query_page(query_campus, page_request)
+        return paging

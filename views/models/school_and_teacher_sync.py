@@ -1,11 +1,23 @@
-from typing import List
+from enum import Enum
+from typing import Optional
 
 from fastapi import Query
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field
 
-from views.models.planning_school import PlanningSchoolStatus, PlanningSchoolFounderType
-from views.models.system import InstitutionType
-from typing import Optional
+
+class SchoolType(str, Enum):
+    """
+    学校：planning_school
+    分校：school
+    校区：campus
+    """
+    PLANING_SCHOOL = "planning_school"
+    SCHOOL = "school"
+    CAMPUS = "campus"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.SCHOOL, cls.CAMPUS, cls.PLANING_SCHOOL]
 
 
 class SchoolSyncQueryModel(BaseModel):
@@ -15,12 +27,13 @@ class SchoolSyncQueryModel(BaseModel):
     school_name: str = Query("", title="学校名称", description="1-20字符", examples=['XX小学'])
     borough: str | None = Query("", title="  ", description=" 行政管辖区", )
     block: str | None = Query("", title=" ", description="地域管辖区", )
-    social_credit_code: str | None = Query(None, title="", description="统一社会信用代码",
+    social_credit_code: str | None = Query("", title="", description="统一社会信用代码",
                                            examples=['XH423423876867'])
     school_edu_level: str | None = Query('', title="", description="办学类型/教育层次", examples=['学前教育'])
     school_category: str | None = Query('', title="", description=" 办学类型二级/学校（机构）类别", examples=['小学'])
     school_operation_type: str | None = Query('', title="", description=" 办学类型三级/办学类型",
                                               examples=['附设小学班'])
+    type: SchoolType = Query(..., title="", description="学校类型", examples=['公办'])
 
 
 class SchoolSyncQueryReModel(BaseModel):
@@ -30,14 +43,13 @@ class SchoolSyncQueryReModel(BaseModel):
 
     social_credit_code: str = Field(..., title="", description="统一社会信用代码",
                                     examples=['XH423423876867'])
+    school_no: str = Field(..., title="学校编号", description="1-20字符", examples=['XX小学'])
     school_name: str = Field(..., title="学校名称", description="1-20字符", examples=['XX小学'])
-    borough: str = Query(..., title="  ", description=" 行政管辖区", )
-    block: str = Query(..., title=" ", description="地域管辖区", )
-    founder_type: str = Field(..., title="", description="举办者类型",examples=['地方'])
-    founder_type_lv2: str = Field(..., title="", description="举办者类型二级",examples=['教育部门'])
-    founder_type_lv3: str = Field(..., title="", description="举办者类型三级",examples=['县级教育部门'])
-
-
+    borough: str = Field(..., title="  ", description=" 行政管辖区", )
+    block: str = Field(..., title=" ", description="地域管辖区", )
+    founder_type: str = Field(..., title="", description="举办者类型", examples=['地方'])
+    founder_type_lv2: str = Field(..., title="", description="举办者类型二级", examples=['教育部门'])
+    founder_type_lv3: str = Field(..., title="", description="举办者类型三级", examples=['县级教育部门'])
 
 
 class SupervisorSyncQueryModel(BaseModel):

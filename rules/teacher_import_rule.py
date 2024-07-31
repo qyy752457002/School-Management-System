@@ -1,48 +1,30 @@
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
-from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+import os
 from datetime import datetime
-from business_exceptions.common import IdCardError
-from daos.teachers_dao import TeachersDao
-from daos.school_dao import SchoolDAO
-from daos.teachers_info_dao import TeachersInfoDao
-from models.teachers import Teacher
-from views.common.common_view import check_id_number
-from views.models.teachers import Teachers as TeachersModel
-from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherImportSaveResultModel, \
-    TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
-    NewTeacherApprovalCreate, TeachersSaveImportCreatModel, TeacherImportResultModel, \
-    TeachersSaveImportRegisterCreatModel, TeacherInfoImportSubmit,TeachersSaveImportRegisterCreatTestModel
-from business_exceptions.teacher import TeacherNotFoundError, TeacherExistsError
-from business_exceptions.school import SchoolNotFoundError
-from views.models.teacher_transaction import TeacherAddModel, TeacherAddReModel
-# from rules.teachers_info_rule import TeachersInfoRule
-from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, TeacherChangeLogQueryModel, \
-    CurrentTeacherInfoSaveModel, TeacherRe, TeacherAdd, CombinedModel, TeacherInfoSubmit
 
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
 from mini_framework.async_task.data_access.task_dao import TaskDAO
 from mini_framework.async_task.task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter, ExcelReader
+from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.storage.manager import storage_manager
+from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.utils.logging import logger
-from daos.teacher_entry_dao import TeacherEntryApprovalDao
-from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
-from daos.teacher_key_info_approval_dao import TeacherKeyInfoApprovalDao
-from daos.teacher_change_dao import TeacherChangeLogDAO
-from rules.teacher_change_rule import TeacherChangeRule
-from daos.teacher_approval_log_dao import TeacherApprovalLogDao
-from mini_framework.design_patterns.depend_inject import get_injector
-from rules.common.common_rule import convert_fields_to_str, excel_fields_to_enum
+from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
+from business_exceptions.school import SchoolNotFoundError
+from daos.organization_dao import OrganizationDAO
+from daos.school_dao import SchoolDAO
+from rules.common.common_rule import excel_fields_to_enum
 from rules.teachers_info_rule import TeachersInfoRule
 from rules.teachers_rule import TeachersRule
-from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
-from daos.organization_dao import OrganizationDAO
-
-from models.public_enum import Gender
-import os
+# from rules.teachers_info_rule import TeachersInfoRule
+from views.models.teachers import CombinedModel
+from views.models.teachers import TeacherImportSaveResultModel, \
+    TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
+    TeachersSaveImportCreatModel, TeacherImportResultModel, \
+    TeacherInfoImportSubmit, TeachersSaveImportRegisterCreatTestModel
 
 
 @dataclass_inject

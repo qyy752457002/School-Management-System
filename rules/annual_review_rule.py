@@ -1,12 +1,12 @@
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from mini_framework.design_patterns.depend_inject import dataclass_inject
-from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
+
+from business_exceptions.teacher import TeacherNotFoundError, AnnualReviewNotFoundError
 from daos.annual_review_dao import AnnualReviewDAO
+from daos.teachers_dao import TeachersDao
 from models.annual_review import AnnualReview
 from views.models.teacher_extend import AnnualReviewModel, AnnualReviewUpdateModel
-from daos.teachers_dao import TeachersDao
-from business_exceptions.teacher import TeacherNotFoundError,AnnualReviewNotFoundError
-from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 
 @dataclass_inject
@@ -59,32 +59,30 @@ class AnnualReviewRule(object):
             annual_review.append(orm_model_to_view_model(item, AnnualReviewUpdateModel))
         return annual_review_db
 
-
-    async def submitting(self,annual_review_id):
+    async def submitting(self, annual_review_id):
         annual_review = await self.annual_review_dao.get_annual_review_by_annual_review_id(annual_review_id)
         if not annual_review:
             raise AnnualReviewNotFoundError()
         annual_review.approval_status = "submitting"
         return await self.annual_review_dao.update_annual_review(annual_review, "approval_status")
 
-    async def submitted(self,annual_review_id):
+    async def submitted(self, annual_review_id):
         annual_review = await self.annual_review_dao.get_annual_review_by_annual_review_id(annual_review_id)
         if not annual_review:
             raise AnnualReviewNotFoundError()
         annual_review.approval_status = "submitted"
         return await self.annual_review_dao.update_annual_review(annual_review, "approval_status")
 
-    async def approved(self,annual_review_id):
+    async def approved(self, annual_review_id):
         annual_review = await self.annual_review_dao.get_annual_review_by_annual_review_id(annual_review_id)
         if not annual_review:
             raise AnnualReviewNotFoundError()
         annual_review.approval_status = "approved"
         return await self.annual_review_dao.update_annual_review(annual_review, "approval_status")
 
-    async def rejected(self,annual_review_id):
+    async def rejected(self, annual_review_id):
         annual_review = await self.annual_review_dao.get_annual_review_by_annual_review_id(annual_review_id)
         if not annual_review:
             raise AnnualReviewNotFoundError()
         annual_review.approval_status = "rejected"
         return await self.annual_review_dao.update_annual_review(annual_review, "approval_status")
-
