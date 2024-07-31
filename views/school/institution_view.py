@@ -225,6 +225,8 @@ class InstitutionView(BaseView):
         return res
 
     async def page(self,
+                   request:Request,
+
                    page_request=Depends(PageRequest),
                    institution_category: InstitutionType = Query(None, title='单位分类',
                                                                  examples=['institution/administration']),
@@ -237,6 +239,8 @@ class InstitutionView(BaseView):
                    # status: PlanningSchoolStatus = Query("", title="", description=" 状态", examples=['正常']),
                    ):
         print(page_request)
+        obj= await get_extend_params(request)
+
         items = []
         if not institution_category:
             institution_category = [InstitutionType.INSTITUTION, InstitutionType.ADMINISTRATION]
@@ -245,7 +249,7 @@ class InstitutionView(BaseView):
                                                                  school_name=institution_name,
                                                                  school_org_type=institution_org_type, block=block,
                                                                  borough=borough, social_credit_code=social_credit_code,
-                                                                 extra_model=InstitutionBaseInfo)
+                                                                 extra_model=InstitutionBaseInfo,extend_params=obj)
         return res
 
     # 开办

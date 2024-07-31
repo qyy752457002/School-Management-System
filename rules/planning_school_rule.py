@@ -102,6 +102,7 @@ class PlanningSchoolRule(object):
             planning_school.planning_school_name)
         if exists_planning_school:
             raise Exception(f"规划校{planning_school.planning_school_name}已存在")
+        # 校验编码 不能重复
         planning_school_db = view_model_to_orm_model(planning_school, PlanningSchool, exclude=["id"])
         planning_school_db.status = PlanningSchoolStatus.DRAFT.value
         planning_school_db.created_uid = 0
