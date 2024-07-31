@@ -22,7 +22,7 @@ from sqlalchemy import select
 
 from business_exceptions.common import OrgCenterApiError
 from business_exceptions.planning_school import PlanningSchoolNotFoundError, \
-    PlanningSchoolNotFoundByProcessInstanceIdError
+    PlanningSchoolNotFoundByProcessInstanceIdError, PlanningSchoolExistsError
 from daos.enum_value_dao import EnumValueDAO
 from daos.planning_school_communication_dao import PlanningSchoolCommunicationDAO
 from daos.planning_school_dao import PlanningSchoolDAO
@@ -101,8 +101,12 @@ class PlanningSchoolRule(object):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_planning_school_name(
             planning_school.planning_school_name)
         if exists_planning_school:
-            raise Exception(f"规划校{planning_school.planning_school_name}已存在")
+            raise PlanningSchoolExistsError()
+
         # 校验编码 不能重复
+        exists_planning_school = await self.planning_school_dao.get_planning_school_by_args(planning_school_no=planning_school.planning_school_no)
+        if exists_planning_school:
+            raise PlanningSchoolExistsError()
         planning_school_db = view_model_to_orm_model(planning_school, PlanningSchool, exclude=["id"])
         planning_school_db.status = PlanningSchoolStatus.DRAFT.value
         planning_school_db.created_uid = 0
