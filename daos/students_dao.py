@@ -34,12 +34,16 @@ class StudentsDao(DAOBase):
         result = await session.execute(select(Student).where(Student.student_id == int(students_id)))
         return result.scalar_one_or_none()
 
-    async def get_students_by_param(self, **kwargs):
+    async def get_students_by_param(self,id_type_in=None, **kwargs):
         """
         获取单个学生信息
         """
         session = await self.slave_db()
         query = select(Student)
+        if id_type_in and isinstance(id_type_in, list):
+            query = query.where(Student.id_type.in_(id_type_in))
+            # query = query.where(School.institution_category.in_(institution_category))
+
         for key, value in kwargs.items():
             query = query.where(getattr(Student, key) == value)
         result = await session.execute(query)

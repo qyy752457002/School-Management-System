@@ -161,8 +161,7 @@ class SchoolDAO(DAOBase):
             else:
                 query = query.where(School.institution_category == institution_category)
         else:
-            query = query.where(
-                School.institution_category.not_in([InstitutionType.INSTITUTION, InstitutionType.ADMINISTRATION, ]))
+            query = query.where( School.institution_category.not_in([InstitutionType.INSTITUTION, InstitutionType.ADMINISTRATION, ]))
         if school_name:
             query = query.where(School.school_name == school_name)
         if planning_school_id:
