@@ -217,7 +217,7 @@ class ClassDivisionRecordsRule(object):
         return task_result
 
 
-    async def add_class_division_records_and_update_student_baseinfo(self,    class_division_records:List[ClassDivisionRecordsImport] ):
+    async def add_class_division_records_and_update_student_baseinfo(self,    class_division_records:List[ClassDivisionRecordsImport],pre_check=False, ):
 
         # 根据编码转换ID 等操作
         schools = await self.school_dao.get_all_schools()
@@ -287,8 +287,10 @@ class ClassDivisionRecordsRule(object):
 
                 continue
             class_division_records_item.student_id = student.student_id
+            if pre_check:
+                continue
 
-            # 学生班级和学生状态
+            # 学生班级和学生状态 处理数据更新 插入分班记录
             res = await students_base_info_rule.update_students_class_division( class_division_records_item.class_id,  class_division_records_item.student_id)
             # 分班记录
             res_div = await self.add_class_division_records(class_division_records_item.class_id,  class_division_records_item.student_id)
