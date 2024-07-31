@@ -414,6 +414,8 @@ class PlanningSchoolView(BaseView):
         planning_school_eduinfo.planning_school_id = planning_school_id
         planning_school_communication.id = None
         planning_school_eduinfo.id = None
+        # 直接开办同时 更新状态到开办中
+        planning_school.status = PlanningSchoolStatus.OPENING.value
 
         origin = await self.planning_school_rule.get_planning_school_by_id(planning_school.id)
         log_con = compare_modify_fields(planning_school, origin)
