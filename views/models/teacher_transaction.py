@@ -328,6 +328,16 @@ class TeacherTransactionQueryModel(BaseModel):
     transaction_time_s: Optional[date] = Query(None, title="申请开始时间", description="申请开始时间")
     transaction_time_e: Optional[date] = Query(None, title="申请结束时间", description="申请结束时间")
     transaction_type: Optional[str] = Query("", title="异动类型", description="异动类型")
+    teacher_employer: Optional[int | str] = Query(None, title="所属机构", description="所属机构")
+    borough: Optional[str] = Query("", title="所在区县", description="所在区县")
+    @model_validator(mode='before')
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list = ["teacher_employer"]
+        for _change in _change_list:
+            if _change in data and isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+        return data
 
 
 class TeacherTransactionQueryReModel(BaseModel):
@@ -341,6 +351,8 @@ class TeacherTransactionQueryReModel(BaseModel):
     transaction_type: str = Field(..., title="异动类型", description="异动类型")
     transaction_remark: Optional[str] = Field("", title="备注", description="备注")
     transaction_time: Optional[datetime] = Field(None, title="申请时间", description="申请时间")
+    school_name: Optional[str] = Field("", title="所属机构", description="所属机构")
+    borough: Optional[str] = Field("", title="所在区县", description="所在区县")
 
     @model_validator(mode='before')
     @classmethod
@@ -657,7 +669,6 @@ class TeacherTransferQueryModel(BaseModel):
     审批时间：approval_time
     申请人：operator_name
     审批人：approval_name
-
     """
     teacher_name: Optional[str] = Query("", title="姓名", description="姓名")
     teacher_number: Optional[str] = Query("", title="教职工号", description="教职工号")

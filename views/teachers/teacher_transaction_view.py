@@ -1,26 +1,24 @@
-from datetime import date
+from typing import Optional
 
-from mini_framework.web.views import BaseView
-from mini_framework.design_patterns.depend_inject import get_injector
-from mini_framework.web.views import BaseView
 from fastapi import Query, Depends, Body
+from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.web.std_models.page import PageRequest
+from mini_framework.web.views import BaseView
+from starlette.requests import Request
 
-from views.models.teacher_transaction import TeacherBorrowModel, TeacherBorrowReModel, TeacherBorrowQueryModel, \
-    TeacherRetireQuery, TransferDetailsModel, TeacherRetireCreateModel
-from rules.transfer_details_rule import TransferDetailsRule
-
-from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionQuery, \
-    TeacherTransferQueryModel, TeacherTransactionQueryModel
-
+from rules.teacher_borrow_rule import TeacherBorrowRule
+from rules.teacher_retire_rule import TeacherRetireRule
 from rules.teacher_transaction_rule import TeacherTransactionRule
 from rules.teachers_rule import TeachersRule
-from rules.teacher_borrow_rule import TeacherBorrowRule
-from views.models.teacher_transaction import TeacherBorrowModel, TeacherBorrowReModel, TeacherBorrowQueryModel, \
+from rules.transfer_details_rule import TransferDetailsRule
+from views.common.common_view import get_extend_params
+from views.models.system import UnitType
+from views.models.teacher_transaction import TeacherBorrowModel, TeacherBorrowQueryModel, \
     TeacherRetireQuery, TeacherRetireCreateModel
-from mini_framework.web.std_models.page import PageRequest
+from views.models.teacher_transaction import TeacherTransactionModel, TeacherTransactionQuery, \
+    TeacherTransferQueryModel, TeacherTransactionQueryModel
+from views.models.teacher_transaction import TransferDetailsModel
 from views.models.teachers import TeacherAdd
-from typing import Optional
-from rules.teacher_retire_rule import TeacherRetireRule
 
 
 class TransferDetailsView(BaseView):
@@ -98,48 +96,72 @@ class TransferDetailsView(BaseView):
         return res
 
     # 调动管理查询
-    async def page_transfer_out_launch(self, transfer_details=Depends(TeacherTransferQueryModel),
+    async def page_transfer_out_launch(self, request: Request, transfer_details=Depends(TeacherTransferQueryModel),
                                        page_request=Depends(PageRequest)):
         """
         我发起的调出
         """
+        extend_param = {}
+        ob = await get_extend_params(request)
+        if ob.unit_type == UnitType.SCHOOL.value:
+            transfer_details.original_unit_id = ob.school_id
+        elif ob.unit_type == UnitType.COUNTRY.value:
+            transfer_details.original_district_area_id = ob.county_id
         type = "launch"
-        user_id = "asdfasdf"
+        extend_param["applicant_name"] = "asdfasdf"
         paging_result = await self.transfer_details_rule.query_transfer_out_with_page(type, transfer_details,
-                                                                                      page_request, user_id)
+                                                                                      page_request, extend_param)
         return paging_result
 
-    async def page_transfer_out_approval(self, transfer_details=Depends(TeacherTransferQueryModel),
+    async def page_transfer_out_approval(self, request: Request, transfer_details=Depends(TeacherTransferQueryModel),
                                          page_request=Depends(PageRequest)):
         """
         我审批的调出
         """
+        extend_param = {}
+        ob = await get_extend_params(request)
+        if ob.unit_type == UnitType.SCHOOL.value:
+            transfer_details.original_unit_id = ob.school_id
+        elif ob.unit_type == UnitType.COUNTRY.value:
+            transfer_details.original_district_area_id = ob.county_id
         type = "approval"
-        user_id = "asdfasdf"
+        extend_param["applicant_name"] = "asdfasdf"
         paging_result = await self.transfer_details_rule.query_transfer_out_with_page(type, transfer_details,
-                                                                                      page_request, user_id)
+                                                                                      page_request, extend_param)
         return paging_result
 
-    async def page_transfer_in_launch(self, transfer_details=Depends(TeacherTransferQueryModel),
+    async def page_transfer_in_launch(self, request: Request, transfer_details=Depends(TeacherTransferQueryModel),
                                       page_request=Depends(PageRequest)):
         """
         我发起的调入
         """
-        user_id = "asdfasdf"
         type = "launch"
+        extend_param = {}
+        ob = await get_extend_params(request)
+        if ob.unit_type == UnitType.SCHOOL.value:
+            transfer_details.current_unit_id = ob.school_id
+        elif ob.unit_type == UnitType.COUNTRY.value:
+            transfer_details.current_district_area_id = ob.county_id
+        extend_param["applicant_name"] = "asdfasdf"
         paging_result = await self.transfer_details_rule.query_transfer_in_with_page(type, transfer_details,
-                                                                                     page_request, user_id)
+                                                                                     page_request, extend_param)
         return paging_result
 
-    async def page_transfer_in_approval(self, transfer_details=Depends(TeacherTransferQueryModel),
+    async def page_transfer_in_approval(self, request: Request, transfer_details=Depends(TeacherTransferQueryModel),
                                         page_request=Depends(PageRequest)):
         """
         我审批的调入
         """
         type = "approval"
-        user_id = "asdfasdf"
+        extend_param = {}
+        ob = await get_extend_params(request)
+        if ob.unit_type == UnitType.SCHOOL.value:
+            transfer_details.current_unit_id = ob.school_id
+        elif ob.unit_type == UnitType.COUNTRY.value:
+            transfer_details.current_district_area_id = ob.county_id
+        extend_param["applicant_name"] = "asdfasdf"
         paging_result = await self.transfer_details_rule.query_transfer_in_with_page(type, transfer_details,
-                                                                                     page_request, user_id)
+                                                                                     page_request, extend_param)
         return paging_result
 
     # 调动审批
@@ -240,13 +262,14 @@ class TeacherTransactionView(BaseView):
         teacher_id = int(teacher_id)
         return await self.teacher_transaction_rule.get_all_teacher_transaction(teacher_id)
 
-    async def page_transaction(self, teacher_transaction=Depends(TeacherTransactionQueryModel),
+    async def page_transaction(self, request: Request, teacher_transaction=Depends(TeacherTransactionQueryModel),
                                page_request=Depends(PageRequest)):
         """
         分页查询
         """
+        ob = await get_extend_params(request)
         paging_result = await self.teacher_transaction_rule.query_transaction_with_page(teacher_transaction,
-                                                                                        page_request)
+                                                                                        page_request, ob)
         return paging_result
 
     # 异动审批
@@ -305,11 +328,13 @@ class TeacherRetireView(BaseView):
         res = await self.teacher_retire_rule.add_teacher_retire(teacher_retire, user_id)
         return res
 
-    async def page_teacher_retire(self, current_teacher=Depends(TeacherRetireQuery), page_request=Depends(PageRequest)):
+    async def page_teacher_retire(self, request: Request, current_teacher=Depends(TeacherRetireQuery),
+                                  page_request=Depends(PageRequest)):
         """
         退休老师分页查询
         """
-        paging_result = await self.teacher_retire_rule.query_retire_teacher_with_page(current_teacher, page_request)
+        ob = await get_extend_params(request)
+        paging_result = await self.teacher_retire_rule.query_retire_teacher_with_page(current_teacher, page_request, ob)
         return paging_result
 
 
@@ -388,48 +413,72 @@ class TeacherBorrowView(BaseView):
     #     return await self.teacher_borrow_rule.query_teacher_transfer(teacher_borrow)
 
     # 借动管理查询
-    async def page_borrow_out_launch(self, teacher_borrow=Depends(TeacherBorrowQueryModel),
+    async def page_borrow_out_launch(self, request: Request, teacher_borrow=Depends(TeacherBorrowQueryModel),
                                      page_request=Depends(PageRequest)):
         """
        我发起的借出
         """
+        extend_param = {}
+        ob = await get_extend_params(request)
+        if ob.unit_type == UnitType.SCHOOL.value:
+            teacher_borrow.original_unit_id = ob.school_id
+        elif ob.unit_type == UnitType.COUNTRY.value:
+            teacher_borrow.original_district_area_id = ob.county_id
+        extend_param["applicant_name"] = "asdfasdf"
         type = "launch"
-        user_id = "asdfasdf"
         paging_result = await self.teacher_borrow_rule.query_borrow_out_with_page(type, teacher_borrow, page_request,
-                                                                                  user_id)
+                                                                                  extend_param)
         return paging_result
 
-    async def page_borrow_out_approval(self, teacher_borrow=Depends(TeacherBorrowQueryModel),
+    async def page_borrow_out_approval(self, request: Request, teacher_borrow=Depends(TeacherBorrowQueryModel),
                                        page_request=Depends(PageRequest)):
         """
         我审批的借出
         """
+        extend_param = {}
+        ob = await get_extend_params(request)
+        if ob.unit_type == UnitType.SCHOOL.value:
+            teacher_borrow.original_unit_id = ob.school_id
+        elif ob.unit_type == UnitType.COUNTRY.value:
+            teacher_borrow.original_district_area_id = ob.county_id
+        extend_param["applicant_name"] = "asdfasdf"
         type = "approval"
-        user_id = "asdfasdf"
         paging_result = await self.teacher_borrow_rule.query_borrow_out_with_page(type, teacher_borrow, page_request,
-                                                                                  user_id)
+                                                                                  extend_param)
         return paging_result
 
-    async def page_borrow_in_launch(self, teacher_borrow=Depends(TeacherBorrowQueryModel),
+    async def page_borrow_in_launch(self, request: Request, teacher_borrow=Depends(TeacherBorrowQueryModel),
                                     page_request=Depends(PageRequest)):
         """
         我发起的借入
         """
-        user_id = "asdfasdf"
+        extend_param = {}
+        ob = await get_extend_params(request)
+        if ob.unit_type == UnitType.SCHOOL.value:
+            teacher_borrow.current_unit_id = ob.school_id
+        elif ob.unit_type == UnitType.COUNTRY.value:
+            teacher_borrow.current_district_area_id = ob.county_id
+        extend_param["applicant_name"] = "asdfasdf"
         type = "launch"
         paging_result = await self.teacher_borrow_rule.query_borrow_in_with_page(type, teacher_borrow, page_request,
-                                                                                 user_id)
+                                                                                 extend_param)
         return paging_result
 
-    async def page_borrow_in_approval(self, teacher_borrow=Depends(TeacherBorrowQueryModel),
+    async def page_borrow_in_approval(self, request: Request, teacher_borrow=Depends(TeacherBorrowQueryModel),
                                       page_request=Depends(PageRequest)):
         """
         我审批的借入
         """
+        extend_param = {}
+        ob = await get_extend_params(request)
+        if ob.unit_type == UnitType.SCHOOL.value:
+            teacher_borrow.current_unit_id = ob.school_id
+        elif ob.unit_type == UnitType.COUNTRY.value:
+            teacher_borrow.current_district_area_id = ob.county_id
+        extend_param["applicant_name"] = "asdfasdf"
         type = "approval"
-        user_id = "asdfasdf"
         paging_result = await self.teacher_borrow_rule.query_borrow_in_with_page(type, teacher_borrow, page_request,
-                                                                                 user_id)
+                                                                                 extend_param)
         return paging_result
 
     # 审批相关

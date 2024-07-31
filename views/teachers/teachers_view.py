@@ -51,7 +51,7 @@ class TeachersView(BaseView):
         extend_param = {}
         ob = await get_extend_params(request)
         if ob.unit_type == UnitType.SCHOOL.value:
-            extend_param["teacher_employer"] = ob.school_id
+            teacher_approval_query.teacher_employer = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             extend_param["borough"] = ob.county_id
         extend_param["applicant_name"] = "asdfasdf"
@@ -69,7 +69,7 @@ class TeachersView(BaseView):
         extend_param = {}
         ob = await get_extend_params(request)
         if ob.unit_type == UnitType.SCHOOL.value:
-            extend_param["teacher_employer"] = ob.school_id
+            teacher_approval_query.teacher_employer = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             extend_param["borough"] = ob.county_id
         extend_param["applicant_name"] = "asdfasdf"

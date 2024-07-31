@@ -1,5 +1,3 @@
-from sqlalchemy import select
-
 from mini_framework.databases.entities.dao_base import DAOBase
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
@@ -9,9 +7,10 @@ from models.school import School
 from models.teacher_retire import TeacherRetire
 from models.teachers import Teacher
 from models.teachers_info import TeacherInfo
+from views.models.extend_params import ExtendParams
 from views.models.teacher_transaction import TeacherRetireQuery
 from views.models.teachers import TeacherMainStatus
-
+from views.models.system import UnitType
 
 class TeachersRetireDao(DAOBase):
     # 新增教师基本信息
@@ -41,7 +40,7 @@ class TeachersRetireDao(DAOBase):
         return result.scalar_one_or_none()
 
     async def query_retire_teacher_with_page(self, query_model: TeacherRetireQuery,
-                                             page_request: PageRequest) -> Paging:
+                                             page_request: PageRequest, extend_params: ExtendParams = None) -> Paging:
         query = select(TeacherRetire.retire_date, TeacherRetire.retire_number, Teacher.teacher_id,
                        Teacher.teacher_main_status,
                        Teacher.teacher_sub_status,
@@ -55,6 +54,13 @@ class TeachersRetireDao(DAOBase):
             TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id, isouter=True
         ).join(School, Teacher.teacher_employer == School.id,
                )
+        if extend_params:
+            if extend_params.unit_type == UnitType.SCHOOL.value:
+                query = query.where(Teacher.teacher_employer == extend_params.school_id)
+            elif extend_params.unit_type == UnitType.COUNTRY.value:
+                query = query.where(School.borough == extend_params.county_id)
+            else:
+                pass
         if query_model.in_post != None:
             query = query.where(Teacher.teacher_main_status == TeacherMainStatus.RETIRED.value,
                                 TeacherInfo.in_post == query_model.in_post)
