@@ -1,13 +1,14 @@
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
+import json
+
 from mini_framework.design_patterns.depend_inject import dataclass_inject
-from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
+
+from business_exceptions.teacher import TeacherNotFoundError, TeacherJobAppointmentsNotFoundError
 from daos.teacher_job_appointments_dao import TeacherJobAppointmentsDAO
 from daos.teachers_dao import TeachersDao
 from models.teacher_job_appointments import TeacherJobAppointments
 from views.models.teacher_extend import TeacherJobAppointmentsModel, TeacherJobAppointmentsUpdateModel
-from business_exceptions.teacher import TeacherNotFoundError, TeacherJobAppointmentsNotFoundError
-import json
-from mini_framework.utils.snowflake import SnowflakeIdGenerator
 
 
 @dataclass_inject
@@ -35,7 +36,8 @@ class TeacherJobAppointmentsRule(object):
         teacher_job_appointments_db.teacher_job_appointments_id = SnowflakeIdGenerator(1, 1).generate_id()
         teacher_job_appointments_db = await self.teacher_job_appointments_dao.add_teacher_job_appointments(
             teacher_job_appointments_db)
-        teacher_job_appointments = orm_model_to_view_model(teacher_job_appointments_db, TeacherJobAppointmentsUpdateModel,
+        teacher_job_appointments = orm_model_to_view_model(teacher_job_appointments_db,
+                                                           TeacherJobAppointmentsUpdateModel,
                                                            exclude=["concurrent_position"])
         teacher_job_appointments.concurrent_position = json.loads(teacher_job_appointments_db.concurrent_position)
         return teacher_job_appointments
@@ -47,7 +49,8 @@ class TeacherJobAppointmentsRule(object):
             raise TeacherJobAppointmentsNotFoundError()
         teacher_job_appointments_db = await self.teacher_job_appointments_dao.delete_teacher_job_appointments(
             exists_teacher_job_appointments)
-        teacher_job_appointments = orm_model_to_view_model(teacher_job_appointments_db,TeacherJobAppointmentsUpdateModel,
+        teacher_job_appointments = orm_model_to_view_model(teacher_job_appointments_db,
+                                                           TeacherJobAppointmentsUpdateModel,
                                                            exclude=["concurrent_position"])
         teacher_job_appointments.concurrent_position = json.loads(teacher_job_appointments_db.concurrent_position)
         return teacher_job_appointments

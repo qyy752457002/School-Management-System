@@ -3,26 +3,24 @@ import pprint
 import traceback
 from urllib.parse import urlencode
 
+from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.storage.view_model import FileStorageModel
 from mini_framework.utils.http import HTTPRequest
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-
-from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from daos.permission_menu_dao import PermissionMenuDAO
 from daos.roles_dao import RolesDAO
-from drop.work_flow_node_define import WorkFlowNodeDefine
-from models.permission_menu import PermissionMenu
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from views.common.common_view import workflow_service_config, convert_snowid_in_model
-
-from views.models.sub_system import SubSystem as SubSystemModel
 from views.models.permission_menu import PermissionMenu as PermissionMenuModel
+from views.models.sub_system import SubSystem as SubSystemModel
 from views.models.system import PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, SCHOOL_CLOSE_WORKFLOW_CODE, \
     INSTITUTION_CLOSE_WORKFLOW_CODE
+from daos.sub_system_dao import SubSystemDAO
+from models.sub_system import SubSystem
 
 
 @dataclass_inject
@@ -31,6 +29,7 @@ class SystemRule(object):
     roles_dao: RolesDAO
     teacher_work_flow_rule: TeacherWorkFlowRule
     file_storage_dao: FileStorageDAO
+    system_dao: SubSystemDAO
 
     async def get_system_by_id(self, system_id):
         system_db = await self.system_dao.get_subsystem_by_id(system_id)

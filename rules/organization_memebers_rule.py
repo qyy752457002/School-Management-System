@@ -1,33 +1,29 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.utils.logging import logger
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-
-from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from sqlalchemy import select
 
-from business_exceptions.organization import OrganizationNotFoundError, OrganizationExistError, \
-    OrganizationMemberExistError, OrganizationMemberNotFoundError
-from business_exceptions.school import SchoolNotFoundError
+from business_exceptions.organization import OrganizationMemberExistError, OrganizationMemberNotFoundError
 from daos.organization_dao import OrganizationDAO
 from daos.organization_members_dao import OrganizationMembersDAO
+from models.organization import Organization as OrganizationModel
+from models.organization_members import OrganizationMembers as OrganizationMembersModel
 # from daos.organization_members_dao import CampusDAO
 # from daos.organization_members_dao import OrganizationDAO
 # from daos.organization_members_members_dao import OrganizationMembersDAO
 # from models.organization import Campus
-from rules.enum_value_rule import EnumValueRule
 from rules.organization_rule import OrganizationRule
 from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
 from views.models.organization import Organization, OrganizationMembers, OrganizationMembersSearchRes
-# from views.models.organization import Campus as Organization
-
 # from views.models.organization import CampusBaseInfo
 from views.models.planning_school import PlanningSchoolStatus
-from views.models.school import School as SchoolModel
-from models.organization import Organization as OrganizationModel
-from models.organization_members import OrganizationMembers as OrganizationMembersModel
+
+
+# from views.models.organization import Campus as Organization
 @dataclass_inject
 class OrganizationMembersRule(object):
     organization_members_dao: OrganizationMembersDAO

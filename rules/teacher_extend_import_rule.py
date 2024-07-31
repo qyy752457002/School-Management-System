@@ -1,100 +1,69 @@
-from views.models.teachers import IdentityType
-from mini_framework.design_patterns.depend_inject import dataclass_inject
-from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
-from datetime import datetime
-from views.models.teachers import TeacherFileStorageModel
-
-from views.models.teacher_extend import ResearchAchievementsModel, TeacherEthicRecordsModel, TeacherEthicType
 import shortuuid
-from mini_framework.async_task.data_access.models import TaskResult
 from mini_framework.async_task.data_access.task_dao import TaskDAO
-from mini_framework.async_task.task.task import Task, TaskState
+from mini_framework.async_task.task.task import Task
 from mini_framework.data.tasks.excel_tasks import ExcelWriter, ExcelReader
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.storage.manager import storage_manager
+from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.utils.logging import logger
 
-from rules.common.common_rule import excel_fields_to_enum
-
-from rules.teachers_info_rule import TeachersInfoRule
-from rules.teachers_rule import TeachersRule
-from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
-from daos.organization_dao import OrganizationDAO
-from daos.teachers_dao import TeachersDao
 from business_exceptions.teacher import TeacherNotFoundError
-from rules.teacher_work_experience_rule import TeacherWorkExperienceRule
-from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
-
-from rules.teacher_learn_experience_rule import TeacherLearnExperienceRule
-from rules.research_achievements_rule import ResearchAchievementsRule
-from rules.teacher_ethic_records_rule import TeacherEthicRecordsRule
-
-from views.models.teacher_extend import TeacherWorkExperienceModel, TeacherWorkExperienceComModel, \
-    TeacherWorkExperienceResultModel
-
-from views.models.teacher_extend import TeacherLearnExperienceModel, TeacherLearnExperienceComModel, \
-    TeacherLearnExperienceResultModel
-
-from rules.teacher_job_appointments_rule import TeacherJobAppointmentsRule
-from views.models.teacher_extend import TeacherJobAppointmentsModel, TeacherJobAppointmentsComModel, \
-    TeacherJobAppointmentsResultModel
-
-from rules.teacher_professional_titles_rule import TeacherProfessionalTitlesRule
-from views.models.teacher_extend import TeacherProfessionalTitlesModel, TeacherProfessionalTitlesComModel, \
-    TeacherProfessionalTitlesResultModel
-
-from rules.teacher_qualifications_rule import TeacherQualificationsRule
-from views.models.teacher_extend import TeacherQualificationsModel, TeacherQualificationsComModel, \
-    TeacherQualificationsResultModel
-
-from rules.teacher_skill_certificates_rule import TeacherSkillCertificatesRule
-from views.models.teacher_extend import TeacherSkillCertificatesModel, TeacherSkillCertificatesComModel, \
-    TeacherSkillCertificatesResultModel
-
+from daos.teachers_dao import TeachersDao
+from rules.annual_review_rule import AnnualReviewRule
+from rules.common.common_rule import excel_fields_to_enum
+from rules.domestic_training_rule import DomesticTrainingRule
 from rules.educational_teaching_rule import EducationalTeachingRule
+from rules.overseas_study_rule import OverseasStudyRule
+from rules.research_achievements_rule import ResearchAchievementsRule
+from rules.talent_program_rule import TalentProgramRule
+from rules.teacher_ethic_records_rule import TeacherEthicRecordsRule
+from rules.teacher_job_appointments_rule import TeacherJobAppointmentsRule
+from rules.teacher_learn_experience_rule import TeacherLearnExperienceRule
+from rules.teacher_professional_titles_rule import TeacherProfessionalTitlesRule
+from rules.teacher_qualifications_rule import TeacherQualificationsRule
+from rules.teacher_skill_certificates_rule import TeacherSkillCertificatesRule
+from rules.teacher_work_experience_rule import TeacherWorkExperienceRule
+from views.models.teacher_extend import AnnualReviewModel, AnnualReviewComModel, AnnualReviewResultModel
+from views.models.teacher_extend import DomesticTrainingModel, DomesticTrainingComModel, DomesticTrainingResultModel
 from views.models.teacher_extend import EducationalTeachingModel, EducationalTeachingComModel, \
     EducationalTeachingResultModel
-
-from views.models.teacher_extend import TeacherEthicRecordsModel, TeacherEthicRecordsRewardsComModel, \
-    TeacherEthicRecordsRewardsResultModel
-
-from views.models.teacher_extend import TeacherEthicRecordsDisciplinaryComModel, \
-    TeacherEthicRecordsDisciplinaryResultModel
-
-from rules.talent_program_rule import TalentProgramRule
-from views.models.teacher_extend import TalentProgramModel, TalentProgramComModel, TalentProgramResultModel
-
-from rules.domestic_training_rule import DomesticTrainingRule
-from views.models.teacher_extend import DomesticTrainingModel, DomesticTrainingComModel, DomesticTrainingResultModel
-
-from rules.overseas_study_rule import OverseasStudyRule
 from views.models.teacher_extend import OverseasStudyModel, OverseasStudyComModel, OverseasStudyResultModel
-
-from rules.annual_review_rule import AnnualReviewRule
-from views.models.teacher_extend import AnnualReviewModel, AnnualReviewComModel, AnnualReviewResultModel
-
-from views.models.teacher_extend import ResearchAchievementsProjectComModel, \
-    ResearchAchievementsProjectResultModel
-
-from views.models.teacher_extend import ResearchAchievementsBookComModel, \
-    ResearchAchievementsBookResultModel
-
-from views.models.teacher_extend import ResearchAchievementsModel, ResearchAchievementsPaperComModel, \
-    ResearchAchievementsPaperResultModel
-
-from views.models.teacher_extend import ResearchAchievementsRewardComModel, \
-    ResearchAchievementsRewardResultModel
-
 from views.models.teacher_extend import ResearchAchievementsArtworkComModel, \
     ResearchAchievementsArtworkResultModel
-
-from views.models.teacher_extend import ResearchAchievementsPatentComModel, \
-    ResearchAchievementsPatentResultModel
-
+from views.models.teacher_extend import ResearchAchievementsBookComModel, \
+    ResearchAchievementsBookResultModel
 from views.models.teacher_extend import ResearchAchievementsCompetitionComModel, \
     ResearchAchievementsCompetitionResultModel
-
 from views.models.teacher_extend import ResearchAchievementsMedicineComModel, \
     ResearchAchievementsMedicineResultModel
+from views.models.teacher_extend import ResearchAchievementsModel, ResearchAchievementsPaperComModel, \
+    ResearchAchievementsPaperResultModel
+from views.models.teacher_extend import ResearchAchievementsPatentComModel, \
+    ResearchAchievementsPatentResultModel
+from views.models.teacher_extend import ResearchAchievementsProjectComModel, \
+    ResearchAchievementsProjectResultModel
+from views.models.teacher_extend import ResearchAchievementsRewardComModel, \
+    ResearchAchievementsRewardResultModel
+from views.models.teacher_extend import TalentProgramModel, TalentProgramComModel, TalentProgramResultModel
+from views.models.teacher_extend import TeacherEthicRecordsDisciplinaryComModel, \
+    TeacherEthicRecordsDisciplinaryResultModel
+from views.models.teacher_extend import TeacherEthicRecordsModel, TeacherEthicRecordsRewardsComModel, \
+    TeacherEthicRecordsRewardsResultModel
+from views.models.teacher_extend import TeacherEthicType
+from views.models.teacher_extend import TeacherJobAppointmentsModel, TeacherJobAppointmentsComModel, \
+    TeacherJobAppointmentsResultModel
+from views.models.teacher_extend import TeacherLearnExperienceModel, TeacherLearnExperienceComModel, \
+    TeacherLearnExperienceResultModel
+from views.models.teacher_extend import TeacherProfessionalTitlesModel, TeacherProfessionalTitlesComModel, \
+    TeacherProfessionalTitlesResultModel
+from views.models.teacher_extend import TeacherQualificationsModel, TeacherQualificationsComModel, \
+    TeacherQualificationsResultModel
+from views.models.teacher_extend import TeacherSkillCertificatesModel, TeacherSkillCertificatesComModel, \
+    TeacherSkillCertificatesResultModel
+from views.models.teacher_extend import TeacherWorkExperienceModel, TeacherWorkExperienceComModel, \
+    TeacherWorkExperienceResultModel
+from views.models.teachers import IdentityType
+from views.models.teachers import TeacherFileStorageModel
 
 
 @dataclass_inject

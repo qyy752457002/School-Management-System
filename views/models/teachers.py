@@ -154,10 +154,11 @@ class EducateUserModel(BaseModel):
 
 
 class TeachersSchool(BaseModel):
-    """这个模型的作用是在老师关键信息变更审批时，除了把老师更新信息送到工作流（不是在本地查），还需要将当时的状态和就职单位名字送上工作流"""
+    """这个模型的作用是在老师关键信息变更审批时，除了把老师更新信息送到工作流（不是在本地查），还需要将当时的状态和就职单位所处地区名字送上工作流"""
     teacher_main_status: str = Field("", title="主状态", description="主状态")
     teacher_sub_status: str = Field("", title="子状态", description="子状态")
     school_name: str = Field("", title="学校名称", description="学校名称")
+    borough: str = Field("", title="行政管辖区", description="行政管辖区")
 
 
 class TeachersCreatModel(BaseModel):
@@ -1725,6 +1726,8 @@ class NewTeacherApprovalCreate(BaseModel):
     highest_degree_name: str = Field("", title="最高学位名称", description="最高学位名称", example="最高学位名称")
     is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
+
+    borough: str = Field("", title="行政管辖区", description="行政管辖区", example="行政管辖区")
 
     @model_validator(mode='before')
     @classmethod

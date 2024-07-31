@@ -1,5 +1,5 @@
 from fastapi import Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class Campus(BaseModel):
@@ -64,6 +64,20 @@ class Campus(BaseModel):
     # campus_leader_name: str = Field('', title="", description="校区负责人姓名",examples=['3'])
 
     # campus_leader_position: str = Field('', title="", description="校区负责人职位",examples=['3'])
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id", "planning_school_id",]
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 # 规划校的 基本信息模型   视图的额模型是按需提供的
 class CampusBaseInfo(BaseModel):
@@ -85,7 +99,20 @@ class CampusBaseInfo(BaseModel):
     sy_zones: str = Field('', title="", description="属地管理行政部门所在地地区",examples=['铁西区'])
     historical_evolution: str = Field('', title="", description="历史沿革",examples=['xxxxxxxxxxxxxxxxxxxx'])
     status: str = Field(None, title="", description=" 状态",examples=['正常'])
-
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id", "planning_school_id",]
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 
 class CampusKeyInfo(BaseModel):
@@ -101,6 +128,20 @@ class CampusKeyInfo(BaseModel):
     campus_operation_type_lv3: str = Query('', title="", description=" 办学类型三级",examples=['附设小学班'])
     campus_org_type: str = Query('', title="", description=" 校区办别",examples=['民办'])
     campus_level: str = Query('', title="", description=" 校区星级",examples=['5'])
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id", "planning_school_id",]
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 class CampusKeyAddInfo(BaseModel):
     """
     location_city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="校区所在地(省市)")
@@ -145,5 +186,19 @@ class CampusKeyAddInfo(BaseModel):
     campus_leader_name: str = Field('', title="", description="校区负责人姓名",examples=['3'])
 
     campus_leader_position: str = Field('', title="", description="校区负责人职位",examples=['3'])
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id", "planning_school_id",]
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
 
 

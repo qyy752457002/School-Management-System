@@ -1,15 +1,13 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
-# from business_exceptions.education_year import CourseNotFoundError, CourseAlreadyExistError
-# from daos.education_year_dao import CourseDAO
+from business_exceptions.course import CourseNotFoundError, CourseAlreadyExistError
+
 from daos.education_year_dao import EducationYearDAO
-# from models.education_year import Course
+from models.education_year import EducationYear
 from views.models.education_year import EducationYearModel
-
 
 
 @dataclass_inject
@@ -32,7 +30,7 @@ class EducationYearRule(object):
             education_year.education_year_name)
         if exists_education_year:
             raise CourseAlreadyExistError()
-        education_year_db = view_model_to_orm_model(education_year, Course,    exclude=["id"])
+        education_year_db = view_model_to_orm_model(education_year, EducationYear,    exclude=["id"])
 
         education_year_db = await self.education_year_dao.add_education_year(education_year_db)
         education_year = orm_model_to_view_model(education_year_db, EducationYearModel, exclude=["created_at",'updated_at'])
@@ -107,7 +105,7 @@ class EducationYearRule(object):
             raise CourseAlreadyExistError()
         # education_year_db =  Course(school_id=school_id,education_year_list=education_year_list)
         for education_year in education_year_list:
-            education_year_db= view_model_to_orm_model(education_year, Course, exclude=["id"])
+            education_year_db= view_model_to_orm_model(education_year, EducationYear, exclude=["id"])
             res = await self.education_year_dao.add_education_year(education_year_db)
 
             # print(education_year_db.education_year_list)

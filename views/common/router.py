@@ -1,8 +1,6 @@
 from mini_framework.web.router import Router
 
-from views.models.grades import Grades
-
-from views.common.school_and_teacher_sync_view import SchoolTeacherView
+from views.public.school_and_teacher_sync_view import SchoolTeacherView
 
 
 def routers():

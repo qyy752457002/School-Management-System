@@ -1,9 +1,8 @@
 from mini_framework.databases.entities import BaseDBModel
-from sqlalchemy import select, func, update, desc
-
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
+from sqlalchemy import select, func, update, desc
 
 from models.classes import Classes
 from models.grade import Grade
@@ -13,6 +12,7 @@ from models.school import School
 from models.school_communication import SchoolCommunication
 from models.students import Student, StudentApprovalAtatus
 from models.students_base_info import StudentBaseInfo
+from views.models.extend_params import ExtendParams
 from views.models.students import NewStudentsQuery
 
 
@@ -43,7 +43,7 @@ class StudentsBaseInfoDao(DAOBase):
         """
         session = await self.master_db()
         # update_contents = get_update_contents(students_base_info, *args)
-        if isinstance(student_ids, str) and  ',' in student_ids:
+        if isinstance(student_ids, str) and ',' in student_ids:
             student_ids = student_ids.split(',')
         else:
             student_ids = [student_ids]
@@ -123,7 +123,8 @@ class StudentsBaseInfoDao(DAOBase):
         session = await self.master_db()
         return await self.delete(session, students)
 
-    async def query_students_with_page(self, query_model: NewStudentsQuery, page_request: PageRequest) -> Paging:
+    async def query_students_with_page(self, query_model: NewStudentsQuery, page_request: PageRequest,
+                                       extend_params: ExtendParams = None) -> Paging:
         """
         学生姓名：student_name
         报名号：enrollment_number
@@ -162,6 +163,15 @@ class StudentsBaseInfoDao(DAOBase):
                                                   isouter=True).order_by(desc(Student.student_id))
         query = query.where(Student.is_deleted == False)
 
+        if extend_params is not None and len(query_model.county) == 0:
+            if extend_params.county_id:
+                query_model.county = extend_params.county_id
+            pass
+        if extend_params is not None and query_model.school_id == 0:
+            if extend_params.school_id:
+                query_model.school_id = extend_params.school_id
+            pass
+
         if query_model.student_name:
             query = query.where(Student.student_name == query_model.student_name)
         if query_model.enrollment_number:
@@ -179,7 +189,7 @@ class StudentsBaseInfoDao(DAOBase):
         if query_model.enrollment_date:
             query = query.where(StudentBaseInfo.enrollment_date == query_model.enrollment_date)
         if query_model.county:
-            query = query.where(StudentBaseInfo.county == query_model.county)
+            query = query.where(PlanningSchool.block == query_model.county)
         if query_model.emporary_borrowing_status:
             query = query.where(StudentBaseInfo.emporary_borrowing_status == query_model.emporary_borrowing_status)
         if query_model.edu_number:

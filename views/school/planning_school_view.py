@@ -276,6 +276,7 @@ class PlanningSchoolView(BaseView):
                                                 workflow_status=AuditAction.NEEDAUDIT.value)
 
             res = await self.planning_school_rule.update_planning_school_byargs(pl)
+            convert_snowid_in_model(res, extra_colums=['process_instance_id', ])
 
             pass
 
