@@ -39,7 +39,6 @@ class TeachersInfoRule(object):
     teacher_approval_log: TeacherApprovalLogDao
     teacher_change_detail: TeacherChangeRule
     teacher_key_info_approval_dao: TeacherKeyInfoApprovalDao
-    teacher_work_flow_rule: TeacherWorkFlowRule
     operation_record_rule: OperationRecordRule
     operation_record_dao: OperationRecordDAO
     school_dao: SchoolDAO
@@ -331,11 +330,13 @@ class TeachersInfoRule(object):
     async def query_teacher_with_page(self, query_model: NewTeacher, page_request: PageRequest, extend_param):
         params = {"process_code": "t_entry", "approval_status": "t_query"}
         params.update(extend_param)
+        print(params)
         paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                       NewTeacherRe, params)
         return paging
 
-    async def query_current_teacher_with_page(self, query_model: CurrentTeacherQuery, page_request: PageRequest,extend_params):
+    async def query_current_teacher_with_page(self, query_model: CurrentTeacherQuery, page_request: PageRequest,
+                                              extend_params):
         paging = await self.teachers_info_dao.query_current_teacher_with_page(query_model, page_request,
                                                                               extend_params)
         paging_result = PaginatedResponse.from_paging(paging, CurrentTeacherQueryRe)

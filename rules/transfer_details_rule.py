@@ -245,11 +245,14 @@ class TransferDetailsRule(object):
 
     # 调动管理分页查询相关
     async def query_transfer_out_with_page(self, type, query_model: TeacherTransferQueryModel,
-                                           page_request: PageRequest, user_id):
+                                           page_request: PageRequest, extend_param):
+        params = {}
         if type == "launch":
-            params = {"applicant_name": user_id, "process_code": "t_transfer_out", }
+            params = { "process_code": "t_transfer_out", }
+            params.update(extend_param)
         elif type == "approval":
-            params = {"applicant_name": user_id, "process_code": "t_transfer_out", }
+            params = {"process_code": "t_transfer_out", }
+            params.update(extend_param)
         result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
                                                                                       query_model,
                                                                                       TeacherTransferQueryReModel,
@@ -257,18 +260,20 @@ class TransferDetailsRule(object):
         return result
 
     async def query_transfer_in_with_page(self, type, query_model: TeacherTransferQueryModel,
-                                          page_request: PageRequest, user_id):
+                                          page_request: PageRequest, extend_param):
         result = []
         if type == "launch":
-            params = {"applicant_name": user_id, "process_code": "t_transfer_in"}
+            params = {"process_code": "t_transfer_in"}
+            params.update(extend_param)
             result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
                                                                                           query_model,
                                                                                           TeacherTransferQueryReModel,
                                                                                           params)
 
         elif type == "approval":
-            params = {"applicant_name": user_id, "process_code": "t_transfer_in",
+            params = {"process_code": "t_transfer_in",
                       }
+            params.update(extend_param)
             result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
                                                                                           query_model,
                                                                                           TeacherTransferQueryReModel,

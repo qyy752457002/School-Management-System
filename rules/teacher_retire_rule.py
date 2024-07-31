@@ -34,9 +34,9 @@ class TeacherRetireRule(object):
     operation_record_dao: OperationRecordDAO
     teacher_retire_dao: TeachersRetireDao
 
-    async def query_retire_teacher_with_page(self, query_model: TeacherRetireQuery, page_request: PageRequest):
+    async def query_retire_teacher_with_page(self, query_model: TeacherRetireQuery, page_request: PageRequest,extend_params):
         print(query_model)
-        paging = await self.teacher_retire_dao.query_retire_teacher_with_page(query_model, page_request)
+        paging = await self.teacher_retire_dao.query_retire_teacher_with_page(query_model, page_request,extend_params)
         paging_result = PaginatedResponse.from_paging(paging, TeacherRetireQueryRe)
         return paging_result
 

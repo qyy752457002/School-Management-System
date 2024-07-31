@@ -137,10 +137,10 @@ class TeacherTransactionRule(object):
             teacher_transaction.append(orm_model_to_view_model(item, TeacherTransactionGetModel))
         return teacher_transaction
 
-    async def query_transaction_with_page(self, query_model: TeacherTransactionQueryModel, page_request: PageRequest):
+    async def query_transaction_with_page(self, query_model: TeacherTransactionQueryModel, page_request: PageRequest,extend_params):
 
         teacher_transaction_db = await self.teacher_transaction_dao.query_transaction_with_page(query_model,
-                                                                                                page_request)
+                                                                                                page_request,extend_params)
         paging_result = PaginatedResponse.from_paging(teacher_transaction_db, TeacherTransactionQueryReModel)
         return paging_result
 
