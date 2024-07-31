@@ -1,18 +1,18 @@
-from datetime import date, datetime
-from mini_framework.databases.entities import BaseDBModel
-from sqlalchemy import select, func, update
+from datetime import datetime
 
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
+from sqlalchemy import select, func, update
 
 from models.school import School
-from models.teachers_info import TeacherInfo
-from models.teachers import Teacher
-from views.models.teachers import CurrentTeacherQuery, NewTeacher, TeacherApprovalQuery, TeacherMainStatus
 from models.teacher_entry_approval import TeacherEntryApproval
-from views.models.teachers import CurrentTeacherQuery, NewTeacher
+from models.teachers import Teacher
+from models.teachers_info import TeacherInfo
+from views.models.extend_params import ExtendParams
 from views.models.school_and_teacher_sync import SupervisorSyncQueryModel
+from views.models.system import UnitType
+from views.models.teachers import CurrentTeacherQuery, NewTeacher
 
 
 class TeachersInfoDao(DAOBase):
@@ -113,7 +113,7 @@ class TeachersInfoDao(DAOBase):
         return paging
 
     async def query_current_teacher_with_page(self, query_model: CurrentTeacherQuery,
-                                              page_request: PageRequest) -> Paging:
+                                              page_request: PageRequest, extend_params: ExtendParams = None) -> Paging:
         """
         新增教职工分页查询
         教师姓名：teacher_name
@@ -138,7 +138,13 @@ class TeachersInfoDao(DAOBase):
                                                                                        Teacher.teacher_employer == School.id,
                                                                                        ).where(
             Teacher.teacher_main_status == "employed", Teacher.is_deleted == False)
-
+        if extend_params:
+            if extend_params.unit_type == UnitType.SCHOOL.value:
+                query = query.where(Teacher.teacher_employer == extend_params.school_id)
+            elif extend_params.unit_type == UnitType.COUNTRY.value:
+                query = query.where(School.borough == extend_params.county_id)
+            else:
+                pass
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
         if query_model.teacher_id_number:
@@ -216,11 +222,11 @@ class TeachersInfoDao(DAOBase):
                    Teacher.teacher_gender, Teacher.teacher_id_type, Teacher.teacher_id_number,
                    Teacher.teacher_date_of_birth, Teacher.teacher_employer, Teacher.teacher_avatar,
                    Teacher.teacher_sub_status, Teacher.teacher_main_status, Teacher.identity, Teacher.mobile,
-                   School.school_name, Teacher.identity, Teacher.identity_type).join(School,
-                                                                                     Teacher.teacher_employer == School.id,
-                                                                                     ).join(TeacherInfo,
-                                                                                            Teacher.teacher_id == TeacherInfo.teacher_id,
-                                                                                            ).where(
+                   School.school_name, Teacher.identity, Teacher.identity_type, School.borough).join(School,
+                                                                                                     Teacher.teacher_employer == School.id,
+                                                                                                     ).join(TeacherInfo,
+                                                                                                            Teacher.teacher_id == TeacherInfo.teacher_id,
+                                                                                                            ).where(
                 Teacher.teacher_id == teacher_id))
         result = result.first()
 

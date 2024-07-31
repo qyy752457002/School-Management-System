@@ -1,19 +1,16 @@
-from datetime import date, datetime
+from sqlalchemy import select
 
-from sqlalchemy import select, func, update
-
-from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
+from mini_framework.databases.entities.dao_base import DAOBase
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
+from sqlalchemy import select
 
 from models.school import School
-from models.teachers_info import TeacherInfo
-from models.teachers import Teacher
-from views.models.teachers import CurrentTeacherQuery, NewTeacher, TeacherApprovalQuery, TeacherMainStatus
-from models.teacher_entry_approval import TeacherEntryApproval
-from views.models.teachers import CurrentTeacherQuery, NewTeacher
 from models.teacher_retire import TeacherRetire
+from models.teachers import Teacher
+from models.teachers_info import TeacherInfo
 from views.models.teacher_transaction import TeacherRetireQuery
+from views.models.teachers import TeacherMainStatus
 
 
 class TeachersRetireDao(DAOBase):

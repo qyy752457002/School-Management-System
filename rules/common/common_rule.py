@@ -1,35 +1,14 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import traceback
-
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.utils.http import HTTPRequest
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-import hashlib
+from pydantic import BaseModel
 
-import shortuuid
-from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
-from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
-from sqlalchemy import select
-
-from business_exceptions.school import SchoolNotFoundError
-from views.models.teachers import  EducateUserModel
+from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import workflow_service_config, orgcenter_service_config
-from views.models.campus import Campus as CampusModel
-from models.public_enum import IdentityType
-
-from views.models.campus import CampusBaseInfo
-from views.models.planning_school import PlanningSchoolStatus
-from business_exceptions.planning_school import PlanningSchoolNotFoundError
-from daos.planning_school_dao import PlanningSchoolDAO
-from views.models.school import School as SchoolModel
-from daos.enum_value_dao import EnumValueDAO
-from mini_framework.utils.json import JsonUtils
-
-
-from typing import Type, List, Dict
-from pydantic import BaseModel
-from datetime import datetime
+from typing import List, Type, Dict
 
 
 async def send_request(apiname, datadict, method='get', is_need_query_param=False):
