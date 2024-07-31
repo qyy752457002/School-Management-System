@@ -233,21 +233,58 @@ class ClassDivisionRecordsRule(object):
         grades= dic
         dic = {}
         for row in classes:
-            dic[getattr(row, 'class_standard_name')] = row
+            dic[getattr(row, 'id')] = row
         classes= dic
         students_base_info_rule= get_injector(StudentsBaseInfoRule )
         print(class_division_records)
+        res_list=[]
         for class_division_records_item in class_division_records:
             class_division_records_item.school_id =  schools[class_division_records_item.school_no].id if class_division_records_item.school_no in schools.keys() else None
-            class_division_records_item.grade_id =  grades[class_division_records_item.grade_no].id if class_division_records_item.grade_no in grades.keys() else None
-            class_division_records_item.class_id =  classes[class_division_records_item.class_standard_name].id if class_division_records_item.class_standard_name in classes.keys() else None
+            # 校验是否 班级ID 是存在的 且合法
+            if class_division_records_item.class_id is not None:
+                class_division_records_item.class_id= int(class_division_records_item.class_id)
+                if class_division_records_item.class_id>0 :
+                    if class_division_records_item.class_id not in classes.keys():
+                        class_division_records_item.class_id= None
+                        print('班级参数有误 跳过' ,class_division_records_item  , classes.keys())
+                        error = {'班级参数有误':class_division_records_item}
+                        res_list.append(error)
+                        continue
+                    else:
+
+                        classitem = classes[class_division_records_item.class_id]
+                        class_division_records_item.grade_id= int(classitem.grade_id)
+                else:
+                    print('班级参数有误 跳过' ,class_division_records_item  , classes.keys())
+                    res_list.append({'班级参数有误':class_division_records_item})
+
+                    continue
+
+                pass
+            if class_division_records_item.grade_id is not None and class_division_records_item.grade_id>0:
+                pass
+            else:
+                class_division_records_item.grade_id =  grades[class_division_records_item.grade_no].id if class_division_records_item.grade_no in grades.keys() else None
+            if class_division_records_item.class_id is not None and class_division_records_item.class_id>0:
+                pass
+            else:
+
+                class_division_records_item.class_id =  classes[class_division_records_item.class_standard_name].id if class_division_records_item.class_standard_name in classes.keys() else None
             # student= await self.student_dao.get_students_by_param( student_number = class_division_records_item.student_no)
-            student= await self.students_base_info_dao.get_students_base_info_by_param( student_number = class_division_records_item.student_no)
+            if class_division_records_item.id_type is not None and class_division_records_item.id_number is not None:
+                student= await self.student_dao.get_students_by_param( id_type = class_division_records_item.id_type , id_number=class_division_records_item.id_number)
+            else:
+                student= await self.students_base_info_dao.get_students_base_info_by_param( student_number = class_division_records_item.student_no)
+
             if student is None:
                 print('学生未找到 跳过')
+                res_list.append({'学生未找到':class_division_records_item})
+
                 continue
             if class_division_records_item.class_id is None:
                 print('班级参数有误 跳过' ,class_division_records_item.class_standard_name  , classes)
+                res_list.append({'班级参数有误':class_division_records_item})
+
                 continue
             class_division_records_item.student_id = student.student_id
 
@@ -268,7 +305,4 @@ class ClassDivisionRecordsRule(object):
 
                 res3 = await students_base_info_rule.update_students_base_info(baseinfo)
 
-
-
-
-        return class_division_records
+        return res_list
