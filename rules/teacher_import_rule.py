@@ -25,6 +25,7 @@ from views.models.teachers import TeacherImportSaveResultModel, \
     TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
     TeachersSaveImportCreatModel, TeacherImportResultModel, \
     TeacherInfoImportSubmit, TeachersSaveImportRegisterCreatTestModel
+from daos.teachers_info_dao import TeachersInfoDao
 
 
 @dataclass_inject
@@ -35,6 +36,7 @@ class TeacherImportRule:
     file_storage_dao: FileStorageDAO
     task_dao: TaskDAO
     organization_dao: OrganizationDAO
+    teachers_info_dao: TeachersInfoDao
 
     # 导入导出相关
     async def import_teachers(self, task: Task):

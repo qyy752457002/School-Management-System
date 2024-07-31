@@ -104,25 +104,6 @@ class MajorRule(object):
     async def get_major_count(self):
         return await self.major_dao.get_major_count()
 
-    async def query_major_with_page(self, page_request: PageRequest, school_id ):
-
-        need_update_list = []
-        if school_id>0:
-            need_update_list.append(school_id)
-        # need_update_list.append(school_id)
-
-        for key, value in student_transaction.dict().items():
-            if value:
-                need_update_list.append(key)
-        paging = await self.major_dao.query_major_with_page(page_request,*need_update_list
-                                                                                )
-        # 字段映射的示例写法   , {"hash_password": "password"}
-        original_dict_map_view_orm ={"major_no":"major_id"}
-        flipped_dict = {v: k for k, v in original_dict_map_view_orm.items()}
-        paging_result = PaginatedResponse.from_paging(paging, MajorModel ,other_mapper= flipped_dict)
-        convert_snowid_to_strings(paging_result, ["id", "school_id",])
-        return paging_result
-
     async def query_major_with_page_param(self, page_request: PageRequest, school_id ):
 
         paging = await self.major_dao.query_major_with_page_param(page_request,school_id

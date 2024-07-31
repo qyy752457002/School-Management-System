@@ -19,6 +19,8 @@ from views.models.permission_menu import PermissionMenu as PermissionMenuModel
 from views.models.sub_system import SubSystem as SubSystemModel
 from views.models.system import PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, SCHOOL_CLOSE_WORKFLOW_CODE, \
     INSTITUTION_CLOSE_WORKFLOW_CODE
+from daos.sub_system_dao import SubSystemDAO
+from models.sub_system import SubSystem
 
 
 @dataclass_inject
@@ -27,6 +29,7 @@ class SystemRule(object):
     roles_dao: RolesDAO
     teacher_work_flow_rule: TeacherWorkFlowRule
     file_storage_dao: FileStorageDAO
+    system_dao: SubSystemDAO
 
     async def get_system_by_id(self, system_id):
         system_db = await self.system_dao.get_subsystem_by_id(system_id)
