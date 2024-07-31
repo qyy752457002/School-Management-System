@@ -226,7 +226,7 @@ class ClassDivisionRecordsRule(object):
         grades = await self.garde_dao.get_all_grades()
         classes  = await self.class_dao.get_all_class()
         enum_value_rule = get_injector(EnumValueRule )
-        id_types = enum_value_rule.query_enum_values("id_type",None,'enum_value')
+        id_types =await enum_value_rule.query_enum_values("id_type",None,'enum_value')
         dic = {}
         for row in schools:
             dic[getattr(row, 'school_no')] = row
