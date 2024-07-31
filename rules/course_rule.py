@@ -2,17 +2,16 @@
 import copy
 from typing import List
 
-from mini_framework.utils.snowflake import SnowflakeIdGenerator
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-
 from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from business_exceptions.course import CourseNotFoundError, CourseAlreadyExistError
 from daos.course_dao import CourseDAO
 from models.course import Course
 from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
-from views.models.course import Course  as CourseModel
+from views.models.course import Course as CourseModel
 from views.models.extend_params import ExtendParams
 
 

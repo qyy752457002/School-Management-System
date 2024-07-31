@@ -1,33 +1,28 @@
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-from mini_framework.design_patterns.depend_inject import dataclass_inject
-from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
-from daos.teachers_dao import TeachersDao
-from daos.teacher_borrow_dao import TeacherBorrowDAO
-from models.teacher_borrow import TeacherBorrow, BorrowType
-from mini_framework.design_patterns.depend_inject import get_injector
-from rules.transfer_details_rule import TransferDetailsRule
+from datetime import datetime
 
-from business_exceptions.teacher import TeacherNotFoundError, ApprovalStatusError,TeacherStatusError
+from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
+from mini_framework.web.std_models.page import PageRequest
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
+
+from business_exceptions.teacher import TeacherNotFoundError, ApprovalStatusError, TeacherStatusError
+from daos.enum_value_dao import EnumValueDAO
+from daos.operation_record_dao import OperationRecordDAO
+from daos.school_dao import SchoolDAO
+from daos.teacher_borrow_dao import TeacherBorrowDAO
+from daos.teachers_dao import TeachersDao
+from models.teacher_borrow import TeacherBorrow, BorrowType
+from rules.enum_value_rule import EnumValueRule
+from rules.operation_record import OperationRecordRule
+from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
+from rules.teachers_rule import TeachersRule
+from rules.transfer_details_rule import TransferDetailsRule
+from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
 from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTransactionQueryRe, TeacherBorrowModel, \
     TeacherBorrowReModel, TeacherBorrowGetModel, TeacherBorrowQueryModel, TeacherBorrowQueryReModel
-
-from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
-from rules.operation_record import OperationRecordRule
-from daos.operation_record_dao import OperationRecordDAO
-
-from views.models.teachers import TeacherRe, TeacherAdd
-from datetime import datetime
-from daos.school_dao import SchoolDAO
-
-from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
-from daos.enum_value_dao import EnumValueDAO
-from rules.enum_value_rule import EnumValueRule
-
-from rules.teachers_rule import TeachersRule
-
 from views.models.teacher_transaction import WorkflowQueryModel
-
-from mini_framework.utils.snowflake import SnowflakeIdGenerator
+from views.models.teachers import TeacherRe, TeacherAdd
 
 
 @dataclass_inject
@@ -60,7 +55,7 @@ class TeacherBorrowRule(object):
             is_approval = exists_teachers.is_approval
             if is_approval:
                 raise ApprovalStatusError()
-            if exists_teachers .teacher_sub_status != "active":
+            if exists_teachers.teacher_sub_status != "active":
                 raise TeacherStatusError()
             teacher_borrow_db = view_model_to_orm_model(teacher_borrow, TeacherBorrow, exclude=["teacher_borrow_id"])
             teacher_borrow_db.teacher_borrow_id = SnowflakeIdGenerator(1, 1).generate_id()
@@ -249,12 +244,14 @@ class TeacherBorrowRule(object):
 
     # 借动管理分页查询相关
     async def query_borrow_out_with_page(self, type, query_model: TeacherBorrowQueryModel,
-                                         page_request: PageRequest, user_id):
+                                         page_request: PageRequest, extend_param):
         params = {}  # 这个是条件参数
         if type == "launch":
-            params = {"applicant_name": user_id, "process_code": "t_borrow_out", }
+            params = {"process_code": "t_borrow_out", }
+            params.update(extend_param)
         elif type == "approval":
-            params = {"applicant_name": user_id, "process_code": "t_borrow_out", }
+            params = {"process_code": "t_borrow_out", }
+            params.update(extend_param)
         result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
                                                                                       query_model,
                                                                                       TeacherBorrowQueryReModel,
@@ -262,13 +259,14 @@ class TeacherBorrowRule(object):
         return result
 
     async def query_borrow_in_with_page(self, type, query_model: TeacherBorrowQueryModel,
-                                        page_request: PageRequest, user_id):
+                                        page_request: PageRequest, extend_param):
+        params = {}  # 这个是条件参数
         if type == "launch":
-            params = {"applicant_name": user_id, "process_code": "t_borrow_in",
-                      }
+            params = {"process_code": "t_borrow_in", }
+            params.update(extend_param)
         elif type == "approval":
-            params = {"applicant_name": user_id, "process_code": "t_borrow_in",
-                      }
+            params = {"process_code": "t_borrow_in", }
+            params.update(extend_param)
         result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
                                                                                       query_model,
                                                                                       TeacherBorrowQueryReModel,

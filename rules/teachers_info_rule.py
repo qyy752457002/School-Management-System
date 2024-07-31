@@ -1,33 +1,32 @@
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-from mini_framework.design_patterns.depend_inject import dataclass_inject
+from datetime import datetime
+
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
+from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
+
+from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError, QueryError
+from daos.operation_record_dao import OperationRecordDAO
+from daos.school_dao import SchoolDAO
+from daos.teacher_approval_log_dao import TeacherApprovalLogDao
+from daos.teacher_change_dao import TeacherChangeLogDAO
+from daos.teacher_key_info_approval_dao import TeacherKeyInfoApprovalDao
+from daos.teachers_dao import TeachersDao
 from daos.teachers_info_dao import TeachersInfoDao
 from models.teachers_info import TeacherInfo
-from views.models.teachers import TeacherInfo as TeachersInfoModel
+from rules.common.common_rule import convert_fields_to_str
+from rules.operation_record import OperationRecordRule
+from rules.organization_memebers_rule import OrganizationMembersRule
+from rules.teacher_change_rule import TeacherChangeRule
+from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
+from rules.teachers_rule import TeachersRule
+from views.common.common_view import compare_modify_fields
+from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
+from views.models.organization import OrganizationMembers
 from views.models.teachers import NewTeacher, NewTeacherRe, TeacherInfoSaveModel, TeacherInfoSubmit, \
     CurrentTeacherQuery, CurrentTeacherQueryRe, CurrentTeacherInfoSaveModel, NewTeacherInfoSaveModel, \
     TeacherInfoCreateModel, NewTeacherApprovalCreate, TeacherInfoImportSubmit
-from business_exceptions.teacher import TeacherNotFoundError, TeacherInfoNotFoundError, TeacherInfoExitError, QueryError
-from daos.teachers_dao import TeachersDao
-from views.models.organization import OrganizationMembers
-from rules.organization_memebers_rule import OrganizationMembersRule
-from daos.teacher_change_dao import TeacherChangeLogDAO
-from daos.teacher_approval_log_dao import TeacherApprovalLogDao
-from rules.teacher_change_rule import TeacherChangeRule
-from daos.teacher_key_info_approval_dao import TeacherKeyInfoApprovalDao
-from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
-from datetime import datetime
-from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
-from rules.operation_record import OperationRecordRule
-from daos.operation_record_dao import OperationRecordDAO
-from views.common.common_view import compare_modify_fields
-from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
-from rules.teachers_rule import TeachersRule
-from mini_framework.utils.snowflake import SnowflakeIdGenerator
-from rules.common.common_rule import convert_fields_to_str, excel_fields_to_enum
-from rules.common.common_rule import get_identity_by_job
-from daos.school_dao import SchoolDAO
-from views.models.school import School as SchoolModel
+from views.models.teachers import TeacherInfo as TeachersInfoModel
 
 
 @dataclass_inject
@@ -40,7 +39,6 @@ class TeachersInfoRule(object):
     teacher_approval_log: TeacherApprovalLogDao
     teacher_change_detail: TeacherChangeRule
     teacher_key_info_approval_dao: TeacherKeyInfoApprovalDao
-    teacher_work_flow_rule: TeacherWorkFlowRule
     operation_record_rule: OperationRecordRule
     operation_record_dao: OperationRecordDAO
     school_dao: SchoolDAO
@@ -329,14 +327,18 @@ class TeachersInfoRule(object):
         teachers_info = orm_model_to_view_model(teachers_info_db, TeachersInfoModel, exclude=[""])
         return teachers_info
 
-    async def query_teacher_with_page(self, query_model: NewTeacher, page_request: PageRequest, user_id):
-        params = {"applicant_name": user_id, "process_code": "t_entry", "approval_status": "t_query"}
+    async def query_teacher_with_page(self, query_model: NewTeacher, page_request: PageRequest, extend_param):
+        params = {"process_code": "t_entry", "approval_status": "t_query"}
+        params.update(extend_param)
+        print(params)
         paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                       NewTeacherRe, params)
         return paging
 
-    async def query_current_teacher_with_page(self, query_model: CurrentTeacherQuery, page_request: PageRequest):
-        paging = await self.teachers_info_dao.query_current_teacher_with_page(query_model, page_request)
+    async def query_current_teacher_with_page(self, query_model: CurrentTeacherQuery, page_request: PageRequest,
+                                              extend_params):
+        paging = await self.teachers_info_dao.query_current_teacher_with_page(query_model, page_request,
+                                                                              extend_params)
         paging_result = PaginatedResponse.from_paging(paging, CurrentTeacherQueryRe)
         return paging_result
 
@@ -355,7 +357,3 @@ class TeachersInfoRule(object):
         if teachers.teacher_sub_status != "unsubmitted":
             teachers.teacher_sub_status = "unsubmitted"
         return await self.teachers_dao.update_teachers(teachers, "teacher_sub_status")
-
-
-
-

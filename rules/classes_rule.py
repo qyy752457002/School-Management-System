@@ -2,11 +2,11 @@ import copy
 import pprint
 from datetime import date, datetime
 
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
+from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
-from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
-from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from daos.class_dao import ClassesDAO
 from daos.grade_dao import GradeDAO
 from daos.school_dao import SchoolDAO
@@ -19,7 +19,7 @@ from rules.teachers_rule import TeachersRule
 from views.common.common_view import convert_snowid_in_model, convert_snowid_to_strings, convert_dates_to_strings
 from views.models.classes import Classes as ClassesModel
 from views.models.classes import ClassesSearchRes
-from views.models.system import DISTRICT_ENUM_KEY, GRADE_ENUM_KEY, MAJOR_LV3_ENUM_KEY
+from views.models.system import GRADE_ENUM_KEY, MAJOR_LV3_ENUM_KEY
 
 
 @dataclass_inject

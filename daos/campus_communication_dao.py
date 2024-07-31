@@ -11,12 +11,15 @@ class CampusCommunicationDAO(DAOBase):
 
     async def get_campus_communication_by_id(self, campus_communication_id):
         session = await self.slave_db()
+        campus_communication_id= int(campus_communication_id)
         result = await session.execute(select(CampusCommunication).where(CampusCommunication.id == campus_communication_id))
         return result.scalar_one_or_none()
 
 
     async def get_campus_communication_by_campus_id(self, campus_communication_id):
         session = await self.slave_db()
+        campus_communication_id= int(campus_communication_id)
+
         result = await session.execute(select(CampusCommunication).where(CampusCommunication.campus_id == campus_communication_id))
         return result.scalar_one_or_none()
 

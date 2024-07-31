@@ -1,13 +1,15 @@
-from mini_framework.design_patterns.depend_inject import dataclass_inject
-from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
-from mini_framework.utils.http import HTTPRequest
-from urllib.parse import urlencode
-from views.common.common_view import workflow_service_config
-from pydantic import BaseModel
-from views.models.work_flow import WorkFlowInstanceCreateModel, WorkFlowInstanceModel, WorkFlowInstanceQueryModel
-from mini_framework.utils.json import JsonUtils
 from datetime import date, datetime
 from typing import Type
+from urllib.parse import urlencode
+
+from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.utils.http import HTTPRequest
+from mini_framework.utils.json import JsonUtils
+from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
+from pydantic import BaseModel
+
+from views.common.common_view import workflow_service_config
+from views.models.work_flow import WorkFlowInstanceCreateModel, WorkFlowInstanceModel, WorkFlowInstanceQueryModel
 
 
 @dataclass_inject
@@ -311,8 +313,8 @@ class TeacherWorkFlowRule(object):
                     workflow_data[field] = None
             else:
                 json_data[field] = value
-        # json_data = JsonUtils.dict_to_json_str(json_data)
-        # workflow_data["json_data"] = json_data
+        json_data = JsonUtils.dict_to_json_str(json_data)
+        workflow_data["json_data"] = json_data
         print(workflow_data)
         work_flow_instance = WorkFlowInstanceQueryModel(**workflow_data)
         return work_flow_instance

@@ -1,17 +1,14 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
+from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
-from mini_framework.design_patterns.depend_inject import dataclass_inject
-from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
-
-from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from business_exceptions.planning_school_eduinfo import PlanningSchoolEduinfoNotFoundError
 from daos.planning_school_eduinfo_dao import PlanningSchoolEduinfoDAO
 from models.planning_school_eduinfo import PlanningSchoolEduinfo
 from views.common.common_view import convert_snowid_in_model
-from views.models.planning_school_eduinfo import PlanningSchoolEduInfo  as PlanningSchoolEduinfoModel
-
+from views.models.planning_school_eduinfo import PlanningSchoolEduInfo as PlanningSchoolEduinfoModel
 
 
 @dataclass_inject

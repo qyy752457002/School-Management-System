@@ -128,7 +128,7 @@ def check_id_number(id_number: str):
     return is_valid
 
 
-async def get_extend_params(request):
+async def get_extend_params(request)->ExtendParams:
     headers = request.headers
     obj = ExtendParams()
 
@@ -139,12 +139,13 @@ async def get_extend_params(request):
         obj = ExtendParams(**extparam)
         if obj.unit_type == UnitType.CITY.value:
             obj.city = Constant.CURRENT_CITY
-
         if obj.county_id:
             # 区的转换   or todo
             enuminfo = await (EnumValueDAO()).get_enum_value_by_value(obj.county_id, 'country')
             if enuminfo:
                 obj.county_name = enuminfo.description
+
+
     print('Extendparams', obj)
 
     return obj

@@ -1,11 +1,11 @@
-from sqlalchemy import select, func, update, desc
-
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
+from sqlalchemy import select, func, update, desc
 
 from models.planning_school import PlanningSchool
 from views.models.extend_params import ExtendParams
+from views.models.school_and_teacher_sync import SchoolSyncQueryModel
 
 
 class PlanningSchoolDAO(DAOBase):
@@ -30,6 +30,16 @@ class PlanningSchoolDAO(DAOBase):
             select(PlanningSchool).where(PlanningSchool.planning_school_name == planning_school_name).where(
                 PlanningSchool.is_deleted == False))
         return result.first()
+
+    async def get_planning_school_by_args(self, **kwargs):
+        """
+        """
+        session = await self.slave_db()
+        query = select(PlanningSchool)
+        for key, value in kwargs.items():
+            query = query.where(getattr(PlanningSchool, key) == value)
+        result = await session.execute(query)
+        return result.scalar()
 
     async def add_planning_school(self, planning_school):
         session = await self.master_db()
@@ -108,11 +118,11 @@ class PlanningSchoolDAO(DAOBase):
                                               planning_school_code,
                                               block, planning_school_level, borough, status, founder_type,
                                               founder_type_lv2,
-                                              founder_type_lv3,extend_params:ExtendParams=None) -> Paging:
+                                              founder_type_lv3, extend_params: ExtendParams = None) -> Paging:
         query = select(PlanningSchool).where(PlanningSchool.is_deleted == False).order_by(desc(PlanningSchool.id))
-        if extend_params is not None and len(block)==0 and len(borough)==0:
+        if extend_params is not None and len(block) == 0 and len(borough) == 0:
             if extend_params.county_id:
-                block= extend_params.county_id
+                block = extend_params.county_id
                 # query = query.where(PlanningSchool.city == extend_params.city)
             pass
 
@@ -166,3 +176,39 @@ class PlanningSchoolDAO(DAOBase):
         query = update(PlanningSchool).where(PlanningSchool.id == planning_school.id).values(**update_contents)
         # 这里会
         return await self.update(session, query, planning_school, update_contents, is_commit=is_commit)
+
+    async def query_sync_planning_school_with_page(self, query_model: SchoolSyncQueryModel,
+                                                   page_request: PageRequest) -> Paging:
+        query_campus = select(PlanningSchool.planning_school_no.label("school_no"), PlanningSchool.social_credit_code,
+                              PlanningSchool.planning_school_name.label("school_name"),
+                              PlanningSchool.borough,
+                              PlanningSchool.block, PlanningSchool.founder_type, PlanningSchool.founder_type_lv2,
+                              PlanningSchool.founder_type_lv3).where(
+            PlanningSchool.is_deleted == False, PlanningSchool.status == "normal")
+        if query_model.social_credit_code:
+            query_campus = query_campus.where(PlanningSchool.social_credit_code == query_model.social_credit_code)
+        if query_model.school_name:
+            query_campus = query_campus.where(
+                PlanningSchool.planning_school_name.label("school_name").like(f"%{query_model.school_name}%"))
+        if query_model.borough:
+            query_campus = query_campus.where(PlanningSchool.borough == query_model.borough)
+        if query_model.block:
+            query_campus = query_campus.where(PlanningSchool.block == query_model.block)
+        if query_model.school_edu_level:
+            query_campus = query_campus.where(PlanningSchool.planning_school_edu_level == query_model.school_edu_level)
+        if query_model.school_category:
+            query_campus = query_campus.where(PlanningSchool.planning_school_category == query_model.school_category)
+        if query_model.school_operation_type:
+            query_campus = query_campus.where(
+                PlanningSchool.planning_school_operation_type == query_model.school_operation_type)
+
+        paging = await self.query_page(query_campus, page_request)
+        return paging
+
+    async def get_sync_school(self, planning_school_no):
+        session = await self.slave_db()
+        query = select(PlanningSchool).where(
+            PlanningSchool.is_deleted == False, PlanningSchool.status == "normal",
+            PlanningSchool.planning_school_no == planning_school_no)
+        result = await session.execute(query)
+        return result.scalar_one_or_none()

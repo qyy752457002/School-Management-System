@@ -8,21 +8,21 @@ from mini_framework.async_task.data_access.models import TaskResult
 from mini_framework.async_task.data_access.task_dao import TaskDAO
 from mini_framework.async_task.task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter
+from mini_framework.databases.conn_managers.db_manager import db_connection_manager
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.utils.json import JsonUtils
 from mini_framework.utils.logging import logger
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
-from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
-from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
-
+from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from sqlalchemy import select
 
 from business_exceptions.common import OrgCenterApiError
 from business_exceptions.planning_school import PlanningSchoolNotFoundError, \
-    PlanningSchoolNotFoundByProcessInstanceIdError
+    PlanningSchoolNotFoundByProcessInstanceIdError, PlanningSchoolExistsError
 from daos.enum_value_dao import EnumValueDAO
 from daos.planning_school_communication_dao import PlanningSchoolCommunicationDAO
 from daos.planning_school_dao import PlanningSchoolDAO
@@ -42,14 +42,12 @@ from views.common.common_view import workflow_service_config, convert_snowid_to_
 from views.common.constant import Constant
 from views.models.organization import Organization
 from views.models.planning_school import PlanningSchool as PlanningSchoolModel, PlanningSchoolStatus, \
-    PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit, PlanningSchoolBaseInfoOptional, PlanningSchoolPageSearch, \
+    PlanningSchoolKeyInfo, PlanningSchoolTransactionAudit, PlanningSchoolPageSearch, \
     PlanningSchoolOptional
 from views.models.planning_school import PlanningSchoolBaseInfo
-from mini_framework.databases.conn_managers.db_manager import db_connection_manager
-
 from views.models.planning_school_communications import PlanningSchoolCommunications
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
-from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE, PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, \
+from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, \
     PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, DISTRICT_ENUM_KEY, \
     PROVINCE_ENUM_KEY, CITY_ENUM_KEY, PLANNING_SCHOOL_STATUS_ENUM_KEY, FOUNDER_TYPE_ENUM_KEY, FOUNDER_TYPE_LV2_ENUM_KEY, \
     FOUNDER_TYPE_LV3_ENUM_KEY, SCHOOL_ORG_FORM_ENUM_KEY, OrgCenterApiStatus
@@ -103,7 +101,12 @@ class PlanningSchoolRule(object):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_planning_school_name(
             planning_school.planning_school_name)
         if exists_planning_school:
-            raise Exception(f"规划校{planning_school.planning_school_name}已存在")
+            raise PlanningSchoolExistsError()
+
+        # 校验编码 不能重复
+        exists_planning_school = await self.planning_school_dao.get_planning_school_by_args(planning_school_no=planning_school.planning_school_no)
+        if exists_planning_school:
+            raise PlanningSchoolExistsError()
         planning_school_db = view_model_to_orm_model(planning_school, PlanningSchool, exclude=["id"])
         planning_school_db.status = PlanningSchoolStatus.DRAFT.value
         planning_school_db.created_uid = 0
@@ -204,9 +207,9 @@ class PlanningSchoolRule(object):
         print(exists_planning_school.status, 2222222)
         if action == 'open':
             #   自动同步到 组织中心的处理  包含 规划校 对接过去 先加单位 再加组织 后续的    学校单位作为组织的成员 加入到组织里
-            res_unit,data_unit  = await self.send_planning_school_to_org_center(exists_planning_school)
+            res_unit, data_unit = await self.send_planning_school_to_org_center(exists_planning_school)
             #  自动添加一个组织
-            res_oigna = await self.send_unit_orgnization_to_org_center(exists_planning_school,data_unit)
+            res_oigna = await self.send_unit_orgnization_to_org_center(exists_planning_school, data_unit)
             # 添加组织结构 部门
             org = Organization(org_name=exists_planning_school.planning_school_name,
                                school_id=exists_planning_school.id,
@@ -294,6 +297,7 @@ class PlanningSchoolRule(object):
         result = await session.execute(select(PlanningSchool)
                                        .where(PlanningSchool.planning_school_name.like(f'%{planning_school_name}%'))
                                        .where(PlanningSchool.is_deleted == False)
+                                       .where(PlanningSchool.status == PlanningSchoolStatus.NORMAL.value)
                                        )
         res = result.scalars().all()
         print(res)
@@ -805,7 +809,7 @@ class PlanningSchoolRule(object):
             print(response)
             print('发起请求单位到组织中心suc')
 
-            return response,datadict
+            return response, datadict
         except Exception as e:
             print(e)
             raise e
@@ -858,7 +862,7 @@ class PlanningSchoolRule(object):
             return response
         return None
 
-    async def send_unit_orgnization_to_org_center(self, exists_planning_school_origin,data_unit):
+    async def send_unit_orgnization_to_org_center(self, exists_planning_school_origin, data_unit):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if isinstance(exists_planning_school.updated_at, (date, datetime)):
             exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
@@ -884,7 +888,7 @@ class PlanningSchoolRule(object):
                      # "appName": exists_planning_school.planning_school_name,
 
                      "educateUnits": [
-                        data_unit
+                         data_unit
                      ],
 
                      "certPublicKey": "",
@@ -1082,28 +1086,19 @@ class PlanningSchoolRule(object):
             "administrativeDivisionCity": exists_planning_school.city,
             "administrativeDivisionCounty": exists_planning_school.block,
             "administrativeDivisionProvince": exists_planning_school.province,
-            # "createdTime": "1990-04-11 15:22:33",
             "locationAddress": exists_planning_school.block,
             "locationCity": exists_planning_school.city,
             "locationCounty": exists_planning_school.block,
             "locationProvince": exists_planning_school.province,
             # 所属组织
-            # "owner": exists_planning_school.planning_school_no,
             "owner": exists_planning_school.planning_school_name,
             # 教育单位的code
             "unitCode": exists_planning_school.planning_school_no,
-            # "unitId": "48",
-            # "unitId": unitid if unitid is not None else school.planning_school_name,
-
-            # "unitName": "济效火日把先",
             "unitType": "school",
-
         }
-
         apiname = '/api/add-service-units'
         # 字典参数 todo  调整  参数完善   另 服务范围的接口
         datadict = [dict_data]
-        # datadict = convert_dates_to_strings(datadict)
         print('调用添加服务范围  字典参数', datadict, )
 
         response = await send_orgcenter_request(apiname, datadict, 'post', False)

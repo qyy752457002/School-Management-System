@@ -144,7 +144,7 @@ class WorkFlowInstanceQueryModel(BaseModel):
     teacher_id_type: Optional[str] = Query("", title="身份证件类型", description="证件类型")
     teacher_id_number: Optional[str] = Query("", title="身份证件号", description="证件号")
     teacher_date_of_birth: Optional[date] = Query(None, title="出生日期", description="出生日期")
-    teacher_employer: Optional[int] = Query(None, title="任职单位", description="任职单位")
+    teacher_employer: Optional[int|str] = Query(None, title="任职单位", description="任职单位")
     teacher_main_status: Optional[str] = Query("", title="主状态", description="主状态")
     teacher_sub_status: Optional[str] = Query("", title="子状态", description="子状态")
     highest_education: Optional[str] = Field("", title="最高学历", description="最高学历")
