@@ -313,8 +313,8 @@ class TeacherWorkFlowRule(object):
                     workflow_data[field] = None
             else:
                 json_data[field] = value
-        # json_data = JsonUtils.dict_to_json_str(json_data)
-        # workflow_data["json_data"] = json_data
+        json_data = JsonUtils.dict_to_json_str(json_data)
+        workflow_data["json_data"] = json_data
         print(workflow_data)
         work_flow_instance = WorkFlowInstanceQueryModel(**workflow_data)
         return work_flow_instance
