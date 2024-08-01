@@ -154,8 +154,6 @@ class CurrentStudentsView(BaseView):
         if is_lock:
             raise StudentTransactionExistsError()
 
-
-
         # 新增转学数据到库 用于接收流程ID后处理数据变更 后期可以采用工作流的分布式传参到另外一个接口来实现变更代替这里
         # 转出
         student_edu_info_out= copy.deepcopy(student_edu_info)
@@ -163,7 +161,7 @@ class CurrentStudentsView(BaseView):
         res_student = await self.students_base_info_rule.get_students_base_info_by_student_id(student_edu_info.student_id)
         if res_student:
 
-            student_edu_info_out.school_id = res_student.school_id
+            student_edu_info_out.school_id = int(res_student.school_id)
             student_edu_info_out.grade_id = res_student.grade_id
             student_edu_info_out.class_id = res_student.class_id
             class_rule = get_injector(ClassesRule)
