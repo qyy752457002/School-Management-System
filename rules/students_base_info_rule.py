@@ -96,8 +96,11 @@ class StudentsBaseInfoRule(object):
 
         students_base_info_db = await self.students_base_info_dao.add_students_base_info(students_base_info_db)
         students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfo, exclude=[""])
+        try:
 
-        await self.send_student_to_org_center(students_base_info,exits_student)
+            await self.send_student_to_org_center(students_base_info,exits_student)
+        except Exception as e:
+            print('对接组织中心异常',e)
 
 
         return students_base_info

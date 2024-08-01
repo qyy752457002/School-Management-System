@@ -154,8 +154,6 @@ class CurrentStudentsView(BaseView):
         if is_lock:
             raise StudentTransactionExistsError()
 
-
-
         # 新增转学数据到库 用于接收流程ID后处理数据变更 后期可以采用工作流的分布式传参到另外一个接口来实现变更代替这里
         # 转出
         student_edu_info_out= copy.deepcopy(student_edu_info)
@@ -163,7 +161,7 @@ class CurrentStudentsView(BaseView):
         res_student = await self.students_base_info_rule.get_students_base_info_by_student_id(student_edu_info.student_id)
         if res_student:
 
-            student_edu_info_out.school_id = res_student.school_id
+            student_edu_info_out.school_id = int(res_student.school_id)
             student_edu_info_out.grade_id = res_student.grade_id
             student_edu_info_out.class_id = res_student.class_id
             class_rule = get_injector(ClassesRule)
@@ -188,7 +186,8 @@ class CurrentStudentsView(BaseView):
         student_edu_info=await  self.students_rule.complete_info_students_by_id(student_edu_info)
         # student_edu_info.school_name = stuinfo.school_name
 
-        origin_data = {'student_transaction_in': convert_dates_to_strings(student_edu_info.__dict__) , 'student_transaction_out': convert_dates_to_strings(student_edu_info_out.__dict__) , 'student_info': convert_dates_to_strings(stuinfo.__dict__) }
+        origin_data = {'student_transaction_in': convert_dates_to_strings(student_edu_info.__dict__) , 'student_transaction_out': convert_dates_to_strings(student_edu_info_out.__dict__) , 'student_info': convert_dates_to_strings(stuinfo.__dict__),
+                       'direction': TransactionDirection.IN.value,  }
 
         res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info,stuinfo,stuinfo,None, origin_data)
         process_instance_id= node_instance_id =  0
@@ -307,7 +306,9 @@ class CurrentStudentsView(BaseView):
         student_edu_info_in.student_id= res_student_add.student_id
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
 
-        origin_data = {'student_transaction_in':  '', 'student_transaction_out':convert_dates_to_strings( student_edu_info_out.__dict__), 'student_info':convert_dates_to_strings( res_student_add.__dict__), }
+        origin_data = {'student_transaction_in':  '', 'student_transaction_out':convert_dates_to_strings( student_edu_info_out.__dict__), 'student_info':convert_dates_to_strings( res_student_add.__dict__),
+                       'direction': TransactionDirection.IN.value,
+                       }
         # origin_datastr= JsonUtils.dict_to_json_str(origin_data) student_info
         origin_data['student_transaction_in'] = convert_dates_to_strings(student_edu_info_in.__dict__)
 
@@ -385,7 +386,9 @@ class CurrentStudentsView(BaseView):
         student_edu_info_in.student_id= student_id
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
 
-        origin_data = {'student_transaction_in': convert_dates_to_strings(student_edu_info_in.__dict__), 'student_transaction_out': convert_dates_to_strings(student_edu_info_out.__dict__), 'student_info':convert_dates_to_strings(res_student.__dict__) , }
+        origin_data = {'student_transaction_in': convert_dates_to_strings(student_edu_info_in.__dict__), 'student_transaction_out': convert_dates_to_strings(student_edu_info_out.__dict__), 'student_info':convert_dates_to_strings(res_student.__dict__) ,
+                       'direction': TransactionDirection.IN.value,
+                       }
 
         res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo,student_edu_info_in,None,origin_data)
         process_instance_id= node_instance_id =  0
