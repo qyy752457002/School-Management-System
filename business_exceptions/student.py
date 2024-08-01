@@ -42,6 +42,4 @@ class StudentTransactionExistsError(MiniHTTPException):
 class StudentStatusError(MiniHTTPException):
     def __init__(self):
         super().__init__(400, "STUDENT_STATUS_ERROR", "Student Status error.", "学生当前状态不允许此操作")
-class StudentTemporaryStudyExistsError(MiniHTTPException):
-    def __init__(self):
-        super().__init__(400, "STUDENT_TEMPORARY_STUDY_EXISTS", "Student Temporary Study  already exists.", "学生临时就读已存在")
+

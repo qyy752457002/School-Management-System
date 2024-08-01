@@ -10,16 +10,23 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from sqlalchemy import select
 
+from business_exceptions.classes import ClassesNotFoundError
+from business_exceptions.grade import GradeNotFoundError
+from business_exceptions.school import SchoolNotFoundError
 from business_exceptions.student import StudentTemporaryStudyExistsError
+from business_exceptions.student_session import StudentSessionNotFoundError
+from business_exceptions.student_temporary_study import TargetSchoolError
 from daos.class_dao import ClassesDAO
 from daos.grade_dao import GradeDAO
 from daos.school_dao import SchoolDAO
+from daos.student_session_dao import StudentSessionDao
 from daos.student_temporary_study_dao import StudentTemporaryStudyDAO
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.student_temporary_study import StudentTemporaryStudy
 from models.students import StudentApprovalAtatus
 from views.common.common_view import workflow_service_config, convert_snowid_to_strings, convert_snowid_in_model
+from views.models.student_transaction import StudentTransactionStatus
 from views.models.students import StudentsBaseInfo
 from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE
 from views.models.student_temporary_study import StudentTemporaryStudy as StudentTemporaryStudyModel
@@ -34,6 +41,7 @@ class StudentTemporalStudyRule(object):
     class_dao: ClassesDAO
     grade_dao: GradeDAO
     school_dao: SchoolDAO
+    session_dao: StudentSessionDao
 
     async def get_student_temporary_study_by_process_instance_id(self, student_temporary_study_id):
         student_temporary_study_db = await self.student_temporary_study_dao.get_studenttransaction_by_process_instance_id(student_temporary_study_id)
@@ -80,11 +88,43 @@ class StudentTemporalStudyRule(object):
         student_temporary_study = orm_model_to_view_model(student_temporary_study_db, StudentTransactionModel, exclude=[""])
         return student_temporary_study
 
-    async def add_student_temporary_study(self, student_temporary_study,):
+    async def add_student_temporary_study(self, student_temporary_study:StudentTemporaryStudy):
         #  去重
         exists_student_temporary_study = await self.student_temporary_study_dao.get_student_temporary_study_by_args(student_id = student_temporary_study.student_id,is_deleted = False )
         if exists_student_temporary_study:
             raise StudentTemporaryStudyExistsError()
+        # 检查校验数据""
+        school  = await self.school_dao.get_school_by_id(student_temporary_study.school_id)
+        if school is None:
+            raise SchoolNotFoundError()
+        session = await self.session_dao.get_student_session_by_id(student_temporary_study.session_id)
+        if session is None:
+            raise StudentSessionNotFoundError()
+        grade = await self.grade_dao.get_grade_by_id(student_temporary_study.grade_id)
+        if grade is None:
+            raise GradeNotFoundError()
+        classes = await self.class_dao.get_classes_by_id(student_temporary_study.class_id)
+        if classes is None:
+            raise ClassesNotFoundError()
+
+        # 状态和 数据赋值
+        student_temporary_study.status = StudentTransactionStatus.NEEDAUDIT.value
+        baseinfo=await self.students_baseinfo_dao.get_students_base_info_by_student_id(student_temporary_study.student_id)
+        if baseinfo is not None:
+            student_temporary_study.origin_class_id = baseinfo.class_id
+            student_temporary_study.origin_grade_id = baseinfo.grade_id
+            student_temporary_study.origin_school_id = baseinfo.school_id
+            student_temporary_study.origin_session_id = baseinfo.session_id
+
+        students = await self.students_dao.get_students_by_id(student_temporary_study.student_id)
+        if students is not None:
+            student_temporary_study.student_gender = students.gender
+            student_temporary_study.student_name = baseinfo.name
+            student_temporary_study.student_no = baseinfo.edu_number
+            student_temporary_study.id_number = baseinfo.id_number
+            student_temporary_study.edu_number = baseinfo.edu_number
+        if school.id   ==baseinfo.school_id:
+            raise TargetSchoolError()
 
 
         student_temporary_study_db = view_model_to_orm_model(student_temporary_study, StudentTemporaryStudy, exclude=["id"])
@@ -98,7 +138,6 @@ class StudentTemporalStudyRule(object):
                                                   exclude=["created_at", 'updated_at', ])
         # str
         convert_snowid_in_model(student_temporary_study)
-
 
         return student_temporary_study
 
