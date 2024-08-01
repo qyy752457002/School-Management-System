@@ -17,10 +17,12 @@ from daos.school_dao import SchoolDAO
 from daos.student_temporary_study_dao import StudentTemporaryStudyDAO
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
+from models.student_temporary_study import StudentTemporaryStudy
 from models.students import StudentApprovalAtatus
 from views.common.common_view import workflow_service_config, convert_snowid_to_strings, convert_snowid_in_model
 from views.models.students import StudentsBaseInfo
 from views.models.system import STUDENT_TRANSFER_WORKFLOW_CODE
+from views.models.student_temporary_study import StudentTemporaryStudy as StudentTemporaryStudyModel
 
 
 @dataclass_inject
@@ -33,7 +35,7 @@ class StudentTemporalStudyRule(object):
     grade_dao: GradeDAO
     school_dao: SchoolDAO
 
-    async def get_student_temporary_study_by_process_instance_id(self, student_temporary_study_id)->StudentTransactionModel:
+    async def get_student_temporary_study_by_process_instance_id(self, student_temporary_study_id):
         student_temporary_study_db = await self.student_temporary_study_dao.get_studenttransaction_by_process_instance_id(student_temporary_study_id)
         # 可选 , exclude=[""]
         # print(vars(student_temporary_study_db))
@@ -41,7 +43,7 @@ class StudentTemporalStudyRule(object):
 
         return student_temporary_study
 
-    async def get_student_temporary_study_by_id(self, student_temporary_study_id)->StudentTransactionModel:
+    async def get_student_temporary_study_by_id(self, student_temporary_study_id):
         student_temporary_study_db = await self.student_temporary_study_dao.get_studenttransaction_by_id(student_temporary_study_id)
         # 可选 , exclude=[""]
         # print(vars(student_temporary_study_db))
@@ -85,23 +87,14 @@ class StudentTemporalStudyRule(object):
             raise StudentTemporaryStudyExistsError()
 
 
-        student_temporary_study_db = view_model_to_orm_model(student_temporary_study, PlanningSchool, exclude=["id"])
-        student_temporary_study_db.status = PlanningSchoolStatus.DRAFT.value
+        student_temporary_study_db = view_model_to_orm_model(student_temporary_study, StudentTemporaryStudy, exclude=["id"])
         student_temporary_study_db.created_uid = 0
         student_temporary_study_db.updated_uid = 0
         student_temporary_study_db.id = SnowflakeIdGenerator(1, 1).generate_id()
-        if student_temporary_study.province and len(student_temporary_study.province) > 0:
-            pass
-        else:
-            student_temporary_study.province = "210000"
-        if student_temporary_study.city and len(student_temporary_study.city) > 0:
-            pass
-        else:
-            student_temporary_study.city = "210100"
+
 
         student_temporary_study_db = await self.student_temporary_study_dao.add_student_temporary_study(student_temporary_study_db)
-        print('id 111', student_temporary_study_db.id)
-        student_temporary_study = orm_model_to_view_model(student_temporary_study_db, PlanningSchoolModel,
+        student_temporary_study = orm_model_to_view_model(student_temporary_study_db, StudentTemporaryStudyModel,
                                                   exclude=["created_at", 'updated_at', ])
         # str
         convert_snowid_in_model(student_temporary_study)
@@ -261,7 +254,7 @@ class StudentTemporalStudyRule(object):
         # student_temporary_study = orm_model_to_view_model(student_temporary_study_db, StudentTransactionModel, exclude=[""])
         return student_edu_info
 
-    async def deal_student_temporary_study(self, student_edu_info:StudentTransactionVM):
+    async def deal_student_temporary_study(self, student_edu_info):
         #   转入  需要设置到当前学校  转出 则该状态
         tinfo=await self.get_student_temporary_study_by_process_instance_id(student_edu_info.process_instance_id)
         # 入信息  这个提取到 入的学校的方法里 预提交方法里
