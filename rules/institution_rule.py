@@ -19,6 +19,7 @@ from rules.school_rule import SchoolRule
 from views.common.common_view import workflow_service_config, map_keys, convert_dates_to_strings
 from views.models.institutions import InstitutionKeyInfo, \
     InstitutionBaseInfo, InstitutionPageSearch
+from views.models.organization import Organization
 from views.models.planning_school import PlanningSchoolStatus
 from views.models.school import SchoolBaseInfoOptional
 from views.models.system import INSTITUTION_OPEN_WORKFLOW_CODE, INSTITUTION_CLOSE_WORKFLOW_CODE, \
@@ -45,10 +46,6 @@ class InstitutionRule(SchoolRule):
         # datadict['school_edu_level'] =   school_flow.school_edu_level
         datadict['block'] =   school_flow.block
         datadict['borough'] =   school_flow.borough
-        # datadict['school_level'] =   school_flow.school_level
-        # datadict['school_category'] =   school_flow.school_category
-        # datadict['school_operation_type'] =   school_flow.school_operation_type
-        # datadict['school_org_type'] =   school_flow.school_org_type
 
         datadict['apply_user'] =  'tester'
         mapa = school_flow.__dict__
@@ -126,10 +123,7 @@ class InstitutionRule(SchoolRule):
         datadict['applicant_name'] =  'tester'
         # datadict['school_code'] = school_flow.school_code
         datadict['school_name'] = school_flow.school_name
-        # datadict['founder_type_lv3'] =   school_flow.founder_type_lv3
-        # datadict['block'] =   school_flow.block
-        # datadict['borough'] =   school_flow.borough
-        # datadict['school_level'] =   school_flow.school_level
+
         datadict['school_no'] =   school_flow.school_no
 
         datadict['apply_user'] =  'tester'
@@ -158,8 +152,33 @@ class InstitutionRule(SchoolRule):
             return
         if action=='open':
             res = await self.update_school_status(school.id,  PlanningSchoolStatus.NORMAL.value, 'open')
-            await self.send_school_to_org_center(school)
-            await self.send_admin_to_org_center(school)
+            try:
+                # 单位发送过去
+                res_unit, data_unit = await self.send_school_to_org_center(school)
+                # 单位的组织 对接
+                # res_unit = await self.send_unit_orgnization_to_org_center(school)
+                res_oigna = await self.send_unit_orgnization_to_org_center(school, data_unit)
+
+                # 添加组织结构 部门
+                org = Organization(org_name=school.school_name,
+                                   school_id=school.id,
+                                   org_type='校',
+                                   parent_id=0,
+                                   org_code=school.school_no,
+                                   org_code_type='school',
+                                   )
+                # 部门对接
+
+                res_org, data_org = await self.send_org_to_org_center(org, res_unit)
+                # 管理员 对接
+                res_admin = await self.send_admin_to_org_center(school,data_org)
+                # 添加 用户和组织关系 就是部门
+                await self.send_user_org_relation_to_org_center(school, res_unit, data_org, res_admin)
+            except Exception as e:
+                print('异常', e)
+                raise e
+            # await self.send_school_to_org_center(school)
+            # await self.send_admin_to_org_center(school)
         if action=='close':
             res = await self.update_school_status(school.id,  PlanningSchoolStatus.CLOSED.value, 'close')
         if action=='keyinfo_change':
@@ -265,7 +284,7 @@ class InstitutionRule(SchoolRule):
             task_result = TaskResult()
 
         return task_result
-    async def send_school_to_org_center(self,exists_planning_school_origin):
+    async def send_school_to_org_center2(self,exists_planning_school_origin):
         exists_planning_school= copy.deepcopy(exists_planning_school_origin)
         if isinstance(exists_planning_school.updated_at, (date, datetime)):
             exists_planning_school.updated_at =exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")

@@ -49,7 +49,7 @@ from views.models.system import SCHOOL_OPEN_WORKFLOW_CODE, \
     SCHOOL_CLOSE_WORKFLOW_CODE, SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, DISTRICT_ENUM_KEY, PROVINCE_ENUM_KEY, \
     CITY_ENUM_KEY, \
     PLANNING_SCHOOL_STATUS_ENUM_KEY, FOUNDER_TYPE_LV2_ENUM_KEY, SCHOOL_ORG_FORM_ENUM_KEY, FOUNDER_TYPE_LV3_ENUM_KEY, \
-    FOUNDER_TYPE_ENUM_KEY
+    FOUNDER_TYPE_ENUM_KEY, OrgCenterInstitutionType
 from views.models.teachers import EducateUserModel
 
 
@@ -874,7 +874,7 @@ class SchoolRule(object):
 
         # 发送规划校到组织中心的方法
 
-    async def send_school_to_org_center(self, exists_planning_school_origin):
+    async def send_school_to_org_center(self, exists_planning_school_origin:School):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if isinstance(exists_planning_school.updated_at, (date, datetime)):
             exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
@@ -895,7 +895,7 @@ class SchoolRule(object):
                      'owner': exists_planning_school.school_no,
                      'unitCode': exists_planning_school.school_no, 'unitId': '',
                      'unitName': exists_planning_school.school_name,
-                     'unitType': 'school',
+                     'unitType': OrgCenterInstitutionType.get_mapper(exists_planning_school.institution_category) if exists_planning_school.institution_category  else 'school',
                      'updatedTime': exists_planning_school.updated_at
 
                      }
@@ -980,7 +980,8 @@ class SchoolRule(object):
                      'unitCode': exists_planning_school.school_no,
                      # 'unitId': '',
                      'unitName': exists_planning_school.school_name,
-                     'unitType': 'school',
+                     # 'unitType': 'school',
+                     'unitType': OrgCenterInstitutionType.get_mapper(exists_planning_school.institution_category) if exists_planning_school.institution_category  else 'school',
                      'updatedTime': exists_planning_school.updated_at,
                      # "appHomeUrl": "http://tgiibjya.nr/xxhsh",
                      # "appName": exists_planning_school.planning_school_name,
