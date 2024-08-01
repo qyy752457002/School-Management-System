@@ -30,9 +30,10 @@ class StudentTemporaryStudyDAO(DAOBase):
 		result = await session.execute(select(StudentTemporaryStudy).where(StudentTemporaryStudy.id == id))
 		return result.scalar_one_or_none()
 
-	async def query_student_temporary_study_with_page(self, pageQueryModel, page_request: PageRequest):
+	async def query_student_temporary_study_with_page(self,  page_request: PageRequest, **kwargs):
 		query = select(StudentTemporaryStudy)
-		
+		for key, value in kwargs.items():
+			query = query.where(getattr(StudentTemporaryStudy, key) == value)
 		### �˴���д��ѯ����
 		
 		paging = await self.query_page(query, page_request)

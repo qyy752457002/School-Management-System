@@ -545,6 +545,21 @@ class CurrentStudentsView(BaseView):
         res3 = await self.student_temporary_study_rule.add_student_temporary_study(student_temporary_study)
 
         return res3
+    async def page_temporary_study(self,
+                                   student_name: str = Query("", title="", description="", ),
+                                   student_gender: str = Query("", title="", description="", ),
+                                   apply_user: str = Query("", title="", description="", ),
+                                   edu_number: str = Query("", title="", description="", ),
+                                   school_id: str|int = Query(None, title="", description="", regex="^[\w.\d-]+$", ),
+                           status: StudentTransactionStatus = Query(None, title="", description="状态", ),
+                           page_request=Depends(PageRequest)
+                           ):
+        items = []
+        # exit(1)
+        # return page_search
+
+        paging_result = await self.student_temporary_study_rule.query_student_temporary_study_with_page(page_request, status,student_name,student_gender,school_id,apply_user,edu_number,)
+        return paging_result
 
 class CurrentStudentsBaseInfoView(BaseView):
     def __init__(self):
