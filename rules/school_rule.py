@@ -532,7 +532,7 @@ class SchoolRule(object):
 
                 res_org, data_org = await self.send_org_to_org_center(org, res_unit)
                 # 管理员 对接
-                res_admin = await self.send_admin_to_org_center(school)
+                res_admin = await self.send_admin_to_org_center(school,data_org)
                 # 添加 用户和组织关系 就是部门
                 await self.send_user_org_relation_to_org_center(school, res_unit, data_org, res_admin)
             except Exception as e:
@@ -924,7 +924,7 @@ class SchoolRule(object):
 
         return None
 
-    async def send_admin_to_org_center(self, exists_planning_school_origin):
+    async def send_admin_to_org_center(self, exists_planning_school_origin,data_org):
         # teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id)
         # data_dict = to_dict(teacher_db)
         # print(data_dict)
@@ -932,16 +932,22 @@ class SchoolRule(object):
                                      currentUnit=exists_planning_school_origin.school_name,
                                      createdTime=exists_planning_school_origin.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      updatedTime=exists_planning_school_origin.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
-                                     name=exists_planning_school_origin.admin,
+                                     name=exists_planning_school_origin.admin_phone,
+                                     owner=exists_planning_school_origin.school_no,
                                      userCode=exists_planning_school_origin.admin,
-                                     userId=exists_planning_school_origin.admin_phone,
+                                     #userId=exists_planning_school_origin.admin_phone,
                                      phoneNumber=exists_planning_school_origin.admin_phone,
+                                     # 部门group 的显示名字
+                                     departmentNames=data_org['displayName'],
+                                     # 部门group的name
+                                     departmentId=data_org['name'],
+                                     realName=exists_planning_school_origin.admin
                                      )
-        dict_data = dict_data.dict()
-        params_data = JsonUtils.dict_to_json_str(dict_data)
+        dict_data = dict_data.__dict__
+        # params_data = JsonUtils.dict_to_json_str(dict_data)
         api_name = '/api/add-educate-user'
         # 字典参数
-        datadict = params_data
+        datadict = dict_data
         print(datadict, '参数')
         response = await send_orgcenter_request(api_name, datadict, 'post', False)
         print('  管理员 对接 ',response, )
@@ -954,29 +960,55 @@ class SchoolRule(object):
             return response
         return None
 
-    async def send_unit_orgnization_to_org_center2(self, exists_planning_school_origin: School):
+    async def send_unit_orgnization_to_org_center(self, exists_planning_school_origin:School, data_unit):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if isinstance(exists_planning_school.updated_at, (date, datetime)):
             exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
 
-        # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer
+        # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer  orgType组织类型 -必填 administrative_unit|public_institutions|school|developer
         planning_school_communication = await self.school_communication_dao.get_school_communication_by_school_id(
             exists_planning_school.id)
-        cn_exists_planning_school = await self.convert_school_to_export_format(exists_planning_school)
-        dict_data = {'administrativeDivisionCity': '',
+        # cn_exists_planning_school = await self.convert_school_to_import_format(exists_planning_school)
+        dict_data = {'administrativeDivisionCity':  '',
                      'administrativeDivisionCounty': exists_planning_school.block,
-                     'administrativeDivisionProvince': planning_school_communication.loc_area_pro,
+                     'administrativeDivisionProvince':  '',
                      'createdTime': exists_planning_school.create_school_date,
                      'locationAddress': planning_school_communication.detailed_address,
                      'locationCity': '',
                      'locationCounty': planning_school_communication.loc_area,
                      'locationProvince': planning_school_communication.loc_area_pro, 'owner': '',
-                     'unitCode': exists_planning_school.school_no, 'unitId': '',
+                     'unitCode': exists_planning_school.school_no,
+                     # 'unitId': '',
                      'unitName': exists_planning_school.school_name,
                      'unitType': 'school',
-                     'updatedTime': exists_planning_school.updated_at}
-        # todo URL修改
-        apiname = '/api/add-educate-unit'
+                     'updatedTime': exists_planning_school.updated_at,
+                     # "appHomeUrl": "http://tgiibjya.nr/xxhsh",
+                     # "appName": exists_planning_school.planning_school_name,
+
+                     "educateUnits": [
+                         data_unit
+                     ],
+
+                     "certPublicKey": "",
+                     "clientId": "",
+                     "clientSecret": "",
+                     "code": exists_planning_school.school_no,
+                     # "defaultApplication":   exists_planning_school.planning_school_name,
+                     "defaultAvatar": "",
+                     "defaultPassword": "",
+                     "displayName": exists_planning_school.school_name,
+
+                     "logo": "",
+
+                     "orgType": "school",
+                     "overview": "",
+                     "status": "",
+                     "unitCount": "",
+                     # "unitId": exists_planning_school.planning_school_no,
+
+                     }
+        #  URL修改
+        apiname = '/api/add-org'
         # 字典参数
         datadict = dict_data
         if isinstance(datadict['createdTime'], (date, datetime)):
@@ -986,10 +1018,16 @@ class SchoolRule(object):
         #     datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
         datadict = convert_dates_to_strings(datadict)
         print(datadict, '字典参数')
+        print('发起请求组织到组织中心')
 
         response = await send_orgcenter_request(apiname, datadict, 'post', False)
+        print(response, '接口响应')
         try:
-            print('发送单位和组织的关系', response)
+            print(response)
+            # if response['status'] == OrgCenterApiStatus.ERROR.value and is_check_force:
+            #     print('同步组织中心失败')
+            #     raise OrgCenterApiError()
+            print('组织添加suc')
 
             return response
         except Exception as e:
@@ -1110,82 +1148,6 @@ class SchoolRule(object):
         try:
 
             return response, datadict
-        except Exception as e:
-            print(e)
-            raise e
-            return response
-
-        return None
-    async def send_unit_orgnization_to_org_center(self, exists_planning_school_origin:School, data_unit):
-        exists_planning_school = copy.deepcopy(exists_planning_school_origin)
-        if isinstance(exists_planning_school.updated_at, (date, datetime)):
-            exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
-
-        # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer  orgType组织类型 -必填 administrative_unit|public_institutions|school|developer
-        planning_school_communication = await self.school_communication_dao.get_school_communication_by_school_id(
-            exists_planning_school.id)
-        # cn_exists_planning_school = await self.convert_school_to_import_format(exists_planning_school)
-        dict_data = {'administrativeDivisionCity':  '',
-                     'administrativeDivisionCounty': exists_planning_school.block,
-                     'administrativeDivisionProvince':  '',
-                     'createdTime': exists_planning_school.create_school_date,
-                     'locationAddress': planning_school_communication.detailed_address,
-                     'locationCity': '',
-                     'locationCounty': planning_school_communication.loc_area,
-                     'locationProvince': planning_school_communication.loc_area_pro, 'owner': '',
-                     'unitCode': exists_planning_school.school_no,
-                     # 'unitId': '',
-                     'unitName': exists_planning_school.school_name,
-                     'unitType': 'school',
-                     'updatedTime': exists_planning_school.updated_at,
-                     # "appHomeUrl": "http://tgiibjya.nr/xxhsh",
-                     # "appName": exists_planning_school.planning_school_name,
-
-                     "educateUnits": [
-                         data_unit
-                     ],
-
-                     "certPublicKey": "",
-                     "clientId": "",
-                     "clientSecret": "",
-                     "code": exists_planning_school.school_no,
-                     # "defaultApplication":   exists_planning_school.planning_school_name,
-                     "defaultAvatar": "",
-                     "defaultPassword": "",
-                     "displayName": exists_planning_school.school_name,
-
-                     "logo": "",
-
-                     "orgType": "school",
-                     "overview": "",
-                     "status": "",
-                     "unitCount": "",
-                     # "unitId": exists_planning_school.planning_school_no,
-
-                     }
-        #  URL修改
-        apiname = '/api/add-org'
-        # 字典参数
-        datadict = dict_data
-        if isinstance(datadict['createdTime'], (date, datetime)):
-            datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
-
-        # if isinstance(datadict['createdTime'], (date, datetime)):
-        #     datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
-        datadict = convert_dates_to_strings(datadict)
-        print(datadict, '字典参数')
-        print('发起请求组织到组织中心')
-
-        response = await send_orgcenter_request(apiname, datadict, 'post', False)
-        print(response, '接口响应')
-        try:
-            print(response)
-            # if response['status'] == OrgCenterApiStatus.ERROR.value and is_check_force:
-            #     print('同步组织中心失败')
-            #     raise OrgCenterApiError()
-            print('组织添加suc')
-
-            return response
         except Exception as e:
             print(e)
             raise e
