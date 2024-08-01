@@ -513,7 +513,9 @@ class SchoolRule(object):
         if action == 'open':
             res = await self.update_school_status(school.id, PlanningSchoolStatus.NORMAL.value, 'open')
             try:
+                # 单位发送过去
                 await self.send_school_to_org_center(school)
+                # 单位的组织 对接
                 res_unit=await self.send_unit_orgnization_to_org_center(school)
                 # 添加组织结构 部门
                 org = Organization(org_name=school.school_name,
@@ -523,8 +525,10 @@ class SchoolRule(object):
                                    org_code=school.school_no,
                                    org_code_type='school',
                                    )
+                # 部门对接
 
                 res_org, data_org = await self.send_org_to_org_center(org, res_unit)
+                # 管理员 对接
                 res_admin=await self.send_admin_to_org_center(school)
                 # 添加 用户和组织关系 就是部门
                 await self.send_user_org_relation_to_org_center(school, res_unit, data_org, res_admin)
