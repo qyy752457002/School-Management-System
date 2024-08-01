@@ -916,11 +916,11 @@ class SchoolRule(object):
             print('发送单位', response)
             # 单位id更新到表里
             if isinstance(response, dict):
-                unitid = response['data2'] if 'data2' in response else ''
-                exists_planning_school.org_center_info = unitid
+                unitid = response['data2'] if 'data2' in response.keys() else ''
+                exists_planning_school_origin.org_center_info = unitid
                 need_update_list = []
                 need_update_list.append( 'org_center_info')
-                await self.school_dao.update_school_byargs(exists_planning_school,  need_update_list)
+                await self.school_dao.update_school_byargs(exists_planning_school_origin,  *need_update_list)
             return response, datadict
 
             # return response

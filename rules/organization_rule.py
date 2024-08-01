@@ -59,7 +59,10 @@ class OrganizationRule(object):
         organization = orm_model_to_view_model(organization_db, Organization, exclude=["created_at", ])
         convert_snowid_in_model(organization, ["id", "school_id", 'parent_id', ])
         # todo 发送组织中心
-        await self.send_org_to_org_center(organization)
+        try:
+            await self.send_org_to_org_center(organization)
+        except Exception as e:
+            print("发送组织中心失败",e)
         return organization
 
     async def update_organization(self, organization, ):
@@ -215,18 +218,16 @@ class OrganizationRule(object):
         if isinstance(res_unit, dict):
             unitid = res_unit['data2']
         if unitid is None:
-            unitid = school.organization
+            unitid = school.org_center_info
         dict_data = {
             "contactEmail": "j.vyevxiloyy@qq.com",
             "displayName": exists_planning_school.org_name,
-            # todo  参数调试  单位ID
             "educateUnit": unitid if unitid is not None else school.school_name,
             "isDeleted": False,
             "isEnabled": True,
             "isTopGroup": exists_planning_school.parent_id == 0,
-            "key": "sit",
+            "key": "sit"+shortuuid.uuid(),
             "manager": "",
-            # "name": exists_planning_school.org_name + "管理员",
             "name": "基础信息管理系统",
             "newCode": exists_planning_school.org_code,
             "newType": "organization",  # 组织类型 特殊参数必须穿这个
