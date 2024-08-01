@@ -13,11 +13,8 @@ def main():
     cli.register('task', AsyncTaskCommand, router_func_module="views.tasks.router.init_task_router")
 
     cli.register('db-init', DatabaseInitCommand, metadata_model="models.metadata")
-    cli.register('dao-gen', DAOGenerateCommand, model_list=[('models.evaluation_item_model', 'EvaluationItem'),
-                                                            ('models.supervisor_evaluation_model',
-                                                             'SupervisorEvaluation'),
-                                                            ('models.supervisor_model', 'Supervisor'),
-                                                            ('models.supervisor_school_model', 'SupervisorSchool')])
+    cli.register('dao-gen', DAOGenerateCommand, model_list=[('models.student_temporary_study', 'StudentTemporaryStudy'),
+                                                          ])
     cli.register('web', WebCommand, router_func_module="views.router.init_router")
     cli.setup()
 
