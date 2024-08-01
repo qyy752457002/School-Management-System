@@ -873,7 +873,7 @@ class SchoolRule(object):
             # return paging_result
 
         # 发送规划校到组织中心的方法
-
+    # 单位对接
     async def send_school_to_org_center(self, exists_planning_school_origin:School):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if isinstance(exists_planning_school.updated_at, (date, datetime)):
@@ -914,6 +914,13 @@ class SchoolRule(object):
         response = await send_orgcenter_request(apiname, datadict, 'post', False)
         try:
             print('发送单位', response)
+            # 单位id更新到表里
+            if isinstance(response, dict):
+                unitid = response['data2'] if 'data2' in response else ''
+                exists_planning_school.org_center_info = unitid
+                need_update_list = []
+                need_update_list.append( 'org_center_info')
+                await self.school_dao.update_school_byargs(exists_planning_school,  need_update_list)
             return response, datadict
 
             # return response
@@ -923,7 +930,7 @@ class SchoolRule(object):
             return response
 
         return None
-
+    # 用户对接
     async def send_admin_to_org_center(self, exists_planning_school_origin,data_org):
         # teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id)
         # data_dict = to_dict(teacher_db)
@@ -960,6 +967,7 @@ class SchoolRule(object):
             return response
         return None
 
+    # # 单位的组织 对接
     async def send_unit_orgnization_to_org_center(self, exists_planning_school_origin:School, data_unit):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if isinstance(exists_planning_school.updated_at, (date, datetime)):
@@ -1037,7 +1045,7 @@ class SchoolRule(object):
             return response
 
         return None
-
+    # 部门对接
     async def send_org_to_org_center(self, exists_planning_school_origin: Organization, res_unit):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if hasattr(exists_planning_school, 'updated_at') and isinstance(exists_planning_school.updated_at,
@@ -1095,6 +1103,7 @@ class SchoolRule(object):
 
         return None
 
+    #   # 添加 用户和组织关系 就是部门
     async def send_user_org_relation_to_org_center(self, exists_planning_school_origin: Organization, res_unit,
                                                    data_org, res_admin):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
