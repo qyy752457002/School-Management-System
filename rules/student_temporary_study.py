@@ -14,7 +14,8 @@ from business_exceptions.classes import ClassesNotFoundError
 from business_exceptions.grade import GradeNotFoundError
 from business_exceptions.school import SchoolNotFoundError, SchoolValidateError
 from business_exceptions.student_session import StudentSessionNotFoundError
-from business_exceptions.student_temporary_study import TargetSchoolError, StudentTemporaryStudyExistsError
+from business_exceptions.student_temporary_study import TargetSchoolError, StudentTemporaryStudyExistsError, \
+    StudentTemporaryStudyNotFoundError
 from daos.class_dao import ClassesDAO
 from daos.grade_dao import GradeDAO
 from daos.school_dao import SchoolDAO
@@ -141,29 +142,29 @@ class StudentTemporalStudyRule(object):
         return student_temporary_study
 
     async def update_student_temporary_study(self, student_temporary_study):
-        exists_student_temporary_study = await self.student_temporary_study_dao.get_studenttransaction_by_id(
+        exists_student_temporary_study = await self.student_temporary_study_dao.get_student_temporary_study_by_id(
             student_temporary_study.id)
         if not exists_student_temporary_study:
-            raise Exception(f"转学申请{student_temporary_study.id}不存在")
+            raise StudentTemporaryStudyNotFoundError()
 
         need_update_list = []
         for key, value in student_temporary_study.dict().items():
             if value:
                 need_update_list.append(key)
 
-        student_temporary_study_db = await self.student_temporary_study_dao.update_studenttransaction(student_temporary_study,
+        student_temporary_study_db = await self.student_temporary_study_dao.update_student_temporary_study(student_temporary_study,
                                                                                               *need_update_list)
         # student_temporary_study = orm_model_to_view_model(student_temporary_study_db, StudentTransactionModel, exclude=[""])
         return student_temporary_study_db
 
     async def delete_student_temporary_study(self, student_temporary_study_id):
-        exists_student_temporary_study = await self.student_temporary_study_dao.get_studenttransaction_by_id(
-            student_temporary_study_id)
+        exists_student_temporary_study = await self.student_temporary_study_dao.get_student_temporary_study_by_id(
+            student_temporary_study_id, use_master=True)
         if not exists_student_temporary_study:
-            raise Exception(f"转学申请{student_temporary_study_id}不存在")
+            raise StudentTemporaryStudyNotFoundError()
         student_temporary_study_db = await self.student_temporary_study_dao.delete_student_temporary_study(
             exists_student_temporary_study)
-        student_temporary_study = orm_model_to_view_model(student_temporary_study_db, StudentTransactionModel, exclude=[""])
+        student_temporary_study = orm_model_to_view_model(student_temporary_study_db, StudentTemporaryStudyModel, exclude=[""])
         return student_temporary_study
 
     async def get_all_student_temporary_studys(self):

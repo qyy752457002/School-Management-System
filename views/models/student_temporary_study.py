@@ -50,13 +50,22 @@ class StudentTemporaryStudy(BaseModel):
 
 
 
-class StudentTemporaryStudyPageSearch(BaseModel):
-    audit_status: StudentTransactionStatus = Query("", title="", description="状态", examples=['needaudit'])
-    student_name: str = Query("", title="", description="学生姓名", min_length=1, max_length=20)
 
-    school_id: int = Query(0, title="", description="学校ID", )
-    school_name: str  = Query('', title="", description="学校", )
-    student_gender: str = Query("", title="", description=" 学生性别", min_length=1, max_length=20)
+class StudentTemporaryStudyOptional(BaseModel):
 
-    applicant_name: str = Query("",alias='apply_user', title="", description="申请人", min_length=1, max_length=20, )
-    edu_number: str = Query("",alias='edu_no', title="  ", description=" 学籍号码", min_length=1, max_length=20)
+
+    id: int | str = Query(None, title="", description="id", example='1')
+    student_name: int | str = Query(None, title="", description="", example='')
+    id_number: int | str = Query(None, title="", description="", example='')
+    student_gender: int | str = Query(None, title="", description="", example='')
+    edu_number: int | str = Query(None, title="", description="", example='')
+    student_no: int | str = Query(None, title="", description="", example='')
+
+    origin_school_id: int | str = Field(0, title="", description="", examples=['1'])
+    origin_session_id: int | str = Field(0, title="", description="", examples=['1'])
+    origin_grade_id: int | str = Field(0, title="", description="", examples=['1'])
+    origin_class_id: int | str = Field(0, title="", description="", examples=['1'])
+
+    process_instance_id: int | str = Field(0, title="", description="", examples=['1'])
+    status: str = Field('', title="", description="状态", examples=[''])
+    is_deleted: bool = Field('', title="", description="", examples=[''])

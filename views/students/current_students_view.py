@@ -24,7 +24,7 @@ from rules.students_key_info_change_rule import StudentsKeyInfoChangeRule
 from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_client_ip, convert_dates_to_strings
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
-from views.models.student_temporary_study import StudentTemporaryStudy
+from views.models.student_temporary_study import StudentTemporaryStudy, StudentTemporaryStudyOptional
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
     StudentEduInfo, StudentTransactionAudit, StudentEduInfoOut, StudentTransactionPageSearch
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, \
@@ -550,7 +550,7 @@ class CurrentStudentsView(BaseView):
                                    student_gender: str = Query("", title="", description="", ),
                                    apply_user: str = Query("", title="", description="", ),
                                    edu_number: str = Query("", title="", description="", ),
-                                   school_id: str|int = Query(None, title="", description="", regex="^[\w.\d-]+$", ),
+                                   school_id: str|int = Query(None, title="", description="",   ),
                            status: StudentTransactionStatus = Query(None, title="", description="状态", ),
                            page_request=Depends(PageRequest)
                            ):
@@ -560,6 +560,16 @@ class CurrentStudentsView(BaseView):
 
         paging_result = await self.student_temporary_study_rule.query_student_temporary_study_with_page(page_request, status,student_name,student_gender,school_id,apply_user,edu_number,)
         return paging_result
+
+    async def patch_temporary_study_cancel(self,     student_temporary_study_id: str|int = Query(None, title="", description="",   ),
+                                           ):
+        """
+        """
+        student_temporary_study = StudentTemporaryStudyOptional(id=int(student_temporary_study_id),
+                                                                  is_deleted=True,
+                                                                  )
+        res = await self.student_temporary_study_rule.update_student_temporary_study(student_temporary_study)
+        return res
 
 class CurrentStudentsBaseInfoView(BaseView):
     def __init__(self):

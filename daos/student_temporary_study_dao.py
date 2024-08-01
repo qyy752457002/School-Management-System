@@ -25,8 +25,11 @@ class StudentTemporaryStudyDAO(DAOBase):
 		await session.delete(student_temporary_study)
 		await session.commit()
 
-	async def get_student_temporary_study_by_id(self, id):
-		session = await self.slave_db()
+	async def get_student_temporary_study_by_id(self, id,use_master=False):
+		if use_master:
+			session = await self.master_db()
+		else:
+			session = await self.slave_db()
 		result = await session.execute(select(StudentTemporaryStudy).where(StudentTemporaryStudy.id == id))
 		return result.scalar_one_or_none()
 
