@@ -28,9 +28,10 @@ from daos.planning_school_dao import PlanningSchoolDAO
 from daos.school_communication_dao import SchoolCommunicationDAO
 from daos.school_dao import SchoolDAO
 from models.planning_school import PlanningSchool
+from models.public_enum import IdentityType
 from models.school import School
 from models.student_transaction import AuditAction
-from rules.common.common_rule import send_request, send_orgcenter_request
+from rules.common.common_rule import send_request, send_orgcenter_request, get_identity_by_job
 from rules.enum_value_rule import EnumValueRule
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, convert_snowid_in_model, convert_snowid_to_strings, \
@@ -1004,7 +1005,7 @@ class SchoolRule(object):
 
         # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer
 
-        school = await self.planning_school_dao.get_planning_school_by_id(exists_planning_school.school_id)
+        school = await self.school_dao.get_school_by_id(exists_planning_school.school_id)
         if school is None:
             print('学校未找到 跳过发送组织', exists_planning_school.school_id)
             return
