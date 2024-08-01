@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
-from views.common.common_view import workflow_service_config, orgcenter_service_config
+from views.common.common_view import workflow_service_config, orgcenter_service_config, check_result_org_center_api
 from typing import List, Type, Dict
 
 
@@ -207,11 +207,13 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
             return {}
         if isinstance(response, str):
             return {response}
+        check_result_org_center_api(response)
         return response
         pass
     except Exception as e:
         print('发生异常',e)
         traceback.print_exc()
+        raise Exception(e)
         return {}
 
     pass

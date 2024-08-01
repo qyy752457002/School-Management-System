@@ -49,9 +49,10 @@ class OrgCenterApiStatus(str, Enum):
     """
     ERROR = "error"
     SUCCESS  = "success"
+    OK = "ok"
     @classmethod
     def to_list(cls):
-        return [cls.ERROR, cls.SUCCESS, ]
+        return [cls.ERROR, cls.SUCCESS,cls.OK, ]
 
 class InstitutionType(str, Enum):
     """
