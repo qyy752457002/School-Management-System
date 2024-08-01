@@ -70,6 +70,7 @@ from . import subject
 from . import organization
 from . import organization_members
 from . import course_school_nature
+from . import student_temporary_study
 
 #教师工作流定以相关
 
