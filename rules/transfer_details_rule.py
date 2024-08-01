@@ -147,7 +147,11 @@ class TransferDetailsRule(object):
             school = await self.school_dao.get_school_by_id(original_unit_id)
             transfer_details.original_unit_name = school.school_name
             transfer_details.original_district_area_id = int(school.borough)
+            transfer_details.original_district_city_id = int(school.block)
+            transfer_details.original_district_province_id = 210000 #辽宁省编号
+            transfer_details.original_region_area_id=210100 #沈阳市编号
             transfer_details.transfer_type = TransferType.OUT.value
+            transfer_details.original_unit_id = int(original_unit_id)
             transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
             transfer_details_db.transfer_details_id = SnowflakeIdGenerator(1, 1).generate_id()
             transfer_details_db = await self.transfer_details_dao.add_transfer_details(transfer_details_db)
