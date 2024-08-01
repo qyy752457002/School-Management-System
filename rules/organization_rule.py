@@ -7,6 +7,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
+from pydantic import BaseModel
 from sqlalchemy import select
 
 from business_exceptions.organization import OrganizationNotFoundError, OrganizationExistError
@@ -58,7 +59,10 @@ class OrganizationRule(object):
         organization = orm_model_to_view_model(organization_db, Organization, exclude=["created_at", ])
         convert_snowid_in_model(organization, ["id", "school_id", 'parent_id', ])
         # todo 发送组织中心
-        await self.send_org_to_org_center(organization)
+        try:
+            await self.send_org_to_org_center(organization)
+        except Exception as e:
+            print("发送组织中心失败",e)
         return organization
 
     async def update_organization(self, organization, ):
@@ -196,79 +200,58 @@ class OrganizationRule(object):
 
         return organization_id
 
-    async def send_org_to_org_center(self, exists_planning_school_origin: Organization):
+
+    # 部门对接
+    async def send_org_to_org_center(self, exists_planning_school_origin: Organization|BaseModel, res_unit=None):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if hasattr(exists_planning_school, 'updated_at') and isinstance(exists_planning_school.updated_at,
                                                                         (date, datetime)):
             exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
 
         # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer
-        # return
 
         school = await self.school_dao.get_school_by_id(exists_planning_school.school_id)
         if school is None:
             print('学校未找到 跳过发送组织', exists_planning_school.school_id)
             return
-        # cn_exists_planning_school = await self.convert_school_to_export_format(exists_planning_school )
+        unitid = None
+        if isinstance(res_unit, dict):
+            unitid = res_unit['data2']
+        if unitid is None:
+            unitid = school.org_center_info
         dict_data = {
             "contactEmail": "j.vyevxiloyy@qq.com",
-            "createdTime": exists_planning_school.created_at,
             "displayName": exists_planning_school.org_name,
-            # todo  参数调试
-            "educateUnit": school.school_name,
-            "educateUnitObj": {
-                "administrativeDivisionCity": "",
-                "administrativeDivisionCounty": "",
-                "administrativeDivisionProvince": "",
-                "createdTime": school.created_at,
-                "departmentObjs": [],
-                "locationAddress": "",
-                "locationCity": "",
-                "locationCounty": "",
-                "locationProvince": "",
-                "owner": "",
-                "unitCode": school.school_no,
-                "unitId": "",
-                "unitName": school.school_name,
-                "unitType": "",
-                "updatedTime": school.updated_at
-            },
+            "educateUnit": unitid if unitid is not None else school.school_name,
             "isDeleted": False,
             "isEnabled": True,
             "isTopGroup": exists_planning_school.parent_id == 0,
-            "key": "sit",
+            "key": "sit"+shortuuid.uuid(),
             "manager": "",
-            "name": exists_planning_school.org_name,
+            "name": "基础信息管理系统",
             "newCode": exists_planning_school.org_code,
             "newType": "organization",  # 组织类型 特殊参数必须穿这个
             "owner": school.school_no,
-            "parentId": exists_planning_school.parent_id,
+            "parentId": str(exists_planning_school.parent_id),
             "parentName": "",
             "tags": [
                 ""
             ],
             "title": exists_planning_school.org_name,
             "type": "",
-            "updatedTime": exists_planning_school.updated_at
         }
 
-        apiname = '/api/add-group'
+        apiname = '/api/add-group-organization'
         # 字典参数
         datadict = dict_data
-        if isinstance(datadict['createdTime'], (date, datetime)):
-            datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
-
-        # if isinstance(datadict['createdTime'], (date, datetime)):
-        #     datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
         datadict = convert_dates_to_strings(datadict)
-        print(datadict, '字典参数')
+        print('调用添加部门  字典参数', datadict, )
 
         response = await send_orgcenter_request(apiname, datadict, 'post', False)
-        print(response, '接口响应')
         try:
-            print(response)
+            print('调用添加部门 接口响应', response, )
 
-            return response
+            return response, datadict
         except Exception as e:
             print(e)
             raise e

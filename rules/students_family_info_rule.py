@@ -2,6 +2,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.utils.json import JsonUtils
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
+from pydantic import BaseModel
 
 from business_exceptions.student import StudentFamilyInfoNotFoundError, StudentNotFoundError, \
     StudentFamilyInfoExistsError
@@ -62,7 +63,7 @@ class StudentsFamilyInfoRule(object):
         students_family_info = orm_model_to_view_model(students_family_info_db, StudentsFamilyInfoModel, exclude=[""])
         convert_snowid_in_model(students_family_info,
                                 ["id", 'student_id', 'school_id', 'class_id', 'session_id', 'student_family_info_id'])
-        # 家长身份 使用统一方法 todo
+        # 家长身份 使用统一方法 todo 调试
         await self.send_student_familyinfo_to_org_center(students_family_info, exits_student)
 
 
@@ -116,7 +117,7 @@ class StudentsFamilyInfoRule(object):
             student_family_info.append(student_family_info_model)
 
         return student_family_info
-    async def send_student_familyinfo_to_org_center(self, exists_planning_school_origin:StudentsFamilyInfo,exits_student:Student):
+    async def send_student_familyinfo_to_org_center(self, exists_planning_school_origin:StudentsFamilyInfo|BaseModel,exits_student:Student):
         student_baseinfo=baseinfo = await self.students_base_info_dao.get_students_base_info_by_student_id(exits_student.student_id)
         # data_dict = to_dict(teacher_db)
         # print(data_dict)

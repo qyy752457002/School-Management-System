@@ -49,9 +49,10 @@ class OrgCenterApiStatus(str, Enum):
     """
     ERROR = "error"
     SUCCESS  = "success"
+    OK = "ok"
     @classmethod
     def to_list(cls):
-        return [cls.ERROR, cls.SUCCESS, ]
+        return [cls.ERROR, cls.SUCCESS,cls.OK, ]
 
 class InstitutionType(str, Enum):
     """
@@ -62,6 +63,30 @@ class InstitutionType(str, Enum):
     @classmethod
     def to_list(cls):
         return [cls.INSTITUTION, cls.ADMINISTRATION,cls.SCHOOL]
+
+class OrgCenterInstitutionType(str, Enum):
+    """
+    组织中心的机构类型
+    """
+    INSTITUTION = "public_institutions"
+    ADMINISTRATION = "administrative_unit"
+    SCHOOL = "school"
+    DEVELOPER = "developer"
+    NULL = ""
+
+    @classmethod
+    def to_list(cls):
+        return [cls.INSTITUTION, cls.ADMINISTRATION,cls.SCHOOL, cls.DEVELOPER]
+    @classmethod
+    def to_dict(cls):
+        return {InstitutionType.INSTITUTION: cls.INSTITUTION, InstitutionType.ADMINISTRATION: cls.ADMINISTRATION,
+                InstitutionType.SCHOOL: cls.SCHOOL,
+                cls.DEVELOPER: cls.DEVELOPER,
+                }
+
+    @classmethod
+    def get_mapper(cls, key):
+        return cls.to_dict().get(key, cls.NULL)
 class ProcessCodeType(str, Enum):
     """
     """

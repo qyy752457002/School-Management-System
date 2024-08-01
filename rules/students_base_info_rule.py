@@ -3,6 +3,7 @@ from mini_framework.utils.json import JsonUtils
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
+from pydantic import BaseModel
 
 from business_exceptions.student import StudentNotFoundError, StudentExistsError, StudentSessionNotFoundError
 from daos.school_communication_dao import SchoolCommunicationDAO
@@ -157,8 +158,8 @@ class StudentsBaseInfoRule(object):
         count = await self.students_base_info_dao.get_student_base_info_count()
         return count
 
-    # 发送学生到组织中心
-    async def send_student_to_org_center(self, student_baseinfo:StudentsBaseInfo,exits_student:Student):
+    # 发送学生到组织中心 todo 调试
+    async def send_student_to_org_center(self, student_baseinfo:StudentsBaseInfo|BaseModel,exits_student:Student):
         # teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id)
         # data_dict = to_dict(teacher_db)
         # print(data_dict)

@@ -1,17 +1,19 @@
 from copy import deepcopy
-from typing import List
 
-from fastapi.params import Body
+# from fastapi import Field
+from fastapi import Query, Depends
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task.task import Task
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.json import JsonUtils
-from mini_framework.web.toolkit.model_utilities import view_model_to_orm_model
+from mini_framework.web.request_context import request_context_manager
+from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
 from business_exceptions.institution import InstitutionStatusError, InstitutionNotFoundError
 from models.student_transaction import AuditAction
+from rules.institution_rule import InstitutionRule
 from rules.operation_record import OperationRecordRule
 from rules.school_communication_rule import SchoolCommunicationRule
 from rules.school_eduinfo_rule import SchoolEduinfoRule
@@ -19,27 +21,14 @@ from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_extend_params, convert_snowid_in_model, \
     convert_query_to_none
-from views.models.operation_record import OperationTarget, OperationType, ChangeModule, OperationRecord
-from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo, PlanningSchoolTransactionAudit, \
-    PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolImportReq, PlanningSchoolFileStorageModel
-from views.models.school import School, SchoolKeyInfo, SchoolPageSearch, SchoolBaseInfo
-# from fastapi import Field
-from fastapi import Query, Depends, Body
-from pydantic import BaseModel, Field
-from mini_framework.web.std_models.page import PageRequest
-from mini_framework.web.std_models.page import PaginatedResponse
-from views.models.institutions import Institutions, InstitutionTask, InstitutionOptional, InstitutionKeyInfo, \
+from views.models.institutions import InstitutionOptional, InstitutionKeyInfo, \
     InstitutionPageSearch, InstitutionsAdd, InstitutionBaseInfo, InstitutionsWorkflowInfo, InstitutionCommunications
-from rules.institution_rule import InstitutionRule
-from mini_framework.web.request_context import request_context_manager
-
-from mini_framework.async_task.app.app_factory import app
-from mini_framework.async_task.task.task import Task
-
+from views.models.operation_record import OperationTarget, OperationType, ChangeModule, OperationRecord
+from views.models.planning_school import PlanningSchoolTransactionAudit, \
+    PlanningSchoolStatus, PlanningSchoolImportReq, PlanningSchoolFileStorageModel
 from views.models.school_communications import SchoolCommunications
 from views.models.school_eduinfo import SchoolEduInfo
-from views.models.system import InstitutionType, SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, \
-    INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE, ImportScene
+from views.models.system import InstitutionType, INSTITUTION_KEYINFO_CHANGE_WORKFLOW_CODE, ImportScene
 
 
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
@@ -225,7 +214,7 @@ class InstitutionView(BaseView):
         return res
 
     async def page(self,
-                   request:Request,
+                   request: Request,
 
                    page_request=Depends(PageRequest),
                    institution_category: InstitutionType = Query(None, title='单位分类',
@@ -239,7 +228,7 @@ class InstitutionView(BaseView):
                    # status: PlanningSchoolStatus = Query("", title="", description=" 状态", examples=['正常']),
                    ):
         print(page_request)
-        obj= await get_extend_params(request)
+        obj = await get_extend_params(request)
 
         items = []
         if not institution_category:
@@ -249,7 +238,7 @@ class InstitutionView(BaseView):
                                                                  school_name=institution_name,
                                                                  school_org_type=institution_org_type, block=block,
                                                                  borough=borough, social_credit_code=social_credit_code,
-                                                                 extra_model=InstitutionBaseInfo,extend_params=obj)
+                                                                 extra_model=InstitutionBaseInfo, extend_params=obj)
         return res
 
     # 开办
@@ -372,7 +361,6 @@ class InstitutionView(BaseView):
     # 学校开设审核
     async def patch_open_audit(self,
                                audit_info: PlanningSchoolTransactionAudit
-
                                ):
         print('前端入参', audit_info)
         resultra = await self.institution_rule.req_workflow_audit(audit_info, 'open')
@@ -423,8 +411,8 @@ class InstitutionView(BaseView):
                                       file: PlanningSchoolImportReq
                                       ) -> Task:
         file_name = file.file_name
-        task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name=file.bucket_name,file_size='51363', scene= ImportScene.INSTITUTION.value)
-
+        task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name=file.bucket_name,
+                                                    file_size='51363', scene=ImportScene.INSTITUTION.value)
 
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个 键

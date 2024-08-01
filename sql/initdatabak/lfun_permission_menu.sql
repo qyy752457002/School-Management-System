@@ -12,7 +12,7 @@
  Target Server Version : 120001 (120001)
  File Encoding         : 65001
 
- Date: 29/07/2024 16:08:44
+ Date: 01/08/2024 18:05:35
 */
 
 
@@ -95,7 +95,6 @@ INSERT INTO "public"."lfun_permission_menu" VALUES (29, '调入信息管理', '/
 INSERT INTO "public"."lfun_permission_menu" VALUES (30, '调出信息管理', '/employed/transferout', '', 'menu', '', '', '53', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employedworktransferout', 0);
 INSERT INTO "public"."lfun_permission_menu" VALUES (54, '离退休信息管理', '/nonemployed/retire', '', 'menu', '', '', '31', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employedworkretire', 0);
 INSERT INTO "public"."lfun_permission_menu" VALUES (53, '调动管理', '', '', 'root', '', '', '17', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'transfer', 0);
-INSERT INTO "public"."lfun_permission_menu" VALUES (42, '转学管理', '/instudent/transfer', '', 'menu', '', '', '36', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'instudent_transfer', 0);
 INSERT INTO "public"."lfun_permission_menu" VALUES (1, '园所信息管理（学校）', '/planning', '', 'menu', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.169988', '2024-06-04 10:43:11.169988', 'f', 'planning', 0);
 INSERT INTO "public"."lfun_permission_menu" VALUES (2, '园所信息管理（分校）', '/school', '', 'menu', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'school', 0);
 INSERT INTO "public"."lfun_permission_menu" VALUES (55, '园所信息审核（学校）', '', '', 'root', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.169988', '2024-06-04 10:43:11.169988', 'f', 'planning-audit', 0);
@@ -156,6 +155,7 @@ INSERT INTO "public"."lfun_permission_menu" VALUES (90, '组织管理', '/org', 
 INSERT INTO "public"."lfun_permission_menu" VALUES (95, '组织管理', '/org', '', 'menu', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'org', 0);
 INSERT INTO "public"."lfun_permission_menu" VALUES (91, '机构信息审核', '', '', 'menu', '', '', '0', 1, 0, 0, '2024-07-25 13:15:14.000000', '2024-07-25 13:15:12.000000', 'f', 'institution-audit', 0);
 INSERT INTO "public"."lfun_permission_menu" VALUES (96, '组织管理', '/org', '', 'menu', '', '', '9', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'org', 0);
+INSERT INTO "public"."lfun_permission_menu" VALUES (42, '转学信息管理', '/instudent/transfer', '', 'menu', '', '', '36', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'instudent_transfer', 0);
 
 -- ----------------------------
 -- Primary Key structure for table lfun_permission_menu
