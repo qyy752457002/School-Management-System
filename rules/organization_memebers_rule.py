@@ -73,6 +73,7 @@ class OrganizationMembersRule(object):
             await org_rule.update_organization(orginfo_vm)
 
         convert_snowid_in_model(organization_members_db_res, ["id", "school_id",'parent_id','teacher_id','org_id'])
+        # todo 部门成员 对接到组织中心  兼容 教师和 普通添加
 
         return organization_members_db_res
 
