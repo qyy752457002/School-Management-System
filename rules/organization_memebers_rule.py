@@ -7,7 +7,8 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from sqlalchemy import select
 
-from business_exceptions.organization import OrganizationMemberExistError, OrganizationMemberNotFoundError
+from business_exceptions.organization import OrganizationMemberExistError, OrganizationMemberNotFoundError, \
+    OrganizationNotFoundError
 from daos.organization_dao import OrganizationDAO
 from daos.organization_members_dao import OrganizationMembersDAO
 from daos.school_dao import SchoolDAO
@@ -58,6 +59,9 @@ class OrganizationMembersRule(object):
         # 去重和 新增插入    有可能重复  手动处理去重
         logger.debug("增加组织成员", organization_members)
         print("add_organization_members", organization_members)
+        org = await self.organization_dao.get_organization_by_id(organization_members.org_id)
+        if not org:
+            raise OrganizationNotFoundError()
         exists_organization_members = await self.organization_members_dao.get_organization_members_by_param(
             organization_members)
         if exists_organization_members:
