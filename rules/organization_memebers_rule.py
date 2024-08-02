@@ -1,4 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+import copy
+
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.utils.logging import logger
@@ -73,6 +75,8 @@ class OrganizationMembersRule(object):
         organization_members_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
         organization_members_db = await self.organization_members_dao.add_organization_members(organization_members_db)
+        organization_member=copy.deepcopy( organization_members_db)
+
         organization_members_db_res = orm_model_to_view_model(organization_members_db, OrganizationMembers,
                                                               exclude=["created_at", 'updated_at'], other_mapper={})
         # 更新部门成员的计数
@@ -91,7 +95,7 @@ class OrganizationMembersRule(object):
         # todo 部门成员 对接到组织中心  兼容 教师和 普通添加
         # 管理员 对接
         try:
-            res_admin = await self.send_admin_to_org_center(organization_members_db, )
+            res_admin = await self.send_admin_to_org_center(organization_member, )
         except Exception as e:
             logger.error(e)
             print('部门成员 对接到组织中心 异常', e)
@@ -246,6 +250,7 @@ class OrganizationMembersRule(object):
         return lst
 
     async def send_admin_to_org_center(self, organization_member: OrganizationMembersModel, ):
+        # organization_member=copy.deepcopy( organization_member_in)
         orginfo = await self.organization_dao.get_organization_by_id(organization_member.org_id)
         school = await self.school_dao.get_school_by_id(orginfo.school_id)
         teacher = await self.teacher_dao.get_teachers_by_id(organization_member.teacher_id)
