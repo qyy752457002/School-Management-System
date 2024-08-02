@@ -1,0 +1,9 @@
+[
+  {
+    "appCode": "base-mt", 
+    "resourceCode": "school",  
+    "displayName": "分校",  
+    "description": "分校", 
+    "action": "open、import、view、edit、delete"  
+  }
+]
