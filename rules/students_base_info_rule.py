@@ -173,28 +173,31 @@ class StudentsBaseInfoRule(object):
         school = await self.school_dao.get_school_by_id(student_baseinfo.school_id)
 
 
-        dict_data = EducateUserModel(**student_baseinfo.__dict__,currentUnit=student_baseinfo.school,
+        dict_data = EducateUserModel(**student_baseinfo.__dict__,
+                                     currentUnit=student_baseinfo.school,
                                      # createdTime= student_baseinfo.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      # updatedTime=student_baseinfo.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      name=exits_student.student_name,
                                      userCode=student_baseinfo.student_number,
                                      userId=student_baseinfo.student_id,
                                      phoneNumber= '',
+                                     # departmentId="基础信息管理系统",
+                                     #不同于老师显示的  基础系统名字 可能不一定准确  这里暂时用班级试试
                                      departmentId=student_baseinfo.class_id,
                                      departmentName=student_baseinfo.class_id,
                                      gender= exits_student.student_gender,
                                      idcard=exits_student.id_number,
                                      idcardType=exits_student.id_type,
                                      realName=exits_student.student_name,
-                                     # 组织和主单位
+                                     # 组织和主单位 确保学校已经对接进去了
                                      owner=school.school_no,
                                      mainUnitName=school.school_no,
                                      # identity=student_baseinfo.identity,
                                      identityTypeNames=student_baseinfo.identity_type,
 
                                      )
-        dict_data = dict_data.dict()
-        params_data = JsonUtils.dict_to_json_str(dict_data)
+        params_data = dict_data.__dict__
+        # params_data = JsonUtils.dict_to_json_str(dict_data)
         api_name = '/api/add-educate-user'
         # 字典参数
         datadict = params_data
