@@ -49,7 +49,7 @@ class NewsStudentsView(BaseView):
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
         self.class_division_records_rule = get_injector(ClassDivisionRecordsRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
-
+    # 新增学生 只含基本信息
     async def post_newstudent(self, students: NewStudents):
         """
         新增新生信息
@@ -191,7 +191,7 @@ class NewsStudentsInfoView(BaseView):
         """
         res = await self.students_base_info_rule.get_students_base_info_by_student_id(student_id)
         return res
-
+    # 新增学生基本信息
     async def post_newstudentbaseinfo(self, new_students_base_info: NewBaseInfoCreate):
         """
         新生新增基本信息
@@ -201,7 +201,7 @@ class NewsStudentsInfoView(BaseView):
             raise StudentStatusError()
         res = await self.students_base_info_rule.add_students_base_info(new_students_base_info)
         return res
-
+    # 保存学生基本信息 触发对接组织中心
     async def put_newstudentbaseinfo(self, new_students_base_info: NewBaseInfoUpdate, request: Request):
         """
         新生编辑基本信息
