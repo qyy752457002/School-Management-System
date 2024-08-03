@@ -2,7 +2,6 @@ from sqlalchemy import select, func, update
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
-from sqlalchemy_utils.functions.orm import is_deleted
 
 from models.student_temporary_study import StudentTemporaryStudy
 
