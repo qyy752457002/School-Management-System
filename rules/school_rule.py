@@ -31,7 +31,8 @@ from models.planning_school import PlanningSchool
 from models.public_enum import IdentityType
 from models.school import School
 from models.student_transaction import AuditAction
-from rules.common.common_rule import send_request, send_orgcenter_request, get_identity_by_job, check_social_credit_code
+from rules.common.common_rule import send_request, send_orgcenter_request, get_identity_by_job, \
+    check_social_credit_code, check_school_no
 from rules.enum_value_rule import EnumValueRule
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, convert_snowid_in_model, convert_snowid_to_strings, \
@@ -98,6 +99,9 @@ class SchoolRule(object):
         if exists_school:
             raise Exception(f"学校{school.school_name}已存在")
         school_db = view_model_to_orm_model(school, School, exclude=["id"])
+        if hasattr(school, "school_no"):
+
+            await check_school_no(school.school_no)
 
         school_db.status = PlanningSchoolStatus.DRAFT.value
         school_db.created_uid = 0
