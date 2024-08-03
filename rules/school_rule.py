@@ -537,7 +537,7 @@ class SchoolRule(object):
                 await self.send_user_org_relation_to_org_center(school, res_unit, data_org, res_admin)
             except Exception as e:
                 print('异常', e)
-                raise e
+                # raise e
 
         if action == 'close':
             res = await self.update_school_status(school.id, PlanningSchoolStatus.CLOSED.value, 'close')
