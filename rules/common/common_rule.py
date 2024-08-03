@@ -5,7 +5,7 @@ from mini_framework.databases.conn_managers.db_manager import db_connection_mana
 from mini_framework.utils.http import HTTPRequest
 from pydantic import BaseModel
 
-from business_exceptions.common import SocialCreditCodeExistError
+from business_exceptions.common import SocialCreditCodeExistError, SschoolNoExistError
 from daos.campus_dao import CampusDAO
 from daos.class_dao import ClassesDAO
 from daos.grade_dao import GradeDAO
@@ -350,4 +350,15 @@ async def check_social_credit_code(social_credit_code: str|None,  ):
         print("唯一检测3", social_credit_code,exist)
 
         raise SocialCreditCodeExistError()
+async def check_school_no(school_no: str|None,  ):
+    if school_no is None or school_no == "":
+        return
+    school_dao = get_injector(SchoolDAO)
+
+    exist  = await school_dao.get_school_by_args(school_no=school_no,is_deleted=False)
+    if exist:
+        print("唯一检测2", school_no,exist)
+
+        raise SschoolNoExistError()
+
 
