@@ -262,7 +262,6 @@ class SchoolRule(object):
         enum_value_rule = get_injector(EnumValueRule)
         if founder_type:
             if len(founder_type) > 0:
-
                 founder_type_lv2_res = await enum_value_rule.get_next_level_enum_values('founder_type', founder_type)
                 for item in founder_type_lv2_res:
                     founder_type_lv2.append(item.enum_value)

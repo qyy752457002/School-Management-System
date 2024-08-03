@@ -1,15 +1,16 @@
-from sqlalchemy import select, func, update
-from sqlalchemy import and_
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
+from sqlalchemy import and_
+from sqlalchemy import select, func, update
+
+from models.organization import Organization
+from models.organization_members import OrganizationMembers
+from models.school import School
 from models.teachers import Teacher
 from models.teachers_info import TeacherInfo
 from views.models.teacher_transaction import TeacherTransactionQuery
 from views.models.teachers import TeacherApprovalQuery
-from models.school import School
-from models.organization import Organization
-from models.organization_members import OrganizationMembers
 
 
 class TeachersDao(DAOBase):
@@ -53,7 +54,7 @@ class TeachersDao(DAOBase):
                                                                                               TeacherInfo.org_id == Organization.id).join(
             School, School.id == Teacher.teacher_employer, isouter=True).join(OrganizationMembers, and_(
             OrganizationMembers.org_id == Organization.id, OrganizationMembers.teacher_id == Teacher.teacher_id
-            ))
+        ))
         query = query.where(Teacher.teacher_id == teachers_id,
                             Teacher.is_deleted == False,
                             TeacherInfo.org_id == org_id,
