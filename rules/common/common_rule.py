@@ -5,6 +5,10 @@ from mini_framework.databases.conn_managers.db_manager import db_connection_mana
 from mini_framework.utils.http import HTTPRequest
 from pydantic import BaseModel
 
+from daos.class_dao import ClassesDAO
+from daos.grade_dao import GradeDAO
+from daos.school_dao import SchoolDAO
+from daos.student_session_dao import StudentSessionDao
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import workflow_service_config, orgcenter_service_config, check_result_org_center_api
@@ -290,3 +294,36 @@ async def get_identity_by_job(school_operation_type: List, post_type=None):
                 identity = staff_map.get(key)
                 break
     return identity_type, identity
+
+async def get_school_map(keycolum: str,  ):
+    school_dao = get_injector(SchoolDAO)
+    schools = await school_dao.get_all_schools()
+    dic = {}
+    for row in schools:
+        dic[getattr(row, keycolum)] = row
+    schools= dic
+    return schools
+async def get_session_map(keycolum: str,  ):
+    school_dao = get_injector(StudentSessionDao)
+    schools = await school_dao.get_all_student_sessions()
+    dic = {}
+    for row in schools:
+        dic[getattr(row, keycolum)] = row
+    schools= dic
+    return schools
+async def get_grade_map(keycolum: str,  ):
+    school_dao = get_injector(GradeDAO)
+    schools = await school_dao.get_all_grades()
+    dic = {}
+    for row in schools:
+        dic[getattr(row, keycolum)] = row
+    schools= dic
+    return schools
+async def get_class_map(keycolum: str,  ):
+    school_dao = get_injector(ClassesDAO)
+    schools = await school_dao.get_all_class()
+    dic = {}
+    for row in schools:
+        dic[getattr(row, keycolum)] = row
+    schools= dic
+    return schools

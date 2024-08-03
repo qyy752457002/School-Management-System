@@ -30,6 +30,8 @@ class StudentTemporaryStudy(BaseModel):
 
     process_instance_id: int | str = Field(0, title="", description="", examples=['1'])
     status: str = Field('', title="", description="状态", examples=[''])
+    apply_user: str = Field('', title="", description="", examples=[''])
+    apply_time: str = Field('', title="", description="", examples=[''])
 
     @model_validator(mode="before")
     @classmethod
@@ -69,3 +71,13 @@ class StudentTemporaryStudyOptional(BaseModel):
     process_instance_id: int | str = Field(0, title="", description="", examples=['1'])
     status: str = Field('', title="", description="状态", examples=[''])
     is_deleted: bool = Field('', title="", description="", examples=[''])
+
+class StudentTemporaryStudyPageResult(StudentTemporaryStudy):
+    school_name: int | str | None = Field(None, description="", title='',    examples=["1"], )
+    class_name: int | str | None = Field(None, description="", title='',    examples=["1"], )
+    grade_name: int | str | None = Field(None, description="", title='',    examples=["1"], )
+    session_name: int | str | None = Field(None, description="", title='',    examples=["1"], )
+    origin_session_name: int | str | None = Field(None, description="", title='',    examples=["1"], )
+    origin_school_name: int | str | None = Field(None, description="", title='',    examples=["1"], )
+    origin_class_name: int | str | None = Field(None, description="", title='',    examples=["1"], )
+    origin_grade_name: int | str | None = Field(None, description="", title='',    examples=["1"], )
