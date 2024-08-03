@@ -23,8 +23,10 @@ from daos.students_dao import StudentsDao
 from models.student_temporary_study import StudentTemporaryStudy
 from models.student_transaction import StudentTransaction, TransactionDirection
 from models.students import StudentApprovalAtatus
+from rules.common.common_rule import get_school_map, get_session_map, get_grade_map, get_class_map
 from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
-from views.models.student_temporary_study import StudentTemporaryStudy as StudentTemporaryStudyModel
+from views.models.student_temporary_study import StudentTemporaryStudy as StudentTemporaryStudyModel, \
+    StudentTemporaryStudyPageResult
 from views.models.student_transaction import StudentTransactionStatus, StudentEduInfo
 from views.models.students import StudentsBaseInfo
 
@@ -205,7 +207,26 @@ class StudentTemporalStudyRule(object):
 
         paging = await self.student_temporary_study_dao.query_student_temporary_study_with_page(page_request, **kdict)
         # print(2222222222222, vars(paging.items[0]))
-        paging_result = PaginatedResponse.from_paging(paging, StudentTemporaryStudyModel, )
+        paging_result = PaginatedResponse.from_paging(paging, StudentTemporaryStudyPageResult, )
+        # 处理增加字段
+        schools =await get_school_map('id')
+        session = await get_session_map('session_id')
+        grades = await get_grade_map('id')
+        classes = await get_class_map('id')
+        for item in paging_result.items:
+            item.session_name = session[item.session_id].session_name if item.session_id in session.keys() else ''
+
+            item.school_name = schools[item.school_id].school_name if item.school_id in schools.keys() else ''
+            item.grade_name = grades[item.grade_id].grade_name if item.grade_id in grades.keys() else ''
+            item.class_name = classes[item.class_id].class_name if item.class_id in classes.keys() else ''
+
+            item.origin_session_name = session[item.origin_session_id].session_name if item.origin_session_id in session.keys() else ''
+
+            item.origin_school_name = schools[item.origin_school_id].school_name if item.origin_school_id in schools.keys() else ''
+            item.origin_grade_name = grades[item.origin_grade_id].grade_name if item.origin_grade_id in grades.keys() else ''
+            item.origin_class_name = classes[item.origin_class_id].class_name if item.origin_class_id in classes.keys() else ''
+
+
         # print(3333333333333333,paging_result)
         convert_snowid_to_strings(paging_result,
                                   ["id", 'student_id', 'school_id', 'class_id', 'session_id', 'relation_id',
