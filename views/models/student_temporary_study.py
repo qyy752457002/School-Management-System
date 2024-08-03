@@ -30,6 +30,8 @@ class StudentTemporaryStudy(BaseModel):
 
     process_instance_id: int | str = Field(0, title="", description="", examples=['1'])
     status: str = Field('', title="", description="状态", examples=[''])
+    apply_user: str = Field('', title="", description="", examples=[''])
+    apply_time: str = Field('', title="", description="", examples=[''])
 
     @model_validator(mode="before")
     @classmethod
