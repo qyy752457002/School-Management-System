@@ -31,7 +31,7 @@ from models.planning_school import PlanningSchool
 from models.public_enum import IdentityType
 from models.school import School
 from models.student_transaction import AuditAction
-from rules.common.common_rule import send_request, send_orgcenter_request, get_identity_by_job
+from rules.common.common_rule import send_request, send_orgcenter_request, get_identity_by_job, check_social_credit_code
 from rules.enum_value_rule import EnumValueRule
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, convert_snowid_in_model, convert_snowid_to_strings, \
@@ -206,6 +206,7 @@ class SchoolRule(object):
         exists_school = await self.school_dao.get_school_by_id(school.id)
         if not exists_school:
             raise Exception(f"单位{school.id}不存在")
+        await check_social_credit_code(school.social_credit_code)
         if exists_school.status == PlanningSchoolStatus.DRAFT.value:
             if hasattr(school, 'status'):
                 # school.status= PlanningSchoolStatus.OPENING.value
