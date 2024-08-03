@@ -107,6 +107,10 @@ class PlanningSchoolRule(object):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_args(planning_school_no=planning_school.planning_school_no)
         if exists_planning_school:
             raise PlanningSchoolExistsError()
+        # 检查社会信用编码唯一
+        # exists_planning_school = await self.planning_school_dao.get_planning_school_by_args(social_credit_code=planning_school.social_credit_code)
+
+
         planning_school_db = view_model_to_orm_model(planning_school, PlanningSchool, exclude=["id"])
         planning_school_db.status = PlanningSchoolStatus.DRAFT.value
         planning_school_db.created_uid = 0

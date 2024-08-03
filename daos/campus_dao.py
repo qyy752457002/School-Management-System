@@ -21,6 +21,16 @@ class CampusDAO(DAOBase):
             select(Campus).where(Campus.campus_name == campus_name))
         return result.first()
 
+    async def get_campus_by_args(self, **kwargs):
+        """
+        """
+        session = await self.slave_db()
+        query = select(Campus)
+        for key, value in kwargs.items():
+            query = query.where(getattr(Campus, key) == value)
+        result = await session.execute(query)
+        return result.scalar()
+
     async def add_campus(self, campus):
         session = await self.master_db()
         session.add(campus)
