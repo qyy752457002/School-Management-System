@@ -5,8 +5,11 @@ from mini_framework.databases.conn_managers.db_manager import db_connection_mana
 from mini_framework.utils.http import HTTPRequest
 from pydantic import BaseModel
 
+from business_exceptions.common import SocialCreditCodeExistError
+from daos.campus_dao import CampusDAO
 from daos.class_dao import ClassesDAO
 from daos.grade_dao import GradeDAO
+from daos.planning_school_dao import PlanningSchoolDAO
 from daos.school_dao import SchoolDAO
 from daos.student_session_dao import StudentSessionDao
 from models.public_enum import IdentityType
@@ -327,3 +330,24 @@ async def get_class_map(keycolum: str,  ):
         dic[getattr(row, keycolum)] = row
     schools= dic
     return schools
+async def check_social_credit_code(social_credit_code: str|None,  ):
+    if social_credit_code is None or social_credit_code == "":
+        return
+    pschool_dao = get_injector(PlanningSchoolDAO)
+    school_dao = get_injector(SchoolDAO)
+    campus_dao = get_injector(CampusDAO)
+    exist  = await pschool_dao.get_planning_school_by_args(social_credit_code=social_credit_code,is_deleted=False)
+    if exist:
+        print("唯一检测1", social_credit_code,exist)
+        raise SocialCreditCodeExistError()
+    exist  = await school_dao.get_school_by_args(social_credit_code=social_credit_code,is_deleted=False)
+    if exist:
+        print("唯一检测2", social_credit_code,exist)
+
+        raise SocialCreditCodeExistError()
+    exist  = await campus_dao.get_campus_by_args(social_credit_code=social_credit_code,is_deleted=False)
+    if exist:
+        print("唯一检测3", social_credit_code,exist)
+
+        raise SocialCreditCodeExistError()
+
