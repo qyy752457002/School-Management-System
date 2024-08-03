@@ -1,0 +1,16 @@
+[
+  {
+    "appCode": "base-mt",  
+    "policyCode": "school_rule",  
+    "displayName": "学校策略",  
+    "description": "xxxx",  
+    "authorizationModel": "RBAC",  
+    "rule": [
+      
+        "p,  school, open",
+      "p,  school, import",
+      "p,  school, view"
+    ]
+  }
+  
+]
