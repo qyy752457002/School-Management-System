@@ -31,7 +31,7 @@ from models.planning_school import PlanningSchool
 from models.public_enum import IdentityType
 from models.student_transaction import AuditAction
 from rules import enum_value_rule
-from rules.common.common_rule import send_request, send_orgcenter_request, get_identity_by_job
+from rules.common.common_rule import send_request, send_orgcenter_request, get_identity_by_job, check_social_credit_code
 from rules.enum_value_rule import EnumValueRule
 from rules.school_communication_rule import SchoolCommunicationRule
 from rules.school_eduinfo_rule import SchoolEduinfoRule
@@ -269,6 +269,7 @@ class PlanningSchoolRule(object):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school.id)
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
+        await check_social_credit_code(planning_school.social_credit_code)
 
         if exists_planning_school.status == PlanningSchoolStatus.DRAFT.value:
             if hasattr(planning_school, 'status'):

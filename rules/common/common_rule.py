@@ -330,17 +330,24 @@ async def get_class_map(keycolum: str,  ):
         dic[getattr(row, keycolum)] = row
     schools= dic
     return schools
-async def check_social_credit_code(social_credit_code: str,  ):
+async def check_social_credit_code(social_credit_code: str|None,  ):
+    if social_credit_code is None or social_credit_code == "":
+        return
     pschool_dao = get_injector(PlanningSchoolDAO)
     school_dao = get_injector(SchoolDAO)
     campus_dao = get_injector(CampusDAO)
-    exist  = await pschool_dao.get_planning_school_by_args(social_credit_code=social_credit_code)
+    exist  = await pschool_dao.get_planning_school_by_args(social_credit_code=social_credit_code,is_deleted=False)
     if exist:
+        print("唯一检测1", social_credit_code,exist)
         raise SocialCreditCodeExistError()
-    exist  = await school_dao.get_school_by_args(social_credit_code=social_credit_code)
+    exist  = await school_dao.get_school_by_args(social_credit_code=social_credit_code,is_deleted=False)
     if exist:
+        print("唯一检测2", social_credit_code,exist)
+
         raise SocialCreditCodeExistError()
-    exist  = await campus_dao.get_campus_by_args(social_credit_code=social_credit_code)
+    exist  = await campus_dao.get_campus_by_args(social_credit_code=social_credit_code,is_deleted=False)
     if exist:
+        print("唯一检测3", social_credit_code,exist)
+
         raise SocialCreditCodeExistError()
 
