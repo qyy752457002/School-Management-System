@@ -2,6 +2,7 @@ from sqlalchemy import select, func, update
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
+from sqlalchemy_utils.functions.orm import is_deleted
 
 from models.student_temporary_study import StudentTemporaryStudy
 
@@ -34,7 +35,7 @@ class StudentTemporaryStudyDAO(DAOBase):
 		return result.scalar_one_or_none()
 
 	async def query_student_temporary_study_with_page(self,  page_request: PageRequest, **kwargs):
-		query = select(StudentTemporaryStudy)
+		query = select(StudentTemporaryStudy).where(StudentTemporaryStudy.is_deleted == False)
 		for key, value in kwargs.items():
 			query = query.where(getattr(StudentTemporaryStudy, key) == value)
 		### �˴���д��ѯ����
