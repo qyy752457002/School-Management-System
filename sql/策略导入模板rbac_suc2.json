@@ -1,5 +1,18 @@
 [
   {
+    "appCode": "base-mt",
+    "policyCode": "school_rule",
+    "displayName": "学校策略",
+    "description": "xxxx",
+    "authorizationModel": "RBAC",
+    "rule": [
+
+      "p,  school, open",
+      "p,  school, import",
+      "p,  school, view"
+    ]
+  },
+  {
     "appCode": "base-mt",  
     "policyCode": "city_school_manager_rule",
     "displayName": "市级管理员策略",
