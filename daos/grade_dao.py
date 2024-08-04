@@ -65,7 +65,7 @@ class GradeDAO(DAOBase):
 
     async def delete_grade(self, grade):
         session = await self.master_db()
-        await self.delete(session, grade)
+        await self.delete(session, grade,True)
         # await session.execute(  delete(Grade).where(Grade.id == grade.id) )
         # await session.commit()
         return grade
