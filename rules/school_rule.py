@@ -214,11 +214,13 @@ class SchoolRule(object):
         if changed_fields is not None:
             # 取消 和 驳回等 不校验
             if 'social_credit_code' in changed_fields:
-                await check_social_credit_code(school.social_credit_code)
+                if hasattr(school, 'social_credit_code'):
+                    await check_social_credit_code(school.social_credit_code)
             pass
         else:
             # 默认校验
-            await check_social_credit_code(school.social_credit_code)
+            if hasattr(school, 'social_credit_code'):
+                await check_social_credit_code(school.social_credit_code)
         if exists_school.status == PlanningSchoolStatus.DRAFT.value:
             if hasattr(school, 'status'):
                 # school.status= PlanningSchoolStatus.OPENING.value

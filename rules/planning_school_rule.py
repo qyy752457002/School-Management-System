@@ -269,7 +269,8 @@ class PlanningSchoolRule(object):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school.id)
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
-        await check_social_credit_code(planning_school.social_credit_code)
+        if hasattr(planning_school, 'social_credit_code'):
+            await check_social_credit_code(planning_school.social_credit_code)
 
         if exists_planning_school.status == PlanningSchoolStatus.DRAFT.value:
             if hasattr(planning_school, 'status'):

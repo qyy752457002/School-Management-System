@@ -49,7 +49,7 @@ class ClassesRule(ImportCommonAbstractRule,object):
             raise Exception(f"班级信息{classes.class_name}已存在")
         # 校验 teacher_id,care_teacher_id  根据系统配置来决定是允许手填还是关联老师 默认关联老师
         if self.class_leader_teacher_rule == 1:
-            if hasattr(classes, "teacher_id") and not  classes.teacher_id.isdigit():
+            if hasattr(classes, "teacher_id") and classes.teacher_id is not None and not  classes.teacher_id.isdigit():
                 classes.teacher_id = None
             pass
         elif self.class_leader_teacher_rule == 2:
