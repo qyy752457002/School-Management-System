@@ -65,7 +65,10 @@ class GradeRule(object):
                 await self.grade_dao.add_grade(grade_db)
         convert_snowid_in_model(grade_res, ["id", "school_id",])
         # 发送组织中心
-        await self.send_org_to_org_center(grade_db )
+        try:
+            await self.send_org_to_org_center(grade_db )
+        except Exception as e:
+            print('发送组织中心 异常',e)
         return grade_res
 
     async def update_grade(self, grade):
