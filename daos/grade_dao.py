@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, update, delete, desc
+from sqlalchemy import select, func, update,  desc
 
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging

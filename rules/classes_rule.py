@@ -129,7 +129,7 @@ class ClassesRule(ImportCommonAbstractRule,object):
         # classes_db = await self.classes_dao.update_classes(classes_db,ctype)
         # 更新不用转换   因为得到的对象不熟全属性
         # classes = orm_model_to_view_model(classes_db, ClassesModel, exclude=[""])
-        classes_db = deepcopy(classes_db)
+        classes_db = copy.deepcopy(classes_db)
         convert_snowid_in_model(classes_db,['id'])
         return classes_db
 
