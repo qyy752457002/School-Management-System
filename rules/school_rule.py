@@ -206,11 +206,21 @@ class SchoolRule(object):
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""])
         return school_db
 
-    async def update_school_byargs(self, school, ):
+    async def update_school_byargs(self, school, changed_fields: list=None, ):
         exists_school = await self.school_dao.get_school_by_id(school.id)
         if not exists_school:
             raise Exception(f"单位{school.id}不存在")
-        await check_social_credit_code(school.social_credit_code)
+        # 通过指定更新的字段 来 决定是否校验 信用编码
+        if changed_fields is not None:
+            # 取消 和 驳回等 不校验
+            if 'social_credit_code' in changed_fields:
+                if hasattr(school, 'social_credit_code'):
+                    await check_social_credit_code(school.social_credit_code)
+            pass
+        else:
+            # 默认校验
+            if hasattr(school, 'social_credit_code'):
+                await check_social_credit_code(school.social_credit_code)
         if exists_school.status == PlanningSchoolStatus.DRAFT.value:
             if hasattr(school, 'status'):
                 # school.status= PlanningSchoolStatus.OPENING.value
@@ -640,7 +650,13 @@ class SchoolRule(object):
         tinfo = await self.school_dao.get_school_by_process_instance_id(process_instance_id)
         if tinfo:
             tinfo.workflow_status = status.value
-            await self.update_school_byargs(tinfo)
+            if status == AuditAction.PASS.value:
+                await self.update_school_byargs(tinfo,)
+
+                pass
+            else:
+                # 不校验
+                await self.update_school_byargs(tinfo,['workflow_status'])
 
         pass
 
