@@ -8,7 +8,7 @@ class Classes(BaseModel):
     """
     班级表
     """
-    id: int|str = Query(None, title="", description="id", example='1'),
+    id: int|str = Query(None, title="", description="id", example='1')
 
     school_id: int|str = Field(None, title="学校ID", description="学校ID", examples=['1'])
     grade_no: str = Field('', title="年级编号", description="年级编号", examples=['一年级'])
@@ -55,7 +55,7 @@ class Classes(BaseModel):
         for _change in _change_list:
             if _change not in data:
                 continue
-            if isinstance(data[_change], str):
+            if isinstance(data[_change], str) and data[_change].isdigit():
                 data[_change] = int(data[_change])
             elif isinstance(data[_change], int):
                 # data[_change] = str(data[_change])
