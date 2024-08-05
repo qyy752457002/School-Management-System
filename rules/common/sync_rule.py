@@ -48,7 +48,6 @@ class SyncRule(object):
     async def query_sync_school_with_page(self, query_model: SchoolSyncQueryModel, page_request: PageRequest):
         if query_model.type == "planning_school":
             paging = await self.planning_school_dao.query_sync_planning_school_with_page(query_model, page_request)
-
         elif query_model.type == "school":
             paging = await self.school_dao.query_sync_school_with_page(query_model, page_request)
         else:

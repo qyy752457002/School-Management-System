@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Optional
+from typing import List
 
 from fastapi import Query
 from pydantic import BaseModel, Field
