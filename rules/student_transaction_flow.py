@@ -186,6 +186,7 @@ class StudentTransactionFlowRule(object):
 
         # original_dict_map_view_orm['student_transaction_in'] = student_transaction_flow.__dict__
         dict2['student_info'] = original_dict_map_view_orm['student_info']
+        dict2['direction'] = original_dict_map_view_orm['direction']
 
         dict2['original_dict'] = original_dict_map_view_orm
         # 检查字典  如果哪个值为query 则设为none birthday registration_date enrollment_date

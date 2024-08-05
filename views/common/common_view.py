@@ -11,7 +11,7 @@ from views.models.extend_params import ExtendParams
 
 from id_validator import validator
 
-from views.models.system import UnitType
+from views.models.system import UnitType, OrgCenterApiStatus
 
 from enum import Enum
 
@@ -309,3 +309,13 @@ def convert_query_to_none(obj):
             if math.isnan(field):
                 setattr(obj, field_name, None)
     return obj
+def check_result_org_center_api(result):
+    """
+
+    """
+    is_check_force = False
+
+    if result.get("status") == OrgCenterApiStatus.ERROR.value and is_check_force:
+
+        raise Exception(f"orgcenter api error {result.get('msg')}")
+

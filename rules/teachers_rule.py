@@ -327,7 +327,6 @@ class TeachersRule(object):
                                                     "is_approval")
             # todo 先在组织中成员中，再发送到组织中心
             await self.add_teacher_organization_members(int(teachers_id))
-            await self.send_teacher_to_org_center(int(teachers_id))
             return "该老师入职审批已通过"
 
     async def entry_rejected(self, teachers_id, process_instance_id, user_id, reason):
@@ -378,6 +377,7 @@ class TeachersRule(object):
             await self.teachers_dao.update_teachers(teacher, *need_update_list)
             await self.teacher_pending(teachers_id)
             await self.teacher_active(teachers_id)
+            await self.add_teacher_organization_members(int(teachers_id))
             return "该老师关键信息变更审批已通过"
 
     async def teacher_info_change_rejected(self, teachers_id, process_instance_id, user_id, reason):

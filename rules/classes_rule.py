@@ -49,6 +49,8 @@ class ClassesRule(ImportCommonAbstractRule,object):
             raise Exception(f"班级信息{classes.class_name}已存在")
         # 校验 teacher_id,care_teacher_id  根据系统配置来决定是允许手填还是关联老师 默认关联老师
         if self.class_leader_teacher_rule == 1:
+            if hasattr(classes, "teacher_id") and classes.teacher_id is not None and not  classes.teacher_id.isdigit():
+                classes.teacher_id = None
             pass
         elif self.class_leader_teacher_rule == 2:
 
@@ -98,9 +100,18 @@ class ClassesRule(ImportCommonAbstractRule,object):
         classes_db.id = SnowflakeIdGenerator(1, 1).generate_id()
         classes_db = await self.classes_dao.add_classes(classes_db)
         classes = orm_model_to_view_model(classes_db, ClassesModel, exclude=["created_at", 'updated_at'])
-        # 组织中心对接过去
-        await self.send_org_to_org_center(classes_db)
         await self.grade_dao.increment_class_number(classes.school_id,classes.grade_id)
+
+        # 组织中心对接过去 todo  接口故障  超时  不让他影响接口
+        try:
+            await self.send_org_to_org_center(classes_db)
+            pass
+        except TypeError as e:
+            print('班级作为部门对接失败',e)
+        except Exception as e:
+            print('班级作为部门对接失败',e)
+
+
 
         return classes
 
@@ -118,7 +129,7 @@ class ClassesRule(ImportCommonAbstractRule,object):
         # classes_db = await self.classes_dao.update_classes(classes_db,ctype)
         # 更新不用转换   因为得到的对象不熟全属性
         # classes = orm_model_to_view_model(classes_db, ClassesModel, exclude=[""])
-        classes_db = deepcopy(classes_db)
+        classes_db = copy.deepcopy(classes_db)
         convert_snowid_in_model(classes_db,['id'])
         return classes_db
 
@@ -198,7 +209,7 @@ class ClassesRule(ImportCommonAbstractRule,object):
                 "administrativeDivisionCity": "",
                 "administrativeDivisionCounty": "",
                 "administrativeDivisionProvince": "",
-                "createdTime": school.created_at,
+                # "createdTime": school.created_at,
                 "departmentObjs": [],
                 "locationAddress": "",
                 "locationCity": "",
@@ -209,7 +220,7 @@ class ClassesRule(ImportCommonAbstractRule,object):
                 "unitId": "",
                 "unitName": school.school_name,
                 "unitType": "",
-                "updatedTime": school.updated_at
+                # "updatedTime": school.updated_at
             },
             "isDeleted": False,
             "isEnabled": True,
@@ -233,8 +244,8 @@ class ClassesRule(ImportCommonAbstractRule,object):
         apiname = '/api/add-group'
         # 字典参数
         datadict = dict_data
-        if isinstance(datadict['createdTime'], (date, datetime)):
-            datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
+        # if isinstance(datadict['createdTime'], (date, datetime)):
+        #     datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
 
         datadict = convert_dates_to_strings(datadict)
         print(datadict, '字典参数')

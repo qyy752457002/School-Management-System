@@ -65,6 +65,7 @@ class School(BaseDBModel):
     is_entity: Mapped[bool] = mapped_column(nullable=True, default=True, comment=" 是否实体")
     admin: Mapped[str] = mapped_column(String(64), nullable=True, comment="管理员", default='')
     admin_phone: Mapped[str] = mapped_column(String(64), nullable=True, comment="管理员手机", default='')
+    org_center_info: Mapped[str] = mapped_column(String(255), nullable=True, comment="组织中心信息", default='')
 
     process_instance_id: Mapped[int] = mapped_column(BigInteger, nullable=True, default=0, comment="流程ID")
     workflow_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="工作流审核状态", default='')

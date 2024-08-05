@@ -2,6 +2,7 @@ from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.utils.json import JsonUtils
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
+from pydantic import BaseModel
 
 from business_exceptions.student import StudentFamilyInfoNotFoundError, StudentNotFoundError, \
     StudentFamilyInfoExistsError
@@ -62,8 +63,11 @@ class StudentsFamilyInfoRule(object):
         students_family_info = orm_model_to_view_model(students_family_info_db, StudentsFamilyInfoModel, exclude=[""])
         convert_snowid_in_model(students_family_info,
                                 ["id", 'student_id', 'school_id', 'class_id', 'session_id', 'student_family_info_id'])
-        # 家长身份 使用统一方法 todo
-        await self.send_student_familyinfo_to_org_center(students_family_info, exits_student)
+        # 家长身份 使用统一方法 todo 调试
+        try:
+            await self.send_student_familyinfo_to_org_center(students_family_info, exits_student)
+        except Exception as e:
+            print('对接家长信息失败',e)
 
 
         return students_family_info
@@ -116,39 +120,39 @@ class StudentsFamilyInfoRule(object):
             student_family_info.append(student_family_info_model)
 
         return student_family_info
-    async def send_student_familyinfo_to_org_center(self, exists_planning_school_origin:StudentsFamilyInfo,exits_student:Student):
+    async def send_student_familyinfo_to_org_center(self, exists_planning_school_origin:StudentsFamilyInfo|BaseModel,exits_student:Student):
         student_baseinfo=baseinfo = await self.students_base_info_dao.get_students_base_info_by_student_id(exits_student.student_id)
         # data_dict = to_dict(teacher_db)
         # print(data_dict)
         school = await self.school_dao.get_school_by_id(student_baseinfo.school_id)
-        dict_data = EducateUserModel(**exists_planning_school_origin.__dict__,currentUnit=baseinfo.school,
-                                     # createdTime= exists_planning_school_origin.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                                     # updatedTime=exists_planning_school_origin.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
-                                     name=exists_planning_school_origin.name,
+        dict_data = EducateUserModel(**exists_planning_school_origin.__dict__,
+                                     currentUnit=baseinfo.school,
+                                     # name=exists_planning_school_origin.name,
                                      userCode=exists_planning_school_origin.identification_number,
-                                     userId=exists_planning_school_origin.student_family_info_id,
+                                     # userId=exists_planning_school_origin.student_family_info_id,
                                      phoneNumber= exists_planning_school_origin.phone_number,
                                      # name=exits_student.student_name,
                                      # userCode=student_baseinfo.student_number,
                                      # userId=student_baseinfo.student_id,
                                      # phoneNumber= '',
+                                     # todo 家长的部门 用班级还是用 基础系统的名称
                                      departmentId=student_baseinfo.class_id,
                                      departmentName=student_baseinfo.class_id,
-                                     gender= exists_planning_school_origin.gender,
+                                     # gender= exists_planning_school_origin.gender,
                                      idcard=exists_planning_school_origin.identification_number,
                                      idcardType=exists_planning_school_origin.identification_type,
                                      realName=exists_planning_school_origin.name,
                                      # 组织和主单位
                                      owner=school.school_no,
                                      mainUnitName=school.school_no,
-                                     identity=exists_planning_school_origin.identity,
+                                     # identity=exists_planning_school_origin.identity,
                                      identityTypeNames=exists_planning_school_origin.identity_type,
                                      )
-        dict_data = dict_data.dict()
-        params_data = JsonUtils.dict_to_json_str(dict_data)
+        dict_data = dict_data.__dict__
+        # params_data = JsonUtils.dict_to_json_str(dict_data)
         api_name = '/api/add-educate-user'
         # 字典参数
-        datadict = params_data
+        datadict = dict_data
         print(datadict, '参数')
         response = await send_orgcenter_request(api_name, datadict, 'post', False)
         print(response, '接口响应')

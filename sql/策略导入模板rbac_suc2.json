@@ -1,0 +1,82 @@
+[
+  {
+    "appCode": "base-mt",
+    "policyCode": "school_rule",
+    "displayName": "学校策略",
+    "description": "xxxx",
+    "authorizationModel": "RBAC",
+    "rule": [
+
+      "p,  school, open",
+      "p,  school, import",
+      "p,  school, view"
+    ]
+  },
+  {
+    "appCode": "base-mt",  
+    "policyCode": "city_school_manager_rule",
+    "displayName": "市级管理员策略",
+    "description": "xxxx",  
+    "authorizationModel": "RBAC",  
+    "rule": [
+      "p,  grade, view",
+      "p,  organization, view",
+      "p,  major, add",
+        "p,  major, delete",
+      "p,  major, edit",
+      "p,  grade, add",
+      "p,  grade, delete",
+      "p,  grade, edit",
+
+      "p,  course, add",
+      "p,  course, view",
+
+      "p,  subject, view",
+
+      "p,  planning_school_open_audit, view",
+      "p,  planning_school_open_audit, pass",
+      "p,  planning_school_open_audit, refuse",
+      "p,  planning_school_close_audit, view",
+      "p,  planning_school_close_audit, pass",
+      "p,  planning_school_close_audit, refuse",
+      "p,  planning_school_keyinfo_audit, view",
+      "p,  planning_school_keyinfo_audit, pass",
+      "p,  planning_school_keyinfo_audit, refuse",
+      "p,  school_open_audit, view",
+      "p,  school_open_audit, pass",
+      "p,  school_open_audit, refuse",
+      "p,  school_close_audit, view",
+      "p,  school_close_audit, pass",
+      "p,  school_close_audit, refuse",
+      "p,  school_keyinfo_audit, view",
+      "p,  school_keyinfo_audit, pass",
+      "p,  school_keyinfo_audit, refuse",
+
+      "p,  administration, add",
+      "p,  administration, view",
+      "p,  administration_open_audit, view",
+      "p,  administration_open_audit, pass",
+      "p,  administration_open_audit, refuse",
+      "p,  administration_close_audit, view",
+      "p,  administration_close_audit, pass",
+      "p,  administration_close_audit, refuse",
+      "p,  administration_keyinfo_audit, view",
+      "p,  administration_keyinfo_audit, pass",
+      "p,  administration_keyinfo_audit, refuse",
+
+      "p,  institution, add",
+      "p,  institution, import",
+      "p,  institution, view",
+      "p,  institution_open_audit, view",
+      "p,  institution_open_audit, pass",
+      "p,  institution_open_audit, refuse",
+      "p,  institution_close_audit, view",
+      "p,  institution_close_audit, pass",
+      "p,  institution_close_audit, refuse",
+      "p,  institution_keyinfo_audit, view",
+      "p,  institution_keyinfo_audit, pass",
+      "p,  institution_keyinfo_audit, refuse"
+    ]
+  }
+  
+]

@@ -31,6 +31,16 @@ class PlanningSchoolDAO(DAOBase):
                 PlanningSchool.is_deleted == False))
         return result.first()
 
+    async def get_planning_school_by_args(self, **kwargs):
+        """
+        """
+        session = await self.slave_db()
+        query = select(PlanningSchool)
+        for key, value in kwargs.items():
+            query = query.where(getattr(PlanningSchool, key) == value)
+        result = await session.execute(query)
+        return result.scalar()
+
     async def add_planning_school(self, planning_school):
         session = await self.master_db()
         session.add(planning_school)
@@ -191,7 +201,6 @@ class PlanningSchoolDAO(DAOBase):
         if query_model.school_operation_type:
             query_campus = query_campus.where(
                 PlanningSchool.planning_school_operation_type == query_model.school_operation_type)
-
         paging = await self.query_page(query_campus, page_request)
         return paging
 

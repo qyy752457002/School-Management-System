@@ -6,9 +6,17 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.http import HTTPRequest
 from pydantic import BaseModel
 
+from business_exceptions.common import SocialCreditCodeExistError, SschoolNoExistError
+from daos.campus_dao import CampusDAO
+from daos.class_dao import ClassesDAO
+from daos.grade_dao import GradeDAO
+from daos.planning_school_dao import PlanningSchoolDAO
+from daos.school_dao import SchoolDAO
+from daos.student_session_dao import StudentSessionDao
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
-from views.common.common_view import workflow_service_config, orgcenter_service_config
+from views.common.common_view import workflow_service_config, orgcenter_service_config, check_result_org_center_api
+from typing import List, Type, Dict
 
 
 async def send_request(apiname, datadict, method='get', is_need_query_param=False):
@@ -207,11 +215,13 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
             return {}
         if isinstance(response, str):
             return {response}
+        check_result_org_center_api(response)
         return response
         pass
     except Exception as e:
         print('发生异常', e)
         traceback.print_exc()
+        raise Exception(e)
         return {}
 
     pass
@@ -291,3 +301,68 @@ async def get_identity_by_job(school_operation_type: List, post_type=None):
                 identity = staff_map.get(key)
                 break
     return identity_type, identity
+
+async def get_school_map(keycolum: str,  ):
+    school_dao = get_injector(SchoolDAO)
+    schools = await school_dao.get_all_schools()
+    dic = {}
+    for row in schools:
+        dic[getattr(row, keycolum)] = row
+    schools= dic
+    return schools
+async def get_session_map(keycolum: str,  ):
+    school_dao = get_injector(StudentSessionDao)
+    schools = await school_dao.get_all_student_sessions()
+    dic = {}
+    for row in schools:
+        dic[getattr(row, keycolum)] = row
+    schools= dic
+    return schools
+async def get_grade_map(keycolum: str,  ):
+    school_dao = get_injector(GradeDAO)
+    schools = await school_dao.get_all_grades()
+    dic = {}
+    for row in schools:
+        dic[getattr(row, keycolum)] = row
+    schools= dic
+    return schools
+async def get_class_map(keycolum: str,  ):
+    school_dao = get_injector(ClassesDAO)
+    schools = await school_dao.get_all_class()
+    dic = {}
+    for row in schools:
+        dic[getattr(row, keycolum)] = row
+    schools= dic
+    return schools
+async def check_social_credit_code(social_credit_code: str|None,  ):
+    if social_credit_code is None or social_credit_code == "":
+        return
+    pschool_dao = get_injector(PlanningSchoolDAO)
+    school_dao = get_injector(SchoolDAO)
+    campus_dao = get_injector(CampusDAO)
+    exist  = await pschool_dao.get_planning_school_by_args(social_credit_code=social_credit_code,is_deleted=False)
+    if exist:
+        print("唯一检测1", social_credit_code,exist)
+        raise SocialCreditCodeExistError()
+    exist  = await school_dao.get_school_by_args(social_credit_code=social_credit_code,is_deleted=False)
+    if exist:
+        print("唯一检测2", social_credit_code,exist)
+
+        raise SocialCreditCodeExistError()
+    exist  = await campus_dao.get_campus_by_args(social_credit_code=social_credit_code,is_deleted=False)
+    if exist:
+        print("唯一检测3", social_credit_code,exist)
+
+        raise SocialCreditCodeExistError()
+async def check_school_no(school_no: str|None,  ):
+    if school_no is None or school_no == "":
+        return
+    school_dao = get_injector(SchoolDAO)
+
+    exist  = await school_dao.get_school_by_args(school_no=school_no,is_deleted=False)
+    if exist:
+        print("唯一检测2", school_no,exist)
+
+        raise SschoolNoExistError()
+
+

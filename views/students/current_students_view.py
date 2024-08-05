@@ -17,12 +17,14 @@ from rules.classes_rule import ClassesRule
 from rules.graduation_student_rule import GraduationStudentRule
 from rules.operation_record import OperationRecordRule
 from rules.school_rule import SchoolRule
+from rules.student_temporary_study import StudentTemporalStudyRule
 from rules.student_transaction import StudentTransactionRule
 from rules.student_transaction_flow import StudentTransactionFlowRule
 from rules.students_key_info_change_rule import StudentsKeyInfoChangeRule
 from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, get_client_ip, convert_dates_to_strings
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationType, OperationTarget
+from views.models.student_temporary_study import StudentTemporaryStudy, StudentTemporaryStudyOptional
 from views.models.student_transaction import StudentTransaction, StudentTransactionFlow, StudentTransactionStatus, \
     StudentEduInfo, StudentTransactionAudit, StudentEduInfoOut, StudentTransactionPageSearch
 from views.models.students import NewStudents, StudentsKeyinfo, StudentsBaseInfo, StudentsFamilyInfo, \
@@ -53,6 +55,7 @@ class CurrentStudentsView(BaseView):
         self.students_family_info_rule = get_injector(StudentsFamilyInfoRule)
         self.graduation_student_rule = get_injector(GraduationStudentRule)
         self.student_key_info_change_rule = get_injector(StudentsKeyInfoChangeRule)
+        self.student_temporary_study_rule = get_injector(StudentTemporalStudyRule)
 
     async def get_student_session(self, sessions_id: int|str = Query(..., title="", description="届别id",
                                                                  example="1")):
@@ -151,8 +154,6 @@ class CurrentStudentsView(BaseView):
         if is_lock:
             raise StudentTransactionExistsError()
 
-
-
         # 新增转学数据到库 用于接收流程ID后处理数据变更 后期可以采用工作流的分布式传参到另外一个接口来实现变更代替这里
         # 转出
         student_edu_info_out= copy.deepcopy(student_edu_info)
@@ -160,7 +161,7 @@ class CurrentStudentsView(BaseView):
         res_student = await self.students_base_info_rule.get_students_base_info_by_student_id(student_edu_info.student_id)
         if res_student:
 
-            student_edu_info_out.school_id = res_student.school_id
+            student_edu_info_out.school_id = int(res_student.school_id)
             student_edu_info_out.grade_id = res_student.grade_id
             student_edu_info_out.class_id = res_student.class_id
             class_rule = get_injector(ClassesRule)
@@ -185,7 +186,8 @@ class CurrentStudentsView(BaseView):
         student_edu_info=await  self.students_rule.complete_info_students_by_id(student_edu_info)
         # student_edu_info.school_name = stuinfo.school_name
 
-        origin_data = {'student_transaction_in': convert_dates_to_strings(student_edu_info.__dict__) , 'student_transaction_out': convert_dates_to_strings(student_edu_info_out.__dict__) , 'student_info': convert_dates_to_strings(stuinfo.__dict__) }
+        origin_data = {'student_transaction_in': convert_dates_to_strings(student_edu_info.__dict__) , 'student_transaction_out': convert_dates_to_strings(student_edu_info_out.__dict__) , 'student_info': convert_dates_to_strings(stuinfo.__dict__),
+                       'direction': TransactionDirection.IN.value,  }
 
         res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info,stuinfo,stuinfo,None, origin_data)
         process_instance_id= node_instance_id =  0
@@ -304,7 +306,9 @@ class CurrentStudentsView(BaseView):
         student_edu_info_in.student_id= res_student_add.student_id
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
 
-        origin_data = {'student_transaction_in':  '', 'student_transaction_out':convert_dates_to_strings( student_edu_info_out.__dict__), 'student_info':convert_dates_to_strings( res_student_add.__dict__), }
+        origin_data = {'student_transaction_in':  '', 'student_transaction_out':convert_dates_to_strings( student_edu_info_out.__dict__), 'student_info':convert_dates_to_strings( res_student_add.__dict__),
+                       'direction': TransactionDirection.IN.value,
+                       }
         # origin_datastr= JsonUtils.dict_to_json_str(origin_data) student_info
         origin_data['student_transaction_in'] = convert_dates_to_strings(student_edu_info_in.__dict__)
 
@@ -382,7 +386,9 @@ class CurrentStudentsView(BaseView):
         student_edu_info_in.student_id= student_id
         stuinfo= await self.students_rule.get_students_by_id(student_edu_info_in.student_id)
 
-        origin_data = {'student_transaction_in': convert_dates_to_strings(student_edu_info_in.__dict__), 'student_transaction_out': convert_dates_to_strings(student_edu_info_out.__dict__), 'student_info':convert_dates_to_strings(res_student.__dict__) , }
+        origin_data = {'student_transaction_in': convert_dates_to_strings(student_edu_info_in.__dict__), 'student_transaction_out': convert_dates_to_strings(student_edu_info_out.__dict__), 'student_info':convert_dates_to_strings(res_student.__dict__) ,
+                       'direction': TransactionDirection.IN.value,
+                       }
 
         res3 = await self.student_transaction_flow_rule.add_student_transaction_work_flow(student_edu_info_in,stuinfo,student_edu_info_in,None,origin_data)
         process_instance_id= node_instance_id =  0
@@ -536,6 +542,37 @@ class CurrentStudentsView(BaseView):
 
         return {'student_transaction_in': tinfo, 'student_transaction_out': relationinfo,
                 'student_info': stubaseinfo, }
+    # 新增 临时借读
+    async def post_temporary_study(self, student_temporary_study: StudentTemporaryStudy):
+        # print(new_students_key_info)
+        res3 = await self.student_temporary_study_rule.add_student_temporary_study(student_temporary_study)
+
+        return res3
+    async def page_temporary_study(self,
+                                   student_name: str = Query("", title="", description="", ),
+                                   student_gender: str = Query("", title="", description="", ),
+                                   apply_user: str = Query("", title="", description="", ),
+                                   edu_number: str = Query("", title="", description="", ),
+                                   school_id: str|int = Query(None, title="", description="",   ),
+                           status: StudentTransactionStatus = Query(None, title="", description="状态", ),
+                           page_request=Depends(PageRequest)
+                           ):
+        items = []
+        # exit(1)
+        # return page_search
+
+        paging_result = await self.student_temporary_study_rule.query_student_temporary_study_with_page(page_request, status,student_name,student_gender,school_id,apply_user,edu_number,)
+        return paging_result
+
+    async def patch_temporary_study_cancel(self,     student_temporary_study_id: str|int = Query(None, title="", description="",   ),
+                                           ):
+        """
+        """
+        student_temporary_study = StudentTemporaryStudyOptional(id=int(student_temporary_study_id),
+                                                                  is_deleted=True,
+                                                                  )
+        res = await self.student_temporary_study_rule.update_student_temporary_study(student_temporary_study)
+        return res
 
 class CurrentStudentsBaseInfoView(BaseView):
     def __init__(self):

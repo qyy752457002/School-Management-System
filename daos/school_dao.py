@@ -3,7 +3,6 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 from sqlalchemy import select, func, update, desc
 
-from models.campus import Campus
 from models.planning_school import PlanningSchool
 from models.school import School
 from models.school_communication import SchoolCommunication
@@ -30,6 +29,16 @@ class SchoolDAO(DAOBase):
         result = await session.execute(
             select(School).where(School.school_name == school_name).where(School.is_deleted == False))
         return result.first()
+
+    async def get_school_by_args(self, **kwargs):
+        """
+        """
+        session = await self.slave_db()
+        query = select(School)
+        for key, value in kwargs.items():
+            query = query.where(getattr(School, key) == value)
+        result = await session.execute(query)
+        return result.scalar()
 
     async def add_school(self, school):
         session = await self.master_db()
@@ -228,41 +237,7 @@ class SchoolDAO(DAOBase):
             query_school = query_school.where(School.school_category == query_model.school_category)
         if query_model.school_operation_type:
             query_school = query_school.where(School.school_operation_type == query_model.school_operation_type)
-
-        query_campus = select(Campus.campus_no, Campus.social_credit_code, Campus.campus_name.label("school_name"),
-                              Campus.borough,
-                              Campus.block, Campus.founder_type, Campus.founder_type_lv2,
-                              Campus.founder_type_lv3).where(
-            Campus.is_deleted == False, Campus.status == "opening")
-        if query_model.social_credit_code:
-            query_campus = query_campus.where(Campus.social_credit_code == query_model.social_credit_code)
-        if query_model.school_name:
-            query_campus = query_campus.where(
-                Campus.campus_name.label("school_name").like(f"%{query_model.school_name}%"))
-        if query_model.borough:
-            query_campus = query_campus.where(Campus.borough == query_model.borough)
-        if query_model.block:
-            query_campus = query_campus.where(Campus.block == query_model.block)
-        if query_model.school_edu_level:
-            query_campus = query_campus.where(Campus.campus_operation_type == query_model.school_edu_level)
-        if query_model.school_category:
-            query_campus = query_campus.where(Campus.campus_operation_type_lv2 == query_model.school_category)
-        if query_model.school_operation_type:
-            query_campus = query_campus.where(Campus.campus_operation_type_lv3 == query_model.school_operation_type)
-
-        query_planning_school = select(School.school_no, School.social_credit_code, School.school_name, School.borough,
-                              School.block,
-                              School.founder_type, School.founder_type_lv2, School.founder_type_lv3).where(
-            School.is_deleted == False, School.status == "normal")
-
-        if query_model.type == "planning_school":
-            query = query_planning_school
-        elif query_model.type == "school":
-            query = query_school
-        elif query_model.type == "campus":
-            query = query_campus
-
-        paging = await self.query_page(query, page_request)
+        paging = await self.query_page(query_school, page_request)
         return paging
 
     async def get_sync_school(self, school_no):
