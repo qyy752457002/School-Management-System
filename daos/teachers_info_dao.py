@@ -250,7 +250,7 @@ class TeachersInfoDao(DAOBase):
                        School.school_name, School.borough).join(Teacher,
                                                                 Teacher.teacher_id == TeacherInfo.teacher_id).join(
             School, School.id == Teacher.teacher_employer).where(
-            Teacher.teacher_main_status == "employed",
+            Teacher.teacher_main_status == "employed",Teacher.is_approval == False,
             Teacher.is_deleted == False)
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
