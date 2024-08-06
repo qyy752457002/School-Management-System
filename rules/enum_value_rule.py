@@ -37,8 +37,9 @@ class EnumValueRule(object):
             raise EnumValueNotFoundError()
         enum = orm_model_to_view_model(enum_value_db, EnumValueModel)
         enum_value = enum.enum_value
-        parent_id= enum.id
-        return enum_value,parent_id
+        parent_id = enum.id
+        return enum_value, parent_id
+
     async def get_address_by_description(self, description):
         locations = description.split('-')
         if len(locations) == 1:

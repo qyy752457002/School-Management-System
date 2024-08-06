@@ -153,7 +153,6 @@ class TeachersInfoRule(object):
 
     async def update_teachers_info(self, teachers_info: TeacherInfoSubmit, user_id):
         teachers_info.teacher_id = int(teachers_info.teacher_id)
-
         exits_teacher = await self.teachers_dao.get_teachers_by_id(teachers_info.teacher_id)
         if not exits_teacher:
             raise TeacherNotFoundError()
