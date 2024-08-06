@@ -536,7 +536,6 @@ class SchoolView(BaseView):
                                                                     examples=['教育部门']),
                                 founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
                                                                     examples=['县级教育部门']),
-
                                 school_no: str|None = Query(None, title="学校编号", description="学校编号",
                                                        example='SC2032633'),
                                 school_name: str = Query(None, description="学校名称",

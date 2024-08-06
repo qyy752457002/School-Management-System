@@ -163,7 +163,7 @@ class TeacherWorkFlowRule(object):
         result = await httpreq.get_json(url, headerdict)
         return result
 
-    async def get_work_flow_instance_by_process_instance_id(self, process_instance_id: int):
+    async def get_work_flow_instance_by_process_instance_id(self, process_instance_id):
         httpreq = HTTPRequest()
         url = workflow_service_config.workflow_config.get("url")
         params = {"process_instance_id": process_instance_id}

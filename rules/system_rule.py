@@ -94,10 +94,6 @@ class SystemRule(object):
                 if title == '':
                     role = await self.roles_dao.get_roles_by_id(item.id)
                     title = role.app_name
-
-                # item.children= await self.query_system_with_kwargs(role_id,unit_type, edu_type, system_type,item.id)
-                # print(ids,item)
-
         return paging_result, title
 
     async def query_system_with_kwargs(self, role_id, unit_type, edu_type, system_type, parent_id=''):

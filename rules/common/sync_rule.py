@@ -1,4 +1,5 @@
 from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model
 
@@ -12,6 +13,7 @@ from daos.school_communication_dao import SchoolCommunicationDAO
 from daos.school_dao import SchoolDAO
 from daos.school_eduinfo_dao import SchoolEduinfoDAO
 from daos.teachers_info_dao import TeachersInfoDao
+from rules.leader_info_rule import LeaderInfoRule
 from views.models.campus import Campus as CampusModel
 from views.models.campus_communications import CampusCommunications as CampusCommunicationModel
 from views.models.campus_eduinfo import CampusEduInfo as CampusEduInfoModel
@@ -48,7 +50,6 @@ class SyncRule(object):
     async def query_sync_school_with_page(self, query_model: SchoolSyncQueryModel, page_request: PageRequest):
         if query_model.type == "planning_school":
             paging = await self.planning_school_dao.query_sync_planning_school_with_page(query_model, page_request)
-
         elif query_model.type == "school":
             paging = await self.school_dao.query_sync_school_with_page(query_model, page_request)
         else:
@@ -66,6 +67,7 @@ class SyncRule(object):
 
     async def get_sync_school(self, unique_code_list):
         sync_school_list = []
+        leader_info_rule = get_injector(LeaderInfoRule)
         for item in unique_code_list:
             school_info = {}
             sync_planing_school = await self.planning_school_dao.get_sync_school(item)
@@ -84,6 +86,8 @@ class SyncRule(object):
                 school_communication = orm_model_to_view_model(school_communication_db,
                                                                PlanningSchoolCommunicationModel)
                 school_info["school_communication"] = school_communication
+                leader_info_list = await leader_info_rule.get_all_leader_info(planning_school_id, None)
+                school_info["leader_info"] = leader_info_list
                 sync_school_list.append(school_info)
                 continue
             if sync_school:
@@ -97,12 +101,15 @@ class SyncRule(object):
                     school_id)
                 school_communication = orm_model_to_view_model(school_communication_db, SchoolCommunicationModel)
                 school_info["school_communication"] = school_communication
+                leader_info_list = await leader_info_rule.get_all_leader_info(None, school_id)
+                school_info["leader_info"] = leader_info_list
                 sync_school_list.append(school_info)
                 continue
             if sync_campus:
                 campus = orm_model_to_view_model(sync_campus, CampusModel)
                 school_info["school"] = campus
                 campus_id = campus.id
+                school_id = campus.school_id
                 campus_edu_info_db = await self.campus_eduinfo_dao.get_campus_eduinfo_by_campus_id(campus_id)
                 campus_edu_info = orm_model_to_view_model(campus_edu_info_db, CampusEduInfoModel)
                 school_info["school_edu_info"] = campus_edu_info
@@ -110,5 +117,7 @@ class SyncRule(object):
                     campus_id)
                 campus_communication = orm_model_to_view_model(campus_communication_db, CampusCommunicationModel)
                 school_info["school_communication"] = campus_communication
+                leader_info_list = await leader_info_rule.get_all_leader_info(None, school_id)
+                school_info["leader_info"] = leader_info_list
                 sync_school_list.append(school_info)
         return sync_school_list

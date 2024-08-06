@@ -110,10 +110,11 @@ class CampusDAO(DAOBase):
         return result.scalar()
 
     async def query_campus_with_page(self, page_request: PageRequest, campus_name, campus_no, campus_code,
-                                     block, campus_level, borough, status, founder_type,  founder_type_lv2,  founder_type_lv3, school_id) -> Paging:
+                                     block, campus_level, borough, status, founder_type, founder_type_lv2,
+                                     founder_type_lv3, school_id) -> Paging:
         query = select(Campus).order_by(desc(Campus.id))
         query = query.where(Campus.is_deleted == False)
-        print(founder_type,founder_type_lv2)
+        print(founder_type, founder_type_lv2)
 
         if campus_name:
             query = query.where(Campus.campus_name == campus_name)
@@ -186,6 +187,5 @@ class CampusDAO(DAOBase):
             query_campus = query_campus.where(Campus.campus_operation_type_lv2 == query_model.school_category)
         if query_model.school_operation_type:
             query_campus = query_campus.where(Campus.campus_operation_type_lv3 == query_model.school_operation_type)
-
         paging = await self.query_page(query_campus, page_request)
         return paging
