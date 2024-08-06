@@ -376,7 +376,8 @@ class SchoolRule(object):
         # print(extend_params,3333333333)
         if extend_params:
             if extend_params.school_id:
-                query = query.where(School.id == int(extend_params.school_id))
+                # query = query.where(School.id == int(extend_params.school_id))
+                pass
             if extend_params.planning_school_id:
                 query = query.where(School.planning_school_id == int(extend_params.planning_school_id))
 
