@@ -2,8 +2,7 @@
   "web_server": {
     "name": "school",
     "description": "学校综合管理系统",
-    "version": "0.0.1",
-    "need_auth": false
+    "version": "0.0.1"
   },
   "databases": {
     "default": {
