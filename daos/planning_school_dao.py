@@ -201,7 +201,6 @@ class PlanningSchoolDAO(DAOBase):
         if query_model.school_operation_type:
             query_campus = query_campus.where(
                 PlanningSchool.planning_school_operation_type == query_model.school_operation_type)
-
         paging = await self.query_page(query_campus, page_request)
         return paging
 

@@ -313,9 +313,9 @@ def check_result_org_center_api(result):
     """
 
     """
-    is_check_force = True
+    is_check_force = False
 
     if result.get("status") == OrgCenterApiStatus.ERROR.value and is_check_force:
 
-        raise ValueError(f"orgcenter api error {result.get('msg')}")
+        raise Exception(f"orgcenter api error {result.get('msg')}")
 

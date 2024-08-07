@@ -1,0 +1,24 @@
+[
+  {
+    "appCode": "base-mt",
+    "resourceCode": "school2",
+    "displayName": "分校",
+    "description": "分校",
+    "action": "open、import、view、edit、delete"
+  },
+  {
+    "appCode": "base-mt", 
+    "resourceCode": "grade2",
+    "displayName": "年级管理",
+    "description": "年级管理",
+    "action": "add、view、edit、delete"
+  },
+  {
+    "appCode": "base-mt",
+    "resourceCode": "class2",
+    "displayName": "班级管理",
+    "description": "班级管理",
+    "action": "add、view、edit、delete"
+  }
+
+]

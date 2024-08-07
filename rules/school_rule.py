@@ -31,7 +31,8 @@ from models.planning_school import PlanningSchool
 from models.public_enum import IdentityType
 from models.school import School
 from models.student_transaction import AuditAction
-from rules.common.common_rule import send_request, send_orgcenter_request, get_identity_by_job
+from rules.common.common_rule import send_request, send_orgcenter_request, get_identity_by_job, \
+    check_social_credit_code, check_school_no
 from rules.enum_value_rule import EnumValueRule
 from rules.system_rule import SystemRule
 from views.common.common_view import workflow_service_config, convert_snowid_in_model, convert_snowid_to_strings, \
@@ -98,6 +99,9 @@ class SchoolRule(object):
         if exists_school:
             raise Exception(f"学校{school.school_name}已存在")
         school_db = view_model_to_orm_model(school, School, exclude=["id"])
+        if hasattr(school, "school_no"):
+
+            await check_school_no(school.school_no)
 
         school_db.status = PlanningSchoolStatus.DRAFT.value
         school_db.created_uid = 0
@@ -202,10 +206,21 @@ class SchoolRule(object):
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""])
         return school_db
 
-    async def update_school_byargs(self, school, ):
+    async def update_school_byargs(self, school, changed_fields: list=None, ):
         exists_school = await self.school_dao.get_school_by_id(school.id)
         if not exists_school:
             raise Exception(f"单位{school.id}不存在")
+        # 通过指定更新的字段 来 决定是否校验 信用编码
+        if changed_fields is not None:
+            # 取消 和 驳回等 不校验
+            if 'social_credit_code' in changed_fields:
+                if hasattr(school, 'social_credit_code'):
+                    await check_social_credit_code(school.social_credit_code)
+            pass
+        else:
+            # 默认校验
+            if hasattr(school, 'social_credit_code'):
+                await check_social_credit_code(school.social_credit_code)
         if exists_school.status == PlanningSchoolStatus.DRAFT.value:
             if hasattr(school, 'status'):
                 # school.status= PlanningSchoolStatus.OPENING.value
@@ -264,7 +279,6 @@ class SchoolRule(object):
         enum_value_rule = get_injector(EnumValueRule)
         if founder_type:
             if len(founder_type) > 0:
-
                 founder_type_lv2_res = await enum_value_rule.get_next_level_enum_values('founder_type', founder_type)
                 for item in founder_type_lv2_res:
                     founder_type_lv2.append(item.enum_value)
@@ -361,7 +375,8 @@ class SchoolRule(object):
         # print(extend_params,3333333333)
         if extend_params:
             if extend_params.school_id:
-                query = query.where(School.id == int(extend_params.school_id))
+                # query = query.where(School.id == int(extend_params.school_id))
+                pass
             if extend_params.planning_school_id:
                 query = query.where(School.planning_school_id == int(extend_params.planning_school_id))
 
@@ -537,7 +552,7 @@ class SchoolRule(object):
                 await self.send_user_org_relation_to_org_center(school, res_unit, data_org, res_admin)
             except Exception as e:
                 print('异常', e)
-                raise e
+                # raise e
 
         if action == 'close':
             res = await self.update_school_status(school.id, PlanningSchoolStatus.CLOSED.value, 'close')
@@ -635,7 +650,13 @@ class SchoolRule(object):
         tinfo = await self.school_dao.get_school_by_process_instance_id(process_instance_id)
         if tinfo:
             tinfo.workflow_status = status.value
-            await self.update_school_byargs(tinfo)
+            if status == AuditAction.PASS.value:
+                await self.update_school_byargs(tinfo,)
+
+                pass
+            else:
+                # 不校验
+                await self.update_school_byargs(tinfo,['workflow_status'])
 
         pass
 

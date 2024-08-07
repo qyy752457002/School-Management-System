@@ -94,10 +94,6 @@ class SystemRule(object):
                 if title == '':
                     role = await self.roles_dao.get_roles_by_id(item.id)
                     title = role.app_name
-
-                # item.children= await self.query_system_with_kwargs(role_id,unit_type, edu_type, system_type,item.id)
-                # print(ids,item)
-
         return paging_result, title
 
     async def query_system_with_kwargs(self, role_id, unit_type, edu_type, system_type, parent_id=''):
@@ -182,8 +178,16 @@ class SystemRule(object):
                             item['related_license_upload_url']=None
                             if 'related_license_upload' in item.keys() and item['related_license_upload'] and  len(item['related_license_upload'])>0:
                                 print('item', item['related_license_upload'])
+                                # 针对有可能是多张图片的处理
+                                if isinstance(item['related_license_upload'], list):
+                                    item['related_license_upload_url']= [ ]
+                                    for i in range(len(item['related_license_upload'])):
+                                        tempurl = await self.get_download_url_by_id(item['related_license_upload'][i])
+                                        item['related_license_upload_url'].append( tempurl )
+                                    # item['related_license_upload'] = item['related_license_upload'][0]
+                                else:
 
-                                item['related_license_upload_url'] = await self.get_download_url_by_id(
+                                    item['related_license_upload_url'] = await self.get_download_url_by_id(
                                     item['related_license_upload'])
                         elif isinstance(item, object) :
                             item.related_license_upload_url = None

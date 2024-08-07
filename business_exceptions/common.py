@@ -15,3 +15,9 @@ class OrgCenterApiError(MiniHTTPException):
     def __init__(self,):
         # msgtult = msg if len(msg)>0 else "组织中心api响应失败"
         super().__init__(400, "ORG_CENTER_API_ERROR",  "OrgCenterApiError.", "组织中心api响应失败")
+class SocialCreditCodeExistError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(400, "SOCIAL_CREDIT_CODE_ALREADY_EXIST", "social_credit_code already exist.", "社会信用编码已经存在,不允许重复")
+class SschoolNoExistError(MiniHTTPException):
+    def __init__(self):
+        super().__init__(400, "SSCHOOL_NO_EXIST",   "school_no_already_exists",  "学校编号已经存在,不允许重复")

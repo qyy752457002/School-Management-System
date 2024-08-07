@@ -1,10 +1,18 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import traceback
-from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
-from mini_framework.databases.conn_managers.db_manager import db_connection_manager
+from typing import List, Type, Dict
+
+from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.http import HTTPRequest
 from pydantic import BaseModel
 
+from business_exceptions.common import SocialCreditCodeExistError, SschoolNoExistError
+from daos.campus_dao import CampusDAO
+from daos.class_dao import ClassesDAO
+from daos.grade_dao import GradeDAO
+from daos.planning_school_dao import PlanningSchoolDAO
+from daos.school_dao import SchoolDAO
+from daos.student_session_dao import StudentSessionDao
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import workflow_service_config, orgcenter_service_config, check_result_org_center_api
@@ -211,7 +219,7 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
         return response
         pass
     except Exception as e:
-        print('发生异常',e)
+        print('发生异常', e)
         traceback.print_exc()
         raise Exception(e)
         return {}
@@ -224,33 +232,36 @@ async def get_identity_by_job(school_operation_type: List, post_type=None):
 
     staff_student_map = {"preSchoolEducation_kindergarten": "kindergarten_student",
                          "primaryEducation_primarySchool": "primary_school_student",
-                         "secondaryEducation_ordinaryJuniorHigh": "middle_school_student",  # 初级中学还需要修改
+                         "secondaryEducation_ordinaryJuniorHigh_ordinaryJuniorHighSchool": "middle_school_student",
                          "secondaryEducation_ordinaryHighSchool": "high_school_student",
                          "secondaryEducation_secondaryVocationalSchool": "vocational_student"}
     staff_teacher_map = {"preSchoolEducation_kindergarten": "kindergarten_teacher",
                          "primaryEducation_primarySchool": "primary_school_teacher",
-                         "secondaryEducation_ordinaryJuniorHigh": "middle_school_teacher",  # 初级中学还需要修改
+                         "secondaryEducation_ordinaryJuniorHigh_ordinaryJuniorHighSchool": "middle_school_teacher",
                          "secondaryEducation_ordinaryHighSchool": "high_school_teacher",
-                         "secondaryEducation_secondaryVocationalSchool": "vocational_teacher",  # 缺少九年一贯制学校专任教师
+                         "secondaryEducation_secondaryVocationalSchool": "vocational_teacher",
+                         "secondaryEducation_ordinaryJuniorHigh_nineYearSystemSchool": "nine_year_teacher",
                          "secondaryEducation_ordinaryHighSchool_twelveYearSystemSchool": "twelve_year_teacher",
                          "specialEducation_specialEducationSchool": "special_education_teacher"}
     staff_map = {"preSchoolEducation_kindergarten": "kindergarten_staff",
                  "primaryEducation_primarySchool": "primary_school_staff",
-                 "secondaryEducation_ordinaryJuniorHigh": "middle_school_staff",  # 初级中学还需要修改
+                 "secondaryEducation_ordinaryJuniorHigh_ordinaryJuniorHighSchool": "middle_school_staff",
                  "secondaryEducation_ordinaryHighSchool": "high_school_staff",
-                 "secondaryEducation_secondaryVocationalSchool": "vocational_staff",  # 缺少九年一贯制学校职工
+                 "secondaryEducation_secondaryVocationalSchool": "vocational_staff",
+                 "secondaryEducation_ordinaryJuniorHigh_nineYearSystemSchool": "nine_year_staff",
                  "secondaryEducation_ordinaryHighSchool_twelveYearSystemSchool": "twelve_year_staff",
                  "specialEducation_specialEducationSchool": "special_education_staff"}
     staff_manager_map = {"preSchoolEducation_kindergarten": "kindergarten_principal",
                          "primaryEducation_primarySchool": "primary_school_principal",
-                         "secondaryEducation_ordinaryJuniorHigh": "middle_school_principal",  # 初级中学还需要修改
+                         "secondaryEducation_ordinaryJuniorHigh_ordinaryJuniorHighSchool": "middle_school_principal",
                          "secondaryEducation_ordinaryHighSchool": "high_school_principal",
-                         "secondaryEducation_secondaryVocationalSchool": "vocational_principal",  # 缺少九年一贯制学校校长
+                         "secondaryEducation_secondaryVocationalSchool": "vocational_principal",
+                         "secondaryEducation_ordinaryJuniorHigh_nineYearSystemSchool": "nine_year_principal",
                          "secondaryEducation_ordinaryHighSchool_twelveYearSystemSchool": "twelve_year_principal",
                          "specialEducation_specialEducationSchool": "special_education_principal"}
     parent_map = {"preSchoolEducation_kindergarten": "kindergarten_parent",
                   "primaryEducation_primarySchool": "primary_school_parent",
-                  "secondaryEducation_ordinaryJuniorHigh": "middle_school_parent",  # 初级中学还需要修改
+                  "secondaryEducation_ordinaryJuniorHigh_ordinaryJuniorHighSchool": "middle_school_parent",
                   "secondaryEducation_ordinaryHighSchool": "high_school_parent",
                   "secondaryEducation_secondaryVocationalSchool": "vocational_parent"},
     parts = post_type.split(',')
@@ -290,3 +301,68 @@ async def get_identity_by_job(school_operation_type: List, post_type=None):
                 identity = staff_map.get(key)
                 break
     return identity_type, identity
+
+async def get_school_map(keycolum: str,  ):
+    school_dao = get_injector(SchoolDAO)
+    schools = await school_dao.get_all_schools()
+    dic = {}
+    for row in schools:
+        dic[getattr(row, keycolum)] = row
+    schools= dic
+    return schools
+async def get_session_map(keycolum: str,  ):
+    school_dao = get_injector(StudentSessionDao)
+    schools = await school_dao.get_all_student_sessions()
+    dic = {}
+    for row in schools:
+        dic[getattr(row, keycolum)] = row
+    schools= dic
+    return schools
+async def get_grade_map(keycolum: str,  ):
+    school_dao = get_injector(GradeDAO)
+    schools = await school_dao.get_all_grades()
+    dic = {}
+    for row in schools:
+        dic[getattr(row, keycolum)] = row
+    schools= dic
+    return schools
+async def get_class_map(keycolum: str,  ):
+    school_dao = get_injector(ClassesDAO)
+    schools = await school_dao.get_all_class()
+    dic = {}
+    for row in schools:
+        dic[getattr(row, keycolum)] = row
+    schools= dic
+    return schools
+async def check_social_credit_code(social_credit_code: str|None,  ):
+    if social_credit_code is None or social_credit_code == "":
+        return
+    pschool_dao = get_injector(PlanningSchoolDAO)
+    school_dao = get_injector(SchoolDAO)
+    campus_dao = get_injector(CampusDAO)
+    exist  = await pschool_dao.get_planning_school_by_args(social_credit_code=social_credit_code,is_deleted=False)
+    if exist:
+        print("唯一检测1", social_credit_code,exist)
+        raise SocialCreditCodeExistError()
+    exist  = await school_dao.get_school_by_args(social_credit_code=social_credit_code,is_deleted=False)
+    if exist:
+        print("唯一检测2", social_credit_code,exist)
+
+        raise SocialCreditCodeExistError()
+    exist  = await campus_dao.get_campus_by_args(social_credit_code=social_credit_code,is_deleted=False)
+    if exist:
+        print("唯一检测3", social_credit_code,exist)
+
+        raise SocialCreditCodeExistError()
+async def check_school_no(school_no: str|None,  ):
+    if school_no is None or school_no == "":
+        return
+    school_dao = get_injector(SchoolDAO)
+
+    exist  = await school_dao.get_school_by_args(school_no=school_no,is_deleted=False)
+    if exist:
+        print("唯一检测2", school_no,exist)
+
+        raise SschoolNoExistError()
+
+
