@@ -2,19 +2,24 @@
 
   {
     "appCode": "base-mt",  
-    "policyCode": "city_school_manager_rule2",
+    "policyCode": "city_school_manager_rule",
     "displayName": "市级管理员策略",
     "description": "xxxx",  
     "authorizationModel": "RBAC",  
     "rule": [
       "p,  grade, view",
-      "p,  organization, view",
-      "p,  major, add",
-        "p,  major, delete",
-      "p,  major, edit",
       "p,  grade, add",
       "p,  grade, delete",
-      "p,  grade, edit"
+      "p,  grade, edit",
+      "p,  class, view",
+      "p,  class, add",
+      "p,  class, delete",
+      "p,  class, edit",
+      "p,  school, view",
+      "p,  school, open",
+      "p,  school, delete",
+      "p,  school, edit",
+      "p,  school, import"
 
 
     ]
