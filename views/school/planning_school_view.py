@@ -576,7 +576,7 @@ class PlanningSchoolView(BaseView):
                    founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
                                                        examples=['县级教育部门']),
                    page_request=Depends(PageRequest)):
-        print(page_request, )
+        # print(page_request, )
         info= await get_org_center_userinfo()
         print(info)
 

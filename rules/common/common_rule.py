@@ -381,15 +381,17 @@ Get the user from Casdoor providing the user_id.
 
 
 """
+    account = request_context_manager.current().current_login_account
+    # print(account)
+
     full_account = request_context_manager.current().full_account_info
-# account = request_context_manager.current().current_login_account
 
 
     endpoint= "https://org-center.f123.pub"
     apiname= "/api/get-user"
     # authentication_config
     params = {
-        "id": f"{full_account.owner}/{full_account.name}",
+        "id": f"{full_account.owner}/{account.name}",
         "clientId": authentication_config.oauth2.client_id,
         "clientSecret": authentication_config.oauth2.client_secret,
     }
