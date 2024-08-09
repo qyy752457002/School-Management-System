@@ -2,8 +2,11 @@
 import traceback
 from typing import List, Type, Dict
 
+import requests
+from mini_framework.authentication.config import authentication_config
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.http import HTTPRequest
+from mini_framework.web.request_context import request_context_manager
 from pydantic import BaseModel
 
 from business_exceptions.common import SocialCreditCodeExistError, SschoolNoExistError
@@ -364,5 +367,54 @@ async def check_school_no(school_no: str|None,  ):
         print("唯一检测2", school_no,exist)
 
         raise SschoolNoExistError()
+
+
+async def get_org_center_userinfo( ):
+    """
+Get the user from Casdoor providing the user_id.
+
+:param user_id: the id of the user
+:return: a dict that contains user's info
+
+那我怎么通过你昨天给我的这个获取到 督导的id
+
+
+
+"""
+    account = request_context_manager.current().current_login_account
+    # print(account)
+
+    full_account = request_context_manager.current().full_account_info
+
+
+    endpoint= "https://org-center.f123.pub"
+    apiname= "/api/get-user"
+    # authentication_config
+    params = {
+        "id": f"{full_account.owner}/{account.name}",
+        "clientId": authentication_config.oauth2.client_id,
+        "clientSecret": authentication_config.oauth2.client_secret,
+    }
+    # r = requests.get(url, params)
+    # response = r.json()
+
+    #datadict
+
+    datadict= params
+
+    response = await send_orgcenter_request(apiname, datadict, 'get', False)
+    print(' 接口响应', response, )
+    try:
+        if response["status"] != "ok":
+            raise Exception(response["msg"])
+        return  response["data"]
+
+        # return response, datadict
+    except Exception as e:
+        print(e)
+        raise e
+        return response
+
+    return None
 
 

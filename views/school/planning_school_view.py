@@ -12,6 +12,7 @@ from starlette.requests import Request
 from business_exceptions.planning_school import PlanningSchoolValidateError, \
     PlanningSchoolStatusError
 from models.student_transaction import AuditAction
+from rules.common.common_rule import get_org_center_userinfo
 from rules.operation_record import OperationRecordRule
 from rules.school_communication_rule import SchoolCommunicationRule
 from rules.school_eduinfo_rule import SchoolEduinfoRule
@@ -56,6 +57,7 @@ class PlanningSchoolView(BaseView):
         self.school_rule = get_injector(SchoolRule)
         self.school_eduinfo_rule = get_injector(SchoolEduinfoRule)
         self.school_communication_rule = get_injector(SchoolCommunicationRule)
+        # self.common_rule = get_injector(SchoolCommunicationRule)
 
     #   包含3部分信息 1.基本信息 2.通讯信息 3.教育信息
     async def get(self,
@@ -574,7 +576,12 @@ class PlanningSchoolView(BaseView):
                    founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
                                                        examples=['县级教育部门']),
                    page_request=Depends(PageRequest)):
-        print(page_request, )
+        # print(page_request, )
+        info= await get_org_center_userinfo()
+        print(info)
+
+
+
         items = []
         obj= await get_extend_params(request)
 
