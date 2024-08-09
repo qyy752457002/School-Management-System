@@ -383,6 +383,7 @@ Get the user from Casdoor providing the user_id.
 """
     account = request_context_manager.current().current_login_account
     # print(account)
+    # 目前的  full_account_info是灭有的  会异常 现在临时写固定值
 
     full_account = request_context_manager.current().full_account_info
 
@@ -390,8 +391,9 @@ Get the user from Casdoor providing the user_id.
     endpoint= "https://org-center.f123.pub"
     apiname= "/api/get-user"
     # authentication_config
+    owner = "sysjyyjyorg"
     params = {
-        "id": f"{full_account.owner}/{account.name}",
+        "id": f"{owner}/{account.name}",
         "clientId": authentication_config.oauth2.client_id,
         "clientSecret": authentication_config.oauth2.client_secret,
     }
