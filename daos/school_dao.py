@@ -1,9 +1,12 @@
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
-from sqlalchemy import select, func, update, desc
+from sqlalchemy import select, func, update, desc, union_all
 
+from models.campus import Campus
+from models.campus_communication import CampusCommunication
 from models.planning_school import PlanningSchool
+from models.planning_school_communication import PlanningSchoolCommunication
 from models.school import School
 from models.school_communication import SchoolCommunication
 from views.models.extend_params import ExtendParams
@@ -247,3 +250,54 @@ class SchoolDAO(DAOBase):
             School.school_no == school_no)
         result = await session.execute(query)
         return result.scalar_one_or_none()
+
+    async def get_all_school(self):
+        session = await self.slave_db()
+        query_school = select(School.school_name, School.school_code, School.borough, School.block,
+                              School.school_org_type, School.school_short_name,
+                              School.school_en_name, School.social_credit_code, School.urban_rural_nature,
+                              School.school_org_form, School.school_edu_level,
+                              School.school_category,
+                              School.school_operation_type, School.sy_zones, SchoolCommunication.postal_code,
+                              SchoolCommunication.detailed_address).join(SchoolCommunication,
+                                                                         SchoolCommunication.school_id == School.id).where(
+            School.is_deleted == False, School.status == "normal", SchoolCommunication.is_deleted == False)
+        query_campus = select(Campus.campus_name.label("school_name"), Campus.campus_code.label("school_code"),
+                              Campus.borough.label("borough"), Campus.block.label("block"),
+                              Campus.campus_org_type.label("school_org_type"),
+                              Campus.campus_short_name.label("school_short_name"),
+                              Campus.campus_en_name.label("school_en_name"),
+                              Campus.social_credit_code.label("social_credit_code"),
+                              Campus.urban_rural_nature.label("urban_rural_nature"),
+                              Campus.campus_org_form.label("school_org_form"),
+                              Campus.campus_operation_type.label("school_edu_level"),
+                              Campus.campus_operation_type_lv2.label("school_category"),
+                              Campus.campus_operation_type.label("school_operation_type"),
+                              Campus.sy_zones.label("sy_zones"), CampusCommunication.postal_code.label("postal_code"),
+                              CampusCommunication.detailed_address.label("detailed_address")).join(CampusCommunication,
+                                                                                                   CampusCommunication.campus_id == Campus.id).where(
+            Campus.is_deleted == False, Campus.status == "normal", CampusCommunication.is_deleted == False)
+
+        query_planning_school = select(PlanningSchool.planning_school_name.label("school_name"),
+                                       PlanningSchool.planning_school_code.label("school_code"),
+                                       PlanningSchool.borough.label("borough"), PlanningSchool.block.label("block"),
+                                       PlanningSchool.planning_school_org_type.label("school_org_type"),
+                                       PlanningSchool.planning_school_short_name.label("school_short_name"),
+                                       PlanningSchool.planning_school_en_name.label("school_en_name"),
+                                       PlanningSchool.social_credit_code.label("social_credit_code"),
+                                       PlanningSchool.urban_rural_nature.label("urban_rural_nature"),
+                                       PlanningSchool.planning_school_org_form.label("school_org_form"),
+                                       PlanningSchool.planning_school_edu_level.label("school_edu_level"),
+                                       PlanningSchool.planning_school_category.label("school_category"),
+                                       PlanningSchool.planning_school_operation_type.label("school_operation_type"),
+                                       PlanningSchool.sy_zones.label("sy_zones"),
+                                       PlanningSchoolCommunication.postal_code.label("postal_code"),
+                                       PlanningSchoolCommunication.detailed_address.label("detailed_address")).join(
+            PlanningSchoolCommunication,
+            PlanningSchoolCommunication.planning_school_id == PlanningSchool.id).where(
+            PlanningSchool.is_deleted == False, PlanningSchool.status == "normal",
+            PlanningSchoolCommunication.is_deleted == False)
+
+        query = union_all(query_school, query_campus, query_planning_school)
+        result = await session.execute(query)
+        return result.all()
