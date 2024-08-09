@@ -22,7 +22,7 @@ from views.models.planning_school_communications import PlanningSchoolCommunicat
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo as PlanningSchoolEduInfoModel
 from views.models.school import School as SchoolModel
 from views.models.school_and_teacher_sync import SchoolSyncQueryModel, SupervisorSyncQueryModel, \
-    SupervisorSyncQueryReModel, SchoolSyncQueryReModel
+    SupervisorSyncQueryReModel, SchoolSyncQueryReModel, SchoolInfoSyncModel
 from views.models.school_communications import SchoolCommunications as SchoolCommunicationModel
 from views.models.school_eduinfo import SchoolEduInfo as SchoolEduInfoModel
 
@@ -120,4 +120,11 @@ class SyncRule(object):
                 leader_info_list = await leader_info_rule.get_all_leader_info(None, school_id)
                 school_info["leader_info"] = leader_info_list
                 sync_school_list.append(school_info)
+        return sync_school_list
+
+    async def get_all_school(self):
+        sync_school_list = []
+        result = await self.school_dao.get_all_school()
+        for item in result:
+            sync_school_list.append(orm_model_to_view_model(item, SchoolInfoSyncModel))
         return sync_school_list

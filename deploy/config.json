@@ -92,15 +92,14 @@
   "authentication": {
     "jwt": {
       "secret": "Jci5NpY9p2D7JPKXrVL3J8",
-      "algorithm": "HS256",
+      "algorithm": "RS256",
       "expires": 3600,
       "issuer": "lfun",
-      "audience": "manager",
       "issue_at": 0
     },
     "oauth2": {
-      "client_id": "62de2359c3b57ef6abea",
-      "client_secret": "6a4648f4773dd46fd9ccb3d5c9f33ca9ecec657b",
+      "client_id": "9c49aa8d79c97951c242",
+      "client_secret": "b83838efbd8669d325fdc5b5e7ce1173aacb85a4",
       "authorization_url": "https://org-center.f123.pub/login/oauth/authorize",
       "token_url": "https://org-center.f123.pub/api/login/oauth/access_token",
       "user_info_url": "https://org-center.f123.pub/api/userinfo",
