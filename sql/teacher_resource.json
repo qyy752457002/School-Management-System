@@ -1,0 +1,79 @@
+[
+  {
+    "appCode": "base-mt",
+    "resourceCode": "newTeacherEntry",
+    "displayName": "新教职工入职管理",
+    "description": "新教职工入职管理",
+    "action": "entry,edit,delete,view,importBaseInfo,importQuick,importExtend"
+  },
+  {
+    "appCode": "base-mt",
+    "resourceCode": "newTeacherInfo",
+    "displayName": "新教职工信息管理",
+    "description": "新教职工信息管理",
+    "action": "view,revoke"
+  },
+  {
+    "appCode": "base-mt",
+    "resourceCode": "newTeacherApproval",
+    "displayName": "新教职工信息审核",
+    "description": "新教职工信息审核",
+    "action": "view,approval,reject"
+  },
+  {
+    "appCode": "base-mt",
+    "resourceCode": "teacherInfo",
+    "displayName": "教职工信息管理",
+    "description": "教职工信息管理",
+    "action": "editKeyInfo,editBasicInfo,delete,view,borrowOut,transferOut,transaction,retire"
+  },
+  {
+    "appCode": "base-mt",
+    "resourceCode": "teacherKeyInfo",
+    "displayName": "关键信息变更管理",
+    "description": "关键信息变更管理",
+    "action": "view,revoke"
+  },
+  {
+    "appCode": "base-mt",
+    "resourceCode": "teacherTransaction",
+    "displayName": "变动管理",
+    "description": "变动管理",
+    "action": "view"
+  },
+    {
+    "appCode": "base-mt",
+    "resourceCode": "teacherBorrowOut",
+    "displayName": "借出信息管理",
+    "description": "借出信息管理",
+    "action": "view,revoke,borrowOut,approval"
+  },
+      {
+    "appCode": "base-mt",
+    "resourceCode": "teacherBorrowIn",
+    "displayName": "借入信息管理",
+    "description": "借入信息管理",
+    "action": "view,revoke,borrowInIn,borrowInOut,approvalInIn,approvalInOut"
+  },
+      {
+    "appCode": "base-mt",
+    "resourceCode": "teacherTransferOut",
+    "displayName": "调出信息管理",
+    "description": "调出信息管理",
+    "action": "view,revoke,transferOut,approval"
+  },
+      {
+    "appCode": "base-mt",
+    "resourceCode": "teacherTransferIn",
+    "displayName": "调入信息管理",
+    "description": "调入信息管理",
+    "action": "view,revoke,transferInIn,transferInOut,approvalInIn,approvalInOut"
+  },
+        {
+    "appCode": "base-mt",
+    "resourceCode": "teacherRetire",
+    "displayName": "离退休信息管理",
+    "description": "离退休信息管理",
+    "action": "view"
+  }
+]

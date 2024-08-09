@@ -1,6 +1,5 @@
 from enum import Enum
 from typing import Optional
-from typing import List
 
 from fastapi import Query
 from pydantic import BaseModel, Field
@@ -78,3 +77,23 @@ class SupervisorSyncQueryReModel(BaseModel):
     teacher_gender: str = Field(..., title="性别", description="性别")
     current_technical_position: str = Field("", title="职称", description="职称")
     staff_category: str = Field("", title="职务", description="职务")
+
+
+class SchoolInfoSyncModel(BaseModel):
+    school_name: str | None = Field("", title="学校名称", description="学校名称", examples=['XX小学'])
+    school_code: str | None = Field("", title="", description=" 园所标识码", examples=['SC562369322SG'])
+    block: str | None = Field("", title=" Author", description="地域管辖区", examples=['铁西区'])
+    borough: str | None = Field("", title=" Author Email", description=" 行政管辖区", examples=['铁西区'])
+    school_org_type: str | None = Field("", title="", description=" 学校办别", examples=['民办'])
+    school_short_name: str | None = Field("", title="", description="学校简称", examples=['MXXX'])
+    school_en_name: str | None = Field("", title="", description="学校英文名称", examples=['MinxingPrimarySCHOOL'])
+    social_credit_code: str | None = Field("", title="", description="统一社会信用代码", examples=['XH423423876867'])
+    urban_rural_nature: str | None = Field("", title="", description="城乡性质", examples=['城镇'])
+    school_org_form: str | None = Field("", title="", description="办学组织形式", examples=['教学点'])
+    school_edu_level: str | None = Field("", title="", description="办学类型/教育层次", examples=['学前教育'])
+    school_category: str | None = Field("", title="", description=" 办学类型二级/学校（机构）类别", examples=['小学'])
+    school_operation_type: str | None = Field("", title="", description=" 办学类型三级/办学类型",
+                                              examples=['附设小学班'])
+    sy_zones: str | None = Field("", title="", description="属地管理行政部门所在地地区", examples=['铁西区'])
+    postal_code: str | None = Field(None, title="", description="邮政编码", examples=['472566'])
+    detailed_address: str | None = Field(None, title="", description="学校详细地址", examples=['FSDFSD'])

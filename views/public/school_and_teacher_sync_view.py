@@ -38,3 +38,8 @@ class SchoolTeacherView(BaseView):
                                                                                       examples=['3425301994'])) -> List:
         res = await self.sync_rule.get_sync_school(unique_code_list)
         return res
+
+    async def get_all_school(self):
+        res = await self.sync_rule.get_all_school()
+        return res
+
