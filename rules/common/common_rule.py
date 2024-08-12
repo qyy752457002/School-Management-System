@@ -408,19 +408,56 @@ Get the user from Casdoor providing the user_id.
         datadict= params
 
         response = await send_orgcenter_request(apiname, datadict, 'get', False)
-        print(' 接口响应', response, )
+        # print(' 接口响应', response, )
 
 
 
         if response["status"] != "ok":
             raise Exception(response["msg"])
-        info =   response["data2"]
+        print(response['data2'].keys())
+
+        info =   response['data2']
         print(' 解析结果',type(info),  )
         # 将字典转换为JSON格式的字符串
         json_string = json.dumps(info, ensure_ascii=False)
 
         # 打印JSON字符串
         print(json_string)
+        p = info['policies']
+        # 遍历列表里的每个
+        import csv
+
+
+
+
+        for i,value in enumerate(p):
+            print(value['modelText'])
+            print(type(value['ruleCode']),value['ruleCode'])
+            # 数据列表，每个子列表是一行数据
+            # 移除字符串首尾的方括号，并按逗号加空格分割
+            data_str= value['ruleCode']
+            data_list = data_str.strip("[]").split("\",\"")
+
+            # 去除每个元素两侧的双引号
+            data = [item.strip("\"") for item in data_list]
+            # eval("data="+ value['ruleCode'])
+            # data = value['ruleCode']
+
+            # 指定 CSV 文件名
+            filename = str(i)+'policy.csv'
+            print('写入文件：', filename)
+
+            # 打开文件，'w' 表示写入模式
+            with open(filename, 'w', newline='') as csvfile:
+                # 创建 csv 写入器
+                csvwriter = csv.writer(csvfile)
+
+                # 写入数据
+                for row in data:
+                    csvwriter.writerow(row)
+            # if i == "identity":
+            #     info[i] = json.loads(value)
+
 
         # print(info)
         # exit(1)
