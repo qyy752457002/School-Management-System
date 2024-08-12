@@ -1,0 +1,20 @@
+[
+
+  {
+    "appCode": "1238915324217024",
+    "policyCode": "city_school_manager_major_rule",
+    "displayName": "市级管理员专业策略",
+    "description": "市级管理员专业策略",
+    "authorizationModel": "RBAC",  
+    "rule": [
+      "p,  major, view",
+      "p,  major, add",
+      "p,  major, delete",
+      "p,  major, edit"
+
+
+
+    ]
+  }
+  
+]

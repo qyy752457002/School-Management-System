@@ -383,7 +383,7 @@ Get the user from Casdoor providing the user_id.
 """
     account = request_context_manager.current().current_login_account
     # print(account)
-    # 目前的  full_account_info是灭有的  会异常 现在临时写固定值
+    # 目前的  full_account_info是灭有的  会异常 现在临时写固定值  todo  应该加到 框架里
 
     full_account = request_context_manager.current().full_account_info
 
