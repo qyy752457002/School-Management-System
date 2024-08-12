@@ -1,4 +1,5 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+import json
 import traceback
 from typing import List, Type, Dict
 
@@ -381,41 +382,56 @@ Get the user from Casdoor providing the user_id.
 
 
 """
-    account = request_context_manager.current().current_login_account
-    # print(account)
-    # 目前的  full_account_info是灭有的  会异常 现在临时写固定值
 
-    full_account = request_context_manager.current().full_account_info
-
-
-    endpoint= "https://org-center.f123.pub"
-    apiname= "/api/get-user"
-    # authentication_config
-    owner = "sysjyyjyorg"
-    params = {
-        "id": f"{owner}/{account.name}",
-        "clientId": authentication_config.oauth2.client_id,
-        "clientSecret": authentication_config.oauth2.client_secret,
-    }
-    # r = requests.get(url, params)
-    # response = r.json()
-
-    #datadict
-
-    datadict= params
-
-    response = await send_orgcenter_request(apiname, datadict, 'get', False)
-    print(' 接口响应', response, )
     try:
+        account = request_context_manager.current().current_login_account
+        # print(account)
+        # 目前的  full_account_info是灭有的  会异常 现在临时写固定值  todo  应该加到 框架里
+
+        # full_account = request_context_manager.current().full_account_info
+
+
+        endpoint= "https://org-center.f123.pub"
+        apiname= "/api/get-user"
+        # authentication_config
+        owner = "sysjyyjyorg"
+        params = {
+            "id": f"{owner}/{account.name}",
+            "clientId": authentication_config.oauth2.client_id,
+            "clientSecret": authentication_config.oauth2.client_secret,
+        }
+        # r = requests.get(url, params)
+        # response = r.json()
+
+        #datadict
+
+        datadict= params
+
+        response = await send_orgcenter_request(apiname, datadict, 'get', False)
+        print(' 接口响应', response, )
+
+
+
         if response["status"] != "ok":
             raise Exception(response["msg"])
-        return  response["data"]
+        info =   response["data2"]
+        print(' 解析结果',type(info),  )
+        # 将字典转换为JSON格式的字符串
+        json_string = json.dumps(info, ensure_ascii=False)
+
+        # 打印JSON字符串
+        print(json_string)
+
+        # print(info)
+        # exit(1)
+        return info
+
 
         # return response, datadict
     except Exception as e:
-        print(e)
-        raise e
-        return response
+        print('获取用户权限信息异常',e)
+        # raise e
+        return None
 
     return None
 

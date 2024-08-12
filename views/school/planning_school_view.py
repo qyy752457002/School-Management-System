@@ -578,7 +578,7 @@ class PlanningSchoolView(BaseView):
                    page_request=Depends(PageRequest)):
         # print(page_request, )
         info= await get_org_center_userinfo()
-        print(info)
+        # print(info)
 
 
 
