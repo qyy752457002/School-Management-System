@@ -253,7 +253,7 @@ class SchoolDAO(DAOBase):
 
     async def get_all_school(self):
         session = await self.slave_db()
-        query_school = select(School.school_name, School.school_code, School.borough, School.block,
+        query_school = select(School.school_name, School.school_no, School.borough, School.block,
                               School.school_org_type, School.school_short_name,
                               School.school_en_name, School.social_credit_code, School.urban_rural_nature,
                               School.school_org_form, School.school_edu_level,
@@ -261,8 +261,9 @@ class SchoolDAO(DAOBase):
                               School.school_operation_type, School.sy_zones, SchoolCommunication.postal_code,
                               SchoolCommunication.detailed_address).join(SchoolCommunication,
                                                                          SchoolCommunication.school_id == School.id).where(
-            School.is_deleted == False, School.status == "normal", SchoolCommunication.is_deleted == False)
-        query_campus = select(Campus.campus_name.label("school_name"), Campus.campus_code.label("school_code"),
+            School.is_deleted == False, School.status == "normal", SchoolCommunication.is_deleted == False,
+        )
+        query_campus = select(Campus.campus_name.label("school_name"), Campus.campus_no.label("school_no"),
                               Campus.borough.label("borough"), Campus.block.label("block"),
                               Campus.campus_org_type.label("school_org_type"),
                               Campus.campus_short_name.label("school_short_name"),
@@ -276,10 +277,11 @@ class SchoolDAO(DAOBase):
                               Campus.sy_zones.label("sy_zones"), CampusCommunication.postal_code.label("postal_code"),
                               CampusCommunication.detailed_address.label("detailed_address")).join(CampusCommunication,
                                                                                                    CampusCommunication.campus_id == Campus.id).where(
-            Campus.is_deleted == False, Campus.status == "normal", CampusCommunication.is_deleted == False)
+            Campus.is_deleted == False, Campus.status == "normal", CampusCommunication.is_deleted == False,
+        )
 
         query_planning_school = select(PlanningSchool.planning_school_name.label("school_name"),
-                                       PlanningSchool.planning_school_code.label("school_code"),
+                                       PlanningSchool.planning_school_no.label("school_no"),
                                        PlanningSchool.borough.label("borough"), PlanningSchool.block.label("block"),
                                        PlanningSchool.planning_school_org_type.label("school_org_type"),
                                        PlanningSchool.planning_school_short_name.label("school_short_name"),
@@ -301,3 +303,70 @@ class SchoolDAO(DAOBase):
         query = union_all(query_school, query_campus, query_planning_school)
         result = await session.execute(query)
         return result.all()
+
+    async def get_all_school_by_school_no(self, school_no):
+        session = await self.slave_db()
+        query_school = select(School.school_name, School.school_no, School.borough, School.block,
+                              School.school_org_type, School.school_short_name,
+                              School.school_en_name, School.social_credit_code, School.urban_rural_nature,
+                              School.school_org_form, School.school_edu_level,
+                              School.school_category,
+                              School.school_operation_type, School.sy_zones, SchoolCommunication.postal_code,
+                              SchoolCommunication.detailed_address).join(SchoolCommunication,
+                                                                         SchoolCommunication.school_id == School.id).where(
+            School.is_deleted == False, School.status == "normal", SchoolCommunication.is_deleted == False,
+            School.school_no == school_no)
+        query_campus = select(Campus.campus_name.label("school_name"), Campus.campus_no.label("school_no"),
+                              Campus.borough.label("borough"), Campus.block.label("block"),
+                              Campus.campus_org_type.label("school_org_type"),
+                              Campus.campus_short_name.label("school_short_name"),
+                              Campus.campus_en_name.label("school_en_name"),
+                              Campus.social_credit_code.label("social_credit_code"),
+                              Campus.urban_rural_nature.label("urban_rural_nature"),
+                              Campus.campus_org_form.label("school_org_form"),
+                              Campus.campus_operation_type.label("school_edu_level"),
+                              Campus.campus_operation_type_lv2.label("school_category"),
+                              Campus.campus_operation_type.label("school_operation_type"),
+                              Campus.sy_zones.label("sy_zones"), CampusCommunication.postal_code.label("postal_code"),
+                              CampusCommunication.detailed_address.label("detailed_address")).join(CampusCommunication,
+                                                                                                   CampusCommunication.campus_id == Campus.id).where(
+            Campus.is_deleted == False, Campus.status == "normal", CampusCommunication.is_deleted == False,
+            Campus.campus_no == school_no)
+        query_planning_school = select(PlanningSchool.planning_school_name.label("school_name"),
+                                       PlanningSchool.planning_school_no.label("school_no"),
+                                       PlanningSchool.borough.label("borough"), PlanningSchool.block.label("block"),
+                                       PlanningSchool.planning_school_org_type.label("school_org_type"),
+                                       PlanningSchool.planning_school_short_name.label("school_short_name"),
+                                       PlanningSchool.planning_school_en_name.label("school_en_name"),
+                                       PlanningSchool.social_credit_code.label("social_credit_code"),
+                                       PlanningSchool.urban_rural_nature.label("urban_rural_nature"),
+                                       PlanningSchool.planning_school_org_form.label("school_org_form"),
+                                       PlanningSchool.planning_school_edu_level.label("school_edu_level"),
+                                       PlanningSchool.planning_school_category.label("school_category"),
+                                       PlanningSchool.planning_school_operation_type.label("school_operation_type"),
+                                       PlanningSchool.sy_zones.label("sy_zones"),
+                                       PlanningSchoolCommunication.postal_code.label("postal_code"),
+                                       PlanningSchoolCommunication.detailed_address.label("detailed_address")).join(
+            PlanningSchoolCommunication,
+            PlanningSchoolCommunication.planning_school_id == PlanningSchool.id).where(
+            PlanningSchool.is_deleted == False, PlanningSchool.status == "normal",
+            PlanningSchoolCommunication.is_deleted == False, PlanningSchool.planning_school_no == school_no)
+
+        query = union_all(query_school, query_campus, query_planning_school)
+        result = await session.execute(query)
+        return result.all()
+
+    async def get_school_by_school_no(self, school_no):
+        session = await self.slave_db()
+        query_school = select(School.school_name, School.school_no, School.borough, School.block,
+                              School.school_org_type, School.school_short_name,
+                              School.school_en_name, School.social_credit_code, School.urban_rural_nature,
+                              School.school_org_form, School.school_edu_level,
+                              School.school_category,
+                              School.school_operation_type, School.sy_zones, SchoolCommunication.postal_code,
+                              SchoolCommunication.detailed_address).join(SchoolCommunication,
+                                                                         SchoolCommunication.school_id == School.id).where(
+            School.is_deleted == False, School.status == "normal", SchoolCommunication.is_deleted == False,
+            School.school_no == school_no)
+        result = await session.execute(query_school)
+        return result.first()

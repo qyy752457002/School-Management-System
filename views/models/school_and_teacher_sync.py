@@ -81,7 +81,7 @@ class SupervisorSyncQueryReModel(BaseModel):
 
 class SchoolInfoSyncModel(BaseModel):
     school_name: str | None = Field("", title="学校名称", description="学校名称", examples=['XX小学'])
-    school_code: str | None = Field("", title="", description=" 园所标识码", examples=['SC562369322SG'])
+    school_no: str | None = Field("", title="", description=" 学校编号", examples=['SC562369322SG'])
     block: str | None = Field("", title=" Author", description="地域管辖区", examples=['铁西区'])
     borough: str | None = Field("", title=" Author Email", description=" 行政管辖区", examples=['铁西区'])
     school_org_type: str | None = Field("", title="", description=" 学校办别", examples=['民办'])
@@ -97,3 +97,12 @@ class SchoolInfoSyncModel(BaseModel):
     sy_zones: str | None = Field("", title="", description="属地管理行政部门所在地地区", examples=['铁西区'])
     postal_code: str | None = Field(None, title="", description="邮政编码", examples=['472566'])
     detailed_address: str | None = Field(None, title="", description="学校详细地址", examples=['FSDFSD'])
+
+
+class StudentSyncModel(BaseModel):
+    student_name: str | None = Field("", title="学生姓名", description="学生姓名", examples=['张三'])
+    school_no: str | None = Field("", title="学校编号", description="学校编号", examples=['SC562369322SG'])
+    grade_type: str | None = Field("", title="年级", description="年级", examples=['一年级'])
+    class_name: str | None = Field("", title="班级", description="班级", examples=['一班'])
+    student_gender: str | None = Field("", title="性别", description="性别", examples=['男'])
+    edu_number: str | None = Field("", title="学籍号", description="学籍号", examples=['20210001'])

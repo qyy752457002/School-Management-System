@@ -4,6 +4,7 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 from sqlalchemy import select, func, update, desc
 
+from models.campus import Campus
 from models.classes import Classes
 from models.grade import Grade
 from models.major import Major
@@ -83,7 +84,14 @@ class StudentsBaseInfoDao(DAOBase):
                        func.coalesce(PlanningSchool.borough, '').label('borough'),
                        func.coalesce(SchoolCommunication.loc_area, '').label('loc_area'),
                        func.coalesce(SchoolCommunication.loc_area_pro, '').label('loc_area_pro'),
-                       StudentBaseInfo.session, ).join(Classes, Classes.id == StudentBaseInfo.class_id,isouter=True).join(Grade, Grade.id == StudentBaseInfo.grade_id, isouter=True).join(School,School.id == StudentBaseInfo.school_id, isouter=True).join( SchoolCommunication, SchoolCommunication.school_id == School.id, isouter=True).join(PlanningSchool, PlanningSchool.id == School.planning_school_id,isouter=True).join(
+                       StudentBaseInfo.session, ).join(Classes, Classes.id == StudentBaseInfo.class_id,
+                                                       isouter=True).join(Grade, Grade.id == StudentBaseInfo.grade_id,
+                                                                          isouter=True).join(School,
+                                                                                             School.id == StudentBaseInfo.school_id,
+                                                                                             isouter=True).join(
+            SchoolCommunication, SchoolCommunication.school_id == School.id, isouter=True).join(PlanningSchool,
+                                                                                                PlanningSchool.id == School.planning_school_id,
+                                                                                                isouter=True).join(
             Major, Major.id == Classes.major_for_vocational, isouter=True).where(
             StudentBaseInfo.student_id == int(students_id))
         result_list = await session.execute(query)
@@ -229,6 +237,47 @@ class StudentsBaseInfoDao(DAOBase):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(StudentBaseInfo))
         return result.scalar()
+
+    async def get_sync_student_by_school_no(self, school_no, school_type):
+        session = await self.slave_db()
+        if school_type == "school":
+            query = select(Student.student_name, Student.student_gender, Classes.class_name, StudentBaseInfo.edu_number,
+                           School.school_no, Grade.grade_type).join(Student,
+                                                                  StudentBaseInfo.student_id == Student.student_id).join(
+                School, School.id == StudentBaseInfo.school_id).join(Classes,
+                                                                     Classes.id == StudentBaseInfo.class_id,
+                                                                     isouter=True).join(Grade,
+                                                                                        Grade.id == StudentBaseInfo.grade_id,
+                                                                                        isouter=True).where(
+                School.school_no == school_no
+                ).order_by(
+                desc(Student.student_id))
+        elif school_type == "planning_school":
+            query = select(Student.student_name, Student.student_gender, Classes.class_name, StudentBaseInfo.edu_number,
+                           PlanningSchool.planning_school_no.label("school_no"), Grade.grade_type).join(Student,
+                                                                                                      StudentBaseInfo.student_id == Student.student_id).join(
+                PlanningSchool, PlanningSchool.id == StudentBaseInfo.school_id).join(Classes,
+                                                                                     Classes.id == StudentBaseInfo.class_id,
+                                                                                     isouter=True).join(Grade,
+                                                                                                        Grade.id == StudentBaseInfo.grade_id,
+                                                                                                        isouter=True).where(
+                PlanningSchool.planning_school_no == school_no
+            ).order_by(
+                desc(Student.student_id))
+        elif school_type == "campus":
+            query = select(Student.student_name, Student.student_gender, Classes.class_name, StudentBaseInfo.edu_number,
+                           Campus.campus_no.label("school_no"), Grade.grade_type).join(Student,
+                                                                                     StudentBaseInfo.student_id == Student.student_id).join(
+                PlanningSchool, PlanningSchool.id == StudentBaseInfo.school_id).join(Classes,
+                                                                                     Classes.id == StudentBaseInfo.class_id,
+                                                                                     isouter=True).join(Grade,
+                                                                                                        Grade.id == StudentBaseInfo.grade_id,
+                                                                                                        isouter=True).where(
+                Campus.campus_no == school_no
+            ).order_by(
+                desc(Student.student_id))
+        result = await session.execute(query)
+        return result.all()
 
     async def get_students_base_info_by_param(self, **kwargs):
         """

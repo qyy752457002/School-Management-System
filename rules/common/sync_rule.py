@@ -12,6 +12,7 @@ from daos.planning_school_eduinfo_dao import PlanningSchoolEduinfoDAO
 from daos.school_communication_dao import SchoolCommunicationDAO
 from daos.school_dao import SchoolDAO
 from daos.school_eduinfo_dao import SchoolEduinfoDAO
+from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.teachers_info_dao import TeachersInfoDao
 from rules.leader_info_rule import LeaderInfoRule
 from views.models.campus import Campus as CampusModel
@@ -22,7 +23,7 @@ from views.models.planning_school_communications import PlanningSchoolCommunicat
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo as PlanningSchoolEduInfoModel
 from views.models.school import School as SchoolModel
 from views.models.school_and_teacher_sync import SchoolSyncQueryModel, SupervisorSyncQueryModel, \
-    SupervisorSyncQueryReModel, SchoolSyncQueryReModel, SchoolInfoSyncModel
+    SupervisorSyncQueryReModel, SchoolSyncQueryReModel, SchoolInfoSyncModel, StudentSyncModel
 from views.models.school_communications import SchoolCommunications as SchoolCommunicationModel
 from views.models.school_eduinfo import SchoolEduInfo as SchoolEduInfoModel
 
@@ -39,6 +40,7 @@ class SyncRule(object):
     planning_school_dao: PlanningSchoolDAO
     planning_school_eduinfo_dao: PlanningSchoolEduinfoDAO
     planning_school_communication_dao: PlanningSchoolCommunicationDAO
+    students_base_info_dao: StudentsBaseInfoDao
 
     async def query_sync_teacher_with_page(self, query_model: SupervisorSyncQueryModel, page_request: PageRequest):
         print("query_model")
@@ -128,3 +130,39 @@ class SyncRule(object):
         for item in result:
             sync_school_list.append(orm_model_to_view_model(item, SchoolInfoSyncModel))
         return sync_school_list
+
+    async def get_school_by_school_no(self, unique_code_list):
+        sync_school_list = []
+        for school_no in unique_code_list:
+            sync_school = await self.school_dao.get_school_by_school_no(school_no)
+            sync_planning_school = await self.planning_school_dao.get_planning_school_by_school_no(school_no)
+            sync_campus = await self.campus_dao.get_campus_by_school_no(school_no)
+            if sync_school:
+                sync_school_list.append(orm_model_to_view_model(sync_school, SchoolInfoSyncModel))
+                continue
+            if sync_planning_school:
+                sync_school_list.append(orm_model_to_view_model(sync_planning_school, SchoolInfoSyncModel))
+                continue
+            if sync_campus:
+                sync_school_list.append(orm_model_to_view_model(sync_campus, SchoolInfoSyncModel))
+                continue
+        return sync_school_list
+
+    async def get_sync_student_by_school_no(self, school_no):
+        sync_school = await self.school_dao.get_school_by_school_no(school_no)
+        sync_planning_school = await self.planning_school_dao.get_planning_school_by_school_no(school_no)
+        sync_campus = await self.campus_dao.get_campus_by_school_no(school_no)
+        school_type = ""
+        if sync_planning_school:
+            school_type = "planning_school"
+        elif sync_school:
+            school_type = "school"
+        elif sync_campus:
+            school_type = "campus"
+        else:
+            raise Exception("未找到该学校")
+        result = await self.students_base_info_dao.get_sync_student_by_school_no(school_no, school_type)
+        sync_student_list = []
+        for item in result:
+            sync_student_list.append(orm_model_to_view_model(item, StudentSyncModel))
+        return sync_student_list
