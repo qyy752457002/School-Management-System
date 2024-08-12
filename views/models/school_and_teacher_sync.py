@@ -81,7 +81,7 @@ class SupervisorSyncQueryReModel(BaseModel):
 
 class SchoolInfoSyncModel(BaseModel):
     school_name: str | None = Field("", title="学校名称", description="学校名称", examples=['XX小学'])
-    school_code: str | None = Field("", title="", description=" 园所标识码", examples=['SC562369322SG'])
+    school_no: str | None = Field("", title="", description=" 学校编号", examples=['SC562369322SG'])
     block: str | None = Field("", title=" Author", description="地域管辖区", examples=['铁西区'])
     borough: str | None = Field("", title=" Author Email", description=" 行政管辖区", examples=['铁西区'])
     school_org_type: str | None = Field("", title="", description=" 学校办别", examples=['民办'])

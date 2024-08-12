@@ -128,3 +128,20 @@ class SyncRule(object):
         for item in result:
             sync_school_list.append(orm_model_to_view_model(item, SchoolInfoSyncModel))
         return sync_school_list
+
+    async def get_school_by_school_no(self, unique_code_list):
+        sync_school_list = []
+        for school_no in unique_code_list:
+            sync_school = await self.school_dao.get_school_by_school_no(school_no)
+            sync_planning_school = await self.planning_school_dao.get_planning_school_by_school_no(school_no)
+            sync_campus = await self.campus_dao.get_campus_by_school_no(school_no)
+            if sync_school:
+                sync_school_list.append(orm_model_to_view_model(sync_school, SchoolInfoSyncModel))
+                continue
+            if sync_planning_school:
+                sync_school_list.append(orm_model_to_view_model(sync_planning_school, SchoolInfoSyncModel))
+                continue
+            if sync_campus:
+                sync_school_list.append(orm_model_to_view_model(sync_campus, SchoolInfoSyncModel))
+                continue
+        return sync_school_list

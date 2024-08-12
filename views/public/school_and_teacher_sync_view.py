@@ -1,13 +1,23 @@
-from mini_framework.web.views import BaseView
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.views import BaseView
-from fastapi import Query, Depends, Body
+from fastapi import Depends, Body
 
+from fastapi.params import Param
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from views.models.school_and_teacher_sync import SchoolSyncQueryModel, SupervisorSyncQueryModel, \
     SupervisorSyncQueryReModel
 from rules.common.sync_rule import SyncRule
+
 from typing import List
+
+from fastapi import Depends, Body, Query
+from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
+from mini_framework.web.views import BaseView
+
+from rules.common.sync_rule import SyncRule
+from views.models.school_and_teacher_sync import SchoolSyncQueryModel, SupervisorSyncQueryModel, \
+    SupervisorSyncQueryReModel
 
 
 class SchoolTeacherView(BaseView):
@@ -26,7 +36,8 @@ class SchoolTeacherView(BaseView):
         return res
 
     async def post_sync_teacher(self,
-                                teacher_id_number_list: List[str] | None = Body(None, title="", description="身份证件号",
+                                teacher_id_number_list: List[str] | None = Body(None, title="",
+                                                                                description="身份证件号",
                                                                                 examples=['3425301994'])) -> List[
         SupervisorSyncQueryReModel]:
         res = await self.sync_rule.get_sync_teacher(teacher_id_number_list)
@@ -34,8 +45,8 @@ class SchoolTeacherView(BaseView):
         return res
 
     async def post_sync_school(self, unique_code_list: List[str] | None = Body([], title="",
-                                                                                      description="统一社会信用代码",
-                                                                                      examples=['3425301994'])) -> List:
+                                                                               description="统一社会信用代码",
+                                                                               examples=['3425301994'])) -> List:
         res = await self.sync_rule.get_sync_school(unique_code_list)
         return res
 
@@ -43,3 +54,9 @@ class SchoolTeacherView(BaseView):
         res = await self.sync_rule.get_all_school()
         return res
 
+
+    async def post_school_by_school_no(self, unique_code_list: List[str] | None =Body([], title="",
+                                                                             description="学校代码",
+                                                                             examples=['3425301994'])) -> List:
+        res = await self.sync_rule.get_school_by_school_no(unique_code_list)
+        return res
