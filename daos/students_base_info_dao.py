@@ -242,7 +242,7 @@ class StudentsBaseInfoDao(DAOBase):
         session = await self.slave_db()
         if school_type == "school":
             query = select(Student.student_name, Student.student_gender, Classes.class_name, StudentBaseInfo.edu_number,
-                           School.school_no, Grade.grade_no).join(Student,
+                           School.school_no, Grade.grade_type).join(Student,
                                                                   StudentBaseInfo.student_id == Student.student_id).join(
                 School, School.id == StudentBaseInfo.school_id).join(Classes,
                                                                      Classes.id == StudentBaseInfo.class_id,
@@ -254,7 +254,7 @@ class StudentsBaseInfoDao(DAOBase):
                 desc(Student.student_id))
         elif school_type == "planning_school":
             query = select(Student.student_name, Student.student_gender, Classes.class_name, StudentBaseInfo.edu_number,
-                           PlanningSchool.planning_school_no.label("school_no"), Grade.grade_no).join(Student,
+                           PlanningSchool.planning_school_no.label("school_no"), Grade.grade_type).join(Student,
                                                                                                       StudentBaseInfo.student_id == Student.student_id).join(
                 PlanningSchool, PlanningSchool.id == StudentBaseInfo.school_id).join(Classes,
                                                                                      Classes.id == StudentBaseInfo.class_id,
@@ -266,7 +266,7 @@ class StudentsBaseInfoDao(DAOBase):
                 desc(Student.student_id))
         elif school_type == "campus":
             query = select(Student.student_name, Student.student_gender, Classes.class_name, StudentBaseInfo.edu_number,
-                           Campus.campus_no.label("school_no"), Grade.grade_no).join(Student,
+                           Campus.campus_no.label("school_no"), Grade.grade_type).join(Student,
                                                                                      StudentBaseInfo.student_id == Student.student_id).join(
                 PlanningSchool, PlanningSchool.id == StudentBaseInfo.school_id).join(Classes,
                                                                                      Classes.id == StudentBaseInfo.class_id,

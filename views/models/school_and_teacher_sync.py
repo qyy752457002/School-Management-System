@@ -102,7 +102,7 @@ class SchoolInfoSyncModel(BaseModel):
 class StudentSyncModel(BaseModel):
     student_name: str | None = Field("", title="学生姓名", description="学生姓名", examples=['张三'])
     school_no: str | None = Field("", title="学校编号", description="学校编号", examples=['SC562369322SG'])
-    grade_no: str | None = Field("", title="年级", description="年级", examples=['一年级'])
+    grade_type: str | None = Field("", title="年级", description="年级", examples=['一年级'])
     class_name: str | None = Field("", title="班级", description="班级", examples=['一班'])
     student_gender: str | None = Field("", title="性别", description="性别", examples=['男'])
     edu_number: str | None = Field("", title="学籍号", description="学籍号", examples=['20210001'])
