@@ -58,7 +58,7 @@ class PermissionMenuDAO(DAOBase):
         paging = await self.query_page(query, page_request)
         return paging
 
-    async def query_permission_menu_with_args(self, unit_type, edu_type, system_type, role_id: int = None, parent_id=0):
+    async def query_permission_menu_with_args(self, unit_type, edu_type, system_type, role_id: int = None, parent_id=0,resouce_codes=''):
         query = (select(PermissionMenu.id,
                         PermissionMenu.menu_name,
                         PermissionMenu.menu_path,
@@ -97,6 +97,15 @@ class PermissionMenuDAO(DAOBase):
                 pass
         else:
             query = query.where(PermissionMenu.parent_id == 0)
+        if resouce_codes:
+            if isinstance(resouce_codes, list):
+                query = query.where(PermissionMenu.resource_code.in_(resouce_codes))
+                pass
+            else:
+                query = query.where(PermissionMenu.resource_code ==   resouce_codes )
+
+                pass
+
 
         if system_type:
             query = query.where(Role.system_type == system_type)

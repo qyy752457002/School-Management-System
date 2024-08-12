@@ -428,6 +428,7 @@ Get the user from Casdoor providing the user_id.
         role = info['roles'][0]['roleCode']
         # 遍历列表里的每个
         import csv
+        resource_codes = []
 
         for i, value in enumerate(p):
             data = []
@@ -438,6 +439,7 @@ Get the user from Casdoor providing the user_id.
             data_str = value['ruleCode']
             # data_str.replace("\"", "'")
             print(data_str)
+
 
             data = data_list = eval(data_str)
             print(type(data_list), data_list)
@@ -461,6 +463,7 @@ Get the user from Casdoor providing the user_id.
                 # 遍历列表，将每个元素写入文件的一行
                 for item in data:
                     p_list = item.split(",")
+                    resource_codes.append(p_list[1].strip(" "))
                     p_list.insert(1, role)
                     join_str = ','.join(p_list)
                     file.write(join_str + '\n')  # 写入元素，并添加换行符
@@ -478,16 +481,18 @@ Get the user from Casdoor providing the user_id.
             #         csvwriter.writerow(row)
             # if i == "identity":
             #     info[i] = json.loads(value)
+            break
 
-        # print(info)
+        print('资源编码',resource_codes)
         # exit(1)
-        return info
+        return info,resource_codes
 
         # return response, datadict
     except Exception as e:
         print('获取用户权限信息异常', e)
+        traceback.print_exc()
         # raise e
-        return None
+        return None, None
 
     return None
 

@@ -15,7 +15,7 @@ from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.std_models.page import PaginatedResponse
 from views.models.sub_system import SubSystem
 from views.models.system import SystemConfig
-from rules.common.common_rule import excel_fields_to_enum
+from rules.common.common_rule import excel_fields_to_enum, get_org_center_userinfo, verify_auth
 import datetime
 from views.models.teachers import TeacherInfoImportSubmit
 from rules.teachers_info_rule import TeachersInfoRule
@@ -49,8 +49,13 @@ class SystemView(BaseView):
             # title='学校版'
             unit_type = ''
             edu_type = ''
-        res, title = await self.system_rule.query_system_with_kwargs(role_id, unit_type, edu_type, system_type)
+        info,resource_codes = await get_org_center_userinfo()
+        print(info)
+        res, title = await self.system_rule.query_system_with_kwargs(role_id, unit_type, edu_type, system_type, resource_codes=resource_codes)
         # res,title  = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
+
+        # v = await verify_auth("alice","grade","add")
+        # print(v)
         return {'app_name': title,
                 'menu': list(res.values())
                 }
