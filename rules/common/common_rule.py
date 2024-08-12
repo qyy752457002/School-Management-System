@@ -1,9 +1,12 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
+import json
 import traceback
 from typing import List, Type, Dict
 
+from mini_framework.authentication.config import authentication_config
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.http import HTTPRequest
+from mini_framework.web.request_context import request_context_manager
 from pydantic import BaseModel
 
 from business_exceptions.common import SocialCreditCodeExistError, SschoolNoExistError
@@ -16,7 +19,6 @@ from daos.student_session_dao import StudentSessionDao
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import workflow_service_config, orgcenter_service_config, check_result_org_center_api
-from typing import List, Type, Dict
 
 
 async def send_request(apiname, datadict, method='get', is_need_query_param=False):
@@ -302,67 +304,213 @@ async def get_identity_by_job(school_operation_type: List, post_type=None):
                 break
     return identity_type, identity
 
-async def get_school_map(keycolum: str,  ):
+
+async def get_school_map(keycolum: str, ):
     school_dao = get_injector(SchoolDAO)
     schools = await school_dao.get_all_schools()
     dic = {}
     for row in schools:
         dic[getattr(row, keycolum)] = row
-    schools= dic
+    schools = dic
     return schools
-async def get_session_map(keycolum: str,  ):
+
+
+async def get_session_map(keycolum: str, ):
     school_dao = get_injector(StudentSessionDao)
     schools = await school_dao.get_all_student_sessions()
     dic = {}
     for row in schools:
         dic[getattr(row, keycolum)] = row
-    schools= dic
+    schools = dic
     return schools
-async def get_grade_map(keycolum: str,  ):
+
+
+async def get_grade_map(keycolum: str, ):
     school_dao = get_injector(GradeDAO)
     schools = await school_dao.get_all_grades()
     dic = {}
     for row in schools:
         dic[getattr(row, keycolum)] = row
-    schools= dic
+    schools = dic
     return schools
-async def get_class_map(keycolum: str,  ):
+
+
+async def get_class_map(keycolum: str, ):
     school_dao = get_injector(ClassesDAO)
     schools = await school_dao.get_all_class()
     dic = {}
     for row in schools:
         dic[getattr(row, keycolum)] = row
-    schools= dic
+    schools = dic
     return schools
-async def check_social_credit_code(social_credit_code: str|None,  ):
+
+
+async def check_social_credit_code(social_credit_code: str | None, ):
     if social_credit_code is None or social_credit_code == "":
         return
     pschool_dao = get_injector(PlanningSchoolDAO)
     school_dao = get_injector(SchoolDAO)
     campus_dao = get_injector(CampusDAO)
-    exist  = await pschool_dao.get_planning_school_by_args(social_credit_code=social_credit_code,is_deleted=False)
+    exist = await pschool_dao.get_planning_school_by_args(social_credit_code=social_credit_code, is_deleted=False)
     if exist:
-        print("唯一检测1", social_credit_code,exist)
+        print("唯一检测1", social_credit_code, exist)
         raise SocialCreditCodeExistError()
-    exist  = await school_dao.get_school_by_args(social_credit_code=social_credit_code,is_deleted=False)
+    exist = await school_dao.get_school_by_args(social_credit_code=social_credit_code, is_deleted=False)
     if exist:
-        print("唯一检测2", social_credit_code,exist)
+        print("唯一检测2", social_credit_code, exist)
 
         raise SocialCreditCodeExistError()
-    exist  = await campus_dao.get_campus_by_args(social_credit_code=social_credit_code,is_deleted=False)
+    exist = await campus_dao.get_campus_by_args(social_credit_code=social_credit_code, is_deleted=False)
     if exist:
-        print("唯一检测3", social_credit_code,exist)
+        print("唯一检测3", social_credit_code, exist)
 
         raise SocialCreditCodeExistError()
-async def check_school_no(school_no: str|None,  ):
+
+
+async def check_school_no(school_no: str | None, ):
     if school_no is None or school_no == "":
         return
     school_dao = get_injector(SchoolDAO)
 
-    exist  = await school_dao.get_school_by_args(school_no=school_no,is_deleted=False)
+    exist = await school_dao.get_school_by_args(school_no=school_no, is_deleted=False)
     if exist:
-        print("唯一检测2", school_no,exist)
+        print("唯一检测2", school_no, exist)
 
         raise SschoolNoExistError()
 
 
+async def get_org_center_userinfo():
+    """
+Get the user from Casdoor providing the user_id.
+:param user_id: the id of the user
+:return: a dict that contains user's info
+那我怎么通过你昨天给我的这个获取到 督导的id
+"""
+
+    try:
+        account = request_context_manager.current().current_login_account
+        # print(account)
+        # 目前的  full_account_info是灭有的  会异常 现在临时写固定值  todo  应该加到 框架里
+
+        # full_account = request_context_manager.current().full_account_info
+
+        endpoint = "https://org-center.f123.pub"
+        apiname = "/api/get-user"
+        # authentication_config
+        owner = "sysjyyjyorg"
+        params = {
+            "id": f"{owner}/{account.name}",
+            "clientId": authentication_config.oauth2.client_id,
+            "clientSecret": authentication_config.oauth2.client_secret,
+        }
+        # r = requests.get(url, params)
+        # response = r.json()
+
+        # datadict
+
+        datadict = params
+
+        response = await send_orgcenter_request(apiname, datadict, 'get', False)
+        # print(' 接口响应', response, )
+
+        if response["status"] != "ok":
+            raise Exception(response["msg"])
+        print(response['data2'].keys())
+
+        info = response['data2']
+        print(' 解析结果', type(info), )
+        # 将字典转换为JSON格式的字符串
+        json_string = json.dumps(info, ensure_ascii=False)
+
+        # 打印JSON字符串
+        print(json_string)
+        p = info['policies']
+        role = info['roles'][0]['roleCode']
+        # 遍历列表里的每个
+        import csv
+
+        for i, value in enumerate(p):
+            data = []
+            print(value['modelText'])
+            print(type(value['ruleCode']), value['ruleCode'])
+            # 数据列表，每个子列表是一行数据
+            # 移除字符串首尾的方括号，并按逗号加空格分割
+            data_str = value['ruleCode']
+            # data_str.replace("\"", "'")
+            print(data_str)
+
+            data = data_list = eval(data_str)
+            print(type(data_list), data_list)
+            # pprint.pprint(data_list)
+            # exit(1)
+            # data_list = data_str.strip("[]").split("\",\"")
+
+            # 去除每个元素两侧的双引号
+            # data = [item.strip("\"") for item in data_list]
+            # eval("data="+ value['ruleCode'])
+            # data = value['ruleCode']
+
+            # 指定 CSV 文件名
+            filename = str(i) + 'policy.csv'
+            print('写入文件：', filename)
+
+            gstr = "g, alice, " + role
+
+            # 打开文件，准备写入
+            with open(filename, 'w', encoding='utf-8') as file:
+                # 遍历列表，将每个元素写入文件的一行
+                for item in data:
+                    p_list = item.split(",")
+                    p_list.insert(1, role)
+                    join_str = ','.join(p_list)
+                    file.write(join_str + '\n')  # 写入元素，并添加换行符
+                file.write(gstr + '\n')  # 写入元素，并添加换行符
+
+            #
+            # # 打开文件，'w' 表示写入模式
+            # with open(filename, 'w', newline='') as csvfile:
+            #     # 创建 csv 写入器
+            #     csvwriter = csv.writer(csvfile)
+            #
+            #     # 写入数据
+            #     for row in data:
+            #         print('111',row)
+            #         csvwriter.writerow(row)
+            # if i == "identity":
+            #     info[i] = json.loads(value)
+
+        # print(info)
+        # exit(1)
+        return info
+
+        # return response, datadict
+    except Exception as e:
+        print('获取用户权限信息异常', e)
+        # raise e
+        return None
+
+    return None
+
+async def verify_auth(sub: str,obj , act ):
+    import casbin
+
+    e = casbin.Enforcer("model.conf", "0policy.csv")
+
+    # sub = "alice"  # the user that wants to access a resource.
+    # obj = "grade"  # the resource that is going to be accessed.
+    # act = "add"  # the operation that the user performs on the resource.
+
+    if e.enforce(sub, obj, act):
+        # permit alice to read data1
+        print("permit alice to read data1")
+        return True
+        pass
+    else:
+        # deny the request, show an error
+        print("deny the request, show an error")
+        return False
+        pass
+
+
+
+    pass

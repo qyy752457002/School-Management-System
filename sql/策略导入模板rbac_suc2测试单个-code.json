@@ -1,38 +1,28 @@
 [
   {
-    "appCode": "base-mt",
-    "policyCode": "school_rule",
-    "displayName": "学校策略",
-    "description": "xxxx",
-    "authorizationModel": "RBAC",
-    "rule": [
-
-      "p,  school, open",
-      "p,  school, import",
-      "p,  school, view"
-    ]
-  },
-  {
-    "appCode": "base-mt",  
+    "appCode": "1238915324217024",
     "policyCode": "city_school_manager_rule",
     "displayName": "市级管理员策略",
     "description": "xxxx",  
     "authorizationModel": "RBAC",  
-    "rule": [
+    "ruleCode": [
       "p,  grade, view",
-      "p,  organization, view",
-      "p,  major, add",
-        "p,  major, delete",
-      "p,  major, edit",
       "p,  grade, add",
       "p,  grade, delete",
       "p,  grade, edit",
-
-      "p,  course, add",
-      "p,  course, view",
-
-      "p,  subject, view",
-
+      "p,  class, view",
+      "p,  class, add",
+      "p,  class, delete",
+      "p,  class, edit",
+      "p,  school, view",
+      "p,  school, open",
+      "p,  school, delete",
+      "p,  school, edit",
+      "p,  school, import",
+      "p,  major, view",
+      "p,  major, add",
+      "p,  major, delete",
+      "p,  major, edit",
       "p,  planning_school_open_audit, view",
       "p,  planning_school_open_audit, pass",
       "p,  planning_school_open_audit, refuse",
@@ -75,8 +65,15 @@
       "p,  institution_close_audit, refuse",
       "p,  institution_keyinfo_audit, view",
       "p,  institution_keyinfo_audit, pass",
-      "p,  institution_keyinfo_audit, refuse"
+      "p,  institution_keyinfo_audit, refuse",
+      "p,  planning_school, open",
+      "p,  planning_school, import",
+      "p,  planning_school, view",
+      "p,  planning_school, edit",
+      "p,  planning_school, delete",
+      "p,  planning_school, close",
+      "p,  planning_school, relation"
+
     ]
   }
-  
 ]
