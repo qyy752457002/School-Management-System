@@ -4,6 +4,10 @@ from mini_framework.databases.entities.dao_base import DAOBase, get_update_conte
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 from models.students import Student
+from models.school import School
+from models.classes import Classes
+from models.grade import Grade
+
 
 
 class StudentsDao(DAOBase):
@@ -87,3 +91,6 @@ class StudentsDao(DAOBase):
         return student_id
 
         # return await self.update(session, query, None, {}, is_commit=is_commit)
+
+    async def get_sync_student_by_school_no(self,school_no):
+        session = await self.master_db()

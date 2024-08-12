@@ -1,13 +1,3 @@
-from mini_framework.design_patterns.depend_inject import get_injector
-from mini_framework.web.views import BaseView
-from fastapi import Depends, Body
-
-from fastapi.params import Param
-from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
-from views.models.school_and_teacher_sync import SchoolSyncQueryModel, SupervisorSyncQueryModel, \
-    SupervisorSyncQueryReModel
-from rules.common.sync_rule import SyncRule
-
 from typing import List
 
 from fastapi import Depends, Body, Query
@@ -54,9 +44,14 @@ class SchoolTeacherView(BaseView):
         res = await self.sync_rule.get_all_school()
         return res
 
-
-    async def post_school_by_school_no(self, unique_code_list: List[str] | None =Body([], title="",
-                                                                             description="学校代码",
-                                                                             examples=['3425301994'])) -> List:
+    async def post_school_by_school_no(self, unique_code_list: List[str] | None = Body([], title="",
+                                                                                       description="学校代码",
+                                                                                       examples=[
+                                                                                           '3425301994'])) -> List:
         res = await self.sync_rule.get_school_by_school_no(unique_code_list)
+        return res
+
+    async def get_sync_student(self, school_no: str = Query(..., title="学校代码",
+                                                             description="学校代码", example='3425301994')):
+        res = await self.sync_rule.get_sync_student_by_school_no(school_no)
         return res
