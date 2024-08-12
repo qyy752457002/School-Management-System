@@ -577,9 +577,9 @@ class PlanningSchoolView(BaseView):
                                                        examples=['县级教育部门']),
                    page_request=Depends(PageRequest)):
         # print(page_request, )
-        info= await get_org_center_userinfo()
-        v = await verify_auth("alice","grade","add")
-        print(v)
+        # info= await get_org_center_userinfo()
+        # v = await verify_auth("alice","grade","add")
+        # print(v)
         # print(info)
 
 
