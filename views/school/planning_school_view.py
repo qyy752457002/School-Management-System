@@ -12,7 +12,7 @@ from starlette.requests import Request
 from business_exceptions.planning_school import PlanningSchoolValidateError, \
     PlanningSchoolStatusError
 from models.student_transaction import AuditAction
-from rules.common.common_rule import get_org_center_userinfo
+from rules.common.common_rule import get_org_center_userinfo, verify_auth
 from rules.operation_record import OperationRecordRule
 from rules.school_communication_rule import SchoolCommunicationRule
 from rules.school_eduinfo_rule import SchoolEduinfoRule
@@ -578,6 +578,8 @@ class PlanningSchoolView(BaseView):
                    page_request=Depends(PageRequest)):
         # print(page_request, )
         info= await get_org_center_userinfo()
+        v = await verify_auth("alice","grade","add")
+        print(v)
         # print(info)
 
 

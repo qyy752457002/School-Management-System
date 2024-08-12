@@ -1,146 +1,153 @@
 [
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
+    "resourceCode": "planning_school",
+    "displayName": "学校",
+    "description": "学校",
+    "action": "open、import、view、edit、delete、change_baseinfo、change_keyinfo、close、relation"
+  },
+  {
+    "appCode": "1238915324217024",
     "resourceCode": "school",
     "displayName": "分校",
     "description": "分校",
-    "action": "open、import、view、edit、delete"
+    "action": "open、import、view、edit、delete、change_baseinfo、change_keyinfo、close"
   },
   {
-    "appCode": "base-mt", 
+    "appCode": "1238915324217024",
     "resourceCode": "grade",
     "displayName": "年级管理",
     "description": "年级管理",
     "action": "add、view、edit、delete"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "class",
     "displayName": "班级管理",
     "description": "班级管理",
     "action": "add、view、edit、delete"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "organization",
     "displayName": "组织机构",
     "description": "组织机构",
     "action": "add、view、edit、delete"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "major",
     "displayName": "专业管理",
     "description": "专业管理",
     "action": "add、view、edit、delete"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "course",
     "displayName": "学科管理",
     "description": "学科管理",
     "action": "add、view"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "subject",
     "displayName": "课程管理",
     "description": "课程管理",
     "action": "add、view、edit、delete"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "planning_school_open_audit",
     "displayName": "学校开设审核",
     "description": "学校开设审核",
     "action": "start、view、cancel、pass、refuse"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "planning_school_close_audit",
     "displayName": "学校关闭审核",
     "description": "学校关闭审核",
     "action": "start、view、cancel、pass、refuse"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "planning_school_keyinfo_audit",
     "displayName": "学校关键信息审核",
     "description": "学校关键信息审核",
     "action": "start、view、cancel、pass、refuse"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "school_open_audit",
     "displayName": "分校开设审核",
     "description": "分校开设审核",
     "action": "start、view、cancel、pass、refuse"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "school_close_audit",
     "displayName": "分校关闭审核",
     "description": "分校关闭审核",
     "action": "start、view、cancel、pass、refuse"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "school_keyinfo_audit",
     "displayName": "分校关键信息审核",
     "description": "分校关键信息审核",
     "action": "start、view、cancel、pass、refuse"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "administration",
     "displayName": "行政单位信息管理",
     "description": "行政单位信息管理",
     "action": "open、import、view、edit、delete、change、close"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "administration_open_audit",
     "displayName": "行政单位开设审核",
     "description": "行政单位开设审核",
     "action": "start、view、cancel、pass、refuse"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "administration_close_audit",
     "displayName": "行政单位关闭审核",
     "description": "行政单位关闭审核",
     "action": "start、view、cancel、pass、refuse"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "administration_keyinfo_audit",
     "displayName": "行政单位关键信息审核",
     "description": "行政单位关键信息审核",
     "action": "start、view、cancel、pass、refuse"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "institution",
     "displayName": "事业单位信息管理",
     "description": "事业单位信息管理",
     "action": "open、import、view、edit、delete、change、close"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "institution_open_audit",
     "displayName": "事业单位开设审核",
     "description": "事业单位开设审核",
     "action": "start、view、cancel、pass、refuse"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "institution_close_audit",
     "displayName": "事业单位关闭审核",
     "description": "事业单位关闭审核",
     "action": "start、view、cancel、pass、refuse"
   },
   {
-    "appCode": "base-mt",
+    "appCode": "1238915324217024",
     "resourceCode": "institution_keyinfo_audit",
     "displayName": "事业单位关键信息审核",
     "description": "事业单位关键信息审核",

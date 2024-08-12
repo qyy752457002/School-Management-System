@@ -1,0 +1,14 @@
+p, _, grade, view
+p, city_manager, grade, add
+p, _, grade, delete
+p, _, grade, edit
+p, _, class, view
+p, _, class, add
+p, _, class, delete
+p, _, class, edit
+p, _, school, view
+p, _, school, open
+p, _, school, delete
+p, _, school, edit
+p, _, school, import
+g, alice, city_manager
