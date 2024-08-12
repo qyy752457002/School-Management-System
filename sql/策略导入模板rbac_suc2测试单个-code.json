@@ -1,5 +1,4 @@
 [
-
   {
     "appCode": "1238915324217024",
     "policyCode": "city_school_manager_rule",
@@ -20,9 +19,6 @@
       "p,  school, delete",
       "p,  school, edit",
       "p,  school, import"
-
-
     ]
   }
-  
 ]
