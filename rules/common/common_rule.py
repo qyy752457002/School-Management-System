@@ -1,5 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import json
+import pprint
 import traceback
 from typing import List, Type, Dict
 
@@ -431,15 +432,21 @@ Get the user from Casdoor providing the user_id.
 
 
         for i,value in enumerate(p):
+            data=[]
             print(value['modelText'])
             print(type(value['ruleCode']),value['ruleCode'])
             # 数据列表，每个子列表是一行数据
             # 移除字符串首尾的方括号，并按逗号加空格分割
             data_str= value['ruleCode']
-            data_list = data_str.strip("[]").split("\",\"")
+
+            data=data_list = eval(data_str)
+            print(type(data_list),data_list)
+            pprint.pprint(data_list)
+            exit(1)
+            # data_list = data_str.strip("[]").split("\",\"")
 
             # 去除每个元素两侧的双引号
-            data = [item.strip("\"") for item in data_list]
+            # data = [item.strip("\"") for item in data_list]
             # eval("data="+ value['ruleCode'])
             # data = value['ruleCode']
 
