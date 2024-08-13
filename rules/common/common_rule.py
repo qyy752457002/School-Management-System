@@ -485,8 +485,22 @@ Get the user from Casdoor providing the user_id.
             break
 
         print('资源编码', resource_codes)
-        # exit(1)
-        return info, resource_codes, resource_codes_actions
+        # 把资源编码里面的美格元素的逗号左边作为字典的键 右侧的放入列表 列表作为字典的键
+        resource_codes_dict = {}
+        for value in resource_codes_actions:
+            # value = resource_codes[i]
+            temp= value.split( ',')
+            print('temp',temp)
+            key =  temp[0]
+            action  = temp[1]
+            if key not in resource_codes_dict.keys():
+                resource_codes_dict[key] = []
+                resource_codes_dict[key] .append(action)
+            else:
+                resource_codes_dict[key].append(action)
+            print('资源编码', resource_codes_dict)
+
+        return info, resource_codes, resource_codes_dict
 
         # return response, datadict
     except Exception as e:
