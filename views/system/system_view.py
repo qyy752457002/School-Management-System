@@ -1,24 +1,19 @@
+import datetime
+
+# from fastapi import Field
+from fastapi import Query, Depends
 from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.views import BaseView
 
+from rules.common.common_rule import excel_fields_to_enum, get_org_center_userinfo
 from rules.education_year_rule import EducationYearRule
-from rules.sub_system_rule import SubSystemRule
 from rules.system_config_rule import SystemConfigRule
 from rules.system_rule import SystemRule
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
-from views.models.planning_school import PlanningSchool, PlanningSchoolBaseInfo
-from views.models.school import School, SchoolKeyAddInfo
-# from fastapi import Field
-from fastapi import Query, Depends
-from pydantic import BaseModel, Field
-from mini_framework.web.std_models.page import PageRequest
-from mini_framework.web.std_models.page import PaginatedResponse
-from views.models.sub_system import SubSystem
-from views.models.system import SystemConfig
-from rules.common.common_rule import excel_fields_to_enum, get_org_center_userinfo, verify_auth
-import datetime
-from views.models.teachers import TeacherInfoImportSubmit
 from rules.teachers_info_rule import TeachersInfoRule
+from views.models.system import SystemConfig
+from views.models.teachers import TeacherInfoImportSubmit
 
 
 # 当前工具包里支持get  patch前缀的 方法的自定义使用
@@ -49,15 +44,17 @@ class SystemView(BaseView):
             # title='学校版'
             unit_type = ''
             edu_type = ''
-        info,resource_codes = await get_org_center_userinfo()
+        info, resource_codes, resource_codes_actions = await get_org_center_userinfo()
         print(info)
-        res, title = await self.system_rule.query_system_with_kwargs(role_id, unit_type, edu_type, system_type, resource_codes=resource_codes)
+        res, title = await self.system_rule.query_system_with_kwargs(role_id, unit_type, edu_type, system_type,
+                                                                     resource_codes=resource_codes)
         # res,title  = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
 
         # v = await verify_auth("alice","grade","add")
         # print(v)
         return {'app_name': title,
-                'menu': list(res.values())
+                'menu': list(res.values()),
+                'resource_code': resource_codes_actions
                 }
 
     async def get_education_year(self,
