@@ -104,7 +104,7 @@ class ClassesDAO(DAOBase):
         return result.scalar()
 
     async def query_classes_with_page(self, borough, block, school_id, grade_id, class_name,
-                                      page_request: PageRequest) -> Paging:
+                                      page_request: PageRequest,school_no=None) -> Paging:
         teacher_alias = aliased(Teacher, name='teacher_alias')
         teacherinfo_alias = aliased(TeacherInfo, name='teacherinfo_alias')
         query = (select(School.block, School.borough, School.school_name, Classes.id, Classes.class_name,
@@ -157,6 +157,9 @@ class ClassesDAO(DAOBase):
 
         if school_id:
             query = query.where(Classes.school_id == int(school_id))
+            pass
+        if school_no is not None:
+            query = query.where(School.school_no == school_no )
             pass
         if grade_id and int(grade_id) > 0:
             print(grade_id)
