@@ -144,9 +144,9 @@ class ClassesRule(ImportCommonAbstractRule,object):
     async def get_classes_count(self):
         return await self.classes_dao.get_classes_count()
 
-    async def query_classes_with_page(self, page_request: PageRequest, borough, block, school_id, grade_id, class_name):
+    async def query_classes_with_page(self, page_request: PageRequest, borough, block, school_id, grade_id, class_name,school_no=None):
         paging = await self.classes_dao.query_classes_with_page(borough, block, school_id, grade_id, class_name,
-                                                                page_request)
+                                                                page_request,school_no)
         # 字段映射的示例写法   , {"hash_password": "password"} ClassesSearchRes
 
         print(paging)
