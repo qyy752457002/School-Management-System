@@ -12,7 +12,7 @@ from daos.grade_dao import GradeDAO
 from daos.school_dao import SchoolDAO
 from daos.student_session_dao import StudentSessionDao
 from models.classes import Classes
-from rules.common.common_rule import send_orgcenter_request
+from rules.common.common_rule import send_orgcenter_request, get_school_map
 from rules.enum_value_rule import EnumValueRule
 from rules.import_common_abstract_rule import ImportCommonAbstractRule
 from rules.teachers_rule import TeachersRule
@@ -152,17 +152,27 @@ class ClassesRule(ImportCommonAbstractRule,object):
         print(paging)
         paging_result = PaginatedResponse.from_paging(paging, ClassesSearchRes,other_mapper={"school_name": "school_name",})
         # 字段处理
+        schools =await get_school_map('id')
+        # print(schools)
+
+
         if paging_result.items:
             # 查询枚举值列表
             enum_value_rule = get_injector(EnumValueRule)
             grade_enums =await enum_value_rule.query_enum_values(GRADE_ENUM_KEY,'',return_keys='enum_value' )
-            print(grade_enums,999)
+            # print(grade_enums,999)
+            print(schools.keys())
 
             for item in paging_result.items:
+                item.school_id= int(item.school_id)
                 if item.grade_type in grade_enums:
                     item.grade_type_name = grade_enums[item.grade_type].description
                 else:
                     item.grade_type_name = item.grade_type
+                item.school_no = schools[item.school_id].school_no if item.school_id in schools.keys() else '--'
+
+
+
         convert_snowid_to_strings(paging_result,["id", "school_id",'grade_id','session_id','teacher_id','care_teacher_id'])
 
         return paging_result

@@ -71,6 +71,7 @@ class ClassesSearchRes(BaseModel):
     id: int |str= Query(None, title="", description="id", example='1'),
 
     school_id: int|str = Field(None, title="学校ID", description="学校ID", examples=['1'])
+    school_no: int|str|None = Field(None, title="", description="", examples=['1'])
     grade_no: str = Field(None, title="年级编号", description="年级编号", examples=['一年级'])
     grade_id: int|str = Field(None, title="年级ID", description="年级ID", examples=['2'])
     grade_type: str|None = Field(None, title="", description="", examples=[''])
