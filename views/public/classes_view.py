@@ -22,7 +22,7 @@ class ClassesView(BaseView):
                    block: str = Query('', title=" ", description="地域管辖区", examples=['铁西区']),
 
                    school_id: int|str  = Query(0, title="学校ID", description="学校ID", examples=[1]),
-                   school_no: int|str  = Query('', title="学校编号", description="学校编号", examples=[]),
+                   school_no: int|str  = Query(None, title="学校编号", description="学校编号", examples=[]),
 
                    grade_id: int|str  = Query(0, title="年级ID", description="年级ID", examples=[2]),
                    class_name: str = Query('', title="Grade_name", description="班级名称", examples=['一年级'])
