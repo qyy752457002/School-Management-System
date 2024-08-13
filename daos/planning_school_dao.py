@@ -4,6 +4,7 @@ from mini_framework.web.std_models.page import PageRequest
 from sqlalchemy import select, func, update, desc
 
 from models.planning_school import PlanningSchool
+from models.planning_school_communication import PlanningSchoolCommunication
 from views.models.extend_params import ExtendParams
 from views.models.school_and_teacher_sync import SchoolSyncQueryModel
 
@@ -211,3 +212,28 @@ class PlanningSchoolDAO(DAOBase):
             PlanningSchool.planning_school_no == planning_school_no)
         result = await session.execute(query)
         return result.scalar_one_or_none()
+
+    async def get_planning_school_by_school_no(self, school_no):
+        session = await self.slave_db()
+        query_planning_school = select(PlanningSchool.planning_school_name.label("school_name"),
+                                       PlanningSchool.planning_school_no.label("school_no"),
+                                       PlanningSchool.borough.label("borough"), PlanningSchool.block.label("block"),
+                                       PlanningSchool.planning_school_org_type.label("school_org_type"),
+                                       PlanningSchool.planning_school_short_name.label("school_short_name"),
+                                       PlanningSchool.planning_school_en_name.label("school_en_name"),
+                                       PlanningSchool.social_credit_code.label("social_credit_code"),
+                                       PlanningSchool.urban_rural_nature.label("urban_rural_nature"),
+                                       PlanningSchool.planning_school_org_form.label("school_org_form"),
+                                       PlanningSchool.planning_school_edu_level.label("school_edu_level"),
+                                       PlanningSchool.planning_school_category.label("school_category"),
+                                       PlanningSchool.planning_school_operation_type.label("school_operation_type"),
+                                       PlanningSchool.sy_zones.label("sy_zones"),
+                                       PlanningSchoolCommunication.postal_code.label("postal_code"),
+                                       PlanningSchoolCommunication.detailed_address.label("detailed_address")).join(
+            PlanningSchoolCommunication,
+            PlanningSchoolCommunication.planning_school_id == PlanningSchool.id).where(
+            PlanningSchool.is_deleted == False, PlanningSchool.status == "normal",
+            PlanningSchoolCommunication.is_deleted == False, PlanningSchool.planning_school_no == school_no)
+        result = await session.execute(query_planning_school)
+        return result.first()
+

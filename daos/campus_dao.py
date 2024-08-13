@@ -5,6 +5,7 @@ from sqlalchemy import select, func, update, desc
 
 from models.campus import Campus
 from views.models.school_and_teacher_sync import SchoolSyncQueryModel
+from models.campus_communication import CampusCommunication
 
 
 class CampusDAO(DAOBase):
@@ -189,3 +190,24 @@ class CampusDAO(DAOBase):
             query_campus = query_campus.where(Campus.campus_operation_type_lv3 == query_model.school_operation_type)
         paging = await self.query_page(query_campus, page_request)
         return paging
+
+    async def get_campus_by_school_no(self, school_no):
+        session = await self.slave_db()
+        query_campus = select(Campus.campus_name.label("school_name"), Campus.campus_no.label("school_no"),
+                              Campus.borough.label("borough"), Campus.block.label("block"),
+                              Campus.campus_org_type.label("school_org_type"),
+                              Campus.campus_short_name.label("school_short_name"),
+                              Campus.campus_en_name.label("school_en_name"),
+                              Campus.social_credit_code.label("social_credit_code"),
+                              Campus.urban_rural_nature.label("urban_rural_nature"),
+                              Campus.campus_org_form.label("school_org_form"),
+                              Campus.campus_operation_type.label("school_edu_level"),
+                              Campus.campus_operation_type_lv2.label("school_category"),
+                              Campus.campus_operation_type.label("school_operation_type"),
+                              Campus.sy_zones.label("sy_zones"), CampusCommunication.postal_code.label("postal_code"),
+                              CampusCommunication.detailed_address.label("detailed_address")).join(CampusCommunication,
+                                                                                                   CampusCommunication.campus_id == Campus.id).where(
+            Campus.is_deleted == False, Campus.status == "normal", CampusCommunication.is_deleted == False,
+            Campus.campus_no == school_no)
+        result = await session.execute(query_campus)
+        return result.first()
