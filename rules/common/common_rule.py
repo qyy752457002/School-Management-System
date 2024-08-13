@@ -435,7 +435,7 @@ Get the user from Casdoor providing the user_id.
             data = []
             print(value['modelText'])
             print(type(value['ruleCode']), value['ruleCode'])
-            # 数据列表，每个子列表是一行数据
+            # 数据列表，每个子列表是一行数据 todo 调整返回给前段的按照 资源。json的格式来
             # 移除字符串首尾的方括号，并按逗号加空格分割
             data_str = value['ruleCode']
             # data_str.replace("\"", "'")
