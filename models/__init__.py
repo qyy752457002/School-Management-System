@@ -71,6 +71,7 @@ from . import organization
 from . import organization_members
 from . import course_school_nature
 from . import student_temporary_study
+from . import user_org_relation
 
 #教师工作流定以相关
 

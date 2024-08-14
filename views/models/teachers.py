@@ -63,52 +63,17 @@ class IdentityType(str, Enum):
     @classmethod
     def to_org(cls):
         return {
-            cls.RESIDENT_ID_CARD.value: {
-                "key": "resident_identity_card",
-                "parent_key": "",
-                "value": "居民身份证"
-            },
-            cls.HONG_KONG_PASSPORT_ID.value: {
-                "key": "hong_kong_passport_id",
-                "parent_key": "",
-                "value": "香港特区护照/身份证明"
-            },
-            cls.MACAU_PASSPORT_ID.value: {
-                "key": "macao_passport_id",
-                "parent_key": "",
-                "value": "澳门特区护照/身份证明"
-            },
-            cls.TAIWAN_RESIDENT_TRAVEL_PERMIT.value: {
-                "key": "taiwan_pass",
-                "parent_key": "",
-                "value": "台湾居民来往大陆通行证"
-            },
-            cls.OVERSEAS_PERMANENT_RESIDENCE_PERMIT.value: {
-                "key": "permanent_residence_permit",
-                "parent_key": "",
-                "value": "境外永久居住证"
-            },
-            cls.PASSPORT.value: {
-                "key": "passport",
-                "parent_key": "",
-                "value": "护照"
-            },
-            cls.BIRTH_CERTIFICATE.value: {
-                "key": "birth_certificate",
-                "parent_key": "",
-                "value": "出生证明"
-            },
-            cls.HOUSEHOLD_REGISTER.value: {
-                "key": "household_register",
-                "parent_key": "",
-                "value": "户口薄"
-            },
-            cls.OTHER.value: {
-                "key": "other",
-                "parent_key": "",
-                "value": "其他"
-            }
+            cls.RESIDENT_ID_CARD.value: "resident_identity_card",
+            cls.HONG_KONG_PASSPORT_ID.value: "hong_kong_passport_id",
+            cls.MACAU_PASSPORT_ID.value: "macao_passport_id",
+            cls.TAIWAN_RESIDENT_TRAVEL_PERMIT.value: "taiwan_pass",
+            cls.OVERSEAS_PERMANENT_RESIDENCE_PERMIT.value: "permanent_residence_permit",
+            cls.PASSPORT.value: "passport",
+            cls.BIRTH_CERTIFICATE.value: "birth_certificate",
+            cls.HOUSEHOLD_REGISTER.value: "household_register",
+            cls.OTHER.value: "other",
         }
+
     @classmethod
     def from_to_org(cls, local_value: str):
         result = cls.to_org().get(local_value)
@@ -1969,4 +1934,3 @@ class TeacherChangeLogQueryModel(BaseModel):
     id: Optional[int] = Query(None, title="id", description="id", example=1)
     teacher_id: int | str = Query(..., title="teacher_id", description="teacher_id", example=1)
     change_module: Optional[ChangeModule] = Query(None, description=" 变更模块", examples=[''])
-
