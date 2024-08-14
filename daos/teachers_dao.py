@@ -43,7 +43,7 @@ class TeachersDao(DAOBase):
                        Teacher.teacher_id_type.label("idCardType"),
                        Teacher.teacher_id_number.label("idCardNumber"),
                        func.coalesce(School.org_center_info,'').label("currentUnit"),
-                       TeacherInfo.org_id.label("departmentId"),
+                       Organization.org_code.label("departmentId"),
                        Organization.org_name.label("departmentNames"),
                        Teacher.teacher_gender.label("gender"),
                        OrganizationMembers.identity.label("identity"),

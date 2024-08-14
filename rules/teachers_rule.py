@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from mini_framework.async_task.data_access.task_dao import TaskDAO
+from mini_framework.authentication.config import authentication_config
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
@@ -29,6 +30,7 @@ from rules.organization_memebers_rule import OrganizationMembersRule
 from rules.system_rule import SystemRule
 from rules.teacher_change_rule import TeacherChangeRule
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
+from rules.user_org_relation_rule import UserOrgRelationRule
 from views.common.common_view import check_id_number
 from views.common.common_view import compare_modify_fields
 from views.common.common_view import orgcenter_service_config
@@ -497,7 +499,6 @@ class TeachersRule(object):
         teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id, org_id)
         dict_data = orm_model_to_view_model(teacher_db, EducateUserModel, exclude=[""])
         id_card_type = IdentityType.from_to_org(dict_data.idCardType)
-        id_card_type = JsonUtils.dict_to_json_str(id_card_type)
         dict_data_dict = dict_data.dict()
         dict_data_dict["idCardType"] = id_card_type
         params_data = JsonUtils.dict_to_json_str(dict_data_dict)
@@ -510,17 +511,52 @@ class TeachersRule(object):
             "Content-Type": "application/json"
         }
         try:
-            print(params_data)
             response = await httpreq.post(url, params_data, headerdict)
             result = JsonUtils.json_str_to_dict(response)
-            org_id = result["data2"]
-            # user_org_relation = UserOrgRelation(user_id=int(teacher_id), org_id=org_id)
-            # user_org_relation.id = SnowflakeIdGenerator(1, 1).generate_id()
-            # await self.user_org_relation_dao.add_user_org_relation(user_org_relation)
+            user_id = result["data2"]
+            await self.send_user_department_to_org_center(user_id)
+            user_org_relation_rule = get_injector(UserOrgRelationRule)
+            await user_org_relation_rule.add_user_org_relation(int(teacher_id), user_id)
+            await self.send_user_department_to_org_center(int(teacher_id), user_id)
             return result
         except Exception as e:
             print(e)
             return False
+
+    async def send_user_department_to_org_center(self, teacher_id, user_id):
+        teacher_info = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teacher_id)
+        org_id = teacher_info.org_id
+        teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id, org_id)
+        dict_data = orm_model_to_view_model(teacher_db, EducateUserModel, exclude=[""])
+        dict_data_dict = dict_data.dict()
+        unitId = dict_data_dict["currentUnit"]
+        department_id = dict_data_dict["departmentId"]
+        identity = dict_data_dict["identity"]
+        identityType = dict_data_dict["identityType"]
+        depart_parm = {"unitId": unitId,
+                       "departmentId": department_id,
+                       "identity": identity,
+                       "identityType": identityType,
+                       "userId": user_id,
+                       "clientId": authentication_config.oauth2.client_id,
+                       "clientSecret": authentication_config.oauth2.client_secret,
+                       }
+        params_data = JsonUtils.dict_to_json_str(depart_parm)
+        httpreq = HTTPRequest()
+        url = orgcenter_service_config.orgcenter_config.get("url")
+        api_name = '/api/add-educate-user-department-identity'
+        url = url + api_name
+        headerdict = {
+            "accept": "application/json",
+            "Content-Type": "application/json"
+        }
+        try:
+            print(params_data)
+            response = await httpreq.post(url, params_data, headerdict)
+            result = JsonUtils.json_str_to_dict(response)
+            return result
+        except Exception as e:
+            return e
 
     async def get_teacher_identity(self, teacher_id):
         current_post_type = ""

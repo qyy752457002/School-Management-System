@@ -144,7 +144,7 @@ class InstitutionRule(SchoolRule):
             print(e)
         return response
 
-    async def deal_school(self,process_instance_id ,action, ):
+    async def deal_school(self,process_instance_id,action, ):
         #  读取流程实例ID
         school = await self.school_dao.get_school_by_process_instance_id(process_instance_id)
         if not school:

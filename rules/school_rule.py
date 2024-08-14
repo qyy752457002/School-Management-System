@@ -541,7 +541,6 @@ class SchoolRule(object):
                                    org_type='校',
                                    parent_id=0,
                                    org_code=school.school_no,
-                                   org_code_type='school',
                                    )
                 # 部门对接
 
@@ -1018,7 +1017,6 @@ class SchoolRule(object):
                      "educateUnits": [
                          data_unit
                      ],
-
                      "certPublicKey": "",
                      "clientId": "",
                      "clientSecret": "",
@@ -1027,10 +1025,8 @@ class SchoolRule(object):
                      "defaultAvatar": "",
                      "defaultPassword": "",
                      "displayName": exists_planning_school.school_name,
-
                      "logo": "",
-
-                     "orgType": "school",
+                     "orgType": OrgCenterInstitutionType.get_mapper(exists_planning_school.institution_category) if exists_planning_school.institution_category  else 'school',
                      "overview": "",
                      "status": "",
                      "unitCount": "",

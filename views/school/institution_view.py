@@ -369,7 +369,6 @@ class InstitutionView(BaseView):
         if isinstance(resultra, str):
             return {resultra}
 
-        # print(new_students_key_info)
         return resultra
         pass
 

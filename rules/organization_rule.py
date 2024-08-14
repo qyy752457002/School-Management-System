@@ -215,6 +215,7 @@ class OrganizationRule(object):
             print('学校未找到 跳过发送组织', exists_planning_school.school_id)
             return
         unitid = None
+        org_code= exists_planning_school.org_code
         if isinstance(res_unit, dict):
             unitid = res_unit['data2']
         if unitid is None:
@@ -226,9 +227,9 @@ class OrganizationRule(object):
             "isDeleted": False,
             "isEnabled": True,
             "isTopGroup": exists_planning_school.parent_id == 0,
-            "key": "sit"+shortuuid.uuid(),
+            "key": "",
             "manager": "",
-            "name": "基础信息管理系统",
+            "name": org_code,
             "newCode": exists_planning_school.org_code,
             "newType": "organization",  # 组织类型 特殊参数必须穿这个
             "owner": school.school_no,
@@ -237,7 +238,7 @@ class OrganizationRule(object):
             "tags": [
                 ""
             ],
-            "title": exists_planning_school.org_name,
+            "title": "",
             "type": "",
         }
 
