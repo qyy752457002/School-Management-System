@@ -514,7 +514,7 @@ class TeachersRule(object):
             response = await httpreq.post(url, params_data, headerdict)
             result = JsonUtils.json_str_to_dict(response)
             user_id = result["data2"]
-            await self.send_user_department_to_org_center(user_id)
+            await self.send_user_department_to_org_center(int(teacher_id), user_id)
             user_org_relation_rule = get_injector(UserOrgRelationRule)
             await user_org_relation_rule.add_user_org_relation(int(teacher_id), user_id)
             await self.send_user_department_to_org_center(int(teacher_id), user_id)
