@@ -1,15 +1,14 @@
 from datetime import date, datetime
-
-from pydantic import BaseModel, Field, model_validator, ValidationError, field_validator
-from fastapi import Query
+from enum import Enum
 from typing import Optional
 
-from models.public_enum import Gender
-from business_exceptions.teacher import EthnicityNoneError, PoliticalStatusNoneError
+from fastapi import Query
 from mini_framework.storage.view_model import FileStorageModel
-from views.models.operation_record import ChangeModule
+from pydantic import BaseModel, Field, model_validator
 
-from enum import Enum
+from business_exceptions.teacher import EthnicityNoneError, PoliticalStatusNoneError
+from models.public_enum import Gender
+from views.models.operation_record import ChangeModule
 
 
 class TeacherMainStatus(str, Enum):
@@ -60,6 +59,63 @@ class IdentityType(str, Enum):
             "户口薄": cls.HOUSEHOLD_REGISTER,
             "其他": cls.OTHER
         }
+
+    @classmethod
+    def to_org(cls):
+        return {
+            cls.RESIDENT_ID_CARD.value: {
+                "key": "resident_identity_card",
+                "parent_key": "",
+                "value": "居民身份证"
+            },
+            cls.HONG_KONG_PASSPORT_ID.value: {
+                "key": "hong_kong_passport_id",
+                "parent_key": "",
+                "value": "香港特区护照/身份证明"
+            },
+            cls.MACAU_PASSPORT_ID.value: {
+                "key": "macao_passport_id",
+                "parent_key": "",
+                "value": "澳门特区护照/身份证明"
+            },
+            cls.TAIWAN_RESIDENT_TRAVEL_PERMIT.value: {
+                "key": "taiwan_pass",
+                "parent_key": "",
+                "value": "台湾居民来往大陆通行证"
+            },
+            cls.OVERSEAS_PERMANENT_RESIDENCE_PERMIT.value: {
+                "key": "permanent_residence_permit",
+                "parent_key": "",
+                "value": "境外永久居住证"
+            },
+            cls.PASSPORT.value: {
+                "key": "passport",
+                "parent_key": "",
+                "value": "护照"
+            },
+            cls.BIRTH_CERTIFICATE.value: {
+                "key": "birth_certificate",
+                "parent_key": "",
+                "value": "出生证明"
+            },
+            cls.HOUSEHOLD_REGISTER.value: {
+                "key": "household_register",
+                "parent_key": "",
+                "value": "户口薄"
+            },
+            cls.OTHER.value: {
+                "key": "other",
+                "parent_key": "",
+                "value": "其他"
+            }
+        }
+    @classmethod
+    def from_to_org(cls, local_value: str):
+        result = cls.to_org().get(local_value)
+        if result is None:
+            # 使用 cls.OTHER.value 作为参数再次查找
+            result = cls.to_org().get(cls.OTHER.value)
+        return result
 
     # 中文到枚举值的映射
     @classmethod
@@ -148,8 +204,8 @@ class EducateUserModel(BaseModel):
                 data[_change] = str(data[_change])
             else:
                 pass
-        data["userCode"] = data["idCardNumber"] if data.get("idCardNumber") else data["userCode"]
-        data["phoneNumber"] = data["name"]  if data.get("name") else data["phoneNumber"]
+        data["userCode"] = data["idCardNumber"]
+        data["phoneNumber"] = data["name"] if data.get("name") else data["phoneNumber"]
         return data
 
 
@@ -212,6 +268,7 @@ class TeachersSaveImportRegisterCreatModel(BaseModel):
     teacher_employer: str = Field(..., title="任职单位", description="单位部门", )
     mobile: int = Field("", title="手机号", description="手机号")
 
+
 class TeachersSaveImportRegisterCreatTestModel(BaseModel):
     """
     姓名：teacher_name
@@ -225,13 +282,12 @@ class TeachersSaveImportRegisterCreatTestModel(BaseModel):
     teacher_name: str = Field(..., title="姓名", description="教师名称")
     teacher_gender: str = Field(..., title="性别", description="教师性别")
     teacher_id_type: str = Field("", title="证件类型", description="证件类型")
-    teacher_id_number: int|str = Field("", title="身份证件号", description="证件号")
+    teacher_id_number: int | str = Field("", title="身份证件号", description="证件号")
     teacher_date_of_birth: date = Field(..., title="出生日期", description="出生日期")
     teacher_employer: str = Field(..., title="单位", description="单位部门", )
     mobile: int = Field("", title="手机号", description="手机号")
     identity: str = Field("", title="身份", description="身份")
     identity_type: str = Field("", title="身份类型", description="身份类型")
-
 
 
 class TeachersSaveImportCreatModel(BaseModel):
@@ -1527,7 +1583,6 @@ class TeacherInfoImportSubmit(BaseModel):
     is_major_graduate: bool | None = Field(False, title="是否为师范生", description="是否为师范生")
     other_contact_address_details: str = Field("", title="其他联系方式", description="其他联系方式")
 
-
     @model_validator(mode='after')
     def check_special_ethnicity_teacher(self):
         if self.nationality == "CN":
@@ -1914,3 +1969,4 @@ class TeacherChangeLogQueryModel(BaseModel):
     id: Optional[int] = Query(None, title="id", description="id", example=1)
     teacher_id: int | str = Query(..., title="teacher_id", description="teacher_id", example=1)
     change_module: Optional[ChangeModule] = Query(None, description=" 变更模块", examples=[''])
+
