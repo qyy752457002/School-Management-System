@@ -42,7 +42,7 @@ class TeachersDao(DAOBase):
                        Teacher.teacher_name.label("realName"),
                        Teacher.teacher_id_type.label("idCardType"),
                        Teacher.teacher_id_number.label("idCardNumber"),
-                       Teacher.teacher_employer.label("currentUnit"),
+                       func.coalesce(School.org_center_info,'').label("currentUnit"),
                        TeacherInfo.org_id.label("departmentId"),
                        Organization.org_name.label("departmentNames"),
                        Teacher.teacher_gender.label("gender"),
@@ -50,6 +50,7 @@ class TeachersDao(DAOBase):
                        OrganizationMembers.member_type.label("identityType"),
                        Teacher.mobile.label("name"),
                        Teacher.teacher_id.label("userId"),
+                       School.school_no.label("owner")
                        ).join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id).join(Organization,
                                                                                               TeacherInfo.org_id == Organization.id).join(
             School, School.id == Teacher.teacher_employer, isouter=True).join(OrganizationMembers, and_(
@@ -58,7 +59,7 @@ class TeachersDao(DAOBase):
         query = query.where(Teacher.teacher_id == teachers_id,
                             Teacher.is_deleted == False,
                             TeacherInfo.org_id == org_id,
-                            Organization.id == org_id)
+                            Organization.id == org_id,OrganizationMembers.is_deleted == False,Teacher.is_deleted == False)
         result = await session.execute(query)
         return result.first()
 

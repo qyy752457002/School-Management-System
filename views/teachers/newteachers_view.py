@@ -331,9 +331,6 @@ class NewTeachersView(BaseView):
 
     async def post_teacher_organization_members_test(self, teacher_id: int | str = Query(..., title="教师编号",
                                                                                          description="教师编号",
-                                                                                         example="7210418530586595328"),
-                                                     org_id: int | str = Query(..., title="任职单位",
-                                                                               description="任职单位编号",
-                                                                               example="7210061000211566592")):
-        res = await self.teacher_rule.add_teacher_organization_members(org_id, teacher_id)
+                                                                                         example="7210418530586595328"),):
+        res = await self.teacher_rule.add_teacher_organization_members( teacher_id)
         return res

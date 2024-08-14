@@ -211,6 +211,7 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
         if method == 'get':
             response = await httpreq.get_json(url, headerdict)
         else:
+            print(type(datadict), "数据类型")
             response = await httpreq.post_json(url, datadict, headerdict)
         print(response, '接口响应')
         if response is None:
@@ -297,11 +298,13 @@ async def get_identity_by_job(school_operation_type: List, post_type=None):
                 break
     else:
         identity_type = IdentityType.STAFF.value
+        identity = "education_unit_staff"
         for i in range(len(school_operation_type), 0, -1):
             key = '_'.join(school_operation_type[:i])
             if key in staff_map:
                 identity = staff_map.get(key)
                 break
+
     return identity_type, identity
 
 

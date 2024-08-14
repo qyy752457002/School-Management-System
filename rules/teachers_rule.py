@@ -4,6 +4,7 @@ from mini_framework.async_task.data_access.task_dao import TaskDAO
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
+from mini_framework.utils.http import HTTPRequest
 from mini_framework.utils.json import JsonUtils
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
@@ -19,6 +20,7 @@ from daos.teacher_entry_dao import TeacherEntryApprovalDao
 from daos.teacher_key_info_approval_dao import TeacherKeyInfoApprovalDao
 from daos.teachers_dao import TeachersDao
 from daos.teachers_info_dao import TeachersInfoDao
+from daos.user_org_relation_dao import UserOrgRelationDao
 from models.teachers import Teacher
 from models.teachers_info import TeacherInfo
 from rules.common.common_rule import get_identity_by_job
@@ -29,6 +31,7 @@ from rules.teacher_change_rule import TeacherChangeRule
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from views.common.common_view import check_id_number
 from views.common.common_view import compare_modify_fields
+from views.common.common_view import orgcenter_service_config
 from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
 from views.models.organization import OrganizationMembers
 from views.models.school import School as SchoolModel
@@ -36,7 +39,7 @@ from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, 
     CurrentTeacherInfoSaveModel, TeacherRe, TeacherAdd, TeachersSchool
 from views.models.teachers import Teachers as TeachersModel
 from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherFileStorageModel, \
-    NewTeacherApprovalCreate, TeachersSaveImportCreatModel, EducateUserModel
+    NewTeacherApprovalCreate, TeachersSaveImportCreatModel, EducateUserModel, IdentityType
 
 
 @dataclass_inject
@@ -56,6 +59,7 @@ class TeachersRule(object):
     operation_record_dao: OperationRecordDAO
     school_dao: SchoolDAO
     organization_members_rule: OrganizationMembersRule
+    user_org_relation_dao: UserOrgRelationDao
 
     async def get_teachers_by_id(self, teachers_id):
         teachers_id = int(teachers_id)
@@ -327,6 +331,7 @@ class TeachersRule(object):
                                                     "is_approval")
             # todo 先在组织中成员中，再发送到组织中心
             await self.add_teacher_organization_members(int(teachers_id))
+            await self.send_teacher_to_org_center(int(teachers_id))
             return "该老师入职审批已通过"
 
     async def entry_rejected(self, teachers_id, process_instance_id, user_id, reason):
@@ -491,22 +496,31 @@ class TeachersRule(object):
         org_id = teacher_info.org_id
         teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id, org_id)
         dict_data = orm_model_to_view_model(teacher_db, EducateUserModel, exclude=[""])
-        dict_data = dict_data.dict()
-        params_data = JsonUtils.dict_to_json_str(dict_data)
+        id_card_type = IdentityType.from_to_org(dict_data.idCardType)
+        id_card_type = JsonUtils.dict_to_json_str(id_card_type)
+        dict_data_dict = dict_data.dict()
+        dict_data_dict["idCardType"] = id_card_type
+        params_data = JsonUtils.dict_to_json_str(dict_data_dict)
+        httpreq = HTTPRequest()
+        url = orgcenter_service_config.orgcenter_config.get("url")
         api_name = '/api/add-educate-user'
-        # 字典参数
-        datadict = params_data
-        print(datadict, '参数')
-        # response = await send_orgcenter_request(api_name, datadict, 'post', False)
-        # print(response, '接口响应')
-        # try:
-        #     print(response)
-        #     return response
-        # except Exception as e:
-        #     print(e)
-        #     raise e
-        #     return response
-        return None
+        url = url + api_name
+        headerdict = {
+            "accept": "application/json",
+            "Content-Type": "application/json"
+        }
+        try:
+            print(params_data)
+            response = await httpreq.post(url, params_data, headerdict)
+            result = JsonUtils.json_str_to_dict(response)
+            org_id = result["data2"]
+            # user_org_relation = UserOrgRelation(user_id=int(teacher_id), org_id=org_id)
+            # user_org_relation.id = SnowflakeIdGenerator(1, 1).generate_id()
+            # await self.user_org_relation_dao.add_user_org_relation(user_org_relation)
+            return result
+        except Exception as e:
+            print(e)
+            return False
 
     async def get_teacher_identity(self, teacher_id):
         current_post_type = ""
@@ -530,6 +544,7 @@ class TeachersRule(object):
 
     async def add_teacher_organization_members(self, teacher_id):
         identity_type, identity = await self.get_teacher_identity(teacher_id)
+        print(identity_type, identity)
         teacher_info_db = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teacher_id)
         org_id = teacher_info_db.org_id
         organization = OrganizationMembers()
