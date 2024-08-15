@@ -23,7 +23,7 @@ from views.models.planning_school_communications import PlanningSchoolCommunicat
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo as PlanningSchoolEduInfoModel
 from views.models.school import School as SchoolModel
 from views.models.school_and_teacher_sync import SchoolSyncQueryModel, SupervisorSyncQueryModel, \
-    SupervisorSyncQueryReModel, SchoolSyncQueryReModel, SchoolInfoSyncModel, StudentSyncModel
+    SupervisorSyncQueryReModel, SchoolSyncQueryReModel, SchoolInfoSyncModel, StudentSyncModel,TeacherSyncToArtModel
 from views.models.school_communications import SchoolCommunications as SchoolCommunicationModel
 from views.models.school_eduinfo import SchoolEduInfo as SchoolEduInfoModel
 
@@ -166,3 +166,11 @@ class SyncRule(object):
         for item in result:
             sync_student_list.append(orm_model_to_view_model(item, StudentSyncModel))
         return sync_student_list
+
+    async def get_sync_teacher_to_art(self,school_no):
+        result = await self.teachers_info_dao.get_sync_teacher_by_school_no(school_no)
+        sync_sync_list = []
+        for item in result:
+            sync_sync_list.append(orm_model_to_view_model(item, TeacherSyncToArtModel))
+        return sync_sync_list
+

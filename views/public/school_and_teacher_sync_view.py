@@ -55,3 +55,8 @@ class SchoolTeacherView(BaseView):
                                                              description="学校代码", example='3425301994')):
         res = await self.sync_rule.get_sync_student_by_school_no(school_no)
         return res
+
+    async def get_sync_teacher_to_art(self, school_no: str = Query(..., title="学校代码",
+                                                             description="学校代码", example='3425301994')):
+        res = await self.sync_rule.get_sync_teacher_to_art(school_no)
+        return res

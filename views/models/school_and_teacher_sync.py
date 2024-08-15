@@ -1,3 +1,4 @@
+from datetime import date
 from enum import Enum
 from typing import Optional
 
@@ -106,3 +107,16 @@ class StudentSyncModel(BaseModel):
     class_name: str | None = Field("", title="班级", description="班级", examples=['一班'])
     student_gender: str | None = Field("", title="性别", description="性别", examples=['男'])
     edu_number: str | None = Field("", title="学籍号", description="学籍号", examples=['20210001'])
+
+
+class TeacherSyncToArtModel(BaseModel):
+    teacher_name: str | None = Field("", title="教师姓名", description="教师姓名", examples=['张三'])
+    school_no: str | None = Field("", title="学校编号", description="学校编号", examples=['SC562369322SG'])
+    teacher_number: str | None = Field("", title="教师工号", description="教师工号", examples=['20210001'])
+    teacher_gender: str | None = Field("", title="性别", description="性别", examples=['男'])
+    teacher_date_of_birth: date | None = Field(None, title="出生日期", description="出生日期")
+    political_status: str | None = Field("", title="政治面貌", description="政治面貌", example="党员")
+    # institution_of_education_obtained: str | None = Field("", title="获得学历院校/机构",
+    #                                                       description="获得学历的院校机构")
+    institution_of_highest_education: str| None  = Field("", title="获得最高学历的院校或机构",
+                                                  description="获得最高学历的院校或者机构", example="沈阳师范大学")
