@@ -53,6 +53,30 @@ class TeachersInfoDao(DAOBase):
                 TeacherInfo.teacher_id == teacher_id))
         return result.scalar_one_or_none()
 
+    async def get_sync_teacher_by_school_no(self, school_no):
+        session = await self.slave_db()
+        # latest_degree_subquery = (
+        #     select(TeacherLearnExperience.institution_of_degree_obtained, TeacherLearnExperience.teacher_id).join(
+        #         Teacher,
+        #         TeacherLearnExperience.teacher_id == Teacher.teacher_id).where(
+        #         TeacherLearnExperience.teacher_id == Teacher.teacher_id, TeacherLearnExperience.is_deleted == False,
+        #     ).order_by(
+        #         TeacherLearnExperience.degree_award_date.desc()).limit(1).subquery())
+        query = select(School.school_no,Teacher.teacher_name, Teacher.teacher_gender, Teacher.teacher_date_of_birth,
+                       func.coalesce(TeacherInfo.teacher_number, "").label("teacher_number"),
+                       func.coalesce(TeacherInfo.political_status, "").label("political_status"),
+                       func.coalesce(TeacherInfo.institution_of_highest_education, "").label("institution_of_highest_education")).outerjoin(TeacherInfo,
+                                                                                                  Teacher.teacher_id == TeacherInfo.teacher_id,
+                                                                                                  ).join(School,
+                                                                                                         Teacher.teacher_employer == School.id,
+                                                                                                         ).where(
+            Teacher.teacher_main_status == "employed", Teacher.teacher_sub_status == "active",
+            Teacher.is_deleted == False, Teacher.is_approval == False, School.school_no == school_no,
+            School.status == "normal").order_by(
+            Teacher.teacher_id.desc())
+        result = await session.execute(query)
+        return result.all()
+
     async def query_teacher_with_page(self, query_model: NewTeacher, page_request: PageRequest) -> Paging:
         """
         新增教职工分页查询
@@ -113,7 +137,8 @@ class TeachersInfoDao(DAOBase):
         return paging
 
     async def query_current_teacher_with_page(self, query_model: CurrentTeacherQuery,
-                                              page_request: PageRequest, extend_params: ExtendParams = None) -> Paging:
+                                              page_request: PageRequest,
+                                              extend_params: ExtendParams = None) -> Paging:
         """
         新增教职工分页查询
         教师姓名：teacher_name
@@ -127,7 +152,8 @@ class TeachersInfoDao(DAOBase):
         用人形式：employment_form
         进本校时间：enter_school_time
         """
-        query = select(Teacher.teacher_id, TeacherInfo.teacher_base_id, Teacher.teacher_name, Teacher.teacher_id_number,
+        query = select(Teacher.teacher_id, TeacherInfo.teacher_base_id, Teacher.teacher_name,
+                       Teacher.teacher_id_number,
                        Teacher.teacher_gender, Teacher.teacher_main_status, Teacher.teacher_sub_status,
                        Teacher.teacher_employer, TeacherInfo.highest_education,
                        TeacherInfo.political_status, TeacherInfo.in_post, TeacherInfo.employment_form,
@@ -171,13 +197,15 @@ class TeachersInfoDao(DAOBase):
         paging = await self.query_page(query, page_request)
         return paging
 
-    # 获取所有教师基本信息
+        # 获取所有教师基本信息
+
     async def get_all_teachers_info(self):
         session = await self.slave_db()
         result = await session.execute(select(TeacherInfo))
         return result.scalars().all()
 
-    # 获取教师基本信息总数
+        # 获取教师基本信息总数
+
     async def get_teachers_info_count(self):
         session = await self.slave_db()
         result = await session.execute(select(func.count()).select_from(TeacherInfo))
@@ -224,9 +252,10 @@ class TeachersInfoDao(DAOBase):
                    Teacher.teacher_sub_status, Teacher.teacher_main_status, Teacher.identity, Teacher.mobile,
                    School.school_name, Teacher.identity, Teacher.identity_type, School.borough).join(School,
                                                                                                      Teacher.teacher_employer == School.id,
-                                                                                                     ).join(TeacherInfo,
-                                                                                                            Teacher.teacher_id == TeacherInfo.teacher_id,
-                                                                                                            ).where(
+                                                                                                     ).join(
+                TeacherInfo,
+                Teacher.teacher_id == TeacherInfo.teacher_id,
+            ).where(
                 Teacher.teacher_id == teacher_id))
         result = result.first()
 
@@ -250,7 +279,7 @@ class TeachersInfoDao(DAOBase):
                        School.school_name, School.borough).join(Teacher,
                                                                 Teacher.teacher_id == TeacherInfo.teacher_id).join(
             School, School.id == Teacher.teacher_employer).where(
-            Teacher.teacher_main_status == "employed",Teacher.is_approval == False,
+            Teacher.teacher_main_status == "employed", Teacher.is_approval == False,
             Teacher.is_deleted == False)
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))

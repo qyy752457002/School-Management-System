@@ -25,7 +25,7 @@
     "resourceCode": "teacherInfo",
     "displayName": "教职工信息管理",
     "description": "教职工信息管理",
-    "action": "editKeyInfo,editBasicInfo,delete,view,borrowOut,transferOut,transaction,retire"
+    "action": "editKeyInfo,editBasicInfo,edit,delete,view,borrowOut,transferOut,transaction,retire"
   },
   {
     "appCode": "base-mt",

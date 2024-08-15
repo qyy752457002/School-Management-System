@@ -580,7 +580,6 @@ class TeachersRule(object):
 
     async def add_teacher_organization_members(self, teacher_id):
         identity_type, identity = await self.get_teacher_identity(teacher_id)
-        print(identity_type, identity)
         teacher_info_db = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teacher_id)
         org_id = teacher_info_db.org_id
         organization = OrganizationMembers()
