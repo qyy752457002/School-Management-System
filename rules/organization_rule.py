@@ -62,7 +62,7 @@ class OrganizationRule(object):
         try:
             await self.send_org_to_org_center(organization)
         except Exception as e:
-            print("发送组织中心失败",e)
+            print("发送组织中心失败", e)
         return organization
 
     async def update_organization(self, organization, ):
@@ -200,9 +200,8 @@ class OrganizationRule(object):
 
         return organization_id
 
-
     # 部门对接
-    async def send_org_to_org_center(self, exists_planning_school_origin: Organization|BaseModel, res_unit=None):
+    async def send_org_to_org_center(self, exists_planning_school_origin: Organization | BaseModel, res_unit=None):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if hasattr(exists_planning_school, 'updated_at') and isinstance(exists_planning_school.updated_at,
                                                                         (date, datetime)):
@@ -215,25 +214,32 @@ class OrganizationRule(object):
             print('学校未找到 跳过发送组织', exists_planning_school.school_id)
             return
         unitid = None
-        org_code= exists_planning_school.org_code
+        org_code = exists_planning_school.org_code
         if isinstance(res_unit, dict):
             unitid = res_unit['data2']
         if unitid is None:
             unitid = school.org_center_info
+        parent_id = ""
+        if int(exists_planning_school.parent_id) != 0:
+            parent = await self.organization_dao.get_organization_by_id(exists_planning_school.parent_id)
+            if parent is None:
+                print('上级部门未找到 跳过发送组织', exists_planning_school.parent_id)
+                return
+            parent_id = parent.org_code
         dict_data = {
             "contactEmail": "j.vyevxiloyy@qq.com",
             "displayName": exists_planning_school.org_name,
             "educateUnit": unitid if unitid is not None else school.school_name,
             "isDeleted": False,
             "isEnabled": True,
-            "isTopGroup": exists_planning_school.parent_id == 0,
+            "isTopGroup": int(exists_planning_school.parent_id) == 0,
             "key": "",
             "manager": "",
             "name": org_code,
             "newCode": exists_planning_school.org_code,
             "newType": "organization",  # 组织类型 特殊参数必须穿这个
             "owner": school.school_no,
-            "parentId": str(exists_planning_school.parent_id),
+            "parentId": parent_id,
             "parentName": "",
             "tags": [
                 ""
@@ -241,21 +247,15 @@ class OrganizationRule(object):
             "title": "",
             "type": "",
         }
-
         apiname = '/api/add-group-organization'
         # 字典参数
         datadict = dict_data
         datadict = convert_dates_to_strings(datadict)
         print('调用添加部门  字典参数', datadict, )
-
         response = await send_orgcenter_request(apiname, datadict, 'post', False)
         try:
             print('调用添加部门 接口响应', response, )
-
             return response, datadict
         except Exception as e:
             print(e)
             raise e
-            return response
-
-        return None
