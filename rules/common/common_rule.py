@@ -1,6 +1,7 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import json
 import traceback
+from datetime import datetime
 from typing import List, Type, Dict
 
 from mini_framework.authentication.config import authentication_config
@@ -19,7 +20,13 @@ from daos.student_session_dao import StudentSessionDao
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import workflow_service_config, orgcenter_service_config, check_result_org_center_api
+APP_CODE = "1241318252132032"
 
+from datetime import datetime, timedelta
+
+# 缓存数据和过期时间
+user_info_cache = {}
+cache_expiry = timedelta(minutes=30)  # 缓存过期时间设置为30分钟
 
 async def send_request(apiname, datadict, method='get', is_need_query_param=False):
     # 发起审批流的 处理
@@ -535,4 +542,104 @@ async def verify_auth(sub: str, obj, act):
         return False
         pass
 
+    pass
+
+
+async def verify_auth_by_obj_and_act(obj, act):
+    """
+    验证用户权限
+    :param obj:
+    :param act:
+    :return:
+    """
+    account = request_context_manager.current().current_login_account
+    account_name = account.name
+    file_name = await process_userinfo(account_name)
+    print(file_name, '验证结果')
+    if file_name is None:
+        return False
+    file_name = await verify_auth_by_file_name(account_name, obj, act, file_name)
+    return file_name
+
+
+async def process_userinfo(account_name):
+    appCode = APP_CODE
+    user_info = await get_cached_userinfo(account_name)
+    if user_info is None:
+        return None
+    lines = []  # 使用列表收集所有要写入的行
+    filename = account_name + 'policy.csv'
+    for rule in user_info['roles']:
+        if rule["appCode"] == appCode:
+            role = rule['roleCode']
+            g_str = f"g, {account_name}, " + role
+            role_policies = rule['rolepolicies']
+            for policy in role_policies:
+                if not policy:
+                    continue
+                data_str = json.loads(policy['rule_code'])
+                for item in data_str:
+                    p_list = item.split(",")
+                    p_list.insert(1, role)
+                    join_str = ','.join(p_list)
+                    lines.append(join_str + '\n')
+            lines.append(g_str + '\n')
+        else:
+            continue
+    if not lines:
+        return None
+    with open(filename, 'w', encoding='utf-8') as file:
+        file.writelines(lines)
+    return filename
+
+
+async def get_cached_userinfo(account_name: str):
+    now = datetime.now()
+    cache_entry = user_info_cache.get(account_name)
+    if cache_entry:
+        user_info, timestamp = cache_entry
+        if now - timestamp < cache_expiry:
+            return user_info  # 返回缓存的数据
+    user_info = await get_org_center_user_info()
+    if user_info is not None:
+        user_info_cache[account_name] = (user_info, now)
+    return user_info
+
+
+async def get_org_center_user_info():
+    try:
+        account = request_context_manager.current().current_login_account
+        apiname = "/api/get-user"
+        owner = "sysjyyjyorg"
+        params = {
+            "id": f"{owner}/{account.name}",
+            "clientId": authentication_config.oauth2.client_id,
+            "clientSecret": authentication_config.oauth2.client_secret,
+        }
+        datadict = params
+        response = await send_orgcenter_request(apiname, datadict, 'get', False)
+        if response["status"] != "ok":
+            raise Exception(response["msg"])
+        info = response['data2']
+        if len(info['roles']) == 0:
+            return None
+        else:
+            for i in range(len(info['roles'])):
+                role_policies = len(info['roles'][i]["rolepolicies"])
+                if role_policies > 0:
+                    return info
+            return None
+    except Exception as e:
+        print('获取用户权限信息异常', e)
+        return None
+
+async def verify_auth_by_file_name(sub: str, obj, act, file_name):
+    import casbin
+    e = casbin.Enforcer("model.conf", file_name)
+    if e.enforce(sub, obj, act):
+        print("permit alice to read data1")
+        return True
+    else:
+        print("deny the request, show an error")
+        return False
     pass

@@ -6,6 +6,7 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.views import BaseView
 
+from common.decorators import require_role_permission
 from rules.common.common_rule import excel_fields_to_enum, get_org_center_userinfo
 from rules.education_year_rule import EducationYearRule
 from rules.system_config_rule import SystemConfigRule
@@ -82,6 +83,7 @@ class SystemView(BaseView):
         return res
 
     # 系统配置 列表
+    @require_role_permission("evaluationManage", "viewEvaluation")
     async def page_system_config(self,
                                  page_request=Depends(PageRequest),
                                  config_name: str = Query(None, title="", description="", min_length=1, max_length=50,
