@@ -50,7 +50,10 @@ class ClassesRule(ImportCommonAbstractRule,object):
         # 校验 teacher_id,care_teacher_id  根据系统配置来决定是允许手填还是关联老师 默认关联老师
         if self.class_leader_teacher_rule == 1:
             if hasattr(classes, "teacher_id") and classes.teacher_id is not None and not  classes.teacher_id.isdigit():
+                if classes.teacher_name is None or  len(classes.teacher_name)==0:
+                    classes.teacher_name= classes.teacher_id
                 classes.teacher_id = None
+
             pass
         elif self.class_leader_teacher_rule == 2:
 
@@ -144,9 +147,9 @@ class ClassesRule(ImportCommonAbstractRule,object):
     async def get_classes_count(self):
         return await self.classes_dao.get_classes_count()
 
-    async def query_classes_with_page(self, page_request: PageRequest, borough, block, school_id, grade_id, class_name,school_no=None):
+    async def query_classes_with_page(self, page_request: PageRequest, borough, block, school_id, grade_id, class_name,school_no=None,teacher_name=None):
         paging = await self.classes_dao.query_classes_with_page(borough, block, school_id, grade_id, class_name,
-                                                                page_request,school_no)
+                                                                page_request,school_no,teacher_name)
         # 字段映射的示例写法   , {"hash_password": "password"} ClassesSearchRes
 
         print(paging)

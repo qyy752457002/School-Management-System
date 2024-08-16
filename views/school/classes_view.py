@@ -32,6 +32,7 @@ class ClassesView(BaseView):
                    page_request=Depends(PageRequest),
 
                    borough: str = Query('', title=" ", description=" 行政管辖区", examples=['铁西区']),
+                   teacher_name: str = Query('', title=" ", description=" ", examples=['']),
                    block: str = Query('', title=" ", description="地域管辖区", examples=['铁西区']),
 
                    school_id: int|str  = Query(0, title="学校ID", description="学校ID", examples=[1]),
@@ -45,7 +46,7 @@ class ClassesView(BaseView):
         print(page_request)
         items = []
         res = await self.classes_rule.query_classes_with_page(page_request, borough, block, school_id, grade_id,
-                                                              class_name)
+                                                              class_name,teacher_name=teacher_name)
         return res
 
     # 删除
