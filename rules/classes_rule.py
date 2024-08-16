@@ -147,7 +147,7 @@ class ClassesRule(ImportCommonAbstractRule,object):
     async def get_classes_count(self):
         return await self.classes_dao.get_classes_count()
 
-    async def query_classes_with_page(self, page_request: PageRequest, borough, block, school_id, grade_id, class_name,school_no=None,teacher_name=None):
+    async def query_classes_with_page(self, page_request: PageRequest, borough, block, school_id, grade_id, class_name,school_no=None,teacher_name=None,is_lock=None):
         paging = await self.classes_dao.query_classes_with_page(borough, block, school_id, grade_id, class_name,
                                                                 page_request,school_no,teacher_name)
         # 字段映射的示例写法   , {"hash_password": "password"} ClassesSearchRes
@@ -159,6 +159,7 @@ class ClassesRule(ImportCommonAbstractRule,object):
         # print(schools)
 
 
+        class_ids = []
         if paging_result.items:
             # 查询枚举值列表
             enum_value_rule = get_injector(EnumValueRule)
@@ -167,12 +168,16 @@ class ClassesRule(ImportCommonAbstractRule,object):
             print(schools.keys())
 
             for item in paging_result.items:
+                class_ids.append(item.id)
                 item.school_id= int(item.school_id)
                 if item.grade_type in grade_enums:
                     item.grade_type_name = grade_enums[item.grade_type].description
                 else:
                     item.grade_type_name = item.grade_type
                 item.school_no = schools[item.school_id].school_no if item.school_id in schools.keys() else '--'
+        if len(class_ids)>0 and is_lock is not None and is_lock>0:
+            # 批量锁定
+            res = await self.classes_dao.lock_classes_by_ids(class_ids)
 
 
 

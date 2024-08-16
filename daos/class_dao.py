@@ -12,6 +12,7 @@ from models.students import Student
 from models.students_base_info import StudentBaseInfo
 from models.teachers import Teacher
 from models.teachers_info import TeacherInfo
+from views.models.classes import ClassStatus
 
 
 class ClassesDAO(DAOBase):
@@ -97,6 +98,17 @@ class ClassesDAO(DAOBase):
         # await session.delete(classes)
         await session.commit()
         return classes
+    async def lock_classes_by_ids(self, ids):
+        session = await self.master_db()
+        deleted_status = True
+
+        update_stmt = update(Classes).where(Classes.id.in_(ids) ).values(
+            status=ClassStatus.LOCKED.value,
+        )
+        await session.execute(update_stmt)
+        # await session.delete(classes)
+        await session.commit()
+        return
 
     async def get_classes_count(self):
         session = await self.slave_db()
