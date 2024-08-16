@@ -192,6 +192,95 @@ class ClassesDAO(DAOBase):
         paging = await self.query_page(query, page_request)
 
         return paging
+    async def query_classes_with_page_join_teacher(self, borough, block, school_id, grade_id, class_name,
+                                      page_request: PageRequest,school_no=None,teacher_name=None) -> Paging:
+        teacher_alias = aliased(Teacher, name='teacher_alias')
+        teacherinfo_alias = aliased(TeacherInfo, name='teacherinfo_alias')
+        query = (select(School.block, School.borough, School.school_name, Classes.id, Classes.class_name,
+                        Classes.class_number, Classes.year_established,
+                        Classes.session_id,
+                        Classes.created_at,
+                        Classes.class_index,
+                        Classes.education_stage, Classes.school_system,
+                        Classes.class_type, Classes.is_bilingual_class, Classes.major_for_vocational,
+                        Classes.bilingual_teaching_mode, Classes.ethnic_language, Classes.is_att_class,
+                        Classes.att_class_type, Classes.grade_no, Classes.grade_id, Classes.is_deleted,
+                        Classes.school_id,
+                        Classes.teacher_id,
+                        Classes.monitor_id,
+                        Classes.care_teacher_id,
+                        Grade.grade_type,
+                        Classes.created_at, Classes.updated_at,
+                        Classes.created_uid, Classes.updated_uid,
+                        Teacher.teacher_id_number,
+                        Teacher.teacher_name,
+                        Teacher.teacher_id_type,
+                        Teacher.mobile,
+
+                        func.coalesce(Teacher.teacher_id_number, '').label('teacher_id_card'),
+                        func.coalesce(Teacher.teacher_id_type, '').label('teacher_card_type'),
+                        func.coalesce(Teacher.mobile, '').label('teacher_phone'),
+                        func.coalesce(TeacherInfo.teacher_number, '').label('teacher_job_number'),
+                        func.coalesce(Student.student_name, '').label('monitor'),
+                        func.coalesce(StudentBaseInfo.student_number, '').label('monitor_student_number'),
+
+                        func.coalesce(teacher_alias.teacher_id_number, '').label('care_teacher_id_card'),
+                        func.coalesce(teacher_alias.teacher_id_type, '').label('care_teacher_card_type'),
+                        func.coalesce(teacher_alias.mobile, '').label('care_teacher_phone'),
+                        func.coalesce(teacherinfo_alias.teacher_number, '').label('care_teacher_job_number'),
+                        func.coalesce(teacher_alias.teacher_name, '').label('care_teacher_name'),
+                        # func.coalesce(teacher_alias.teacher_name, '').label('care_teacher_name'),
+
+                        ).select_from(Classes).join(School, School.id == Classes.school_id, isouter=True)
+                 .join(Grade, Grade.id == Classes.grade_id, isouter=True)
+                 .join(Teacher, Teacher.teacher_id == Classes.teacher_id, isouter=True)
+                 .join(TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id, isouter=True)
+                 .join(teacher_alias, teacher_alias.teacher_id == Classes.care_teacher_id, isouter=True)
+                 .join(teacherinfo_alias, teacher_alias.teacher_id == teacherinfo_alias.teacher_id, isouter=True)
+
+                 .join(Student, Student.student_id == Classes.monitor_id, isouter=True)
+                 .join(StudentBaseInfo, Student.student_id == StudentBaseInfo.student_id, isouter=True)
+
+                 .where(Classes.is_deleted == False)
+                 .order_by(Classes.id.desc()))
+
+        if school_id:
+            query = query.where(Classes.school_id == int(school_id))
+            pass
+        if school_no is not None:
+            query = query.where(School.school_no == school_no )
+            pass
+        if teacher_name is not None:
+            query = query.where(Classes.teacher_name == teacher_name )
+            pass
+        if grade_id and int(grade_id) > 0:
+            print(grade_id)
+            query = query.where(Classes.grade_id == int(grade_id))
+        if class_name:
+            # query = query.where(Classes.classes_no == class_name)
+            query = query.where(Classes.class_name.like(f'%{class_name}%'))
+
+            # pass
+        if borough and block:
+            cond1 = School.borough == borough
+            cond2 = School.block == block
+            mcond = or_(cond1, cond2)
+
+            query = query.filter(and_(
+                Classes.is_deleted == False,  # a=1
+                or_(
+                    mcond
+                )
+            ))
+        elif borough or block:
+            if block:
+                query = query.where(School.block == block)
+            if borough:
+                query = query.where(School.borough == borough)
+
+        paging = await self.query_page(query, page_request)
+
+        return paging
 
     async def update_classes_byargs(self, classes: Classes, *args, is_commit: bool = True):
         session = await self.master_db()
