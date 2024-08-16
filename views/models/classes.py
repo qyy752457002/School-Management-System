@@ -1,9 +1,20 @@
 from datetime import datetime
+from enum import Enum
 
 from fastapi import Query
 from pydantic import BaseModel, Field, model_validator
 
 
+class ClassStatus(str, Enum):
+    """
+    状态
+    """
+    NORMAL = "normal"
+    LOCKED = "locked"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.NORMAL, cls.LOCKED ]
 class Classes(BaseModel):
     """
     班级表

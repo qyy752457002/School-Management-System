@@ -7,6 +7,7 @@ from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
+from business_exceptions.classes import ClassesLockedError
 from daos.class_dao import ClassesDAO
 from daos.grade_dao import GradeDAO
 from daos.school_dao import SchoolDAO
@@ -17,7 +18,7 @@ from rules.enum_value_rule import EnumValueRule
 from rules.import_common_abstract_rule import ImportCommonAbstractRule
 from rules.teachers_rule import TeachersRule
 from views.common.common_view import convert_snowid_in_model, convert_snowid_to_strings, convert_dates_to_strings
-from views.models.classes import Classes as ClassesModel
+from views.models.classes import Classes as ClassesModel, ClassStatus
 from views.models.classes import ClassesSearchRes
 from views.models.system import GRADE_ENUM_KEY, MAJOR_LV3_ENUM_KEY
 
@@ -122,6 +123,8 @@ class ClassesRule(ImportCommonAbstractRule,object):
         exists_classes = await self.classes_dao.get_classes_by_id(classes.id)
         if not exists_classes:
             raise Exception(f"班级信息{classes.id}不存在")
+        await self.check_lock(exists_classes)
+
         need_update_list = []
         for key, value in classes.dict().items():
             if value:
@@ -140,14 +143,20 @@ class ClassesRule(ImportCommonAbstractRule,object):
         exists_classes = await self.classes_dao.get_classes_by_id(classes_id)
         if not exists_classes:
             raise Exception(f"班级信息{classes_id}不存在")
+        await self.check_lock(exists_classes)
+
         classes_db = await self.classes_dao.softdelete_classes(exists_classes)
         # classes = orm_model_to_view_model(classes_db, ClassesModel, exclude=[""],)
         return classes_db
+    async def check_lock(self, exists_classes):
+        if  exists_classes.status== ClassStatus.LOCKED:
+            raise ClassesLockedError()
+
 
     async def get_classes_count(self):
         return await self.classes_dao.get_classes_count()
 
-    async def query_classes_with_page(self, page_request: PageRequest, borough, block, school_id, grade_id, class_name,school_no=None,teacher_name=None):
+    async def query_classes_with_page(self, page_request: PageRequest, borough, block, school_id, grade_id, class_name,school_no=None,teacher_name=None,is_lock=None):
         paging = await self.classes_dao.query_classes_with_page(borough, block, school_id, grade_id, class_name,
                                                                 page_request,school_no,teacher_name)
         # 字段映射的示例写法   , {"hash_password": "password"} ClassesSearchRes
@@ -159,6 +168,7 @@ class ClassesRule(ImportCommonAbstractRule,object):
         # print(schools)
 
 
+        class_ids = []
         if paging_result.items:
             # 查询枚举值列表
             enum_value_rule = get_injector(EnumValueRule)
@@ -167,12 +177,16 @@ class ClassesRule(ImportCommonAbstractRule,object):
             print(schools.keys())
 
             for item in paging_result.items:
+                class_ids.append(item.id)
                 item.school_id= int(item.school_id)
                 if item.grade_type in grade_enums:
                     item.grade_type_name = grade_enums[item.grade_type].description
                 else:
                     item.grade_type_name = item.grade_type
                 item.school_no = schools[item.school_id].school_no if item.school_id in schools.keys() else '--'
+        if len(class_ids)>0 and is_lock is not None and is_lock>0:
+            # 批量锁定
+            res = await self.classes_dao.lock_classes_by_ids(class_ids)
 
 
 
