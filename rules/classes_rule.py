@@ -50,7 +50,7 @@ class ClassesRule(ImportCommonAbstractRule,object):
         # 校验 teacher_id,care_teacher_id  根据系统配置来决定是允许手填还是关联老师 默认关联老师
         if self.class_leader_teacher_rule == 1:
             if hasattr(classes, "teacher_id") and classes.teacher_id is not None and not  classes.teacher_id.isdigit():
-                if len(classes.teacher_name)==0:
+                if classes.teacher_name is None or  len(classes.teacher_name)==0:
                     classes.teacher_name= classes.teacher_id
                 classes.teacher_id = None
 
