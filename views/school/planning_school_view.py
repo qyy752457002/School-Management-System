@@ -11,6 +11,7 @@ from starlette.requests import Request
 
 from business_exceptions.planning_school import PlanningSchoolValidateError, \
     PlanningSchoolStatusError
+from common.decorators import require_role_permission
 from models.student_transaction import AuditAction
 from rules.common.common_rule import get_org_center_userinfo, verify_auth
 from rules.operation_record import OperationRecordRule
@@ -557,6 +558,7 @@ class PlanningSchoolView(BaseView):
         pass
 
     # 原始的获取规划校分页接口 再用
+    @require_role_permission("planning_school", "view")
     async def page(self,
                    # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
                    request:Request,
