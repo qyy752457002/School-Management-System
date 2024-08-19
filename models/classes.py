@@ -53,6 +53,7 @@ class Classes(BaseDBModel):
     major_for_vocational: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="中职班级专业")
     bilingual_teaching_mode: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="双语教学模式")
     ethnic_language: Mapped[str] = mapped_column(String(48), nullable=True,default='', comment="少数民族语言")
+    status: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="状态")
 
     created_uid: Mapped[int] = mapped_column(  nullable=True , comment="创建人",default=0)
     updated_uid: Mapped[int] = mapped_column( nullable=True , comment="操作人",default=0)

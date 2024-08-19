@@ -70,6 +70,8 @@ class PermissionMenuDAO(DAOBase):
                         PermissionMenu.created_at,
                         PermissionMenu.updated_at,
                         PermissionMenu.created_uid,
+                        PermissionMenu.resource_code,
+                        PermissionMenu.action,
                         PermissionMenu.updated_uid,
                         Role.app_name
                         ).select_from(PermissionMenu).join(RolePermission, RolePermission.menu_id == PermissionMenu.id,

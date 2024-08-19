@@ -13,8 +13,9 @@
         "port": 54321,
         "user": "schooloms",
         "password": "J16s10Wp08yfEskmVAJH",
-        "database": "school_oms_test",
-        "pool_size": 50
+        "database": "school_oms_stg",
+        "pool_size": 50,
+        "max_overflow": 15
       },
       "slaves": [
         {
@@ -22,16 +23,14 @@
           "port": 54321,
           "user": "schooloms",
           "password": "J16s10Wp08yfEskmVAJH",
-          "database": "school_oms_test",
-          "pool_size": 50
+          "database": "school_oms_stg"
         },
         {
           "host": "10.0.0.42",
           "port": 54321,
           "user": "schooloms",
           "password": "J16s10Wp08yfEskmVAJH",
-          "database": "school_oms_test",
-          "pool_size": 50
+          "database": "school_oms_stg"
         }
       ]
     }
@@ -42,43 +41,42 @@
     "secret_key": "MtuM5ZBlARTQMqRsb6mGIMecPlJhCE2D",
     "token_exp_sec": 600,
     "buckets": {
-      "student": {
-        "name": "k8s",
-        "path": "/student"
-      },
-      "school": {
+      "supervisor": {
         "name": "k8s",
         "path": "school"
       },
-      "teacher": {
+      "picture": {
         "name": "k8s",
-        "path": "/teacher"
+        "path": "/picture"
       }
     }
   },
   "redis": {
     "servers": {
       "default": {
-        "host": "redis-standalone.databases.svc.cluster.local",
+        "host": "10.0.5.25",
         "port": 6379,
         "password": ""
       }
     },
     "dbs": {
       "session": {
-        "db": 0,
+        "db": 20,
         "prefix": "",
         "server_key": "default"
       },
       "jwt_blacklist": {
-        "db": 1,
+        "db": 21,
         "prefix": "",
         "server_key": "default"
       },
-      "snowflake": {"db": 0, "prefix": "", "server_key": "default"},
-
+      "snowflake": {
+        "db": 0,
+        "prefix": "",
+        "server_key": "default"
+      },
       "login_state": {
-        "db": 2,
+        "db": 22,
         "prefix": "",
         "server_key": "default"
       },
@@ -103,11 +101,11 @@
       "authorization_url": "https://org-center.f123.pub/org-center/login/oauth/authorize",
       "token_url": "https://org-center.f123.pub/api/login/oauth/access_token",
       "user_info_url": "https://org-center.f123.pub/api/userinfo",
-      "redirect_url": "https://school-oms-dev.f123.pub/auth/oauth2/callback",
+      "redirect_url": "https://school-oms-stg.f123.pub/auth/oauth2/callback",
       "grant_type": "authorization_code",
       "scope": "scope",
       "cert": "cert",
-      "home_url": "https://school-oms-dev.f123.pub/",
+      "home_url": "https://school-oms-stg.f123.pub/",
       "no_login_urls": [
         "/api/school/openapi.json",
         "/api/school/v1/public",
@@ -151,9 +149,7 @@
       "delay": 1,
       "backoff": 2,
       "jitter": true
-    },
-    "workflow":  "fff.cc",
-    "zookeeper_host":   "10.0.9.1:2181,10.0.9.2:2181,10.0.9.3:2181"
+    }
   },
   "task_service": {
     "app_id": "task_service",
@@ -170,33 +166,6 @@
       "email_smtp_port": 25,
       "sms_api_endpoint": "",
       "sms_api_key": ""
-    },
-    "task_types": {
-
-      "teacher_import": {
-        "topic": "teacher_import",
-        "name": "教师导入",
-        "consumer_group_id": "service",
-        "description": "教师导入",
-        "executor_cls_model": "views.tasks.new_teacher_task.TeacherImportExecutor",
-        "payload_cls_model": "views.models.teachers.TeacherFileStorageModel"
-      },
-      "teacher_export": {
-        "topic": "teacher_export",
-        "name": "教师导出",
-        "consumer_group_id": "service",
-        "description": "教师导出",
-        "executor_cls_model": "views.tasks.new_teacher_task.TeacherExportExecutor",
-        "payload_cls_model": "views.models.teachers.CurrentTeacherQuery"
-      },
-      "teacher_save_export": {
-        "topic": "teacher_export",
-        "name": "",
-        "consumer_group_id": "service",
-        "description": "",
-        "executor_cls_model": "views.tasks.new_teacher_task.TeacherSaveExportExecutor",
-        "payload_cls_model": "views.models.teachers.TeacherFileStorageModel"
-      }
     }
   }
 }
