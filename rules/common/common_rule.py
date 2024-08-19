@@ -348,17 +348,24 @@ async def get_class_map(keycolum: str, ):
     return schools
 
 
-async def check_social_credit_code(social_credit_code: str | None, ):
+async def check_social_credit_code(social_credit_code: str | None,current_school=None  ):
     if social_credit_code is None or social_credit_code == "":
         return
     pschool_dao = get_injector(PlanningSchoolDAO)
     school_dao = get_injector(SchoolDAO)
     campus_dao = get_injector(CampusDAO)
-    exist = await pschool_dao.get_planning_school_by_args(social_credit_code=social_credit_code, is_deleted=False)
+    exist = await pschool_dao.get_planning_school_by_args(current_school,social_credit_code=social_credit_code, is_deleted=False)
     if exist:
         print("唯一检测1", social_credit_code, exist)
         raise SocialCreditCodeExistError()
-    exist = await school_dao.get_school_by_args(social_credit_code=social_credit_code, is_deleted=False)
+    not_equal_age = dict()
+    # if current_school is not None:
+    #     not_equal_age = {'id !=': current_school.id}
+
+        # users_not_30 = query_users(**not_equal_age, school_id=current_school.id)
+
+    # users_not_30 = query_users(**not_equal_age)
+    exist = await school_dao.get_school_by_args(current_school,social_credit_code=social_credit_code, is_deleted=False)
     if exist:
         print("唯一检测2", social_credit_code, exist)
 
