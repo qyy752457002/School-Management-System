@@ -13,7 +13,7 @@ from daos.grade_dao import GradeDAO
 from daos.school_dao import SchoolDAO
 from daos.student_session_dao import StudentSessionDao
 from models.classes import Classes
-from rules.common.common_rule import send_orgcenter_request, get_school_map
+from rules.common.common_rule import send_orgcenter_request, get_school_map, get_grade_map
 from rules.enum_value_rule import EnumValueRule
 from rules.import_common_abstract_rule import ImportCommonAbstractRule
 from rules.teachers_rule import TeachersRule
@@ -166,6 +166,8 @@ class ClassesRule(ImportCommonAbstractRule,object):
         # 字段处理
         schools =await get_school_map('id')
         # print(schools)
+        grades = await get_grade_map('id')
+
 
 
         class_ids = []
@@ -184,6 +186,7 @@ class ClassesRule(ImportCommonAbstractRule,object):
                 else:
                     item.grade_type_name = item.grade_type
                 item.school_no = schools[item.school_id].school_no if item.school_id in schools.keys() else '--'
+                item.grade_no = grades[item.grade_id].grade_no if item.grade_id in grades.keys() else '--'
         if len(class_ids)>0 and is_lock is not None and is_lock>0:
             # 批量锁定
             res = await self.classes_dao.lock_classes_by_ids(class_ids)
