@@ -19,6 +19,7 @@ class School(BaseDBModel):
 
     school_name: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校名称")
     school_no: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校编号")
+    old_school_no: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="旧的学校编号(例如一期)")
     school_code: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校标识码")
     school_operation_license_number: Mapped[str] = mapped_column(String(64), nullable=True, default='',
                                                                  comment="办学许可证号")
