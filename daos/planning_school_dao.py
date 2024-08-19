@@ -32,13 +32,15 @@ class PlanningSchoolDAO(DAOBase):
                 PlanningSchool.is_deleted == False))
         return result.first()
 
-    async def get_planning_school_by_args(self, **kwargs):
+    async def get_planning_school_by_args(self,obj=None, **kwargs):
         """
         """
         session = await self.slave_db()
         query = select(PlanningSchool)
         for key, value in kwargs.items():
             query = query.where(getattr(PlanningSchool, key) == value)
+        if obj is not None and hasattr(obj, 'id'):
+            query = query.where(PlanningSchool.id != obj.id)
         result = await session.execute(query)
         return result.scalar()
 

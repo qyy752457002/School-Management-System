@@ -269,7 +269,7 @@ class PlanningSchoolKeyAddInfo(BaseModel):
     planning_school_name: str = Field(..., title="规划校名称", description="规划校名称", min_length=1, max_length=30,
                                       examples=['XX小学'])
     planning_school_no: str = Query(None, title="规划校编号", description="规划校编号/规划校代码", min_length=1,  max_length=50, example='SC2032633')
-    old_planning_school_no: str|None = Query(None, title="规划校编号", description="规划校编号/规划校代码", min_length=1,  max_length=50, example='SC2032633')
+    old_planning_school_no: str|None = Query(None, title="规划校编号", description="规划校编号/规划校代码",    max_length=50, example='SC2032633')
     planning_school_code: str = Field('', title="", description=" 规划校标识码", examples=['SC562369322SG'],
                                       min_length=1,
                                       max_length=30)
@@ -293,7 +293,7 @@ class PlanningSchoolKeyInfo(BaseModel):
     id: int | str = Query(None, title="规划校id", description="规划校id", example='1'),
     planning_school_name: str = Field(..., title="规划校名称", description="1-20字符", examples=['XX小学'])
     planning_school_no: str = Query(None, title="规划校编号", description="规划校编号/规划校代码", min_length=1, max_length=20, example='SC2032633'),
-    old_planning_school_no: str|None = Query(None, title="规划校编号", description="规划校编号/规划校代码", min_length=1, max_length=50, example='SC2032633'),
+    old_planning_school_no: str|None = Query(None, title="规划校编号", description="规划校编号/规划校代码",  max_length=50, example='SC2032633'),
     borough: str = Query(..., title=" 行政管辖区", description=" 行政管辖区", examples=['铁西区']),
     block: str = Query(..., title=" 地域管辖区", description="地域管辖区", examples=['铁西区']),
     # planning_school_type: str = Query(..., title="", description=" 规划校类型", examples=['中小学']),
@@ -313,7 +313,7 @@ class PlanningSchoolPageSearch(BaseModel):
     planning_school_level: str | None = Query("", title="", description=" 学校星级", )
     planning_school_name: str | None = Query("", title="学校名称", description="1-20字符", )
     planning_school_no: str | None = Query("", title="学校编号", description="学校编号/园所代码",  max_length=40, )
-    old_planning_school_no: str | None = Query("", title="学校编号", description="学校编号/园所代码",  max_length=40, )
+    old_planning_school_no: str | None = Query("", title="学校编号", description="学校编号/园所代码",  max_length=50, )
     borough: str | None = Query("", title="  ", description=" 行政管辖区", )
     status: PlanningSchoolStatus | None = Query("", title="", description=" 状态", examples=['正常'])
 
