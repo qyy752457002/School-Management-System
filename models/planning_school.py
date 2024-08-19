@@ -26,6 +26,8 @@ class PlanningSchool(BaseDBModel):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, comment="ID", autoincrement=False)
     planning_school_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="学校名称")
     planning_school_no: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="学校编号")
+    old_planning_school_no: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="旧的学校编号(例如一期)")
+
     planning_school_code: Mapped[str] = mapped_column(String(64), nullable=True,default='',  comment="园所标识码")
     planning_school_operation_license_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="办学许可证号", default='')
     block: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="地域管辖区")
