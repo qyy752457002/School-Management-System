@@ -215,12 +215,12 @@ class SchoolRule(object):
             # 取消 和 驳回等 不校验
             if 'social_credit_code' in changed_fields:
                 if hasattr(school, 'social_credit_code'):
-                    await check_social_credit_code(school.social_credit_code)
+                    await check_social_credit_code(school.social_credit_code,exists_school)
             pass
         else:
             # 默认校验
             if hasattr(school, 'social_credit_code'):
-                await check_social_credit_code(school.social_credit_code)
+                await check_social_credit_code(school.social_credit_code,exists_school)
         if exists_school.status == PlanningSchoolStatus.DRAFT.value:
             if hasattr(school, 'status'):
                 # school.status= PlanningSchoolStatus.OPENING.value
@@ -912,6 +912,7 @@ class SchoolRule(object):
                      'locationCounty': planning_school_communication.loc_area,
                      'locationProvince': planning_school_communication.loc_area_pro,
                      'owner': exists_planning_school.school_no,
+                     # 单位的唯一标识 是code
                      'unitCode': exists_planning_school.school_no, 'unitId': '',
                      'unitName': exists_planning_school.school_name,
                      'unitType': OrgCenterInstitutionType.get_mapper(exists_planning_school.institution_category) if exists_planning_school.institution_category  else 'school',
@@ -1004,6 +1005,7 @@ class SchoolRule(object):
                      'locationCity': '',
                      'locationCounty': planning_school_communication.loc_area,
                      'locationProvince': planning_school_communication.loc_area_pro, 'owner': '',
+                     # 组织的唯一标识 可能是 单位code
                      'unitCode': exists_planning_school.school_no,
                      # 'unitId': '',
                      'unitName': exists_planning_school.school_name,
@@ -1019,6 +1021,7 @@ class SchoolRule(object):
                      "certPublicKey": "",
                      "clientId": "",
                      "clientSecret": "",
+                     # 组织的code
                      "code": exists_planning_school.school_no,
                      # "defaultApplication":   exists_planning_school.planning_school_name,
                      "defaultAvatar": "",
@@ -1087,12 +1090,13 @@ class SchoolRule(object):
             "isTopGroup": exists_planning_school.parent_id == 0,
             "key": "sit",
             "manager": "",
-            # "name": exists_planning_school.org_name + "管理员",
-            "name": "基础信息管理系统",
+            "name": exists_planning_school.org_name + "默认部门",
+            # "name":  exists_planning_school_origin.org_name,
+            #名称唯一
             "newCode": exists_planning_school.org_code,
             "newType": "organization",  # 组织类型 特殊参数必须穿这个
-            "owner": school.school_no,
-            "parentId": str(exists_planning_school.parent_id),
+            "owner": school.school_no,#隶属的组织  是 自动的 组织
+            "parentId": str(exists_planning_school.parent_id), #0表示顶级部门
             "parentName": "",
             "tags": [
                 ""

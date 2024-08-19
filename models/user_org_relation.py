@@ -14,3 +14,4 @@ class UserOrgRelation(BaseDBModel):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, comment="", autoincrement=False)
     user_id: Mapped[int] = mapped_column(BigInteger, primary_key=False, comment="用户ID", nullable=True, default=0)
     org_id: Mapped[str] = mapped_column(String(255), comment="组织ID", nullable=True, default=0)
+    is_deleted: Mapped[bool] = mapped_column(comment="是否删除", nullable=False, default=False)
