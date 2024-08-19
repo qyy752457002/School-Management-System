@@ -16,7 +16,7 @@ class UserOrgRelationDao(DAOBase):
     async def get_user_org_relation_by_user_id(self, user_id):
         session = await self.slave_db()
         result = await session.execute(
-            select(UserOrgRelation).where(UserOrgRelation.user_id == user_id))
+            select(UserOrgRelation).where(UserOrgRelation.user_id == user_id, UserOrgRelation.is_deleted == False))
         return result.scalar_one_or_none()
 
     async def get_user_org_relation_by_org_id(self, org_id):
@@ -24,3 +24,7 @@ class UserOrgRelationDao(DAOBase):
         result = await session.execute(
             select(UserOrgRelation).where(UserOrgRelation.org_id == org_id))
         return result.scalar_one_or_none()
+
+    async def delete_user_org_relation(self, user_org_relation: UserOrgRelation):
+        session = await self.master_db()
+        return await self.delete(session, user_org_relation, is_commit=True)

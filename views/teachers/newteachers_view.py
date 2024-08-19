@@ -245,7 +245,7 @@ class NewTeachersView(BaseView):
         print('发生任务成功')
         return task
 
-    async def page_new_teacher_launch(self,request: Request, teacher_approval_query=Depends(TeacherApprovalQuery),
+    async def page_new_teacher_launch(self, request: Request, teacher_approval_query=Depends(TeacherApprovalQuery),
                                       page_request=Depends(PageRequest)):
         """
         分页查询
@@ -262,7 +262,7 @@ class NewTeachersView(BaseView):
                                                                                  page_request, extend_param)
         return paging_result
 
-    async def page_new_teacher_approval(self,request: Request, teacher_approval_query=Depends(TeacherApprovalQuery),
+    async def page_new_teacher_approval(self, request: Request, teacher_approval_query=Depends(TeacherApprovalQuery),
                                         page_request=Depends(PageRequest)):
         """
         分页查询
@@ -331,6 +331,15 @@ class NewTeachersView(BaseView):
 
     async def post_teacher_organization_members_test(self, teacher_id: int | str = Query(..., title="教师编号",
                                                                                          description="教师编号",
-                                                                                         example="7210418530586595328"),):
-        res = await self.teacher_rule.add_teacher_organization_members( teacher_id)
+                                                                                         example="7210418530586595328"), ):
+        res = await self.teacher_rule.add_teacher_organization_members(teacher_id)
+        return res
+
+    async def get_send_user_department_to_org_center(self, teacher_id: int | str = Query(..., title="教师编号",
+                                                                                         description="教师编号",
+                                                                                         example="7210418530586595328"),
+                                                     user_id=Query(..., title="教师编号",
+                                                                   description="教师编号",
+                                                                   example="7210418530586595328")):
+        res = await self.teacher_rule.send_user_department_to_org_center(teacher_id, user_id)
         return res
