@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from mini_framework.async_task.data_access.task_dao import TaskDAO
@@ -331,9 +332,7 @@ class TeachersRule(object):
             await self.teacher_work_flow_rule.update_work_flow_by_param(process_instance_id, params)
             await self.teachers_dao.update_teachers(teachers_db, "teacher_main_status", "teacher_sub_status",
                                                     "is_approval")
-            # todo 先在组织中成员中，再发送到组织中心
             await self.add_teacher_organization_members(int(teachers_id))
-            await self.send_teacher_to_org_center(int(teachers_id))
             return "该老师入职审批已通过"
 
     async def entry_rejected(self, teachers_id, process_instance_id, user_id, reason):
@@ -384,7 +383,6 @@ class TeachersRule(object):
             await self.teachers_dao.update_teachers(teacher, *need_update_list)
             await self.teacher_pending(teachers_id)
             await self.teacher_active(teachers_id)
-            await self.add_teacher_organization_members(int(teachers_id))
             return "该老师关键信息变更审批已通过"
 
     async def teacher_info_change_rejected(self, teachers_id, process_instance_id, user_id, reason):
@@ -497,6 +495,8 @@ class TeachersRule(object):
         teacher_info = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teacher_id)
         org_id = teacher_info.org_id
         teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id, org_id)
+        if not teacher_db:
+            raise Exception("未找到符合要求的老师")
         dict_data = orm_model_to_view_model(teacher_db, EducateUserModel, exclude=[""])
         id_card_type = IdentityType.from_to_org(dict_data.idCardType)
         dict_data_dict = dict_data.dict()
@@ -510,23 +510,22 @@ class TeachersRule(object):
             "accept": "application/json",
             "Content-Type": "application/json"
         }
-        try:
-            response = await httpreq.post(url, params_data, headerdict)
-            result = JsonUtils.json_str_to_dict(response)
-            user_id = result["data2"]
-            await self.send_user_department_to_org_center(int(teacher_id), user_id)
-            user_org_relation_rule = get_injector(UserOrgRelationRule)
-            await user_org_relation_rule.add_user_org_relation(int(teacher_id), user_id)
-            await self.send_user_department_to_org_center(int(teacher_id), user_id)
-            return result
-        except Exception as e:
-            print(e)
-            return False
+        response = await httpreq.post(url, params_data, headerdict)
+        result = JsonUtils.json_str_to_dict(response)
+        print(result)
+        if result["status"] != "ok":
+            raise Exception(response)
+        user_id = result["data2"]
+        user_org_relation_rule = get_injector(UserOrgRelationRule)
+        await user_org_relation_rule.add_user_org_relation(int(teacher_id), user_id)
+        return result
 
     async def send_user_department_to_org_center(self, teacher_id, user_id):
         teacher_info = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teacher_id)
         org_id = teacher_info.org_id
         teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id, org_id)
+        if not teacher_db:
+            raise Exception("未找到符合要求的老师")
         dict_data = orm_model_to_view_model(teacher_db, EducateUserModel, exclude=[""])
         dict_data_dict = dict_data.dict()
         unitId = dict_data_dict["currentUnit"]
@@ -541,18 +540,19 @@ class TeachersRule(object):
                        "clientId": authentication_config.oauth2.client_id,
                        "clientSecret": authentication_config.oauth2.client_secret,
                        }
-        params_data = JsonUtils.dict_to_json_str(depart_parm)
+        depart_parm_list = [depart_parm]
         httpreq = HTTPRequest()
         url = orgcenter_service_config.orgcenter_config.get("url")
-        api_name = '/api/add-educate-user-department-identity'
+        api_name = '/api/add-educate-user-department-identitys'
         url = url + api_name
         headerdict = {
             "accept": "application/json",
             "Content-Type": "application/json"
         }
         try:
-            print(params_data)
-            response = await httpreq.post(url, params_data, headerdict)
+            json_data = json.dumps(depart_parm_list)
+            print(json_data)
+            response = await httpreq.post(url, json_data, headerdict)
             result = JsonUtils.json_str_to_dict(response)
             return result
         except Exception as e:
@@ -588,5 +588,4 @@ class TeachersRule(object):
         organization.teacher_id = int(teacher_id)
         organization.member_type = identity_type
         organization.identity = identity
-        await self.organization_members_rule.update_organization_members_by_teacher_id(organization)
-        return
+        return await self.organization_members_rule.add_organization_members(organization)

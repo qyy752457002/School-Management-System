@@ -1,8 +1,12 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import copy
+import json
 
+from mini_framework.authentication.config import authentication_config
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
+from mini_framework.utils.http import HTTPRequest
+from mini_framework.utils.json import JsonUtils
 from mini_framework.utils.logging import logger
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
@@ -15,6 +19,7 @@ from daos.organization_dao import OrganizationDAO
 from daos.organization_members_dao import OrganizationMembersDAO
 from daos.school_dao import SchoolDAO
 from daos.teachers_dao import TeachersDao
+from daos.teachers_info_dao import TeachersInfoDao
 from models.organization import Organization as OrganizationModel
 from models.organization_members import OrganizationMembers as OrganizationMembersModel
 from rules.common.common_rule import send_orgcenter_request
@@ -23,11 +28,14 @@ from rules.common.common_rule import send_orgcenter_request
 # from daos.organization_members_members_dao import OrganizationMembersDAO
 # from models.organization import Campus
 from rules.organization_rule import OrganizationRule
+from rules.user_org_relation_rule import UserOrgRelationRule
 from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
+from views.common.common_view import orgcenter_service_config
 from views.models.organization import Organization, OrganizationMembers, OrganizationMembersSearchRes
 # from views.models.organization import CampusBaseInfo
 from views.models.planning_school import PlanningSchoolStatus
 from views.models.teachers import EducateUserModel
+from views.models.teachers import IdentityType
 
 
 # from views.models.organization import Campus as Organization
@@ -37,6 +45,7 @@ class OrganizationMembersRule(object):
     organization_dao: OrganizationDAO
     school_dao: SchoolDAO
     teacher_dao: TeachersDao
+    teacher_info_dao: TeachersInfoDao
 
     async def get_organization_members_by_id(self, organization_members_id, extra_model=None):
         organization_members_db = await self.organization_members_dao.get_organization_members_by_id(
@@ -75,7 +84,7 @@ class OrganizationMembersRule(object):
         organization_members_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
         organization_members_db = await self.organization_members_dao.add_organization_members(organization_members_db)
-        organization_member=copy.deepcopy( organization_members_db)
+        organization_member = copy.deepcopy(organization_members_db)
 
         organization_members_db_res = orm_model_to_view_model(organization_members_db, OrganizationMembers,
                                                               exclude=["created_at", 'updated_at'], other_mapper={})
@@ -95,7 +104,7 @@ class OrganizationMembersRule(object):
         # todo 部门成员 对接到组织中心  兼容 教师和 普通添加
         # 管理员 对接
         try:
-            res_admin = await self.send_admin_to_org_center(organization_member, )
+            res_admin = await self.send_user_to_org_center(organization_member, )
         except Exception as e:
             logger.error(e)
             print('部门成员 对接到组织中心 异常', e)
@@ -289,3 +298,71 @@ class OrganizationMembersRule(object):
             raise e
             return response
         return None
+
+    async def send_user_to_org_center(self, organization_member: OrganizationMembersModel):
+        teacher_db = await self.teacher_dao.get_teachers_arg_by_id(organization_member.teacher_id,
+                                                                   organization_member.org_id)
+        if not teacher_db:
+            raise Exception("未找到符合要求的老师")
+        dict_data = orm_model_to_view_model(teacher_db, EducateUserModel, exclude=[""])
+        id_card_type = IdentityType.from_to_org(dict_data.idCardType)
+        dict_data_dict = dict_data.dict()
+        dict_data_dict["idCardType"] = id_card_type
+        params_data = JsonUtils.dict_to_json_str(dict_data_dict)
+        httpreq = HTTPRequest()
+        url = orgcenter_service_config.orgcenter_config.get("url")
+        api_name = '/api/add-educate-user'
+        url = url + api_name
+        headerdict = {
+            "accept": "application/json",
+            "Content-Type": "application/json"
+        }
+        response = await httpreq.post(url, params_data, headerdict)
+        result = JsonUtils.json_str_to_dict(response)
+        print(result)
+        if result["status"] != "ok":
+            raise Exception(response)
+        user_id = result["data2"]
+        user_org_relation_rule = get_injector(UserOrgRelationRule)
+        await user_org_relation_rule.add_user_org_relation(int(organization_member.teacher_id), user_id)
+        await self.send_user_department_to_org_center(int(organization_member.teacher_id), user_id)
+        return result
+
+    # 往部门中加人
+    async def send_user_department_to_org_center(self, teacher_id, user_id):
+        teacher_info = await self.teacher_info_dao.get_teachers_info_by_teacher_id(teacher_id)
+        org_id = teacher_info.org_id
+        teacher_db = await self.teacher_dao.get_teachers_arg_by_id(teacher_id, org_id)
+        if not teacher_db:
+            raise Exception("未找到符合要求的老师")
+        dict_data = orm_model_to_view_model(teacher_db, EducateUserModel, exclude=[""])
+        dict_data_dict = dict_data.dict()
+        unitId = dict_data_dict["currentUnit"]
+        department_id = dict_data_dict["departmentId"]
+        identity = dict_data_dict["identity"]
+        identityType = dict_data_dict["identityType"]
+        depart_parm = {"unitId": unitId,
+                       "departmentId": department_id,
+                       "identity": identity,
+                       "identityType": identityType,
+                       "userId": user_id,
+                       "clientId": authentication_config.oauth2.client_id,
+                       "clientSecret": authentication_config.oauth2.client_secret,
+                       }
+        depart_parm_list = [depart_parm]
+        httpreq = HTTPRequest()
+        url = orgcenter_service_config.orgcenter_config.get("url")
+        api_name = '/api/add-educate-user-department-identitys'
+        url = url + api_name
+        headerdict = {
+            "accept": "application/json",
+            "Content-Type": "application/json"
+        }
+        try:
+            json_data = json.dumps(depart_parm_list)
+            print(json_data)
+            response = await httpreq.post(url, json_data, headerdict)
+            result = JsonUtils.json_str_to_dict(response)
+            return result
+        except Exception as e:
+            return e
