@@ -7,6 +7,7 @@ from typing import List, Type, Dict
 from mini_framework.authentication.config import authentication_config
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.http import HTTPRequest
+from mini_framework.utils.logging import logger
 from mini_framework.web.request_context import request_context_manager
 from pydantic import BaseModel
 
@@ -221,6 +222,7 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
             print(type(datadict), "数据类型")
             response = await httpreq.post_json(url, datadict, headerdict)
         print(response, '接口响应')
+        logger.info('接口响应',response)
         if response is None:
             return {}
         if isinstance(response, str):
