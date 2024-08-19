@@ -532,7 +532,6 @@ class SchoolRule(object):
                 # 单位发送过去
                 res_unit, data_unit = await self.send_school_to_org_center(school)
                 # 单位的组织 对接
-                # res_unit = await self.send_unit_orgnization_to_org_center(school)
                 res_oigna = await self.send_unit_orgnization_to_org_center(school, data_unit)
                 res_oigna_service_unit = await self.send_service_unit_to_org_center(school, data_unit)
 
@@ -1199,12 +1198,12 @@ class SchoolRule(object):
             exists_planning_school.id)
         # cn_exists_planning_school = await self.convert_school_to_import_format(exists_planning_school)
         dict_data = {
+            # 组织的code
+
             'orgCode': exists_planning_school.school_no,
 
             'unitId':  '',
 
-                     # 组织的code
-                     "code": exists_planning_school.school_no,
                      # "defaultApplication":   exists_planning_school.planning_school_name,
 
                      # "unitId": exists_planning_school.planning_school_no,
