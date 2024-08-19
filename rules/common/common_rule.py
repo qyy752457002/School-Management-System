@@ -20,7 +20,7 @@ from daos.student_session_dao import StudentSessionDao
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import workflow_service_config, orgcenter_service_config, check_result_org_center_api
-APP_CODE = "1241318252132032"
+APP_CODE = "1238915324217024"
 
 from datetime import datetime, timedelta
 

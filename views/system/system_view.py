@@ -83,7 +83,7 @@ class SystemView(BaseView):
         return res
 
     # 系统配置 列表
-    @require_role_permission("evaluationManage", "viewEvaluation")
+    @require_role_permission("system_config", "view")
     async def page_system_config(self,
                                  page_request=Depends(PageRequest),
                                  config_name: str = Query(None, title="", description="", min_length=1, max_length=50,
