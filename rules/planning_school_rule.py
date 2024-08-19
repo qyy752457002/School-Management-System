@@ -270,7 +270,7 @@ class PlanningSchoolRule(object):
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
         if hasattr(planning_school, 'social_credit_code'):
-            await check_social_credit_code(planning_school.social_credit_code)
+            await check_social_credit_code(planning_school.social_credit_code,exists_planning_school)
 
         if exists_planning_school.status == PlanningSchoolStatus.DRAFT.value:
             if hasattr(planning_school, 'status'):
