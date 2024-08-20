@@ -11,6 +11,8 @@ from daos.enum_value_dao import EnumValueDAO
 from views.common.constant import Constant
 from views.models.extend_params import ExtendParams
 from views.models.system import UnitType, OrgCenterApiStatus
+import json
+import logging
 
 frontend_enum_mapping = {'preSchoolEducation': '学前教育', 'kindergarten': '幼儿园',
                          'attachedKindergartenClass': '附设幼儿班',
@@ -327,8 +329,7 @@ def check_result_org_center_api(result):
     if result.get("status") == OrgCenterApiStatus.ERROR.value and is_check_force:
         raise Exception(f"orgcenter api error {result.get('msg')}")
 
-import json
-import logging
+
 
 # 配置日志
 logging.basicConfig(filename='app.log', filemode='a', format='%(name)s - %(levelname)s - %(message)s')
@@ -360,5 +361,12 @@ def log_json(json_data, log_file='app.log'):
         logging.error(f"An error occurred: {e}")
 
 
+
+
+def write_json_to_log( data_list,filename='a.log'):
+    with open(filename, 'a') as file:  # 使用 'a' 模式来追加数据
+        for data in data_list:
+            # 将字典转换为 JSON 格式字符串，并确保每条记录后换行
+            file.write(json.dumps(data) + '\n')
 
 

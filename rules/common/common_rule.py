@@ -7,6 +7,7 @@ from typing import List, Type, Dict
 from mini_framework.authentication.config import authentication_config
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.http import HTTPRequest
+from mini_framework.utils.json import JsonUtils
 from mini_framework.utils.logging import logger
 from mini_framework.web.request_context import request_context_manager
 from pydantic import BaseModel
@@ -21,7 +22,7 @@ from daos.student_session_dao import StudentSessionDao
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import workflow_service_config, orgcenter_service_config, check_result_org_center_api, \
-    log_json
+    log_json, write_json_to_log
 
 APP_CODE = "1238915324217024"
 
@@ -55,6 +56,13 @@ async def send_request(apiname, datadict, method='get', is_need_query_param=Fals
     # 示例使用
     json_data = response
     log_json(json_data)
+    # 示例数据
+    data = [
+        response
+    ]
+
+    # 调用函数
+    write_json_to_log(  data)
     if response is None:
         return {}
     if isinstance(response, str):
@@ -226,8 +234,23 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
         else:
             print(type(datadict), "数据类型")
             response = await httpreq.post_json(url, datadict, headerdict)
-        print(response, '接口响应')
+        print( '接口响应',response)
+        json_data =  JsonUtils.json_str_to_dict( response)
+
         logger.info('接口响应',response)
+        # 示例数据
+        data = [
+            json_data
+        ]
+        write_json_to_log(  data)
+
+        # 示例使用
+        json_data = response
+        log_json(json_data)
+
+
+        # 调用函数
+
         if response is None:
             return {}
         if isinstance(response, str):
@@ -238,7 +261,7 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
     except Exception as e:
         print('发生异常', e)
         traceback.print_exc()
-        raise Exception(e)
+        # raise Exception(e)
         return {}
 
     pass
@@ -603,10 +626,10 @@ async def process_userinfo(account_name):
 async def get_cached_userinfo(account_name: str):
     now = datetime.now()
     cache_entry = user_info_cache.get(account_name)
-    if cache_entry:
-        user_info, timestamp = cache_entry
-        if now - timestamp < cache_expiry:
-            return user_info  # 返回缓存的数据
+    # if cache_entry:
+    #     user_info, timestamp = cache_entry
+    #     if now - timestamp < cache_expiry:
+    #         return user_info  # 返回缓存的数据
     user_info = await get_org_center_user_info()
     if user_info is not None:
         user_info_cache[account_name] = (user_info, now)
@@ -625,6 +648,7 @@ async def get_org_center_user_info():
         }
         datadict = params
         response = await send_orgcenter_request(apiname, datadict, 'get', False)
+        print(response)
         if response["status"] != "ok":
             raise Exception(response["msg"])
         info = response['data2']
