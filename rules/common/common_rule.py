@@ -22,7 +22,7 @@ from daos.student_session_dao import StudentSessionDao
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import workflow_service_config, orgcenter_service_config, check_result_org_center_api, \
-    log_json, write_json_to_log
+    log_json, write_json_to_log, convert_dates_to_strings, json_date_hook
 
 APP_CODE = "1238915324217024"
 
@@ -52,7 +52,7 @@ async def send_request(apiname, datadict, method='get', is_need_query_param=Fals
         response = await httpreq.get_json(url, headerdict)
     else:
         response = await httpreq.post_json(url, datadict, headerdict)
-    print(response, '接口响应')
+    # print(response, '接口响应')
     # 示例使用
     json_data = response
     log_json(json_data)
@@ -232,15 +232,19 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
         if method == 'get':
             response = await httpreq.get_json(url, headerdict)
         else:
-            print(type(datadict), "数据类型")
+            # print(type(datadict), "数据类型")
             response = await httpreq.post_json(url, datadict, headerdict)
-        print( '接口响应',response)
-        json_data =  JsonUtils.json_str_to_dict( response)
 
-        logger.info('接口响应',response)
+        # print( '接口响应',response)
+        # print(type(response), "数据类型")
+
+        # json_data =  JsonUtils.json_str_to_dict( response)
+
+        # logger.info('接口响应',response)
+        response=convert_dates_to_strings(response)
         # 示例数据
         data = [
-            json_data
+            response
         ]
         write_json_to_log(  data)
 
@@ -463,7 +467,7 @@ Get the user from Casdoor providing the user_id.
         json_string = json.dumps(info, ensure_ascii=False)
 
         # 打印JSON字符串
-        print(json_string)
+        # print(json_string)
         p = info['policies']
         role = info['roles'][0]['roleCode']
         # 遍历列表里的每个
@@ -585,7 +589,7 @@ async def verify_auth_by_obj_and_act(obj, act):
     account = request_context_manager.current().current_login_account
     account_name = account.name
     file_name = await process_userinfo(account_name)
-    print(file_name, '验证结果')
+    print( '验证结果',file_name,)
     if file_name is None:
         return False
     file_name = await verify_auth_by_file_name(account_name, obj, act, file_name)
@@ -607,7 +611,8 @@ async def process_userinfo(account_name):
             for policy in role_policies:
                 if not policy:
                     continue
-                data_str = json.loads(policy['rule_code'])
+
+                data_str = json.loads(policy['rule_code'], object_hook=json_date_hook)
                 for item in data_str:
                     p_list = item.split(",")
                     p_list.insert(1, role)
@@ -620,6 +625,7 @@ async def process_userinfo(account_name):
         return None
     with open(filename, 'w', encoding='utf-8') as file:
         file.writelines(lines)
+    print('策略文件',filename)
     return filename
 
 
@@ -648,7 +654,7 @@ async def get_org_center_user_info():
         }
         datadict = params
         response = await send_orgcenter_request(apiname, datadict, 'get', False)
-        print(response)
+        # print(response)
         if response["status"] != "ok":
             raise Exception(response["msg"])
         info = response['data2']

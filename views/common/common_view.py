@@ -361,12 +361,31 @@ def log_json(json_data, log_file='app.log'):
         logging.error(f"An error occurred: {e}")
 
 
+import json
+from datetime import date
 
+class DateEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, date):
+            return obj.isoformat()  # 或者 obj.strftime('%Y-%m-%d')
+        return super(DateEncoder, self).default(obj)
+
+# sample_dict = {"name": "Alice", "birthdate": date(1990, 5, 17)}
+import json
+from datetime import date
+
+def json_date_hook(json_dict):
+    for (key, value) in json_dict.items():
+        try:
+            json_dict[key] = date.fromisoformat(value)
+        except (ValueError, TypeError):
+            pass
+    return json_dict
 
 def write_json_to_log( data_list,filename='a.log'):
     with open(filename, 'a') as file:  # 使用 'a' 模式来追加数据
         for data in data_list:
             # 将字典转换为 JSON 格式字符串，并确保每条记录后换行
-            file.write(json.dumps(data) + '\n')
+            file.write(json.dumps(data,cls=DateEncoder) + '\n')
 
 
