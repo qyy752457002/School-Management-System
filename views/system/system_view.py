@@ -6,6 +6,7 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.views import BaseView
 
+from common.decorators import require_role_permission
 from rules.common.common_rule import excel_fields_to_enum, get_org_center_userinfo
 from rules.education_year_rule import EducationYearRule
 from rules.system_config_rule import SystemConfigRule
@@ -45,7 +46,7 @@ class SystemView(BaseView):
             unit_type = ''
             edu_type = ''
         info, resource_codes, resource_codes_actions = await get_org_center_userinfo()
-        print(info)
+        print( '资源和action',resource_codes, resource_codes_actions)
         res, title = await self.system_rule.query_system_with_kwargs(role_id, unit_type, edu_type, system_type,
                                                                      resource_codes=resource_codes)
         # res,title  = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
@@ -76,12 +77,14 @@ class SystemView(BaseView):
         return res
 
     # 系统配置的新增接口
+    @require_role_permission("system_config", "add")
     async def post_system_config(self, system_config: SystemConfig):
         res = await self.system_config_rule.add_system_config(system_config)
         print(res)
         return res
 
     # 系统配置 列表
+    @require_role_permission("system_config", "view")
     async def page_system_config(self,
                                  page_request=Depends(PageRequest),
                                  config_name: str = Query(None, title="", description="", min_length=1, max_length=50,
@@ -96,6 +99,7 @@ class SystemView(BaseView):
         return res
 
     # 系统配置详情
+    @require_role_permission("system_config", "detail")
     async def get_system_config_detail(self,
                                        config_id: int | str = Query(0, description="", example='1'),
                                        ):
@@ -104,6 +108,7 @@ class SystemView(BaseView):
         return res
 
     # 修改系统配置
+    @require_role_permission("system_config", "edit")
     async def put_system_config(self,
                                 system_config: SystemConfig
 

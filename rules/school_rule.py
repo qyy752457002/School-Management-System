@@ -23,6 +23,7 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from sqlalchemy import select, or_
 
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
+from business_exceptions.school import SchoolExistsError
 from daos.enum_value_dao import EnumValueDAO
 from daos.planning_school_dao import PlanningSchoolDAO
 from daos.school_communication_dao import SchoolCommunicationDAO
@@ -97,7 +98,7 @@ class SchoolRule(object):
         exists_school = await self.school_dao.get_school_by_school_name(
             school.school_name)
         if exists_school:
-            raise Exception(f"学校{school.school_name}已存在")
+            raise SchoolExistsError()
         school_db = view_model_to_orm_model(school, School, exclude=["id"])
         if hasattr(school, "school_no"):
 
@@ -941,6 +942,7 @@ class SchoolRule(object):
                 exists_planning_school_origin.org_center_info = unitid
                 need_update_list = []
                 need_update_list.append( 'org_center_info')
+                datadict['unitId'] = unitid
                 await self.school_dao.update_school_byargs(exists_planning_school_origin,  *need_update_list)
             return response, datadict
 
@@ -996,6 +998,9 @@ class SchoolRule(object):
 
         # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer  orgType组织类型 -必填 administrative_unit|public_institutions|school|developer
         planning_school_communication = await self.school_communication_dao.get_school_communication_by_school_id(
+            exists_planning_school.id)
+
+        school  = await self.school_dao.get_school_by_id(
             exists_planning_school.id)
         # cn_exists_planning_school = await self.convert_school_to_import_format(exists_planning_school)
         dict_data = {'administrativeDivisionCity':  '',
