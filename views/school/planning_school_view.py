@@ -61,6 +61,7 @@ class PlanningSchoolView(BaseView):
         # self.common_rule = get_injector(SchoolCommunicationRule)
 
     #   包含3部分信息 1.基本信息 2.通讯信息 3.教育信息
+    @require_role_permission("planning_school", "view")
     async def get(self,
 
                   planning_school_id: int | str = Query(..., description="学校id|根据学校查规划校", example='1'),
@@ -84,9 +85,8 @@ class PlanningSchoolView(BaseView):
 
         return {'planning_school': planning_school, 'planning_school_communication': planning_school_communication,
                 'planning_school_eduinfo': planning_school_eduinfo, 'planning_school_keyinfo': extra_model}
-
+    @require_role_permission("planning_school", "add")
     async def post(self, planning_school: PlanningSchoolKeyAddInfo,
-
                    ):
         # 保存 模型
         res = await self.planning_school_rule.add_planning_school(planning_school)
@@ -111,6 +111,7 @@ class PlanningSchoolView(BaseView):
         return res
 
     # # 修改 关键信息
+    @require_role_permission("planning_school", "change_keyinfo")
     async def put_keyinfo(self,
                           planning_school: PlanningSchoolKeyInfo,
                           ):
@@ -163,6 +164,7 @@ class PlanningSchoolView(BaseView):
         return res
 
     # 删除
+    @require_role_permission("planning_school", "delete")
     async def delete(self, planning_school_id: int | str = Query(..., title="", description="学校id/园所id",
                                                                  example='2203'), ):
         print(planning_school_id)
@@ -181,6 +183,7 @@ class PlanningSchoolView(BaseView):
         return res
 
     # 修改 变更 基本信息
+    @require_role_permission("planning_school", "change_baseinfo")
     async def patch_baseinfo(self, planning_school_baseinfo: PlanningSchoolBaseInfo, ):
 
         origin = await self.planning_school_rule.get_planning_school_by_id(planning_school_baseinfo.id)
@@ -201,6 +204,7 @@ class PlanningSchoolView(BaseView):
         return res
 
     # 规划校的审批流列表
+    @require_role_permission("planning_school", "view")
     async def page_planning_school_audit(self,
                                          # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
                                          process_code: str = Query("", title="流程代码",
