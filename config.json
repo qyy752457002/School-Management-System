@@ -131,6 +131,9 @@
       }
     }
   },
+  "system_config": {
+    "add_class": 0
+  },
   "workflow_service": {
     "name": "workflow_service",
     "description": "",
