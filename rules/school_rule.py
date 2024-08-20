@@ -941,6 +941,7 @@ class SchoolRule(object):
                 exists_planning_school_origin.org_center_info = unitid
                 need_update_list = []
                 need_update_list.append( 'org_center_info')
+                datadict['unitId'] = unitid
                 await self.school_dao.update_school_byargs(exists_planning_school_origin,  *need_update_list)
             return response, datadict
 
@@ -996,6 +997,9 @@ class SchoolRule(object):
 
         # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer  orgType组织类型 -必填 administrative_unit|public_institutions|school|developer
         planning_school_communication = await self.school_communication_dao.get_school_communication_by_school_id(
+            exists_planning_school.id)
+
+        school  = await self.school_dao.get_school_by_id(
             exists_planning_school.id)
         # cn_exists_planning_school = await self.convert_school_to_import_format(exists_planning_school)
         dict_data = {'administrativeDivisionCity':  '',
