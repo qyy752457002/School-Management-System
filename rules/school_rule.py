@@ -1212,7 +1212,7 @@ class SchoolRule(object):
         print(datadict, '字典参数')
         print('发起请求服务单位到组织中心')
 
-        response = await send_orgcenter_request(apiname, datadict, 'post', False)
+        response = await send_orgcenter_request(apiname, datadict, 'post', True)
         print(response, '接口响应')
         try:
             print(response)
