@@ -30,7 +30,7 @@ class NewTeachersView(BaseView):
     # 新增教职工登记信息
     async def post_newteacher(self, teachers: TeachersCreatModel):
         print(teachers)
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         res, teacher_base_id = await self.teacher_rule.add_teachers(teachers, user_id)
         result = {}
         result.update(res)
@@ -41,9 +41,8 @@ class NewTeachersView(BaseView):
         """
         删除教师信息
         """
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         teacher_id = int(teacher_id)
-
         await self.teacher_rule.delete_teachers(teacher_id, user_id)
         return str(teacher_id)
 
@@ -57,7 +56,7 @@ class NewTeachersView(BaseView):
     # 编辑新教职工登记信息
     async def put_newteacher(self, teachers: Teachers):
         print(teachers)
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         res = await self.teacher_rule.update_teachers(teachers, user_id)
         return res
 
@@ -73,7 +72,7 @@ class NewTeachersView(BaseView):
             new_teacher.teacher_employer = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             extend_param["borough"] = ob.county_id
-        extend_param["applicant_name"] = "asdfasdf"
+        extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
         paging_result = await self.teacher_info_rule.query_teacher_with_page(new_teacher, page_request, extend_param)
         return paging_result
 
@@ -83,7 +82,7 @@ class NewTeachersView(BaseView):
         """
         保存不经过验证
         """
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         res = await self.teacher_info_rule.update_teachers_info_save(teacher_info, user_id)
 
         return res
@@ -103,7 +102,7 @@ class NewTeachersView(BaseView):
     #     return res
 
     async def put_newteacherinforesave(self, teacher_info: CurrentTeacherInfoSaveModel):
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         res = await self.teacher_info_rule.update_teachers_info_save(teacher_info, user_id)
         return res
 
@@ -114,7 +113,7 @@ class NewTeachersView(BaseView):
 
     # 编辑教职工基本信息
     async def put_newteacherinfo(self, teacher_info: TeacherInfoSubmit):
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         if teacher_info.teacher_base_id < 0:
             res = await self.teacher_info_rule.add_teachers_info_valid(teacher_info, user_id)
         else:
@@ -144,7 +143,7 @@ class NewTeachersView(BaseView):
                                                                          description="流程实例id",
                                                                          example=123),
                                    reason: str = Body(None, title="审批意见", description="审批意见", example="同意")):
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         teacher_id = int(teacher_id)
         process_instance_id = int(process_instance_id)
         reason = reason
@@ -160,9 +159,8 @@ class NewTeachersView(BaseView):
                                                       description="审核理由")):
         teacher_id = int(teacher_id)
         process_instance_id = int(process_instance_id)
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         reason = reason
-
         return await self.teacher_rule.entry_rejected(teacher_id, process_instance_id, user_id, reason)
 
     async def patch_entry_revoked(self,
@@ -177,7 +175,7 @@ class NewTeachersView(BaseView):
         """
         teacher_id = int(teacher_id)
         process_instance_id = int(process_instance_id)
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         return await self.teacher_rule.entry_revoked(teacher_id, process_instance_id, user_id)
 
     # async def patch_info_submitting(self,
@@ -256,7 +254,7 @@ class NewTeachersView(BaseView):
             teacher_approval_query.teacher_employer = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             extend_param["borough"] = ob.county_id
-        extend_param["applicant_name"] = "asdfasdf"
+        extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
         type = 'launch'
         paging_result = await self.teacher_rule.query_teacher_approval_with_page(type, teacher_approval_query,
                                                                                  page_request, extend_param)
@@ -273,7 +271,7 @@ class NewTeachersView(BaseView):
             teacher_approval_query.teacher_employer = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             extend_param["borough"] = ob.county_id
-        extend_param["applicant_name"] = "asdfasdf"
+        extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
         type = 'approval'
         paging_result = await self.teacher_rule.query_teacher_approval_with_page(type, teacher_approval_query,
                                                                                  page_request, extend_param)

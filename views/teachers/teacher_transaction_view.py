@@ -19,6 +19,7 @@ from views.models.teacher_transaction import TeacherTransactionModel, TeacherTra
     TeacherTransferQueryModel, TeacherTransactionQueryModel
 from views.models.teacher_transaction import TransferDetailsModel
 from views.models.teachers import TeacherAdd
+from mini_framework.web.request_context import request_context_manager
 
 
 class TransferDetailsView(BaseView):
@@ -48,7 +49,7 @@ class TransferDetailsView(BaseView):
         调入
         """
 
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         if add_teacher != None:
             await self.transfer_details_rule.add_transfer_in_outer_details(add_teacher, transfer_details, user_id)
         else:
@@ -59,7 +60,7 @@ class TransferDetailsView(BaseView):
         """
         调出
         """
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         res = await self.transfer_details_rule.add_transfer_out_details(transfer_details, user_id)
         return res
 
@@ -83,7 +84,7 @@ class TransferDetailsView(BaseView):
 
     async def page_transfer_with_page(self, transfer_details=Depends(TeacherTransferQueryModel),
                                       page_request=Depends(PageRequest)):
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         paging_result = await self.transfer_details_rule.query_transfer_with_page(transfer_details, page_request,
                                                                                   user_id)
         return paging_result
@@ -108,7 +109,7 @@ class TransferDetailsView(BaseView):
         elif ob.unit_type == UnitType.COUNTRY.value:
             transfer_details.original_district_area_id = ob.county_id
         type = "launch"
-        extend_param["applicant_name"] = "asdfasdf"
+        extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
         paging_result = await self.transfer_details_rule.query_transfer_out_with_page(type, transfer_details,
                                                                                       page_request, extend_param)
         return paging_result
@@ -125,7 +126,7 @@ class TransferDetailsView(BaseView):
         elif ob.unit_type == UnitType.COUNTRY.value:
             transfer_details.original_district_area_id = ob.county_id
         type = "approval"
-        extend_param["applicant_name"] = "asdfasdf"
+        extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
         paging_result = await self.transfer_details_rule.query_transfer_out_with_page(type, transfer_details,
                                                                                       page_request, extend_param)
         return paging_result
@@ -142,7 +143,7 @@ class TransferDetailsView(BaseView):
             transfer_details.current_unit_id = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             transfer_details.current_district_area_id = ob.county_id
-        extend_param["applicant_name"] = "asdfasdf"
+        extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
         paging_result = await self.transfer_details_rule.query_transfer_in_with_page(type, transfer_details,
                                                                                      page_request, extend_param)
         return paging_result
@@ -159,7 +160,7 @@ class TransferDetailsView(BaseView):
             transfer_details.current_unit_id = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             transfer_details.current_district_area_id = ob.county_id
-        extend_param["applicant_name"] = "asdfasdf"
+        extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
         paging_result = await self.transfer_details_rule.query_transfer_in_with_page(type, transfer_details,
                                                                                      page_request, extend_param)
         return paging_result
@@ -186,7 +187,7 @@ class TransferDetailsView(BaseView):
                                       reason: str = Body("", title="reason",
                                                          description="审核理由")):
 
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         teacher_id = int(teacher_id)
         process_instance_id = int(process_instance_id)
         reason = reason
@@ -202,7 +203,7 @@ class TransferDetailsView(BaseView):
                                                                       example=123),
                                       reason: str = Body("", title="reason",
                                                          description="审核理由")):
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         reason = reason
         teacher_id = int(teacher_id)
         process_instance_id = int(process_instance_id)
@@ -217,7 +218,7 @@ class TransferDetailsView(BaseView):
                                                                      example=123),
                                      reason: str = Body("", title="reason",
                                                         description="审核理由")):
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         reason = reason
         teacher_id = int(teacher_id)
         process_instance_id = int(process_instance_id)
@@ -245,7 +246,7 @@ class TeacherTransactionView(BaseView):
 
     # 教师 异动接口
     async def post_teacher_transaction(self, teacher_transaction: TeacherTransactionModel):
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         res = await self.teacher_transaction_rule.add_teacher_transaction_except_retire(teacher_transaction, user_id)
         return res
 
@@ -324,7 +325,7 @@ class TeacherRetireView(BaseView):
         """
         教师退休
         """
-        user_id = "asdfasdf"
+        user_id=request_context_manager.current().current_login_account.name
         res = await self.teacher_retire_rule.add_teacher_retire(teacher_retire, user_id)
         return res
 
@@ -363,7 +364,7 @@ class TeacherBorrowView(BaseView):
         """
         借入
         """
-        user_id = "asdfasdf"
+        user_id=request_context_manager.current().current_login_account.name
         if add_teacher != None:
             res = await self.teacher_borrow_rule.add_teacher_borrow_in_outer(add_teacher, teacher_borrow, user_id)
         else:
@@ -374,7 +375,7 @@ class TeacherBorrowView(BaseView):
         """
         借出
         """
-        user_id = "asdfasdf"
+        user_id=request_context_manager.current().current_login_account.name
         res = await self.teacher_borrow_rule.add_teacher_borrow_out(teacher_borrow, user_id)
         return res
 
@@ -401,7 +402,7 @@ class TeacherBorrowView(BaseView):
         """
         分页查询
         """
-        user_id = "asdfasdf"
+        user_id=request_context_manager.current().current_login_account.name
         paging_result = await self.teacher_borrow_rule.query_teacher_borrow_with_page(teacher_borrow, page_request,
                                                                                       user_id)
         return paging_result
@@ -502,7 +503,7 @@ class TeacherBorrowView(BaseView):
                                                                           example=123),
                                     reason: str = Body("", title="reason",
                                                        description="审核理由")):
-        user_id = "asdfasdf"
+        user_id=request_context_manager.current().current_login_account.name
         reason = reason
         teacher_id = int(teacher_id)
         process_instance_id = int(process_instance_id)
@@ -518,7 +519,7 @@ class TeacherBorrowView(BaseView):
                                                                           example=123),
                                     reason: str = Body("", title="reason",
                                                        description="审核理由")):
-        user_id = "asdfasdf"
+        user_id=request_context_manager.current().current_login_account.name
         reason = reason
         teacher_id = int(teacher_id)
         process_instance_id = int(process_instance_id)
@@ -534,7 +535,7 @@ class TeacherBorrowView(BaseView):
                                                                          example=123),
                                    reason: str = Body("", title="reason",
                                                       description="审核理由")):
-        user_id = "asdfasdf"
+        user_id=request_context_manager.current().current_login_account.name
         teacher_id = int(teacher_id)
         process_instance_id = int(process_instance_id)
         reason = reason
