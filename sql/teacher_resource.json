@@ -32,35 +32,35 @@
     "resourceCode": "teacherTransaction",
     "displayName": "变动管理",
     "description": "变动管理",
-    "action": "view"
+    "action": "view,edit"
   },
   {
     "appCode": "1238914398508736",
     "resourceCode": "teacherBorrowOut",
     "displayName": "借出信息管理",
     "description": "借出信息管理",
-    "action": "view,revoke,borrowOut,approval"
+    "action": "view,revoke,borrowOut,approval,approval,edit"
   },
   {
     "appCode": "1238914398508736",
     "resourceCode": "teacherBorrowIn",
     "displayName": "借入信息管理",
     "description": "借入信息管理",
-    "action": "view,revoke,borrowInIn,borrowInOut,approvalInIn,approvalInOut"
+    "action": "view,revoke,borrowInIn,borrowInOut,approvalInIn,approvalInOut,approval,edit"
   },
   {
     "appCode": "1238914398508736",
     "resourceCode": "teacherTransferOut",
     "displayName": "调出信息管理",
     "description": "调出信息管理",
-    "action": "view,revoke,transferOut,approval"
+    "action": "view,revoke,transferOut,approval,edit"
   },
   {
     "appCode": "1238914398508736",
     "resourceCode": "teacherTransferIn",
     "displayName": "调入信息管理",
     "description": "调入信息管理",
-    "action": "view,revoke,transferInIn,transferInOut,approvalInIn,approvalInOut"
+    "action": "view,revoke,transferInIn,transferInOut,approvalInIn,approvalInOut,approval,edit"
   },
   {
     "appCode": "1238914398508736",

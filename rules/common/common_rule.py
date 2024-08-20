@@ -619,7 +619,6 @@ async def process_userinfo(account_name):
                 json_str= policy['rule_code']
                 if json_str.strip():
                     # data = json.loads(json_str)
-
                     try:
                         data_str = json.loads(policy['rule_code'], object_hook=json_date_hook)
                         for item in data_str:

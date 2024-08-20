@@ -12,14 +12,14 @@ from views.models.teachers import Teachers, TeacherInfo, CurrentTeacherQuery, \
     CurrentTeacherInfoSaveModel, TeacherApprovalQuery
 from fastapi import Query, Depends, Body
 from mini_framework.utils.json import JsonUtils
-
+from common.decorators import require_role_permission
 
 class TeachersView(BaseView):
     def __init__(self):
         super().__init__()
         self.teacher_rule = get_injector(TeachersRule)
         self.teacher_info_rule = get_injector(TeachersInfoRule)
-
+    @require_role_permission("teacherInfo", "view")
     async def get_teacher(self, teacher_id: int | str = Query(..., title="教师编号", description="教师编号")):
         """
         获取单个教职工信息
@@ -29,11 +29,12 @@ class TeachersView(BaseView):
         return res
 
     # 编辑新教职工登记信息
+    @require_role_permission("teacherInfo", "edit")
     async def put_teacher(self, teachers: Teachers):
         user_id = request_context_manager.current().current_login_account.name
         new_fields = await self.teacher_rule.update_teachers(teachers, user_id)
         return new_fields
-
+    @require_role_permission("teacherInfo", "view")
     async def page(self, request: Request, current_teacher=Depends(CurrentTeacherQuery),
                    page_request=Depends(PageRequest)):
         """
@@ -42,7 +43,7 @@ class TeachersView(BaseView):
         ob = await get_extend_params(request)
         paging_result = await self.teacher_info_rule.query_current_teacher_with_page(current_teacher, page_request, ob)
         return paging_result
-
+    @require_role_permission("teacherKeyInfo", "view")
     async def page_teacher_info_change_launch(self, request: Request,
                                               teacher_approval_query=Depends(TeacherApprovalQuery),
                                               page_request=Depends(PageRequest)):
@@ -60,7 +61,7 @@ class TeachersView(BaseView):
         paging_result = await self.teacher_rule.query_teacher_info_change_approval(type, teacher_approval_query,
                                                                                    page_request, extend_param)
         return paging_result
-
+    @require_role_permission("teacherKeyInfo", "view")
     async def page_teacher_info_change_approval(self, request: Request,
                                                 teacher_approval_query=Depends(TeacherApprovalQuery),
                                                 page_request=Depends(PageRequest)):
@@ -81,6 +82,7 @@ class TeachersView(BaseView):
         return paging_result
 
     # 获取教职工基本信息
+    @require_role_permission("teacherInfo", "view")
     async def get_teacherinfo(self, teacher_id: int | str = Query(..., title="姓名", description="教师名称",
                                                                   example=123)):
         teacher_id = int(teacher_id)
@@ -88,6 +90,7 @@ class TeachersView(BaseView):
         return res
 
     # 编辑教职工基本信息
+    @require_role_permission("teacherInfo", "edit")
     async def put_teacherinfosave(self, teacher_info: CurrentTeacherInfoSaveModel):
         """
         保存不经过验证
@@ -95,7 +98,7 @@ class TeachersView(BaseView):
         user_id = request_context_manager.current().current_login_account.name
         res = await self.teacher_info_rule.update_teachers_info_save(teacher_info, user_id)
         return res
-
+    @require_role_permission("teacherInfo", "edit")
     async def put_teacherinfo(self, teacher_info: TeacherInfo):
         """
         提交教职工基本信息
@@ -105,13 +108,14 @@ class TeachersView(BaseView):
         return res
 
     # 删除教职工基本信息
+    @require_role_permission("teacherInfo", "delete")
     async def delete_teacherinfo(self,
                                  teacher_id: int | str = Query(..., title="姓名", description="教师名称",
                                                                example=123)):
         teacher_id = int(teacher_id)
         await self.teacher_info_rule.delete_teachers_info(teacher_id)
         return str(teacher_id)
-
+    @require_role_permission("teacherKeyInfo", "approval")
     async def patch_teacher_info_change_approved(self,
                                                  teacher_id: int | str = Body(..., title="教师编号",
                                                                               description="教师编号",
@@ -127,7 +131,7 @@ class TeachersView(BaseView):
         reason = reason
 
         return await self.teacher_rule.teacher_info_change_approved(teacher_id, process_instance_id, user_id, reason)
-
+    @require_role_permission("teacherKeyInfo", "reject")
     async def patch_teacher_info_change_rejected(self,
                                                  teacher_id: int | str = Body(..., title="教师编号",
                                                                               description="教师编号",
@@ -142,7 +146,7 @@ class TeachersView(BaseView):
         user_id = request_context_manager.current().current_login_account.name
         reason = reason
         return await self.teacher_rule.teacher_info_change_rejected(teacher_id, process_instance_id, user_id, reason)
-
+    @require_role_permission("teacherKeyInfo", "revoke")
     async def patch_teacher_info_change_revoked(self,
                                                 teacher_id: int | str = Body(..., title="教师编号",
                                                                              description="教师编号",

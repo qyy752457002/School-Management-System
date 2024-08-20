@@ -2,10 +2,12 @@ from typing import Optional
 
 from fastapi import Query, Depends, Body
 from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
+from common.decorators import require_role_permission
 from rules.teacher_borrow_rule import TeacherBorrowRule
 from rules.teacher_retire_rule import TeacherRetireRule
 from rules.teacher_transaction_rule import TeacherTransactionRule
@@ -19,7 +21,6 @@ from views.models.teacher_transaction import TeacherTransactionModel, TeacherTra
     TeacherTransferQueryModel, TeacherTransactionQueryModel
 from views.models.teacher_transaction import TransferDetailsModel
 from views.models.teachers import TeacherAdd
-from mini_framework.web.request_context import request_context_manager
 
 
 class TransferDetailsView(BaseView):
@@ -39,6 +40,7 @@ class TransferDetailsView(BaseView):
         res = await self.transfer_details_rule.get_transfer_details_by_transfer_details_id(transfer_details_id)
         return res
 
+    @require_role_permission("teacherTransferIn", "edit")
     async def post_transfer_in_details(self, transfer_details: TransferDetailsModel,
                                        add_teacher: Optional[TeacherAdd] = None,
                                        # transfer_inner: bool = Query(True, title="transfer_status",
@@ -56,6 +58,7 @@ class TransferDetailsView(BaseView):
             await self.transfer_details_rule.add_transfer_in_inner_details(transfer_details, user_id)
         return
 
+    @require_role_permission("teacherTransferOut", "edit")
     async def post_transfer_out_details(self, transfer_details: TransferDetailsModel):
         """
         调出
@@ -82,6 +85,7 @@ class TransferDetailsView(BaseView):
         teacher_id = int(teacher_id)
         return await self.transfer_details_rule.get_all_transfer_details(teacher_id)
 
+    @require_role_permission("teacherTransferOut", "view")
     async def page_transfer_with_page(self, transfer_details=Depends(TeacherTransferQueryModel),
                                       page_request=Depends(PageRequest)):
         user_id = request_context_manager.current().current_login_account.name
@@ -89,6 +93,7 @@ class TransferDetailsView(BaseView):
                                                                                   user_id)
         return paging_result
 
+    @require_role_permission("teacherInfo", "transferIn")
     async def get_teacher_transfer(self, teacher_transaction=Depends(TeacherTransactionQuery)):
         """
         查询系统内有没有此人
@@ -97,6 +102,7 @@ class TransferDetailsView(BaseView):
         return res
 
     # 调动管理查询
+    @require_role_permission("teacherInfo", "transferOut")
     async def page_transfer_out_launch(self, request: Request, transfer_details=Depends(TeacherTransferQueryModel),
                                        page_request=Depends(PageRequest)):
         """
@@ -114,6 +120,7 @@ class TransferDetailsView(BaseView):
                                                                                       page_request, extend_param)
         return paging_result
 
+    @require_role_permission("teacherTransferOut", "approval")
     async def page_transfer_out_approval(self, request: Request, transfer_details=Depends(TeacherTransferQueryModel),
                                          page_request=Depends(PageRequest)):
         """
@@ -131,6 +138,7 @@ class TransferDetailsView(BaseView):
                                                                                       page_request, extend_param)
         return paging_result
 
+    @require_role_permission("teacherInfo", "transferOut")
     async def page_transfer_in_launch(self, request: Request, transfer_details=Depends(TeacherTransferQueryModel),
                                       page_request=Depends(PageRequest)):
         """
@@ -148,6 +156,7 @@ class TransferDetailsView(BaseView):
                                                                                      page_request, extend_param)
         return paging_result
 
+    @require_role_permission("teacherTransferIn", "approval")
     async def page_transfer_in_approval(self, request: Request, transfer_details=Depends(TeacherTransferQueryModel),
                                         page_request=Depends(PageRequest)):
         """
@@ -177,7 +186,7 @@ class TransferDetailsView(BaseView):
     #                                                                   description="transfer_detailsID", example=1234)):
     #     res = await self.transfer_details_rule.submitted(transfer_details_id)
     #     return res
-
+    @require_role_permission("teacherTransferIn", "approval")
     async def patch_transfer_approved(self,
                                       teacher_id: str = Body(None, title="transfer_detailsID",
                                                              description="transfer_detailsID", example=1234),
@@ -195,6 +204,7 @@ class TransferDetailsView(BaseView):
                                                                  reason)
         return res
 
+    @require_role_permission("teacherTransferIn", "approval")
     async def patch_transfer_rejected(self,
                                       teacher_id: str = Body(None, title="教师id",
                                                              description="教师id", example=1234),
@@ -211,6 +221,7 @@ class TransferDetailsView(BaseView):
                                                                  reason)
         return res
 
+    @require_role_permission("teacherTransferIn", "revoke")
     async def patch_transfer_revoked(self,
                                      teacher_id: str = Body(None, title="教师id",
                                                             description="教师id", example=1234),
@@ -233,6 +244,7 @@ class TeacherTransactionView(BaseView):
         super().__init__()
         self.teacher_transaction_rule = get_injector(TeacherTransactionRule)
 
+    @require_role_permission("teacherInfo", "transaction")
     async def get_teacher_transaction(self,
                                       teacher_transaction_id: int | str = Query(..., title="teacher_transactionID",
                                                                                 description="teacher_transactionID",
@@ -245,6 +257,7 @@ class TeacherTransactionView(BaseView):
         return res
 
     # 教师 异动接口
+    @require_role_permission("teacherInfo", "transaction")
     async def post_teacher_transaction(self, teacher_transaction: TeacherTransactionModel):
         user_id = request_context_manager.current().current_login_account.name
         res = await self.teacher_transaction_rule.add_teacher_transaction_except_retire(teacher_transaction, user_id)
@@ -253,7 +266,7 @@ class TeacherTransactionView(BaseView):
     # async def put_teacher_transaction(self, teacher_transaction: TeacherTransactionUpdateModel):
     #     res = await self.teacher_transaction_rule.update_teacher_transaction(teacher_transaction)
     #     return res
-
+    @require_role_permission("teacherTransaction", "view")
     async def get_teacher_transaction_all(self, teacher_id: int | str = Query(None, title="teacher_transactionID",
                                                                               description="teacher_transactionID",
                                                                               example=1234)):
@@ -263,6 +276,7 @@ class TeacherTransactionView(BaseView):
         teacher_id = int(teacher_id)
         return await self.teacher_transaction_rule.get_all_teacher_transaction(teacher_id)
 
+    @require_role_permission("teacherTransaction", "view")
     async def page_transaction(self, request: Request, teacher_transaction=Depends(TeacherTransactionQueryModel),
                                page_request=Depends(PageRequest)):
         """
@@ -298,7 +312,7 @@ class TeacherTransactionView(BaseView):
     #                                                                                example=1234)):
     #     res = await self.teacher_transaction_rule.rejected(teacher_transaction_id)
     #     return res
-
+    @require_role_permission("teacherTransaction", "edit")
     async def patch_teacher_active(self,
                                    teacher_id: int | str = Body(..., title="教师编号", description="教师编号",
                                                                 example=123),
@@ -321,14 +335,16 @@ class TeacherRetireView(BaseView):
 
         self.teacher_retire_rule = get_injector(TeacherRetireRule)
 
+    @require_role_permission("teacherInfo", "retire")
     async def post_teacher_retire(self, teacher_retire: TeacherRetireCreateModel):
         """
         教师退休
         """
-        user_id=request_context_manager.current().current_login_account.name
+        user_id = request_context_manager.current().current_login_account.name
         res = await self.teacher_retire_rule.add_teacher_retire(teacher_retire, user_id)
         return res
 
+    @require_role_permission("teacherRetire", "view")
     async def page_teacher_retire(self, request: Request, current_teacher=Depends(TeacherRetireQuery),
                                   page_request=Depends(PageRequest)):
         """
@@ -358,24 +374,26 @@ class TeacherBorrowView(BaseView):
         res = await self.teacher_borrow_rule.get_teacher_borrow_by_teacher_borrow_id(teacher_borrow_id)
         return res
 
+    @require_role_permission("teacherBorrowIn", "edit")
     async def post_teacher_borrow_in(self, teacher_borrow: TeacherBorrowModel,
                                      add_teacher: Optional[TeacherAdd] = None,
                                      ):
         """
         借入
         """
-        user_id=request_context_manager.current().current_login_account.name
+        user_id = request_context_manager.current().current_login_account.name
         if add_teacher != None:
             res = await self.teacher_borrow_rule.add_teacher_borrow_in_outer(add_teacher, teacher_borrow, user_id)
         else:
             res = await self.teacher_borrow_rule.add_teacher_borrow_in_inner(teacher_borrow, user_id)
         return res
 
+    @require_role_permission("teacherBorrowOut", "edit")
     async def post_teacher_borrow_out(self, teacher_borrow: TeacherBorrowModel):
         """
         借出
         """
-        user_id=request_context_manager.current().current_login_account.name
+        user_id = request_context_manager.current().current_login_account.name
         res = await self.teacher_borrow_rule.add_teacher_borrow_out(teacher_borrow, user_id)
         return res
 
@@ -397,12 +415,13 @@ class TeacherBorrowView(BaseView):
         teacher_id = int(teacher_id)
         return await self.teacher_borrow_rule.get_all_teacher_borrow(teacher_id)
 
+    @require_role_permission("teacherBorrowOut", "view")
     async def page_borrow_with_page(self, teacher_borrow=Depends(TeacherBorrowQueryModel),
                                     page_request=Depends(PageRequest)):
         """
         分页查询
         """
-        user_id=request_context_manager.current().current_login_account.name
+        user_id = request_context_manager.current().current_login_account.name
         paging_result = await self.teacher_borrow_rule.query_teacher_borrow_with_page(teacher_borrow, page_request,
                                                                                       user_id)
         return paging_result
@@ -414,6 +433,7 @@ class TeacherBorrowView(BaseView):
     #     return await self.teacher_borrow_rule.query_teacher_transfer(teacher_borrow)
 
     # 借动管理查询
+    @require_role_permission("teacherBorrowOut", "view")
     async def page_borrow_out_launch(self, request: Request, teacher_borrow=Depends(TeacherBorrowQueryModel),
                                      page_request=Depends(PageRequest)):
         """
@@ -431,6 +451,7 @@ class TeacherBorrowView(BaseView):
                                                                                   extend_param)
         return paging_result
 
+    @require_role_permission("teacherBorrowOut", "approval")
     async def page_borrow_out_approval(self, request: Request, teacher_borrow=Depends(TeacherBorrowQueryModel),
                                        page_request=Depends(PageRequest)):
         """
@@ -448,6 +469,7 @@ class TeacherBorrowView(BaseView):
                                                                                   extend_param)
         return paging_result
 
+    @require_role_permission("teacherBorrowIn", "view")
     async def page_borrow_in_launch(self, request: Request, teacher_borrow=Depends(TeacherBorrowQueryModel),
                                     page_request=Depends(PageRequest)):
         """
@@ -465,6 +487,7 @@ class TeacherBorrowView(BaseView):
                                                                                  extend_param)
         return paging_result
 
+    @require_role_permission("teacherBorrowIn", "approval")
     async def page_borrow_in_approval(self, request: Request, teacher_borrow=Depends(TeacherBorrowQueryModel),
                                       page_request=Depends(PageRequest)):
         """
@@ -494,7 +517,7 @@ class TeacherBorrowView(BaseView):
     #                                                                       example=1234)):
     #     res = await self.teacher_borrow_rule.submitted(teacher_borrow_id)
     #     return res
-
+    @require_role_permission("teacherBorrowIn", "approval")
     async def patch_borrow_approved(self,
                                     teacher_id: int | str = Body(None, title="transfer_detailsID",
                                                                  description="transfer_detailsID", example=1234),
@@ -503,7 +526,7 @@ class TeacherBorrowView(BaseView):
                                                                           example=123),
                                     reason: str = Body("", title="reason",
                                                        description="审核理由")):
-        user_id=request_context_manager.current().current_login_account.name
+        user_id = request_context_manager.current().current_login_account.name
         reason = reason
         teacher_id = int(teacher_id)
         process_instance_id = int(process_instance_id)
@@ -511,6 +534,7 @@ class TeacherBorrowView(BaseView):
                                                              reason)
         return res
 
+    @require_role_permission("teacherBorrowIn", "approval")
     async def patch_borrow_rejected(self,
                                     teacher_id: int | str = Body(None, title="transfer_detailsID",
                                                                  description="transfer_detailsID", example=1234),
@@ -519,7 +543,7 @@ class TeacherBorrowView(BaseView):
                                                                           example=123),
                                     reason: str = Body("", title="reason",
                                                        description="审核理由")):
-        user_id=request_context_manager.current().current_login_account.name
+        user_id = request_context_manager.current().current_login_account.name
         reason = reason
         teacher_id = int(teacher_id)
         process_instance_id = int(process_instance_id)
@@ -527,6 +551,7 @@ class TeacherBorrowView(BaseView):
                                                              reason)
         return res
 
+    @require_role_permission("teacherBorrowIn", "revoke")
     async def patch_borrow_revoked(self,
                                    teacher_id: int | str = Body(None, title="transfer_detailsID",
                                                                 description="transfer_detailsID", example=1234),
@@ -535,7 +560,7 @@ class TeacherBorrowView(BaseView):
                                                                          example=123),
                                    reason: str = Body("", title="reason",
                                                       description="审核理由")):
-        user_id=request_context_manager.current().current_login_account.name
+        user_id = request_context_manager.current().current_login_account.name
         teacher_id = int(teacher_id)
         process_instance_id = int(process_instance_id)
         reason = reason
@@ -543,6 +568,7 @@ class TeacherBorrowView(BaseView):
                                                             reason)
         return res
 
+    @require_role_permission("teacherBorrowIn", "edit")
     async def patch_teacher_borrow_active(self,
                                           teacher_id: int | str = Body(..., title="教师编号", description="教师编号",
                                                                        example=123),
