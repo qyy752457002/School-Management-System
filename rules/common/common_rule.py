@@ -611,13 +611,25 @@ async def process_userinfo(account_name):
             for policy in role_policies:
                 if not policy:
                     continue
+                json_str= policy['rule_code']
+                if json_str.strip():
+                    # data = json.loads(json_str)
 
-                data_str = json.loads(policy['rule_code'], object_hook=json_date_hook)
-                for item in data_str:
-                    p_list = item.split(",")
-                    p_list.insert(1, role)
-                    join_str = ','.join(p_list)
-                    lines.append(join_str + '\n')
+                    try:
+                        data_str = json.loads(policy['rule_code'], object_hook=json_date_hook)
+                        for item in data_str:
+                            p_list = item.split(",")
+                            p_list.insert(1, role)
+                            join_str = ','.join(p_list)
+                            lines.append(join_str + '\n')
+
+                    except json.JSONDecodeError as e:
+                        print(f"解析错误：{e}")
+
+
+                else:
+                    print("字符串为空或只包含空白字符")
+
             lines.append(g_str + '\n')
         else:
             continue
