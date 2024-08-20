@@ -428,14 +428,12 @@ async def get_org_center_userinfo():
 Get the user from Casdoor providing the user_id.
 :param user_id: the id of the user
 :return: a dict that contains user's info
-那我怎么通过你昨天给我的这个获取到 督导的id
 """
 
     try:
         account = request_context_manager.current().current_login_account
         # print(account)
         # 目前的  full_account_info是灭有的  会异常 现在临时写固定值  todo  应该加到 框架里
-
         # full_account = request_context_manager.current().full_account_info
 
         endpoint = "https://org-center.f123.pub"
@@ -459,7 +457,7 @@ Get the user from Casdoor providing the user_id.
 
         if response["status"] != "ok":
             raise Exception(response["msg"])
-        print(response['data2'].keys())
+        # print(response['data2'].keys())
 
         info = response['data2']
         print(' 解析结果', type(info), )
@@ -477,16 +475,16 @@ Get the user from Casdoor providing the user_id.
 
         for i, value in enumerate(p):
             data = []
-            print(value['modelText'])
-            print(type(value['ruleCode']), value['ruleCode'])
+            # print(value['modelText'])
+            # print(type(value['ruleCode']), value['ruleCode'])
             # 数据列表，每个子列表是一行数据 todo 调整返回给前段的按照 资源。json的格式来
             # 移除字符串首尾的方括号，并按逗号加空格分割
             data_str = value['ruleCode']
             # data_str.replace("\"", "'")
-            print(data_str)
+            # print(data_str)
 
             data = data_list = eval(data_str)
-            print(type(data_list), data_list)
+            # print(type(data_list), data_list)
             # pprint.pprint(data_list)
             # exit(1)
             # data_list = data_str.strip("[]").split("\",\"")
@@ -534,7 +532,7 @@ Get the user from Casdoor providing the user_id.
         for value in resource_codes_actions:
             # value = resource_codes[i]
             temp= value.split( ',')
-            print('temp',temp)
+            # print('temp',temp)
             key =  temp[0]
             action  = temp[1]
             if key not in resource_codes_dict.keys():
@@ -542,7 +540,7 @@ Get the user from Casdoor providing the user_id.
                 resource_codes_dict[key] .append(action)
             else:
                 resource_codes_dict[key].append(action)
-            print('资源编码', resource_codes_dict)
+            # print('资源编码', resource_codes_dict)
 
         return info, resource_codes, resource_codes_dict
 
@@ -644,10 +642,10 @@ async def process_userinfo(account_name):
 async def get_cached_userinfo(account_name: str):
     now = datetime.now()
     cache_entry = user_info_cache.get(account_name)
-    # if cache_entry:
-    #     user_info, timestamp = cache_entry
-    #     if now - timestamp < cache_expiry:
-    #         return user_info  # 返回缓存的数据
+    if cache_entry:
+        user_info, timestamp = cache_entry
+        if now - timestamp < cache_expiry:
+            return user_info  # 返回缓存的数据
     user_info = await get_org_center_user_info()
     if user_info is not None:
         user_info_cache[account_name] = (user_info, now)

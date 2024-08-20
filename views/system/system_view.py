@@ -46,7 +46,7 @@ class SystemView(BaseView):
             unit_type = ''
             edu_type = ''
         info, resource_codes, resource_codes_actions = await get_org_center_userinfo()
-        print(info)
+        print( '资源和action',resource_codes, resource_codes_actions)
         res, title = await self.system_rule.query_system_with_kwargs(role_id, unit_type, edu_type, system_type,
                                                                      resource_codes=resource_codes)
         # res,title  = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
