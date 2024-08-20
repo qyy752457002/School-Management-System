@@ -180,6 +180,20 @@ class WorkflowServiceConfig:
 
 workflow_service_config = WorkflowServiceConfig()
 
+@singleton
+class SystemConfig:
+    def __init__(self):
+        from mini_framework.configurations import config_injection
+        manager = config_injection.get_config_manager()
+        # 读取 配置
+        workflow_service_dict = manager.get_domain_config("system_config")
+        if not workflow_service_dict:
+            raise ValueError('system_config configuration is required')
+        self.system_config = workflow_service_dict
+
+
+system_config = SystemConfig()
+
 
 @singleton
 class OrgcenterServiceConfig:

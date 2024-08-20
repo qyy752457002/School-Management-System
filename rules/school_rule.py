@@ -532,8 +532,9 @@ class SchoolRule(object):
                 # 单位发送过去
                 res_unit, data_unit = await self.send_school_to_org_center(school)
                 # 单位的组织 对接
-                # res_unit = await self.send_unit_orgnization_to_org_center(school)
                 res_oigna = await self.send_unit_orgnization_to_org_center(school, data_unit)
+                # 服务单位
+                # res_oigna_service_unit = await self.send_service_unit_to_org_center(school, data_unit)
 
                 # 添加组织结构 部门
                 org = Organization(org_name=school.school_name,
@@ -940,6 +941,7 @@ class SchoolRule(object):
                 exists_planning_school_origin.org_center_info = unitid
                 need_update_list = []
                 need_update_list.append( 'org_center_info')
+                datadict['unitId'] = unitid
                 await self.school_dao.update_school_byargs(exists_planning_school_origin,  *need_update_list)
             return response, datadict
 
@@ -995,6 +997,9 @@ class SchoolRule(object):
 
         # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer  orgType组织类型 -必填 administrative_unit|public_institutions|school|developer
         planning_school_communication = await self.school_communication_dao.get_school_communication_by_school_id(
+            exists_planning_school.id)
+
+        school  = await self.school_dao.get_school_by_id(
             exists_planning_school.id)
         # cn_exists_planning_school = await self.convert_school_to_import_format(exists_planning_school)
         dict_data = {'administrativeDivisionCity':  '',
@@ -1064,6 +1069,8 @@ class SchoolRule(object):
             return response
 
         return None
+
+
     # 部门对接
     async def send_org_to_org_center(self, exists_planning_school_origin: Organization, res_unit):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
@@ -1179,6 +1186,46 @@ class SchoolRule(object):
         try:
 
             return response, datadict
+        except Exception as e:
+            print(e)
+            raise e
+            return response
+
+        return None
+    # 发送 服务单位 给 组织中心
+    async def send_service_unit_to_org_center(self, exists_planning_school_origin:School, data_unit):
+        exists_planning_school = copy.deepcopy(exists_planning_school_origin)
+
+        school  = await self.school_dao.get_school_by_id(
+            exists_planning_school.id)
+        dict_data = {
+            # 组织的code
+
+            'orgCode': exists_planning_school.school_no,
+
+            'unitId':  school.org_center_info,
+
+
+                     }
+        #  URL修改
+        apiname = '/api/add-service-unit'
+        # 字典参数
+        datadict = dict_data
+
+        datadict = convert_dates_to_strings(datadict)
+        print(datadict, '字典参数')
+        print('发起请求服务单位到组织中心')
+
+        response = await send_orgcenter_request(apiname, datadict, 'post', True)
+        print(response, '接口响应')
+        try:
+            print(response)
+            # if response['status'] == OrgCenterApiStatus.ERROR.value and is_check_force:
+            #     print('同步组织中心失败')
+            #     raise OrgCenterApiError()
+            print('服务单位添加suc')
+
+            return response
         except Exception as e:
             print(e)
             raise e
