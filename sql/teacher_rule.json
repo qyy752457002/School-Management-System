@@ -23,6 +23,8 @@
       "p, teacherInfo, view",
       "p, teacherInfo, borrowOut",
       "p, teacherInfo, transferOut",
+      "p, teacherInfo, borrowIn",
+      "p, teacherInfo, transferIn",
       "p, teacherInfo, transaction",
       "p, teacherInfo, retire",
       "p, teacherKeyInfo, view",
