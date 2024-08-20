@@ -534,7 +534,7 @@ class SchoolRule(object):
                 # 单位的组织 对接
                 res_oigna = await self.send_unit_orgnization_to_org_center(school, data_unit)
                 # 服务单位
-                res_oigna_service_unit = await self.send_service_unit_to_org_center(school, data_unit)
+                # res_oigna_service_unit = await self.send_service_unit_to_org_center(school, data_unit)
 
                 # 添加组织结构 部门
                 org = Organization(org_name=school.school_name,
