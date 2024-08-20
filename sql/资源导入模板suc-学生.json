@@ -22,13 +22,6 @@
   },
   {
     "appCode": "1238915324217024",
-    "resourceCode": "infomanage",
-    "displayName": "在校生信息管理",
-    "description": "在校生信息管理",
-    "action": "temporary_study_start、temporary_study_cancel、temporary_study_view、current_student_view、current_student_change、current_student_keyinfo_change"
-  },
-  {
-    "appCode": "1238915324217024",
     "resourceCode": "instudent_transfer",
     "displayName": "转学信息管理",
     "description": "转学信息管理",
