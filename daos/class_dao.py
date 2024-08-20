@@ -159,7 +159,10 @@ class ClassesDAO(DAOBase):
                  .join(StudentBaseInfo, Student.student_id == StudentBaseInfo.student_id, isouter=True)
 
                  .where(Classes.is_deleted == False)
-                 .order_by(Classes.id.desc()))
+                 .order_by(Classes.school_id .desc())
+                 .order_by(Classes.grade_id .desc())
+                 .order_by(Classes.class_index .desc())
+                 )
 
         if school_id:
             query = query.where(Classes.school_id == int(school_id))
