@@ -37,8 +37,10 @@ from views.models.planning_school import PlanningSchoolStatus
 from views.models.teachers import EducateUserModel
 from views.models.teachers import IdentityType
 
-
 # from views.models.organization import Campus as Organization
+SOURCE_APP = "教职工信息管理系统"
+
+
 @dataclass_inject
 class OrganizationMembersRule(object):
     organization_members_dao: OrganizationMembersDAO
@@ -308,6 +310,7 @@ class OrganizationMembersRule(object):
         id_card_type = IdentityType.from_to_org(dict_data.idCardType)
         dict_data_dict = dict_data.dict()
         dict_data_dict["idCardType"] = id_card_type
+        dict_data_dict["sourceApp"] = SOURCE_APP
         params_data = JsonUtils.dict_to_json_str(dict_data_dict)
         httpreq = HTTPRequest()
         url = orgcenter_service_config.orgcenter_config.get("url")
