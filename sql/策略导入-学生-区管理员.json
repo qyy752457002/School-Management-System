@@ -1,0 +1,23 @@
+[
+  {
+    "appCode": "1238915324217024",
+    "policyCode": "country_manager_student_rule",
+    "displayName": "区级管理员学生部分策略",
+    "description": "区级管理员学生部分策略",
+    "authorizationModel": "RBAC",
+    "ruleCode": [
+      "p,  new_student, open",
+      "p,  new_student, view",
+      "p,  classdivision, view",
+      "p,  infomanage, temporary_study_view",
+      "p,  infomanage, current_student_view",
+      "p,  instudent_transfer, in_view",
+      "p,  instudent_transfer, out_view",
+      "p,  student_inner_transaction, view",
+      "p,  current_student_keyinfo_change, view",
+      "p,  current_student_keyinfo_change, pass",
+      "p,  current_student_keyinfo_change, refuse",
+      "p,  graduation, view"
+    ]
+  }
+]
