@@ -533,6 +533,7 @@ class SchoolRule(object):
                 res_unit, data_unit = await self.send_school_to_org_center(school)
                 # 单位的组织 对接
                 res_oigna = await self.send_unit_orgnization_to_org_center(school, data_unit)
+                # 服务单位
                 res_oigna_service_unit = await self.send_service_unit_to_org_center(school, data_unit)
 
                 # 添加组织结构 部门
@@ -1190,23 +1191,16 @@ class SchoolRule(object):
     # 发送 服务单位 给 组织中心
     async def send_service_unit_to_org_center(self, exists_planning_school_origin:School, data_unit):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
-        if isinstance(exists_planning_school.updated_at, (date, datetime)):
-            exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
 
-        # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer  orgType组织类型 -必填 administrative_unit|public_institutions|school|developer
-        planning_school_communication = await self.school_communication_dao.get_school_communication_by_school_id(
+        school  = await self.school_dao.get_school_by_id(
             exists_planning_school.id)
-        # cn_exists_planning_school = await self.convert_school_to_import_format(exists_planning_school)
         dict_data = {
             # 组织的code
 
             'orgCode': exists_planning_school.school_no,
 
-            'unitId':  '',
+            'unitId':  school.org_center_info,
 
-                     # "defaultApplication":   exists_planning_school.planning_school_name,
-
-                     # "unitId": exists_planning_school.planning_school_no,
 
                      }
         #  URL修改
@@ -1214,11 +1208,9 @@ class SchoolRule(object):
         # 字典参数
         datadict = dict_data
 
-        # if isinstance(datadict['createdTime'], (date, datetime)):
-        #     datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
         datadict = convert_dates_to_strings(datadict)
         print(datadict, '字典参数')
-        print('发起请求组织到组织中心')
+        print('发起请求服务单位到组织中心')
 
         response = await send_orgcenter_request(apiname, datadict, 'post', False)
         print(response, '接口响应')
@@ -1227,7 +1219,7 @@ class SchoolRule(object):
             # if response['status'] == OrgCenterApiStatus.ERROR.value and is_check_force:
             #     print('同步组织中心失败')
             #     raise OrgCenterApiError()
-            print('组织添加suc')
+            print('服务单位添加suc')
 
             return response
         except Exception as e:
