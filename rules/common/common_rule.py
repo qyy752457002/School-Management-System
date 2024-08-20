@@ -20,7 +20,9 @@ from daos.school_dao import SchoolDAO
 from daos.student_session_dao import StudentSessionDao
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
-from views.common.common_view import workflow_service_config, orgcenter_service_config, check_result_org_center_api
+from views.common.common_view import workflow_service_config, orgcenter_service_config, check_result_org_center_api, \
+    log_json
+
 APP_CODE = "1238915324217024"
 
 from datetime import datetime, timedelta
@@ -50,6 +52,9 @@ async def send_request(apiname, datadict, method='get', is_need_query_param=Fals
     else:
         response = await httpreq.post_json(url, datadict, headerdict)
     print(response, '接口响应')
+    # 示例使用
+    json_data = response
+    log_json(json_data)
     if response is None:
         return {}
     if isinstance(response, str):
