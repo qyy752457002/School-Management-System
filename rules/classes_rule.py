@@ -17,7 +17,8 @@ from rules.common.common_rule import send_orgcenter_request, get_school_map, get
 from rules.enum_value_rule import EnumValueRule
 from rules.import_common_abstract_rule import ImportCommonAbstractRule
 from rules.teachers_rule import TeachersRule
-from views.common.common_view import convert_snowid_in_model, convert_snowid_to_strings, convert_dates_to_strings
+from views.common.common_view import convert_snowid_in_model, convert_snowid_to_strings, convert_dates_to_strings, \
+    system_config
 from views.models.classes import Classes as ClassesModel, ClassStatus
 from views.models.classes import ClassesSearchRes
 from views.models.system import GRADE_ENUM_KEY, MAJOR_LV3_ENUM_KEY
@@ -48,6 +49,8 @@ class ClassesRule(ImportCommonAbstractRule,object):
             classes.class_name, classes.school_id,classes)
         if exists_classes:
             raise Exception(f"班级信息{classes.class_name}已存在")
+        await self.check_lock()
+
         # 校验 teacher_id,care_teacher_id  根据系统配置来决定是允许手填还是关联老师 默认关联老师
         if self.class_leader_teacher_rule == 1:
             if hasattr(classes, "teacher_id") and classes.teacher_id is not None and not  classes.teacher_id.isdigit():
@@ -148,8 +151,13 @@ class ClassesRule(ImportCommonAbstractRule,object):
         classes_db = await self.classes_dao.softdelete_classes(exists_classes)
         # classes = orm_model_to_view_model(classes_db, ClassesModel, exclude=[""],)
         return classes_db
-    async def check_lock(self, exists_classes):
-        if  exists_classes.status== ClassStatus.LOCKED:
+    async def check_lock(self, exists_classes=None):
+        is_lock = system_config.system_config.get("add_class")
+        if int(is_lock)  == 1:
+            raise ClassesLockedError()
+
+        # 如果已有的状态为锁定
+        if exists_classes is not None and  exists_classes.status== ClassStatus.LOCKED:
             raise ClassesLockedError()
 
 

@@ -87,10 +87,10 @@
   },
   "authentication": {
     "jwt": {
-      "secret": "secret",
+      "secret": "Jci5NpY9p2D7JPKXrVL3J8",
       "algorithm": "RS256",
       "expires": 3600,
-      "issuer": "issuer",
+      "issuer": "lfun",
       "issue_at": 0
     },
     "oauth2": {
@@ -130,6 +130,9 @@
         "replication_factor": 3
       }
     }
+  },
+  "system_config": {
+    "add_class": 0
   },
   "workflow_service": {
     "name": "workflow_service",

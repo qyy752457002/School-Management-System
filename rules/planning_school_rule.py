@@ -22,7 +22,7 @@ from sqlalchemy import select
 
 from business_exceptions.common import OrgCenterApiError
 from business_exceptions.planning_school import PlanningSchoolNotFoundError, \
-    PlanningSchoolNotFoundByProcessInstanceIdError, PlanningSchoolExistsError
+    PlanningSchoolNotFoundByProcessInstanceIdError, PlanningSchoolExistsError, PlanningSchoolStatusError
 from daos.enum_value_dao import EnumValueDAO
 from daos.planning_school_communication_dao import PlanningSchoolCommunicationDAO
 from daos.planning_school_dao import PlanningSchoolDAO
@@ -203,7 +203,7 @@ class PlanningSchoolRule(object):
             exists_planning_school.status = PlanningSchoolStatus.CLOSED.value
         else:
             # exists_planning_school.status= PlanningSchoolStatus.OPENING.value
-            raise Exception(f"规划校当前状态不支持您的操作{exists_planning_school.status}")
+            raise PlanningSchoolStatusError()
 
         need_update_list = []
         need_update_list.append('status')
@@ -270,7 +270,7 @@ class PlanningSchoolRule(object):
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
         if hasattr(planning_school, 'social_credit_code'):
-            await check_social_credit_code(planning_school.social_credit_code)
+            await check_social_credit_code(planning_school.social_credit_code,exists_planning_school)
 
         if exists_planning_school.status == PlanningSchoolStatus.DRAFT.value:
             if hasattr(planning_school, 'status'):
@@ -932,11 +932,8 @@ class PlanningSchoolRule(object):
         print(response, '接口响应')
         try:
             print(response)
-            is_check_force = True
-            if response['status'] == OrgCenterApiStatus.ERROR.value and is_check_force:
-                print('同步组织中心失败')
-                raise OrgCenterApiError()
-            print('组织添加suc')
+
+            print('组织添加 res')
 
             return response
         except Exception as e:

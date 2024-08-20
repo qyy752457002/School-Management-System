@@ -196,7 +196,6 @@ class TeachersInfoDao(DAOBase):
         query = query.order_by(Teacher.teacher_id.desc())
         paging = await self.query_page(query, page_request)
         return paging
-
         # 获取所有教师基本信息
 
     async def get_all_teachers_info(self):
@@ -292,7 +291,7 @@ class TeachersInfoDao(DAOBase):
         if query_model.teacher_id_type:
             query = query.where(Teacher.teacher_id_type == query_model.teacher_id_type)
         if query_model.teacher_gender:
-            query = query.where(Teacher.teacher_employer == query_model.teacher_gender)
+            query = query.where(Teacher.teacher_gender == query_model.teacher_gender)
         paging = await self.query_page(query, page_request)
         return paging
 
