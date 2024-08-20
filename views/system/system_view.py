@@ -77,6 +77,7 @@ class SystemView(BaseView):
         return res
 
     # 系统配置的新增接口
+    @require_role_permission("system_config", "add")
     async def post_system_config(self, system_config: SystemConfig):
         res = await self.system_config_rule.add_system_config(system_config)
         print(res)
@@ -98,6 +99,7 @@ class SystemView(BaseView):
         return res
 
     # 系统配置详情
+    @require_role_permission("system_config", "detail")
     async def get_system_config_detail(self,
                                        config_id: int | str = Query(0, description="", example='1'),
                                        ):
@@ -106,6 +108,7 @@ class SystemView(BaseView):
         return res
 
     # 修改系统配置
+    @require_role_permission("system_config", "edit")
     async def put_system_config(self,
                                 system_config: SystemConfig
 
