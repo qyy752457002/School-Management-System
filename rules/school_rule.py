@@ -956,13 +956,13 @@ class SchoolRule(object):
     # 用户对接
     async def send_admin_to_org_center(self, exists_planning_school_origin,data_org):
         # teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id)
-        # data_dict = to_dict(teacher_db)
-        # print(data_dict)
         dict_data = EducateUserModel(**exists_planning_school_origin.__dict__,
+                                     # 所在单位
                                      currentUnit=exists_planning_school_origin.school_name,
                                      createdTime=exists_planning_school_origin.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      updatedTime=exists_planning_school_origin.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      name=exists_planning_school_origin.admin_phone,
+                                     # 组织
                                      owner=exists_planning_school_origin.school_no,
                                      userCode=exists_planning_school_origin.admin,
                                      #userId=exists_planning_school_origin.admin_phone,
