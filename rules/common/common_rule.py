@@ -600,7 +600,11 @@ async def verify_auth_by_obj_and_act(obj, act):
         return False
     # 当abac是 这里是一个字典 包含了属性
     # 定义请求的属性
-    account_name = {
+
+    token = request_context_manager.current()
+    query= token['query_params']
+    print(query)
+    objattr = {
         "Age": 25,
         "department": "sales"
     }

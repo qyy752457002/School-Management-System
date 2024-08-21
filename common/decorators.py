@@ -1,5 +1,7 @@
 from functools import wraps
 
+from mini_framework.web.request_context import request_context_manager
+
 from business_exceptions.auth import NoPermissionError
 from rules.common.common_rule import verify_auth_by_obj_and_act
 
@@ -8,6 +10,11 @@ def require_role_permission(role: str, action: str):
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
+            # print(args, )
+            # print( kwargs)
+
+            # print('tt', type(token),token )
+
             v = await verify_auth_by_obj_and_act(role, action)
             if not v:
                 print('no permission', role, action)
