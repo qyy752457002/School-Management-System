@@ -134,6 +134,8 @@ class CurrentStudentsView(BaseView):
 
         return paging_result
     # 转学申请详情
+    @require_role_permission("instudent_transfer", "in_view")
+
     async def get_student_transaction_info(self,
 
                                            apply_id: int|str = Query(..., description=" ", example='1'),

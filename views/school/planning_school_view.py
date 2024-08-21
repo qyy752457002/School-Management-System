@@ -63,9 +63,7 @@ class PlanningSchoolView(BaseView):
     #   包含3部分信息 1.基本信息 2.通讯信息 3.教育信息
     @require_role_permission("planning_school", "view")
     async def get(self,
-
                   planning_school_id: int | str = Query(..., description="学校id|根据学校查规划校", example='1'),
-
                   ):
         planning_school = ''
         planning_school_communication = ''
