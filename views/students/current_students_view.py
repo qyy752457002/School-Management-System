@@ -465,6 +465,7 @@ class CurrentStudentsView(BaseView):
         res = await self.student_key_info_change_rule.add_student_key_info_change(new_students_key_info)
         # res = await self.students_rule.update_students(new_students_key_info)
         return res
+    @require_role_permission("new_student", "delete")
 
     async def delete_studentkeyinfo(self, student_id: str = Query(..., title="学生编号", description="学生编号", )):
         """
