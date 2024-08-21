@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import String, DateTime, BigInteger
+from sqlalchemy import String, DateTime, BigInteger, Text
 from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
@@ -67,7 +67,7 @@ class PlanningSchool(BaseDBModel):
     department_unit_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="属地管理行政部门单位号",
                                                         default='')
     sy_zones: Mapped[str] = mapped_column(String(64), nullable=True, comment="属地管理行政部门所在地地区", default='')
-    historical_evolution: Mapped[str] = mapped_column(String(300), nullable=True, comment="历史沿革", default='')
+    historical_evolution: Mapped[str] = mapped_column(Text, nullable=True, comment="历史沿革", default='')
     sy_zones_pro: Mapped[str] = mapped_column(String(64), nullable=True, comment="属地管理教育行政部门所在地（省级）",
                                               default='')
     primary_planning_school_system: Mapped[str] = mapped_column(String(64), nullable=True, comment="小学学制",

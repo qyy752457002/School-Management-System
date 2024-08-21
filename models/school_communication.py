@@ -20,7 +20,7 @@ class SchoolCommunication(BaseDBModel):
     fax_number: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="传真电话")
     email: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="单位电子信箱")
 
-    school_web_url: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="校园网域名")
+    school_web_url: Mapped[str] = mapped_column(String(1000), nullable=True,default='', comment="校园网域名")
     related_license_upload: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="相关证照上传")
     detailed_address: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="园所详细地址")
 

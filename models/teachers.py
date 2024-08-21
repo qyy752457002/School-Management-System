@@ -35,9 +35,9 @@ class Teacher(BaseDBModel):
     teacher_date_of_birth: Mapped[date] = mapped_column(Date, nullable=True, comment="出生日期")
     teacher_employer: Mapped[int] = mapped_column(BigInteger, default=0, nullable=True, comment="任职单位")
     teacher_avatar: Mapped[str] = mapped_column(nullable=True, default="", comment="头像")  # 图像处理再定
-    teacher_main_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="主状态",
+    teacher_main_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="主状态",
                                                      default="unemployed")
-    teacher_sub_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="子状态",
+    teacher_sub_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="子状态",
                                                     default="unsubmitted")
     identity: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份", default='')
     identity_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份类型", default='')
