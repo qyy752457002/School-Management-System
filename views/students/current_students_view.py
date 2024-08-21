@@ -58,6 +58,7 @@ class CurrentStudentsView(BaseView):
         self.student_key_info_change_rule = get_injector(StudentsKeyInfoChangeRule)
         self.student_temporary_study_rule = get_injector(StudentTemporalStudyRule)
 
+    @require_role_permission("student_session", "view")
     async def get_student_session(self, sessions_id: int|str = Query(..., title="", description="届别id",
                                                                  example="1")):
         """
@@ -65,6 +66,7 @@ class CurrentStudentsView(BaseView):
         """
         res = await self.student_session_rule.get_student_session_by_id(sessions_id)
         return res
+    @require_role_permission("student_session", "add")
 
     async def post_student_session(self, student_session: StudentSession):
         """
@@ -72,6 +74,7 @@ class CurrentStudentsView(BaseView):
         """
         res = await self.student_session_rule.add_student_session(student_session)
         return res
+    @require_role_permission("student_session", "edit")
 
     async def patch_student_session(self, student_session: StudentSession):
         """
@@ -79,6 +82,7 @@ class CurrentStudentsView(BaseView):
         """
         res = await self.student_session_rule.update_student_session(student_session)
         return res
+    @require_role_permission("student_session", "view")
 
     async def page_session(self,
                            session_name: str = Query("", title="", description="", ),
@@ -452,6 +456,7 @@ class CurrentStudentsView(BaseView):
         """
         res = await self.students_rule.get_students_by_id(student_id)
         return res
+    @require_role_permission("current_student_keyinfo_change", "start")
 
     async def put_studentkeyinfo(self, new_students_key_info: StudentsKeyinfo):
         """
@@ -469,6 +474,7 @@ class CurrentStudentsView(BaseView):
         return str(student_id)
 #     撤回   审核  查看
     # 查看 学生 关键信息变更
+    @require_role_permission("current_student_keyinfo_change", "view")
     async def get_studentkeyinfochange(self, apply_id: str = Query(..., title=" 学生 关键信息变更的申请ID", description="",
                                                                example="1")):
         """
@@ -477,6 +483,8 @@ class CurrentStudentsView(BaseView):
         res = await self.student_key_info_change_rule.get_student_key_info_change_by_id(apply_id)
         return res
     # 撤回 学生 关键信息变更
+    @require_role_permission("current_student_keyinfo_change", "cancel")
+
     async def patch_studentkeyinfochange_cancel(self, apply_id: str = Query(..., title=" 学生 关键信息变更的申请ID", description="",
                                                                    example="1")):
         """
@@ -499,6 +507,8 @@ class CurrentStudentsView(BaseView):
 
         return res
     #审核 学生 关键信息变更
+    @require_role_permission("current_student_keyinfo_change", "pass")
+
     async def patch_studentkeyinfochange_audit(self,
         audit_info: StudentsKeyinfoChangeAudit
 

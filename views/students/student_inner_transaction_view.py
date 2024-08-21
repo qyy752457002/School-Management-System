@@ -41,6 +41,8 @@ class StudentInnerTransactionView(BaseView):
         return res
 
     # 分页查询
+    @require_role_permission("student_inner_transaction", "view")
+
     async def page(self,
                    student_inner_transaction_search= Depends( StudentInnerTransactionSearch)   ,
 
@@ -60,6 +62,8 @@ class StudentInnerTransactionView(BaseView):
         return res
 
     # 异动 撤回
+    @require_role_permission("student_inner_transaction", "cancel")
+
     async def patch_student_inner_transaction_cancel(self,
                                        transaction_id: int|str = Query(..., description="异动id", example='2')
                                        ):
@@ -79,6 +83,8 @@ class StudentInnerTransactionView(BaseView):
         # print(new_students_key_info)
         return res2
     # 在校生校内异动审核
+    @require_role_permission("student_inner_transaction", "pass")
+
     async def patch_student_inner_transaction_audit(self,
                                                     audit_info: StudentInnerTransactionAudit
 
