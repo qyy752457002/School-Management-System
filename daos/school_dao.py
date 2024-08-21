@@ -33,7 +33,7 @@ class SchoolDAO(DAOBase):
             select(School).where(School.school_name == school_name).where(School.is_deleted == False))
         return result.first()
 
-    async def get_school_by_args(self,obj=None, **kwargs):
+    async def get_school_by_args(self, obj=None, **kwargs):
         """
         """
         session = await self.slave_db()
@@ -224,9 +224,13 @@ class SchoolDAO(DAOBase):
 
     async def query_sync_school_with_page(self, query_model: SchoolSyncQueryModel,
                                           page_request: PageRequest) -> Paging:
-        query_school = select(School.school_no, School.social_credit_code, School.school_name, School.borough,
-                              School.block,
-                              School.founder_type, School.founder_type_lv2, School.founder_type_lv3).where(
+        query_school = select(School.school_no,
+                              func.coalesce(School.social_credit_code, "").label("social_credit_code"),
+                              School.school_name, func.coalesce(School.borough, "").label("borough"),
+                              func.coalesce(School.block, "").label("block"),
+                              func.coalesce(School.founder_type, "").label("founder_type"),
+                              func.coalesce(School.founder_type_lv2, "").label("founder_type_lv2"),
+                              func.coalesce(School.founder_type_lv3, "").label("founder_type_lv3")).where(
             School.is_deleted == False, School.status == "normal")
         if query_model.social_credit_code:
             query_school = query_school.where(School.social_credit_code == query_model.social_credit_code)
