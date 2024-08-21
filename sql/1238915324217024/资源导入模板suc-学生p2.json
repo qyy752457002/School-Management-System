@@ -1,11 +1,23 @@
 [
-
   {
     "appCode": "1238915324217024",
     "resourceCode": "new_student",
     "displayName": "新生入学管理",
     "description": "新生入学管理",
-    "action": "delete_student_keyinfo"
+    "action": "open、import、view、edit、flowout、sync、formaladmission、delete_student_keyinfo"
+  },
+  {
+    "appCode": "1238915324217024",
+    "resourceCode": "classdivision",
+    "displayName": "分班管理",
+    "description": "分班管理",
+    "action": "view、lottery_classdivision、import、banding、batch_banding、export"
+  },
+  {
+    "appCode": "1238915324217024",
+    "resourceCode": "student_session",
+    "displayName": "届别管理",
+    "description": "届别管理",
+    "action": "add、view、edit、delete、status"
   }
-
 ]
