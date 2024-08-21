@@ -56,14 +56,14 @@ class PlanningSchool(BaseModel):
     old_planning_school_no: str|None = Field('', title="规划校编号", description="规划校编号/规划校代码", examples=['SC2032633'])
     planning_school_operation_license_number: str|None = Field(..., title="办学许可证号",
                                                           description="办学许可证号", examples=['EDU2024012569'])
-    block: str = Field(..., title="地域管辖区", description="地域管辖区", examples=['铁西区'])
+    block: str|None = Field(..., title="地域管辖区", description="地域管辖区", examples=['铁西区'])
     borough: str = Field(..., title="行政管辖区", description=" 行政管辖区", examples=['铁西区'])
     planning_school_edu_level: str | None = Field(..., title="办学类型", description="办学类型", examples=['学前教育'])
     planning_school_category: str | None = Field(..., title="办学类型二级", description=" 办学类型二级",
                                                  examples=['小学'])
     planning_school_operation_type: str | None = Field(..., title="办学类型三级", description=" 办学类型三级",
                                                        examples=['附设小学班'])
-    planning_school_org_type: str = Field(..., title="规划校办别", description=" 规划校办别", examples=['民办'])
+    planning_school_org_type: str|None = Field(..., title="规划校办别", description=" 规划校办别", examples=['民办'])
     planning_school_level: str | int | None = Field(None, title="规划校星级", description=" 规划校星级", examples=['5'])
     status: str = Field(..., title="状态", description=" 状态", examples=['正常'])
     planning_school_code: str |None= Field(..., title="规划校标识码", description=" 规划校标识码",
