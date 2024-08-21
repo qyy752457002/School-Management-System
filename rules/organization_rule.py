@@ -197,7 +197,6 @@ class OrganizationRule(object):
 
         exists_organization_members = await self.organization_dao.update_organization_increment_member_cnt(
             OrganizationModel(id=int(organization_id), ))
-
         return organization_id
 
     # 部门对接
