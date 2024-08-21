@@ -24,7 +24,7 @@ from rules.enum_value_rule import EnumValueRule
 from views.common.common_view import workflow_service_config, orgcenter_service_config, check_result_org_center_api, \
     log_json, write_json_to_log, convert_dates_to_strings, json_date_hook
 
-APP_CODE = "1238915324217024"
+APP_CODE = "1238914398508736"
 
 from datetime import datetime, timedelta
 

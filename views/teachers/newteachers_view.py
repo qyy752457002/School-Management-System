@@ -8,6 +8,7 @@ from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
 from common.decorators import require_role_permission
+from rules.common.common_rule import verify_auth_by_obj_and_act, get_org_center_user_info
 from rules.teacher_import_rule import TeacherImportRule
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from rules.teachers_info_rule import TeachersInfoRule
@@ -48,6 +49,7 @@ class NewTeachersView(BaseView):
         teacher_id = int(teacher_id)
         await self.teacher_rule.delete_teachers(teacher_id, user_id)
         return str(teacher_id)
+
     @require_role_permission("newTeacherEntry", "view")
     # 查询单个教职工登记信息
     async def get_newteacher(self, teacher_id: int | str = Query(..., title="教师编号", description="教师编号")):
@@ -55,6 +57,7 @@ class NewTeachersView(BaseView):
         teacher_id = int(teacher_id)
         res = await self.teacher_rule.get_teachers_by_id(teacher_id)
         return res
+
     @require_role_permission("newTeacherEntry", "edit")
     # 编辑新教职工登记信息
     async def put_newteacher(self, teachers: Teachers):
@@ -352,3 +355,7 @@ class NewTeachersView(BaseView):
                                                                    example="7210418530586595328")):
         res = await self.teacher_rule.send_user_department_to_org_center(teacher_id, user_id)
         return res
+
+    async def get_account_info_test(self):
+        user_info = await get_org_center_user_info()
+        return user_info
