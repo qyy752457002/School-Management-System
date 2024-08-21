@@ -1,7 +1,7 @@
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
-from sqlalchemy import select, func, update, desc, union_all
+from sqlalchemy import select, func, update, desc, union_all, or_, and_
 
 from models.campus import Campus
 from models.campus_communication import CampusCommunication
@@ -175,12 +175,25 @@ class SchoolDAO(DAOBase):
             else:
                 query = query.where(School.institution_category == institution_category)
         else:
-            query = query.where(
-                School.institution_category.not_in([InstitutionType.INSTITUTION, InstitutionType.ADMINISTRATION, ]))
+            cond1 =  School.institution_category.not_in([InstitutionType.INSTITUTION, InstitutionType.ADMINISTRATION, ])
+            cond2 =  School.institution_category.is_(None)
+            mcond = or_(cond1, cond2)
+
+            query = query.filter(
+                or_(
+                    mcond
+                )
+            )
+
         if school_name:
             query = query.where(School.school_name == school_name)
+        print('参数',type(planning_school_id), planning_school_id)
+
         if planning_school_id:
-            query = query.where(School.planning_school_id == planning_school_id)
+            if isinstance(planning_school_id, str) and len(planning_school_id)>0:
+                planning_school_id = int(planning_school_id)
+            if planning_school_id >0 :
+                query = query.where(School.planning_school_id == planning_school_id)
 
         if school_no:
             query = query.where(School.school_no == school_no)
