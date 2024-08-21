@@ -42,15 +42,15 @@ class SchoolSyncQueryReModel(BaseModel):
     这是同步查询返回的model
     """
 
-    social_credit_code: str = Field(..., title="", description="统一社会信用代码",
-                                    examples=['XH423423876867'])
-    school_no: str = Field(..., title="学校编号", description="1-20字符", examples=['XX小学'])
-    school_name: str = Field(..., title="学校名称", description="1-20字符", examples=['XX小学'])
-    borough: str = Field(..., title="  ", description=" 行政管辖区", )
-    block: str = Field(..., title=" ", description="地域管辖区", )
-    founder_type: str = Field(..., title="", description="举办者类型", examples=['地方'])
-    founder_type_lv2: str = Field(..., title="", description="举办者类型二级", examples=['教育部门'])
-    founder_type_lv3: str = Field(..., title="", description="举办者类型三级", examples=['县级教育部门'])
+    social_credit_code: str | None = Field("", title="", description="统一社会信用代码",
+                                           examples=['XH423423876867'])
+    school_no: str | None = Field("", title="学校编号", description="1-20字符", examples=['XX小学'])
+    school_name: str | None = Field("", title="学校名称", description="1-20字符", examples=['XX小学'])
+    borough: str | None = Field("", title="  ", description=" 行政管辖区", )
+    block: str | None = Field("", title=" ", description="地域管辖区", )
+    founder_type: str | None = Field("", title="", description="举办者类型", examples=['地方'])
+    founder_type_lv2: str | None = Field("", title="", description="举办者类型二级", examples=['教育部门'])
+    founder_type_lv3: str | None = Field("", title="", description="举办者类型三级", examples=['县级教育部门'])
 
 
 class SupervisorSyncQueryModel(BaseModel):
@@ -118,5 +118,6 @@ class TeacherSyncToArtModel(BaseModel):
     political_status: str | None = Field("", title="政治面貌", description="政治面貌", example="党员")
     # institution_of_education_obtained: str | None = Field("", title="获得学历院校/机构",
     #                                                       description="获得学历的院校机构")
-    institution_of_highest_education: str| None  = Field("", title="获得最高学历的院校或机构",
-                                                  description="获得最高学历的院校或者机构", example="沈阳师范大学")
+    institution_of_highest_education: str | None = Field("", title="获得最高学历的院校或机构",
+                                                         description="获得最高学历的院校或者机构",
+                                                         example="沈阳师范大学")

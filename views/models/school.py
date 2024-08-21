@@ -66,6 +66,67 @@ class School(BaseModel):
                 pass
         return data
 
+
+class SchoolSyncModel(BaseModel):
+    id:int|str= Query(None, title="", description="学校id", example='1')
+    planning_school_id: int |str|None= Field(None, title="", description="规划校id",examples=['1'])
+    school_name: str = Field(..., title="学校名称", description="学校名称",examples=['XX小学'])
+    school_no: str = Field(..., title="学校编号", description="学校编号",examples=['SC2032633'])
+    old_school_no: str|None = Field(None, title="学校编号", description="学校编号",examples=['SC2032633'])
+    school_operation_license_number: str|None = Field(None, title=" Description", description="办学许可证号",examples=['EDU2024012569'])
+    block: str|None = Field(None, title=" Author", description="地域管辖区",examples=['铁西区'])
+    borough: str|None = Field(None, title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
+    school_edu_level: str|None = Field(None, title="", description="办学类型",examples=['学前教育'])
+    school_category: str|None = Field(None, title="", description=" 办学类型二级",examples=['小学'])
+    school_operation_type: str|None = Field(None, title="", description=" 办学类型三级",examples=['附设小学班'])
+    school_org_type: str|None = Field(None, title="", description=" 学校办别",examples=['民办'])
+    school_level: str |None= Field(None, title="", description=" 学校星级",examples=['5'])
+    status: str = Field(..., title="", description=" 状态",examples=['正常'])
+    school_code: str|None = Field(None, title="", description=" 园所标识码",examples=['SC562369322SG'])
+    kg_level: str|None = Field(None, title="", description="星级",examples=['5'])
+    created_uid: int|None = Field(None, title="", description="创建人",examples=['1'])
+    school_short_name: str|None = Field(None, title="", description="园所简称",examples=['MXXX'])
+    school_en_name: str|None = Field(None, title="", description="园所英文名称",examples=['MinxingPrimarySCHOOL'])
+    create_school_date: str|None = Field(None, title="", description="建校年月",examples=['2021-10-10 00:00:00'])
+    social_credit_code: str|None = Field(None, title="", description="统一社会信用代码",examples=['XH423423876867'])
+    founder_type: str|None = Field(None, title="", description="举办者类型",examples=['地方'])
+    founder_type_lv2: str|None = Field(None, title="", description="举办者类型二级",examples=['教育部门'])
+    founder_type_lv3: str|None = Field(None, title="", description="举办者类型三级",examples=['县级教育部门'])
+    founder_name: str|None = Field(None, title="", description="举办者名称",examples=['上海教育局'])
+    founder_code: str|None = Field(None, title="", description="举办者识别码",examples=['SC562369322SG'])
+    urban_rural_nature: str|None = Field(None, title="", description="城乡性质",examples=['城镇'])
+    school_org_form: str|None = Field(None, title="", description="办学组织形式",examples=['教学点'])
+    school_closure_date: str|None = Field(None, title="", description="学校关闭日期",examples=[''])
+    department_unit_number: str|None = Field(None, title="", description="属地管理行政部门单位号",examples=['SC562369322SG'])
+    sy_zones: str|None = Field(None, title="", description="属地管理行政部门所在地地区",examples=['铁西区'])
+    historical_evolution: str|None = Field(None, title="", description="历史沿革",examples=['xxxxxxxxxxxxxxxxxxxx'])
+    sy_zones_pro: str|None = Field(None, title="", description="属地管理教育行政部门所在地（省级）",examples=['沈阳'])
+    primary_school_system: str|None = Field(None, title="", description="小学学制",examples=['6'])
+    primary_school_entry_age: str|None = Field(None, title="", description="小学入学年龄",examples=['6'])
+    junior_middle_school_system: str|None = Field(None, title="", description="初中学制",examples=['3'])
+    junior_middle_school_entry_age: str|None = Field(None, title="", description="初中入学年龄",examples=['12'])
+    senior_middle_school_system: str|None = Field(None, title="", description="高中学制",examples=['3'])
+    workflow_status: str |None= Field(None, title="", description="", examples=[''])
+    location_economic_attribute: str |None= Field(None, title="所属地经济属性", description="", examples=[''])
+    urban_ethnic_nature: str |None= Field(None, title="所在地民族属性", description="", examples=[''])
+    leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
+    is_master: str|None|bool = Field(None, title="", description=" ",examples=[''])
+    @model_validator(mode="before")
+    @classmethod
+    def check_id_before(self, data: dict):
+        _change_list= ["id", "planning_school_id",]
+        for _change in _change_list:
+            if _change not in data:
+                continue
+            if isinstance(data[_change], str):
+                data[_change] = int(data[_change])
+            elif isinstance(data[_change], int):
+                data[_change] = str(data[_change])
+            else:
+                pass
+        return data
+
+
 # 学校的 基本信息模型   视图的额模型是按需提供的
 class SchoolBaseInfoOptional(BaseModel):
     id:int|str= Query(0, title="", description="学校id", example='1')

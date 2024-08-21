@@ -24,9 +24,9 @@ class TeacherChangeView(BaseView):
         res = await self.teacher_change_rule.add_teacher_change(teacher_change)
         return res
 
-    async def post_teacher_change_detail(self, teacher_change_detail: TeacherChangeDetail):
-        res = await self.teacher_change_rule.add_teacher_change_detail(teacher_change_detail)
-        return res
+    # async def post_teacher_change_detail(self, teacher_change_detail: TeacherChangeDetail):
+    #     res = await self.teacher_change_rule.add_teacher_change_detail(teacher_change_detail)
+    #     return res
 
     async def get_teacher_change_all(self, teacher_id: int = Query(None, title="teacher_changeID",
                                                                    description="teacher_changeID", example=1234)):

@@ -7,6 +7,8 @@ from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
+from common.decorators import require_role_permission
+from rules.common.common_rule import verify_auth_by_obj_and_act, get_org_center_user_info
 from rules.teacher_import_rule import TeacherImportRule
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from rules.teachers_info_rule import TeachersInfoRule
@@ -28,25 +30,27 @@ class NewTeachersView(BaseView):
         self.teacher_import_rule = get_injector(TeacherImportRule)
 
     # 新增教职工登记信息
+    @require_role_permission("newTeacherEntry", "entry")
     async def post_newteacher(self, teachers: TeachersCreatModel):
         print(teachers)
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         res, teacher_base_id = await self.teacher_rule.add_teachers(teachers, user_id)
         result = {}
         result.update(res)
         result.update({"teacher_base_id": teacher_base_id})
         return result
 
+    @require_role_permission("newTeacherEntry", "delete")
     async def delete_newteacher(self, teacher_id: int | str = Query(..., title="教师编号", description="教师编号")):
         """
         删除教师信息
         """
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         teacher_id = int(teacher_id)
-
         await self.teacher_rule.delete_teachers(teacher_id, user_id)
         return str(teacher_id)
 
+    @require_role_permission("newTeacherEntry", "view")
     # 查询单个教职工登记信息
     async def get_newteacher(self, teacher_id: int | str = Query(..., title="教师编号", description="教师编号")):
 
@@ -54,15 +58,16 @@ class NewTeachersView(BaseView):
         res = await self.teacher_rule.get_teachers_by_id(teacher_id)
         return res
 
+    @require_role_permission("newTeacherEntry", "edit")
     # 编辑新教职工登记信息
     async def put_newteacher(self, teachers: Teachers):
         print(teachers)
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         res = await self.teacher_rule.update_teachers(teachers, user_id)
         return res
 
     # 分页查询
-
+    @require_role_permission("newTeacherEntry", "view")
     async def page(self, request: Request, new_teacher=Depends(NewTeacher), page_request=Depends(PageRequest)):
         """
         分页查询
@@ -73,21 +78,23 @@ class NewTeachersView(BaseView):
             new_teacher.teacher_employer = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             extend_param["borough"] = ob.county_id
-        extend_param["applicant_name"] = "asdfasdf"
+        extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
         paging_result = await self.teacher_info_rule.query_teacher_with_page(new_teacher, page_request, extend_param)
         return paging_result
 
     # 新教职工基本信息的功能
     # 新增教职工基本信息
+    @require_role_permission("newTeacherEntry", "entry")
     async def post_newteacherinfosave(self, teacher_info: TeacherInfoSaveModel):
         """
         保存不经过验证
         """
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         res = await self.teacher_info_rule.update_teachers_info_save(teacher_info, user_id)
 
         return res
 
+    @require_role_permission("newTeacherEntry", "view")
     async def get_newteacherinfo(self, teacher_id: int | str = Query(..., title="姓名", description="教师名称",
                                                                      example=123)):
         # todo:重新获取时需要根据状态判断一下返回的应该是需要进行验证的还是不需要验证的。
@@ -101,9 +108,9 @@ class NewTeachersView(BaseView):
     #     else:
     #         res = await self.teacher_info_rule.add_teachers_info_valid(teacher_info)
     #     return res
-
+    @require_role_permission("newTeacherEntry", "edit")
     async def put_newteacherinforesave(self, teacher_info: CurrentTeacherInfoSaveModel):
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         res = await self.teacher_info_rule.update_teachers_info_save(teacher_info, user_id)
         return res
 
@@ -113,8 +120,9 @@ class NewTeachersView(BaseView):
         return res
 
     # 编辑教职工基本信息
+    @require_role_permission("newTeacherEntry", "edit")
     async def put_newteacherinfo(self, teacher_info: TeacherInfoSubmit):
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         if teacher_info.teacher_base_id < 0:
             res = await self.teacher_info_rule.add_teachers_info_valid(teacher_info, user_id)
         else:
@@ -136,7 +144,7 @@ class NewTeachersView(BaseView):
     #                           teacher_id: int = Query(..., title="教师编号", description="教师编号", example=123)):
     #     await self.teacher_rule.submitted(teacher_id)
     #     return teacher_id
-
+    @require_role_permission("newTeacherApproval", "approval")
     async def patch_entry_approved(self,
                                    teacher_id: int | str = Body(..., title="教师编号", description="教师编号",
                                                                 example=123),
@@ -144,12 +152,13 @@ class NewTeachersView(BaseView):
                                                                          description="流程实例id",
                                                                          example=123),
                                    reason: str = Body(None, title="审批意见", description="审批意见", example="同意")):
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         teacher_id = int(teacher_id)
         process_instance_id = int(process_instance_id)
         reason = reason
         return await self.teacher_rule.entry_approved(teacher_id, process_instance_id, user_id, reason)
 
+    @require_role_permission("newTeacherApproval", "reject")
     async def patch_entry_rejected(self,
                                    teacher_id: int | str = Body(..., title="教师编号", description="教师编号",
                                                                 example=123),
@@ -160,11 +169,11 @@ class NewTeachersView(BaseView):
                                                       description="审核理由")):
         teacher_id = int(teacher_id)
         process_instance_id = int(process_instance_id)
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         reason = reason
-
         return await self.teacher_rule.entry_rejected(teacher_id, process_instance_id, user_id, reason)
 
+    @require_role_permission("newTeacherApproval", "revoke")
     async def patch_entry_revoked(self,
                                   teacher_id: int | str = Body(..., title="教师编号", description="教师编号",
                                                                example=123),
@@ -177,7 +186,7 @@ class NewTeachersView(BaseView):
         """
         teacher_id = int(teacher_id)
         process_instance_id = int(process_instance_id)
-        user_id = "asdfasdf"
+        user_id = request_context_manager.current().current_login_account.name
         return await self.teacher_rule.entry_revoked(teacher_id, process_instance_id, user_id)
 
     # async def patch_info_submitting(self,
@@ -207,7 +216,7 @@ class NewTeachersView(BaseView):
     #                                                            example=123)):
     #     await self.teacher_info_rule.rejected(teacher_base_id)
     #     return teacher_base_id
-
+    @require_role_permission("newTeacherEntry", "importBaseInfo")
     async def post_new_teacher_import(self, file_id: int | str = Query(..., title="文件id",
                                                                        example=123)) -> Task:
 
@@ -222,6 +231,7 @@ class NewTeachersView(BaseView):
         print('发生任务成功')
         return task
 
+    @require_role_permission("newTeacherEntry", "importQuick")
     async def post_new_teacher_save_import(self, file_id: int | str = Query(..., title="文件id",
                                                                             example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
@@ -245,6 +255,7 @@ class NewTeachersView(BaseView):
         print('发生任务成功')
         return task
 
+    @require_role_permission("newTeacherApproval", "view")
     async def page_new_teacher_launch(self, request: Request, teacher_approval_query=Depends(TeacherApprovalQuery),
                                       page_request=Depends(PageRequest)):
         """
@@ -256,12 +267,13 @@ class NewTeachersView(BaseView):
             teacher_approval_query.teacher_employer = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             extend_param["borough"] = ob.county_id
-        extend_param["applicant_name"] = "asdfasdf"
+        extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
         type = 'launch'
         paging_result = await self.teacher_rule.query_teacher_approval_with_page(type, teacher_approval_query,
                                                                                  page_request, extend_param)
         return paging_result
 
+    @require_role_permission("newTeacherApproval", "view")
     async def page_new_teacher_approval(self, request: Request, teacher_approval_query=Depends(TeacherApprovalQuery),
                                         page_request=Depends(PageRequest)):
         """
@@ -273,7 +285,7 @@ class NewTeachersView(BaseView):
             teacher_approval_query.teacher_employer = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             extend_param["borough"] = ob.county_id
-        extend_param["applicant_name"] = "asdfasdf"
+        extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
         type = 'approval'
         paging_result = await self.teacher_rule.query_teacher_approval_with_page(type, teacher_approval_query,
                                                                                  page_request, extend_param)
@@ -343,3 +355,7 @@ class NewTeachersView(BaseView):
                                                                    example="7210418530586595328")):
         res = await self.teacher_rule.send_user_department_to_org_center(teacher_id, user_id)
         return res
+
+    async def get_account_info_test(self):
+        user_info = await get_org_center_user_info()
+        return user_info
