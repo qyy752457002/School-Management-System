@@ -179,8 +179,13 @@ class SchoolDAO(DAOBase):
                 School.institution_category.not_in([InstitutionType.INSTITUTION, InstitutionType.ADMINISTRATION, ]))
         if school_name:
             query = query.where(School.school_name == school_name)
+        print('参数',type(planning_school_id), planning_school_id)
+
         if planning_school_id:
-            query = query.where(School.planning_school_id == planning_school_id)
+            if isinstance(planning_school_id, str) and len(planning_school_id)>0:
+                planning_school_id = int(planning_school_id)
+            if planning_school_id >0 :
+                query = query.where(School.planning_school_id == planning_school_id)
 
         if school_no:
             query = query.where(School.school_no == school_no)
