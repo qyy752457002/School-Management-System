@@ -171,7 +171,8 @@ class ClassesDAO(DAOBase):
             query = query.where(School.school_no == school_no )
             pass
         if teacher_name is not None:
-            query = query.where(Classes.teacher_name == teacher_name )
+            if teacher_name != '':
+                query = query.where(Classes.teacher_name == teacher_name )
             pass
         if grade_id and int(grade_id) > 0:
             print(grade_id)

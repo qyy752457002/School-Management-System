@@ -176,6 +176,12 @@ class SystemRule(object):
                 for item in paging.items:
                     if process_code == PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE or process_code == SCHOOL_CLOSE_WORKFLOW_CODE or process_code == INSTITUTION_CLOSE_WORKFLOW_CODE:
                         if isinstance(item, dict)  :
+                            if 'id' in item.keys():
+                                item['id']= int(item['id'])
+                            if 'planning_school_id' in item.keys():
+                                item['planning_school_id']= int(item['planning_school_id'])
+                            if 'school_id' in item.keys():
+                                item['school_id']= int(item['school_id'])
                             item['related_license_upload_url']=None
                             if 'related_license_upload' in item.keys() and item['related_license_upload'] and  len(item['related_license_upload'])>0:
                                 print('item', item['related_license_upload'])
