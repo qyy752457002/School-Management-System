@@ -4,6 +4,8 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
+
+from common.decorators import require_role_permission
 from rules.course_rule import CourseRule
 from views.common.common_view import get_extend_params, convert_snowid_to_strings, convert_snowid_in_model
 from views.models.course import Course
@@ -16,6 +18,7 @@ class CourseView(BaseView):
         self.course_rule = get_injector(CourseRule)
 
     # 新增课程  市区  校
+    @require_role_permission("course", "add")
     async def post(self,
                    request: Request,
                    school_id: int | str = Query(..., description="学校ID", example='1'),
@@ -36,6 +39,8 @@ class CourseView(BaseView):
         return res
 
     # 分页
+    @require_role_permission("course", "view")
+
 
     async def page(self,
                    request: Request,

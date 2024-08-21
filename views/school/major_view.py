@@ -4,6 +4,7 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 
+from common.decorators import require_role_permission
 from rules.major_rule import MajorRule
 from views.models.majors import Majors
 from views.models.grades import Grades
@@ -15,7 +16,7 @@ class MajorView(BaseView):
     def __init__(self):
         super().__init__()
         self.major_rule = get_injector(MajorRule)
-
+    @require_role_permission("major", "add")
     async def post(self,
                    school_id: int | str = Query(..., description="学校ID", example='1'),
                    major_list: List[Majors] = Body([], description="选择的专业", example=[
@@ -27,6 +28,7 @@ class MajorView(BaseView):
         res = await self.major_rule.add_major_multi(school_id, major_list)
 
         return res
+    @require_role_permission("major", "view")
 
     async def page(self,
                    page_request=Depends(PageRequest),
@@ -43,6 +45,8 @@ class MajorView(BaseView):
         # return PaginatedResponse(has_next=True, has_prev=True, page=page_request.page, pages=10, per_page=page_request.per_page, total=100, items=items)
 
     # 删除
+    @require_role_permission("major", "delete")
+
     async def delete(self, major_id: int | str = Query(..., title="", description="专业id", )):
         print(major_id)
         res = await self.major_rule.softdelete_major(major_id)
@@ -50,6 +54,8 @@ class MajorView(BaseView):
         return res
 
     # 修改 关键信息
+    @require_role_permission("major", "edit")
+
     async def put(self,
                   school_id: int | str = Query(..., description="学校ID", example='1'),
                   major_list: List[Majors] = Body([], description="选择的专业", example=[
