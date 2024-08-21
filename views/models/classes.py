@@ -91,6 +91,7 @@ class ClassesSearchRes(BaseModel):
     class_name: str|None = Field(None, title="Grade_name", description="班级名称", examples=['一年级'])
     class_number: str |None= Field(None, description="班号", examples=['一年级'])
     class_index: str = Field('', description="班级序号", examples=['一班'])
+    class_standard_name: str|None = Field(None,title="班级全称", description="", examples=[''])
 
     year_established: str = Field(None, description="建班年份", examples=['fsdfdsfsdxxx'])
     teacher_id_card: str = Field(None, description="班主任身份证", examples=['fsdfdsfsdxxx'])

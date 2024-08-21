@@ -1,9 +1,9 @@
 [
   {
     "appCode": "1238915324217024",
-    "policyCode": "city_school_manager_rule",
-    "displayName": "市级管理员策略",
-    "description": "xxxx",  
+    "policyCode": "city_school_manager_school_rule",
+    "displayName": "市级管理员学校部分策略",
+    "description": "市级管理员学校部分策略xxxx",
     "authorizationModel": "RBAC",  
     "ruleCode": [
       "p,  grade, view",

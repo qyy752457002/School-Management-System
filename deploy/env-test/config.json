@@ -14,8 +14,7 @@
         "user": "schooloms",
         "password": "J16s10Wp08yfEskmVAJH",
         "database": "school_oms_test",
-        "pool_size": 50,
-        "max_overflow": 15
+        "pool_size": 50
       },
       "slaves": [
         {
@@ -41,14 +40,19 @@
     "secret_key": "MtuM5ZBlARTQMqRsb6mGIMecPlJhCE2D",
     "token_exp_sec": 600,
     "buckets": {
-      "supervisor": {
+      "student": {
+        "name": "k8s",
+        "path": "/student"
+      },
+      "school": {
         "name": "k8s",
         "path": "school"
       },
-      "picture": {
+      "teacher": {
         "name": "k8s",
-        "path": "/picture"
+        "path": "/teacher"
       }
+
     }
   },
   "redis": {
@@ -61,27 +65,27 @@
     },
     "dbs": {
       "session": {
-        "db": 0,
+        "db": 4,
         "prefix": "",
         "server_key": "default"
       },
       "jwt_blacklist": {
-        "db": 1,
+        "db": 5,
         "prefix": "",
         "server_key": "default"
       },
       "snowflake": {
-        "db": 0,
+        "db": 4,
         "prefix": "",
         "server_key": "default"
       },
       "login_state": {
-        "db": 2,
+        "db": 6,
         "prefix": "",
         "server_key": "default"
       },
       "account": {
-        "db": 3,
+        "db": 7,
         "prefix": "",
         "server_key": "default"
       }
@@ -169,6 +173,33 @@
       "email_smtp_port": 25,
       "sms_api_endpoint": "",
       "sms_api_key": ""
+    },
+    "task_types": {
+
+      "teacher_import": {
+        "topic": "teacher_import",
+        "name": "教师导入",
+        "consumer_group_id": "service",
+        "description": "教师导入",
+        "executor_cls_model": "views.tasks.new_teacher_task.TeacherImportExecutor",
+        "payload_cls_model": "views.models.teachers.TeacherFileStorageModel"
+      },
+      "teacher_export": {
+        "topic": "teacher_export",
+        "name": "教师导出",
+        "consumer_group_id": "service",
+        "description": "教师导出",
+        "executor_cls_model": "views.tasks.new_teacher_task.TeacherExportExecutor",
+        "payload_cls_model": "views.models.teachers.CurrentTeacherQuery"
+      },
+      "teacher_save_export": {
+        "topic": "teacher_export",
+        "name": "",
+        "consumer_group_id": "service",
+        "description": "",
+        "executor_cls_model": "views.tasks.new_teacher_task.TeacherSaveExportExecutor",
+        "payload_cls_model": "views.models.teachers.TeacherFileStorageModel"
+      }
     }
   }
 }

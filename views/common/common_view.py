@@ -11,6 +11,8 @@ from daos.enum_value_dao import EnumValueDAO
 from views.common.constant import Constant
 from views.models.extend_params import ExtendParams
 from views.models.system import UnitType, OrgCenterApiStatus
+import json
+import logging
 
 frontend_enum_mapping = {'preSchoolEducation': '学前教育', 'kindergarten': '幼儿园',
                          'attachedKindergartenClass': '附设幼儿班',
@@ -341,5 +343,63 @@ def check_result_org_center_api(result):
     if result.get("status") == OrgCenterApiStatus.ERROR.value and is_check_force:
         raise Exception(f"orgcenter api error {result.get('msg')}")
 
+
+
+# 配置日志
+logging.basicConfig(filename='app.log', filemode='a', format='%(name)s - %(levelname)s - %(message)s')
+
+def log_json(json_data, log_file='app.log'):
+    """
+    将JSON数据记录到日志文件中
+
+    :param json_data: 要记录的JSON数据
+    :param log_file: 日志文件的名称，默认为'app.log'
+    """
+    try:
+        # 确保json_data是字符串类型
+        if not isinstance(json_data, str):
+            json_data = json.dumps(json_data)
+
+        # 尝试解析JSON数据以验证其有效性
+        json.loads(json_data)
+
+        # 记录JSON数据到日志文件
+        logging.basicConfig(filename=log_file, filemode='a', format='%(asctime)s - %(message)s')
+        logging.info(json_data)
+
+    except json.JSONDecodeError as e:
+        # 如果JSON数据无效，记录错误信息
+        logging.error(f"Invalid JSON data: {e}")
+    except Exception as e:
+        # 记录其他可能的错误
+        logging.error(f"An error occurred: {e}")
+
+
+import json
+from datetime import date
+
+class DateEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, date):
+            return obj.isoformat()  # 或者 obj.strftime('%Y-%m-%d')
+        return super(DateEncoder, self).default(obj)
+
+# sample_dict = {"name": "Alice", "birthdate": date(1990, 5, 17)}
+import json
+from datetime import date
+
+def json_date_hook(json_dict):
+    for (key, value) in json_dict.items():
+        try:
+            json_dict[key] = date.fromisoformat(value)
+        except (ValueError, TypeError):
+            pass
+    return json_dict
+
+def write_json_to_log( data_list,filename='a.log'):
+    with open(filename, 'a') as file:  # 使用 'a' 模式来追加数据
+        for data in data_list:
+            # 将字典转换为 JSON 格式字符串，并确保每条记录后换行
+            file.write(json.dumps(data,cls=DateEncoder) + '\n')
 
 
