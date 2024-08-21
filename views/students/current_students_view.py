@@ -11,6 +11,7 @@ from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
 from business_exceptions.student import StudentExistsThisSchoolError, StudentTransactionExistsError
+from common.decorators import require_role_permission
 from models.student_transaction import AuditAction, TransactionDirection, AuditFlowStatus
 from models.students import StudentApprovalAtatus
 from rules.classes_rule import ClassesRule
@@ -543,11 +544,14 @@ class CurrentStudentsView(BaseView):
         return {'student_transaction_in': tinfo, 'student_transaction_out': relationinfo,
                 'student_info': stubaseinfo, }
     # 新增 临时借读
+    @require_role_permission("infomanage", "temporary_study_start")
     async def post_temporary_study(self, student_temporary_study: StudentTemporaryStudy):
         # print(new_students_key_info)
         res3 = await self.student_temporary_study_rule.add_student_temporary_study(student_temporary_study)
 
         return res3
+    @require_role_permission("infomanage", "temporary_study_view")
+
     async def page_temporary_study(self,
                                    student_name: str = Query("", title="", description="", ),
                                    student_gender: str = Query("", title="", description="", ),
@@ -563,6 +567,7 @@ class CurrentStudentsView(BaseView):
 
         paging_result = await self.student_temporary_study_rule.query_student_temporary_study_with_page(page_request, status,student_name,student_gender,school_id,apply_user,edu_number,)
         return paging_result
+    @require_role_permission("infomanage", "temporary_study_cancel")
 
     async def patch_temporary_study_cancel(self,     student_temporary_study_id: str|int = Query(None, title="", description="",   ),
                                            ):
