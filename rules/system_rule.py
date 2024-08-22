@@ -201,11 +201,11 @@ class SystemRule(object):
                         print('学校关闭的流程 处理3个ID为str', )
                         if isinstance(item, dict)  :
                             if 'id' in item:
-                                item['id']= int(item['id'])
+                                item['id']= str(item['id'])
                             if 'planning_school_id' in item:
-                                item['planning_school_id']= int(item['planning_school_id'])
+                                item['planning_school_id']= str(item['planning_school_id'])
                             if 'school_id' in item:
-                                item['school_id']= int(item['school_id'])
+                                item['school_id']= str(item['school_id'])
                             print('处理字典',item)
                     else :
                         print('非关闭的流程', )
