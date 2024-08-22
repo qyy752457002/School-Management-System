@@ -14,6 +14,7 @@ from business_exceptions.planning_school import PlanningSchoolValidateError, \
 from common.decorators import require_role_permission
 from models.student_transaction import AuditAction
 from rules.common.common_rule import get_org_center_userinfo, verify_auth
+from rules.leader_info_rule import LeaderInfoRule
 from rules.operation_record import OperationRecordRule
 from rules.school_communication_rule import SchoolCommunicationRule
 from rules.school_eduinfo_rule import SchoolEduinfoRule
@@ -58,6 +59,7 @@ class PlanningSchoolView(BaseView):
         self.school_rule = get_injector(SchoolRule)
         self.school_eduinfo_rule = get_injector(SchoolEduinfoRule)
         self.school_communication_rule = get_injector(SchoolCommunicationRule)
+        self.leaderinfo_rule = get_injector(LeaderInfoRule)
         # self.common_rule = get_injector(SchoolCommunicationRule)
 
     #   包含3部分信息 1.基本信息 2.通讯信息 3.教育信息
@@ -70,6 +72,7 @@ class PlanningSchoolView(BaseView):
         planning_school_communication = ''
         planning_school_eduinfo = ''
         extra_model = ''
+        leaderinfo=None
         try:
 
             planning_school, extra_model = await self.planning_school_rule.get_planning_school_by_id(planning_school_id,
@@ -78,12 +81,13 @@ class PlanningSchoolView(BaseView):
                 planning_school_id)
             planning_school_eduinfo = await self.planning_school_eduinfo_rule.get_planning_school_eduinfo_by_planning_school_id(
                 planning_school_id)
-            pass
+        #     增加返回领导信息
+            leaderinfo = await self.leaderinfo_rule.get_all_leader_info(planning_school_id)
         except PlanningSchoolValidateError as e:
             print(e)
 
         return {'planning_school': planning_school, 'planning_school_communication': planning_school_communication,
-                'planning_school_eduinfo': planning_school_eduinfo, 'planning_school_keyinfo': extra_model}
+                'planning_school_eduinfo': planning_school_eduinfo, 'planning_school_keyinfo': extra_model,'leader_info':leaderinfo}
 
     async def post(self, planning_school: PlanningSchoolKeyAddInfo,
 
@@ -578,13 +582,6 @@ class PlanningSchoolView(BaseView):
                    founder_type_lv3: List[str] = Query([], title="", description="举办者类型三级",
                                                        examples=['县级教育部门']),
                    page_request=Depends(PageRequest)):
-        # print(page_request, )
-        # info= await get_org_center_userinfo()
-        # v = await verify_auth("alice","grade","add")
-        # print(v)
-        # print(info)
-
-
 
         items = []
         obj= await get_extend_params(request)

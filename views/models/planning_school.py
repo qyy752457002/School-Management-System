@@ -51,13 +51,13 @@ class PlanningSchoolStatus(str, Enum):
 class PlanningSchool(BaseModel):
     id: int | str = Query(None, title="规划校id", description="规划校id", example='1'),
 
-    planning_school_name: str = Field(..., title="规划校名称", description="1-20字符", examples=['XX小学'])
-    planning_school_no: str = Field(..., title="规划校编号", description="规划校编号/规划校代码", examples=['SC2032633'])
+    planning_school_name: str|None  = Field(..., title="规划校名称", description="1-20字符", examples=['XX小学'])
+    planning_school_no: str |None = Field(..., title="规划校编号", description="规划校编号/规划校代码", examples=['SC2032633'])
     old_planning_school_no: str|None = Field('', title="规划校编号", description="规划校编号/规划校代码", examples=['SC2032633'])
     planning_school_operation_license_number: str|None = Field(..., title="办学许可证号",
                                                           description="办学许可证号", examples=['EDU2024012569'])
     block: str|None = Field(..., title="地域管辖区", description="地域管辖区", examples=['铁西区'])
-    borough: str = Field(..., title="行政管辖区", description=" 行政管辖区", examples=['铁西区'])
+    borough: str|None  = Field(..., title="行政管辖区", description=" 行政管辖区", examples=['铁西区'])
     planning_school_edu_level: str | None = Field(..., title="办学类型", description="办学类型", examples=['学前教育'])
     planning_school_category: str | None = Field(..., title="办学类型二级", description=" 办学类型二级",
                                                  examples=['小学'])
@@ -65,7 +65,7 @@ class PlanningSchool(BaseModel):
                                                        examples=['附设小学班'])
     planning_school_org_type: str|None = Field(..., title="规划校办别", description=" 规划校办别", examples=['民办'])
     planning_school_level: str | int | None = Field(None, title="规划校星级", description=" 规划校星级", examples=['5'])
-    status: str = Field(..., title="状态", description=" 状态", examples=['正常'])
+    status: str |None = Field(..., title="状态", description=" 状态", examples=['正常'])
     planning_school_code: str |None= Field(..., title="规划校标识码", description=" 规划校标识码",
                                       examples=['SC562369322SG'])
     kg_level: str | None = Field(None, title="星级", description="星级", examples=['5'])
@@ -96,10 +96,10 @@ class PlanningSchool(BaseModel):
     sy_zones_pro: str |None= Field(..., title="属地管理教育行政部门所在地（省级）",
                               description="属地管理教育行政部门所在地（省级）", examples=['沈阳'])
     primary_planning_school_system: str |None= Field(..., title="小学学制", description="小学学制", examples=['6'])
-    primary_planning_school_entry_age: str = Field(..., title="小学入学年龄", description="小学入学年龄",
+    primary_planning_school_entry_age: str|None  = Field(..., title="小学入学年龄", description="小学入学年龄",
                                                    examples=['6'])
     junior_middle_planning_school_system: str|None = Field(..., title="初中学制", description="初中学制", examples=['3'])
-    junior_middle_planning_school_entry_age: str = Field(..., title="初中入学年龄", description="初中入学年龄",
+    junior_middle_planning_school_entry_age: str|None  = Field(..., title="初中入学年龄", description="初中入学年龄",
                                                          examples=['12'])
     senior_middle_planning_school_system: str|None = Field(..., title="高中学制", description="高中学制", examples=['3'])
     province: str | None = Field('', title="省份", description="", examples=[''], max_length=30)
@@ -121,7 +121,7 @@ class PlanningSchoolSyncModel(BaseModel):
     planning_school_operation_license_number: str|None = Field("", title="办学许可证号",
                                                           description="办学许可证号", examples=['EDU2024012569'])
     block: str = Field(..., title="地域管辖区", description="地域管辖区", examples=['铁西区'])
-    borough: str = Field(..., title="行政管辖区", description=" 行政管辖区", examples=['铁西区'])
+    borough: str|None  = Field(..., title="行政管辖区", description=" 行政管辖区", examples=['铁西区'])
     planning_school_edu_level: str | None = Field(None, title="办学类型", description="办学类型", examples=['学前教育'])
     planning_school_category: str | None = Field(None, title="办学类型二级", description=" 办学类型二级",
                                                  examples=['小学'])
@@ -337,7 +337,7 @@ class PlanningSchoolKeyAddInfo(BaseModel):
     planning_school_code: str = Field('', title="", description=" 规划校标识码", examples=['SC562369322SG'],
                                       min_length=1,
                                       max_length=30)
-    borough: str = Query(..., title=" Author Email", description=" 行政管辖区", examples=['铁西区'], min_length=1,
+    borough: str|None  = Query(..., title=" Author Email", description=" 行政管辖区", examples=['铁西区'], min_length=1,
                          max_length=30)
     block: str = Query(..., title=" Author", description="地域管辖区", examples=['铁西区'], min_length=1, max_length=30)
     province: str | None = Query('', title=" ", description="", examples=[''], max_length=30)
@@ -358,7 +358,7 @@ class PlanningSchoolKeyInfo(BaseModel):
     planning_school_name: str = Field(..., title="规划校名称", description="1-20字符", examples=['XX小学'])
     planning_school_no: str = Query(None, title="规划校编号", description="规划校编号/规划校代码", min_length=1, max_length=20, example='SC2032633'),
     old_planning_school_no: str|None = Query(None, title="规划校编号", description="规划校编号/规划校代码",  max_length=50, example='SC2032633'),
-    borough: str = Query(..., title=" 行政管辖区", description=" 行政管辖区", examples=['铁西区']),
+    borough: str|None  = Query(..., title=" 行政管辖区", description=" 行政管辖区", examples=['铁西区']),
     block: str = Query(..., title=" 地域管辖区", description="地域管辖区", examples=['铁西区']),
     # planning_school_type: str = Query(..., title="", description=" 规划校类型", examples=['中小学']),
     planning_school_edu_level: str | None = Query(..., title="办学类型", description="办学类型/规划校性质",
@@ -397,7 +397,6 @@ class PlanningSchoolTask(BaseModel):
 
 class PlanningSchoolImportbak(PlanningSchoolOptional, PlanningSchoolCommunications):
     pass
-
 
 class PlanningSchoolImport(BaseModel, ):
     # title是和栏位表头匹配的 描述是为了和模型里的注释一致 方便理解的 产品提供的它的名称不统一
