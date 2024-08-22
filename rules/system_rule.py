@@ -18,7 +18,7 @@ from views.common.common_view import workflow_service_config, convert_snowid_in_
 from views.models.permission_menu import PermissionMenu as PermissionMenuModel
 from views.models.sub_system import SubSystem as SubSystemModel
 from views.models.system import PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, SCHOOL_CLOSE_WORKFLOW_CODE, \
-    INSTITUTION_CLOSE_WORKFLOW_CODE
+    INSTITUTION_CLOSE_WORKFLOW_CODE, SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE
 from daos.sub_system_dao import SubSystemDAO
 from models.sub_system import SubSystem
 
@@ -176,6 +176,7 @@ class SystemRule(object):
                 for item in paging.items:
                     if process_code == PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE or process_code == SCHOOL_CLOSE_WORKFLOW_CODE or process_code == INSTITUTION_CLOSE_WORKFLOW_CODE:
                         if isinstance(item, dict)  :
+
                             item['related_license_upload_url']=None
                             if 'related_license_upload' in item.keys() and item['related_license_upload'] and  len(item['related_license_upload'])>0:
                                 print('item', item['related_license_upload'])
@@ -195,6 +196,19 @@ class SystemRule(object):
                             if   item.related_license_upload:
                                 item.related_license_upload_url = await self.get_download_url_by_id(
                                 item.related_license_upload)
+
+                    elif process_code == SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE :
+                        print('学校关闭的流程 处理3个ID为str', )
+                        if isinstance(item, dict)  :
+                            if 'id' in item:
+                                item['id']= str(item['id'])
+                            if 'planning_school_id' in item:
+                                item['planning_school_id']= str(item['planning_school_id'])
+                            if 'school_id' in item:
+                                item['school_id']= str(item['school_id'])
+                            print('处理字典',item)
+                    else :
+                        print('非关闭的流程', )
 
             return paging
         except Exception as e:
