@@ -308,6 +308,11 @@ async def get_identity_by_job(school_operation_type: List, post_type=None):
                   "secondaryEducation_ordinaryJuniorHigh_ordinaryJuniorHighSchool": "middle_school_parent",
                   "secondaryEducation_ordinaryHighSchool": "high_school_parent",
                   "secondaryEducation_secondaryVocationalSchool": "vocational_parent"},
+    if post_type is None :
+        identity_type = IdentityType.STAFF.value
+        identity = "education_unit_staff"
+        return identity_type, identity
+
     parts = post_type.split(',')
     if parts[0] == "student":
         identity_type = IdentityType.STUDENT.value

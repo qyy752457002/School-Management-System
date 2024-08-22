@@ -1,4 +1,4 @@
-from mini_framework.design_patterns.depend_inject import dataclass_inject
+# from rules.teachers_info_rule import TeachersInfoRule
 import os
 from datetime import datetime
 
@@ -16,6 +16,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from business_exceptions.school import SchoolNotFoundError
 from daos.organization_dao import OrganizationDAO
 from daos.school_dao import SchoolDAO
+from daos.teachers_info_dao import TeachersInfoDao
 from rules.common.common_rule import excel_fields_to_enum
 from rules.teachers_info_rule import TeachersInfoRule
 from rules.teachers_rule import TeachersRule
@@ -24,8 +25,8 @@ from views.models.teachers import CombinedModel
 from views.models.teachers import TeacherImportSaveResultModel, \
     TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
     TeachersSaveImportCreatModel, TeacherImportResultModel, \
-    TeacherInfoImportSubmit, TeachersSaveImportRegisterCreatTestModel
-from daos.teachers_info_dao import TeachersInfoDao
+    TeacherInfoImportSubmit, TeachersSaveImportRegisterCreatTestModel, TeachersSaveImportRegisterCreatTestTestModel, \
+    TeacherImportSaveResulRestModel, TeachersSaveImportCreatTestModel
 
 
 @dataclass_inject
@@ -126,7 +127,6 @@ class TeacherImportRule:
         # await self.task_dao.add_task_result(task_result)
         return file_storage_resp
 
-
     async def import_teachers_save(self, task: Task):
         if not isinstance(task.payload, TeacherFileStorageModel):
             raise ValueError("参数错误")
@@ -196,6 +196,36 @@ class TeacherImportRule:
         # await self.task_dao.add_task_result(task_result)
         return file_storage_resp
 
+    async def import_teachers_save_test(self):
+
+        local_file_path = "821.xlsx"
+        teacher_id_list = []
+        reader = ExcelReader()
+        reader.set_data(local_file_path)
+        logger.info("Test开始注册模型")
+        reader.register_model("Sheet1", TeachersSaveImportRegisterCreatTestTestModel, header=1)
+        logger.info("Test开始读取模型")
+        data = reader.execute()["Sheet1"]
+        if not isinstance(data, list):
+            raise ValueError("数据格式错误")
+        results = []
+        for idx, item in enumerate(data):
+            item = item.dict()
+            school = await self.school_dao.get_school_by_school_name(item["teacher_employer"])
+            if school:
+                school = school._asdict()['School']
+                item["teacher_employer"] = school.id
+            else:
+                raise SchoolNotFoundError()
+            item["org_id"] = "7225385181417443328"
+            teacher_model = TeachersSaveImportCreatTestModel(**item)
+            logger.info(type(item))
+            try:
+                teacher_id = await self.teacher_rule.add_teachers_import_save_test(teacher_model)
+                teacher_id_list.append(teacher_id)
+            except Exception as ex:
+                print(ex, '表内数据异常')
+        return teacher_id_list
 
     async def teachers_export(self, task: Task):
         bucket = "teachers_export"
@@ -239,4 +269,3 @@ class TeacherImportRule:
         task_result.result_extra = {"file_size": file_storage.file_size}
         await self.task_dao.add_task_result(task_result)
         return task_result
-

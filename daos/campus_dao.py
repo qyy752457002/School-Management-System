@@ -173,8 +173,8 @@ class CampusDAO(DAOBase):
                               Campus.block, Campus.founder_type, Campus.founder_type_lv2,
                               Campus.founder_type_lv3).where(
             Campus.is_deleted == False, Campus.status == "normal")
-        if query_model.social_credit_code:
-            query_campus = query_campus.where(Campus.social_credit_code == query_model.social_credit_code)
+        if query_model.school_no:
+            query_campus = query_campus.where(Campus.campus_no== query_model.school_no)
         if query_model.school_name:
             query_campus = query_campus.where(
                 Campus.campus_name.label("school_name").like(f"%{query_model.school_name}%"))
