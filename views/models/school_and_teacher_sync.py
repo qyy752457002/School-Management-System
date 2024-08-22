@@ -34,6 +34,7 @@ class SchoolSyncQueryModel(BaseModel):
     school_category: str | None = Query('', title="", description=" 办学类型二级/学校（机构）类别", examples=['小学'])
     school_operation_type: str | None = Query('', title="", description=" 办学类型三级/办学类型",
                                               examples=['附设小学班'])
+    school_no: str | None = Query("", title="学校编号", description="1-20字符", examples=['XX小学'])
     type: SchoolType = Query(..., title="", description="学校类型", examples=['公办'])
 
 

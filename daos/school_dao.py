@@ -245,8 +245,8 @@ class SchoolDAO(DAOBase):
                               func.coalesce(School.founder_type_lv2, "").label("founder_type_lv2"),
                               func.coalesce(School.founder_type_lv3, "").label("founder_type_lv3")).where(
             School.is_deleted == False, School.status == "normal")
-        if query_model.social_credit_code:
-            query_school = query_school.where(School.social_credit_code == query_model.social_credit_code)
+        if query_model.school_no:
+            query_school = query_school.where(School.school_no == query_model.school_no)
         if query_model.school_name:
             query_school = query_school.where(School.school_name.like(f"%{query_model.school_name}%"))
         if query_model.borough:

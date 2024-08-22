@@ -32,7 +32,7 @@ class PlanningSchoolDAO(DAOBase):
                 PlanningSchool.is_deleted == False))
         return result.first()
 
-    async def get_planning_school_by_args(self,obj=None, **kwargs):
+    async def get_planning_school_by_args(self, obj=None, **kwargs):
         """
         """
         session = await self.slave_db()
@@ -188,8 +188,8 @@ class PlanningSchoolDAO(DAOBase):
                               PlanningSchool.block, PlanningSchool.founder_type, PlanningSchool.founder_type_lv2,
                               PlanningSchool.founder_type_lv3).where(
             PlanningSchool.is_deleted == False, PlanningSchool.status == "normal")
-        if query_model.social_credit_code:
-            query_campus = query_campus.where(PlanningSchool.social_credit_code == query_model.social_credit_code)
+        if query_model.school_no:
+            query_campus = query_campus.where(PlanningSchool.planning_school_no == query_model.school_no)
         if query_model.school_name:
             query_campus = query_campus.where(
                 PlanningSchool.planning_school_name.label("school_name").like(f"%{query_model.school_name}%"))
@@ -238,4 +238,3 @@ class PlanningSchoolDAO(DAOBase):
             PlanningSchoolCommunication.is_deleted == False, PlanningSchool.planning_school_no == school_no)
         result = await session.execute(query_planning_school)
         return result.first()
-
