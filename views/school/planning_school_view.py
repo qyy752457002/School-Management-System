@@ -72,6 +72,7 @@ class PlanningSchoolView(BaseView):
         planning_school_communication = ''
         planning_school_eduinfo = ''
         extra_model = ''
+        leaderinfo=None
         try:
 
             planning_school, extra_model = await self.planning_school_rule.get_planning_school_by_id(planning_school_id,
@@ -81,12 +82,12 @@ class PlanningSchoolView(BaseView):
             planning_school_eduinfo = await self.planning_school_eduinfo_rule.get_planning_school_eduinfo_by_planning_school_id(
                 planning_school_id)
         #     增加返回领导信息
-            leaderinfo = await self.leaderinfo_rule.get_leader_info_by_planning_school_id(planning_school_id)
+            leaderinfo = await self.leaderinfo_rule.get_all_leader_info(planning_school_id)
         except PlanningSchoolValidateError as e:
             print(e)
 
         return {'planning_school': planning_school, 'planning_school_communication': planning_school_communication,
-                'planning_school_eduinfo': planning_school_eduinfo, 'planning_school_keyinfo': extra_model}
+                'planning_school_eduinfo': planning_school_eduinfo, 'planning_school_keyinfo': extra_model,'leader_info':leaderinfo}
 
     async def post(self, planning_school: PlanningSchoolKeyAddInfo,
 
