@@ -136,6 +136,7 @@
     }
   },
   "system_config": {
+    "permission_verify": false,
     "add_class": 0
   },
   "workflow_service": {
