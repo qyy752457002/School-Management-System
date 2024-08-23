@@ -12,6 +12,7 @@ from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
 from business_exceptions.institution import InstitutionStatusError, InstitutionNotFoundError
+from common.decorators import require_role_permission
 from models.student_transaction import AuditAction
 from rules.institution_rule import InstitutionRule
 from rules.operation_record import OperationRecordRule
@@ -41,7 +42,6 @@ class InstitutionView(BaseView):
         self.school_communication_rule = get_injector(SchoolCommunicationRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
         self.system_rule = get_injector(SystemRule)
-
     async def get(self,
                   institution_id: int | str = Query(..., description="|", example='1'),
                   ):

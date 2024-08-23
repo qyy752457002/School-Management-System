@@ -63,10 +63,9 @@ class PlanningSchoolView(BaseView):
         # self.common_rule = get_injector(SchoolCommunicationRule)
 
     #   包含3部分信息 1.基本信息 2.通讯信息 3.教育信息
+    @require_role_permission("planning_school", "view")
     async def get(self,
-
                   planning_school_id: int | str = Query(..., description="学校id|根据学校查规划校", example='1'),
-
                   ):
         planning_school = ''
         planning_school_communication = ''
@@ -87,10 +86,9 @@ class PlanningSchoolView(BaseView):
             print(e)
 
         return {'planning_school': planning_school, 'planning_school_communication': planning_school_communication,
-                'planning_school_eduinfo': planning_school_eduinfo, 'planning_school_keyinfo': extra_model,'leader_info':leaderinfo}
-
+                'planning_school_eduinfo': planning_school_eduinfo, 'planning_school_keyinfo': extra_model}
+    @require_role_permission("planning_school", "open")
     async def post(self, planning_school: PlanningSchoolKeyAddInfo,
-
                    ):
         # 保存 模型
         res = await self.planning_school_rule.add_planning_school(planning_school)
@@ -115,6 +113,7 @@ class PlanningSchoolView(BaseView):
         return res
 
     # # 修改 关键信息
+    @require_role_permission("planning_school", "change_keyinfo")
     async def put_keyinfo(self,
                           planning_school: PlanningSchoolKeyInfo,
                           ):
@@ -167,6 +166,7 @@ class PlanningSchoolView(BaseView):
         return res
 
     # 删除
+    @require_role_permission("planning_school", "delete")
     async def delete(self, planning_school_id: int | str = Query(..., title="", description="学校id/园所id",
                                                                  example='2203'), ):
         print(planning_school_id)
@@ -185,6 +185,7 @@ class PlanningSchoolView(BaseView):
         return res
 
     # 修改 变更 基本信息
+    @require_role_permission("planning_school", "change_baseinfo")
     async def patch_baseinfo(self, planning_school_baseinfo: PlanningSchoolBaseInfo, ):
 
         origin = await self.planning_school_rule.get_planning_school_by_id(planning_school_baseinfo.id)
@@ -205,6 +206,7 @@ class PlanningSchoolView(BaseView):
         return res
 
     # 规划校的审批流列表
+    @require_role_permission("planning_school", "view")
     async def page_planning_school_audit(self,
                                          # page_search: PlanningSchoolPageSearch = Depends(PlanningSchoolPageSearch),
                                          process_code: str = Query("", title="流程代码",
@@ -249,6 +251,7 @@ class PlanningSchoolView(BaseView):
         return paging_result
 
     # 开办   校验合法性等  业务逻辑   开班式 校验所有的数据是否 都填写了
+    @require_role_permission("planning_school", "open")
     async def patch_open(self, planning_school_id: str | int = Query(..., title="学校编号", description="学校id/园所id",
                                                                      min_length=1, max_length=20, example='SC2032633'),
                          is_add_log=True):
@@ -303,6 +306,7 @@ class PlanningSchoolView(BaseView):
         return res
 
     # 关闭    附件 和 原因的保存 到日志
+    @require_role_permission("planning_school", "close")
     async def patch_close(self, planning_school_id: str = Query(..., title="学校编号", description="学校id/园所id",
                                                                 min_length=1, max_length=20, example='SC2032633'),
                           action_reason: str = Query(None, description="原因", min_length=1, max_length=20,
@@ -349,6 +353,7 @@ class PlanningSchoolView(BaseView):
         return res
 
     # 导入   任务队列的
+    @require_role_permission("planning_school", "import")
     async def post_planning_school_import(self,
                                           file: PlanningSchoolImportReq
 
@@ -368,6 +373,7 @@ class PlanningSchoolView(BaseView):
         return task
 
     # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性     允许 部分 不填  现保存
+    @require_role_permission("planning_school", "edit")
     async def put(self,
 
                   planning_school: PlanningSchoolBaseInfoOptional,
@@ -407,6 +413,7 @@ class PlanningSchoolView(BaseView):
         return res
 
     # 正式开办  传全部  插入或者更新
+    @require_role_permission("planning_school", "open")
     async def put_open(self,
 
                        planning_school: PlanningSchoolBaseInfo,
@@ -459,6 +466,7 @@ class PlanningSchoolView(BaseView):
         return paging_result
 
     # 学校开设审核
+    @require_role_permission("planning_school_open_audit", "pass")
     async def patch_open_audit(self,
                                audit_info: PlanningSchoolTransactionAudit
                                ):
@@ -476,6 +484,7 @@ class PlanningSchoolView(BaseView):
         pass
 
     # 学校关闭审核
+    @require_role_permission("planning_school_close_audit", "pass")
     async def patch_close_audit(self,
                                 audit_info: PlanningSchoolTransactionAudit
 
@@ -490,6 +499,7 @@ class PlanningSchoolView(BaseView):
         pass
 
     # 学校关键信息变更审核
+    @require_role_permission("planning_school_keyinfo_audit", "pass")
     async def patch_keyinfo_audit(self,
                                   audit_info: PlanningSchoolTransactionAudit
 
@@ -504,6 +514,7 @@ class PlanningSchoolView(BaseView):
         pass
 
     # 规划校的开办关闭修改的 取消接口
+    @require_role_permission("planning_school_open_audit", "cancel")
     async def patch_open_cancel(self,
 
                                 process_instance_id: int = Query(0, title="流程ID", description="流程ID",
@@ -525,6 +536,7 @@ class PlanningSchoolView(BaseView):
         pass
 
     # 学校关闭
+    @require_role_permission("planning_school_close_audit", "cancel")
     async def patch_close_cancel(self,
                                  process_instance_id: int = Query(0, title="流程ID", description="流程ID",
                                                                   example=25),
@@ -544,6 +556,7 @@ class PlanningSchoolView(BaseView):
         pass
 
     # 学校关键信息变更
+    @require_role_permission("planning_school_keyinfo_audit", "cancel")
     async def patch_keyinfo_cancel(self,
                                    process_instance_id: int = Query(0, title="流程ID", description="流程ID",
                                                                     example=25),

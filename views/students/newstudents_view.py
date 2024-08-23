@@ -13,6 +13,7 @@ from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
 from business_exceptions.student import StudentStatusError
+from common.decorators import require_role_permission
 from rules.class_division_records_rule import ClassDivisionRecordsRule
 from rules.operation_record import OperationRecordRule
 from views.common.common_view import compare_modify_fields, get_client_ip, convert_query_to_none, get_extend_params
@@ -50,6 +51,7 @@ class NewsStudentsView(BaseView):
         self.class_division_records_rule = get_injector(ClassDivisionRecordsRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
     # 新增学生 只含基本信息
+    @require_role_permission("new_student", "open")
     async def post_newstudent(self, students: NewStudents):
         """
         新增新生信息
@@ -66,6 +68,8 @@ class NewsStudentsView(BaseView):
 
     # 分页查询
     #
+    @require_role_permission("new_student", "view")
+
     async def page_newstudent(self,
                               request:Request,
 
@@ -89,6 +93,8 @@ class NewsStudentsView(BaseView):
         res = await self.students_rule.get_students_by_id(student_id)
 
         return res
+
+    @require_role_permission("new_student", "edit")
 
     async def put_newstudentkeyinfo(self, new_students_key_info: StudentsKeyinfo, request: Request):
         """"
@@ -123,6 +129,7 @@ class NewsStudentsView(BaseView):
         """
         await self.students_rule.delete_students(student_id)
         return str(student_id)
+    @require_role_permission("new_student", "flowout")
 
     async def patch_newstudent_flowout(self, new_students_flow_out: NewStudentsFlowOut):
         """
@@ -140,6 +147,8 @@ class NewsStudentsView(BaseView):
 
     # todo 仅仅修改一个状态就行
     # 正式录取接口
+    @require_role_permission("new_student", "formaladmission")
+
     async def patch_formaladmission(self, student_id: str = Query(..., description="学生id", example=["123,569,987"]),
                                     ):
         print(student_id)
@@ -147,6 +156,8 @@ class NewsStudentsView(BaseView):
         return res
 
     # 导入   任务队列的
+    @require_role_permission("new_student", "import")
+
     async def post_new_student_import(self,
                                       # file_name: str = Body(..., description="文件名"),
                                       file: PlanningSchoolImportReq
@@ -239,6 +250,7 @@ class NewsStudentsInfoView(BaseView):
         return res
 
     # 修改分班
+    @require_role_permission("classdivision", "open")
     async def patch_newstudent_classdivision(self,
                                              class_id: int | str = Query(..., title="", description="班级ID", ),
                                              student_id: str = Query(..., title="", description="学生ID/逗号分割", ),
@@ -279,6 +291,8 @@ class NewsStudentsInfoView(BaseView):
         return res
 
     # 摇号分班  未使用
+    @require_role_permission("classdivision", "lottery_classdivision")
+
     async def patch_newstudent_lottery_classdivision(self,
                                                      background_tasks: BackgroundTasks,
 
@@ -299,6 +313,8 @@ class NewsStudentsInfoView(BaseView):
             log.write(message)
 
     # 分页查询
+    @require_role_permission("classdivision", "view")
+
     async def page_newstudent_classdivision(self,
                                             enrollment_number: str = Query('', title="", description="报名号",
                                                                            min_length=1, max_length=30, example=''),

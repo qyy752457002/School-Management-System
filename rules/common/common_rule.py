@@ -598,10 +598,21 @@ async def verify_auth_by_obj_and_act(obj, act):
     """
     account = request_context_manager.current().current_login_account
     account_name = account.name
+
     file_name = await process_userinfo(account_name)
     print( '验证结果',file_name,)
     if file_name is None:
         return False
+    # 当abac是 这里是一个字典 包含了属性
+    # 定义请求的属性
+
+    token = request_context_manager.current()
+    query= token['query_params']
+    print(query)
+    objattr = {
+        "Age": 25,
+        "department": "sales"
+    }
     file_name = await verify_auth_by_file_name(account_name, obj, act, file_name)
     return file_name
 
@@ -691,7 +702,7 @@ async def get_org_center_user_info():
         print('获取用户权限信息异常', e)
         return None
 
-async def verify_auth_by_file_name(sub: str, obj, act, file_name):
+async def verify_auth_by_file_name(sub: str|dict, obj, act, file_name):
     import casbin
     e = casbin.Enforcer("model.conf", file_name)
     if e.enforce(sub, obj, act):
