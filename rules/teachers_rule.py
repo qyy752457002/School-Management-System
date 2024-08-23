@@ -42,7 +42,8 @@ from views.models.teachers import TeacherApprovalQuery, TeacherApprovalQueryRe, 
     CurrentTeacherInfoSaveModel, TeacherRe, TeacherAdd, TeachersSchool
 from views.models.teachers import Teachers as TeachersModel
 from views.models.teachers import TeachersCreatModel, TeacherInfoSaveModel, TeacherFileStorageModel, \
-    NewTeacherApprovalCreate, TeachersSaveImportCreatModel, EducateUserModel, IdentityType
+    NewTeacherApprovalCreate, TeachersSaveImportCreatModel, EducateUserModel, IdentityType, \
+    TeachersSaveImportCreatTestModel
 
 
 @dataclass_inject
@@ -193,6 +194,19 @@ class TeachersRule(object):
         teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
         teacher_base_id = teachers_info.teacher_base_id
         return teachers_work, teacher_base_id
+
+    async def add_teachers_import_save_test(self, teachers: TeachersSaveImportCreatTestModel):
+        teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[])
+        teachers_db.teacher_id = SnowflakeIdGenerator(1, 1).generate_id()
+        teachers_db = await self.teachers_dao.add_teachers(teachers_db)
+        teachers_work = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
+        teachers_info = TeacherInfoSaveModel(teacher_id=teachers_work.teacher_id, org_id=teachers.org_id,
+                                             department=str(teachers.org_id), )
+        teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
+        teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
+        teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
+        teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
+        return teachers_work.teacher_id
 
     async def query_teacher_operation_record_with_page(self, query_model: TeacherChangeLogQueryModel,
                                                        page_request: PageRequest):
