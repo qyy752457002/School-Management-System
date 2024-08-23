@@ -486,7 +486,6 @@ class SchoolRule(object):
         if audit_info.transaction_audit_action == AuditAction.PASS.value:
             # 成功则写入数据
             res2 = await self.deal_school(audit_info.process_instance_id, action)
-
         # 发起审批流的 处理
 
         datadict = dict()
@@ -955,10 +954,8 @@ class SchoolRule(object):
         return None
     # 用户对接
     async def send_admin_to_org_center(self, exists_planning_school_origin,data_org):
-        # teacher_db = await self.teachers_dao.get_teachers_arg_by_id(teacher_id)
 
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
-
         school = exists_planning_school
         if school is None:
             print('学校未找到 跳过发送组织', exists_planning_school)
