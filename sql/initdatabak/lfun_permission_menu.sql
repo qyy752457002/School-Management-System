@@ -12,7 +12,7 @@
  Target Server Version : 120001 (120001)
  File Encoding         : 65001
 
- Date: 20/08/2024 18:43:20
+ Date: 26/08/2024 10:17:40
 */
 
 
@@ -64,14 +64,11 @@ COMMENT ON TABLE "public"."lfun_permission_menu" IS '菜单权限表';
 -- ----------------------------
 -- Records of lfun_permission_menu
 -- ----------------------------
-INSERT INTO "public"."lfun_permission_menu" VALUES (15, '新教职工入职', '/onboarding', '', 'menu', '', '', '14', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'onboarding', 0, NULL, NULL);
 INSERT INTO "public"."lfun_permission_menu" VALUES (5, '班级管理', '/class', '', 'menu', '', '', '3', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'class', 0, NULL, NULL);
 INSERT INTO "public"."lfun_permission_menu" VALUES (14, '新教职工管理', '', '', 'root', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'onboarding', 0, NULL, NULL);
 INSERT INTO "public"."lfun_permission_menu" VALUES (17, '在职教职工管理', '', '', 'root', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employed', 0, NULL, NULL);
-INSERT INTO "public"."lfun_permission_menu" VALUES (16, '新教职工审批', '/onboarding/approve', '', 'menu', '', '', '14', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'approve', 0, NULL, NULL);
 INSERT INTO "public"."lfun_permission_menu" VALUES (21, '年级管理', '/grade', '', 'menu', '', '', '12', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'grade', 0, NULL, NULL);
 INSERT INTO "public"."lfun_permission_menu" VALUES (22, '班级管理', '/class', '', 'menu', '', '', '12', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'class', 0, NULL, NULL);
-INSERT INTO "public"."lfun_permission_menu" VALUES (24, '在职教职工管理', '/employed', '', 'menu', '', '', '17', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employed', 0, NULL, NULL);
 INSERT INTO "public"."lfun_permission_menu" VALUES (31, '非在职教职工管理', '', '', 'root', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'nonemployed', 0, NULL, NULL);
 INSERT INTO "public"."lfun_permission_menu" VALUES (32, '系统管理', '', '', 'root', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'trchsys', 0, NULL, NULL);
 INSERT INTO "public"."lfun_permission_menu" VALUES (34, '任务管理', '/trchsys/task', '', 'menu', '', '', '32', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'trchsystask', 0, NULL, NULL);
@@ -82,14 +79,7 @@ INSERT INTO "public"."lfun_permission_menu" VALUES (3, '园所配置管理', '',
 INSERT INTO "public"."lfun_permission_menu" VALUES (4, '班级类型管理', '/grade', '', 'menu', '', '', '3', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'grade', 0, NULL, NULL);
 INSERT INTO "public"."lfun_permission_menu" VALUES (9, '中小学配置管理', '', '', 'root', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'config', 1, NULL, NULL);
 INSERT INTO "public"."lfun_permission_menu" VALUES (12, '职高配置管理', '', '', 'root', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'config', 1, NULL, NULL);
-INSERT INTO "public"."lfun_permission_menu" VALUES (25, '教职工信息变更审批', '/employed/approve', '', 'menu', '', '', '17', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employedapprove', 0, NULL, NULL);
-INSERT INTO "public"."lfun_permission_menu" VALUES (26, '变动管理', '/employed/workchange', '', 'menu', '', '', '17', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employedworkchange', 5, NULL, NULL);
 INSERT INTO "public"."lfun_permission_menu" VALUES (52, '借动管理', '', '', 'root', '', '', '17', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'borrow', 0, NULL, NULL);
-INSERT INTO "public"."lfun_permission_menu" VALUES (27, '借入信息管理', '/employed/borrowin', '', 'menu', '', '', '52', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employedworkborrowin', 0, NULL, NULL);
-INSERT INTO "public"."lfun_permission_menu" VALUES (28, '借出信息管理', '/employed/borrowout', '', 'menu', '', '', '52', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employedworkborrowout', 0, NULL, NULL);
-INSERT INTO "public"."lfun_permission_menu" VALUES (29, '调入信息管理', '/employed/transferin', '', 'menu', '', '', '53', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employedworktransferin', 0, NULL, NULL);
-INSERT INTO "public"."lfun_permission_menu" VALUES (30, '调出信息管理', '/employed/transferout', '', 'menu', '', '', '53', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employedworktransferout', 0, NULL, NULL);
-INSERT INTO "public"."lfun_permission_menu" VALUES (54, '离退休信息管理', '/nonemployed/retire', '', 'menu', '', '', '31', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employedworkretire', 0, NULL, NULL);
 INSERT INTO "public"."lfun_permission_menu" VALUES (53, '调动管理', '', '', 'root', '', '', '17', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'transfer', 0, NULL, NULL);
 INSERT INTO "public"."lfun_permission_menu" VALUES (1, '园所信息管理（学校）', '/planning', '', 'menu', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.169988', '2024-06-04 10:43:11.169988', 'f', 'planning', 0, NULL, NULL);
 INSERT INTO "public"."lfun_permission_menu" VALUES (2, '园所信息管理（分校）', '/school', '', 'menu', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'school', 0, NULL, NULL);
@@ -160,6 +150,16 @@ INSERT INTO "public"."lfun_permission_menu" VALUES (42, '转学信息管理', '/
 INSERT INTO "public"."lfun_permission_menu" VALUES (45, '异动管理', '/instudent/innerTransfer', '', 'menu', '', '', '36', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'instudent_innerTransfer', 0, 'student_inner_transaction', 'start、view、cancel、pass、refuse');
 INSERT INTO "public"."lfun_permission_menu" VALUES (46, '临时就读', '/instudent/emporaryBorrowing', '', 'menu', '', '', '36', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'instudent_emporaryBorrowing', 0, 'temporary_study', 'view');
 INSERT INTO "public"."lfun_permission_menu" VALUES (37, '毕业生信息管理', '/graduation', '', 'menu', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'graduation', 0, 'graduation', 'add、view、set、start');
+INSERT INTO "public"."lfun_permission_menu" VALUES (54, '离退休信息管理', '/nonemployed/retire', '', 'menu', '', '', '31', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employedworkretire', 0, 'teacherRetire', 'view');
+INSERT INTO "public"."lfun_permission_menu" VALUES (29, '调入信息管理', '/employed/transferin', '', 'menu', '', '', '53', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employedworktransferin', 0, 'teacherTransferIn', 'view,revoke,transferInIn,transferInOut,approvalInIn,approvalInOut,approval,edit');
+INSERT INTO "public"."lfun_permission_menu" VALUES (30, '调出信息管理', '/employed/transferout', '', 'menu', '', '', '53', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employedworktransferout', 0, 'teacherTransferOut', 'view,revoke,transferOut,approval,edit');
+INSERT INTO "public"."lfun_permission_menu" VALUES (28, '借出信息管理', '/employed/borrowout', '', 'menu', '', '', '52', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employedworkborrowout', 0, 'teacherBorrowOut', 'view,revoke,borrowOut,approval,approval,edit');
+INSERT INTO "public"."lfun_permission_menu" VALUES (27, '借入信息管理', '/employed/borrowin', '', 'menu', '', '', '52', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employedworkborrowin', 0, 'teacherBorrowIn', 'view,revoke,borrowInIn,borrowInOut,approvalInIn,approvalInOut,approval,edit');
+INSERT INTO "public"."lfun_permission_menu" VALUES (26, '变动管理', '/employed/workchange', '', 'menu', '', '', '17', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employedworkchange', 5, 'teacherTransaction', 'view,edit');
+INSERT INTO "public"."lfun_permission_menu" VALUES (15, '新教职工入职', '/onboarding', '', 'menu', '', '', '14', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'onboarding', 0, 'newTeacherEntry', 'entry,edit,delete,view,importBaseInfo,importQuick,importExtend,revoke');
+INSERT INTO "public"."lfun_permission_menu" VALUES (16, '新教职工审批', '/onboarding/approve', '', 'menu', '', '', '14', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'approve', 0, 'newTeacherApproval', 'view,approval,reject,revoke');
+INSERT INTO "public"."lfun_permission_menu" VALUES (24, '在职教职工管理', '/employed', '', 'menu', '', '', '17', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employed', 0, 'teacherInfo', 'editKeyInfo,editBasicInfo,edit,delete,view,borrowOut,transferOut,transaction,retire,borrowIn,transferIn');
+INSERT INTO "public"."lfun_permission_menu" VALUES (25, '教职工信息变更审批', '/employed/approve', '', 'menu', '', '', '17', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'employedapprove', 0, 'teacherKeyInfo', 'view,revoke,approval,reject');
 
 -- ----------------------------
 -- Primary Key structure for table lfun_permission_menu
