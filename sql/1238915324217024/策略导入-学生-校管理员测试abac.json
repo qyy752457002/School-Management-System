@@ -1,0 +1,12 @@
+[
+  {
+    "appCode": "1238915324217024",
+    "policyCode": "school_manager_student_abac_test_rule",
+    "displayName": "校级管理员学生部分策略abac",
+    "description": "校级管理员学生部分策略abac",
+    "authorizationModel": "ABAC",
+    "ruleCode": [
+      "p,  r.sub.direction == 'in', instudent_transfer, in_view"
+    ]
+  }
+]

@@ -132,10 +132,12 @@ class EduType(str, Enum):
     KG = "kg"
     K12 = "k12"
     VOCATIONAL = "vocational"
+    INSTITUTE = "institute"
+    ADMINISTRATION = "administration"
 
     @classmethod
     def to_list(cls):
-        return [cls.KG, cls.K12, cls.VOCATIONAL]
+        return [cls.KG, cls.K12, cls.VOCATIONAL, cls.INSTITUTE, cls.ADMINISTRATION]
 
 class ImportScene(str, Enum):
     """ 导入场景的模版场景定义

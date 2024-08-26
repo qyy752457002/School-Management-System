@@ -15,7 +15,7 @@ class School(BaseModel):
     old_school_no: str|None = Field('', title="学校编号", description="学校编号",examples=['SC2032633'])
     school_operation_license_number: str|None = Field(..., title=" Description", description="办学许可证号",examples=['EDU2024012569'])
     block: str |None= Field(..., title=" Author", description="地域管辖区",examples=['铁西区'])
-    borough: str = Field(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
+    borough: str |None= Field(..., title=" Author Email", description=" 行政管辖区",examples=['铁西区'])
     school_edu_level: str|None = Field(..., title="", description="办学类型",examples=['学前教育'])
     school_category: str|None = Field(..., title="", description=" 办学类型二级",examples=['小学'])
     school_operation_type: str|None = Field(..., title="", description=" 办学类型三级",examples=['附设小学班'])

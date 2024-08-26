@@ -1,14 +1,13 @@
-p, _, grade, view
-p, city_manager, grade, add
-p, _, grade, delete
-p, _, grade, edit
-p, _, class, view
-p, _, class, add
-p, _, class, delete
-p, _, class, edit
-p, _, school, view
-p, _, school, open
-p, _, school, delete
-p, _, school, edit
-p, _, school, import
+p,city_manager,  new_student, open
+p,city_manager,  new_student, view
+p,city_manager,  new_student, flowout
+p,city_manager,  classdivision, view
+p,city_manager,  student_session, view
+p,city_manager,  infomanage, temporary_study_view
+p,city_manager,  infomanage, current_student_view
+p,city_manager,  instudent_transfer, in_view
+p,city_manager,  instudent_transfer, out_view
+p,city_manager,  student_inner_transaction, view
+p,city_manager,  current_student_keyinfo_change, view
+p,city_manager,  graduation, view
 g, alice, city_manager

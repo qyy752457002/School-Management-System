@@ -13,6 +13,7 @@ from rules.system_config_rule import SystemConfigRule
 from rules.system_rule import SystemRule
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from rules.teachers_info_rule import TeachersInfoRule
+from views.common.common_view import system_config
 from views.models.system import SystemConfig
 from views.models.teachers import TeacherInfoImportSubmit
 
@@ -47,6 +48,11 @@ class SystemView(BaseView):
             edu_type = ''
         info, resource_codes, resource_codes_actions = await get_org_center_userinfo()
         print( '资源和action',resource_codes, resource_codes_actions)
+        is_permission_verify = system_config.system_config.get("permission_verify")
+        print('permission verify',  is_permission_verify)
+        if not is_permission_verify:
+            resource_codes=None
+
         res, title = await self.system_rule.query_system_with_kwargs(role_id, unit_type, edu_type, system_type,
                                                                      resource_codes=resource_codes)
         # res,title  = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )

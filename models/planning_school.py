@@ -84,6 +84,7 @@ class PlanningSchool(BaseDBModel):
     workflow_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="工作流审核状态", default='')
     admin: Mapped[str] = mapped_column(String(64), nullable=True, comment="管理员", default='')
     admin_phone: Mapped[str] = mapped_column(String(64), nullable=True, comment="管理员手机", default='')
+    org_center_info: Mapped[str] = mapped_column(String(255), nullable=True, comment="组织中心信息", default='')
 
     created_uid: Mapped[int] = mapped_column(nullable=True, comment="创建人", default=0)
     updated_uid: Mapped[int] = mapped_column(nullable=True, comment="操作人", default=0)

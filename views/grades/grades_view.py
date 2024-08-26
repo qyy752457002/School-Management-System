@@ -1,6 +1,7 @@
 
 from starlette.requests import Request
 
+from common.decorators import require_role_permission
 from views.common.common_view import get_extend_params
 
 from fastapi import Query, Depends, Body
@@ -14,7 +15,7 @@ class GradesView(BaseView):
     def __init__(self):
         super().__init__()
         self.grade_rule = get_injector(GradeRule)
-
+    @require_role_permission("grade", "view")
     async def get(self,
                   grade_id: int|str = Query(None, title="", description="年级ID"),
                   city :str= Query(None, title="", description="",min_length=1,max_length=20,example=''),
@@ -23,6 +24,7 @@ class GradesView(BaseView):
         account = await self.grade_rule.get_grade_by_id(grade_id)
 
         return account
+    @require_role_permission("grade", "add")
 
     async def post(self, grades: Grades,request:Request):
         print(grades)
@@ -35,6 +37,7 @@ class GradesView(BaseView):
 
         res = await self.grade_rule.add_grade(grades,obj)
         return res
+    @require_role_permission("grade", "view")
 
     async def page(self,
                    request:Request,
@@ -78,6 +81,8 @@ class GradesView(BaseView):
         return lst
 
     # 删除
+    @require_role_permission("grade", "delete")
+
     async def delete(self, grade_id: int|str = Query(..., title="", description="年级id", example='1'), ):
         print(grade_id)
         # return  grade_id
@@ -87,6 +92,8 @@ class GradesView(BaseView):
         return res
 
     # 修改 关键信息
+    @require_role_permission("grade", "edit")
+
     async def put(self,
                   grades: Grades,
                   request:Request,
