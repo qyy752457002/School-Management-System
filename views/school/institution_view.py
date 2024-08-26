@@ -415,7 +415,7 @@ class InstitutionView(BaseView):
 
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
-            task_type="institution_import",
+            task_type="school_task_institution_import",
             # 文件 要对应的 视图模型
             # payload=InstitutionTask(file_name=file_name, bucket='', scene='institution_import'),
             payload=task_model,
@@ -548,7 +548,7 @@ class InstitutionView(BaseView):
 
         print('入参接收2', page_search)
         task = Task(
-            task_type="institution_export",
+            task_type="school_task_institution_export",
             payload=page_search,
             operator=request_context_manager.current().current_login_account.account_id
         )
