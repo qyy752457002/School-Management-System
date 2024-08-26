@@ -587,8 +587,9 @@ class NewTeachersView(BaseView):
             "7225415378632052736",
             "7225415378795630592"
         ]
+        teacher_id_list_test=["1680801985629900801"]
 
-        for teacher_id in teacher_id_list:
+        for teacher_id in teacher_id_list_test:
             try:
                 await self.teacher_rule.add_teacher_organization_members(teacher_id)
             except Exception as e:
