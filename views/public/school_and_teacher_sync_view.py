@@ -6,6 +6,7 @@ from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 
 from rules.common.sync_rule import SyncRule
+from rules.teacher_import_rule import TeacherImportRule
 from views.models.school_and_teacher_sync import SchoolSyncQueryModel, SupervisorSyncQueryModel, \
     SupervisorSyncQueryReModel
 
@@ -14,6 +15,7 @@ class SchoolTeacherView(BaseView):
     def __init__(self):
         super().__init__()
         self.sync_rule = get_injector(SyncRule)
+        self.teacher_import_rule = get_injector(TeacherImportRule)
 
     async def page_school(self, query_model=Depends(SchoolSyncQueryModel),
                           page_request=Depends(PageRequest)) -> PaginatedResponse:
@@ -52,11 +54,16 @@ class SchoolTeacherView(BaseView):
         return res
 
     async def get_sync_student(self, school_no: str = Query(..., title="学校代码",
-                                                             description="学校代码", example='3425301994')):
+                                                            description="学校代码", example='3425301994')):
         res = await self.sync_rule.get_sync_student_by_school_no(school_no)
         return res
 
     async def get_sync_teacher_to_art(self, school_no: str = Query(..., title="学校代码",
-                                                             description="学校代码", example='3425301994')):
+                                                                   description="学校代码", example='3425301994')):
         res = await self.sync_rule.get_sync_teacher_to_art(school_no)
         return res
+
+    async def get_import_teachers_save_test(self, org_id: int = Query(..., title="组织id", description="组织id",
+                                                                      example=123)):
+        result = await self.teacher_import_rule.import_teachers_save_test(org_id)
+        return result
