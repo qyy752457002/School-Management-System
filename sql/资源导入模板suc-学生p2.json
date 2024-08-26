@@ -1,0 +1,9 @@
+[
+  {
+    "appCode": "1238915971225216",
+    "resourceCode": "infomanage",
+    "displayName": "在校生信息管理",
+    "description": "在校生信息管理",
+    "action": "temporary_study_start、temporary_study_cancel、temporary_study_view、current_student_view、current_student_change、current_student_keyinfo_change"
+  }
+]

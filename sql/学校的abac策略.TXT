@@ -1,0 +1,25 @@
+# 学校管理员策略
+p, school_admin, school, open, role=school_admin, obj_attr=any
+p, school_admin, school, import, role=school_admin, obj_attr=any
+p, school_admin, school, view, role=school_admin, obj_attr=any
+p, school_admin, school, edit, role=school_admin, obj_attr=any
+p, school_admin, school, delete, role=school_admin, obj_attr=any
+p, school_admin, school, change_key_info, role=school_admin, obj_attr=any
+p, school_admin, school, change_basic_info, role=school_admin, obj_attr=any
+p, school_admin, school, close, role=school_admin, obj_attr=any
+p, school_admin, school, associate_school, role=school_admin, obj_attr=any
+
+# 区县（市）管理员策略
+p, district_admin, school, open, role=district_admin, obj_attr=any
+p, district_admin, school, import, role=district_admin, obj_attr=any
+p, district_admin, school, view, role=district_admin, obj_attr=any
+p, district_admin, school, close, role=district_admin, obj_attr=any
+p, district_admin, school, associate_school, role=district_admin, obj_attr=any
+
+# 市管理员策略
+p, city_admin, school, open, role=city_admin, obj_attr=any
+p, city_admin, school, import, role=city_admin, obj_attr=any
+p, city_admin, school, view, role=city_admin, obj_attr=any
+p, city_admin, school, close, role=city_admin, obj_attr=any
+
+#在上述示例中，我们添加了 sub_attr 和 obj_attr 来表示主体和对象的属性。在这个例子中，我们使用 role 作为主体属性，来区分不同类型的管理员。

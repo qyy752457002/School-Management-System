@@ -1,19 +1,23 @@
 import os
 
-from mini_framework.context import env
-
-from router import init_router
+from mini_framework.async_task.async_task_command import AsyncTaskCommand
+from mini_framework.commands.cli import CLI
+from mini_framework.databases.dao_gen_command import DAOGenerateCommand
+from mini_framework.databases.db_init_command import DatabaseInitCommand
+from mini_framework.web.web_command import WebCommand
 
 
 def main():
-    env.app_root = os.path.dirname(os.path.abspath(__file__))
-    init_router()
-    from mini_framework.web.app_context import ApplicationContextManager
-    application_context_manager = ApplicationContextManager()
-    application_context_manager.initialize()
-    application_context_manager.run(host="0.0.0.0", port=8000)
+    root_path = os.path.dirname(os.path.abspath(__file__))
+    cli = CLI(root_path)
+    cli.register('task', AsyncTaskCommand, router_func_module="views.tasks.router.init_task_router")
+
+    cli.register('db-init', DatabaseInitCommand, metadata_model="models.metadata")
+    cli.register('dao-gen', DAOGenerateCommand, model_list=[('models.student_temporary_study', 'StudentTemporaryStudy'),
+                                                          ])
+    cli.register('web', WebCommand, router_func_module="views.router.init_router")
+    cli.setup()
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()

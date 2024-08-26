@@ -1,0 +1,12 @@
+[
+  {
+    "appCode": "1238915324217024",
+    "policyCode": "city_school_manager_school_test_rule",
+    "displayName": "市级管理员学校部分策略abac",
+    "description": "市级管理员学校部分策略abac",
+    "authorizationModel": "ABAC",
+    "ruleCode": [
+      "p,   r.sub.status == 'opening', planning_school, view"
+    ]
+  }
+]

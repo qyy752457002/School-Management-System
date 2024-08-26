@@ -1,0 +1,31 @@
+# 应用相关的配置
+app:
+  name: schooloms       # 应用的名称
+  replicas: 4               # 副本数量，定义了应用的副本数
+  stage: dev                # 部署阶段，例如开发(dev)、生产(prod)
+  image: docker-hub.f123.pub/lfun/school-oms  # 应用使用的镜像
+  tag: dev-min-v0.0.4  # 镜像版本
+  appEnv:                   # 应用环境变量
+    FOO: bar                # 环境变量键值对
+    BAZ: qux
+
+backends:                 # 应用使用的服务
+  - name: school-oms-task
+    image: docker-hub.f123.pub/lfun/school-oms-task  # 服务使用的镜像
+    replicas: 2           # 服务的副本数
+
+ports:                 # 应用内部使用的端口号
+  - name: svc
+    containerPort: 8080
+    servicePort: 8080
+    paths:
+      - /api/school
+
+# 镜像相关的配置
+image:
+  pullSecret: lfun          # 定义用于拉取私有镜像的密钥
+  pullPolicy: IfNotPresent  # 定义镜像拉取策略
+
+# Ingress 路由相关的配置
+ingress:
+  host: ms-test.f123.pub    # Ingress 路由的主机名

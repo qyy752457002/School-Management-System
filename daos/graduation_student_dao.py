@@ -1,0 +1,88 @@
+from sqlalchemy import select, func, update
+from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
+from mini_framework.databases.queries.pages import Paging
+from mini_framework.web.std_models.page import PageRequest
+
+from models.classes import Classes
+from models.graduation_student import GraduationStudent
+from models.planning_school import PlanningSchool
+from models.school import School
+from models.students import Student, StudentApprovalAtatus
+from models.students_base_info import StudentBaseInfo
+
+
+class GraduationStudentDAO(DAOBase):
+
+    async def add_graduationstudent(self, graduationstudent: GraduationStudent):
+        session = await self.master_db()
+        session.add(graduationstudent)
+        await session.commit()
+        await session.refresh(graduationstudent)
+        return graduationstudent
+
+    async def get_graduationstudent_count(self, ):
+        session = await self.slave_db()
+        result = await session.execute(select(func.count()).select_from(GraduationStudent))
+        return result.scalar()
+
+    async def delete_graduationstudent(self, graduationstudent: GraduationStudent):
+        session = await self.master_db()
+        await session.delete(graduationstudent)
+        await session.commit()
+
+    async def get_graduationstudent_by_id(self, id):
+        session = await self.slave_db()
+        result = await session.execute(select(GraduationStudent).where(GraduationStudent.id == id))
+        return result.scalar_one_or_none()
+
+    async def get_graduationstudent_by_name(self, name):
+        session = await self.slave_db()
+        result = await session.execute(select(GraduationStudent).where(GraduationStudent.student_name == name))
+        return result.scalar_one_or_none()
+
+    async def query_graduationstudent_with_page(self, page_request: PageRequest, **kwargs):
+        query = select(Student.student_id, Student.student_name, Student.student_gender, Student.enrollment_number,
+                       Student.id_number, Student.approval_status,
+
+                       StudentBaseInfo.edu_number, StudentBaseInfo.class_id,
+                       StudentBaseInfo.school_id, StudentBaseInfo.graduation_type,
+                       School.school_name,  School.block,  School.borough,  Classes.class_name,
+
+                       ).select_from(Student).join(StudentBaseInfo,
+                                                          Student.student_id == StudentBaseInfo.student_id,
+                                                          isouter=True).join(School,
+                                                                             School.id == StudentBaseInfo.school_id,
+                                                                             isouter=True).join(PlanningSchool,
+                                                                                                School.planning_school_id == PlanningSchool.id,
+                                                                                                isouter=True).join(Classes,
+                                                                                                Classes.id == StudentBaseInfo.class_id,
+                                                                                                isouter=True)
+
+        query = query.where(Student.approval_status  == StudentApprovalAtatus.GRADUATED.value)
+        for key, value in kwargs.items():
+            if key == 'student_name' or key == 'student_gender':
+                query = query.where(getattr(Student, key) == value)
+            elif key == 'borough':
+                query = query.where(getattr(PlanningSchool, key) == value)
+            else:
+                query = query.where(getattr(StudentBaseInfo, key) == value)
+
+        paging = await self.query_page(query, page_request)
+        return paging
+
+    async def update_graduationstudent(self, graduationstudent, *args, is_commit=True):
+        session = await self.master_db()
+        update_contents = get_update_contents(graduationstudent, *args)
+        query = update(StudentBaseInfo).where(StudentBaseInfo.student_id == graduationstudent.student_id).values(
+            **update_contents)
+        return await self.update(session, query, graduationstudent, update_contents, is_commit=is_commit)
+
+    async def softdelete_graduationstudent(self, graduationstudent):
+        session = await self.master_db()
+        deleted_status = True
+        update_stmt = update(GraduationStudent).where(GraduationStudent.id == graduationstudent.id).values(
+            is_deleted=deleted_status,
+        )
+        await session.execute(update_stmt)
+        await session.commit()
+        return graduationstudent
