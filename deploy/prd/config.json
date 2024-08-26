@@ -99,11 +99,11 @@
       "issue_at": 0
     },
     "oauth2": {
-      "client_id": "-----",
-      "client_secret": "---",
-      "authorization_url": "https://---/org-center/login/oauth/authorize",
-      "token_url": "https://---/api/login/oauth/access_token",
-      "user_info_url": "https://---/api/userinfo",
+      "client_id": "96f9b99bc1f8dbaeb66a",
+      "client_secret": "388647ca9398429aa78459f19b5e2d9f2e9c0eb7",
+      "authorization_url": "https://org-center.syn.cn/org-center/login/oauth/authorize",
+      "token_url": "https://org-center.syn.cn/api/login/oauth/access_token",
+      "user_info_url": "https://org-center.syn.cn/api/userinfo",
       "redirect_url": "https://one-oms.syn.cn/auth/oauth2/callback",
       "grant_type": "authorization_code",
       "scope": "scope",
@@ -152,7 +152,7 @@
   "orgcenter_service": {
     "name": "orgcenter_service",
     "description": "",
-    "url": "https://---"
+    "url": "https://org-center.syn.cn"
   },
   "transaction_service": {
     "retry": {
