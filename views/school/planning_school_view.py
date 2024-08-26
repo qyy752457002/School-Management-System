@@ -363,7 +363,7 @@ class PlanningSchoolView(BaseView):
         task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name=file.bucket_name,file_size='51363', scene= ImportScene.PLANNING_SCHOOL.value)
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
-            task_type="planning_school_import",
+            task_type="school_task_planning_school_import",
             # 文件 要对应的 视图模型
             payload=task_model,
             operator=request_context_manager.current().current_login_account.account_id
@@ -641,7 +641,7 @@ class PlanningSchoolView(BaseView):
         print('入参接收2', page_search)
 
         task = Task(
-            task_type="planning_school_export",
+            task_type="school_task_planning_school_export",
             payload=page_search,
             operator=request_context_manager.current().current_login_account.account_id
         )

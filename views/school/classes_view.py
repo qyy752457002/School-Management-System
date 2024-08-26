@@ -82,7 +82,7 @@ class ClassesView(BaseView):
 
 
         task = Task(
-            task_type="class_import",
+            task_type="school_task_class_import",
             # 文件 要对应的 视图模型
             payload=task_model,
             # payload=SchoolTask(file_name=file_name, scene= ImportScene.CLASS.value, bucket='class_import' ),
