@@ -332,8 +332,8 @@ class NewTeachersView(BaseView):
     #     await self.teacher_work_flow_instance_rule.update_work_flow_by_param(process_instance_id, params)
 
     # 测试导入
-    async def post_teacher_import_test(self, file_id: int = Query(..., title="文件id", description="文件id")):
-        await self.teacher_import_rule.import_teachers_test(file_id)
+    # async def post_teacher_import_test(self, file_id: int = Query(..., title="文件id", description="文件id")):
+    #     await self.teacher_import_rule.import_teachers_test(file_id)
 
     async def get_teachers_arg_by_id_test(self,
                                           teacher_id: int | str = Query(..., title="教师编号", description="教师编号",
