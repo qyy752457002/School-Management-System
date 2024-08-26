@@ -1,6 +1,7 @@
-from sqlalchemy import select, func, update
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.web.std_models.page import PageRequest
+from sqlalchemy import select, func, update
+
 from models.organization import Organization
 
 
@@ -43,6 +44,7 @@ class OrganizationDAO(DAOBase):
         result = await session.execute(select(Organization).where(Organization.org_name == org_name).where(
             Organization.school_id == school_id).where(Organization.is_deleted == False))
         return result.scalar_one_or_none()
+
     async def query_organization_with_page(self, page_request: PageRequest, parent_id, school_id):
         query = select(Organization).where(Organization.is_deleted == False)
         if parent_id:
@@ -83,3 +85,9 @@ class OrganizationDAO(DAOBase):
         await session.execute(query)
         # await session.query(Organization).filter_by(id=organization.id).update({Organization.value: Organization.value + 1})
         await session.commit()
+
+    async def get_organization_by_org_name(self, org_name):
+        session = await self.slave_db()
+        result = await session.execute(
+            select(Organization).where(Organization.org_name == org_name, Organization.is_deleted == False))
+        return result.first()
