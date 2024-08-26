@@ -1,11 +1,14 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import json
 import traceback
+from datetime import datetime
 from typing import List, Type, Dict
 
 from mini_framework.authentication.config import authentication_config
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.http import HTTPRequest
+from mini_framework.utils.json import JsonUtils
+from mini_framework.utils.logging import logger
 from mini_framework.web.request_context import request_context_manager
 from pydantic import BaseModel
 
@@ -18,8 +21,16 @@ from daos.school_dao import SchoolDAO
 from daos.student_session_dao import StudentSessionDao
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
-from views.common.common_view import workflow_service_config, orgcenter_service_config, check_result_org_center_api
+from views.common.common_view import workflow_service_config, orgcenter_service_config, check_result_org_center_api, \
+    log_json, write_json_to_log, convert_dates_to_strings, json_date_hook
 
+APP_CODE = "1238914398508736"
+
+from datetime import datetime, timedelta
+
+# 缓存数据和过期时间
+user_info_cache = {}
+cache_expiry = timedelta(minutes=30)  # 缓存过期时间设置为30分钟
 
 async def send_request(apiname, datadict, method='get', is_need_query_param=False):
     # 发起审批流的 处理
@@ -41,7 +52,17 @@ async def send_request(apiname, datadict, method='get', is_need_query_param=Fals
         response = await httpreq.get_json(url, headerdict)
     else:
         response = await httpreq.post_json(url, datadict, headerdict)
-    print(response, '接口响应')
+    # print(response, '接口响应')
+    # 示例使用
+    json_data = response
+    log_json(json_data)
+    # 示例数据
+    data = [
+        response
+    ]
+
+    # 调用函数
+    write_json_to_log(  data)
     if response is None:
         return {}
     if isinstance(response, str):
@@ -211,9 +232,29 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
         if method == 'get':
             response = await httpreq.get_json(url, headerdict)
         else:
-            print(type(datadict), "数据类型")
+            # print(type(datadict), "数据类型")
             response = await httpreq.post_json(url, datadict, headerdict)
-        print(response, '接口响应')
+
+        # print( '接口响应',response)
+        # print(type(response), "数据类型")
+
+        # json_data =  JsonUtils.json_str_to_dict( response)
+
+        # logger.info('接口响应',response)
+        response=convert_dates_to_strings(response)
+        # 示例数据
+        data = [
+            response
+        ]
+        write_json_to_log(  data)
+
+        # 示例使用
+        json_data = response
+        log_json(json_data)
+
+
+        # 调用函数
+
         if response is None:
             return {}
         if isinstance(response, str):
@@ -224,7 +265,7 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
     except Exception as e:
         print('发生异常', e)
         traceback.print_exc()
-        raise Exception(e)
+        # raise Exception(e)
         return {}
 
     pass
@@ -267,6 +308,11 @@ async def get_identity_by_job(school_operation_type: List, post_type=None):
                   "secondaryEducation_ordinaryJuniorHigh_ordinaryJuniorHighSchool": "middle_school_parent",
                   "secondaryEducation_ordinaryHighSchool": "high_school_parent",
                   "secondaryEducation_secondaryVocationalSchool": "vocational_parent"},
+    if post_type is None :
+        identity_type = IdentityType.STAFF.value
+        identity = "education_unit_staff"
+        return identity_type, identity
+
     parts = post_type.split(',')
     if parts[0] == "student":
         identity_type = IdentityType.STUDENT.value
@@ -394,14 +440,12 @@ async def get_org_center_userinfo():
 Get the user from Casdoor providing the user_id.
 :param user_id: the id of the user
 :return: a dict that contains user's info
-那我怎么通过你昨天给我的这个获取到 督导的id
 """
 
     try:
         account = request_context_manager.current().current_login_account
         # print(account)
         # 目前的  full_account_info是灭有的  会异常 现在临时写固定值  todo  应该加到 框架里
-
         # full_account = request_context_manager.current().full_account_info
 
         endpoint = "https://org-center.f123.pub"
@@ -425,7 +469,7 @@ Get the user from Casdoor providing the user_id.
 
         if response["status"] != "ok":
             raise Exception(response["msg"])
-        print(response['data2'].keys())
+        # print(response['data2'].keys())
 
         info = response['data2']
         print(' 解析结果', type(info), )
@@ -433,7 +477,7 @@ Get the user from Casdoor providing the user_id.
         json_string = json.dumps(info, ensure_ascii=False)
 
         # 打印JSON字符串
-        print(json_string)
+        # print(json_string)
         p = info['policies']
         role = info['roles'][0]['roleCode']
         # 遍历列表里的每个
@@ -443,16 +487,16 @@ Get the user from Casdoor providing the user_id.
 
         for i, value in enumerate(p):
             data = []
-            print(value['modelText'])
-            print(type(value['ruleCode']), value['ruleCode'])
+            # print(value['modelText'])
+            # print(type(value['ruleCode']), value['ruleCode'])
             # 数据列表，每个子列表是一行数据 todo 调整返回给前段的按照 资源。json的格式来
             # 移除字符串首尾的方括号，并按逗号加空格分割
             data_str = value['ruleCode']
             # data_str.replace("\"", "'")
-            print(data_str)
+            # print(data_str)
 
             data = data_list = eval(data_str)
-            print(type(data_list), data_list)
+            # print(type(data_list), data_list)
             # pprint.pprint(data_list)
             # exit(1)
             # data_list = data_str.strip("[]").split("\",\"")
@@ -500,7 +544,7 @@ Get the user from Casdoor providing the user_id.
         for value in resource_codes_actions:
             # value = resource_codes[i]
             temp= value.split( ',')
-            print('temp',temp)
+            # print('temp',temp)
             key =  temp[0]
             action  = temp[1]
             if key not in resource_codes_dict.keys():
@@ -508,7 +552,7 @@ Get the user from Casdoor providing the user_id.
                 resource_codes_dict[key] .append(action)
             else:
                 resource_codes_dict[key].append(action)
-            print('资源编码', resource_codes_dict)
+            # print('资源编码', resource_codes_dict)
 
         return info, resource_codes, resource_codes_dict
 
@@ -542,4 +586,129 @@ async def verify_auth(sub: str, obj, act):
         return False
         pass
 
+    pass
+
+
+async def verify_auth_by_obj_and_act(obj, act):
+    """
+    验证用户权限
+    :param obj:
+    :param act:
+    :return:
+    """
+    account = request_context_manager.current().current_login_account
+    account_name = account.name
+
+    file_name = await process_userinfo(account_name)
+    print( '验证结果',file_name,)
+    if file_name is None:
+        return False
+    # 当abac是 这里是一个字典 包含了属性
+    # 定义请求的属性
+
+    token = request_context_manager.current()
+    query= token['query_params']
+    print(query)
+    objattr = {
+        "Age": 25,
+        "department": "sales"
+    }
+    file_name = await verify_auth_by_file_name(account_name, obj, act, file_name)
+    return file_name
+
+
+async def process_userinfo(account_name):
+    appCode = APP_CODE
+    user_info = await get_cached_userinfo(account_name)
+    if user_info is None:
+        return None
+    lines = []  # 使用列表收集所有要写入的行
+    filename = account_name + 'policy.csv'
+    for rule in user_info['roles']:
+        if rule["appCode"] == appCode:
+            role = rule['roleCode']
+            g_str = f"g, {account_name}, " + role
+            role_policies = rule['rolepolicies']
+            for policy in role_policies:
+                if not policy:
+                    continue
+                json_str= policy['rule_code']
+                if json_str.strip():
+                    # data = json.loads(json_str)
+                    try:
+                        data_str = json.loads(policy['rule_code'], object_hook=json_date_hook)
+                        for item in data_str:
+                            p_list = item.split(",")
+                            p_list.insert(1, role)
+                            join_str = ','.join(p_list)
+                            lines.append(join_str + '\n')
+
+                    except json.JSONDecodeError as e:
+                        print(f"解析错误：{e}")
+
+
+                else:
+                    print("字符串为空或只包含空白字符")
+
+            lines.append(g_str + '\n')
+        else:
+            continue
+    if not lines:
+        return None
+    with open(filename, 'w', encoding='utf-8') as file:
+        file.writelines(lines)
+    print('策略文件',filename)
+    return filename
+
+
+async def get_cached_userinfo(account_name: str):
+    now = datetime.now()
+    cache_entry = user_info_cache.get(account_name)
+    if cache_entry:
+        user_info, timestamp = cache_entry
+        if now - timestamp < cache_expiry:
+            return user_info  # 返回缓存的数据
+    user_info = await get_org_center_user_info()
+    if user_info is not None:
+        user_info_cache[account_name] = (user_info, now)
+    return user_info
+
+
+async def get_org_center_user_info():
+    try:
+        account = request_context_manager.current().current_login_account
+        apiname = "/api/get-user"
+        owner = "sysjyyjyorg"
+        params = {
+            "id": f"{owner}/{account.name}",
+            "clientId": authentication_config.oauth2.client_id,
+            "clientSecret": authentication_config.oauth2.client_secret,
+        }
+        datadict = params
+        response = await send_orgcenter_request(apiname, datadict, 'get', False)
+        # print(response)
+        if response["status"] != "ok":
+            raise Exception(response["msg"])
+        info = response['data2']
+        if len(info['roles']) == 0:
+            return None
+        else:
+            for i in range(len(info['roles'])):
+                role_policies = len(info['roles'][i]["rolepolicies"])
+                if role_policies > 0:
+                    return info
+            return None
+    except Exception as e:
+        print('获取用户权限信息异常', e)
+        return None
+
+async def verify_auth_by_file_name(sub: str|dict, obj, act, file_name):
+    import casbin
+    e = casbin.Enforcer("model.conf", file_name)
+    if e.enforce(sub, obj, act):
+        print("permit alice to read data1")
+        return True
+    else:
+        print("deny the request, show an error")
+        return False
     pass

@@ -1,7 +1,7 @@
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
-from sqlalchemy import select, func, update, desc, union_all
+from sqlalchemy import select, func, update, desc, union_all, or_, and_
 
 from models.campus import Campus
 from models.campus_communication import CampusCommunication
@@ -33,7 +33,7 @@ class SchoolDAO(DAOBase):
             select(School).where(School.school_name == school_name).where(School.is_deleted == False))
         return result.first()
 
-    async def get_school_by_args(self,obj=None, **kwargs):
+    async def get_school_by_args(self, obj=None, **kwargs):
         """
         """
         session = await self.slave_db()
@@ -175,12 +175,25 @@ class SchoolDAO(DAOBase):
             else:
                 query = query.where(School.institution_category == institution_category)
         else:
-            query = query.where(
-                School.institution_category.not_in([InstitutionType.INSTITUTION, InstitutionType.ADMINISTRATION, ]))
+            cond1 =  School.institution_category.not_in([InstitutionType.INSTITUTION, InstitutionType.ADMINISTRATION, ])
+            cond2 =  School.institution_category.is_(None)
+            mcond = or_(cond1, cond2)
+
+            query = query.filter(
+                or_(
+                    mcond
+                )
+            )
+
         if school_name:
             query = query.where(School.school_name == school_name)
+        print('参数',type(planning_school_id), planning_school_id)
+
         if planning_school_id:
-            query = query.where(School.planning_school_id == planning_school_id)
+            if isinstance(planning_school_id, str) and len(planning_school_id)>0:
+                planning_school_id = int(planning_school_id)
+            if planning_school_id >0 :
+                query = query.where(School.planning_school_id == planning_school_id)
 
         if school_no:
             query = query.where(School.school_no == school_no)
@@ -224,12 +237,16 @@ class SchoolDAO(DAOBase):
 
     async def query_sync_school_with_page(self, query_model: SchoolSyncQueryModel,
                                           page_request: PageRequest) -> Paging:
-        query_school = select(School.school_no, School.social_credit_code, School.school_name, School.borough,
-                              School.block,
-                              School.founder_type, School.founder_type_lv2, School.founder_type_lv3).where(
+        query_school = select(School.school_no,
+                              func.coalesce(School.social_credit_code, "").label("social_credit_code"),
+                              School.school_name, func.coalesce(School.borough, "").label("borough"),
+                              func.coalesce(School.block, "").label("block"),
+                              func.coalesce(School.founder_type, "").label("founder_type"),
+                              func.coalesce(School.founder_type_lv2, "").label("founder_type_lv2"),
+                              func.coalesce(School.founder_type_lv3, "").label("founder_type_lv3")).where(
             School.is_deleted == False, School.status == "normal")
-        if query_model.social_credit_code:
-            query_school = query_school.where(School.social_credit_code == query_model.social_credit_code)
+        if query_model.school_no:
+            query_school = query_school.where(School.school_no == query_model.school_no)
         if query_model.school_name:
             query_school = query_school.where(School.school_name.like(f"%{query_model.school_name}%"))
         if query_model.borough:

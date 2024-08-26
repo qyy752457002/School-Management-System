@@ -11,6 +11,7 @@ from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
 from business_exceptions.student import StudentExistsThisSchoolError, StudentTransactionExistsError
+from common.decorators import require_role_permission
 from models.student_transaction import AuditAction, TransactionDirection, AuditFlowStatus
 from models.students import StudentApprovalAtatus
 from rules.classes_rule import ClassesRule
@@ -57,6 +58,7 @@ class CurrentStudentsView(BaseView):
         self.student_key_info_change_rule = get_injector(StudentsKeyInfoChangeRule)
         self.student_temporary_study_rule = get_injector(StudentTemporalStudyRule)
 
+    @require_role_permission("student_session", "view")
     async def get_student_session(self, sessions_id: int|str = Query(..., title="", description="届别id",
                                                                  example="1")):
         """
@@ -64,6 +66,7 @@ class CurrentStudentsView(BaseView):
         """
         res = await self.student_session_rule.get_student_session_by_id(sessions_id)
         return res
+    @require_role_permission("student_session", "add")
 
     async def post_student_session(self, student_session: StudentSession):
         """
@@ -71,6 +74,7 @@ class CurrentStudentsView(BaseView):
         """
         res = await self.student_session_rule.add_student_session(student_session)
         return res
+    @require_role_permission("student_session", "edit")
 
     async def patch_student_session(self, student_session: StudentSession):
         """
@@ -78,6 +82,7 @@ class CurrentStudentsView(BaseView):
         """
         res = await self.student_session_rule.update_student_session(student_session)
         return res
+    @require_role_permission("student_session", "view")
 
     async def page_session(self,
                            session_name: str = Query("", title="", description="", ),
@@ -129,6 +134,8 @@ class CurrentStudentsView(BaseView):
 
         return paging_result
     # 转学申请详情
+    @require_role_permission("instudent_transfer", "in_view")
+
     async def get_student_transaction_info(self,
 
                                            apply_id: int|str = Query(..., description=" ", example='1'),
@@ -451,6 +458,7 @@ class CurrentStudentsView(BaseView):
         """
         res = await self.students_rule.get_students_by_id(student_id)
         return res
+    @require_role_permission("current_student_keyinfo_change", "start")
 
     async def put_studentkeyinfo(self, new_students_key_info: StudentsKeyinfo):
         """
@@ -459,6 +467,7 @@ class CurrentStudentsView(BaseView):
         res = await self.student_key_info_change_rule.add_student_key_info_change(new_students_key_info)
         # res = await self.students_rule.update_students(new_students_key_info)
         return res
+    @require_role_permission("new_student", "delete")
 
     async def delete_studentkeyinfo(self, student_id: str = Query(..., title="学生编号", description="学生编号", )):
         """
@@ -468,6 +477,7 @@ class CurrentStudentsView(BaseView):
         return str(student_id)
 #     撤回   审核  查看
     # 查看 学生 关键信息变更
+    @require_role_permission("current_student_keyinfo_change", "view")
     async def get_studentkeyinfochange(self, apply_id: str = Query(..., title=" 学生 关键信息变更的申请ID", description="",
                                                                example="1")):
         """
@@ -476,6 +486,8 @@ class CurrentStudentsView(BaseView):
         res = await self.student_key_info_change_rule.get_student_key_info_change_by_id(apply_id)
         return res
     # 撤回 学生 关键信息变更
+    @require_role_permission("current_student_keyinfo_change", "cancel")
+
     async def patch_studentkeyinfochange_cancel(self, apply_id: str = Query(..., title=" 学生 关键信息变更的申请ID", description="",
                                                                    example="1")):
         """
@@ -498,6 +510,8 @@ class CurrentStudentsView(BaseView):
 
         return res
     #审核 学生 关键信息变更
+    @require_role_permission("current_student_keyinfo_change", "pass")
+
     async def patch_studentkeyinfochange_audit(self,
         audit_info: StudentsKeyinfoChangeAudit
 
@@ -543,11 +557,14 @@ class CurrentStudentsView(BaseView):
         return {'student_transaction_in': tinfo, 'student_transaction_out': relationinfo,
                 'student_info': stubaseinfo, }
     # 新增 临时借读
+    @require_role_permission("infomanage", "temporary_study_start")
     async def post_temporary_study(self, student_temporary_study: StudentTemporaryStudy):
         # print(new_students_key_info)
         res3 = await self.student_temporary_study_rule.add_student_temporary_study(student_temporary_study)
 
         return res3
+    @require_role_permission("infomanage", "temporary_study_view")
+
     async def page_temporary_study(self,
                                    student_name: str = Query("", title="", description="", ),
                                    student_gender: str = Query("", title="", description="", ),
@@ -563,6 +580,7 @@ class CurrentStudentsView(BaseView):
 
         paging_result = await self.student_temporary_study_rule.query_student_temporary_study_with_page(page_request, status,student_name,student_gender,school_id,apply_user,edu_number,)
         return paging_result
+    @require_role_permission("infomanage", "temporary_study_cancel")
 
     async def patch_temporary_study_cancel(self,     student_temporary_study_id: str|int = Query(None, title="", description="",   ),
                                            ):

@@ -18,7 +18,7 @@ from rules.leader_info_rule import LeaderInfoRule
 from views.models.campus import Campus as CampusModel
 from views.models.campus_communications import CampusCommunications as CampusCommunicationModel
 from views.models.campus_eduinfo import CampusEduInfo as CampusEduInfoModel
-from views.models.planning_school import PlanningSchool as PlanningSchoolModel
+from views.models.planning_school import PlanningSchoolSyncModel
 from views.models.planning_school_communications import PlanningSchoolCommunications as PlanningSchoolCommunicationModel
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo as PlanningSchoolEduInfoModel
 from views.models.school import School as SchoolModel
@@ -26,6 +26,7 @@ from views.models.school_and_teacher_sync import SchoolSyncQueryModel, Superviso
     SupervisorSyncQueryReModel, SchoolSyncQueryReModel, SchoolInfoSyncModel, StudentSyncModel,TeacherSyncToArtModel
 from views.models.school_communications import SchoolCommunications as SchoolCommunicationModel
 from views.models.school_eduinfo import SchoolEduInfo as SchoolEduInfoModel
+from views.models.school import SchoolSyncModel
 
 
 @dataclass_inject
@@ -76,7 +77,7 @@ class SyncRule(object):
             sync_school = await self.school_dao.get_sync_school(item)
             sync_campus = await self.campus_dao.get_sync_campus(item)
             if sync_planing_school:
-                school = orm_model_to_view_model(sync_planing_school, PlanningSchoolModel)
+                school = orm_model_to_view_model(sync_planing_school, PlanningSchoolSyncModel)
                 school_info["school"] = school
                 planning_school_id = school.id
                 school_edu_info_db = await self.planning_school_eduinfo_dao.get_planning_school_eduinfo_by_planning_school_id(
@@ -93,7 +94,7 @@ class SyncRule(object):
                 sync_school_list.append(school_info)
                 continue
             if sync_school:
-                school = orm_model_to_view_model(sync_school, SchoolModel)
+                school = orm_model_to_view_model(sync_school, SchoolSyncModel)
                 school_info["school"] = school
                 school_id = school.id
                 school_edu_info_db = await self.school_eduinfo_dao.get_school_eduinfo_by_school_id(school_id)

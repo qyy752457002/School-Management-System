@@ -3,6 +3,7 @@ from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
+from common.decorators import require_role_permission
 # from rules.subject_memebers_rule import SubjectMembersRule
 from rules.subject_rule import  SubjectRule
 from views.common.common_view import get_extend_params
@@ -23,6 +24,7 @@ class SubjectView(BaseView):
         super().__init__()
         self.subject_rule = get_injector(SubjectRule)
     #  添加时过滤 删除态
+    @require_role_permission("subject", "add")
     async def post(self, subject: Subject):
         print(subject)
         subject.id=None
@@ -30,6 +32,8 @@ class SubjectView(BaseView):
 
         return res
     # 分页
+    @require_role_permission("subject", "view")
+
     async def page(self,
                    request:Request,
                    page_request=Depends(PageRequest),
@@ -43,6 +47,8 @@ class SubjectView(BaseView):
         return res
 
     # 删除
+    @require_role_permission("subject", "delete")
+
     async def delete(self,
                      id: int|str = Query(0, title="", description="", examples=[1]),
                        ):
@@ -51,6 +57,8 @@ class SubjectView(BaseView):
         return res
 
     # 修改
+    @require_role_permission("subject", "edit")
+
     async def put(self,
                   orginization: Subject,
                   ):

@@ -5,6 +5,7 @@ from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 
+from common.decorators import require_role_permission
 from views.common.common_view import convert_snowid_in_model
 from views.models.classes import Classes
 from views.models.grades import Grades
@@ -20,13 +21,14 @@ class ClassesView(BaseView):
     def __init__(self):
         super().__init__()
         self.classes_rule = get_injector(ClassesRule)
-
+    @require_role_permission("class", "add")
     async def post(self, classes: Classes):
         print(classes)
         res = await  self.classes_rule.add_classes(classes)
         convert_snowid_in_model(res ,["id", "school_id",'grade_id','session_id','teacher_id','care_teacher_id'])
 
         return res
+    @require_role_permission("class", "view")
 
     async def page(self,
                    page_request=Depends(PageRequest),
@@ -50,6 +52,8 @@ class ClassesView(BaseView):
         return res
 
     # 删除
+    @require_role_permission("class", "delete")
+
     async def delete(self, class_id: str = Query(..., title="", description="班级id", min_length=1, max_length=20,
                                                  example='SC2032633'), ):
         print(class_id)
@@ -58,6 +62,8 @@ class ClassesView(BaseView):
         return res
 
     # 修改 关键信息
+    @require_role_permission("class", "edit")
+
     async def put(self, classes: Classes
                   ):
         # print(planning_school)
@@ -76,7 +82,7 @@ class ClassesView(BaseView):
 
 
         task = Task(
-            task_type="class_import",
+            task_type="school_task_class_import",
             # 文件 要对应的 视图模型
             payload=task_model,
             # payload=SchoolTask(file_name=file_name, scene= ImportScene.CLASS.value, bucket='class_import' ),

@@ -159,7 +159,10 @@ class ClassesDAO(DAOBase):
                  .join(StudentBaseInfo, Student.student_id == StudentBaseInfo.student_id, isouter=True)
 
                  .where(Classes.is_deleted == False)
-                 .order_by(Classes.id.desc()))
+                 .order_by(Classes.school_id .desc())
+                 .order_by(Classes.grade_id .desc())
+                 .order_by(Classes.class_index .desc())
+                 )
 
         if school_id:
             query = query.where(Classes.school_id == int(school_id))
@@ -168,7 +171,8 @@ class ClassesDAO(DAOBase):
             query = query.where(School.school_no == school_no )
             pass
         if teacher_name is not None:
-            query = query.where(Classes.teacher_name == teacher_name )
+            if teacher_name != '':
+                query = query.where(Classes.teacher_name == teacher_name )
             pass
         if grade_id and int(grade_id) > 0:
             print(grade_id)

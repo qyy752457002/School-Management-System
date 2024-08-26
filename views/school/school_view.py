@@ -11,6 +11,7 @@ from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
 from business_exceptions.school import SchoolStatusError
+from common.decorators import require_role_permission
 from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
 from rules.system_rule import SystemRule
@@ -46,7 +47,7 @@ class SchoolView(BaseView):
         self.operation_record_rule = get_injector(OperationRecordRule)
         self.system_rule = get_injector(SystemRule)
 
-
+    @require_role_permission("school", "view")
     async def get(self,
                   school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1, max_length=20,
                                          example=''),
@@ -68,6 +69,7 @@ class SchoolView(BaseView):
 
         return {'school': school, 'school_communication': school_communication, 'school_eduinfo': school_eduinfo,
                 'school_keyinfo': school_keyinfo}
+    @require_role_permission("school", "open")
 
     async def post(self, school: SchoolKeyAddInfo):
         print('入参',school)
@@ -97,6 +99,8 @@ class SchoolView(BaseView):
         # return  school
 
     # # 修改 关键信息
+    @require_role_permission("school", "change_keyinfo")
+
     async def put_keyinfo(self,
                           school: SchoolKeyInfo,
 
@@ -150,6 +154,8 @@ class SchoolView(BaseView):
         # return  {school_no,borough,block }
 
     # 删除
+    @require_role_permission("school", "delete")
+
     async def delete(self, school_id: str = Query(..., title="学校编号", description="学校id/园所id", min_length=1,
                                                   max_length=20, example='SC2032633'), ):
         print(school_id)
@@ -173,6 +179,8 @@ class SchoolView(BaseView):
         # return  school_id
 
     # 修改 变更 基本信息
+    @require_role_permission("school", "change_baseinfo")
+
     async def patch_baseinfo(self, school_baseinfo: SchoolBaseInfo):
         origin = await self.school_rule.get_school_by_id(school_baseinfo.id)
         log_con = compare_modify_fields(school_baseinfo, origin)
@@ -192,6 +200,7 @@ class SchoolView(BaseView):
             ))
 
         return res
+    @require_role_permission("school", "view")
 
     async def page(self,
                    request:Request,
@@ -238,6 +247,8 @@ class SchoolView(BaseView):
         return paging_result
 
     # 开办
+    @require_role_permission("school", "open")
+
     async def patch_open(self, school_id: str = Query(..., title="学校编号", description="学校id/园所id", min_length=1,
                                                       max_length=20, example='SC2032633')):
         # print(school)
@@ -279,6 +290,8 @@ class SchoolView(BaseView):
         return res
 
     # 关闭
+    @require_role_permission("school", "close")
+
     async def patch_close(self, school_id: str = Query(..., title="学校编号", description="学校id/园所id", min_length=1,
                                                        max_length=20, example='SC2032633'),
                           action_reason: str = Query(None, description="原因", min_length=1, max_length=20,
@@ -324,6 +337,8 @@ class SchoolView(BaseView):
 
 
     # 更新 全部信息 用于页面的 暂存 操作  不校验 数据的合法性
+    @require_role_permission("school", "edit")
+
     async def put(self,
 
                   school: SchoolBaseInfoOptional,
@@ -367,6 +382,8 @@ class SchoolView(BaseView):
         return res
 
     # 正式开办  传全部  插入或者更新
+    @require_role_permission("school", "open")
+
     async def put_open(self,
 
                        school: SchoolBaseInfo,
@@ -428,6 +445,8 @@ class SchoolView(BaseView):
         paging_result = await self.school_rule.query_schools(school_name,await get_extend_params(request),school_id,block,borough,)
         return paging_result
     # 学校开设审核
+    @require_role_permission("school_open_audit", "pass")
+
     async def patch_open_audit(self,
                                audit_info: PlanningSchoolTransactionAudit
 
@@ -443,6 +462,8 @@ class SchoolView(BaseView):
         return resultra
         pass
     # 学校关闭审核
+    @require_role_permission("school_close_audit", "pass")
+
     async def patch_close_audit(self,
                                 audit_info: PlanningSchoolTransactionAudit
 
@@ -458,6 +479,8 @@ class SchoolView(BaseView):
         return resultra
         pass
     # 学校关键信息变更审核
+    @require_role_permission("school_keyinfo_audit", "pass")
+
     async def patch_keyinfo_audit(self,
                                   audit_info: PlanningSchoolTransactionAudit
 
@@ -475,6 +498,8 @@ class SchoolView(BaseView):
 
 
     # 导入   任务队列的
+    @require_role_permission("school", "import")
+
     async def post_school_import(self,
                                  # file_name: str = Body(..., description="文件名"),
                                  file:PlanningSchoolImportReq
@@ -488,7 +513,7 @@ class SchoolView(BaseView):
 
         task = Task(
             #todo sourcefile无法记录3个参数  故 暂时用3个参数来实现  需要 在cofnig里有配置   对应task类里也要有这个 键
-            task_type="school_import",
+            task_type="school_task_school_import",
             # 文件 要对应的 视图模型
             # payload=SchoolTask(file_name=file_name, scene= ImportScene.SCHOOL.value, bucket='school_import' ),
             payload=task_model,
@@ -523,6 +548,8 @@ class SchoolView(BaseView):
         return result
 
     # 分校的审批流列表
+    @require_role_permission("school", "view")
+
     async def page_school_audit(self,
                                 block: str = Query("", title=" ", description="地域管辖区", ),
                                 school_code: str = Query("", title="", description=" 园所标识码", ),
@@ -572,6 +599,7 @@ class SchoolView(BaseView):
         paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,  )
         print('333',page_request)
         return paging_result
+    @require_role_permission("school_open_audit", "cancel")
 
     async def patch_open_cancel(self,
 
@@ -594,6 +622,8 @@ class SchoolView(BaseView):
         return res2
         pass
         # 学校关闭
+    @require_role_permission("school_close_audit", "cancel")
+
     async def patch_close_cancel(self,
                                  process_instance_id: int = Query(0, title="流程ID", description="流程ID",
                                                                   example= 25),
@@ -613,6 +643,8 @@ class SchoolView(BaseView):
         return res2
         pass
         # 学校关键信息变更
+    @require_role_permission("school_keyinfo_audit", "cancel")
+
     async def patch_keyinfo_cancel(self,
                                    process_instance_id: int = Query(0, title="流程ID", description="流程ID",
                                                                     example= 25),
@@ -640,7 +672,7 @@ class SchoolView(BaseView):
         page_search= convert_query_to_none(page_search)
         print('入参接收2',page_search)
         task = Task(
-            task_type="school_export",
+            task_type="school_task_school_export",
             payload=page_search,
             operator=request_context_manager.current().current_login_account.account_id
         )

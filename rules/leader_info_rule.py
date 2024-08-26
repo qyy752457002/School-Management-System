@@ -88,7 +88,7 @@ class LeaderInfoRule(object):
 
         return paging_result
 
-    async def get_all_leader_info(self, planning_school_id, school_id):
+    async def get_all_leader_info(self, planning_school_id, school_id=None):
         kdict = {
             "planning_school_id": planning_school_id,
             "school_id": school_id,

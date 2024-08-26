@@ -1,0 +1,9 @@
+[
+  {
+    "appCode": "1238915324217024",
+    "resourceCode": "new_student",
+    "displayName": "新生入学管理",
+    "description": "新生入学管理",
+    "action": "open、import、view、edit、flowout、sync、formaladmission、delete_student_keyinfo"
+  }
+]

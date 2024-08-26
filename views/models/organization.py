@@ -20,7 +20,7 @@ class Organization(BaseModel):
     org_name: str = Field(None, title="", description="组织或者部门名称 例如行政部",examples=['行政部'])
     org_code: str|None = Field(None, title="", description=" ",examples=[''])
     parent_id: int|str = Field(None, title="", description="父级ID",examples=['0'])
-    member_cnt: int = Field(None, title="", description="人数",examples=['0'])
+    member_cnt: int |None= Field(None, title="", description="人数",examples=['0'])
     created_at: str|None|date|datetime = Field(None, title="", description=" ",examples=[''])
     updated_at: str|None|date|datetime = Field(None, title="", description=" ",examples=[''])
 

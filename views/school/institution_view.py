@@ -12,6 +12,7 @@ from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
 from business_exceptions.institution import InstitutionStatusError, InstitutionNotFoundError
+from common.decorators import require_role_permission
 from models.student_transaction import AuditAction
 from rules.institution_rule import InstitutionRule
 from rules.operation_record import OperationRecordRule
@@ -41,7 +42,6 @@ class InstitutionView(BaseView):
         self.school_communication_rule = get_injector(SchoolCommunicationRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
         self.system_rule = get_injector(SystemRule)
-
     async def get(self,
                   institution_id: int | str = Query(..., description="|", example='1'),
                   ):
@@ -415,7 +415,7 @@ class InstitutionView(BaseView):
 
         task = Task(
             # 需要 在cofnig里有配置   对应task类里也要有这个 键
-            task_type="institution_import",
+            task_type="school_task_institution_import",
             # 文件 要对应的 视图模型
             # payload=InstitutionTask(file_name=file_name, bucket='', scene='institution_import'),
             payload=task_model,
@@ -548,7 +548,7 @@ class InstitutionView(BaseView):
 
         print('入参接收2', page_search)
         task = Task(
-            task_type="institution_export",
+            task_type="school_task_institution_export",
             payload=page_search,
             operator=request_context_manager.current().current_login_account.account_id
         )

@@ -244,6 +244,9 @@ class InstitutionBaseInfo(BaseModel):
     status: str |None = Field( '',   title='状态',  description=" 状态",examples=[''])
     urban_ethnic_nature: str |None = Field("",   title='所在地民族属性',  description="",examples=[''])
     leg_repr_name: str |None= Field(None, title="", description="法定代表人姓名",examples=['XX'])
+
+    admin: str |None = Field("",   title='管理员',  description=" ",examples=[''])
+    admin_phone: str |None = Field("",   title='管理员手机',  description=" ",examples=[''])
     @model_validator(mode="before")
     @classmethod
     def check_id_before(self, data: dict):
