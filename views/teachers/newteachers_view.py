@@ -236,7 +236,7 @@ class NewTeachersView(BaseView):
                                                                             example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
         task = Task(
-            task_type="teacher_save_import",
+            task_type="school_task_teacher_save_import",
             payload=filestorage,
             # operator="123456"
             operator=request_context_manager.current().current_login_account.account_id
@@ -247,7 +247,7 @@ class NewTeachersView(BaseView):
 
     async def post_new_teacher_export(self, teacher_query: CurrentTeacherQuery) -> Task:
         task = Task(
-            task_type="teacher_export",
+            task_type="school_task_teacher_export",
             payload=teacher_query,
             operator=request_context_manager.current().current_login_account.account_id
         )
