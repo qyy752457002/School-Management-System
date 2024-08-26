@@ -171,7 +171,7 @@ class NewsStudentsView(BaseView):
 
         task = Task(
             # todo sourcefile无法记录3个参数  故 暂时用3个参数来实现  需要 在cofnig里有配置   对应task类里也要有这个 键
-            task_type="new_student_import",
+            task_type="school_task_new_student_import",
             # 文件 要对应的 视图模型
             payload=task_model,
             # payload=NewStudentTask(file_name=filename, bucket=bucket, scene=scene),
@@ -419,7 +419,7 @@ class NewsStudentsFamilyInfoView(BaseView):
         students_query.approval_status = [StudentApprovalAtatus.ENROLLMENT]
 
         task = Task(
-            task_type="student_export",
+            task_type="school_task_student_export",
             payload=students_query,
             operator=request_context_manager.current().current_login_account.account_id
         )
@@ -435,7 +435,7 @@ class NewsStudentsFamilyInfoView(BaseView):
         # students_query.approval_status =   [StudentApprovalAtatus.ENROLLMENT  ]
 
         task = Task(
-            task_type="newstudent_classdivision_export",
+            task_type="school_task_newstudent_classdivision_export",
             payload=students_query,
             operator=request_context_manager.current().current_login_account.account_id
         )
@@ -451,7 +451,7 @@ class NewsStudentsFamilyInfoView(BaseView):
         task_model = PlanningSchoolFileStorageModel(file_name=file_name, virtual_bucket_name=file.bucket_name,
                                                     file_size='51363', scene=ImportScene.NEWSTUDENT_FAMILYINFO.value)
         task = Task(
-            task_type="newstudent_familyinfo_import",
+            task_type="school_task_newstudent_familyinfo_import",
             # 文件 要对应的 视图模型
             payload=task_model,
             # payload=NewStudentTask(file_name=file_name, scene= ImportScene.NEWSTUDENT_FAMILYINFO.value, bucket='newstudent_familyinfo_import' ),

@@ -38,7 +38,7 @@ from views.models.teachers import EducateUserModel
 from views.models.teachers import IdentityType
 
 # from views.models.organization import Campus as Organization
-SOURCE_APP = "教职工信息管理系统"
+SOURCE_APP = "学校综合管理系统"
 
 
 @dataclass_inject

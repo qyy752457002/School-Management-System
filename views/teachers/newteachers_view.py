@@ -236,7 +236,7 @@ class NewTeachersView(BaseView):
                                                                             example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
         task = Task(
-            task_type="teacher_save_import",
+            task_type="school_task_teacher_save_import",
             payload=filestorage,
             # operator="123456"
             operator=request_context_manager.current().current_login_account.account_id
@@ -247,7 +247,7 @@ class NewTeachersView(BaseView):
 
     async def post_new_teacher_export(self, teacher_query: CurrentTeacherQuery) -> Task:
         task = Task(
-            task_type="teacher_export",
+            task_type="school_task_teacher_export",
             payload=teacher_query,
             operator=request_context_manager.current().current_login_account.account_id
         )
@@ -587,8 +587,9 @@ class NewTeachersView(BaseView):
             "7225415378632052736",
             "7225415378795630592"
         ]
+        teacher_id_list_test=["1680801985629900801"]
 
-        for teacher_id in teacher_id_list:
+        for teacher_id in teacher_id_list_test:
             try:
                 await self.teacher_rule.add_teacher_organization_members(teacher_id)
             except Exception as e:
