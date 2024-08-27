@@ -197,8 +197,7 @@ class TeacherImportRule:
         return file_storage_resp
 
     async def import_teachers_save_test(self,org_id):
-
-        local_file_path = "827821.xlsx"
+        local_file_path = "821.xlsx"
         teacher_id_list = []
         reader = ExcelReader()
         reader.set_data(local_file_path)
