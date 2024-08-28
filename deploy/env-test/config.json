@@ -14,13 +14,16 @@
         "user": "schooloms",
         "password": "J16s10Wp08yfEskmVAJH",
         "database": "school_oms_test",
-        "pool_size": 50
+        "pool_size": 35,
+        "max_overflow": 15
       },
       "slaves": [
         {
           "host": "10.0.0.42",
           "port": 54321,
           "user": "schooloms",
+          "pool_size": 35,
+          "max_overflow": 15,
           "password": "J16s10Wp08yfEskmVAJH",
           "database": "school_oms_test"
         },
@@ -28,6 +31,8 @@
           "host": "10.0.0.42",
           "port": 54321,
           "user": "schooloms",
+          "pool_size": 35,
+          "max_overflow": 15,
           "password": "J16s10Wp08yfEskmVAJH",
           "database": "school_oms_test"
         }
