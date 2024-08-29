@@ -51,7 +51,7 @@ from views.models.system import SCHOOL_OPEN_WORKFLOW_CODE, \
     SCHOOL_CLOSE_WORKFLOW_CODE, SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, DISTRICT_ENUM_KEY, PROVINCE_ENUM_KEY, \
     CITY_ENUM_KEY, \
     PLANNING_SCHOOL_STATUS_ENUM_KEY, FOUNDER_TYPE_LV2_ENUM_KEY, SCHOOL_ORG_FORM_ENUM_KEY, FOUNDER_TYPE_LV3_ENUM_KEY, \
-    FOUNDER_TYPE_ENUM_KEY, OrgCenterInstitutionType
+    FOUNDER_TYPE_ENUM_KEY, OrgCenterInstitutionType, InstitutionType
 from views.models.teachers import EducateUserModel
 
 
@@ -973,6 +973,8 @@ class SchoolRule(object):
 
         school  = await self.school_dao.get_school_by_id(
             exists_planning_school_origin.id)
+        # 学校综合管理系统  教育单位管理系统
+        # 'unitType': ,
 
         dict_data = EducateUserModel(**exists_planning_school_origin.__dict__,
                                      # 所在单位
@@ -992,6 +994,7 @@ class SchoolRule(object):
                                      realName=exists_planning_school_origin.admin,
                                      identity = identity,
                                      identityType = IdentityType.STAFF.value,
+                                     sourceApp =  '教育单位管理系统' if exists_planning_school.institution_category in [InstitutionType.ADMINISTRATION.value, InstitutionType.INSTITUTION.value]  else '学校综合管理系统'
                                      )
         dict_data = dict_data.__dict__
         # params_data = JsonUtils.dict_to_json_str(dict_data)
