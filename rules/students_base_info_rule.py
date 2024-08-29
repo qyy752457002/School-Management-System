@@ -172,13 +172,12 @@ class StudentsBaseInfoRule(object):
         await psr.convert_import_format_to_view_model(student_baseinfo)
         school = await self.school_dao.get_school_by_id(student_baseinfo.school_id)
 
-
         dict_data = EducateUserModel(**student_baseinfo.__dict__,
                                      currentUnit=student_baseinfo.school,
                                      # createdTime= student_baseinfo.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      # updatedTime=student_baseinfo.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      name=exits_student.student_name,
-                                     userCode=student_baseinfo.student_number,
+                                     # userCode=student_baseinfo.student_number,
                                      userId=student_baseinfo.student_id,
                                      phoneNumber= '',
                                      # departmentId="基础信息管理系统",
@@ -197,6 +196,9 @@ class StudentsBaseInfoRule(object):
 
                                      )
         params_data = dict_data.__dict__
+        # 秘钥
+        params_data['clientId'] = 'c07ac36559b4a860d248'
+        params_data['clientSecret'] = '5445838d08a0e7b2139acf77868e858c592e09f3'
         # params_data = JsonUtils.dict_to_json_str(dict_data)
         api_name = '/api/add-educate-user'
         # 字典参数

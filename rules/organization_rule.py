@@ -2,6 +2,7 @@ import copy
 from datetime import date, datetime
 
 import shortuuid
+from mini_framework.authentication.config import authentication_config
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
@@ -245,6 +246,9 @@ class OrganizationRule(object):
             ],
             "title": "",
             "type": "",
+        #     秘钥
+            "clientId":  'c07ac36559b4a860d248',
+            "clientSecret":  '5445838d08a0e7b2139acf77868e858c592e09f3',
         }
         apiname = '/api/add-group-organization'
         # 字典参数
