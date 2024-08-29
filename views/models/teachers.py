@@ -179,7 +179,7 @@ class EducateUserModel(BaseModel):
                 data[_change] = str(data[_change])
             else:
                 pass
-        if data.get("userCode") is None:
+        if data.get("userCode") is None and 'idCardNumber' in data:
             data["userCode"] = data["idCardNumber"]
         data["phoneNumber"] = data["name"] if data.get("name") else ""
         return data

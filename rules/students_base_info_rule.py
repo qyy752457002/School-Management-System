@@ -1,3 +1,5 @@
+import traceback
+
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.utils.json import JsonUtils
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
@@ -101,6 +103,7 @@ class StudentsBaseInfoRule(object):
             await self.send_student_to_org_center(students_base_info,exits_student)
         except Exception as e:
             print('对接组织中心异常',e)
+            traceback.print_exc()
 
 
         return students_base_info
@@ -177,7 +180,7 @@ class StudentsBaseInfoRule(object):
                                      # createdTime= student_baseinfo.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      # updatedTime=student_baseinfo.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      name=exits_student.student_name,
-                                     # userCode=student_baseinfo.student_number,
+                                     userCode= str(student_baseinfo.student_id) ,
                                      userId=student_baseinfo.student_id,
                                      phoneNumber= '',
                                      # departmentId="基础信息管理系统",
