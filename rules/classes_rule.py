@@ -1,5 +1,6 @@
 import copy
 import pprint
+import traceback
 from datetime import date, datetime
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
@@ -53,7 +54,8 @@ class ClassesRule(ImportCommonAbstractRule,object):
 
         # 校验 teacher_id,care_teacher_id  根据系统配置来决定是允许手填还是关联老师 默认关联老师
         if self.class_leader_teacher_rule == 1:
-            if hasattr(classes, "teacher_id") and classes.teacher_id is not None and not  classes.teacher_id.isdigit():
+            if hasattr(classes, "teacher_id") and classes.teacher_id is not None and isinstance(classes.teacher_id,str) and not  classes.teacher_id.isdigit():
+                # 名字 则提换到 teacher_name
                 if classes.teacher_name is None or  len(classes.teacher_name)==0:
                     classes.teacher_name= classes.teacher_id
                 classes.teacher_id = None
@@ -111,13 +113,14 @@ class ClassesRule(ImportCommonAbstractRule,object):
 
         # 组织中心对接过去 todo  接口故障  超时  不让他影响接口
         try:
-            await self.send_org_to_org_center(classes_db)
+            await self.send_org_to_org_center(classes_db,classes)
             pass
         except TypeError as e:
             print('班级作为部门对接失败',e)
+            traceback.print_exc()
         except Exception as e:
             print('班级作为部门对接失败',e)
-
+            traceback.print_exc()
 
 
         return classes
@@ -226,15 +229,15 @@ class ClassesRule(ImportCommonAbstractRule,object):
         if hasattr(item,'class_type'):
             item.class_type = self.class_systems.get(item.class_type, item.class_type)
         pass
-    async def send_org_to_org_center(self, exists_planning_school_origin: Classes):
+    async def send_org_to_org_center(self, exists_planning_school_origin: Classes,classes):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
-        print(111,exists_planning_school)
-        pprint.pprint(exists_planning_school)
-        if hasattr(exists_planning_school, 'updated_at') and isinstance(exists_planning_school.updated_at,
-                                                                        (date, datetime)):
-            exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
+        print(111,exists_planning_school_origin,classes )
+        # pprint.pprint(exists_planning_school)
+        # if hasattr(exists_planning_school, 'updated_at') and isinstance(exists_planning_school.updated_at,
+        #                                                                 (date, datetime)):
+        #     exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
 
-        school = await self.school_dao.get_school_by_id(exists_planning_school.school_id)
+        school = await self.school_dao.get_school_by_id(exists_planning_school_origin.school_id)
         if school is None:
             print('学校未找到 跳过发送组织', exists_planning_school.school_id)
             return
