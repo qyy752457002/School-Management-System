@@ -873,6 +873,8 @@ class PlanningSchoolRule(object):
                                      departmentId=data_org['name'],
                                      identity = identity,
                                      identityType = IdentityType.STAFF.value,
+                                     user_account_status='active',
+
                                      realName=exists_planning_school_origin.admin
                                      )
         dict_data = dict_data.__dict__

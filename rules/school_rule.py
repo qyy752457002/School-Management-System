@@ -994,6 +994,8 @@ class SchoolRule(object):
                                      realName=exists_planning_school_origin.admin,
                                      identity = identity,
                                      identityType = IdentityType.STAFF.value,
+                                     user_account_status='active',
+
                                      sourceApp =  '教育单位管理系统' if exists_planning_school.institution_category in [InstitutionType.ADMINISTRATION.value, InstitutionType.INSTITUTION.value]  else '学校综合管理系统'
                                      )
         dict_data = dict_data.__dict__
