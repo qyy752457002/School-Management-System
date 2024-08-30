@@ -1,4 +1,5 @@
 import copy
+import traceback
 from datetime import datetime, date
 
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
@@ -69,6 +70,7 @@ class GradeRule(object):
             await self.send_org_to_org_center(grade_db )
         except Exception as e:
             print('发送组织中心 异常',e)
+            traceback.print_exc()
         return grade_res
 
     async def update_grade(self, grade):
@@ -143,7 +145,7 @@ class GradeRule(object):
             convert_snowid_in_model(item, ["id", "school_id", ])
             lst.append(item)
         return lst
-    async def send_org_to_org_center(self, exists_planning_school_origin: Grade):
+    async def send_org_to_org_center2(self, exists_planning_school_origin: Grade):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if hasattr(exists_planning_school, 'updated_at') and isinstance(exists_planning_school.updated_at,
                                                                         (date, datetime)):
@@ -199,7 +201,6 @@ class GradeRule(object):
 
         datadict = convert_dates_to_strings(datadict)
         print(datadict, '字典参数')
-
         response = await send_orgcenter_request(apiname, datadict, 'post', False)
         print(response, '接口响应')
         try:
@@ -212,4 +213,53 @@ class GradeRule(object):
             return response
 
         return None
+
+    async def send_org_to_org_center(self, exists_planning_school_origin:Grade, res_unit=None):
+        exists_planning_school =  exists_planning_school_origin
+
+
+        school = await self.school_dao.get_school_by_id(exists_planning_school_origin.school_id)
+        if school is None:
+            print('学校未找到 跳过发送组织', exists_planning_school.school_id)
+            return
+        unitid = None
+        if isinstance(res_unit, dict):
+            unitid = res_unit['data2']
+        if unitid is None:
+            unitid = school.org_center_info
+        parent_id = ""
+
+        dict_data = {
+            "contactEmail": "j.vyevxiloyy@qq.com",
+            "displayName": exists_planning_school.grade_name,
+            "educateUnit": unitid if unitid is not None else school.school_name,
+            "isDeleted": False,
+            "isEnabled": True,
+            "isTopGroup":  True,
+            "key": "",
+            "manager": "",
+            "name": exists_planning_school.grade_name,
+            "newCode": exists_planning_school.grade_no,
+            "newType": "organization",  # 组织类型 特殊参数必须穿这个
+            "owner": school.school_no,
+            "parentId": parent_id,
+            "parentName": "",
+            "tags": [
+                ""
+            ],
+            "title": "",
+            "type": "",
+        }
+        apiname = '/api/add-group-organization'
+        # 字典参数
+        datadict = dict_data
+        datadict = convert_dates_to_strings(datadict)
+        print('调用添加部门  字典参数', datadict, )
+        response = await send_orgcenter_request(apiname, datadict, 'post', False)
+        try:
+            print('调用添加部门 接口响应', response, )
+            return response, datadict
+        except Exception as e:
+            print(e)
+            raise e
 

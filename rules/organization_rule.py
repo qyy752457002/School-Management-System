@@ -207,8 +207,6 @@ class OrganizationRule(object):
                                                                         (date, datetime)):
             exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
 
-        # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer
-
         school = await self.school_dao.get_school_by_id(exists_planning_school.school_id)
         if school is None:
             print('学校未找到 跳过发送组织', exists_planning_school.school_id)
@@ -246,9 +244,6 @@ class OrganizationRule(object):
             ],
             "title": "",
             "type": "",
-        #     秘钥
-            "clientId":  'c07ac36559b4a860d248',
-            "clientSecret":  '5445838d08a0e7b2139acf77868e858c592e09f3',
         }
         apiname = '/api/add-group-organization'
         # 字典参数
