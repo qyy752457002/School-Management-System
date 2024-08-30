@@ -330,15 +330,15 @@ class ClassesRule(ImportCommonAbstractRule,object):
             "educateUnit": unitid if unitid is not None else school.school_name,
             "isDeleted": False,
             "isEnabled": True,
-            "isTopGroup":  True,
+            "isTopGroup":  False,
             "key": "",
             "manager": "",
             "name": exists_planning_school.class_name,
             "newCode": exists_planning_school.class_number,
             "newType": "organization",  # 组织类型 特殊参数必须穿这个
             "owner": school.school_no,
-            "parentId": grade.grade_no,
-            "parentName": "",
+            "parentId": grade.grade_name,#年级编号
+            # "parentName": grade.grade_name, #年级名称
             "tags": [
                 ""
             ],

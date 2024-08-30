@@ -238,6 +238,8 @@ class GradeRule(object):
             "isTopGroup":  True,
             "key": "",
             "manager": "",
+            # 年级名称  年级编号  父级ID是 空
+
             "name": exists_planning_school.grade_name,
             "newCode": exists_planning_school.grade_no,
             "newType": "organization",  # 组织类型 特殊参数必须穿这个
