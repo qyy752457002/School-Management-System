@@ -134,6 +134,7 @@ class StudentsBaseInfoRule(object):
         students_base_info = await self.students_base_info_dao.update_students_base_info(students_base_info,
                                                                                          *need_update_list)
         convert_snowid_in_model(students_base_info, ["id",'student_id','school_id','class_id','session_id','student_base_id','grade_id'])
+        print('原基本学生信息',origin_exist_data)
         if origin_exist_data is not None:
             try:
                 if origin_exist_data.class_id is not None:
@@ -143,14 +144,15 @@ class StudentsBaseInfoRule(object):
                     else:
                         pass
                     if origin_exist_data.class_id>0:
-                        print('不处理')
+                        print('不处理',origin_exist_data.class_id)
                         pass
                     else:
                         print('处理')
                         res,param_dict = await self.send_student_to_org_center(students_base_info,students_base_info)
                         await self.send_user_org_relation_to_org_center(param_dict, None, None, res)
 
-                        # origin_exist_data.class_id = None
+                        # origin_exi
+                        # st_data.class_id = None
                 else:
                     pass
 
@@ -213,7 +215,7 @@ class StudentsBaseInfoRule(object):
         psr = await student_rule.init_enum_value()
         await psr.convert_import_format_to_view_model(student_baseinfo)
         school = await self.school_dao.get_school_by_id(student_baseinfo.school_id)
-        student_baseinfo.class_id= '7228496316651933696'
+        # student_baseinfo.class_id= '7228496316651933696'
         classes  = await self.classes_dao.get_classes_by_id(student_baseinfo.class_id)
         student_baseinfo.identity_type = IdentityType.STUDENT.value
         # if school is None:
