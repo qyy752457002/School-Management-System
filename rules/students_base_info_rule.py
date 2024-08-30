@@ -27,7 +27,8 @@ from views.models.organization import Organization
 from views.models.students import NewBaseInfoCreate, StudentsBaseInfo
 from views.models.students import NewStudentsQuery, NewStudentsQueryRe
 from views.models.teachers import EducateUserModel
-from views.models.school import SchoolKeyInfo as SchoolModel
+from views.models.school import SchoolKeyInfo as SchoolModel, School
+
 
 @dataclass_inject
 class StudentsBaseInfoRule(object):
@@ -186,7 +187,20 @@ class StudentsBaseInfoRule(object):
         student_baseinfo.class_id= '7228496316651933696'
         classes  = await self.classes_dao.get_classes_by_id(student_baseinfo.class_id)
         student_baseinfo.identity_type = IdentityType.STUDENT.value
-        student_baseinfo.identity= 'primary_school_student'
+        # if school is None:
+        #     print('学校未找到 跳过发送组织', school)
+        #     return
+        school_operation_type = []
+        if school:
+            school2 = orm_model_to_view_model(school, School)
+            if school2.school_edu_level:
+                school_operation_type.append(school2.school_edu_level)
+            if school2.school_category:
+                school_operation_type.append(school2.school_category)
+            if school2.school_operation_type:
+                school_operation_type.append(school2.school_operation_type)
+        identity_type, identity = await get_identity_by_job(school_operation_type, 'student')
+        student_baseinfo.identity= identity
 
         dict_data = EducateUserModel(**student_baseinfo.__dict__,
                                      currentUnit= school.org_center_info,
