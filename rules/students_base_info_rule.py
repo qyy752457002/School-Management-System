@@ -134,6 +134,7 @@ class StudentsBaseInfoRule(object):
         students_base_info = await self.students_base_info_dao.update_students_base_info(students_base_info,
                                                                                          *need_update_list)
         convert_snowid_in_model(students_base_info, ["id",'student_id','school_id','class_id','session_id','student_base_id','grade_id'])
+        origin_exist_data= exists_students_base_info
         print('原基本学生信息',origin_exist_data)
         if origin_exist_data is not None:
             try:
@@ -148,7 +149,13 @@ class StudentsBaseInfoRule(object):
                         pass
                     else:
                         print('处理')
-                        res,param_dict = await self.send_student_to_org_center(students_base_info,students_base_info)
+                        studict = students_base_info.__dict__
+                        studict['school_id'] = origin_exist_data.school_id
+                        stuobj = StudentsBaseInfo(**studict)
+                        stutableobj = await self.students_dao.get_students_by_id(stuobj.student_id)
+
+                        # students_base_info.school_id = origin_exist_data.school_id
+                        res,param_dict = await self.send_student_to_org_center(stuobj,stutableobj)
                         await self.send_user_org_relation_to_org_center(param_dict, None, None, res)
 
                         # origin_exi
