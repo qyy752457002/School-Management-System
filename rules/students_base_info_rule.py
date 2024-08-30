@@ -108,8 +108,9 @@ class StudentsBaseInfoRule(object):
         students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfo, exclude=[""])
         try:
 
-            res,param_dict = await self.send_student_to_org_center(students_base_info,exits_student)
-            await self.send_user_org_relation_to_org_center(param_dict, None, None, res)
+            # res,param_dict = await self.send_student_to_org_center(students_base_info,exits_student)
+            # await self.send_user_org_relation_to_org_center(param_dict, None, None, res)
+            pass
 
         except Exception as e:
             print('对接组织中心异常',e)
@@ -118,7 +119,7 @@ class StudentsBaseInfoRule(object):
 
         return students_base_info
 
-    async def update_students_base_info(self, students_base_info):
+    async def update_students_base_info(self, students_base_info,origin_exist_data =None):
         """
         编辑学生基本信息
         """
@@ -133,6 +134,34 @@ class StudentsBaseInfoRule(object):
         students_base_info = await self.students_base_info_dao.update_students_base_info(students_base_info,
                                                                                          *need_update_list)
         convert_snowid_in_model(students_base_info, ["id",'student_id','school_id','class_id','session_id','student_base_id','grade_id'])
+        if origin_exist_data is not None:
+            try:
+                if origin_exist_data.class_id is not None:
+                    if isinstance(origin_exist_data.class_id,str):
+                        origin_exist_data.class_id = int(origin_exist_data.class_id)
+
+                    else:
+                        pass
+                    if origin_exist_data.class_id>0:
+                        print('不处理')
+                        pass
+                    else:
+                        print('处理')
+                        res,param_dict = await self.send_student_to_org_center(students_base_info,students_base_info)
+                        await self.send_user_org_relation_to_org_center(param_dict, None, None, res)
+
+                        # origin_exist_data.class_id = None
+                else:
+                    pass
+
+
+                pass
+
+            except Exception as e:
+                print('对接组织中心异常',e)
+                traceback.print_exc()
+
+            pass
 
         return students_base_info
 
