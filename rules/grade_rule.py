@@ -24,6 +24,7 @@ from views.models.system import DISTRICT_ENUM_KEY
 class GradeRule(object):
     grade_dao: GradeDAO
     school_dao: SchoolDAO
+
     async def get_grade_by_id(self, grade_id):
         grade_db = await self.grade_dao.get_grade_by_id(grade_id)
         # 可选 , exclude=[""]
@@ -64,12 +65,12 @@ class GradeRule(object):
                 grade_db.id = SnowflakeIdGenerator(1, 1).generate_id()
 
                 await self.grade_dao.add_grade(grade_db)
-        convert_snowid_in_model(grade_res, ["id", "school_id",])
+        convert_snowid_in_model(grade_res, ["id", "school_id", ])
         # 发送组织中心
         try:
-            await self.send_org_to_org_center(grade_db )
+            await self.send_org_to_org_center(grade_db)
         except Exception as e:
-            print('发送组织中心 异常',e)
+            print('发送组织中心 异常', e)
             traceback.print_exc()
         return grade_res
 
@@ -145,6 +146,7 @@ class GradeRule(object):
             convert_snowid_in_model(item, ["id", "school_id", ])
             lst.append(item)
         return lst
+
     async def send_org_to_org_center2(self, exists_planning_school_origin: Grade):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if hasattr(exists_planning_school, 'updated_at') and isinstance(exists_planning_school.updated_at,
@@ -214,9 +216,8 @@ class GradeRule(object):
 
         return None
 
-    async def send_org_to_org_center(self, exists_planning_school_origin:Grade, res_unit=None):
-        exists_planning_school =  exists_planning_school_origin
-
+    async def send_org_to_org_center(self, exists_planning_school_origin: Grade, res_unit=None):
+        exists_planning_school = exists_planning_school_origin
 
         school = await self.school_dao.get_school_by_id(exists_planning_school_origin.school_id)
         if school is None:
@@ -235,7 +236,7 @@ class GradeRule(object):
             "educateUnit": unitid if unitid is not None else school.school_name,
             "isDeleted": False,
             "isEnabled": True,
-            "isTopGroup":  True,
+            "isTopGroup": True,
             "key": "",
             "manager": "",
             # 年级名称  年级编号  父级ID是 空
@@ -264,4 +265,3 @@ class GradeRule(object):
         except Exception as e:
             print(e)
             raise e
-

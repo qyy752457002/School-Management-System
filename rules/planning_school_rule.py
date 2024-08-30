@@ -20,7 +20,6 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from sqlalchemy import select
 
-from business_exceptions.common import OrgCenterApiError
 from business_exceptions.planning_school import PlanningSchoolNotFoundError, \
     PlanningSchoolNotFoundByProcessInstanceIdError, PlanningSchoolExistsError, PlanningSchoolStatusError
 from daos.enum_value_dao import EnumValueDAO
@@ -30,7 +29,6 @@ from daos.planning_school_eduinfo_dao import PlanningSchoolEduinfoDAO
 from models.planning_school import PlanningSchool
 from models.public_enum import IdentityType
 from models.student_transaction import AuditAction
-from rules import enum_value_rule
 from rules.common.common_rule import send_request, send_orgcenter_request, get_identity_by_job, check_social_credit_code
 from rules.enum_value_rule import EnumValueRule
 from rules.school_communication_rule import SchoolCommunicationRule
@@ -50,7 +48,7 @@ from views.models.planning_school_eduinfo import PlanningSchoolEduInfo
 from views.models.system import PLANNING_SCHOOL_OPEN_WORKFLOW_CODE, \
     PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE, PLANNING_SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, DISTRICT_ENUM_KEY, \
     PROVINCE_ENUM_KEY, CITY_ENUM_KEY, PLANNING_SCHOOL_STATUS_ENUM_KEY, FOUNDER_TYPE_ENUM_KEY, FOUNDER_TYPE_LV2_ENUM_KEY, \
-    FOUNDER_TYPE_LV3_ENUM_KEY, SCHOOL_ORG_FORM_ENUM_KEY, OrgCenterApiStatus
+    FOUNDER_TYPE_LV3_ENUM_KEY, SCHOOL_ORG_FORM_ENUM_KEY
 from views.models.teachers import EducateUserModel
 
 
@@ -104,12 +102,12 @@ class PlanningSchoolRule(object):
             raise PlanningSchoolExistsError()
 
         # 校验编码 不能重复
-        exists_planning_school = await self.planning_school_dao.get_planning_school_by_args(planning_school_no=planning_school.planning_school_no)
+        exists_planning_school = await self.planning_school_dao.get_planning_school_by_args(
+            planning_school_no=planning_school.planning_school_no)
         if exists_planning_school:
             raise PlanningSchoolExistsError()
         # 检查社会信用编码唯一
         # exists_planning_school = await self.planning_school_dao.get_planning_school_by_args(social_credit_code=planning_school.social_credit_code)
-
 
         planning_school_db = view_model_to_orm_model(planning_school, PlanningSchool, exclude=["id"])
         planning_school_db.status = PlanningSchoolStatus.DRAFT.value
@@ -210,7 +208,7 @@ class PlanningSchoolRule(object):
 
         print(exists_planning_school.status, 2222222)
         if action == 'open':
-            #这个和分校的不同 分校是对接和更新本地库并列  这里是对接放在更新本地的方法内部   自动同步到 组织中心的处理  包含 规划校 对接过去 先加单位 再加组织 后续的    学校单位作为组织的成员 加入到组织里
+            # 这个和分校的不同 分校是对接和更新本地库并列  这里是对接放在更新本地的方法内部   自动同步到 组织中心的处理  包含 规划校 对接过去 先加单位 再加组织 后续的    学校单位作为组织的成员 加入到组织里
             res_unit, data_unit = await self.send_planning_school_to_org_center(exists_planning_school)
             #  自动添加一个组织
             res_oigna = await self.send_unit_orgnization_to_org_center(exists_planning_school, data_unit)
@@ -271,7 +269,7 @@ class PlanningSchoolRule(object):
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
         if hasattr(planning_school, 'social_credit_code'):
-            await check_social_credit_code(planning_school.social_credit_code,exists_planning_school)
+            await check_social_credit_code(planning_school.social_credit_code, exists_planning_school)
 
         if exists_planning_school.status == PlanningSchoolStatus.DRAFT.value:
             if hasattr(planning_school, 'status'):
@@ -779,7 +777,7 @@ class PlanningSchoolRule(object):
         planning_school_communication = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(
             exists_planning_school.id)
         cn_exists_planning_school = await self.convert_planning_school_to_export_format(exists_planning_school)
-        dict_data = {'administrativeDivisionCity':  '',
+        dict_data = {'administrativeDivisionCity': '',
                      'administrativeDivisionCounty': cn_exists_planning_school.block,
                      'administrativeDivisionProvince': planning_school_communication.loc_area_pro,
                      'createdTime': exists_planning_school.create_planning_school_date,
@@ -818,11 +816,11 @@ class PlanningSchoolRule(object):
                 unitid = response['data2'] if 'data2' in response.keys() else ''
                 exists_planning_school_origin.org_center_info = unitid
                 need_update_list = []
-                need_update_list.append( 'org_center_info')
+                need_update_list.append('org_center_info')
                 datadict['unitId'] = unitid
-                #检查这个方法 加字段
-                await self.planning_school_dao.update_planning_school_byargs(exists_planning_school_origin,  *need_update_list)
-
+                # 检查这个方法 加字段
+                await self.planning_school_dao.update_planning_school_byargs(exists_planning_school_origin,
+                                                                             *need_update_list)
 
             return response, datadict
         except Exception as e:
@@ -853,7 +851,7 @@ class PlanningSchoolRule(object):
                 school_operation_type.append(school.planning_school_operation_type)
         identity_type, identity = await get_identity_by_job(school_operation_type, '')
 
-        school  = await self.planning_school_dao.get_planning_school_by_id(
+        school = await self.planning_school_dao.get_planning_school_by_id(
             exists_planning_school_origin.id)
         dict_data = EducateUserModel(**exists_planning_school_origin.__dict__,
                                      # 单位 部门
@@ -871,8 +869,8 @@ class PlanningSchoolRule(object):
                                      departmentNames=data_org['displayName'],
                                      # 部门group的name
                                      departmentId=data_org['name'],
-                                     identity = identity,
-                                     identityType = IdentityType.STAFF.value,
+                                     identity=identity,
+                                     identityType=IdentityType.STAFF.value,
                                      user_account_status='active',
 
                                      realName=exists_planning_school_origin.admin
@@ -908,12 +906,12 @@ class PlanningSchoolRule(object):
         planning_school_communication = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(
             exists_planning_school.id)
         cn_exists_planning_school = await self.convert_planning_school_to_export_format(exists_planning_school)
-        dict_data = {'administrativeDivisionCity':  '',
+        dict_data = {'administrativeDivisionCity': '',
                      'administrativeDivisionCounty': exists_planning_school.block,
                      'administrativeDivisionProvince': '',
                      'createdTime': exists_planning_school.create_planning_school_date,
                      'locationAddress': planning_school_communication.detailed_address,
-                     'locationCity':  '',
+                     'locationCity': '',
                      'locationCounty': planning_school_communication.loc_area,
                      'locationProvince': planning_school_communication.loc_area_pro, 'owner': '',
                      'unitCode': exists_planning_school.planning_school_no,

@@ -2,7 +2,6 @@ import copy
 from datetime import date, datetime
 
 import shortuuid
-from mini_framework.authentication.config import authentication_config
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
