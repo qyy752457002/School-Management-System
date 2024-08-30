@@ -212,7 +212,7 @@ class NewsStudentsInfoView(BaseView):
             raise StudentStatusError()
         res = await self.students_base_info_rule.add_students_base_info(new_students_base_info)
         return res
-    # 保存学生基本信息 触发对接组织中心
+    # 保存学生基本信息 todo  触发对接组织中心 这里已经选择了班级
     async def put_newstudentbaseinfo(self, new_students_base_info: NewBaseInfoUpdate, request: Request):
         """
         新生编辑基本信息
@@ -235,7 +235,7 @@ class NewsStudentsInfoView(BaseView):
             # 然后，如果您需要一个 date 对象，可以通过 datetime 对象的 date 方法获取
             new_students_base_info.admission_date = datetime_object.date()
 
-        res = await self.students_base_info_rule.update_students_base_info(new_students_base_info)
+        res = await self.students_base_info_rule.update_students_base_info(new_students_base_info,origin)
 
         json_string = json.dumps(log_con, ensure_ascii=False)
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
