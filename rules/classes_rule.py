@@ -46,6 +46,7 @@ class ClassesRule(ImportCommonAbstractRule,object):
         return classes
 
     async def add_classes(self, classes: ClassesModel):
+        classes_input = copy.deepcopy(classes)
         exists_classes = await self.classes_dao.get_classes_by_classes_name(
             classes.class_name, classes.school_id,classes)
         if exists_classes:
@@ -107,13 +108,16 @@ class ClassesRule(ImportCommonAbstractRule,object):
         classes_db.updated_at = datetime.now()
 
         classes_db.id = SnowflakeIdGenerator(1, 1).generate_id()
-        classes_db = await self.classes_dao.add_classes(classes_db)
-        classes = orm_model_to_view_model(classes_db, ClassesModel, exclude=["created_at", 'updated_at'])
+        classes_db_out = await self.classes_dao.add_classes(classes_db)
+        classes_out= orm_model_to_view_model(classes_db, ClassesModel, exclude=["created_at", 'updated_at'])
         await self.grade_dao.increment_class_number(classes.school_id,classes.grade_id)
 
         # 组织中心对接过去 todo  接口故障  超时  不让他影响接口
         try:
-            await self.send_org_to_org_center(classes_db,classes)
+            school = await self.school_dao.get_school_by_id(classes_input.school_id)
+            print(school)
+
+            await self.send_org_to_org_center(classes,school)
             pass
         except TypeError as e:
             print('班级作为部门对接失败',e)
@@ -123,7 +127,7 @@ class ClassesRule(ImportCommonAbstractRule,object):
             traceback.print_exc()
 
 
-        return classes
+        return classes_out
 
     async def update_classes(self, classes, ctype=1):
         exists_classes = await self.classes_dao.get_classes_by_id(classes.id)
@@ -229,15 +233,15 @@ class ClassesRule(ImportCommonAbstractRule,object):
         if hasattr(item,'class_type'):
             item.class_type = self.class_systems.get(item.class_type, item.class_type)
         pass
-    async def send_org_to_org_center(self, exists_planning_school_origin: Classes,classes):
-        exists_planning_school = copy.deepcopy(exists_planning_school_origin)
-        print(111,exists_planning_school_origin,classes )
+    async def send_org_to_org_center(self, exists_planning_school_origin: Classes,school):
+        # exists_planning_school = copy.deepcopy(exists_planning_school_origin)
+        exists_planning_school =  exists_planning_school_origin
         # pprint.pprint(exists_planning_school)
         # if hasattr(exists_planning_school, 'updated_at') and isinstance(exists_planning_school.updated_at,
         #                                                                 (date, datetime)):
         #     exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
 
-        school = await self.school_dao.get_school_by_id(exists_planning_school_origin.school_id)
+        # school = await self.school_dao.get_school_by_id(exists_planning_school_origin.school_id)
         if school is None:
             print('学校未找到 跳过发送组织', exists_planning_school.school_id)
             return
@@ -291,7 +295,7 @@ class ClassesRule(ImportCommonAbstractRule,object):
         datadict = convert_dates_to_strings(datadict)
         print(datadict, '字典参数')
 
-        response = await send_orgcenter_request(apiname, datadict, 'post', False)
+        response = await send_orgcenter_request(apiname, datadict, 'post', True)
         print(response, '接口响应')
         try:
             print(response)
