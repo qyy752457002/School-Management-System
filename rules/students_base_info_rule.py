@@ -1,4 +1,6 @@
+import copy
 import traceback
+from datetime import date, datetime
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.utils.json import JsonUtils
@@ -8,21 +10,24 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 from pydantic import BaseModel
 
 from business_exceptions.student import StudentNotFoundError, StudentExistsError, StudentSessionNotFoundError
+from daos.class_dao import ClassesDAO
 from daos.school_communication_dao import SchoolCommunicationDAO
 from daos.school_dao import SchoolDAO
 from daos.student_session_dao import StudentSessionDao
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
+from models.public_enum import IdentityType
 from models.student_session import StudentSessionstatus
 from models.students import Student
 from models.students_base_info import StudentBaseInfo
-from rules.common.common_rule import send_orgcenter_request
+from rules.common.common_rule import send_orgcenter_request, get_identity_by_job
 from rules.students_rule import StudentsRule
 from views.common.common_view import page_none_deal, convert_snowid_to_strings, convert_snowid_in_model
+from views.models.organization import Organization
 from views.models.students import NewBaseInfoCreate, StudentsBaseInfo
 from views.models.students import NewStudentsQuery, NewStudentsQueryRe
 from views.models.teachers import EducateUserModel
-
+from views.models.school import SchoolKeyInfo as SchoolModel
 
 @dataclass_inject
 class StudentsBaseInfoRule(object):
@@ -31,6 +36,8 @@ class StudentsBaseInfoRule(object):
     student_session_dao: StudentSessionDao
     school_dao: SchoolDAO
     school_commu_dao: SchoolCommunicationDAO
+    classes_dao: ClassesDAO
+
 
     async def get_students_base_info_by_student_id(self, student_id)->StudentsBaseInfo:
         """
@@ -100,7 +107,9 @@ class StudentsBaseInfoRule(object):
         students_base_info = orm_model_to_view_model(students_base_info_db, StudentsBaseInfo, exclude=[""])
         try:
 
-            await self.send_student_to_org_center(students_base_info,exits_student)
+            res,param_dict = await self.send_student_to_org_center(students_base_info,exits_student)
+            await self.send_user_org_relation_to_org_center(param_dict, None, None, res)
+
         except Exception as e:
             print('对接组织中心异常',e)
             traceback.print_exc()
@@ -174,9 +183,13 @@ class StudentsBaseInfoRule(object):
         psr = await student_rule.init_enum_value()
         await psr.convert_import_format_to_view_model(student_baseinfo)
         school = await self.school_dao.get_school_by_id(student_baseinfo.school_id)
+        student_baseinfo.class_id= '7228496316651933696'
+        classes  = await self.classes_dao.get_classes_by_id(student_baseinfo.class_id)
+        student_baseinfo.identity_type = IdentityType.STUDENT.value
+        student_baseinfo.identity= 'primary_school_student'
 
         dict_data = EducateUserModel(**student_baseinfo.__dict__,
-                                     currentUnit=student_baseinfo.school,
+                                     currentUnit= school.org_center_info,
                                      # createdTime= student_baseinfo.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      # updatedTime=student_baseinfo.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
                                      name=exits_student.student_name,
@@ -185,8 +198,8 @@ class StudentsBaseInfoRule(object):
                                      phoneNumber= '',
                                      # departmentId="基础信息管理系统",
                                      #不同于老师显示的  基础系统名字 可能不一定准确  这里暂时用班级试试
-                                     departmentId=student_baseinfo.class_id,
-                                     departmentName=student_baseinfo.class_id,
+                                     departmentId=classes.class_name,
+                                     departmentName=classes.class_name,
                                      gender= exits_student.student_gender,
                                      idcard=exits_student.id_number,
                                      idcardType=exits_student.id_type,
@@ -194,14 +207,16 @@ class StudentsBaseInfoRule(object):
                                      # 组织和主单位 确保学校已经对接进去了
                                      owner=school.school_no,
                                      mainUnitName=school.school_no,
-                                     # identity=student_baseinfo.identity,
-                                     identityTypeNames=student_baseinfo.identity_type,
+                                     # identity= '',
+                                     # identityType = IdentityType.STUDENT.value,
+
+                                     # identityTypeNames=student_baseinfo.identity_type,
 
                                      )
         params_data = dict_data.__dict__
         # 秘钥
-        params_data['clientId'] = 'c07ac36559b4a860d248'
-        params_data['clientSecret'] = '5445838d08a0e7b2139acf77868e858c592e09f3'
+        # params_data['clientId'] = 'c07ac36559b4a860d248'
+        # params_data['clientSecret'] = '5445838d08a0e7b2139acf77868e858c592e09f3'
         # params_data = JsonUtils.dict_to_json_str(dict_data)
         api_name = '/api/add-educate-user'
         # 字典参数
@@ -211,9 +226,48 @@ class StudentsBaseInfoRule(object):
         print(response, '接口响应')
         try:
             print(response)
-            return response
+            return response,params_data
         except Exception as e:
             print(e)
             raise e
             return response
+        return None
+
+    async def send_user_org_relation_to_org_center(self, param_dict , res_unit,
+                                                   data_org, res_admin):
+
+        unitid = None
+        userid = None
+        if isinstance(res_unit, dict):
+            unitid = res_unit['data2']
+        if isinstance(res_admin, dict):
+            userid = res_admin['data2']
+        #
+        dict_data = {
+            "createdTime": "1989-05-20 17:50:56",
+            "departmentId": param_dict['departmentId'],
+            "identity":param_dict['identity'],
+            "identityType": IdentityType.STUDENT.value,
+            # 单位和用户ID
+            # "unitId": "74",
+            "userId": userid,
+            "unitId":  param_dict['currentUnit'],
+        }
+
+        apiname = '/api/add-educate-user-department-identitys'
+        # 字典参数 todo  调整  参数完善   另 服务范围的接口
+        datadict = [dict_data]
+        # datadict = convert_dates_to_strings(datadict)
+        print('调用添加部门用户关系  字典参数', datadict, )
+
+        response = await send_orgcenter_request(apiname, datadict, 'post', False)
+        print('调用添加部门用户关系 接口响应', response, )
+        try:
+
+            return response, datadict
+        except Exception as e:
+            print(e)
+            raise e
+            return response
+
         return None
