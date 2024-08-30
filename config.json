@@ -94,8 +94,8 @@
       "issue_at": 0
     },
     "oauth2": {
-      "client_id": "8b09974946cd0e2d1bc2",
-      "client_secret": "3e4f37fd9ca22088dfd83c51673c099f4d14fa96",
+      "client_id": "9c49aa8d79c97951c242",
+      "client_secret": "b83838efbd8669d325fdc5b5e7ce1173aacb85a4",
       "authorization_url": "https://org-center.f123.pub/org-center/login/oauth/authorize",
       "token_url": "https://org-center.f123.pub/api/login/oauth/access_token",
       "user_info_url": "https://org-center.f123.pub/api/userinfo",
@@ -138,7 +138,7 @@
   "workflow_service": {
     "name": "workflow_service",
     "description": "",
-    "url": "http://127.0.0.1:8081"
+    "url": "https://school-workflow-dev.f123.pub"
   },
   "orgcenter_service": {
     "name": "orgcenter_service",

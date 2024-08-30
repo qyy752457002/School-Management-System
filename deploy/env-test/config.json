@@ -105,8 +105,8 @@
       "issue_at": 0
     },
     "oauth2": {
-      "client_id": "0b344fa7bbccfbef743d",
-      "client_secret": "e2a030f3e839a4bc12b4b4e368576db85669d2c9",
+      "client_id": "8b09974946cd0e2d1bc2",
+      "client_secret": "3e4f37fd9ca22088dfd83c51673c099f4d14fa96",
       "authorization_url": "https://org-center.f123.pub/org-center/login/oauth/authorize",
       "token_url": "https://org-center.f123.pub/api/login/oauth/access_token",
       "user_info_url": "https://org-center.f123.pub/api/userinfo",
