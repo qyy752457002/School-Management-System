@@ -82,7 +82,7 @@ doc_upload: str = Field('',   description=" 附件",examples=[''])
 
 
     transaction_type: Mapped[str] = mapped_column(String(30), nullable=True, comment="异动类型", default='')
-    transaction_type_lv2: Mapped[str] = mapped_column(String(30), nullable=True, comment="异动类型2级", default='')
+    transaction_type_lv2: Mapped[str] = mapped_column(String(30), nullable=True, comment="异动类型2级,枚举transaction_type_lv2", default='')
 
     country_no: Mapped[str] = mapped_column(String(255), nullable=True, comment="国家学籍号码", default='')
     # out_date: Mapped[str] = mapped_column(String(255), nullable=True, comment="转出日期", default='')
