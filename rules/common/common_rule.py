@@ -743,6 +743,11 @@ async def request_org_center_login_out():
         datadict = params
         response = await send_orgcenter_request(apiname, datadict, 'get', True)
         print('登出res',response)
+        if response["status"] == "ok":
+            # raise Exception(response["msg"])
+            pass
+        return True
+
 
     except Exception as e:
         print('获取登出异常', e)

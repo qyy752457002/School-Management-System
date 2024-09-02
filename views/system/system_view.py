@@ -181,4 +181,4 @@ class SystemView(BaseView):
     # 退出的接口
     async def patch_login_out(self,  ):
         res = await common_rule.login_out()
-        return res
+        return { }
