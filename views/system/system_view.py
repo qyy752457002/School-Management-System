@@ -179,6 +179,6 @@ class SystemView(BaseView):
         await self.teachers_info_rule.update_teachers_info_import(info_model, user_id)
         return
     # 退出的接口
-    async def patch_login_out(self,  ):
+    async def get_login_out(self,  ):
         res = await common_rule.login_out()
         return { }
