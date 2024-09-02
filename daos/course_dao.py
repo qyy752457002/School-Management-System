@@ -98,7 +98,7 @@ class CourseDAO(DAOBase):
 
     async def get_all_course(self, filterdict):
         session = await self.slave_db()
-        temodel = select(Course)
+        temodel = select(Course).order_by(Course.course_no.asc())
         if filterdict:
             for key, value in filterdict.items():
                 temodel = temodel.where(getattr(Course, key) == value)
