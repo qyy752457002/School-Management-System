@@ -50,9 +50,10 @@ class CourseView(BaseView):
                    # campus_name:str= Query(None, description="校区名称" ,min_length=1,max_length=20,example='XX小学'),
                    school_id: int | str = Query(0, description="学校ID", example='1'),
                    ):
-        print(page_request)
-        obj = await get_extend_params(request)
-        if obj.school_id:
+        obj= await get_extend_params(request)
+        print(page_request,obj)
+
+        if obj.school_id and school_id==0:
             school_id = obj.school_id
 
         items = []
