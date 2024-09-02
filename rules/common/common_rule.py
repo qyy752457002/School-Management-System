@@ -686,6 +686,7 @@ async def get_org_center_user_info():
         }
         datadict = params
         response = await send_orgcenter_request(apiname, datadict, 'get', False)
+        print('获取用户权限信息 status',response["status"])
         # print(response)
         if response["status"] != "ok":
             raise Exception(response["msg"])
@@ -712,3 +713,43 @@ async def verify_auth_by_file_name(sub: str|dict, obj, act, file_name):
         print("deny the request, show an error")
         return False
     pass
+
+# 退出
+async def login_out():
+    """
+
+    """
+    # account = request_context_manager.current().current_login_account
+    # account_name = account.name
+
+    # file_name = await process_userinfo(account_name)
+    user_info = await request_org_center_login_out()
+
+    print( '验证结果',user_info,)
+
+    return user_info
+async def request_org_center_login_out():
+    try:
+        token = request_context_manager.current().token
+        apiname = "/api/logout"
+        # owner = "sysjyyjyorg"
+        params = {
+            # "id": f"{owner}/{account.name}",
+            # "clientId": authentication_config.oauth2.client_id,
+            # "clientSecret": authentication_config.oauth2.client_secret,
+            "state":  'application-center',
+            "post_logout_redirect_uri":  '', #如果是要跳转 传入要跳的url
+            "id_token_hint": token,
+        }
+        datadict = params
+        response = await send_orgcenter_request(apiname, datadict, 'get', True)
+        print('登出res',response)
+        if response["status"] == "ok":
+            # raise Exception(response["msg"])
+            pass
+        return True
+
+
+    except Exception as e:
+        print('获取登出异常', e)
+        return None

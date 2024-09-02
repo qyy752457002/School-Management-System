@@ -40,7 +40,7 @@ action_target_id: str = Field(..., title="操作对象ID", description="操作�
     operator_id: Mapped[int] = mapped_column(BigInteger, nullable=True, comment=" 操作人", default=0)
     operator_name: Mapped[str] = mapped_column(String(64), nullable=True, comment="操作人姓名", default='')
 
-    change_module: Mapped[str] = mapped_column(String(64), nullable=True, comment="变更模块")
+    change_module: Mapped[str] = mapped_column(String(64), nullable=True, comment="变更模块,枚举change_module")
     change_detail: Mapped[str] = mapped_column(String(64), nullable=True, comment="变更详情")
 
     process_instance_id: Mapped[int] = mapped_column(BigInteger,nullable=True, comment="流程ID")
