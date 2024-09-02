@@ -686,6 +686,7 @@ async def get_org_center_user_info():
         }
         datadict = params
         response = await send_orgcenter_request(apiname, datadict, 'get', False)
+        print('获取用户权限信息 status',response["status"])
         # print(response)
         if response["status"] != "ok":
             raise Exception(response["msg"])
