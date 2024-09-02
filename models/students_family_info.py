@@ -32,7 +32,7 @@ class StudentFamilyInfo(BaseDBModel):
     student_id: Mapped[int] = mapped_column(BigInteger,nullable=False, comment="学生ID")  # 外键，与学生表关联，关系为一对多
     name: Mapped[str] = mapped_column(String(64), nullable=True, comment="姓名")
     gender: Mapped[str] = mapped_column(String(64), nullable=True, comment="性别")
-    relationship: Mapped[str] = mapped_column(String(64), nullable=True, comment="关系")
+    relationship: Mapped[str] = mapped_column(String(64), nullable=True, comment="关系枚举relation")
     is_guardian: Mapped[bool] = mapped_column( default=False, nullable=True, comment="是否监护人")
     identification_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="证件类型")
     identification_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="证件号码")
@@ -47,5 +47,5 @@ class StudentFamilyInfo(BaseDBModel):
     identity: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份",default='')
     identity_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份类型",default='')
     # 职业(family_member_occupation)
-    family_member_occupation: Mapped[str] = mapped_column(String(128), nullable=True,default='', comment="家庭成员职业")
+    family_member_occupation: Mapped[str] = mapped_column(String(128), nullable=True,default='', comment="家庭成员职业枚举family_member_occupation")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
