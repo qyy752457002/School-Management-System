@@ -41,7 +41,12 @@ class CourseDAO(DAOBase):
                                                         CourseSchoolNature.course_no == Course.course_no,
                                                         isouter=True).where(Course.is_deleted == False).order_by(Course.course_no.asc())
         for key, value in kwargs.items():
-            query = query.where(getattr(Course, key) == value)
+            if value is None:
+                continue
+            if key == 'school_nature':
+                query = query.where(CourseSchoolNature.school_nature == value )
+            else:
+                query = query.where(getattr(Course, key) == value)
         paging = await self.query_page(query, page_request)
         return paging
 
