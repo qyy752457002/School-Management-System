@@ -131,7 +131,14 @@ class CourseRule(object):
             exists_course = await self.course_dao.get_course_by_school_id(      school_id)
             if exists_course:
                 raise CourseAlreadyExistError()
+        #     自动对list里的课程遍历 针对courseno去重
+        cousrnos= [ ]
+
         for course in course_list:
+            if course.course_no in cousrnos:
+                print("重复课程",course.course_no)
+                continue
+            cousrnos.append(course.course_no)
             # 扩展参数 放入到视图模型 再转换给orm
             if obj and  obj.county_id:
                 course.district=obj.county_id
