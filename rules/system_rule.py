@@ -109,6 +109,9 @@ class SystemRule(object):
             ids.append(item['id'])
             if title == '':
                 title = item['app_name']
+            # 判断如果action里有汉字的顿号 则提换为英文的逗号
+            if item['action'] and '、' in item['action']:
+                item['action'] = item['action'].replace('、', ',')
 
             system = orm_model_to_view_model(item, PermissionMenuModel, other_mapper={
                 "menu_name": "power_name",
@@ -129,6 +132,9 @@ class SystemRule(object):
             ids_3.append(item['id'])
 
             if int(item['parent_id']) in res.keys():
+                # 判断如果action里有汉字的顿号 则提换为英文的逗号
+                if item['action'] and '、' in item['action']:
+                    item['action'] = item['action'].replace('、', ',')
                 system = orm_model_to_view_model(item, PermissionMenuModel, other_mapper={
                     "menu_name": "power_name",
                     "menu_path": "power_url",
@@ -148,6 +154,8 @@ class SystemRule(object):
                 print(item.id, item.children)
                 for value in paging3:
                     if int(value['parent_id']) == int(item.id):
+                        if value['action'] and '、' in value['action']:
+                            value['action'] = value['action'].replace('、', ',')
                         system = orm_model_to_view_model(value, PermissionMenuModel, other_mapper={
                             "menu_name": "power_name",
                             "menu_path": "power_url",

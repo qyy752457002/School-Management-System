@@ -710,11 +710,13 @@ async def get_org_center_user_info():
 async def verify_auth_by_file_name(sub: str|dict, obj, act, file_name):
     import casbin
     e = casbin.Enforcer("model.conf", file_name)
+    print("校验权限  ", sub, obj, act)
+
     if e.enforce(sub, obj, act):
-        print("permit alice to read data1")
+        print("permit 允许")
         return True
     else:
-        print("deny the request, show an error")
+        print("deny the request, 权限 不足")
         return False
     pass
 

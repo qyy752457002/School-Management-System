@@ -13,10 +13,10 @@ def require_role_permission(role: str, action: str):
         async def wrapper(*args, **kwargs):
             v = await verify_auth_by_obj_and_act(role, action)
             is_permission_verify = system_config.system_config.get("permission_verify")
-            print('permission verify',  is_permission_verify)
+            print('权限验证开关',  is_permission_verify)
 
             if not v:
-                print('no permission', role, action,)
+                print('权限不足 拦截 no permission', role, action,)
                 if is_permission_verify:
                     raise NoPermissionError()
             return await func(*args, **kwargs)
