@@ -39,9 +39,14 @@ class CourseDAO(DAOBase):
     async def query_course_with_page(self, page_request: PageRequest, **kwargs):
         query = select(Course).select_from(Course).join(CourseSchoolNature,
                                                         CourseSchoolNature.course_no == Course.course_no,
-                                                        isouter=True).where(Course.is_deleted == False)
+                                                        isouter=True).where(Course.is_deleted == False).order_by(Course.course_no.asc())
         for key, value in kwargs.items():
-            query = query.where(getattr(Course, key) == value)
+            if value is None:
+                continue
+            if key == 'school_nature':
+                query = query.where(CourseSchoolNature.school_nature == value )
+            else:
+                query = query.where(getattr(Course, key) == value)
         paging = await self.query_page(query, page_request)
         return paging
 
@@ -98,7 +103,7 @@ class CourseDAO(DAOBase):
 
     async def get_all_course(self, filterdict):
         session = await self.slave_db()
-        temodel = select(Course)
+        temodel = select(Course).order_by(Course.course_no.asc())
         if filterdict:
             for key, value in filterdict.items():
                 temodel = temodel.where(getattr(Course, key) == value)

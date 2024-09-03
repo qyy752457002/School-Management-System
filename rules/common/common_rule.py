@@ -9,6 +9,7 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.utils.json import JsonUtils
 from mini_framework.utils.logging import logger
+from mini_framework.web.middlewares.auth import get_auth_url
 from mini_framework.web.request_context import request_context_manager
 from pydantic import BaseModel
 
@@ -726,8 +727,13 @@ async def login_out():
     user_info = await request_org_center_login_out()
 
     print( '验证结果',user_info,)
+    request=request_context_manager.current()
 
-    return user_info
+    auth_uri = await get_auth_url(request)
+
+
+
+    return auth_uri
 async def request_org_center_login_out():
     try:
         token = request_context_manager.current().token
