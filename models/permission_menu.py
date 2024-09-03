@@ -21,7 +21,7 @@ class PermissionMenu(BaseDBModel):
     menu_name: Mapped[str] = mapped_column(String(64),  nullable=True, comment="菜单名称",default='')
     menu_path: Mapped[str] = mapped_column(String(64),  nullable=True, comment="菜单路径",default='')
     resource_code: Mapped[str] = mapped_column(String(128),  nullable=True, comment="资源编码-用于资源和菜单的绑定",default='')
-    action: Mapped[str] = mapped_column(String(128),  nullable=True, comment="允许的资源动作",default='')
+    action: Mapped[str] = mapped_column(String(600),  nullable=True, comment="允许的资源动作",default='')
     menu_icon: Mapped[str] = mapped_column(String(255),  nullable=True, comment="菜单图标",default='')
     menu_type: Mapped[str] = mapped_column(String(255),  nullable=True, comment="菜单类型",default='')
     menu_code: Mapped[str] = mapped_column(String(255),  nullable=True, comment="菜单简码",default='')
