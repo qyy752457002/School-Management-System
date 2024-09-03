@@ -101,6 +101,8 @@ class PermissionMenuDAO(DAOBase):
             query = query.where(PermissionMenu.parent_id == 0)
         if resouce_codes:
             if isinstance(resouce_codes, list):
+                # 针对list 去重
+                resouce_codes = list(set(resouce_codes))
                 query = query.where(PermissionMenu.resource_code.in_(resouce_codes))
                 pass
             else:
