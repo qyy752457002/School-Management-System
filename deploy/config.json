@@ -150,6 +150,7 @@
   "orgcenter_service": {
     "name": "orgcenter_service",
     "description": "",
+    "app_code": "1238915324217024",
     "url": "https://org-center.f123.pub"
   },
   "transaction_service": {
