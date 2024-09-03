@@ -608,8 +608,8 @@ async def verify_auth_by_obj_and_act(obj, act):
     # 定义请求的属性
 
     token = request_context_manager.current()
-    query= token['query_params']
-    print(query)
+    # query= token['query_params']
+    # print(query)
     objattr = {
         "Age": 25,
         "department": "sales"
@@ -619,7 +619,10 @@ async def verify_auth_by_obj_and_act(obj, act):
 
 
 async def process_userinfo(account_name):
-    appCode = APP_CODE
+    # print(222, authentication_config.oauth2)
+    # appCode = authentication_config.oauth2.app_code
+    appCode = orgcenter_service_config.orgcenter_config.get("app_code")
+
     user_info = await get_cached_userinfo(account_name)
     if user_info is None:
         return None
