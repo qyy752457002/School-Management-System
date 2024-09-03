@@ -99,6 +99,7 @@
       "authorization_url": "https://org-center.f123.pub/org-center/login/oauth/authorize",
       "token_url": "https://org-center.f123.pub/api/login/oauth/access_token",
       "user_info_url": "https://org-center.f123.pub/api/userinfo",
+      "login_out_url": "https://org-center.f123.pub/api/logout",
       "redirect_url": "http://localhost:8080/api/school/auth/callback/debug",
       "grant_type": "authorization_code",
       "scope": "scope",
@@ -133,7 +134,7 @@
   },
   "system_config": {
     "add_class": 0,
-    "permission_verify": true
+    "permission_verify": false
   },
   "workflow_service": {
     "name": "workflow_service",
