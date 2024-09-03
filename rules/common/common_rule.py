@@ -719,6 +719,51 @@ async def verify_auth_by_file_name(sub: str|dict, obj, act, file_name):
         print("deny the request, 权限 不足")
         return False
     pass
+def filter_action_by_file_name( item , processed_dict):
+    #读取文件 获取数据 匹配里面的内容
+    if item['action'] and item['resource_code']:
+        if  item['resource_code']  in processed_dict.keys():
+            listtt = item['action'].split(',')
+            for i,action in  enumerate(listtt):
+                if action in processed_dict[item['resource_code']]:
+                    print('匹配到权限', item)
+                    return True
+                else:
+                    listtt.remove(action)
+                    print('未匹配到权限', item)
+            # print('匹配到权限', item)
+            item['action']= ','.join(listtt)
+            return True
+        else:
+            return False
+
+
+    pass
+def read_file_to_permission_dict(file_content):
+    # 初始化一个空字典
+    result_dict = {}
+
+    # 按行分割文件内容并遍历每一行
+    for line in file_content.strip().split('\n'):
+        # 用逗号分割每一行，并去除多余的空格
+        parts = [part.strip() for part in line.split(',')]
+
+        # 检查行是否有足够的部分
+        if len(parts) >= 4:
+            key = parts[2]
+            value = parts[3]
+
+            # 如果键已经在字典中，将值追加到列表中
+            if key in result_dict:
+                result_dict[key].append(value)
+            else:
+                # 否则，创建一个包含值的新的列表
+                result_dict[key] = [value]
+
+    return result_dict
+
+
+
 
 # 退出
 async def login_out():
