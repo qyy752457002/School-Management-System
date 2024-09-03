@@ -513,7 +513,7 @@ class SchoolView(BaseView):
 
         task = Task(
             #todo sourcefile无法记录3个参数  故 暂时用3个参数来实现  需要 在cofnig里有配置   对应task类里也要有这个 键
-            task_type="school_import",
+            task_type="school_task_school_import",
             # 文件 要对应的 视图模型
             # payload=SchoolTask(file_name=file_name, scene= ImportScene.SCHOOL.value, bucket='school_import' ),
             payload=task_model,
@@ -672,7 +672,7 @@ class SchoolView(BaseView):
         page_search= convert_query_to_none(page_search)
         print('入参接收2',page_search)
         task = Task(
-            task_type="school_export",
+            task_type="school_task_school_export",
             payload=page_search,
             operator=request_context_manager.current().current_login_account.account_id
         )

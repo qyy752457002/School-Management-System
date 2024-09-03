@@ -9,6 +9,7 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 
 from business_exceptions.course import CourseNotFoundError, CourseAlreadyExistError
 from daos.course_dao import CourseDAO
+from daos.school_dao import SchoolDAO
 from models.course import Course
 from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
 from views.models.course import Course as CourseModel
@@ -18,6 +19,7 @@ from views.models.extend_params import ExtendParams
 @dataclass_inject
 class CourseRule(object):
     course_dao: CourseDAO
+    school_dao: SchoolDAO
 
     async def get_course_by_id(self, course_id):
         course_id=int(course_id)
@@ -83,6 +85,7 @@ class CourseRule(object):
             "school_id": school_id,
             "course_id": course_id,
             "course_no": course_no,
+            "school_nature": None,
             "city": extobj.city,
             "district": extobj.county_id,
             "is_deleted":False
@@ -99,6 +102,12 @@ class CourseRule(object):
             del kdict["city"]
         if not kdict["district"]:
             del kdict["district"]
+        # 如果有学校ID  读取学校的 二级类型
+        if school_id is not None:
+            school_info = await self.school_dao.get_school_by_id(school_id)
+            if school_info:
+                kdict["school_nature"] = school_info.school_category
+        print(kdict)
 
         paging = await self.course_dao.query_course_with_page(page_request,**kdict
                                                                                 )
@@ -122,7 +131,14 @@ class CourseRule(object):
             exists_course = await self.course_dao.get_course_by_school_id(      school_id)
             if exists_course:
                 raise CourseAlreadyExistError()
+        #     自动对list里的课程遍历 针对courseno去重
+        cousrnos= [ ]
+
         for course in course_list:
+            if course.course_no in cousrnos:
+                print("重复课程",course.course_no)
+                continue
+            cousrnos.append(course.course_no)
             # 扩展参数 放入到视图模型 再转换给orm
             if obj and  obj.county_id:
                 course.district=obj.county_id

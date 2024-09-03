@@ -1,0 +1,209 @@
+{
+  "web_server": {
+    "name": "school",
+    "description": "学校综合管理系统",
+    "version": "0.0.1"
+  },
+  "databases": {
+    "default": {
+      "async_driver": "kingbase+asyncpg",
+      "sync_driver": "kingbase",
+      "master": {
+        "host": "10.41.10.72",
+        "port": 54321,
+        "user": "schooloms",
+        "password": "cXSWBD$vnYq*wbeN8^S2sd#sR2",
+        "database": "school_oms",
+        "pool_size": 50
+      },
+      "slaves": [
+        {
+          "host": "10.41.10.72",
+          "port": 54321,
+          "user": "schooloms",
+          "password": "cXSWBD$vnYq*wbeN8^S2sd#sR2",
+          "database": "school_oms"
+        },
+        {
+          "host": "10.41.10.72",
+          "port": 54321,
+          "user": "schooloms",
+          "password": "cXSWBD$vnYq*wbeN8^S2sd#sR2",
+          "database": "school_oms"
+        }
+      ]
+    }
+  },
+  "storage": {
+    "endpoint": "cunchu.syn.cn",
+    "access_key": "F48k6OaKWDMvpMnJd980",
+    "secret_key": "XLDImojyUsvVoEGJN8MoVBzrjecrUUicR25LNewK",
+    "token_exp_sec": 600,
+    "buckets": {
+      "student": {
+        "name": "school-oms",
+        "path": "/student"
+      },
+      "school": {
+        "name": "school-oms",
+        "path": "school"
+      },
+      "teacher": {
+        "name": "school-oms",
+        "path": "/teacher"
+      }
+    }
+  },
+  "redis": {
+    "servers": {
+      "default": {
+        "host": "10.41.9.89",
+        "port": 6379,
+        "password": ""
+      }
+    },
+    "dbs": {
+      "session": {
+        "db": 4,
+        "prefix": "",
+        "server_key": "default"
+      },
+      "jwt_blacklist": {
+        "db": 5,
+        "prefix": "",
+        "server_key": "default"
+      },
+      "snowflake": {
+        "db": 4,
+        "prefix": "",
+        "server_key": "default"
+      },
+      "login_state": {
+        "db": 6,
+        "prefix": "",
+        "server_key": "default"
+      },
+      "account": {
+        "db": 7,
+        "prefix": "",
+        "server_key": "default"
+      }
+    }
+  },
+  "authentication": {
+    "jwt": {
+      "secret": "Jci5NpY9p2D7JPKXrVL3J8",
+      "algorithm": "RS256",
+      "expires": 3600,
+      "issuer": "lfun",
+      "issue_at": 0
+    },
+    "oauth2": {
+      "client_id": "96f9b99bc1f8dbaeb66a",
+      "client_secret": "388647ca9398429aa78459f19b5e2d9f2e9c0eb7",
+      "authorization_url": "https://org-center.syn.cn/org-center/login/oauth/authorize",
+      "token_url": "https://org-center.syn.cn/api/login/oauth/access_token",
+      "user_info_url": "https://org-center.syn.cn/api/userinfo",
+      "redirect_url": "https://one-oms.syn.cn/auth/oauth2/callback",
+      "grant_type": "authorization_code",
+      "scope": "scope",
+      "cert": "cert",
+      "home_url": "https://one-oms.syn.cn/",
+      "no_login_urls": [
+        "/api/school/openapi.json",
+        "/api/school/v1/public",
+        "/api/school/docs",
+        "/api/school/v1/sync"
+      ]
+    }
+  },
+  "kafka": {
+    "bootstrap_servers": [
+      "10.41.10.32:9092",
+      "10.41.10.33:9092",
+      "10.41.9.108:9092",
+      "10.41.9.109:9092",
+      "10.41.9.110:9092",
+      "10.41.9.111:9092",
+      "10.41.10.34:9092"
+    ],
+    "auto_offset_reset": "earliest",
+    "group_id": "test",
+    "topics": {
+      "account_create": {
+        "partitions": 3,
+        "replication_factor": 3
+      },
+      "account_export": {
+        "partitions": 3,
+        "replication_factor": 3
+      }
+    }
+  },
+  "system_config": {
+    "permission_verify": false,
+    "add_class": 0
+  },
+  "workflow_service": {
+    "name": "workflow_service",
+    "description": "",
+    "url": "https://one-oms.syn.cn/workflow"
+  },
+  "orgcenter_service": {
+    "name": "orgcenter_service",
+    "description": "",
+    "url": "https://org-center.syn.cn"
+  },
+  "transaction_service": {
+    "retry": {
+      "max_attempts": 3,
+      "delay": 1,
+      "backoff": 2,
+      "jitter": true
+    }
+  },
+  "task_service": {
+    "app_id": "task_service",
+    "retry": {
+      "max_attempts": 3,
+      "delay": 1,
+      "backoff": 2,
+      "jitter": true
+    },
+    "alert": {
+      "email_from": "",
+      "email_to": [],
+      "email_smtp_server": "",
+      "email_smtp_port": 25,
+      "sms_api_endpoint": "",
+      "sms_api_key": ""
+    },
+    "task_types": {
+
+      "teacher_import": {
+        "topic": "teacher_import",
+        "name": "教师导入",
+        "consumer_group_id": "service",
+        "description": "教师导入",
+        "executor_cls_model": "views.tasks.new_teacher_task.TeacherImportExecutor",
+        "payload_cls_model": "views.models.teachers.TeacherFileStorageModel"
+      },
+      "teacher_export": {
+        "topic": "teacher_export",
+        "name": "教师导出",
+        "consumer_group_id": "service",
+        "description": "教师导出",
+        "executor_cls_model": "views.tasks.new_teacher_task.TeacherExportExecutor",
+        "payload_cls_model": "views.models.teachers.CurrentTeacherQuery"
+      },
+      "teacher_save_export": {
+        "topic": "teacher_export",
+        "name": "",
+        "consumer_group_id": "service",
+        "description": "",
+        "executor_cls_model": "views.tasks.new_teacher_task.TeacherSaveExportExecutor",
+        "payload_cls_model": "views.models.teachers.TeacherFileStorageModel"
+      }
+    }
+  }
+}

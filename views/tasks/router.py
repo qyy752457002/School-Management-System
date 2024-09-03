@@ -31,7 +31,7 @@ def init_task_router():
     from mini_framework.async_task.router import task_router
 
     task_router.register(
-        code="institution_import",
+        code="school_task_institution_import",
         consumer_group_id="service",
         topic="institution_import",
         name="事业单位导入任务",
@@ -41,7 +41,7 @@ def init_task_router():
         description="事业单位导入任务",
     )
     task_router.register(
-        code="institution_export",
+        code="school_task_institution_export",
         consumer_group_id="service",
         topic="institution_export",
         name="事业单位导出",
@@ -51,7 +51,7 @@ def init_task_router():
         description="事业单位导出",
     )
     task_router.register(
-        code="new_student_import",
+        code="school_task_new_student_import",
         consumer_group_id="service",
         topic="new_student_import",
         name="新生导入",
@@ -61,7 +61,7 @@ def init_task_router():
         description="新生导入",
     )
     task_router.register(
-        code="newstudent_familyinfo_import",
+        code="school_task_newstudent_familyinfo_import",
         consumer_group_id="service",
         topic="newstudent_familyinfo_import",
         name="新生家庭成员信息导入",
@@ -71,7 +71,7 @@ def init_task_router():
         description="新生家庭成员信息导入",
     )
     task_router.register(
-        code="school_import",
+        code="school_task_school_import",
         consumer_group_id="service",
         topic="school_import",
         name="学校导入",
@@ -81,7 +81,7 @@ def init_task_router():
         description="学校导入",
     )
     task_router.register(
-        code="school_export",
+        code="school_task_school_export",
         consumer_group_id="service",
         topic="school_export",
         name="学校导出",
@@ -91,7 +91,7 @@ def init_task_router():
         description="学校导出",
     )
     task_router.register(
-        code="planning_school_import",
+        code="school_task_planning_school_import",
         consumer_group_id="service",
         topic="planning_school_import",
         name="规划校上传和导入",
@@ -101,7 +101,7 @@ def init_task_router():
         description="规划校上传和导入",
     )
     task_router.register(
-        code="planning_school_export",
+        code="school_task_planning_school_export",
         consumer_group_id="service",
         topic="planning_school_export",
         name="规划校的导出",
@@ -112,7 +112,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="student_export",
+        code="school_task_student_export",
         consumer_group_id="service",
         topic="student_export",
         name="学生导出",
@@ -122,7 +122,7 @@ def init_task_router():
         description="学生导出",
     )
     task_router.register(
-        code="newstudent_classdivision_export",
+        code="school_task_newstudent_classdivision_export",
         consumer_group_id="service",
         topic="newstudent_classdivision_export",
         name="学生分班记录导出",
@@ -132,7 +132,7 @@ def init_task_router():
         description="学生分班记录导出",
     )
     task_router.register(
-        code="class_import",
+        code="school_task_class_import",
         consumer_group_id="service",
         topic="class_import",
         name="班级导入",
@@ -142,7 +142,7 @@ def init_task_router():
         description="班级导入",
     )
     task_router.register(
-        code="teacher_import",
+        code="school_task_teacher_import",
         consumer_group_id="service",
         topic="teacher_import",
         name="教师导入",
@@ -152,7 +152,7 @@ def init_task_router():
         description="教师导入",
     )
     task_router.register(
-        code="teacher_export",
+        code="school_task_teacher_export",
         consumer_group_id="service",
         topic="teacher_export",
         name="教师导出",
@@ -162,7 +162,7 @@ def init_task_router():
         description="教师导出",
     )
     task_router.register(
-        code="teacher_save_import",
+        code="school_task_teacher_save_import",
         consumer_group_id="service",
         topic="teacher_save_import",
         name="教师保存导入",
@@ -172,7 +172,7 @@ def init_task_router():
         description="",
     )
     task_router.register(
-        code="teacher_work_experience_import",
+        code="school_task_teacher_work_experience_import",
         consumer_group_id="service",
         topic="teacher_work_experience_import",
         name="教师工作经历导入",
@@ -182,7 +182,7 @@ def init_task_router():
         description="",
     )
     task_router.register(
-        code="teacher_learn_experience_import",
+        code="school_task_teacher_learn_experience_import",
         consumer_group_id="service",
         topic="teacher_learn_experience_import",
         name="teacher_learn_experience导入",
@@ -192,7 +192,7 @@ def init_task_router():
         description="",
     )
     task_router.register(
-        code="teacher_job_appointments_import",
+        code="school_task_teacher_job_appointments_import",
         consumer_group_id="service",
         topic="teacher_job_appointments_import",
         name="teacher_job_appointments导入",
@@ -203,7 +203,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="teacher_professional_titles_import",
+        code="school_task_teacher_professional_titles_import",
         consumer_group_id="service",
         topic="teacher_professional_titles_import",
         name="teacher_professional_titles导入",
@@ -214,7 +214,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="teacher_qualifications_import",
+        code="school_task_teacher_qualifications_import",
         consumer_group_id="service",
         topic="teacher_qualifications_import",
         name="teacher_qualifications导入",
@@ -225,7 +225,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="teacher_skill_certificates_import",
+        code="school_task_teacher_skill_certificates_import",
         consumer_group_id="service",
         topic="teacher_skill_certificates_import",
         name="teacher_skill_certificates导入",
@@ -236,7 +236,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="teacher_ethic_records_rewards_import",
+        code="school_task_teacher_ethic_records_rewards_import",
         consumer_group_id="service",
         topic="teacher_ethic_records_rewards_import",
         name="teacher_ethic_records_rewards导入",
@@ -247,7 +247,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="teacher_ethic_records_disciplinary_import",
+        code="school_task_teacher_ethic_records_disciplinary_import",
         consumer_group_id="service",
         topic="teacher_ethic_records_disciplinary_import",
         name="teacher_ethic_records_disciplinary导入",
@@ -258,7 +258,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="educational_teaching_import",
+        code="school_task_educational_teaching_import",
         consumer_group_id="service",
         topic="educational_teaching_import",
         name="educational_teaching导入",
@@ -269,7 +269,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="talent_programs_import",
+        code="school_task_talent_programs_import",
         consumer_group_id="service",
         topic="talent_programs_import",
         name="talent_programs导入",
@@ -280,7 +280,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="domestic_training_import",
+        code="school_task_domestic_training_import",
         consumer_group_id="service",
         topic="domestic_training_import",
         name="domestic_training导入",
@@ -291,7 +291,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="overseas_study_import",
+        code="school_task_overseas_study_import",
         consumer_group_id="service",
         topic="overseas_study_import",
         name="overseas_study导入",
@@ -302,7 +302,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="annual_review_import",
+        code="school_task_annual_review_import",
         consumer_group_id="service",
         topic="annual_review_import",
         name="annual_review导入",
@@ -313,7 +313,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="research_achievements_project_import",
+        code="school_task_research_achievements_project_import",
         consumer_group_id="service",
         topic="research_achievements_project_import",
         name="research_achievements_project导入",
@@ -324,7 +324,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="research_achievements_book_import",
+        code="school_task_research_achievements_book_import",
         consumer_group_id="service",
         topic="research_achievements_book_import",
         name="research_achievements_book导入",
@@ -335,7 +335,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="research_achievements_paper_import",
+        code="school_task_research_achievements_paper_import",
         consumer_group_id="service",
         topic="research_achievements_paper_import",
         name="research_achievements_paper导入",
@@ -346,7 +346,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="research_achievements_reward_import",
+        code="school_task_research_achievements_reward_import",
         consumer_group_id="service",
         topic="research_achievements_reward_import",
         name="research_achievements_reward导入",
@@ -357,7 +357,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="research_achievements_artwork_import",
+        code="school_task_research_achievements_artwork_import",
         consumer_group_id="service",
         topic="research_achievements_artwork_import",
         name="research_achievements_artwork导入",
@@ -368,7 +368,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="research_achievements_patent_import",
+        code="school_task_research_achievements_patent_import",
         consumer_group_id="service",
         topic="research_achievements_patent_import",
         name="research_achievements_patent导入",
@@ -379,7 +379,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="research_achievements_competition_import",
+        code="school_task_research_achievements_competition_import",
         consumer_group_id="service",
         topic="research_achievements_competition_import",
         name="research_achievements_competition导入",
@@ -390,7 +390,7 @@ def init_task_router():
     )
 
     task_router.register(
-        code="research_achievements_medicine_import",
+        code="school_task_research_achievements_medicine_import",
         consumer_group_id="service",
         topic="research_achievements_medicine_import",
         name="research_achievements_medicine导入",

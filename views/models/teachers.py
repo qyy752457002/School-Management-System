@@ -169,6 +169,7 @@ class EducateUserModel(BaseModel):
     userCode: str | None = Field("", title="用户编码", description="用户编码")
     userId: str | None = Field("", title="用户ID", description="用户ID")
     userStatus: str | None = Field("", title="用户状态", description="用户状态")
+    user_account_status: str | None = Field("", title="", description="")
 
     @model_validator(mode='before')
     @classmethod
@@ -179,7 +180,7 @@ class EducateUserModel(BaseModel):
                 data[_change] = str(data[_change])
             else:
                 pass
-        if data.get("userCode") is None:
+        if data.get("userCode") is None and 'idCardNumber' in data:
             data["userCode"] = data["idCardNumber"]
         data["phoneNumber"] = data["name"] if data.get("name") else ""
         return data

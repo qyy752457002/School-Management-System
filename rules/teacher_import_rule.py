@@ -196,9 +196,8 @@ class TeacherImportRule:
         # await self.task_dao.add_task_result(task_result)
         return file_storage_resp
 
-    async def import_teachers_save_test(self):
-
-        local_file_path = "821.xlsx"
+    async def import_teachers_save_test(self,org_id):
+        local_file_path = os.path.join("rules", "821.xlsx")
         teacher_id_list = []
         reader = ExcelReader()
         reader.set_data(local_file_path)
@@ -208,7 +207,6 @@ class TeacherImportRule:
         data = reader.execute()["Sheet1"]
         if not isinstance(data, list):
             raise ValueError("数据格式错误")
-        results = []
         for idx, item in enumerate(data):
             item = item.dict()
             school = await self.school_dao.get_school_by_school_name(item["teacher_employer"])
@@ -224,7 +222,7 @@ class TeacherImportRule:
                 teacher_id = await self.teacher_rule.add_teachers_import_save_test(teacher_model)
                 teacher_id_list.append(teacher_id)
             except Exception as ex:
-                print(ex, '表内数据异常')
+                return ex
         return teacher_id_list
 
     async def teachers_export(self, task: Task):

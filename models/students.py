@@ -145,8 +145,8 @@ class Student(BaseDBModel):
     student_gender: Mapped[str] = mapped_column(String(64), nullable=True, comment="学生性别")
     enrollment_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="报名号")
     birthday: Mapped[date] = mapped_column(Date, nullable=True, comment="生日", default='')
-    id_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="证件类别")
+    id_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="证件类别,枚举id_type")
     id_number: Mapped[str] = mapped_column(String(64), nullable=True, comment="证件号码")
     photo: Mapped[str] = mapped_column(String(64), nullable=True, comment="照片")  # 图像处理再定
-    approval_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="状态", default="enrollment")
+    approval_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="状态,枚举student_approval_status", default="enrollment")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")

@@ -206,8 +206,6 @@ class OrganizationRule(object):
                                                                         (date, datetime)):
             exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
 
-        # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer
-
         school = await self.school_dao.get_school_by_id(exists_planning_school.school_id)
         if school is None:
             print('学校未找到 跳过发送组织', exists_planning_school.school_id)
@@ -224,7 +222,7 @@ class OrganizationRule(object):
             if parent is None:
                 print('上级部门未找到 跳过发送组织', exists_planning_school.parent_id)
                 return
-            parent_id = parent.org_code
+            parent_id = parent.org_name
         dict_data = {
             "contactEmail": "j.vyevxiloyy@qq.com",
             "displayName": exists_planning_school.org_name,
@@ -234,7 +232,7 @@ class OrganizationRule(object):
             "isTopGroup": int(exists_planning_school.parent_id) == 0,
             "key": "",
             "manager": "",
-            "name": org_code,
+            "name": exists_planning_school.org_name,
             "newCode": exists_planning_school.org_code,
             "newType": "organization",  # 组织类型 特殊参数必须穿这个
             "owner": school.school_no,

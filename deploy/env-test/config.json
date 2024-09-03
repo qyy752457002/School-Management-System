@@ -14,13 +14,16 @@
         "user": "schooloms",
         "password": "J16s10Wp08yfEskmVAJH",
         "database": "school_oms_test",
-        "pool_size": 50
+        "pool_size": 35,
+        "max_overflow": 15
       },
       "slaves": [
         {
           "host": "10.0.0.42",
           "port": 54321,
           "user": "schooloms",
+          "pool_size": 35,
+          "max_overflow": 15,
           "password": "J16s10Wp08yfEskmVAJH",
           "database": "school_oms_test"
         },
@@ -28,6 +31,8 @@
           "host": "10.0.0.42",
           "port": 54321,
           "user": "schooloms",
+          "pool_size": 35,
+          "max_overflow": 15,
           "password": "J16s10Wp08yfEskmVAJH",
           "database": "school_oms_test"
         }
@@ -100,8 +105,8 @@
       "issue_at": 0
     },
     "oauth2": {
-      "client_id": "0b344fa7bbccfbef743d",
-      "client_secret": "e2a030f3e839a4bc12b4b4e368576db85669d2c9",
+      "client_id": "9c49aa8d79c97951c242",
+      "client_secret": "b83838efbd8669d325fdc5b5e7ce1173aacb85a4",
       "authorization_url": "https://org-center.f123.pub/org-center/login/oauth/authorize",
       "token_url": "https://org-center.f123.pub/api/login/oauth/access_token",
       "user_info_url": "https://org-center.f123.pub/api/userinfo",

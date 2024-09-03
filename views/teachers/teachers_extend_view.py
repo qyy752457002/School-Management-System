@@ -704,7 +704,7 @@ class TeacherExtendImportView(BaseView):
                                                                                    example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
         task = Task(
-            task_type="teacher_work_experience_import",
+            task_type="school_task_teacher_work_experience_import",
             payload=filestorage,
             operator=request_context_manager.current().current_login_account.account_id
         )
@@ -716,7 +716,7 @@ class TeacherExtendImportView(BaseView):
     async def post_teacher_learn_experience_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                     example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="teacher_learn_experience_import", payload=filestorage,
+        task = Task(task_type="school_task_teacher_learn_experience_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         # await self.teacher_extend_experience_rule.teacher_learn_experience_import(file_id)
@@ -726,7 +726,7 @@ class TeacherExtendImportView(BaseView):
     async def post_teacher_job_appointments_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                     example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="teacher_job_appointments_import", payload=filestorage,
+        task = Task(task_type="school_task_teacher_job_appointments_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -736,7 +736,7 @@ class TeacherExtendImportView(BaseView):
     async def post_teacher_professional_titles_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                        example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="teacher_professional_titles_import", payload=filestorage,
+        task = Task(task_type="school_task_teacher_professional_titles_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -746,7 +746,7 @@ class TeacherExtendImportView(BaseView):
     async def post_teacher_qualifications_import(self,
                                                  file_id: int | str = Query(..., title="文件id", example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="teacher_qualifications_import", payload=filestorage,
+        task = Task(task_type="school_task_teacher_qualifications_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -756,7 +756,7 @@ class TeacherExtendImportView(BaseView):
     async def post_teacher_skill_certificates_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                       example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="teacher_skill_certificates_import", payload=filestorage,
+        task = Task(task_type="school_task_teacher_skill_certificates_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -766,7 +766,7 @@ class TeacherExtendImportView(BaseView):
     async def post_teacher_ethic_records_rewards_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                          example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="teacher_ethic_records_rewards_import", payload=filestorage,
+        task = Task(task_type="school_task_teacher_ethic_records_rewards_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -776,7 +776,7 @@ class TeacherExtendImportView(BaseView):
     async def post_teacher_ethic_records_disciplinary_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                               example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="teacher_ethic_records_disciplinary_import", payload=filestorage,
+        task = Task(task_type="school_task_teacher_ethic_records_disciplinary_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -786,7 +786,7 @@ class TeacherExtendImportView(BaseView):
     async def post_educational_teaching_import(self,
                                                file_id: int | str = Query(..., title="文件id", example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="educational_teaching_import", payload=filestorage,
+        task = Task(task_type="school_task_educational_teaching_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -795,7 +795,7 @@ class TeacherExtendImportView(BaseView):
 
     async def post_talent_programs_import(self, file_id: int | str = Query(..., title="文件id", example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="talent_programs_import", payload=filestorage,
+        task = Task(task_type="school_task_talent_programs_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -804,7 +804,7 @@ class TeacherExtendImportView(BaseView):
 
     async def post_domestic_training_import(self, file_id: int | str = Query(..., title="文件id", example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="domestic_training_import", payload=filestorage,
+        task = Task(task_type="school_task_domestic_training_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -813,7 +813,7 @@ class TeacherExtendImportView(BaseView):
 
     async def post_overseas_study_import(self, file_id: int | str = Query(..., title="文件id", example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="overseas_study_import", payload=filestorage,
+        task = Task(task_type="school_task_overseas_study_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -822,7 +822,7 @@ class TeacherExtendImportView(BaseView):
 
     async def post_annual_review_import(self, file_id: int | str = Query(..., title="文件id", example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="annual_review_import", payload=filestorage,
+        task = Task(task_type="school_task_annual_review_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -832,7 +832,7 @@ class TeacherExtendImportView(BaseView):
     async def post_research_achievements_project_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                          example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="research_achievements_project_import", payload=filestorage,
+        task = Task(task_type="school_task_research_achievements_project_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -842,7 +842,7 @@ class TeacherExtendImportView(BaseView):
     async def post_research_achievements_book_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                       example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="research_achievements_book_import", payload=filestorage,
+        task = Task(task_type="school_task_research_achievements_book_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -852,7 +852,7 @@ class TeacherExtendImportView(BaseView):
     async def post_research_achievements_paper_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                        example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="research_achievements_paper_import", payload=filestorage,
+        task = Task(task_type="school_task_research_achievements_paper_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -862,7 +862,7 @@ class TeacherExtendImportView(BaseView):
     async def post_research_achievements_reward_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                         example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="research_achievements_reward_import", payload=filestorage,
+        task = Task(task_type="school_task_research_achievements_reward_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -872,7 +872,7 @@ class TeacherExtendImportView(BaseView):
     async def post_research_achievements_artwork_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                          example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="research_achievements_artwork_import", payload=filestorage,
+        task = Task(task_type="school_task_research_achievements_artwork_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -882,7 +882,7 @@ class TeacherExtendImportView(BaseView):
     async def post_research_achievements_patent_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                         example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="research_achievements_patent_import", payload=filestorage,
+        task = Task(task_type="school_task_research_achievements_patent_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -892,7 +892,7 @@ class TeacherExtendImportView(BaseView):
     async def post_research_achievements_competition_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                              example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="research_achievements_competition_import", payload=filestorage,
+        task = Task(task_type="school_task_research_achievements_competition_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")
@@ -902,7 +902,7 @@ class TeacherExtendImportView(BaseView):
     async def post_research_achievements_medicine_import(self, file_id: int | str = Query(..., title="文件id",
                                                                                           example=123)) -> Task:
         filestorage = await self.teacher_rule.get_task_model_by_id(file_id)
-        task = Task(task_type="research_achievements_medicine_import", payload=filestorage,
+        task = Task(task_type="school_task_research_achievements_medicine_import", payload=filestorage,
                     operator=request_context_manager.current().current_login_account.account_id)
         task = await app.task_topic.send(task)
         print("发生任务成功")

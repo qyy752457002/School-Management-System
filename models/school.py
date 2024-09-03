@@ -25,9 +25,10 @@ class School(BaseDBModel):
                                                                  comment="办学许可证号")
     block: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="地域管辖区")
     borough: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="行政管辖区")
-    school_edu_level: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="教育层次")
-    school_category: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校（机构）类别")
-    school_operation_type: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="办学类型")
+    school_edu_level: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="教育层次:枚举school_nature 1级")
+    # school_category粗 枚举 school_nature_lv2 2级细 目前是枚举 school_nature_lv2
+    school_category: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校（机构）类别,枚举 school_nature_lv2 2级")
+    school_operation_type: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="办学类型:枚举 school_nature_lv3 3级枚举")
     school_org_type: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校办别")
     school_level: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校星级")
     status: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="状态")
@@ -48,7 +49,7 @@ class School(BaseDBModel):
     leg_repr_certificatenumber: Mapped[str] = mapped_column(String(64), nullable=True, comment="法人证书号", default='')
 
     urban_rural_nature: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="城乡性质")
-    school_org_form: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="办学组织形式")
+    school_org_form: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="办学组织形式,枚举school_org_form")
     school_closure_date: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校关闭日期")
     department_unit_number: Mapped[str] = mapped_column(String(64), nullable=True, default='',
                                                         comment="属地管理行政部门单位号")

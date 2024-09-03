@@ -25,7 +25,7 @@ class Grade(BaseDBModel):
 
 
     grade_no: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级编号")
-    grade_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="年级类型/班级类型 例如 一年级 二年级 三年级")
+    grade_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="年级类型/班级类型 例如 一年级 二年级 三年级,枚举grade")
 
     grade_name: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级名称/班级名称")
     sort_number: Mapped[int] = mapped_column(nullable=True,default=0, comment="排序序号")
