@@ -139,8 +139,8 @@
     }
   },
   "system_config": {
-    "permission_verify": false,
-    "add_class": 0
+    "add_class": 0,
+    "permission_verify": true
   },
   "workflow_service": {
     "name": "workflow_service",
