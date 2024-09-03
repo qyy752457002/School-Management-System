@@ -95,6 +95,7 @@
     },
     "oauth2": {
       "client_id": "9c49aa8d79c97951c242",
+      "app_code": "1238914398508736",
       "client_secret": "b83838efbd8669d325fdc5b5e7ce1173aacb85a4",
       "authorization_url": "https://org-center.f123.pub/org-center/login/oauth/authorize",
       "token_url": "https://org-center.f123.pub/api/login/oauth/access_token",
