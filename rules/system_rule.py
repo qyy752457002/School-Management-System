@@ -105,10 +105,11 @@ class SystemRule(object):
         file_name=None
         processed_dict={}
         is_permission_verify = system_config.system_config.get("permission_verify")
-        if not  is_permission_verify:
+        if   is_permission_verify:
             # 获取权限一次
             account = request_context_manager.current().current_login_account
             account_name = account.name
+            print('开始菜单的权限过滤方法 --')
 
             file_name = await process_userinfo(account_name)
             with open(file_name, 'r') as file:
@@ -127,7 +128,7 @@ class SystemRule(object):
             # 判断如果action里有汉字的顿号 则提换为英文的逗号
             if item['action'] and '、' in item['action']:
                 item['action'] = item['action'].replace('、', ',')
-            filter_action_by_file_name(item,processed_dict)
+            await filter_action_by_file_name(item,processed_dict)
 
             system = orm_model_to_view_model(item, PermissionMenuModel, other_mapper={
                 "menu_name": "power_name",
@@ -151,7 +152,7 @@ class SystemRule(object):
                 # 判断如果action里有汉字的顿号 则提换为英文的逗号
                 if item['action'] and '、' in item['action']:
                     item['action'] = item['action'].replace('、', ',')
-                filter_action_by_file_name(item,processed_dict)
+                await filter_action_by_file_name(item,processed_dict)
 
                 system = orm_model_to_view_model(item, PermissionMenuModel, other_mapper={
                     "menu_name": "power_name",
@@ -174,7 +175,7 @@ class SystemRule(object):
                     if int(value['parent_id']) == int(item.id):
                         if value['action'] and '、' in value['action']:
                             value['action'] = value['action'].replace('、', ',')
-                        filter_action_by_file_name(value,processed_dict)
+                        await filter_action_by_file_name(value,processed_dict)
 
                         system = orm_model_to_view_model(value, PermissionMenuModel, other_mapper={
                             "menu_name": "power_name",

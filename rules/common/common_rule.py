@@ -1,5 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import json
+import random
 import traceback
 from datetime import datetime
 from typing import List, Type, Dict
@@ -719,20 +720,25 @@ async def verify_auth_by_file_name(sub: str|dict, obj, act, file_name):
         print("deny the request, 权限 不足")
         return False
     pass
-def filter_action_by_file_name( item , processed_dict):
+async def filter_action_by_file_name( item , processed_dict):
     #读取文件 获取数据 匹配里面的内容
+    print(11,item,)
     if item['action'] and item['resource_code']:
         if  item['resource_code']  in processed_dict.keys():
             listtt = item['action'].split(',')
-            for i,action in  enumerate(listtt):
+            newlist = []
+            for action in  listtt:
                 if action in processed_dict[item['resource_code']]:
-                    print('匹配到权限', item)
-                    return True
+                    print('匹配到权限', action)
+                    newlist.append(action)
+                    continue
+                    # return True
                 else:
                     listtt.remove(action)
-                    print('未匹配到权限', item)
+                    print('移除这个权限 ',action, processed_dict[item['resource_code']])
             # print('匹配到权限', item)
-            item['action']= ','.join(listtt)
+            item['action']= ','.join(newlist)
+            print('过滤后res',item)
             return True
         else:
             return False
