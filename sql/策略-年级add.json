@@ -1,0 +1,12 @@
+[
+  {
+    "appCode": "1238915324217024",
+    "policyCode": "grade_add_manager_rule",
+    "displayName": "测试年级新增策略",
+    "description": "测试年级新增策略",
+    "authorizationModel": "RBAC",  
+    "ruleCode": [
+      "p,  grade, add"
+    ]
+  }
+]
