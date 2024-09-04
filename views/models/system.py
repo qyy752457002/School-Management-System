@@ -134,10 +134,21 @@ class EduType(str, Enum):
     VOCATIONAL = "vocational"
     INSTITUTE = "institute"
     ADMINISTRATION = "administration"
+    NULL =  None
 
     @classmethod
     def to_list(cls):
         return [cls.KG, cls.K12, cls.VOCATIONAL, cls.INSTITUTE, cls.ADMINISTRATION]
+    @classmethod
+    def to_dict(cls):
+        return {
+            cls.KG:SchoolNature.PRESCHOOLEDUATION,
+            cls.K12:SchoolNature.PRESCHOOLEDUATION,
+            cls.VOCATIONAL:SchoolNature.PRESCHOOLEDUATION,
+                }
+    @classmethod
+    def get_mapper(cls, key):
+        return cls.to_dict().get(key, cls.NULL)
 
 class ImportScene(str, Enum):
     """ 导入场景的模版场景定义
@@ -185,6 +196,12 @@ class SystemConfig(BaseModel):
     id: int|str|None = Field('0', title="",description="id",examples=['1'])
     # created_at: datetime|None = Field('',  description="",examples=[''])
 
+class SchoolNature(str, Enum):
+    """
+    """
+    PRESCHOOLEDUATION =   "preSchoolEducation"
+    PRIMARYEDUATION =   "primaryEducation"
+    SECONDARYEDUATION =  "secondaryEducation"
 
 
 
