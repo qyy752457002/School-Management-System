@@ -402,4 +402,17 @@ def write_json_to_log( data_list,filename='a.log'):
             # 将字典转换为 JSON 格式字符串，并确保每条记录后换行
             file.write(json.dumps(data,cls=DateEncoder) + '\n')
 
+from mini_framework.multi_tenant.tenant import Tenant, TenantStatus
 
+
+def get_tenant_by_code(code: str):
+    return Tenant(
+        code=code,
+        name="租户1",
+        description="租户1",
+        status=TenantStatus.active,
+        client_id="5447ba36b3b8359c7ac7",
+        client_secret="449dfa687cfbd86673f563b8b1050409efd8125a",
+        redirect_url="http://localhost:8000/auth/callback/debug",
+        home_url="http://localhost:8000",
+    )

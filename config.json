@@ -2,7 +2,9 @@
   "web_server": {
     "name": "school",
     "description": "学校综合管理系统",
-    "version": "0.0.1"
+    "version": "0.0.1",
+    "need_auth": true,
+    "multi_tenant": true
   },
   "databases": {
     "default": {
@@ -88,9 +90,10 @@
   "authentication": {
     "jwt": {
       "secret": "Jci5NpY9p2D7JPKXrVL3J8",
-      "algorithm": "RS256",
+      "algorithm": "HS256",
       "expires": 3600,
       "issuer": "lfun",
+      "audience": "audience",
       "issue_at": 0
     },
     "oauth2": {
