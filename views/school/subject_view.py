@@ -1,4 +1,5 @@
 from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.multi_tenant.registry import tenant_registry
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
@@ -44,6 +45,7 @@ class SubjectView(BaseView):
         obj =  await get_extend_params(request)
         items = []
         res = await self.subject_rule.query_subject_with_page(page_request,   school_id,subject_name, obj )
+        print(2222,tenant_registry)
         return res
 
     # 删除
