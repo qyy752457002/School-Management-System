@@ -131,9 +131,12 @@ class PlanningSchoolDAO(DAOBase):
             pass
         # 扩展参数的 类型映射 到 字段 进行筛选
         if extend_params is not None and extend_params.edu_type:
-            school_edu_level = EduType.get_mapper(extend_params.edu_type)
-            if school_edu_level is not None:
-                query = query.where(PlanningSchool.planning_school_edu_level ==  school_edu_level)
+            planning_school_category = EduType.get_mapper(extend_params.edu_type)
+            if planning_school_category is not None:
+                if isinstance(planning_school_category, list):
+                    query = query.where(PlanningSchool.planning_school_category.in_(planning_school_category))
+                else:
+                    query = query.where(PlanningSchool.planning_school_category ==  planning_school_category)
 
         if planning_school_name:
             query = query.where(PlanningSchool.planning_school_name == planning_school_name)

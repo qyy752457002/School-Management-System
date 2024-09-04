@@ -142,9 +142,17 @@ class EduType(str, Enum):
     @classmethod
     def to_dict(cls):
         return {
-            cls.KG:SchoolNature.PRESCHOOLEDUATION,
-            cls.K12:SchoolNature.PRESCHOOLEDUATION,
-            cls.VOCATIONAL:SchoolNature.PRESCHOOLEDUATION,
+            cls.KG:SchoolNatureLv2.KINDERGARTEN,
+            cls.K12: [
+                SchoolNatureLv2.PRIMARYSCHOOL,
+                SchoolNatureLv2.ADULTPRIMARYSCHOOL,
+                SchoolNatureLv2.ORDINARYJUNIORHIGH,
+                SchoolNatureLv2.VOCATIONALJUNIORHIGH,
+                SchoolNatureLv2.ADULTJUNIORHIGH,
+                SchoolNatureLv2.ORDINARYHIGHSCHOOL,
+                SchoolNatureLv2.ADULTHIGHSCHOOL,
+                       ],
+            cls.VOCATIONAL:SchoolNatureLv2.SECONDARYVOCATIONALSCHOOL,
                 }
     @classmethod
     def get_mapper(cls, key):
@@ -202,7 +210,18 @@ class SchoolNature(str, Enum):
     PRESCHOOLEDUATION =   "preSchoolEducation"
     PRIMARYEDUATION =   "primaryEducation"
     SECONDARYEDUATION =  "secondaryEducation"
-
+class SchoolNatureLv2(str, Enum):
+    """
+    """
+    KINDERGARTEN =   "kindergarten"
+    PRIMARYSCHOOL  =   "primarySchool"
+    ADULTPRIMARYSCHOOL   =  "adultPrimarySchool"
+    ORDINARYJUNIORHIGH =  "ordinaryJuniorHigh"
+    VOCATIONALJUNIORHIGH  =  "vocationalJuniorHigh"
+    ADULTJUNIORHIGH  =  "adultJuniorHigh"
+    ORDINARYHIGHSCHOOL =  "ordinaryHighSchool"
+    ADULTHIGHSCHOOL =  "adultHighSchool"
+    SECONDARYVOCATIONALSCHOOL =  "secondaryVocationalSchool"
 
 
 
