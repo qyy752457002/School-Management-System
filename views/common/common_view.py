@@ -4,10 +4,12 @@ from enum import Enum
 
 from fastapi.params import Query
 from id_validator import validator
+from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.design_patterns.singleton import singleton
 
 
 from daos.enum_value_dao import EnumValueDAO
+from rules.tenant_rule import TenantRule
 from views.common.constant import Constant
 from views.models.extend_params import ExtendParams
 from views.models.system import UnitType, OrgCenterApiStatus
@@ -405,8 +407,11 @@ def write_json_to_log( data_list,filename='a.log'):
 from mini_framework.multi_tenant.tenant import Tenant, TenantStatus
 
 
-def get_tenant_by_code(code: str):
-    return Tenant(
+async def get_tenant_by_code(code: str):
+    rule = get_injector(TenantRule)
+    tenant = await rule.get_tenant_by_code(code)
+    print(111,tenant)
+    tt =  Tenant(
         code=code,
         name="租户1",
         description="租户1",
@@ -416,3 +421,5 @@ def get_tenant_by_code(code: str):
         redirect_url="http://localhost:8000/auth/callback/debug",
         home_url="http://localhost:8000",
     )
+    print(tt)
+    return tenant

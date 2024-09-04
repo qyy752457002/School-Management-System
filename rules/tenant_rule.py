@@ -14,6 +14,7 @@ from models.tenant import Tenant
 # from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
 from views.models.tenant import Tenant as TenantModel
 from views.models.extend_params import ExtendParams
+from mini_framework.multi_tenant.tenant import Tenant as TenantViewModel
 
 
 @dataclass_inject
@@ -30,7 +31,9 @@ class TenantRule(object):
     async def get_tenant_by_code(self, tenant_code):
         tenant_db = await self.tenant_dao.get_tenant_by_code(tenant_code)
         # 可选 , exclude=[""]
-        tenant = orm_model_to_view_model(tenant_db, TenantModel)
+        if tenant_db is None:
+            raise TenantNotFoundError()
+        tenant = orm_model_to_view_model(tenant_db, TenantViewModel)
         return tenant
     async def get_tenant_by_name(self, tenant_name):
         tenant_db = await self.tenant_dao.get_tenant_by_name(tenant_name)

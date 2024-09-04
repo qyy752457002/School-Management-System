@@ -45,7 +45,7 @@ class SubjectView(BaseView):
         obj =  await get_extend_params(request)
         items = []
         res = await self.subject_rule.query_subject_with_page(page_request,   school_id,subject_name, obj )
-        print(2222,tenant_registry)
+        print(2222,tenant_registry,vars(tenant_registry))
         return res
 
     # 删除

@@ -5,11 +5,11 @@ from pydantic import BaseModel, Field, model_validator
 class Tenant(BaseModel):
     id: int | str = Query(None, title="", description="id", example='1'),
     origin_id: int | str = Field(0, title="学校ID", description="学校ID", examples=['1'])
-    tenant_type: str = Field(..., title="", description="", examples=['19'])
-    code: str | None = Field('', title="", description="", examples=['19'])
+    tenant_type: str|None = Field( None, title="", description="", examples=['19'])
+    code: str |None = Field('', title="", description="", examples=['19'])
     name: str | None = Field('', title="", description="", examples=['19'])
-    description: int | str = Field(0, title="", description="", examples=['1'])
-    status: str = Field(..., title="", description="", examples=[''])
+    description: int | str|None = Field(0, title="", description="", examples=['1'])
+    status: str|None = Field('', title="", description="", examples=[''])
     client_id: str | None = Field('', title="", description="", examples=[''])
     client_secret: str | None = Field('', title="", description="", examples=[''])
     home_url: str | None = Field('', title="", description="", examples=[''])
