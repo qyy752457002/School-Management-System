@@ -1,5 +1,6 @@
 # from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import json
+import random
 import traceback
 from datetime import datetime
 from typing import List, Type, Dict
@@ -608,8 +609,8 @@ async def verify_auth_by_obj_and_act(obj, act):
     # 定义请求的属性
 
     token = request_context_manager.current()
-    query= token['query_params']
-    print(query)
+    # query= token['query_params']
+    # print(query)
     objattr = {
         "Age": 25,
         "department": "sales"
@@ -619,7 +620,10 @@ async def verify_auth_by_obj_and_act(obj, act):
 
 
 async def process_userinfo(account_name):
-    appCode = APP_CODE
+    # print(222, authentication_config.oauth2)
+    # appCode = authentication_config.oauth2.app_code
+    appCode = orgcenter_service_config.orgcenter_config.get("app_code")
+
     user_info = await get_cached_userinfo(account_name)
     if user_info is None:
         return None
@@ -707,13 +711,65 @@ async def get_org_center_user_info():
 async def verify_auth_by_file_name(sub: str|dict, obj, act, file_name):
     import casbin
     e = casbin.Enforcer("model.conf", file_name)
+    print("校验权限  ", sub, obj, act)
+
     if e.enforce(sub, obj, act):
-        print("permit alice to read data1")
+        print("permit 允许")
         return True
     else:
-        print("deny the request, show an error")
+        print("deny the request, 权限 不足")
         return False
     pass
+async def filter_action_by_file_name( item , processed_dict):
+    #读取文件 获取数据 匹配里面的内容
+    print(11,item,)
+    if item['action'] and item['resource_code']:
+        if  item['resource_code']  in processed_dict.keys():
+            listtt = item['action'].split(',')
+            newlist = []
+            for action in  listtt:
+                if action in processed_dict[item['resource_code']]:
+                    print('匹配到权限', action)
+                    newlist.append(action)
+                    continue
+                    # return True
+                else:
+                    listtt.remove(action)
+                    print('移除这个权限 ',action, processed_dict[item['resource_code']])
+            # print('匹配到权限', item)
+            item['action']= ','.join(newlist)
+            print('过滤后res',item)
+            return True
+        else:
+            return False
+
+
+    pass
+def read_file_to_permission_dict(file_content):
+    # 初始化一个空字典
+    result_dict = {}
+
+    # 按行分割文件内容并遍历每一行
+    for line in file_content.strip().split('\n'):
+        # 用逗号分割每一行，并去除多余的空格
+        parts = [part.strip() for part in line.split(',')]
+
+        # 检查行是否有足够的部分
+        if len(parts) >= 4:
+            key = parts[2]
+            value = parts[3]
+
+            # 如果键已经在字典中，将值追加到列表中
+            if key in result_dict:
+                result_dict[key].append(value)
+            else:
+                # 否则，创建一个包含值的新的列表
+                result_dict[key] = [value]
+
+    return result_dict
+
+
+
 
 # 退出
 async def login_out():

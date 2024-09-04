@@ -139,8 +139,8 @@
     }
   },
   "system_config": {
-    "permission_verify": false,
-    "add_class": 0
+    "add_class": 0,
+    "permission_verify": true
   },
   "workflow_service": {
     "name": "workflow_service",
@@ -150,6 +150,7 @@
   "orgcenter_service": {
     "name": "orgcenter_service",
     "description": "",
+    "app_code": "1238915324217024",
     "url": "https://org-center.f123.pub"
   },
   "transaction_service": {

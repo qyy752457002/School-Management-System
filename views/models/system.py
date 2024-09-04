@@ -134,10 +134,29 @@ class EduType(str, Enum):
     VOCATIONAL = "vocational"
     INSTITUTE = "institute"
     ADMINISTRATION = "administration"
+    NULL =  None
 
     @classmethod
     def to_list(cls):
         return [cls.KG, cls.K12, cls.VOCATIONAL, cls.INSTITUTE, cls.ADMINISTRATION]
+    @classmethod
+    def to_dict(cls):
+        return {
+            cls.KG:SchoolNatureLv2.KINDERGARTEN,
+            cls.K12: [
+                SchoolNatureLv2.PRIMARYSCHOOL,
+                SchoolNatureLv2.ADULTPRIMARYSCHOOL,
+                SchoolNatureLv2.ORDINARYJUNIORHIGH,
+                SchoolNatureLv2.VOCATIONALJUNIORHIGH,
+                SchoolNatureLv2.ADULTJUNIORHIGH,
+                SchoolNatureLv2.ORDINARYHIGHSCHOOL,
+                SchoolNatureLv2.ADULTHIGHSCHOOL,
+                       ],
+            cls.VOCATIONAL:SchoolNatureLv2.SECONDARYVOCATIONALSCHOOL,
+                }
+    @classmethod
+    def get_mapper(cls, key):
+        return cls.to_dict().get(key, cls.NULL)
 
 class ImportScene(str, Enum):
     """ 导入场景的模版场景定义
@@ -185,7 +204,24 @@ class SystemConfig(BaseModel):
     id: int|str|None = Field('0', title="",description="id",examples=['1'])
     # created_at: datetime|None = Field('',  description="",examples=[''])
 
-
+class SchoolNature(str, Enum):
+    """
+    """
+    PRESCHOOLEDUATION =   "preSchoolEducation"
+    PRIMARYEDUATION =   "primaryEducation"
+    SECONDARYEDUATION =  "secondaryEducation"
+class SchoolNatureLv2(str, Enum):
+    """
+    """
+    KINDERGARTEN =   "kindergarten"
+    PRIMARYSCHOOL  =   "primarySchool"
+    ADULTPRIMARYSCHOOL   =  "adultPrimarySchool"
+    ORDINARYJUNIORHIGH =  "ordinaryJuniorHigh"
+    VOCATIONALJUNIORHIGH  =  "vocationalJuniorHigh"
+    ADULTJUNIORHIGH  =  "adultJuniorHigh"
+    ORDINARYHIGHSCHOOL =  "ordinaryHighSchool"
+    ADULTHIGHSCHOOL =  "adultHighSchool"
+    SECONDARYVOCATIONALSCHOOL =  "secondaryVocationalSchool"
 
 
 
