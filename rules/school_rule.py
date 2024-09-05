@@ -297,7 +297,7 @@ class SchoolRule(object):
             # school_dao=get_injector(SchoolDAO)
             tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
 
-            if tenant.tenant_type== 'school':
+            if  tenant is   not None and  tenant.tenant_type== 'school':
                 school =  await self.school_dao.get_school_by_id(tenant.origin_id)
                 print('获取租户的学校对象',school)
                 school_no= school.school_no
