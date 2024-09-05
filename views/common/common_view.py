@@ -6,7 +6,8 @@ from fastapi.params import Query
 from id_validator import validator
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.design_patterns.singleton import singleton
-
+from mini_framework.multi_tenant.registry import tenant_registry
+from mini_framework.web.request_context import request_context_manager
 
 from daos.enum_value_dao import EnumValueDAO
 from rules.tenant_rule import TenantRule
@@ -422,4 +423,9 @@ async def get_tenant_by_code(code: str):
         home_url="http://localhost:8000",
     )
     print(tt)
+    return tenant
+async def get_tenant_current( ):
+    tenant_code = request_context_manager.current().tenant_code
+    tenant =await tenant_registry.get_tenant(tenant_code)
+
     return tenant

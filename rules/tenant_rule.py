@@ -8,6 +8,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from business_exceptions.tenant import TenantNotFoundError, TenantAlreadyExistError
+from daos.planning_school_dao import PlanningSchoolDAO
 from daos.tenant_dao import TenantDAO
 from daos.school_dao import SchoolDAO
 from models.tenant import Tenant
@@ -21,6 +22,7 @@ from mini_framework.multi_tenant.tenant import Tenant as TenantViewModel
 class TenantRule(object):
     tenant_dao: TenantDAO
     school_dao: SchoolDAO
+    plannning_school_dao: PlanningSchoolDAO
 
     async def get_tenant_by_id(self, tenant_id):
         tenant_id=int(tenant_id)
@@ -160,4 +162,15 @@ class TenantRule(object):
         # convert_snowid_in_model(tenant, ["id", "school_id",'grade_id',])
         return tenant
 
+    async def sync_tenant_all(self, school_id):
+        items =  await self.plannning_school_dao.get_planning_school_by_id(school_id)
+        if items is None:
+            return
+        tenant  =  await self.tenant_dao.get_tenant_by_code(items.planning_school_no)
+        if tenant is not  None:
+            return
 
+        items = copy.deepcopy(items)
+        # for item in items:
+        # convert_snowid_in_model(item,["id", "school_id",'grade_id',])
+        return items

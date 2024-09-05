@@ -90,7 +90,7 @@
   "authentication": {
     "jwt": {
       "secret": "Jci5NpY9p2D7JPKXrVL3J8",
-      "algorithm": "HS256",
+      "algorithm": "RS256",
       "expires": 3600,
       "issuer": "lfun",
       "audience": "audience",

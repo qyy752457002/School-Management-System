@@ -32,7 +32,7 @@ class TenantDAO(DAOBase):
 
 	async def get_tenant_by_code(self, code):
 		session = await self.slave_db()
-		result = await session.execute(select(Tenant).where(Tenant.code == code))
+		result = await session.execute(select(Tenant).where(Tenant.code == code).where(Tenant.is_deleted == False))
 		return result.scalar_one_or_none()
 	async def query_tenant_with_page(self, pageQueryModel, page_request: PageRequest):
 		query = select(Tenant)
