@@ -1,8 +1,10 @@
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
+from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest
 from sqlalchemy import select, func, update, desc
 
+from daos.tenant_dao import TenantDAO
 from models.planning_school import PlanningSchool
 from models.planning_school_communication import PlanningSchoolCommunication
 from views.models.extend_params import ExtendParams

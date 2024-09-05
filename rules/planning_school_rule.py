@@ -26,6 +26,8 @@ from daos.enum_value_dao import EnumValueDAO
 from daos.planning_school_communication_dao import PlanningSchoolCommunicationDAO
 from daos.planning_school_dao import PlanningSchoolDAO
 from daos.planning_school_eduinfo_dao import PlanningSchoolEduinfoDAO
+from daos.school_dao import SchoolDAO
+from daos.tenant_dao import TenantDAO
 from models.planning_school import PlanningSchool
 from models.public_enum import IdentityType
 from models.student_transaction import AuditAction
@@ -174,6 +176,18 @@ class PlanningSchoolRule(object):
             for item in founder_type_lv3_res:
                 founder_type_lv3.append(item.enum_value)
 
+        if extend_params.tenant:
+            # 读取类型  读取ID  加到条件里
+            tenant_dao=get_injector(TenantDAO)
+            school_dao=get_injector(SchoolDAO)
+            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
+
+            if tenant.tenant_type== 'planning_school':
+                school =  await self.planning_school_dao.get_planning_school_by_id(tenant.origin_id)
+                print('获取租户的学校对象',school)
+                planning_school_no= school.planning_school_no
+                # kdict["school_id"] = school.id
+            pass
         paging = await self.planning_school_dao.query_planning_school_with_page(page_request, planning_school_name,
                                                                                 planning_school_no,
                                                                                 planning_school_code,
