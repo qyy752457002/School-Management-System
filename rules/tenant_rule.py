@@ -173,7 +173,7 @@ class TenantRule(object):
         # 请求接口 todo 解析放入表里
         res  =await  get_org_center_application(items.planning_school_no)
         for value in  res['data']:
-            if res['owner']!= items.planning_school_no:
+            if value['owner']!= items.planning_school_no:
                 continue
 
             tenant_db = Tenant(
@@ -184,17 +184,10 @@ class TenantRule(object):
                 code=value['owner'],
                 name=value['name'],
                 client_id=value['clientId'],
-                school_id=school_id,
-                origin_id=school_id,
+                # school_id=school_id,
+                # origin_id=school_id,
                 client_secret=value['clientSecret'],
                 cert_public_key=value['certPublicKey'],
-                extend_params=ExtendParams(
-                    planning_school_id=school_id,
-                    planning_school_no=items.planning_school_no,
-                    planning_school_name=items.planning_school_name,
-                )
-
-
             )
             res_add  = await self.tenant_dao.add_tenant(tenant_db)
             print('保存结果',res_add )
