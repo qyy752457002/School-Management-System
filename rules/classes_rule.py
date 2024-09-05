@@ -192,6 +192,9 @@ class ClassesRule(ImportCommonAbstractRule, object):
             print(schools.keys())
 
             for item in paging_result.items:
+                if hasattr(item, 'monitor_id') and  item.monitor_id == 0:
+                    item.monitor_id=None
+                    pass
                 class_ids.append(item.id)
                 item.school_id = int(item.school_id)
                 if item.grade_type in grade_enums:

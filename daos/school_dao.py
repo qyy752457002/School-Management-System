@@ -32,12 +32,17 @@ class SchoolDAO(DAOBase):
         result = await session.execute(
             select(School).where(School.school_name == school_name).where(School.is_deleted == False))
         return result.first()
+    async def get_school_by_no(self, school_no):
+        session = await self.slave_db()
+        result = await session.execute(
+            select(School).where(School.school_no == school_no).where(School.is_deleted == False))
+        return result.scalar_one_or_none()
 
     async def get_school_by_args(self, obj=None, **kwargs):
         """
         """
         session = await self.slave_db()
-        query = select(School)
+        query = select(School).order_by(School.id.desc())
         for key, value in kwargs.items():
             query = query.where(getattr(School, key) == value)
         if obj is not None and hasattr(obj, 'id'):

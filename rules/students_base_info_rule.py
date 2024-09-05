@@ -13,6 +13,7 @@ from daos.school_dao import SchoolDAO
 from daos.student_session_dao import StudentSessionDao
 from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
+from daos.tenant_dao import TenantDAO
 from models.public_enum import IdentityType
 from models.student_session import StudentSessionstatus
 from models.students import Student
@@ -196,6 +197,19 @@ class StudentsBaseInfoRule(object):
         """
         分页查询
         """
+        if extend_params.tenant:
+            # 读取类型  读取ID  加到条件里
+            tenant_dao=get_injector(TenantDAO)
+            # school_dao=get_injector(SchoolDAO)
+            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
+
+            if tenant is   not None and tenant.tenant_type== 'school':
+                school =  await self.school_dao.get_school_by_id(tenant.origin_id)
+                print('获取租户的学校对象',school)
+                if school:
+                    extend_params.school_id= school.id
+            pass
+
         paging = await self.students_base_info_dao.query_students_with_page(query_model, page_request, extend_params)
 
         paging_result = PaginatedResponse.from_paging(page_none_deal(paging), NewStudentsQueryRe)
