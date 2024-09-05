@@ -200,7 +200,7 @@ class TenantRule(object):
                 name=value['name'],
                 client_id=value['clientId'],
                 # school_id=school_id,
-                # origin_id=school_id,
+                origin_id=school_id,
                 client_secret=value['clientSecret'],
                 cert_public_key=value['certPublicKey'],
             )
