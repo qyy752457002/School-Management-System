@@ -32,11 +32,11 @@ class SchoolDAO(DAOBase):
         result = await session.execute(
             select(School).where(School.school_name == school_name).where(School.is_deleted == False))
         return result.first()
-    async def get_school_by_school_no(self, school_no):
+    async def get_school_by_no(self, school_no):
         session = await self.slave_db()
         result = await session.execute(
             select(School).where(School.school_no == school_no).where(School.is_deleted == False))
-        return result.first()
+        return result.scalar_one_or_none()
 
     async def get_school_by_args(self, obj=None, **kwargs):
         """

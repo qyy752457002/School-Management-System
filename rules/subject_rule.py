@@ -101,7 +101,7 @@ class SubjectRule(object):
             tenant =  await self.tenant_dao.get_tenant_by_code(extobj.tenant.code)
 
             if tenant.tenant_type== 'school':
-                school =  await self.school_dao.get_school_by_school_no(tenant.code)
+                school =  await self.school_dao.get_school_by_no(tenant.code)
                 print('获取租户的学校对象',school)
                 kdict["school_id"] = school.id
             pass
