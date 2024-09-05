@@ -42,7 +42,7 @@ class SchoolDAO(DAOBase):
         """
         """
         session = await self.slave_db()
-        query = select(School)
+        query = select(School).order_by(School.id.desc())
         for key, value in kwargs.items():
             query = query.where(getattr(School, key) == value)
         if obj is not None and hasattr(obj, 'id'):

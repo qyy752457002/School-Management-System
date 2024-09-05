@@ -11,6 +11,7 @@ from business_exceptions.tenant import TenantNotFoundError, TenantAlreadyExistEr
 from daos.planning_school_dao import PlanningSchoolDAO
 from daos.tenant_dao import TenantDAO
 from daos.school_dao import SchoolDAO
+from models.school import School
 from models.tenant import Tenant
 from rules.common.common_rule import get_org_center_application
 # from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
@@ -36,8 +37,13 @@ class TenantRule(object):
         # 可选 , exclude=[""]
         if tenant_db is None:
             # 可能是 区 或者 市的编码的情况
-            tenant_db = await self.school_dao.get_school_by_school_no(tenant_code)
-            raise TenantNotFoundError()
+            # obj = School(block=tenant_code,planning_school_id =  0 )
+            # exist = await school_dao.get_school_by_args(school_no=school_no, is_deleted=False)
+
+            school  = await self.school_dao.get_school_by_args(block=tenant_code,planning_school_id =  0)
+            tenant_db = await self.tenant_dao.get_tenant_by_code(school.school_no)
+            if tenant_db is None:
+                raise TenantNotFoundError()
         tenant = orm_model_to_view_model(tenant_db, TenantViewModel)
         return tenant
     async def get_tenant_by_name(self, tenant_name):
