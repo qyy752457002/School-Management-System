@@ -917,7 +917,8 @@ class SchoolRule(object):
             exists_planning_school.id)
         cn_exists_planning_school = await self.convert_school_to_export_format(exists_planning_school)
         # todo 多组织 是否支持逗号分隔
-        dict_data = {'administrativeDivisionCity': '',
+        dict_data = {
+                     'administrativeDivisionCity': '',
                      'administrativeDivisionCounty': exists_planning_school.block,
                      'administrativeDivisionProvince': planning_school_communication.loc_area_pro,
                      'createdTime': exists_planning_school.create_school_date,
