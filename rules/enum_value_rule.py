@@ -10,7 +10,7 @@ from sqlalchemy import select
 from business_exceptions.enum_value import EnumValueNotFoundError
 from daos.enum_value_dao import EnumValueDAO
 from models.enum_value import EnumValue
-from views.common.common_view import convert_snowid_to_strings
+# from views.common.common_view import convert_snowid_to_strings
 from views.models.enum_value import EnumValue as EnumValueModel
 
 
@@ -196,7 +196,7 @@ class EnumValueRule(object):
         paging = await self.enum_value_dao.query_enum_value_with_page(page_request, enum_value_name, parent_code)
         # 字段映射的示例写法   , {"hash_password": "password"}
         paging_result = PaginatedResponse.from_paging(paging, EnumValueModel)
-        convert_snowid_to_strings(paging_result, )
+        # convert_snowid_to_strings(paging_result, )
 
         return paging_result
 

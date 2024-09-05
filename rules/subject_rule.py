@@ -6,8 +6,10 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from business_exceptions.subject import SubjectAlreadyExistError, SubjectNotFoundError
+from daos.school_dao import SchoolDAO
 # from business_exceptions.subject import CourseNotFoundError, CourseAlreadyExistError
 from daos.subject_dao import SubjectDAO
+from daos.tenant_dao import TenantDAO
 from models.subject import Subject
 from rules.course_rule import CourseRule
 from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
@@ -18,6 +20,8 @@ from views.models.subject import Subject as SubjectModel
 @dataclass_inject
 class SubjectRule(object):
     subject_dao: SubjectDAO
+    tenant_dao:TenantDAO
+    school_dao:SchoolDAO
 
     async def get_subject_by_id(self, subject_id):
         subject_db = await self.subject_dao.get_subject_by_id(subject_id)
@@ -79,11 +83,8 @@ class SubjectRule(object):
         kdict = {
             "subject_name": subject_name,
             "school_id": school_id,
-            # "subject_id": subject_id,
-            # "subject_no": subject_no,
             "city": extobj.city,
             "district": extobj.county_id,
-            # "is_deleted":False
         }
         if not kdict["subject_name"]:
             del kdict["subject_name"]
@@ -94,6 +95,17 @@ class SubjectRule(object):
             del kdict["city"]
         if not kdict["district"]:
             del kdict["district"]
+        print(2222, extobj.tenant )
+        if extobj.tenant:
+            # 读取类型  读取ID  加到条件里
+            tenant =  await self.tenant_dao.get_tenant_by_code(extobj.tenant.code)
+
+            if tenant.tenant_type== 'school':
+                school =  await self.school_dao.get_school_by_no(tenant.code)
+                print('获取租户的学校对象',school)
+                kdict["school_id"] = school.id
+            pass
+
 
         paging = await self.subject_dao.query_subject_with_page(page_request,**kdict
                                                                                 )

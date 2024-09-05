@@ -23,8 +23,7 @@ from daos.school_dao import SchoolDAO
 from daos.student_session_dao import StudentSessionDao
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
-from views.common.common_view import workflow_service_config, orgcenter_service_config, check_result_org_center_api, \
-    log_json, write_json_to_log, convert_dates_to_strings, json_date_hook
+
 
 APP_CODE = "1238914398508736"
 
@@ -37,6 +36,7 @@ cache_expiry = timedelta(minutes=30)  # 缓存过期时间设置为30分钟
 async def send_request(apiname, datadict, method='get', is_need_query_param=False):
     # 发起审批流的 处理
     httpreq = HTTPRequest()
+    from views.common.common_view import workflow_service_config
     url = workflow_service_config.workflow_config.get("url")
 
     url = url + apiname
@@ -57,12 +57,13 @@ async def send_request(apiname, datadict, method='get', is_need_query_param=Fals
     # print(response, '接口响应')
     # 示例使用
     json_data = response
+    from views.common.common_view import    log_json
     log_json(json_data)
     # 示例数据
     data = [
         response
     ]
-
+    from views.common.common_view import      write_json_to_log
     # 调用函数
     write_json_to_log(  data)
     if response is None:
@@ -217,6 +218,7 @@ async def get_address_by_description(description: str):
 async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_param=False):
     # 发起审批流的 处理
     httpreq = HTTPRequest()
+    from views.common.common_view import  orgcenter_service_config
     url = orgcenter_service_config.orgcenter_config.get("url")
 
     url = url + apiname
@@ -243,15 +245,18 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
         # json_data =  JsonUtils.json_str_to_dict( response)
 
         # logger.info('接口响应',response)
+        from views.common.common_view import       convert_dates_to_strings
         response=convert_dates_to_strings(response)
         # 示例数据
         data = [
             response
         ]
+        from views.common.common_view import      write_json_to_log
         write_json_to_log(  data)
 
         # 示例使用
         json_data = response
+        from views.common.common_view import    log_json
         log_json(json_data)
 
 
@@ -261,7 +266,7 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
             return {}
         if isinstance(response, str):
             return {response}
-        check_result_org_center_api(response)
+        # check_result_org_center_api(response)
         return response
         pass
     except Exception as e:
@@ -622,12 +627,14 @@ async def verify_auth_by_obj_and_act(obj, act):
 async def process_userinfo(account_name):
     # print(222, authentication_config.oauth2)
     # appCode = authentication_config.oauth2.app_code
+    from views.common.common_view import  orgcenter_service_config
     appCode = orgcenter_service_config.orgcenter_config.get("app_code")
 
     user_info = await get_cached_userinfo(account_name)
     if user_info is None:
         return None
     lines = []  # 使用列表收集所有要写入的行
+    from views.common.common_view import        json_date_hook
     filename = account_name + 'policy.csv'
     for rule in user_info['roles']:
         if rule["appCode"] == appCode:
@@ -641,7 +648,7 @@ async def process_userinfo(account_name):
                 if json_str.strip():
                     # data = json.loads(json_str)
                     try:
-                        data_str = json.loads(policy['rule_code'], object_hook=json_date_hook)
+                        data_str = json.loads(policy['rule_code'], object_hook=json_date_hook )
                         for item in data_str:
                             p_list = item.split(",")
                             p_list.insert(1, role)
@@ -814,4 +821,32 @@ async def request_org_center_login_out():
 
     except Exception as e:
         print('获取登出异常', e)
+        return None
+async def get_org_center_application(school_no):
+    try:
+        token = request_context_manager.current().token
+        apiname = "/api/get-applications"
+        # owner = "sysjyyjyorg"
+        from views.common.common_view import  orgcenter_service_config
+        appCode = orgcenter_service_config.orgcenter_config.get("app_code")
+
+        params = {
+            # "id": f"{owner}/{account.name}",
+            # "clientId": authentication_config.oauth2.client_id,
+            # "clientSecret": authentication_config.oauth2.client_secret,
+            "owner": school_no,
+            "name":  appCode, #
+            # "id_token_hint": token,
+        }
+        datadict = params
+        response = await send_orgcenter_request(apiname, datadict, 'get', True)
+        print('登出res',response)
+        if response["status"] == "ok":
+            # raise Exception(response["msg"])
+            pass
+        return response
+
+
+    except Exception as e:
+        print('get_org_center_application异常', e)
         return None

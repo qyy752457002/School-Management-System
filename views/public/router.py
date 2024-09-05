@@ -3,6 +3,7 @@ from mini_framework.web.router import Router
 from views.public.classes_view import ClassesView
 from views.public.current_students_view import CurrentStudentsView
 from views.public.newstudents_view import NewsStudentsInfoView
+from views.public.tenant_view import TenantView
 from views.school.campus_view import CampusView
 from views.school.course_view import CourseView
 from views.school.institution_view import InstitutionView
@@ -22,6 +23,7 @@ def routers():
     router.include_api_view_class(CurrentStudentsView, "/v1/public/new-student", description="在校生管理")
     router.include_api_view_class(ClassesView, "/v1/public/class", description="班级管理")
     router.include_api_view_class(SchoolTeacherView, "/v1/sync", description="同步管理")
+    router.include_api_view_class(TenantView, "/v1/tenant", description="同步租户的信息")
 
 
     return router

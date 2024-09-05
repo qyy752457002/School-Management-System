@@ -4,10 +4,13 @@ from enum import Enum
 
 from fastapi.params import Query
 from id_validator import validator
+from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.design_patterns.singleton import singleton
-
+from mini_framework.multi_tenant.registry import tenant_registry
+from mini_framework.web.request_context import request_context_manager
 
 from daos.enum_value_dao import EnumValueDAO
+from rules.tenant_rule import TenantRule
 from views.common.constant import Constant
 from views.models.extend_params import ExtendParams
 from views.models.system import UnitType, OrgCenterApiStatus
@@ -156,6 +159,10 @@ async def get_extend_params(request) -> ExtendParams:
                 obj.county_name = enuminfo.description
 
     print('Extendparams', obj)
+
+    tenant_code = request_context_manager.current().tenant_code
+    tenant =await tenant_registry.get_tenant(tenant_code)
+    obj.tenant = tenant
 
     return obj
 
@@ -402,4 +409,27 @@ def write_json_to_log( data_list,filename='a.log'):
             # 将字典转换为 JSON 格式字符串，并确保每条记录后换行
             file.write(json.dumps(data,cls=DateEncoder) + '\n')
 
+from mini_framework.multi_tenant.tenant import Tenant, TenantStatus
 
+
+async def get_tenant_by_code(code: str):
+    rule = get_injector(TenantRule)
+    tenant = await rule.get_tenant_by_code(code)
+    print('解析到租户',tenant)
+    tt =  Tenant(
+        code=code,
+        name="租户1",
+        description="租户1",
+        status=TenantStatus.active,
+        client_id="5447ba36b3b8359c7ac7",
+        client_secret="449dfa687cfbd86673f563b8b1050409efd8125a",
+        redirect_url="http://localhost:8000/auth/callback/debug",
+        home_url="http://localhost:8000",
+    )
+    # print(tt)
+    return tenant
+async def get_tenant_current( ):
+    tenant_code = request_context_manager.current().tenant_code
+    tenant =await tenant_registry.get_tenant(tenant_code)
+
+    return tenant
