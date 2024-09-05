@@ -21,8 +21,7 @@ class School(BaseDBModel):
     school_no: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校编号")
     old_school_no: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="旧的学校编号(例如一期)")
     school_code: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校标识码")
-    school_operation_license_number: Mapped[str] = mapped_column(String(64), nullable=True, default='',
-                                                                 comment="办学许可证号")
+    school_operation_license_number: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="办学许可证号")
     block: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="地域管辖区")
     borough: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="行政管辖区")
     school_edu_level: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="教育层次:枚举school_nature 1级")
