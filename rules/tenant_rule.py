@@ -35,6 +35,8 @@ class TenantRule(object):
         tenant_db = await self.tenant_dao.get_tenant_by_code(tenant_code)
         # 可选 , exclude=[""]
         if tenant_db is None:
+            # 可能是 区 或者 市的编码的情况
+            tenant_db = await self.school_dao.get_school_by_school_no(tenant_code)
             raise TenantNotFoundError()
         tenant = orm_model_to_view_model(tenant_db, TenantViewModel)
         return tenant
@@ -177,10 +179,12 @@ class TenantRule(object):
             # return
         if tenant_type == 'school':
             code = items.school_no
+            description = items.school_name
 
             pass
         else:
             code = items.planning_school_no
+            description = items.planning_school_name
             pass
 
         tenant  =  await self.tenant_dao.get_tenant_by_code(code)
@@ -199,8 +203,9 @@ class TenantRule(object):
                 code=value['owner'],
                 name=value['name'],
                 client_id=value['clientId'],
+                description=description,
                 # school_id=school_id,
-                origin_id=school_id,
+                origin_id=int(school_id),
                 client_secret=value['clientSecret'],
                 cert_public_key=value['certPublicKey'],
             )
