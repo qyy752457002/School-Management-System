@@ -9,6 +9,7 @@ from mini_framework.databases.entities import BaseDBModel
 class Tenant(BaseDBModel):
     """
     租户表
+
     """
     __tablename__ = 'lfun_tenant'
     __table_args__ = {'comment': '租户表模型'}
@@ -21,6 +22,7 @@ class Tenant(BaseDBModel):
     status: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="")
     client_id: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="")
     client_secret: Mapped[str] = mapped_column(String(128), nullable=True,default='', comment="")
+    cert_public_key: Mapped[str] = mapped_column(String(4096), nullable=True,default='', comment="")
     home_url: Mapped[str] = mapped_column(String(128), nullable=True,default='', comment="")
     redirect_url: Mapped[str] = mapped_column(String(512), nullable=True,default='', comment="")
 
