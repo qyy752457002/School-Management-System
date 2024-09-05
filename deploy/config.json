@@ -98,6 +98,7 @@
       "algorithm": "RS256",
       "expires": 3600,
       "issuer": "lfun",
+      "audience": "audience",
       "issue_at": 0
     },
     "oauth2": {
@@ -141,7 +142,7 @@
   },
   "system_config": {
     "add_class": 0,
-    "permission_verify": true
+    "permission_verify": false
   },
   "workflow_service": {
     "name": "workflow_service",
