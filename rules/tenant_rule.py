@@ -165,22 +165,37 @@ class TenantRule(object):
 
     async def sync_tenant_all(self, school_id):
         items =  await self.plannning_school_dao.get_planning_school_by_id(school_id)
+        tenant_type= 'planning_school'
         if items is None:
-            return
-        tenant  =  await self.tenant_dao.get_tenant_by_code(items.planning_school_no)
+            items =  await self.school_dao.get_school_by_id(school_id)
+            if items is None:
+                return
+            else:
+                tenant_type= 'school'
+        else:
+            pass
+            # return
+        if tenant_type == 'school':
+            code = items.school_no
+
+            pass
+        else:
+            code = items.planning_school_no
+            pass
+
+        tenant  =  await self.tenant_dao.get_tenant_by_code(code)
         if tenant is not  None:
             return
         # 请求接口 todo 解析放入表里
-        res  =await  get_org_center_application(items.planning_school_no)
+        res  =await  get_org_center_application(code)
         for value in  res['data']:
-            if value['owner']!= items.planning_school_no:
+            if value['owner']!= code:
                 continue
 
             tenant_db = Tenant(
                 id=SnowflakeIdGenerator(1, 1).generate_id(),
-                tenant_type= 'planning_school',
+                tenant_type=  tenant_type,
                 status= 'active',
-
                 code=value['owner'],
                 name=value['name'],
                 client_id=value['clientId'],
@@ -191,7 +206,6 @@ class TenantRule(object):
             )
             res_add  = await self.tenant_dao.add_tenant(tenant_db)
             print('保存结果',res_add )
-
 
         # for item in items:
         # convert_snowid_in_model(item,["id", "school_id",'grade_id',])
