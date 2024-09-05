@@ -90,7 +90,7 @@
   "authentication": {
     "jwt": {
       "secret": "Jci5NpY9p2D7JPKXrVL3J8",
-      "algorithm": "HS256",
+      "algorithm": "RS256",
       "expires": 3600,
       "issuer": "issuer",
       "audience": "audience",
@@ -137,7 +137,7 @@
   },
   "system_config": {
     "add_class": 0,
-    "permission_verify": true
+    "permission_verify": false
   },
   "workflow_service": {
     "name": "workflow_service",
