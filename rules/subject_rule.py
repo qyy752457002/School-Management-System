@@ -103,7 +103,8 @@ class SubjectRule(object):
             if tenant is   not None and tenant.tenant_type== 'school':
                 school =  await self.school_dao.get_school_by_no(tenant.code)
                 print('获取租户的学校对象',school)
-                kdict["school_id"] = school.id
+                if school:
+                    kdict["school_id"] = school.id
             pass
 
         paging = await self.subject_dao.query_subject_with_page(page_request,**kdict
