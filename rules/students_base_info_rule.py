@@ -206,7 +206,8 @@ class StudentsBaseInfoRule(object):
             if tenant is   not None and tenant.tenant_type== 'school':
                 school =  await self.school_dao.get_school_by_id(tenant.origin_id)
                 print('获取租户的学校对象',school)
-                extend_params.school_id= school.id
+                if school:
+                    extend_params.school_id= school.id
             pass
 
         paging = await self.students_base_info_dao.query_students_with_page(query_model, page_request, extend_params)

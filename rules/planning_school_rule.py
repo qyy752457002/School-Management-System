@@ -185,7 +185,8 @@ class PlanningSchoolRule(object):
             if tenant is   not None and  tenant.tenant_type== 'planning_school':
                 school =  await self.planning_school_dao.get_planning_school_by_id(tenant.origin_id)
                 print('获取租户的学校对象',school)
-                planning_school_no= school.planning_school_no
+                if school:
+                    planning_school_no= school.planning_school_no
                 # kdict["school_id"] = school.id
             pass
         paging = await self.planning_school_dao.query_planning_school_with_page(page_request, planning_school_name,
