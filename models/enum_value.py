@@ -9098,16 +9098,4 @@ class EnumValue(BaseDBModel):
                       parent_id="0", is_enabled=True, created_uid=0, updated_uid=0, created_at=datetime.now(),
                       updated_at=datetime.now(), is_deleted=False)
 
-
-
-
-            # 学校分类  课程分类  授课方式 证件类型 户口性质 宗教 健康状况=health_status_lv1 血型  关系  面貌 =political_status_lv1 毕业状态
-
-            # 死亡这一栏 todo  家庭成员职业  STUDENT_APPROVALATATUS等后面5个
-
         ]
-
-
-
-
-
