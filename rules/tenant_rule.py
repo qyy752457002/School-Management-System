@@ -37,15 +37,17 @@ class TenantRule(object):
         # 可选 , exclude=[""]
         if tenant_db is None:
             # 可能是 区 或者 市的编码的情况
-            # obj = School(block=tenant_code,planning_school_id =  0 )
-            # exist = await school_dao.get_school_by_args(school_no=school_no, is_deleted=False)
-
             school  = await self.school_dao.get_school_by_args(block=tenant_code,planning_school_id =  0)
             if school is None:
-                raise TenantNotFoundError()
+                print('未找到区教育局')
+                # raise TenantNotFoundError()
+                return
             tenant_db = await self.tenant_dao.get_tenant_by_code(school.school_no)
             if tenant_db is None:
-                raise TenantNotFoundError()
+                print('找到区教育局,但不存在于租户表里')
+
+                # raise TenantNotFoundError()
+                return
         tenant = orm_model_to_view_model(tenant_db, TenantViewModel)
         return tenant
     async def get_tenant_by_name(self, tenant_name):
