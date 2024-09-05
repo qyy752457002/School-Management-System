@@ -9,24 +9,6 @@ class LeaderInfo(BaseDBModel):
     """
     领导表
 
-领导姓名
-leader_name
-职务
-position
-状态
-status
-任职开始时间
-start_date
-任职结束时间
-end_date
-工作内容
-job_content
-分管工作
-job_responsibility
-学校ID
-school_id
-事业单位ID
-institution_id
     """
     __tablename__ = 'lfun_leader_info'
     __table_args__ = {'comment': '领导表'}
