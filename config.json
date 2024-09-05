@@ -103,7 +103,7 @@
       "token_url": "https://org-center.f123.pub/api/login/oauth/access_token",
       "user_info_url": "https://org-center.f123.pub/api/userinfo",
       "login_out_url": "https://org-center.f123.pub/api/logout",
-      "redirect_url": "http://localhost:8080/api/school/auth/callback/debug",
+      "redirect_url": "https://school-oms-dev.f123.pub/auth/oauth2/callback/{tenant}",
       "grant_type": "authorization_code",
       "scope": "scope",
       "cert": "cert",
