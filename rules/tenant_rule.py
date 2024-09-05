@@ -174,11 +174,15 @@ class TenantRule(object):
         return tenant
 
     async def sync_tenant_all(self, school_id):
+        print(school_id)
         items =  await self.plannning_school_dao.get_planning_school_by_id(school_id)
         tenant_type= 'planning_school'
         if items is None:
+            print('学校未找到当前租户')
             items =  await self.school_dao.get_school_by_id(school_id)
             if items is None:
+                print('分校未找到当前租户')
+
                 return
             else:
                 tenant_type= 'school'
