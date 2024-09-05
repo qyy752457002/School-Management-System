@@ -160,6 +160,10 @@ async def get_extend_params(request) -> ExtendParams:
 
     print('Extendparams', obj)
 
+    tenant_code = request_context_manager.current().tenant_code
+    tenant =await tenant_registry.get_tenant(tenant_code)
+    obj.tenant = tenant
+
     return obj
 
 
@@ -411,7 +415,7 @@ from mini_framework.multi_tenant.tenant import Tenant, TenantStatus
 async def get_tenant_by_code(code: str):
     rule = get_injector(TenantRule)
     tenant = await rule.get_tenant_by_code(code)
-    print(111,tenant)
+    print('解析到租户',tenant)
     tt =  Tenant(
         code=code,
         name="租户1",
@@ -422,7 +426,7 @@ async def get_tenant_by_code(code: str):
         redirect_url="http://localhost:8000/auth/callback/debug",
         home_url="http://localhost:8000",
     )
-    print(tt)
+    # print(tt)
     return tenant
 async def get_tenant_current( ):
     tenant_code = request_context_manager.current().tenant_code

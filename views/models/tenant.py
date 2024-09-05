@@ -14,6 +14,7 @@ class Tenant(BaseModel):
     client_secret: str | None = Field('', title="", description="", examples=[''])
     home_url: str | None = Field('', title="", description="", examples=[''])
     redirect_url: str | None = Field('', title="", description="", examples=[''])
+    cert_public_key: str | None = Field('', title="", description="", examples=[''])
 
     @model_validator(mode="before")
     @classmethod
