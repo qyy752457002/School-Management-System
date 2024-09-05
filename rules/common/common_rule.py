@@ -815,3 +815,30 @@ async def request_org_center_login_out():
     except Exception as e:
         print('获取登出异常', e)
         return None
+async def get_org_center_application(school_no):
+    try:
+        token = request_context_manager.current().token
+        apiname = "/api/get-applications"
+        # owner = "sysjyyjyorg"
+        appCode = orgcenter_service_config.orgcenter_config.get("app_code")
+
+        params = {
+            # "id": f"{owner}/{account.name}",
+            # "clientId": authentication_config.oauth2.client_id,
+            # "clientSecret": authentication_config.oauth2.client_secret,
+            "owner": school_no,
+            "name":  appCode, #
+            # "id_token_hint": token,
+        }
+        datadict = params
+        response = await send_orgcenter_request(apiname, datadict, 'get', True)
+        print('登出res',response)
+        if response["status"] == "ok":
+            # raise Exception(response["msg"])
+            pass
+        return response
+
+
+    except Exception as e:
+        print('get_org_center_application异常', e)
+        return None

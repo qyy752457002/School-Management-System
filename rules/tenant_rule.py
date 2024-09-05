@@ -2,7 +2,7 @@
 import copy
 from typing import List
 
-from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
 from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
@@ -12,6 +12,7 @@ from daos.planning_school_dao import PlanningSchoolDAO
 from daos.tenant_dao import TenantDAO
 from daos.school_dao import SchoolDAO
 from models.tenant import Tenant
+from rules.common.common_rule import get_org_center_application
 # from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
 from views.models.tenant import Tenant as TenantModel
 from views.models.extend_params import ExtendParams
@@ -169,8 +170,9 @@ class TenantRule(object):
         tenant  =  await self.tenant_dao.get_tenant_by_code(items.planning_school_no)
         if tenant is not  None:
             return
+        # 请求接口 todo 解析放入表里 
+        res  =await  get_org_center_application(items.planning_school_no)
 
-        items = copy.deepcopy(items)
         # for item in items:
         # convert_snowid_in_model(item,["id", "school_id",'grade_id',])
         return items
