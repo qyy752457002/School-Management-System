@@ -41,6 +41,8 @@ class TenantRule(object):
             # exist = await school_dao.get_school_by_args(school_no=school_no, is_deleted=False)
 
             school  = await self.school_dao.get_school_by_args(block=tenant_code,planning_school_id =  0)
+            if school is None:
+                raise TenantNotFoundError()
             tenant_db = await self.tenant_dao.get_tenant_by_code(school.school_no)
             if tenant_db is None:
                 raise TenantNotFoundError()
