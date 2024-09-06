@@ -23,6 +23,7 @@ class GraduationStudent(BaseDBModel):
     session_id: Mapped[int] = mapped_column(BigInteger,nullable=True, comment="届别id", default=0)
     status: Mapped[str] = mapped_column(String(32), nullable=True, default='', comment="毕业状态")
     graduation_date: Mapped[date] = mapped_column(Date, nullable=True, comment="出生日期")
+    graduation_year: Mapped[str] = mapped_column(String(32), nullable=True, default='', comment="毕业年份")
     graduation_remark: Mapped[str] = mapped_column(String(200), nullable=True, default='', comment="毕业备注")
     photo: Mapped[str] = mapped_column(String(64), nullable=True, comment="照片", default='')  # 图像处理再定
     archive_status: Mapped[bool] = mapped_column(nullable=False, default=False, comment="是否已归档")

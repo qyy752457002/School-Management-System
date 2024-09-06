@@ -1,19 +1,24 @@
-from datetime import datetime
 
-from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
-from mini_framework.web.std_models.page import PageRequest
-from sqlalchemy import select, func, update
-
-from models.classes import Classes
-from models.graduation_student import GraduationStudent
-from models.planning_school import PlanningSchool
-from models.school import School
-from models.student_county_school_archive import CountyGraduationStudent
-from models.student_session import StudentSession
 from models.students import Student, StudentApprovalAtatus
 from models.students_base_info import StudentBaseInfo
 from views.models.student_graduate import GraduateStudentQueryModel, CountySchoolArchiveQueryModel
+from datetime import datetime
 
+from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
+from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.web.std_models.page import PageRequest
+from sqlalchemy import literal
+from sqlalchemy import select, func, update, case, and_
+
+from daos.grade_dao import GradeDAO
+from daos.student_session_dao import StudentSessionDao
+from models.classes import Classes
+from models.graduation_student import GraduationStudent
+from models.planning_school import PlanningSchool
+from models.public_enum import Section
+from models.school import School
+from models.student_county_school_archive import CountyGraduationStudent
+from models.student_session import StudentSession
 
 class GraduationStudentDAO(DAOBase):
 
@@ -128,10 +133,63 @@ class GraduationStudentDAO(DAOBase):
         finally:
             await session.close()
 
+    async def update_graduation_student_archive_status_by_school_id(self, school_id: int, is_commit=True):
+        session = await self.master_db()
+        current_year = datetime.now().year
+        try:
+            stmt_select = select(GraduationStudent).where(GraduationStudent.school_id == school_id,
+                                                          GraduationStudent.archive_status == False)
+            result = await session.execute(stmt_select)
+            students_to_update = result.scalars().all()
+            if not students_to_update:
+                return {"message": "没有符合条件的学校"}
+            school = students_to_update[0].school
+            borough = students_to_update[0].borough
+            for student in students_to_update:
+                update_contents = {"archive_status": True, "archive_date": str(current_year)}
+                query = update(GraduationStudent).where(GraduationStudent.student_id == student.student_id).values(
+                    **update_contents)
+                await self.update(session, query, student, update_contents, is_commit=False)
+            graduate_student_count = len(students_to_update)
+            county_school = CountyGraduationStudent(school_id=school_id, graduate_count=graduate_student_count,
+                                                    school=school, borough=borough, year=str(current_year))
+            session.add(county_school)
+            if is_commit:
+                await session.commit()
+                return True
+        except Exception as e:
+            await session.rollback()
+            return {"error": f"更新失败，已回滚，错误: {str(e)}"}
+        finally:
+            await session.close()
+
+    async def update_graduation_student_archive_status(self, borough, is_commit=True):
+        session = await self.master_db()
+        current_year = datetime.now().year
+        try:
+            stmt_select = select(GraduationStudent).where(GraduationStudent.borough == borough,
+                                                          GraduationStudent.archive_status == False)
+            result = await session.execute(stmt_select)
+            students_to_update = result.scalars().all()
+            if not students_to_update:
+                return {"message": "没有符合条件的学生"}
+            for student in students_to_update:
+                update_contents = {"archive_status": True, "archive_date": str(current_year)}
+                query = update(GraduationStudent).where(GraduationStudent.student_id == student.student_id).values(
+                    **update_contents)
+                await self.update(session, query, student, update_contents, is_commit=False)
+            if is_commit:
+                await session.commit()
+                return True
+        except Exception as e:
+            await session.rollback()
+            return {"error": f"更新失败，已回滚，错误: {str(e)}"}
+        finally:
+            await session.close()
+
     async def update_graduation_student_by_school_id(self, school_id: int, grade_level: int, is_commit=True):
         session = await self.master_db()
         current_year = datetime.now().year
-
         school_duration = grade_level  # 根据学校不同的学制，比如小学是6年，初中是3年
         session_year = current_year - school_duration
         try:
@@ -152,7 +210,7 @@ class GraduationStudentDAO(DAOBase):
             # 2 更新学生状态
             for student_base, school, student in students_to_graduate:
                 update_contents = {"graduation_type": "graduation"}
-                query = update(StudentBaseInfo).where(StudentBaseInfo.student_id == student_base.student_id).values(
+                query = await session.update(StudentBaseInfo).where(StudentBaseInfo.student_id == student_base.student_id).values(
                     **update_contents)
                 await self.update(session, query, student_base, update_contents, is_commit=False)
                 # 3 将学生放入毕业表中
@@ -164,6 +222,7 @@ class GraduationStudentDAO(DAOBase):
                                                        session_id=student_base.session_id,
                                                        status=student_base.graduation_type,
                                                        graduation_date=datetime.now().date(),
+                                                       graduation_year=str(current_year),
                                                        graduation_remark="",
                                                        archive_status=False)
                 session.add(graduation_student)
@@ -271,11 +330,94 @@ class GraduationStudentDAO(DAOBase):
 
     async def query_school_archive_status_with_page(self, page_request: PageRequest,
                                                     query_model: CountySchoolArchiveQueryModel):
-        relationship = (select(CountyGraduationStudent.school_id,
-                               func.count(CountyGraduationStudent.school_id).label('relation_count')))
+        relationship_count_subquery = (
+            select(CountyGraduationStudent.school_id, CountyGraduationStudent.graduate_count.label('graduate_count'),
+                   func.count(CountyGraduationStudent.school_id).label(
+                       'relation_count')).where(
+                CountyGraduationStudent.year == str(datetime.now().year)).group_by(
+                CountyGraduationStudent.school_id).subquery())
+        archive_status = case((relationship_count_subquery.c.relation_count > 0, True), else_=False).label(
+            'archive_status')
+        query = select(School.school_name, School.borough, School.id, archive_status,
+                       func.coalesce(relationship_count_subquery.c.graduate_count, 0).label("graduate_count")).join(
+            relationship_count_subquery,
+            School.id == relationship_count_subquery.c.school_id,
+            isouter=True).where(
+            School.is_deleted == False, School.institution_category == None, School.status == "normal")
+        if query_model.borough:
+            query = query.where(School.borough == query_model.borough)
+        if query_model.school_id:
+            query = query.where(School.id == query_model.school_id)
+        if query_model.archive_status is not None:
+            query = query.where(archive_status == literal(query_model.archive_status))
+        query = query.order_by(School.id.desc())
+        paging = await self.query_page(query, page_request)
+        return paging
 
+    async def get_school_is_graduate(self, query_archive_status=False):
+        session = await self.slave_db()
+        relationship_count_subquery = (
+            select(GraduationStudent.school_id, func.count(GraduationStudent.school_id).label(
+                'relation_count')).where(GraduationStudent.graduation_year == str(datetime.now().year)).group_by(
+                GraduationStudent.school_id).subquery())
+        archive_status = case((relationship_count_subquery.c.relation_count > 0, True), else_=False).label(
+            'archive_status')
+        query = select(School.school_name, School.id, archive_status).join(
+            relationship_count_subquery,
+            School.id == relationship_count_subquery.c.school_id,
+            isouter=True).where(
+            School.is_deleted == False, School.institution_category == None, School.status == "normal")
+        query = query.where(archive_status == literal(query_archive_status))
+        query = query.order_by(School.id.desc())
+        result = await session.execute(query)
+        return result.scalars().all()
 
+    async def upgrade_all_student(self, school_id: int):
+        session = await self.master_db()
+        current_year = datetime.now().year
+        # try:
+        stmt_select = (
+            select(Classes, StudentSession)
+            .join(StudentSession, StudentSession.session_id == Classes.session_id)
+            .where(
+                and_(
+                    Classes.school_id == school_id,
+                    StudentSession.year < current_year  # 比较届别的年份
+                )
+            )
+        )
+        result = await session.execute(stmt_select)
+        classes_to_upgrade = result.scalars().all()
+        grade_dao = get_injector(GradeDAO)
+        session_dao = get_injector(StudentSessionDao)
+        for class_obj in classes_to_upgrade:
+            session_info = await session_dao.get_student_session_by_id(class_obj.session_id)
+            section = session_info.section
+            grade_level = Section.get_grade_level(section)
+            current_grade = await grade_dao.get_grade_by_id_and_school_id(class_obj.grade_id, school_id,
+                                                                          session_info.section)
+            if current_grade:
+                if grade_level != 0:
+                    # 如果学制不是0，代表不是中职学校
+                    if current_grade.grade_index < grade_level:
+                        # 如果当前年级小于学制年级，升级
+                        update_grade = await grade_dao.get_grade_by_index_and_school_id(current_grade.id + 1,
+                                                                                        school_id, section)
+                        if update_grade:
+                            # todo 更新班级的年级
+                            update_contents = {"grade_id": update_grade.id}
+                            await session.update(Classes).where(Classes.id == class_obj.id).values(**update_contents)
+                            # todo 更新同一班级学生的年级
+                            await session.update(StudentBaseInfo).where(
+                                StudentBaseInfo.class_id == class_obj.id).values(**update_contents)
+                        else:
+                            continue
 
-
-        # paging = await self.query_page(query, page_request)
-        # return paging
+        #     if is_commit:
+        #         await session.commit()
+        #         return True
+        # except Exception as e:
+        #     await session.rollback()
+        #     return {"error": f"更新失败，已回滚，错误: {str(e)}"}
+        # finally:
+        #     await session.close()

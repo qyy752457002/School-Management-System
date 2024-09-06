@@ -26,6 +26,7 @@ class GraduationStudentsView(BaseView):
         res = await self.graduation_student_rule.update_graduation_student_by_school_id(school_id)
         return res
 
+    # 修改毕业状态
     async def post_student_graduate_status_by_student_id(self, student_id: int | str = Body(..., title="学生编号",
                                                                                             description="学生编号"),
                                                          status: str = Body(..., title="毕业状态",
@@ -33,14 +34,29 @@ class GraduationStudentsView(BaseView):
         res = await self.graduation_student_rule.update_graduation_student_status(student_id, status)
         return res
 
+    # 归档
     async def get_student_graduate_archive_status_by_school_id(self, school_id: int | str = Query(..., title="学校编号",
                                                                                                   description="学校编号")):
-        res = await self.graduation_student_rule.update_archive_status_and_year_by_student_id(school_id)
+        #
+        # todo 王老师要求修改为根据区号归档，由区统一归档需要根据登录获得的区号
+        # 先把区号写死
+        borough = '210100'
+        res = await self.graduation_student_rule.update_archive_status_and_year_by_student_id_county(borough)
+        if type(res) == list:
+            return {"message": "归档失败", "data": res}
         return res
 
+    # 区查询学校的归档状态
     async def page_school_archive_status(self, query_model: CountySchoolArchiveQueryModel,
                                          page_request=Depends(PageRequest)):
         res = await self.graduation_student_rule.query_school_archive_status_with_page(page_request, query_model)
+        return res
+
+    # 学生升级
+    async def get_upgrade_all_student(self,school_id: int | str = Query(..., title="学校编号",
+                                                                                                  description="学校编号")):
+        # 这是根据学校的id升级所有学生
+        res = await self.graduation_student_rule.upgrade_all_student(school_id)
         return res
 
     # 毕业 制证  毕业证url  备注

@@ -17,7 +17,8 @@ from models.graduation_student import GraduationStudent
 from models.students import Student, StudentApprovalAtatus
 from rules.classes_rule import ClassesRule
 from views.common.common_view import page_none_deal
-from views.models.student_graduate import GraduateStudentQueryModel, GraduateStudentQueryReModel,CountySchoolArchiveQueryReModel
+from views.models.student_graduate import GraduateStudentQueryModel, GraduateStudentQueryReModel, \
+    CountySchoolArchiveQueryReModel
 from views.models.students import GraduationStudents as GraduationStudentModel, StudentGraduation
 from views.models.system import SchoolNatureLv2
 
@@ -69,6 +70,22 @@ class GraduationStudentRule(object):
         """
         res = await self.graduation_student_dao.update_graduation_student_archive_status_by_school_id(school_id)
         return res
+
+    async def update_archive_status_and_year_by_student_id_county(self, borough):
+        un_graduate_school_list = []
+        # 获取未发起毕业的学校
+        un_graduate_school_list_db = await self.graduation_student_dao.get_school_is_graduate()
+        for school in un_graduate_school_list_db:
+            item = {}
+            item['school_id'] = school.school_id
+            item['school_name'] = school.school_name
+            un_graduate_school_list.append(item)
+        # 判断是否有未发起毕业的学校
+        if not un_graduate_school_list:
+            res = await self.graduation_student_dao.update_graduation_student_archive_status(borough)
+            return res
+        else:
+            return un_graduate_school_list
 
     async def update_graduation_student(self, student_id, graduate_status, graduate_picture, graduation_photo='',
                                         credential_notes=''):
@@ -170,6 +187,7 @@ class GraduationStudentRule(object):
             else:
                 session_id = session.session_id
                 class_rule = get_injector(ClassesRule)
+                # 这里是为了删除已毕业学生的班级信息
                 result = await class_rule.delete_class_by_school_id_and_session_id(school_id, session_id)
                 if result == True:
                     page_request = PageRequest(page=1, per_page=10)
@@ -178,7 +196,6 @@ class GraduationStudentRule(object):
                     return paging
                 else:
                     return result
-
         else:
             return result
 
@@ -195,3 +212,10 @@ class GraduationStudentRule(object):
         paging = await self.graduation_student_dao.query_school_archive_status_with_page(page_request, query_model)
         paging_result = PaginatedResponse.from_paging(paging, CountySchoolArchiveQueryReModel)
         return paging_result
+
+    async def upgrade_all_student(self, school_id):
+        """
+        升级所有学生
+        """
+        result = await self.graduation_student_dao.upgrade_all_student(school_id)
+        return result
