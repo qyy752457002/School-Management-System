@@ -13,6 +13,7 @@ class CountyGraduationStudent(BaseDBModel):
     __tablename__ = 'lfun_county_graduation_student'
     __table_args__ = {'comment': '判断学校是否已经归档表'}
 
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, comment="ID")
     school: Mapped[str] = mapped_column(String(32), nullable=True, default='', comment="学校")
     school_id: Mapped[int] = mapped_column(BigInteger, nullable=True, comment="学校id", default=0)
     borough: Mapped[str] = mapped_column(String(32), nullable=True, default='', comment="行政属地")
