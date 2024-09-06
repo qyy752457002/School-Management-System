@@ -2,9 +2,12 @@ from datetime import datetime
 
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
+from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest
 from sqlalchemy import select, func, update
 
+from daos.school_dao import SchoolDAO
+from daos.tenant_dao import TenantDAO
 from models.school import School
 from models.teacher_entry_approval import TeacherEntryApproval
 from models.teachers import Teacher
@@ -171,6 +174,19 @@ class TeachersInfoDao(DAOBase):
                 query = query.where(School.borough == extend_params.county_id)
             else:
                 pass
+        if extend_params.tenant:
+            # 读取类型  读取ID  加到条件里
+            tenant_dao=get_injector(TenantDAO)
+            school_dao=get_injector(SchoolDAO)
+            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
+
+            if tenant is   not None and  tenant.tenant_type== 'school':
+                school =  await school_dao.get_school_by_id(tenant.origin_id)
+                print('获取租户的学校对象',school)
+                if school:
+                    query = query.where(Teacher.teacher_employer == school.id)
+            pass
+
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
         if query_model.teacher_id_number:
