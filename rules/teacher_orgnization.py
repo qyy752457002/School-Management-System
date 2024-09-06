@@ -5,6 +5,7 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model
 
 from daos.teachers_dao import TeachersDao
 from views.common.common_view import workflow_service_config
+from views.models.teachers import EducateUserModel
 
 
 @dataclass_inject
@@ -15,7 +16,7 @@ class TeacherOrganisation(object):
         新接组织中心相关内容添加用户
         """
         educate_user = await self.teachers_dao.get_teachers_by_id(teacher_id)
-        educate_user = orm_model_to_view_model(educate_user, EducateUserTeacherModel, exclude=[""])
+        educate_user = orm_model_to_view_model(educate_user, EducateUserModel, exclude=[""])
         params_data = JsonUtils.dict_to_json_str(educate_user)
 
         httpreq = HTTPRequest()
