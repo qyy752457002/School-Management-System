@@ -1,8 +1,7 @@
-from sqlalchemy import select, func, update, and_, or_, alias
-
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
+from sqlalchemy import select, func, update, and_, or_
 from sqlalchemy.orm import aliased
 
 from models.classes import Classes
@@ -98,11 +97,12 @@ class ClassesDAO(DAOBase):
         # await session.delete(classes)
         await session.commit()
         return classes
+
     async def lock_classes_by_ids(self, ids):
         session = await self.master_db()
         deleted_status = True
 
-        update_stmt = update(Classes).where(Classes.id.in_(ids) ).values(
+        update_stmt = update(Classes).where(Classes.id.in_(ids)).values(
             status=ClassStatus.LOCKED.value,
         )
         await session.execute(update_stmt)
@@ -115,8 +115,15 @@ class ClassesDAO(DAOBase):
         result = await session.execute(select(func.count()).select_from(Classes))
         return result.scalar()
 
+    async def get_all_class_by_school_id(self, school_id, session_id):
+        session = await self.slave_db()
+        result = await session.execute(
+            select(Classes).where(Classes.school_id == school_id, Classes.session_id == session_id,
+                                  Classes.is_deleted == False))
+        return result.all()
+
     async def query_classes_with_page(self, borough, block, school_id, grade_id, class_name,
-                                      page_request: PageRequest,school_no=None,teacher_name=None) -> Paging:
+                                      page_request: PageRequest, school_no=None, teacher_name=None) -> Paging:
         teacher_alias = aliased(Teacher, name='teacher_alias')
         teacherinfo_alias = aliased(TeacherInfo, name='teacherinfo_alias')
         query = (select(School.block, School.borough, School.school_name, Classes.id, Classes.class_name,
@@ -137,7 +144,8 @@ class ClassesDAO(DAOBase):
                         Classes.created_uid, Classes.updated_uid,
                         Classes.teacher_name,
                         Classes.monitor_student_number,
-                        Classes.teacher_id_card,Classes.teacher_card_type,Classes.teacher_phone,Classes.teacher_job_number,
+                        Classes.teacher_id_card, Classes.teacher_card_type, Classes.teacher_phone,
+                        Classes.teacher_job_number,
 
                         func.coalesce(Student.student_name, '').label('monitor'),
 
@@ -159,20 +167,20 @@ class ClassesDAO(DAOBase):
                  .join(StudentBaseInfo, Student.student_id == StudentBaseInfo.student_id, isouter=True)
 
                  .where(Classes.is_deleted == False)
-                 .order_by(Classes.school_id .desc())
-                 .order_by(Classes.grade_id .desc())
-                 .order_by(Classes.class_index .desc())
+                 .order_by(Classes.school_id.desc())
+                 .order_by(Classes.grade_id.desc())
+                 .order_by(Classes.class_index.desc())
                  )
 
         if school_id:
             query = query.where(Classes.school_id == int(school_id))
             pass
         if school_no is not None:
-            query = query.where(School.school_no == school_no )
+            query = query.where(School.school_no == school_no)
             pass
         if teacher_name is not None:
             if teacher_name != '':
-                query = query.where(Classes.teacher_name == teacher_name )
+                query = query.where(Classes.teacher_name == teacher_name)
             pass
         if grade_id and int(grade_id) > 0:
             print(grade_id)
@@ -202,8 +210,10 @@ class ClassesDAO(DAOBase):
         paging = await self.query_page(query, page_request)
 
         return paging
+
     async def query_classes_with_page_join_teacher(self, borough, block, school_id, grade_id, class_name,
-                                      page_request: PageRequest,school_no=None,teacher_name=None) -> Paging:
+                                                   page_request: PageRequest, school_no=None,
+                                                   teacher_name=None) -> Paging:
         teacher_alias = aliased(Teacher, name='teacher_alias')
         teacherinfo_alias = aliased(TeacherInfo, name='teacherinfo_alias')
         query = (select(School.block, School.borough, School.school_name, Classes.id, Classes.class_name,
@@ -258,10 +268,10 @@ class ClassesDAO(DAOBase):
             query = query.where(Classes.school_id == int(school_id))
             pass
         if school_no is not None:
-            query = query.where(School.school_no == school_no )
+            query = query.where(School.school_no == school_no)
             pass
         if teacher_name is not None:
-            query = query.where(Classes.teacher_name == teacher_name )
+            query = query.where(Classes.teacher_name == teacher_name)
             pass
         if grade_id and int(grade_id) > 0:
             print(grade_id)

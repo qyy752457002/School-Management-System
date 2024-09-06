@@ -223,6 +223,27 @@ class SchoolNatureLv2(str, Enum):
     ADULTHIGHSCHOOL =  "adultHighSchool"
     SECONDARYVOCATIONALSCHOOL =  "secondaryVocationalSchool"
 
+    @classmethod
+    def to_grade_level(cls):
+        return {
+            cls.KINDERGARTEN.value: 3,
+            cls.PRIMARYSCHOOL.value: 6,
+            cls.ADULTPRIMARYSCHOOL.value: 6,
+            cls.ORDINARYJUNIORHIGH.value: 3,
+            cls.VOCATIONALJUNIORHIGH.value: 3,
+            cls.ADULTJUNIORHIGH.value: 3,
+            cls.ORDINARYHIGHSCHOOL.value: 3,
+            cls.ADULTHIGHSCHOOL.value: 3,
+            cls.SECONDARYVOCATIONALSCHOOL.value: 3,
+        }
+
+    @classmethod
+    def get_grade_level(cls, key):
+       return cls.to_grade_level().get(key, 0)
+
+
+
+
 
 
 

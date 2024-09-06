@@ -37,7 +37,7 @@ class TenantRule(object):
         # 可选 , exclude=[""]
         if tenant_db is None:
             # 可能是 区 或者 市的编码的情况
-            school  = await self.school_dao.get_school_by_args(block=tenant_code,planning_school_id =  0)
+            school  = await self.school_dao.get_school_by_args(block=tenant_code,planning_school_id = 0)
             if school is None:
                 print('未找到区教育局')
                 # raise TenantNotFoundError()
@@ -76,7 +76,6 @@ class TenantRule(object):
         for key, value in tenant.dict().items():
             if value:
                 need_update_list.append(key)
-
         tenant_db = await self.tenant_dao.update_tenant(tenant, *need_update_list)
 
 
@@ -184,7 +183,6 @@ class TenantRule(object):
             items =  await self.school_dao.get_school_by_id(school_id)
             if items is None:
                 print('分校未找到当前租户')
-
                 return
             else:
                 tenant_type= 'school'
@@ -194,7 +192,6 @@ class TenantRule(object):
         if tenant_type == 'school':
             code = items.school_no
             description = items.school_name
-
             pass
         else:
             code = items.planning_school_no

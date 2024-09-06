@@ -157,7 +157,6 @@ async def get_extend_params(request) -> ExtendParams:
             enuminfo = await (EnumValueDAO()).get_enum_value_by_value(obj.county_id, 'country')
             if enuminfo:
                 obj.county_name = enuminfo.description
-
     print('Extendparams', obj)
 
     tenant_code = request_context_manager.current().tenant_code

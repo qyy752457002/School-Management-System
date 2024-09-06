@@ -1,14 +1,18 @@
-from sqlalchemy import select, func, update
+from datetime import datetime
+
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
-from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
+from sqlalchemy import select, func, update
 
 from models.classes import Classes
 from models.graduation_student import GraduationStudent
 from models.planning_school import PlanningSchool
 from models.school import School
+from models.student_county_school_archive import CountyGraduationStudent
+from models.student_session import StudentSession
 from models.students import Student, StudentApprovalAtatus
 from models.students_base_info import StudentBaseInfo
+from views.models.student_graduate import GraduateStudentQueryModel, CountySchoolArchiveQueryModel
 
 
 class GraduationStudentDAO(DAOBase):
@@ -32,7 +36,14 @@ class GraduationStudentDAO(DAOBase):
 
     async def get_graduationstudent_by_id(self, id):
         session = await self.slave_db()
-        result = await session.execute(select(GraduationStudent).where(GraduationStudent.id == id))
+        result = await session.execute(
+            select(GraduationStudent).where(GraduationStudent.id == id, GraduationStudent.is_deleted == False))
+        return result.scalar_one_or_none()
+
+    async def get_graduationstudent_by_student_id(self, student_id):
+        session = await self.slave_db()
+        result = await session.execute(select(GraduationStudent).where(GraduationStudent.student_id == student_id,
+                                                                       GraduationStudent.is_deleted == False))
         return result.scalar_one_or_none()
 
     async def get_graduationstudent_by_name(self, name):
@@ -46,19 +57,19 @@ class GraduationStudentDAO(DAOBase):
 
                        StudentBaseInfo.edu_number, StudentBaseInfo.class_id,
                        StudentBaseInfo.school_id, StudentBaseInfo.graduation_type,
-                       School.school_name,  School.block,  School.borough,  Classes.class_name,
+                       School.school_name, School.block, School.borough, Classes.class_name,
 
                        ).select_from(Student).join(StudentBaseInfo,
-                                                          Student.student_id == StudentBaseInfo.student_id,
-                                                          isouter=True).join(School,
-                                                                             School.id == StudentBaseInfo.school_id,
-                                                                             isouter=True).join(PlanningSchool,
-                                                                                                School.planning_school_id == PlanningSchool.id,
-                                                                                                isouter=True).join(Classes,
-                                                                                                Classes.id == StudentBaseInfo.class_id,
-                                                                                                isouter=True)
+                                                   Student.student_id == StudentBaseInfo.student_id,
+                                                   isouter=True).join(School,
+                                                                      School.id == StudentBaseInfo.school_id,
+                                                                      isouter=True).join(PlanningSchool,
+                                                                                         School.planning_school_id == PlanningSchool.id,
+                                                                                         isouter=True).join(Classes,
+                                                                                                            Classes.id == StudentBaseInfo.class_id,
+                                                                                                            isouter=True)
 
-        query = query.where(Student.approval_status  == StudentApprovalAtatus.GRADUATED.value)
+        query = query.where(Student.approval_status == StudentApprovalAtatus.GRADUATED.value)
         for key, value in kwargs.items():
             if key == 'student_name' or key == 'student_gender':
                 query = query.where(getattr(Student, key) == value)
@@ -86,3 +97,185 @@ class GraduationStudentDAO(DAOBase):
         await session.execute(update_stmt)
         await session.commit()
         return graduationstudent
+
+    async def update_graduation_student_archive_status_by_school_id(self, school_id: int, is_commit=True):
+        session = await self.master_db()
+        current_year = datetime.now().year
+        try:
+            stmt_select = select(GraduationStudent).where(GraduationStudent.school_id == school_id,
+                                                          GraduationStudent.archive_status == False)
+            result = await session.execute(stmt_select)
+            students_to_update = result.scalars().all()
+            if not students_to_update:
+                return {"message": "没有符合条件的学校"}
+            school = students_to_update[0].school
+            borough = students_to_update[0].borough
+            for student in students_to_update:
+                update_contents = {"archive_status": True, "archive_date": str(current_year)}
+                query = update(GraduationStudent).where(GraduationStudent.student_id == student.student_id).values(
+                    **update_contents)
+                await self.update(session, query, student, update_contents, is_commit=False)
+            graduate_student_count = len(students_to_update)
+            county_school = CountyGraduationStudent(school_id=school_id, graduate_count=graduate_student_count,
+                                                    school=school, borough=borough, year=str(current_year))
+            session.add(county_school)
+            if is_commit:
+                await session.commit()
+                return True
+        except Exception as e:
+            await session.rollback()
+            return {"error": f"更新失败，已回滚，错误: {str(e)}"}
+        finally:
+            await session.close()
+
+    async def update_graduation_student_by_school_id(self, school_id: int, grade_level: int, is_commit=True):
+        session = await self.master_db()
+        current_year = datetime.now().year
+
+        school_duration = grade_level  # 根据学校不同的学制，比如小学是6年，初中是3年
+        session_year = current_year - school_duration
+        try:
+            # 1 筛选符合要求的学生
+            stmt_select = select(StudentBaseInfo, School, Student).join(StudentSession,
+                                                                        StudentSession.session_id == StudentBaseInfo.session_id).join(
+                School, School.id == StudentBaseInfo.school_id).join(Student,
+                                                                     Student.student_id == StudentBaseInfo.student_id).where(
+                StudentBaseInfo.school_id == school_id,
+                StudentSession.year == str(session_year),  # 届别为需要毕业的年
+                StudentBaseInfo.graduation_type == None,  # 状态为未毕业
+                Student.is_deleted == False,
+            )
+            result = await session.execute(stmt_select)
+            students_to_graduate = result.all()
+            if not students_to_graduate:
+                return {"message": "没有符合条件的学生"}
+            # 2 更新学生状态
+            for student_base, school, student in students_to_graduate:
+                update_contents = {"graduation_type": "graduation"}
+                query = update(StudentBaseInfo).where(StudentBaseInfo.student_id == student_base.student_id).values(
+                    **update_contents)
+                await self.update(session, query, student_base, update_contents, is_commit=False)
+                # 3 将学生放入毕业表中
+                graduation_student = GraduationStudent(student_id=student_base.student_id,
+                                                       student_name=student.student_name, school=school.school_name,
+                                                       school_id=student_base.school_id, borough=school.borough,
+                                                       edu_number=student_base.edu_number,
+                                                       class_id=student_base.class_id, session=student_base.session,
+                                                       session_id=student_base.session_id,
+                                                       status=student_base.graduation_type,
+                                                       graduation_date=datetime.now().date(),
+                                                       graduation_remark="",
+                                                       archive_status=False)
+                session.add(graduation_student)
+            # 4. 提交所有事务
+            if is_commit:
+                await session.commit()
+                return True
+                # return {"message": f"{len(students_to_graduate)} 位学生毕业状态更新成功"}
+        except Exception as e:
+            # 5. 回滚操作，如果有任何失败
+            await session.rollback()
+            return {"error": f"更新失败，已回滚，错误: {str(e)}"}
+        finally:
+            # 6. 关闭会话
+            await session.close()
+
+        # todo 中职和特殊教育的学制不一样，这里需要特别说明
+
+        # try:
+        #     # 1. 查询需要毕业的学生，根据学校ID、学制和届别
+        #     # 假设 StudentBaseInfo 包含 school_id, program_id (专业ID), grade (届别), is_graduated
+        #     stmt_select = select(StudentBaseInfo).where(
+        #         StudentBaseInfo.school_id == school_id,
+        #         StudentBaseInfo.is_graduated == False  # 只选择未毕业的学生
+        #     )
+        #     result = await session.execute(stmt_select)
+        #     students_to_check = result.scalars().all()
+        #
+        #     if not students_to_check:
+        #         return {"message": "没有符合条件的学生"}
+        #
+        #     # 2. 遍历所有学生，计算他们的学制和届别是否达到毕业条件
+        #     graduated_students = []
+        #     for student in students_to_check:
+        #         # 假设每个学生有 program_id 和 program_duration 表示专业学制
+        #         # 查询专业对应的学制
+        #         stmt_program = select(ProgramInfo).where(ProgramInfo.program_id == student.program_id)
+        #         program_result = await session.execute(stmt_program)
+        #         program_info = program_result.scalar_one_or_none()
+        #
+        #         if not program_info:
+        #             continue  # 如果没有查询到对应的专业信息，跳过这个学生
+        #
+        #         program_duration = program_info.program_duration  # 专业的学制（年数）
+        #         graduation_year = student.grade + program_duration  # 计算毕业年份
+        #
+        #         # 判断该学生是否应当毕业
+        #         if current_year >= graduation_year:
+        #             # 3. 更新学生的毕业状态
+        #             update_contents = {"is_graduated": True, "graduation_year": current_year}
+        #             query = update(StudentBaseInfo).where(StudentBaseInfo.student_id == student.student_id).values(
+        #                 **update_contents)
+        #             await self.update(session, query, student, update_contents, is_commit=False)  # 延迟提交
+        #
+        #             # 4. 将毕业学生记录添加到毕业表
+        #             graduation_record = GraduationRecord(
+        #                 student_id=student.student_id,
+        #                 school_id=school_id,
+        #                 graduation_year=current_year
+        #             )
+        #             session.add(graduation_record)
+        #
+        #             graduated_students.append(student)
+        #
+        #     # 5. 提交所有事务
+        #     if is_commit and graduated_students:
+        #         await session.commit()
+        #         return {"message": f"{len(graduated_students)} 位学生毕业状态更新成功"}
+        #
+        # except Exception as e:
+        #     # 6. 回滚操作，如果有任何失败
+        #     await session.rollback()
+        #     return {"error": f"更新失败，已回滚，错误: {str(e)}"}
+        #
+        # finally:
+        #     # 7. 关闭会话
+        #     await session.close()
+
+    async def query_graduation_student_by_model_with_page(self, page_request: PageRequest,
+                                                          query_model: GraduateStudentQueryModel):
+        """
+        根据条件查询毕业生
+        """
+        query = select(GraduationStudent.student_id, GraduationStudent.school_id, GraduationStudent.school,
+                       GraduationStudent.student_name, GraduationStudent.status, GraduationStudent.archive_status,
+                       GraduationStudent.graduation_date, Classes.class_name).join(Classes,
+                                                                                   Classes.id == GraduationStudent.class_id).where(
+            GraduationStudent.is_deleted == False)
+        query = query.order_by(GraduationStudent.created_at.desc())
+        if query_model.school_id:
+            query = query.where(GraduationStudent.school_id == query_model.school_id)
+        if query_model.student_name:
+            query = query.where(GraduationStudent.student_name == query_model.student_name)
+        if query_model.graduation_date_s and query_model.graduation_date_e:
+            query = query.where(GraduationStudent.graduation_date.between(query_model.graduation_date_s,
+                                                                          query_model.graduation_date_e))
+        if query_model.status:
+            query = query.where(GraduationStudent.status == query_model.status)
+        if query_model.archive_status is not None:
+            query = query.where(GraduationStudent.archive_status == query_model.archive_status)
+        if query_model.borough:
+            query = query.where(GraduationStudent.borough == query_model.borough)
+        paging = await self.query_page(query, page_request)
+        return paging
+
+    async def query_school_archive_status_with_page(self, page_request: PageRequest,
+                                                    query_model: CountySchoolArchiveQueryModel):
+        relationship = (select(CountyGraduationStudent.school_id,
+                               func.count(CountyGraduationStudent.school_id).label('relation_count')))
+
+
+
+
+        # paging = await self.query_page(query, page_request)
+        # return paging
