@@ -428,6 +428,8 @@ async def get_tenant_by_code(code: str):
         home_url="http://localhost:8000",
         )
     # print(tt)
+    print('解析到租户最终',tenant)
+
     return tenant
 async def get_tenant_current( ):
     tenant_code = request_context_manager.current().tenant_code
