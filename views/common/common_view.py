@@ -423,7 +423,7 @@ async def get_tenant_by_code(code: str):
         description="租户1",
         status=TenantStatus.active,
         client_id="9c49aa8d79c97951c242",
-        client_secret="449dfa687cfbd86673f563b8b1050409efd8125a",
+        client_secret="b83838efbd8669d325fdc5b5e7ce1173aacb85a4",
         redirect_url= "",
         home_url="http://localhost:8000",
         )
