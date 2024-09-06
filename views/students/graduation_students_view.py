@@ -21,8 +21,8 @@ class GraduationStudentsView(BaseView):
         return res
 
     # 发起毕业
-    async def get_graduation_student_by_school_id(self, school_id: int | str = Query(..., title="教师编号",
-                                                                                     description="教师编号")):
+    async def get_graduation_student_by_school_id(self, school_id: int | str = Query(..., title="学校id",
+                                                                                     description="学校id")):
         res = await self.graduation_student_rule.update_graduation_student_by_school_id(school_id)
         return res
 
@@ -33,7 +33,7 @@ class GraduationStudentsView(BaseView):
         res = await self.graduation_student_rule.update_graduation_student_status(student_id, status)
         return res
 
-    async def post_student_graduate_archive_status_by_school_id(self, school_id: int | str = Body(..., title="学校编号",
+    async def get_student_graduate_archive_status_by_school_id(self, school_id: int | str = Query(..., title="学校编号",
                                                                                                   description="学校编号")):
         res = await self.graduation_student_rule.update_archive_status_and_year_by_student_id(school_id)
         return res
