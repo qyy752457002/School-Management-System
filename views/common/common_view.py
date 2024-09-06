@@ -416,7 +416,7 @@ async def get_tenant_by_code(code: str):
     rule = get_injector(TenantRule)
     tenant = await rule.get_tenant_by_code(code)
     print('解析到租户',tenant)
-    if code=='210100':
+    if tenant is None and code=='210100':
         tenant =  Tenant(
         code=code,
         name="租户1",
@@ -424,7 +424,7 @@ async def get_tenant_by_code(code: str):
         status=TenantStatus.active,
         client_id="5447ba36b3b8359c7ac7",
         client_secret="449dfa687cfbd86673f563b8b1050409efd8125a",
-        redirect_url="http://localhost:8000/auth/callback/debug",
+        redirect_url= "https://school-oms-dev.f123.pub/auth/oauth2/callback/{tenant}",
         home_url="http://localhost:8000",
         )
     # print(tt)
