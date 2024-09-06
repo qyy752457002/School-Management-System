@@ -2,7 +2,9 @@
   "web_server": {
     "name": "school",
     "description": "学校综合管理系统",
-    "version": "0.0.1"
+    "version": "0.0.1",
+    "need_auth": true,
+    "multi_tenant": true
   },
   "databases": {
     "default": {
@@ -101,7 +103,8 @@
       "secret": "Jci5NpY9p2D7JPKXrVL3J8",
       "algorithm": "RS256",
       "expires": 3600,
-      "issuer": "lfun",
+      "issuer": "9c49aa8d79c97951c242",
+      "audience": "audience",
       "issue_at": 0
     },
     "oauth2": {
@@ -110,7 +113,7 @@
       "authorization_url": "https://org-center.f123.pub/org-center/login/oauth/authorize",
       "token_url": "https://org-center.f123.pub/api/login/oauth/access_token",
       "user_info_url": "https://org-center.f123.pub/api/userinfo",
-      "redirect_url": "https://school-oms-test.f123.pub/auth/oauth2/callback",
+      "redirect_url": "https://school-oms-test.f123.pub/auth/oauth2/callback/{tenant}",
       "grant_type": "authorization_code",
       "login_out_url": "https://org-center.f123.pub/api/logout",
       "scope": "scope",
