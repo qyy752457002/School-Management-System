@@ -60,10 +60,4 @@ class SystemConfig(BaseDBModel):
             SystemConfig(id= 27 ,config_name='教师 专利和软著信息导入模版', config_code='teacher_patentinfo_import_template', config_value='', config_remark='',school_id=0, created_uid=0, updated_uid=0, is_deleted=False),
             SystemConfig(id= 28 ,config_name='教师专业技术职务 信息导入模版', config_code='teacher_professionalinfo_import_template', config_value='', config_remark='',school_id=0, created_uid=0, updated_uid=0, is_deleted=False),
 
-
         ]
-
-
-
-
-

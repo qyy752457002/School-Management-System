@@ -124,9 +124,6 @@ class StudentBaseInfo(BaseDBModel):
     identity_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份类型",default='')
     nationality: Mapped[str] = mapped_column(String(64), nullable=True, comment="国籍/地区",default='')
     enrollment_method: Mapped[str] = mapped_column(String(64), nullable=True, comment="就读方式枚举enrollment_method",default='')
-    # ()(workplace)
-    # workplace: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="工作单位")
-
 
     flow_out_time: Mapped[str] = mapped_column(String(64), default='', nullable=True, comment="流出时间")
     flow_out_reason: Mapped[str] = mapped_column(String(64), nullable=True, comment="流出原因")

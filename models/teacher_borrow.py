@@ -64,6 +64,3 @@ class TeacherBorrow(BaseDBModel):
     teacher_id: Mapped[int] = mapped_column(BigInteger,nullable=False, comment="教师ID")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
     borrow_type: Mapped[str] = mapped_column(String(255), nullable=False, comment="借动类型")
-
-
-

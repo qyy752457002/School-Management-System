@@ -1,4 +1,3 @@
-# from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import json
 import random
 import traceback
@@ -239,12 +238,7 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
             # print(type(datadict), "数据类型")
             response = await httpreq.post_json(url, datadict, headerdict)
 
-        # print( '接口响应',response)
-        # print(type(response), "数据类型")
 
-        # json_data =  JsonUtils.json_str_to_dict( response)
-
-        # logger.info('接口响应',response)
         from views.common.common_view import       convert_dates_to_strings
         response=convert_dates_to_strings(response)
         # 示例数据
@@ -412,12 +406,7 @@ async def check_social_credit_code(social_credit_code: str | None,current_school
         print("唯一检测1", social_credit_code, exist)
         raise SocialCreditCodeExistError()
     not_equal_age = dict()
-    # if current_school is not None:
-    #     not_equal_age = {'id !=': current_school.id}
 
-        # users_not_30 = query_users(**not_equal_age, school_id=current_school.id)
-
-    # users_not_30 = query_users(**not_equal_age)
     exist = await school_dao.get_school_by_args(current_school,social_credit_code=social_credit_code, is_deleted=False)
     if exist:
         print("唯一检测2", social_credit_code, exist)
@@ -464,10 +453,6 @@ Get the user from Casdoor providing the user_id.
             "clientId": authentication_config.oauth2.client_id,
             "clientSecret": authentication_config.oauth2.client_secret,
         }
-        # r = requests.get(url, params)
-        # response = r.json()
-
-        # datadict
 
         datadict = params
 
@@ -494,24 +479,14 @@ Get the user from Casdoor providing the user_id.
 
         for i, value in enumerate(p):
             data = []
-            # print(value['modelText'])
-            # print(type(value['ruleCode']), value['ruleCode'])
+
             # 数据列表，每个子列表是一行数据 todo 调整返回给前段的按照 资源。json的格式来
             # 移除字符串首尾的方括号，并按逗号加空格分割
             data_str = value['ruleCode']
-            # data_str.replace("\"", "'")
-            # print(data_str)
 
             data = data_list = eval(data_str)
-            # print(type(data_list), data_list)
-            # pprint.pprint(data_list)
-            # exit(1)
-            # data_list = data_str.strip("[]").split("\",\"")
 
             # 去除每个元素两侧的双引号
-            # data = [item.strip("\"") for item in data_list]
-            # eval("data="+ value['ruleCode'])
-            # data = value['ruleCode']
 
             # 指定 CSV 文件名
             filename = str(i) + 'policy.csv'
@@ -531,18 +506,6 @@ Get the user from Casdoor providing the user_id.
                     file.write(join_str + '\n')  # 写入元素，并添加换行符
                 file.write(gstr + '\n')  # 写入元素，并添加换行符
 
-            #
-            # # 打开文件，'w' 表示写入模式
-            # with open(filename, 'w', newline='') as csvfile:
-            #     # 创建 csv 写入器
-            #     csvwriter = csv.writer(csvfile)
-            #
-            #     # 写入数据
-            #     for row in data:
-            #         print('111',row)
-            #         csvwriter.writerow(row)
-            # if i == "identity":
-            #     info[i] = json.loads(value)
             break
 
         print('资源编码', resource_codes)
@@ -577,10 +540,6 @@ async def verify_auth(sub: str, obj, act):
     import casbin
 
     e = casbin.Enforcer("model.conf", "0policy.csv")
-
-    # sub = "alice"  # the user that wants to access a resource.
-    # obj = "grade"  # the resource that is going to be accessed.
-    # act = "add"  # the operation that the user performs on the resource.
 
     if e.enforce(sub, obj, act):
         # permit alice to read data1

@@ -8,13 +8,6 @@ from mini_framework.databases.entities import BaseDBModel
 
 class GraduationStudent(BaseDBModel):
     """
-     student_id: str = Field(..., title="学生id", description="学生id")
-    student_name: str = Field(..., title="学生姓名", description="学生姓名")
-    gender: str = Field(..., title="性别", description="性别")
-    school: str = Field(..., title="学校", description="学校")
-    county: str = Field(..., title="", description="行政属地")
-    edu_number: str = Field(..., title="", description="学籍号码")
-    class_id: str = Field(..., title="", description="班级")
     归档状态
     归档时间
     """
