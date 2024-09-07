@@ -70,3 +70,36 @@ class IdentityType(str, Enum):
     def to_list(cls):
         return [cls.STUDENT, cls.STAFF, cls.MANAGER, cls.PARENT, cls.THIRD_PARTY]
 
+
+
+class Section(str, Enum):
+    """
+    学段信息
+    幼儿园 - kindergarten
+    小学 - primary_school
+    初中 - junior_middle_school
+    高中 - high_school
+    中职 - vocational_school
+    """
+    KINDERGARTEN = "kindergarten"
+    PRIMARY_SCHOOL = "primary_school"
+    JUNIOR_MIDDLE_SCHOOL = "junior_middle_school"
+    HIGH_SCHOOL = "high_school"
+    VOCATIONAL_SCHOOL = "vocational_school"
+
+    @classmethod
+    def to_list(cls):
+        return [cls.KINDERGARTEN, cls.PRIMARY_SCHOOL, cls.JUNIOR_MIDDLE_SCHOOL, cls.HIGH_SCHOOL, cls.VOCATIONAL_SCHOOL]
+
+    @classmethod
+    def to_grade_level(cls):
+        return {
+            cls.KINDERGARTEN.value: 3,
+            cls.PRIMARY_SCHOOL.value: 6,
+            cls.JUNIOR_MIDDLE_SCHOOL.value: 3,
+            cls.HIGH_SCHOOL.value: 3,
+            cls.VOCATIONAL_SCHOOL.value: 0
+        }
+    @classmethod
+    def get_grade_level(cls, key):
+       return cls.to_grade_level().get(key, 0)
