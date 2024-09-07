@@ -9,6 +9,7 @@ from mini_framework.design_patterns.singleton import singleton
 from mini_framework.multi_tenant.registry import tenant_registry
 from mini_framework.web.request_context import request_context_manager
 
+from business_exceptions.tenant import TenantNotFoundOrUnActiveError
 from daos.enum_value_dao import EnumValueDAO
 from rules.tenant_rule import TenantRule
 from views.common.constant import Constant
@@ -429,6 +430,9 @@ async def get_tenant_by_code(code: str):
         )
     # print(tt)
     print('解析到租户最终',tenant)
+
+    if tenant is None:
+        raise TenantNotFoundOrUnActiveError()
 
     return tenant
 async def get_tenant_current( ):
