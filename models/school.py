@@ -56,12 +56,9 @@ class School(BaseDBModel):
     historical_evolution: Mapped[str] = mapped_column( Text, nullable=True, default='', comment="历史沿革")
     sy_zones_pro: Mapped[str] = mapped_column(String(64), nullable=True, default='',
                                               comment="属地管理教育行政部门所在地（省级）")
-    primary_school_system: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="小学学制")
     primary_school_entry_age: Mapped[str] = mapped_column(String(10), nullable=True, default='', comment="小学入学年龄")
-    junior_middle_school_system: Mapped[str] = mapped_column(String(10), nullable=True, default='', comment="初中学制")
     junior_middle_school_entry_age: Mapped[str] = mapped_column(String(10), nullable=True, default='',
                                                                 comment="初中入学年龄")
-    senior_middle_school_system: Mapped[str] = mapped_column(String(10), nullable=True, default='', comment="高中学制")
     membership_no: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment=" 隶属单位号")
     is_entity: Mapped[bool] = mapped_column(nullable=True, default=True, comment=" 是否实体")
     admin: Mapped[str] = mapped_column(String(64), nullable=True, comment="管理员", default='')

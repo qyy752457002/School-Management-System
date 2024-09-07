@@ -70,16 +70,13 @@ class PlanningSchool(BaseDBModel):
     historical_evolution: Mapped[str] = mapped_column(Text, nullable=True, comment="历史沿革", default='')
     sy_zones_pro: Mapped[str] = mapped_column(String(64), nullable=True, comment="属地管理教育行政部门所在地（省级）",
                                               default='')
-    primary_planning_school_system: Mapped[str] = mapped_column(String(64), nullable=True, comment="小学学制",
-                                                                default='')
+
     primary_planning_school_entry_age: Mapped[str] = mapped_column(String(64), nullable=True, comment="小学入学年龄",
                                                                    default='')
-    junior_middle_planning_school_system: Mapped[str] = mapped_column(String(64), nullable=True, comment="初中学制",
-                                                                      default='')
+
     junior_middle_planning_school_entry_age: Mapped[str] = mapped_column(String(64), nullable=True,
                                                                          comment="初中入学年龄", default='')
-    senior_middle_planning_school_system: Mapped[str] = mapped_column(String(64), nullable=True, comment="高中学制",
-                                                                      default='')
+
     process_instance_id: Mapped[int] = mapped_column(BigInteger, nullable=True, default=0, comment="流程ID")
     workflow_status: Mapped[str] = mapped_column(String(64), nullable=True, comment="工作流审核状态", default='')
     admin: Mapped[str] = mapped_column(String(64), nullable=True, comment="管理员", default='')
