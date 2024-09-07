@@ -17,6 +17,7 @@ class Grade(BaseDBModel):
     school_id: Mapped[int] = mapped_column(BigInteger, comment="学校ID",default=0,nullable=True)
 
     school_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="教育阶段/学校类别 例如 小学 初中")
+    study_section: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="教育阶段")
     city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城市 编码")
     district: Mapped[str] = mapped_column(String(64), nullable=True, comment="区 编码",default='')
     course_no: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="学科编码/中职用枚举")
