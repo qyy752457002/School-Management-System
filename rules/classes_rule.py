@@ -192,8 +192,8 @@ class ClassesRule(ImportCommonAbstractRule, object):
             print(schools.keys())
 
             for item in paging_result.items:
-                if hasattr(item, 'monitor_id') and  item.monitor_id == 0:
-                    item.monitor_id=None
+                if hasattr(item, 'monitor_id') and item.monitor_id == 0:
+                    item.monitor_id = None
                     pass
                 class_ids.append(item.id)
                 item.school_id = int(item.school_id)
@@ -357,3 +357,13 @@ class ClassesRule(ImportCommonAbstractRule, object):
         except Exception as e:
             print(e)
             raise e
+
+    async def delete_class_by_school_id_and_session_id(self, school_id, session_id):
+        result = await self.classes_dao.get_all_class_by_school_id(school_id, session_id)
+        try:
+            for item in result:
+                await self.softdelete_classes(item.id)
+            return True
+        except Exception as e:
+            print(e)
+            return e

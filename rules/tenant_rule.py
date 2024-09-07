@@ -75,7 +75,6 @@ class TenantRule(object):
         for key, value in tenant.dict().items():
             if value:
                 need_update_list.append(key)
-
         tenant_db = await self.tenant_dao.update_tenant(tenant, *need_update_list)
 
 
@@ -189,7 +188,6 @@ class TenantRule(object):
             items =  await self.school_dao.get_school_by_id(school_id)
             if items is None:
                 print('分校未找到当前租户')
-
                 return
             else:
                 tenant_type= 'school'
@@ -201,7 +199,6 @@ class TenantRule(object):
 
             code = items.school_no
             description = items.school_name
-
             pass
         else:
             # 规划校用编号
