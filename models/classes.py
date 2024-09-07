@@ -42,6 +42,7 @@ class Classes(BaseDBModel):
     care_teacher_phone: Mapped[str] = mapped_column(String(48), nullable=True, default='', comment="班主任电话")
     care_teacher_job_number: Mapped[str] = mapped_column(String(48), nullable=True, default='', comment="班主任工号")
     education_stage: Mapped[str] = mapped_column(String(48), nullable=True, default='', comment="教育阶段")
+    study_section: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="教育阶段")
     school_system: Mapped[str] = mapped_column(String(48), nullable=True, default='', comment="学制")
     monitor: Mapped[str] = mapped_column(String(48), nullable=True, default='', comment="班长")
     monitor_id: Mapped[int] = mapped_column(BigInteger, nullable=True, default=0, comment="班长的学生id")

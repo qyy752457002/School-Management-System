@@ -34,6 +34,9 @@ class SchoolEduinfo(BaseDBModel):
     affil_univ_name: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="附属于高校（机构）名称")
     is_last_yr_revok: Mapped[bool] = mapped_column( nullable=True,default=False , comment="是否上年撤销")
     is_school_counted: Mapped[bool] = mapped_column( nullable=True,default=False , comment="是否计校数")
+    primary_school_system: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="小学学制")
+    junior_middle_school_system: Mapped[str] = mapped_column(String(10), nullable=True, default='', comment="初中学制")
+    senior_middle_school_system: Mapped[str] = mapped_column(String(10), nullable=True, default='', comment="高中学制")
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, comment="创建时间")
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, comment="更新时间")
