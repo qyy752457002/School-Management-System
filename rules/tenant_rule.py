@@ -14,6 +14,7 @@ from daos.school_dao import SchoolDAO
 from models.school import School
 from models.tenant import Tenant
 from rules.common.common_rule import get_org_center_application
+from rules.school_rule import SchoolRule
 from views.models.system import InstitutionType
 # from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
 from views.models.tenant import Tenant as TenantModel
@@ -37,7 +38,8 @@ class TenantRule(object):
         tenant_db = await self.tenant_dao.get_tenant_by_code(tenant_code)
         if tenant_db is None:
             # 可能是 区 或者 市的编码的情况
-            school  = await self.school_dao.get_school_by_args(block=tenant_code,planning_school_id =  0)
+            school_rule= get_injector(SchoolRule)
+            school  =  school_rule.get_country_edu_institution_by_code(tenant_code)
             if school is None:
                 print('未找到区教育局')
                 return None
