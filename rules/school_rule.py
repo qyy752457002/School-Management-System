@@ -101,8 +101,7 @@ class SchoolRule(object):
             school.school_name)
         if exists_school:
             raise SchoolExistsError()
-        school_db = view_model_to_orm_model(school, School, exclude=["id"])
-        if hasattr(school, "planning_school_id") and   school.planning_school_id != "":
+        if hasattr(school, "planning_school_id") and   school.planning_school_id != "" and  school.planning_school_id  is not None and  len(school.planning_school_id)   > 0:
             pschool  =await self.p_school_dao.get_planning_school_by_id(school.planning_school_id)
             if pschool:
                 school.school_no = pschool.planning_school_no+str( random.randint(10,99) )
@@ -122,6 +121,7 @@ class SchoolRule(object):
             school.school_no = school_no
         if hasattr(school, "school_no"):
             await check_school_no(school.school_no)
+        school_db = view_model_to_orm_model(school, School, exclude=["id"])
 
         school_db.status = PlanningSchoolStatus.DRAFT.value
         school_db.created_uid = 0
