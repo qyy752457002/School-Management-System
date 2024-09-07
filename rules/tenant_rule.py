@@ -41,13 +41,13 @@ class TenantRule(object):
             if school is None:
                 print('未找到区教育局')
                 # raise TenantNotFoundError()
-                return
+                return None
             tenant_db = await self.tenant_dao.get_tenant_by_code(school.school_no)
             if tenant_db is None:
                 print('找到区教育局,但不存在于租户表里')
 
                 # raise TenantNotFoundError()
-                return
+                return None
         tenant = orm_model_to_view_model(tenant_db, TenantViewModel)
         return tenant
     async def get_tenant_by_name(self, tenant_name):

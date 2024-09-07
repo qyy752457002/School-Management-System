@@ -415,18 +415,20 @@ async def get_tenant_by_code(code: str):
     rule = get_injector(TenantRule)
     tenant = await rule.get_tenant_by_code(code)
     print('解析到租户',tenant)
-    if code=='210100':
+    if tenant is None and code=='210100':
         tenant =  Tenant(
         code=code,
         name="租户1",
         description="租户1",
         status=TenantStatus.active,
-        client_id="5447ba36b3b8359c7ac7",
-        client_secret="449dfa687cfbd86673f563b8b1050409efd8125a",
-        redirect_url="http://localhost:8000/auth/callback/debug",
+        client_id="9c49aa8d79c97951c242",
+        client_secret="b83838efbd8669d325fdc5b5e7ce1173aacb85a4",
+        redirect_url= "",
         home_url="http://localhost:8000",
         )
     # print(tt)
+    print('解析到租户最终',tenant)
+
     return tenant
 async def get_tenant_current( ):
     tenant_code = request_context_manager.current().tenant_code
