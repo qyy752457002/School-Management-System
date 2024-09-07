@@ -1,6 +1,6 @@
-
 from starlette.requests import Request
 
+from typing import List
 from common.decorators import require_role_permission
 from views.common.common_view import get_extend_params
 
@@ -105,7 +105,7 @@ class GradesView(BaseView):
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         # if grade_id:
 
-            # grades.id = grade_id
+        # grades.id = grade_id
         grades.created_at = None
         delattr(grades, 'created_at')
 
@@ -119,6 +119,22 @@ class GradesView(BaseView):
 
         return res
 
+    async def put_all_grades(
+        self,
+        grade_list: List[Grades] = Body(
+            [],
+            description="所有年级列表",
+            example=[
+                {
+                    "id": 1,
+                    "grade_alias": "别名",
+                }
+            ],
+        ),
+    ):
+        res = await self.grade_rule.update_grade_batch(grade_list)
+        return res
+
         # 手动进行 年级的继承
     async def put_grade_extend(self,
                   request:Request,
@@ -129,9 +145,7 @@ class GradesView(BaseView):
 
                   ):
 
-
         obj= await get_extend_params(request)
-
 
         res = await self.grade_rule.update_grade(None)
 
