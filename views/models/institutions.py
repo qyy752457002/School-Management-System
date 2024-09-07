@@ -20,7 +20,7 @@ class Institutions(BaseModel):
     email: str = Field(...,   title='单位电子信箱',  description=" 单位电子信箱",examples=['fsdfds@odk.cc'])
     contact_number: str = Field(...,   title='联系电话',  description=" 联系电话",examples=['0232156562'])
     area_code: str = Field(...,   title='电话区号',  description=" 电话区号",examples=['020'])
-    institution_code: str|None = Field(...,   title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
+    institution_code: str|None = Field( '',   title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
     create_date: str = Field(...,   title='成立年月',  description=" 成立年月",examples=['2020-10-23'])
     leg_repr_name: str = Field(...,   title='法定代表人姓名',  description=" 法定代表人姓名",examples=['XXX'])
     party_leader_name: str = Field(...,   title='党组织负责人姓名',  description=" 党组织负责人姓名",examples=['YYY'])
@@ -171,7 +171,7 @@ class InstitutionsAdd(BaseModel):
     #   title  实际根据title匹配
     institution_category: InstitutionType = Field(InstitutionType.INSTITUTION, title='单位分类',  examples=['institution/administration'])
     school_name: str = Field(...,alias='institution_name', title='单位名称',  examples=['文化部'])
-    school_no: str|None = Field(..., alias='institution_code',  title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
+    school_no: str|None = Field( '', alias='institution_code',  title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
     membership_no: str = Field(...,     title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
     block: str = Query("",   title=" ", description="地域管辖区", ),
     borough: str = Query("",    title="  ", description=" 行政管辖区", ),
@@ -183,7 +183,7 @@ class InstitutionKeyInfo(BaseModel):
     # 如果 不一样 需要转换到orm模型的
     id:int|str= Query(None, title="", description="", example='1')
     school_name: str = Field(...,alias='institution_name', title='单位名称',  examples=['文化部'])
-    school_no: str|None = Field(..., alias='institution_code',  title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
+    school_no: str|None = Field( '', alias='institution_code',  title='机构代码',  description=" 机构代码",examples=['DKE1865656'])
     membership_no: str |None = Field(...,   title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
     block: str |None = Field("", title=" ", description="地域管辖区", )
     borough: str |None = Field("", title="  ", description=" 行政管辖区", )
