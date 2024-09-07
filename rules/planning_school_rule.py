@@ -792,12 +792,12 @@ class PlanningSchoolRule(object):
         planning_school_communication = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(
             exists_planning_school.id)
         cn_exists_planning_school = await self.convert_planning_school_to_export_format(exists_planning_school)
-        dict_data = {'administrativeDivisionCity': '',
+        dict_data = {'administrativeDivisionCity': '沈阳市',
                      'administrativeDivisionCounty': cn_exists_planning_school.block,
                      'administrativeDivisionProvince': planning_school_communication.loc_area_pro,
                      'createdTime': exists_planning_school.create_planning_school_date,
                      'locationAddress': planning_school_communication.detailed_address,
-                     'locationCity': '',
+                     'locationCity': '沈阳市',
                      'locationCounty': planning_school_communication.loc_area,
                      'locationProvince': planning_school_communication.loc_area_pro,
                      # 所属组织这个可以不要
@@ -809,6 +809,11 @@ class PlanningSchoolRule(object):
                      'unitType': 'school',
                      'updatedTime': exists_planning_school.updated_at,
                      }
+        # 判断键 administrativeDivisionProvince 如果值为none或者空字符串 则给默认值
+        if dict_data['administrativeDivisionProvince'] == None or dict_data['administrativeDivisionProvince'] == '':
+            dict_data['administrativeDivisionProvince'] = '辽宁省'
+        if dict_data['locationProvince'] == None or dict_data['locationProvince'] == '':
+            dict_data['locationProvince'] = '辽宁省'
 
         apiname = '/api/add-educate-unit'
         # 字典参数
@@ -816,8 +821,6 @@ class PlanningSchoolRule(object):
         if isinstance(datadict['createdTime'], (date, datetime)):
             datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
 
-        # if isinstance(datadict['createdTime'], (date, datetime)):
-        #     datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
         datadict = convert_dates_to_strings(datadict)
         print(datadict, '字典参数')
         print('发起请求单位到组织中心')
