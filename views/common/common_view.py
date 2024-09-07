@@ -11,6 +11,7 @@ from mini_framework.web.request_context import request_context_manager
 
 from business_exceptions.tenant import TenantNotFoundOrUnActiveError
 from daos.enum_value_dao import EnumValueDAO
+from daos.school_dao import SchoolDAO
 from rules.tenant_rule import TenantRule
 from views.common.constant import Constant
 from views.models.extend_params import ExtendParams
@@ -163,7 +164,17 @@ async def get_extend_params(request) -> ExtendParams:
 
     tenant_code = request_context_manager.current().tenant_code
     tenant =await tenant_registry.get_tenant(tenant_code)
+    print('租户22',tenant)
     obj.tenant = tenant
+    if  len(tenant.code)<10:
+        # 查区教育局的 具体 单位信息
+        school_dao= get_injector(SchoolDAO)
+
+        school  = await  school_dao.get_school_by_tenant_code(tenant_code )
+        # school  =  school_rule.get_country_edu_institution_by_code(tenant_code)
+        if school:
+            obj.county_id = school.block
+        pass
 
     return obj
 
