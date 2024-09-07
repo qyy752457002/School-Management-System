@@ -194,53 +194,6 @@ class GraduationStudentDAO(DAOBase):
         finally:
             await session.close()
 
-    async def update_graduation_student_archive_status_by_school_id(
-        self, school_id: int, is_commit=True
-    ):
-        session = await self.master_db()
-        current_year = datetime.now().year
-        try:
-            stmt_select = select(GraduationStudent).where(
-                GraduationStudent.school_id == school_id,
-                GraduationStudent.archive_status == False,
-            )
-            result = await session.execute(stmt_select)
-            students_to_update = result.scalars().all()
-            if not students_to_update:
-                return {"message": "没有符合条件的学校"}
-            school = students_to_update[0].school
-            borough = students_to_update[0].borough
-            for student in students_to_update:
-                update_contents = {
-                    "archive_status": True,
-                    "archive_date": str(current_year),
-                }
-                query = (
-                    update(GraduationStudent)
-                    .where(GraduationStudent.student_id == student.student_id)
-                    .values(**update_contents)
-                )
-                await self.update(
-                    session, query, student, update_contents, is_commit=False
-                )
-            graduate_student_count = len(students_to_update)
-            county_school = CountyGraduationStudent(
-                school_id=school_id,
-                graduate_count=graduate_student_count,
-                school=school,
-                borough=borough,
-                year=str(current_year),
-            )
-            session.add(county_school)
-            if is_commit:
-                await session.commit()
-                return True
-        except Exception as e:
-            await session.rollback()
-            return {"error": f"更新失败，已回滚，错误: {str(e)}"}
-        finally:
-            await session.close()
-
     async def update_graduation_student_archive_status(self, borough, is_commit=True):
         session = await self.master_db()
         current_year = datetime.now().year
