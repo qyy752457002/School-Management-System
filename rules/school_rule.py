@@ -2,6 +2,7 @@
 import copy
 import json
 import os
+import random
 from copy import deepcopy
 from datetime import datetime, date
 
@@ -100,9 +101,27 @@ class SchoolRule(object):
             school.school_name)
         if exists_school:
             raise SchoolExistsError()
-        school_db = view_model_to_orm_model(school, School, exclude=["id"])
+        if hasattr(school, "planning_school_id") and   school.planning_school_id != "" and  school.planning_school_id  is not None and  len(school.planning_school_id)   > 0:
+            pschool  =await self.p_school_dao.get_planning_school_by_id(school.planning_school_id)
+            if pschool:
+                school.school_no = pschool.planning_school_no+str( random.randint(10,99) )
+            pass
+        if hasattr(school, "institution_category"):
+            school_no= school.block
+
+            if school.institution_category== InstitutionType.INSTITUTION.value:
+                school_no =  school_no+ "X10"
+            elif school.institution_category== InstitutionType.ADMINISTRATION.value:
+                school_no =  school_no+ "X20"
+
+            else:
+                pass
+            school_no =  school_no+str( random.randint(100,999) )
+            print( '生成机构编码' , school_no )
+            school.school_no = school_no
         if hasattr(school, "school_no"):
             await check_school_no(school.school_no)
+        school_db = view_model_to_orm_model(school, School, exclude=["id"])
 
         school_db.status = PlanningSchoolStatus.DRAFT.value
         school_db.created_uid = 0
@@ -151,7 +170,7 @@ class SchoolRule(object):
         dicta = planning_school.__dict__
         dicta['school_name'] = planning_school.planning_school_name
         dicta['planning_school_id'] = planning_school.id
-        dicta['school_no'] = planning_school.planning_school_no
+        dicta['school_no'] = planning_school.planning_school_no+'00'
         dicta['school_edu_level'] = planning_school.planning_school_edu_level
         dicta['school_category'] = planning_school.planning_school_category
         dicta['school_operation_type'] = planning_school.planning_school_operation_type
