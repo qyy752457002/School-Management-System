@@ -94,7 +94,7 @@ class GradeDAO(DAOBase):
 
     async def query_grade_with_page(self, grade_name, school_id, page_request: PageRequest, city='',
                                     district='') -> Paging:
-        query = select(Grade).where(Grade.is_deleted == False).order_by(desc(Grade.id))
+        query = select(Grade).where(Grade.is_deleted == False).order_by(Grade.grade_index)
         if grade_name:
             query = query.where(Grade.grade_name.like(f'%{grade_name}%'))
         if school_id:

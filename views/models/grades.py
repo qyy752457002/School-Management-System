@@ -27,7 +27,11 @@ class Grades(BaseModel):
     district: str|None = Field("", title="", description="",examples=[''])
     sort_number: int|None = Field(None, title="", description="排序序号",examples=[0])
 
-    description: str = Field('',  description="简介",examples=['fsdfdsfsdxxx'])
+    study_section: str|None = Field("", title="", description="",examples=[''])
+    is_enabled: bool = Field(True, title="", description="是否启用",examples=[True])
+    is_graduation_grade: bool = Field(True, title="", description="是否毕业年级",examples=[True])
+
+    description: str|None = Field('',  description="简介",examples=['fsdfdsfsdxxx'])
     created_at: datetime = Field('',  description="简介",examples=['2020-01-01'])
     id:int|str= Field(0, title="", description="id", example='1')
     @model_validator(mode="before")
