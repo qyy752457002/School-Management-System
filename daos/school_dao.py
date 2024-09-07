@@ -394,3 +394,7 @@ class SchoolDAO(DAOBase):
             School.school_no == school_no)
         result = await session.execute(query_school)
         return result.first()
+    async def get_school_by_tenant_code(self, tenant_code):
+        school  = await self.get_school_by_args(block=tenant_code,planning_school_id =  0)
+
+        return school

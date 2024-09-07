@@ -11,11 +11,9 @@ from business_exceptions.tenant import TenantNotFoundError, TenantAlreadyExistEr
 from daos.planning_school_dao import PlanningSchoolDAO
 from daos.tenant_dao import TenantDAO
 from daos.school_dao import SchoolDAO
-from models.school import School
 from models.tenant import Tenant
 from rules.common.common_rule import get_org_center_application
 from views.models.system import InstitutionType
-# from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
 from views.models.tenant import Tenant as TenantModel
 from views.models.extend_params import ExtendParams
 from mini_framework.multi_tenant.tenant import Tenant as TenantViewModel
@@ -37,7 +35,11 @@ class TenantRule(object):
         tenant_db = await self.tenant_dao.get_tenant_by_code(tenant_code)
         if tenant_db is None:
             # 可能是 区 或者 市的编码的情况
-            school  = await self.school_dao.get_school_by_args(block=tenant_code,planning_school_id =  0)
+            # school  = await self.school_dao.get_school_by_args(block=tenant_code,planning_school_id =  0)
+            school  = await self.school_dao.get_school_by_tenant_code(tenant_code )
+
+        # school_rule= get_injector(SchoolRule)
+        #     school  =  school_rule.get_country_edu_institution_by_code(tenant_code)
             if school is None:
                 print('未找到区教育局')
                 return None
@@ -173,6 +175,12 @@ class TenantRule(object):
         return tenant
 
     async def sync_tenant_all(self, school_id):
+        """市   用 市编号      当前用区号 +行政单位筛选    备用的 产品会定义一个机构编号 其中的第几位标识这个单位是否有管理全区学校的权限
+         区     区号
+          学校   学校ID
+            事业单位
+             行政单位
+              """
         print(school_id)
         items =  await self.plannning_school_dao.get_planning_school_by_id(school_id)
         tenant_type= 'planning_school'
@@ -189,26 +197,30 @@ class TenantRule(object):
             pass
             # return
         if tenant_type == 'school':
+            # 学校用编号
+
             code = items.school_no
             description = items.school_name
 
             pass
         else:
+            # 规划校用编号
             code = items.planning_school_no
             description = items.planning_school_name
             pass
 
+        # 不重复插入 租户
         tenant  =  await self.tenant_dao.get_tenant_by_code(code)
         if tenant is not  None:
             return
-        # 请求接口 todo 解析放入表里
+        # 请求接口  解析放入表里
         res  =await  get_org_center_application(code)
         for value in  res['data']:
             if value['owner']!= code:
                 continue
 
             if tenant_type == 'school' and   items.institution_category not  in [InstitutionType.INSTITUTION,InstitutionType.ADMINISTRATION] :
-                # 学校用的是 ID  事业单位用的是区号
+                # 学校用的是 ID  事业单位用的是区号 school_no
                 code = str(items.id)
                 pass
 
