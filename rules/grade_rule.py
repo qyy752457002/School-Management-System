@@ -1,6 +1,7 @@
 import copy
 import traceback
 from datetime import datetime, date
+from typing import List
 
 from mini_framework.databases.conn_managers.db_manager import db_connection_manager
 from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
@@ -91,6 +92,13 @@ class GradeRule(object):
         # gradev = orm_model_to_view_model(grade_db, GradeModel,  )
         convert_snowid_in_model(grade, ["id", "school_id", ])
         return grade
+
+    async def update_grade_batch(self, grade_list:List[GradeModel]):
+        for grade in grade_list:
+            if grade.grade_alias:
+                need_update_list = ['grade_alias']
+                grade_db = await self.grade_dao.update_grade_byargs(grade, *need_update_list)
+        return grade_db
 
     async def delete_grade(self, grade_id):
         exists_grade = await self.grade_dao.get_grade_by_id(grade_id)
