@@ -14,6 +14,7 @@ from daos.school_dao import SchoolDAO
 from models.school import School
 from models.tenant import Tenant
 from rules.common.common_rule import get_org_center_application
+from views.models.system import InstitutionType
 # from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
 from views.models.tenant import Tenant as TenantModel
 from views.models.extend_params import ExtendParams
@@ -210,11 +211,17 @@ class TenantRule(object):
             if value['owner']!= code:
                 continue
 
+            if tenant_type == 'school' and   items.institution_category not  in [InstitutionType.INSTITUTION,InstitutionType.ADMINISTRATION] :
+                # 学校用的是 ID  事业单位用的是区号
+                code = str(items.id)
+                pass
+
+
             tenant_db = Tenant(
                 id=SnowflakeIdGenerator(1, 1).generate_id(),
                 tenant_type=  tenant_type,
                 status= 'active',
-                code=value['owner'],
+                code=code,
                 name=value['name'],
                 client_id=value['clientId'],
                 description=description,
