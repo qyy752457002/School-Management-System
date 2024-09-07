@@ -106,14 +106,20 @@ class PlanningSchoolRule(object):
 
         # 校验编码 不能重复 自动生成编码
         planning_school_no= planning_school.block
+        subfix = str( random.randint(100,999) )
+        print( '生成机构编码2' , planning_school_no,subfix )
+
         if planning_school.planning_school_operation_type:
-            info = await self.enum_value_dao.get_enum_value_by_value(planning_school.planning_school_operation_type)
+            info = await self.enum_value_dao.get_enum_value_by_value(planning_school.planning_school_operation_type,'school_nature_lv3')
+            print( '生成机构编码3' , info,vars(info) )
+
             if info:
                 planning_school_no =  planning_school_no+str(info.sort_number )
 
             pass
-        planning_school_no =  planning_school_no+str( random.randint(100,999) )
+        planning_school_no =  planning_school_no+subfix
         print( '生成机构编码' , planning_school_no )
+        planning_school.planning_school_no= planning_school_no
 
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_args(
             planning_school_no=planning_school.planning_school_no)

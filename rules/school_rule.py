@@ -119,6 +119,7 @@ class SchoolRule(object):
                 pass
             school_no =  school_no+str( random.randint(100,999) )
             print( '生成机构编码' , school_no )
+            school.school_no = school_no
         if hasattr(school, "school_no"):
             await check_school_no(school.school_no)
 
