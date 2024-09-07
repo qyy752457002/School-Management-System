@@ -2,6 +2,7 @@
 import copy
 import json
 import os
+import random
 from copy import deepcopy
 from datetime import datetime, date
 
@@ -101,6 +102,12 @@ class SchoolRule(object):
         if exists_school:
             raise SchoolExistsError()
         school_db = view_model_to_orm_model(school, School, exclude=["id"])
+        if hasattr(school, "planning_school_id") and   school.planning_school_id != "":
+            pschool  =await self.p_school_dao.get_planning_school_by_id(school.planning_school_id)
+            if pschool:
+                school.school_no = pschool.planning_school_no+str( random.randint(10,99) )
+            pass
+
         if hasattr(school, "school_no"):
             await check_school_no(school.school_no)
 
@@ -151,7 +158,7 @@ class SchoolRule(object):
         dicta = planning_school.__dict__
         dicta['school_name'] = planning_school.planning_school_name
         dicta['planning_school_id'] = planning_school.id
-        dicta['school_no'] = planning_school.planning_school_no
+        dicta['school_no'] = planning_school.planning_school_no+'00'
         dicta['school_edu_level'] = planning_school.planning_school_edu_level
         dicta['school_category'] = planning_school.planning_school_category
         dicta['school_operation_type'] = planning_school.planning_school_operation_type
