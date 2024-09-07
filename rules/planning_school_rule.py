@@ -105,6 +105,9 @@ class PlanningSchoolRule(object):
 
         # 校验编码 不能重复 自动生成编码
         planning_school_no= planning_school.block
+        if planning_school.planning_school_operation_type:
+
+            pass
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_args(
             planning_school_no=planning_school.planning_school_no)
         if exists_planning_school:
