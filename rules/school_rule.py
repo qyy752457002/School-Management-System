@@ -1277,3 +1277,9 @@ class SchoolRule(object):
             return response
 
         return None
+    # 获取区教育局
+    async def get_country_edu_institution_by_code(self, tenant_code ):
+        school  = await self.school_dao.get_school_by_args(block=tenant_code,planning_school_id =  0)
+
+
+        return school
