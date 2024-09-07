@@ -115,7 +115,7 @@ class PlanningSchoolSyncModel(BaseModel):
     id: int | str = Query(None, title="规划校id", description="规划校id", example='1'),
 
     planning_school_name: str = Field(None, title="规划校名称", description="1-20字符", examples=['XX小学'])
-    planning_school_no: str = Field(None, title="规划校编号", description="规划校编号/规划校代码", examples=['SC2032633'])
+    planning_school_no: str |None= Field(None, title="规划校编号", description="规划校编号/规划校代码", examples=['SC2032633'])
     old_planning_school_no: str|None = Field('', title="规划校编号", description="规划校编号/规划校代码", examples=['SC2032633'])
     planning_school_operation_license_number: str|None = Field("", title="办学许可证号",
                                                           description="办学许可证号", examples=['EDU2024012569'])
@@ -331,7 +331,7 @@ class PlanningSchoolKeyAddInfo(BaseModel):
 
     planning_school_name: str = Field(None, title="规划校名称", description="规划校名称", min_length=1, max_length=30,
                                       examples=['XX小学'])
-    planning_school_no: str = Query(None, title="规划校编号", description="规划校编号/规划校代码", min_length=1,  max_length=50, example='SC2032633')
+    planning_school_no: str|None = Query(None, title="规划校编号", description="规划校编号/规划校代码", min_length=1,  max_length=50, example='SC2032633')
     old_planning_school_no: str|None = Query(None, title="规划校编号", description="规划校编号/规划校代码",    max_length=50, example='SC2032633')
     planning_school_code: str = Field('', title="", description=" 规划校标识码", examples=['SC562369322SG'],
                                       min_length=1,
@@ -355,7 +355,7 @@ class PlanningSchoolKeyAddInfo(BaseModel):
 class PlanningSchoolKeyInfo(BaseModel):
     id: int | str = Query(None, title="规划校id", description="规划校id", example='1'),
     planning_school_name: str = Field(None, title="规划校名称", description="1-20字符", examples=['XX小学'])
-    planning_school_no: str = Query(None, title="规划校编号", description="规划校编号/规划校代码", min_length=1, max_length=20, example='SC2032633'),
+    planning_school_no: str |None= Query(None, title="规划校编号", description="规划校编号/规划校代码", min_length=1, max_length=20, example='SC2032633'),
     old_planning_school_no: str|None = Query(None, title="规划校编号", description="规划校编号/规划校代码",  max_length=50, example='SC2032633'),
     borough: str|None  = Query(None, title=" 行政管辖区", description=" 行政管辖区", examples=['铁西区']),
     block: str |None= Query(None, title=" 地域管辖区", description="地域管辖区", examples=['铁西区']),

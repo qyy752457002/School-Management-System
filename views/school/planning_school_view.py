@@ -90,7 +90,7 @@ class PlanningSchoolView(BaseView):
     @require_role_permission("planning_school", "open")
     async def post(self, planning_school: PlanningSchoolKeyAddInfo,
                    ):
-        # 保存 模型
+        # 保存 模型 生产    必填 改掉    字段不变
         res = await self.planning_school_rule.add_planning_school(planning_school)
         resc = PlanningSchoolCommunications(id=0)
         newid = str(res.id)
