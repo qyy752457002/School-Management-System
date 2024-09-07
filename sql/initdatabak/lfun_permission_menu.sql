@@ -12,7 +12,7 @@
  Target Server Version : 120001 (120001)
  File Encoding         : 65001
 
- Date: 06/09/2024 15:06:10
+ Date: 07/09/2024 16:10:51
 */
 
 
@@ -145,7 +145,6 @@ INSERT INTO "public"."lfun_permission_menu" VALUES (59, '关键信息变更审�
 INSERT INTO "public"."lfun_permission_menu" VALUES (58, '学校关闭审核', '/planning-audit/closeschool', '', 'menu', '', '', '55', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'planning-audit-closeschool', 0, 'planning_school_close_audit', 'start、view、cancel、pass、refuse、approval');
 INSERT INTO "public"."lfun_permission_menu" VALUES (57, '学校开设审核', '/planning-audit/openschool', '', 'menu', '', '', '55', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'planning-audit-openschool', 0, 'planning_school_open_audit', 'open、import、view、edit、delete、change_baseinfo、change_keyinfo、close、relation、approval');
 INSERT INTO "public"."lfun_permission_menu" VALUES (51, '课程管理', '/subject', '', 'menu', '', '职高', '12', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'subject', 0, 'subject', 'add、view、edit、delete、approval');
-INSERT INTO "public"."lfun_permission_menu" VALUES (50, '课程管理', '/subject', '', 'menu', '', '中小学', '9', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'subject', 0, 'subject', 'add、view、edit、delete、approval');
 INSERT INTO "public"."lfun_permission_menu" VALUES (45, '异动管理', '/instudent/innerTransfer', '', 'menu', '', '', '36', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'instudent_innerTransfer', 0, 'student_inner_transaction', 'start、view、cancel、pass、refuse、approval');
 INSERT INTO "public"."lfun_permission_menu" VALUES (44, '转出信息管理', '/instudent/checkout', '', 'menu', '', '', '36', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'instudent_checkout', 0, 'instudent_transfer', 'in_view、in_pass、in_refuse、out_view、out_pass、out_refuse、approval');
 INSERT INTO "public"."lfun_permission_menu" VALUES (43, '转入信息管理', '/instudent/checkin', '', 'menu', '', '', '36', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'instudent_checkin', 0, 'instudent_transfer', 'in_view、in_pass、in_refuse、out_view、out_pass、out_refuse、approval');
@@ -160,6 +159,7 @@ INSERT INTO "public"."lfun_permission_menu" VALUES (8, '中小学信息管理（
 INSERT INTO "public"."lfun_permission_menu" VALUES (7, '中小学信息管理（学校）', '/planning', '', 'menu', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'planning', 0, 'planning_school', 'open、import、view、edit、delete、change_baseinfo、change_keyinfo、close、relation、approval');
 INSERT INTO "public"."lfun_permission_menu" VALUES (2, '园所信息管理（分校）', '/school', '', 'menu', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'school', 0, 'school', 'open、import、view、edit、delete、change_baseinfo、change_keyinfo、close、approval');
 INSERT INTO "public"."lfun_permission_menu" VALUES (1, '园所信息管理（学校）', '/planning', '', 'menu', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.169988', '2024-06-04 10:43:11.169988', 'f', 'planning', 0, 'planning_school', 'open、import、view、edit、delete、change_baseinfo、change_keyinfo、close、relation、approval');
+INSERT INTO "public"."lfun_permission_menu" VALUES (50, '课程管理', '/subject', '', 'menu', '', '中小学', '9', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'subject', 0, 'subject', 'add、view、edit、delete、approval、create_subject、create_textbook');
 
 -- ----------------------------
 -- Primary Key structure for table lfun_permission_menu
