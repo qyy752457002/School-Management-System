@@ -107,7 +107,18 @@ class SchoolRule(object):
             if pschool:
                 school.school_no = pschool.planning_school_no+str( random.randint(10,99) )
             pass
+        if hasattr(school, "institution_category"):
+            school_no= school.block
 
+            if school.institution_category== InstitutionType.INSTITUTION.value:
+                school_no =  school_no+ "X10"
+            elif school.institution_category== InstitutionType.ADMINISTRATION.value:
+                school_no =  school_no+ "X20"
+
+            else:
+                pass
+            school_no =  school_no+str( random.randint(100,999) )
+            print( '生成机构编码' , school_no )
         if hasattr(school, "school_no"):
             await check_school_no(school.school_no)
 
