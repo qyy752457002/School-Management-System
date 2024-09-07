@@ -27,7 +27,7 @@ class PlanningSchoolEduInfo(BaseModel):
     is_last_yr_revok:  bool|None = Field(None, title="", description="是否上年撤销", examples=[False])
     is_school_counted:  bool|None = Field(None, title="", description="是否计校数", examples=[False])
 
-    primary_school_system: str|None = Field(..., title="", description="小学学制",examples=['6'])
-    junior_middle_school_system: str |None= Field(..., title="", description="初中学制",examples=['3'])
-    senior_middle_school_system: str|None = Field(..., title="", description="高中学制",examples=['3'])
+    primary_planning_school_system: str|None = Field('', title="", description="小学学制",examples=['6'])
+    junior_middle_planning_school_system: str |None= Field( '', title="", description="初中学制",examples=['3'])
+    senior_middle_planning_school_system: str|None = Field('', title="", description="高中学制",examples=['3'])
 

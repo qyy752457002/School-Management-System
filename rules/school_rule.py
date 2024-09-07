@@ -101,7 +101,7 @@ class SchoolRule(object):
             school.school_name)
         if exists_school:
             raise SchoolExistsError()
-        if hasattr(school, "planning_school_id") and   school.planning_school_id != "" and  school.planning_school_id  is not None and  len(school.planning_school_id)   > 0:
+        if hasattr(school, "planning_school_id") and   school.planning_school_id != "" and  school.planning_school_id  is not None  :
             pschool  =await self.p_school_dao.get_planning_school_by_id(school.planning_school_id)
             if pschool:
                 school.school_no = pschool.planning_school_no+str( random.randint(10,99) )
