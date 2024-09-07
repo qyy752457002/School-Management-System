@@ -688,7 +688,7 @@ async def verify_auth_by_file_name(sub: str|dict, obj, act, file_name):
     pass
 async def filter_action_by_file_name( item , processed_dict):
     #读取文件 获取数据 匹配里面的内容
-    print(11,item,)
+    # print(11,item,)
     if item['action'] and item['resource_code']:
         if  item['resource_code']  in processed_dict.keys():
             listtt = item['action'].split(',')
