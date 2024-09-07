@@ -17,6 +17,7 @@ class Grade(BaseDBModel):
     school_id: Mapped[int] = mapped_column(BigInteger, comment="学校ID",default=0,nullable=True)
 
     school_type: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="教育阶段/学校类别 例如 小学 初中")
+    study_section: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="教育阶段")
     city: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="城市 编码")
     district: Mapped[str] = mapped_column(String(64), nullable=True, comment="区 编码",default='')
     course_no: Mapped[str] = mapped_column(String(24), nullable=True,default='', comment="学科编码/中职用枚举")
@@ -34,6 +35,8 @@ class Grade(BaseDBModel):
     grade_alias: Mapped[str] = mapped_column(String(64), nullable=False, comment="年级别名")
     description: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="简介")
     is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)
+    is_enabled: Mapped[bool] = mapped_column( nullable=True  , comment="是否选择",default=False)
+    is_graduation_grade: Mapped[bool] = mapped_column( nullable=True  , comment="是否毕业年级",default=False)
     created_at = mapped_column(DateTime, default=datetime.now, nullable=True, comment="创建时间")
     grade_index: Mapped[int] = mapped_column(nullable=True,comment="年级序号,用来判断怎么选择")
     section: Mapped[str] = mapped_column(String(64), nullable=True, comment="学段",default='')
