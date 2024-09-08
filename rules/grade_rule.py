@@ -125,8 +125,8 @@ class GradeRule(object):
         return await self.grade_dao.get_grade_count()
 
     async def query_grade_with_page(self, page_request: PageRequest, grade_name=None, school_id=None, city='',
-                                    district=''):
-        paging = await self.grade_dao.query_grade_with_page(grade_name, school_id, page_request, city, district)
+                                    district='',obj=None):
+        paging = await self.grade_dao.query_grade_with_page(grade_name, school_id, page_request, city, district,obj )
         # 字段映射的示例写法
         paging_result = PaginatedResponse.from_paging(paging, GradeModel)
         convert_snowid_to_strings(paging_result, ["id", "school_id", ])
