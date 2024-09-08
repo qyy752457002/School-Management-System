@@ -38,6 +38,7 @@ from rules.school_communication_rule import SchoolCommunicationRule
 from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
+from rules.tenant_rule import TenantRule
 from views.common.common_view import workflow_service_config, convert_snowid_to_strings, convert_snowid_in_model, \
     frontend_enum_mapping, convert_dates_to_strings
 from views.common.constant import Constant
@@ -293,6 +294,11 @@ class PlanningSchoolRule(object):
             print('自动创建分校的教育信息')
 
             await school_eduinfo_rule.add_school_eduinfo_from_planning_school(res_edu, school_res)
+            #     todo 自懂获取秘钥
+            tenant_rule = get_injector(TenantRule)
+            print('开始 获取租户信息-单位')
+            await tenant_rule.sync_tenant_all(planning_school_id)
+
 
         # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
         print('更新规划校主体信息')
@@ -978,7 +984,7 @@ class PlanningSchoolRule(object):
 
                      "logo": "",
 
-                     "orgType": "school",
+                     "orgType": "school",#这个决定了  组织中心把它放入 学校综合管理还是教育单位管理
                      "overview": "",
                      "status": "",
                      "unitCount": "",

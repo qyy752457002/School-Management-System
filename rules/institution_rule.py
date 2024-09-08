@@ -7,7 +7,7 @@ import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
 from mini_framework.async_task.task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter
-from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.storage.manager import storage_manager
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.utils.json import JsonUtils
@@ -16,6 +16,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 
 from rules.common.common_rule import send_request, send_orgcenter_request
 from rules.school_rule import SchoolRule
+from rules.tenant_rule import TenantRule
 from views.common.common_view import workflow_service_config, map_keys, convert_dates_to_strings
 from views.models.institutions import InstitutionKeyInfo, \
     InstitutionBaseInfo, InstitutionPageSearch
@@ -173,6 +174,10 @@ class InstitutionRule(SchoolRule):
                 res_admin = await self.send_admin_to_org_center(school,data_org)
                 # 添加 用户和组织关系 就是部门
                 await self.send_user_org_relation_to_org_center(school, res_unit, data_org, res_admin)
+                #     todo 自懂获取秘钥
+                tenant_rule = get_injector(TenantRule)
+                print('开始 获取租户信息-单位')
+                await tenant_rule.sync_tenant_all(school.id)
             except Exception as e:
                 print('异常', e)
                 raise e
