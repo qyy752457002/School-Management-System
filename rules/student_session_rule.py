@@ -29,6 +29,9 @@ class StudentSessionRule(object):
 
         return session
 
+
+
+
     async def add_student_session(self, session: StudentSession):
         """
         新增类别

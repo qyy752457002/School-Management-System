@@ -22,15 +22,3 @@ class EducationYear(BaseDBModel):
 
     is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)
     created_at = mapped_column(DateTime, default=datetime.now, nullable=True, comment="创建时间")
-
-    # @staticmethod
-    # def seed():
-    #     return [
-    #
-    #         EducationYear(school_type='小学',education_year=6,city='沈阳市',district='',created_at=datetime.now()),
-    #         EducationYear(school_type='初中',education_year=3,city='沈阳市',district='',created_at=datetime.now()),
-    #         EducationYear(school_type='小学',education_year=5,city='沈阳市',district='和平区',created_at=datetime.now()),
-    #         EducationYear(school_type='初中',education_year=4,city='沈阳市',district='和平区',created_at=datetime.now()),
-    #
-    #
-    #     ]

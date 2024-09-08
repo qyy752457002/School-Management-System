@@ -21,13 +21,13 @@ class School(BaseDBModel):
     school_no: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校编号")
     old_school_no: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="旧的学校编号(例如一期)")
     school_code: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校标识码")
-    school_operation_license_number: Mapped[str] = mapped_column(String(64), nullable=True, default='',
-                                                                 comment="办学许可证号")
+    school_operation_license_number: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="办学许可证号")
     block: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="地域管辖区")
     borough: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="行政管辖区")
-    school_edu_level: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="教育层次")
-    school_category: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校（机构）类别")
-    school_operation_type: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="办学类型")
+    school_edu_level: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="教育层次:枚举school_nature 1级")
+    # school_category粗 枚举 school_nature_lv2 2级细 目前是枚举 school_nature_lv2
+    school_category: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校（机构）类别,枚举 school_nature_lv2 2级")
+    school_operation_type: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="办学类型:枚举 school_nature_lv3 3级枚举")
     school_org_type: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校办别")
     school_level: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校星级")
     status: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="状态")
@@ -48,7 +48,7 @@ class School(BaseDBModel):
     leg_repr_certificatenumber: Mapped[str] = mapped_column(String(64), nullable=True, comment="法人证书号", default='')
 
     urban_rural_nature: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="城乡性质")
-    school_org_form: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="办学组织形式")
+    school_org_form: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="办学组织形式,枚举school_org_form")
     school_closure_date: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="学校关闭日期")
     department_unit_number: Mapped[str] = mapped_column(String(64), nullable=True, default='',
                                                         comment="属地管理行政部门单位号")
@@ -56,12 +56,9 @@ class School(BaseDBModel):
     historical_evolution: Mapped[str] = mapped_column( Text, nullable=True, default='', comment="历史沿革")
     sy_zones_pro: Mapped[str] = mapped_column(String(64), nullable=True, default='',
                                               comment="属地管理教育行政部门所在地（省级）")
-    primary_school_system: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="小学学制")
     primary_school_entry_age: Mapped[str] = mapped_column(String(10), nullable=True, default='', comment="小学入学年龄")
-    junior_middle_school_system: Mapped[str] = mapped_column(String(10), nullable=True, default='', comment="初中学制")
     junior_middle_school_entry_age: Mapped[str] = mapped_column(String(10), nullable=True, default='',
                                                                 comment="初中入学年龄")
-    senior_middle_school_system: Mapped[str] = mapped_column(String(10), nullable=True, default='', comment="高中学制")
     membership_no: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment=" 隶属单位号")
     is_entity: Mapped[bool] = mapped_column(nullable=True, default=True, comment=" 是否实体")
     admin: Mapped[str] = mapped_column(String(64), nullable=True, comment="管理员", default='')

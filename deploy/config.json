@@ -2,7 +2,9 @@
   "web_server": {
     "name": "school",
     "description": "学校综合管理系统",
-    "version": "0.0.1"
+    "version": "0.0.1",
+    "need_auth": true,
+    "multi_tenant": true
   },
   "databases": {
     "default": {
@@ -14,7 +16,8 @@
         "user": "schooloms",
         "password": "J16s10Wp08yfEskmVAJH",
         "database": "school_oms_dev",
-        "pool_size": 50
+        "pool_size": 5,
+        "max_overflow": 10
       },
       "slaves": [
         {
@@ -23,7 +26,8 @@
           "user": "schooloms",
           "password": "J16s10Wp08yfEskmVAJH",
           "database": "school_oms_dev",
-          "pool_size": 50
+          "pool_size": 5,
+          "max_overflow": 10
         },
         {
           "host": "10.0.0.42",
@@ -31,7 +35,8 @@
           "user": "schooloms",
           "password": "J16s10Wp08yfEskmVAJH",
           "database": "school_oms_dev",
-          "pool_size": 50
+          "pool_size": 5,
+          "max_overflow": 10
         }
       ]
     }
@@ -94,7 +99,8 @@
       "secret": "Jci5NpY9p2D7JPKXrVL3J8",
       "algorithm": "RS256",
       "expires": 3600,
-      "issuer": "lfun",
+      "issuer": "9c49aa8d79c97951c242",
+      "audience": "audience",
       "issue_at": 0
     },
     "oauth2": {
@@ -103,8 +109,9 @@
       "authorization_url": "https://org-center.f123.pub/org-center/login/oauth/authorize",
       "token_url": "https://org-center.f123.pub/api/login/oauth/access_token",
       "user_info_url": "https://org-center.f123.pub/api/userinfo",
-      "redirect_url": "https://school-oms-dev.f123.pub/auth/oauth2/callback",
+      "redirect_url": "https://school-oms-dev.f123.pub/auth/oauth2/callback/{tenant}",
       "grant_type": "authorization_code",
+      "login_out_url": "https://org-center.f123.pub/api/logout",
       "scope": "scope",
       "cert": "cert",
       "home_url": "https://school-oms-dev.f123.pub/",
@@ -136,8 +143,8 @@
     }
   },
   "system_config": {
-    "permission_verify": false,
-    "add_class": 0
+    "add_class": 0,
+    "permission_verify": false
   },
   "workflow_service": {
     "name": "workflow_service",
@@ -147,6 +154,7 @@
   "orgcenter_service": {
     "name": "orgcenter_service",
     "description": "",
+    "app_code": "1238915324217024",
     "url": "https://org-center.f123.pub"
   },
   "transaction_service": {

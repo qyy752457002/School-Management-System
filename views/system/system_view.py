@@ -7,6 +7,7 @@ from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.views import BaseView
 
 from common.decorators import require_role_permission
+from rules.common import common_rule
 from rules.common.common_rule import excel_fields_to_enum, get_org_center_userinfo
 from rules.education_year_rule import EducationYearRule
 from rules.system_config_rule import SystemConfigRule
@@ -177,3 +178,7 @@ class SystemView(BaseView):
         user_id = "asgfhjk"
         await self.teachers_info_rule.update_teachers_info_import(info_model, user_id)
         return
+    # 退出的接口
+    async def get_login_out(self,  ):
+        res = await common_rule.login_out()
+        return {'home_url':res ,'msg':'退出成功' }

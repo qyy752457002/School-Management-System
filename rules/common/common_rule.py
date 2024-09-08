@@ -1,5 +1,5 @@
-# from mini_framework.databases.entities.toolkit import orm_model_to_view_model
 import json
+import random
 import traceback
 from datetime import datetime
 from typing import List, Type, Dict
@@ -9,6 +9,7 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.http import HTTPRequest
 from mini_framework.utils.json import JsonUtils
 from mini_framework.utils.logging import logger
+from mini_framework.web.middlewares.auth import get_auth_url
 from mini_framework.web.request_context import request_context_manager
 from pydantic import BaseModel
 
@@ -21,8 +22,7 @@ from daos.school_dao import SchoolDAO
 from daos.student_session_dao import StudentSessionDao
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
-from views.common.common_view import workflow_service_config, orgcenter_service_config, check_result_org_center_api, \
-    log_json, write_json_to_log, convert_dates_to_strings, json_date_hook
+
 
 APP_CODE = "1238914398508736"
 
@@ -35,6 +35,7 @@ cache_expiry = timedelta(minutes=30)  # 缓存过期时间设置为30分钟
 async def send_request(apiname, datadict, method='get', is_need_query_param=False):
     # 发起审批流的 处理
     httpreq = HTTPRequest()
+    from views.common.common_view import workflow_service_config
     url = workflow_service_config.workflow_config.get("url")
 
     url = url + apiname
@@ -55,12 +56,13 @@ async def send_request(apiname, datadict, method='get', is_need_query_param=Fals
     # print(response, '接口响应')
     # 示例使用
     json_data = response
+    from views.common.common_view import    log_json
     log_json(json_data)
     # 示例数据
     data = [
         response
     ]
-
+    from views.common.common_view import      write_json_to_log
     # 调用函数
     write_json_to_log(  data)
     if response is None:
@@ -215,6 +217,7 @@ async def get_address_by_description(description: str):
 async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_param=False):
     # 发起审批流的 处理
     httpreq = HTTPRequest()
+    from views.common.common_view import  orgcenter_service_config
     url = orgcenter_service_config.orgcenter_config.get("url")
 
     url = url + apiname
@@ -235,21 +238,19 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
             # print(type(datadict), "数据类型")
             response = await httpreq.post_json(url, datadict, headerdict)
 
-        # print( '接口响应',response)
-        # print(type(response), "数据类型")
 
-        # json_data =  JsonUtils.json_str_to_dict( response)
-
-        # logger.info('接口响应',response)
+        from views.common.common_view import       convert_dates_to_strings
         response=convert_dates_to_strings(response)
         # 示例数据
         data = [
             response
         ]
+        from views.common.common_view import      write_json_to_log
         write_json_to_log(  data)
 
         # 示例使用
         json_data = response
+        from views.common.common_view import    log_json
         log_json(json_data)
 
 
@@ -259,7 +260,7 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
             return {}
         if isinstance(response, str):
             return {response}
-        check_result_org_center_api(response)
+        # check_result_org_center_api(response)
         return response
         pass
     except Exception as e:
@@ -405,12 +406,7 @@ async def check_social_credit_code(social_credit_code: str | None,current_school
         print("唯一检测1", social_credit_code, exist)
         raise SocialCreditCodeExistError()
     not_equal_age = dict()
-    # if current_school is not None:
-    #     not_equal_age = {'id !=': current_school.id}
 
-        # users_not_30 = query_users(**not_equal_age, school_id=current_school.id)
-
-    # users_not_30 = query_users(**not_equal_age)
     exist = await school_dao.get_school_by_args(current_school,social_credit_code=social_credit_code, is_deleted=False)
     if exist:
         print("唯一检测2", social_credit_code, exist)
@@ -457,10 +453,6 @@ Get the user from Casdoor providing the user_id.
             "clientId": authentication_config.oauth2.client_id,
             "clientSecret": authentication_config.oauth2.client_secret,
         }
-        # r = requests.get(url, params)
-        # response = r.json()
-
-        # datadict
 
         datadict = params
 
@@ -487,24 +479,14 @@ Get the user from Casdoor providing the user_id.
 
         for i, value in enumerate(p):
             data = []
-            # print(value['modelText'])
-            # print(type(value['ruleCode']), value['ruleCode'])
+
             # 数据列表，每个子列表是一行数据 todo 调整返回给前段的按照 资源。json的格式来
             # 移除字符串首尾的方括号，并按逗号加空格分割
             data_str = value['ruleCode']
-            # data_str.replace("\"", "'")
-            # print(data_str)
 
             data = data_list = eval(data_str)
-            # print(type(data_list), data_list)
-            # pprint.pprint(data_list)
-            # exit(1)
-            # data_list = data_str.strip("[]").split("\",\"")
 
             # 去除每个元素两侧的双引号
-            # data = [item.strip("\"") for item in data_list]
-            # eval("data="+ value['ruleCode'])
-            # data = value['ruleCode']
 
             # 指定 CSV 文件名
             filename = str(i) + 'policy.csv'
@@ -524,18 +506,6 @@ Get the user from Casdoor providing the user_id.
                     file.write(join_str + '\n')  # 写入元素，并添加换行符
                 file.write(gstr + '\n')  # 写入元素，并添加换行符
 
-            #
-            # # 打开文件，'w' 表示写入模式
-            # with open(filename, 'w', newline='') as csvfile:
-            #     # 创建 csv 写入器
-            #     csvwriter = csv.writer(csvfile)
-            #
-            #     # 写入数据
-            #     for row in data:
-            #         print('111',row)
-            #         csvwriter.writerow(row)
-            # if i == "identity":
-            #     info[i] = json.loads(value)
             break
 
         print('资源编码', resource_codes)
@@ -571,10 +541,6 @@ async def verify_auth(sub: str, obj, act):
 
     e = casbin.Enforcer("model.conf", "0policy.csv")
 
-    # sub = "alice"  # the user that wants to access a resource.
-    # obj = "grade"  # the resource that is going to be accessed.
-    # act = "add"  # the operation that the user performs on the resource.
-
     if e.enforce(sub, obj, act):
         # permit alice to read data1
         print("permit alice to read data1")
@@ -607,8 +573,8 @@ async def verify_auth_by_obj_and_act(obj, act):
     # 定义请求的属性
 
     token = request_context_manager.current()
-    query= token['query_params']
-    print(query)
+    # query= token['query_params']
+    # print(query)
     objattr = {
         "Age": 25,
         "department": "sales"
@@ -618,11 +584,16 @@ async def verify_auth_by_obj_and_act(obj, act):
 
 
 async def process_userinfo(account_name):
-    appCode = APP_CODE
+    # print(222, authentication_config.oauth2)
+    # appCode = authentication_config.oauth2.app_code
+    from views.common.common_view import  orgcenter_service_config
+    appCode = orgcenter_service_config.orgcenter_config.get("app_code")
+
     user_info = await get_cached_userinfo(account_name)
     if user_info is None:
         return None
     lines = []  # 使用列表收集所有要写入的行
+    from views.common.common_view import        json_date_hook
     filename = account_name + 'policy.csv'
     for rule in user_info['roles']:
         if rule["appCode"] == appCode:
@@ -636,7 +607,7 @@ async def process_userinfo(account_name):
                 if json_str.strip():
                     # data = json.loads(json_str)
                     try:
-                        data_str = json.loads(policy['rule_code'], object_hook=json_date_hook)
+                        data_str = json.loads(policy['rule_code'], object_hook=json_date_hook )
                         for item in data_str:
                             p_list = item.split(",")
                             p_list.insert(1, role)
@@ -686,6 +657,7 @@ async def get_org_center_user_info():
         }
         datadict = params
         response = await send_orgcenter_request(apiname, datadict, 'get', False)
+        print('获取用户权限信息 status',response["status"])
         # print(response)
         if response["status"] != "ok":
             raise Exception(response["msg"])
@@ -705,10 +677,135 @@ async def get_org_center_user_info():
 async def verify_auth_by_file_name(sub: str|dict, obj, act, file_name):
     import casbin
     e = casbin.Enforcer("model.conf", file_name)
+    print("校验权限  ", sub, obj, act)
+
     if e.enforce(sub, obj, act):
-        print("permit alice to read data1")
+        print("permit 允许")
         return True
     else:
-        print("deny the request, show an error")
+        print("deny the request, 权限 不足")
         return False
     pass
+async def filter_action_by_file_name( item , processed_dict):
+    #读取文件 获取数据 匹配里面的内容
+    # print(11,item,)
+    if item['action'] and item['resource_code']:
+        if  item['resource_code']  in processed_dict.keys():
+            listtt = item['action'].split(',')
+            newlist = []
+            for action in  listtt:
+                if action in processed_dict[item['resource_code']]:
+                    print('匹配到权限', action)
+                    newlist.append(action)
+                    continue
+                    # return True
+                else:
+                    listtt.remove(action)
+                    print('移除这个权限 ',action, processed_dict[item['resource_code']])
+            # print('匹配到权限', item)
+            item['action']= ','.join(newlist)
+            print('过滤后res',item)
+            return True
+        else:
+            return False
+
+
+    pass
+def read_file_to_permission_dict(file_content):
+    # 初始化一个空字典
+    result_dict = {}
+
+    # 按行分割文件内容并遍历每一行
+    for line in file_content.strip().split('\n'):
+        # 用逗号分割每一行，并去除多余的空格
+        parts = [part.strip() for part in line.split(',')]
+
+        # 检查行是否有足够的部分
+        if len(parts) >= 4:
+            key = parts[2]
+            value = parts[3]
+
+            # 如果键已经在字典中，将值追加到列表中
+            if key in result_dict:
+                result_dict[key].append(value)
+            else:
+                # 否则，创建一个包含值的新的列表
+                result_dict[key] = [value]
+
+    return result_dict
+
+
+
+
+# 退出
+async def login_out():
+    """
+
+    """
+    # account = request_context_manager.current().current_login_account
+    # account_name = account.name
+
+    # file_name = await process_userinfo(account_name)
+    user_info = await request_org_center_login_out()
+
+    print( '验证结果',user_info,)
+    request=request_context_manager.current()
+
+    auth_uri = await get_auth_url(request)
+
+
+
+    return auth_uri
+async def request_org_center_login_out():
+    try:
+        token = request_context_manager.current().token
+        apiname = "/api/logout"
+        # owner = "sysjyyjyorg"
+        params = {
+            # "id": f"{owner}/{account.name}",
+            # "clientId": authentication_config.oauth2.client_id,
+            # "clientSecret": authentication_config.oauth2.client_secret,
+            "state":  'application-center',
+            "post_logout_redirect_uri":  '', #如果是要跳转 传入要跳的url
+            "id_token_hint": token,
+        }
+        datadict = params
+        response = await send_orgcenter_request(apiname, datadict, 'get', True)
+        print('登出res',response)
+        if response["status"] == "ok":
+            # raise Exception(response["msg"])
+            pass
+        return True
+
+
+    except Exception as e:
+        print('获取登出异常', e)
+        return None
+async def get_org_center_application(school_no):
+    try:
+        token = request_context_manager.current().token
+        apiname = "/api/get-applications"
+        # owner = "sysjyyjyorg"
+        from views.common.common_view import  orgcenter_service_config
+        appCode = orgcenter_service_config.orgcenter_config.get("app_code")
+
+        params = {
+            # "id": f"{owner}/{account.name}",
+            # "clientId": authentication_config.oauth2.client_id,
+            # "clientSecret": authentication_config.oauth2.client_secret,
+            "owner": school_no,
+            "name":  appCode, #
+            # "id_token_hint": token,
+        }
+        datadict = params
+        response = await send_orgcenter_request(apiname, datadict, 'get', True)
+        print('登出res',response)
+        if response["status"] == "ok":
+            # raise Exception(response["msg"])
+            pass
+        return response
+
+
+    except Exception as e:
+        print('get_org_center_application异常', e)
+        return None

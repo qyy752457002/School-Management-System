@@ -12,7 +12,7 @@
  Target Server Version : 120001 (120001)
  File Encoding         : 65001
 
- Date: 26/08/2024 10:17:57
+ Date: 07/09/2024 13:55:47
 */
 
 
@@ -327,6 +327,7 @@ INSERT INTO "public"."lfun_role_permission" VALUES (287, 6, 7, 0, 0, 0, '2024-06
 INSERT INTO "public"."lfun_role_permission" VALUES (71, 11, 43, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (70, 11, 42, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 INSERT INTO "public"."lfun_role_permission" VALUES (72, 11, 44, 1, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
+INSERT INTO "public"."lfun_role_permission" VALUES (292, 5, 1, 0, 0, 0, '2024-06-04 10:45:29.000000', '2024-06-04 10:45:33.000000', 'f', '');
 
 -- ----------------------------
 -- Primary Key structure for table lfun_role_permission

@@ -1,3 +1,4 @@
+from mini_framework.multi_tenant.tenant import Tenant
 from pydantic import BaseModel, Field
 
 from views.models.system import UnitType, SystemType, EduType
@@ -21,3 +22,4 @@ class ExtendParams(BaseModel):
     # 市  有市ID
     city: str = Field(None, title="", description="城市 市端这里是沈阳的编码", examples=[''])
     user_name: str = Field(None, title="", description="", examples=[''])
+    tenant: Tenant = Field(None, title="", description="", examples=[''])

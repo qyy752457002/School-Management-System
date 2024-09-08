@@ -8,20 +8,6 @@ from mini_framework.databases.entities import BaseDBModel
 
 class SubDbInfo(BaseDBModel):
     """
-    sync_log_id
-sync_task_id
-source_system
-target_system
-sync_entity_type
-sync_start_date
-sync_end_date
-total_records
-successful_records
-failed_records
-sync_status
-error_message
-error_stack_trace
-last_updated_time
     """
     __tablename__ = 'lfun_data_sync_records'
     __table_args__ = {'comment': '数据同步记录表模型'}
@@ -47,8 +33,3 @@ last_updated_time
     created_at = mapped_column(DateTime, default=datetime.now, nullable=False, comment="创建时间")
     updated_at = mapped_column(DateTime, onupdate=datetime.now, default=datetime.now, nullable=False, comment="更新时间")
     is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)
-
-
-
-
-

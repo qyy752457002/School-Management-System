@@ -25,16 +25,3 @@ class RolePermission(BaseDBModel):
     created_at = mapped_column(DateTime, default=datetime.now, nullable=True, comment="创建时间")
     updated_at = mapped_column(DateTime, onupdate=datetime.now, default=datetime.now, nullable=True, comment="更新时间")
     is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)
-    #
-    # @staticmethod
-    # def seed():
-    #     return [
-    #         RolePermission(id=1, role_id=1, menu_id=1, sort_order=1, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-    #         RolePermission(id=2,role_id=1, menu_id=2, sort_order=1, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-    #         RolePermission(id=3,role_id=1, menu_id=3, sort_order=1, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-    #         RolePermission(id=4,role_id=1, menu_id=4, sort_order=1, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-    #         RolePermission(id=5,role_id=1, menu_id=5, sort_order=1, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-    #         RolePermission(id=6,role_id=1, menu_id=6, sort_order=1, created_uid=1, updated_uid=1, created_at=datetime.now(), updated_at=datetime.now(), is_deleted=False),
-    #     ]
-
-

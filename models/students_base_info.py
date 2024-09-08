@@ -56,8 +56,7 @@ class StudentBaseInfo(BaseDBModel):
     __tablename__ = 'lfun_students_base_info'
     __table_args__ = {'comment': '学生表基本信息模型'}
 
-    student_base_id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="主键",
-                                                 autoincrement=False)  # 与学生表关联，关系为一对一，主键
+    student_base_id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="主键", autoincrement=False)  # 与学生表关联，关系为一对一，主键
 
     student_id: Mapped[int] = mapped_column(BigInteger,nullable=False, comment="学生ID", autoincrement=False)  # 与学生表关联，关系为一对一，主键
 
@@ -88,17 +87,18 @@ class StudentBaseInfo(BaseDBModel):
     birth_place: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="出生地")
     residence_district: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="户口所在地new")
     native_place_district: Mapped[str] = mapped_column(String(64), nullable=False, default='', comment="籍贯")
-    religious_belief: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="宗教信仰")
+    religious_belief: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="宗教信仰,枚举religious_belief")
     residence_nature: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="户口性质")
     enrollment_date: Mapped[date] = mapped_column(Date, default=date(1970, 1, 1), nullable=True, comment="入学日期")
+    study_section: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="教育阶段")
     # 入学年月(admission_date)健康状况(health_status)
     admission_date: Mapped[date] = mapped_column(Date, default=date(1970, 1, 1), nullable=True, comment="入学年月new")
     contact_number: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="联系电话")
     health_condition: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="健康状况")
-    health_status: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="")
+    health_status: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="枚举health_status")
     political_status: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="政治面貌")
     ethnicity: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="民族")
-    blood_type: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="血型")
+    blood_type: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="血型枚举blood_type")
     home_phone_number: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="家庭电话")
     email_or_other_contact: Mapped[str] = mapped_column(String(64), nullable=True, default='',
                                                         comment="电子信箱/其他联系方式")
@@ -124,11 +124,10 @@ class StudentBaseInfo(BaseDBModel):
     identity: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份",default='')
     identity_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份类型",default='')
     nationality: Mapped[str] = mapped_column(String(64), nullable=True, comment="国籍/地区",default='')
-    enrollment_method: Mapped[str] = mapped_column(String(64), nullable=True, comment="就读方式",default='')
-    # ()(workplace)
-    # workplace: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="工作单位")
-
+    enrollment_method: Mapped[str] = mapped_column(String(64), nullable=True, comment="就读方式枚举enrollment_method",default='')
 
     flow_out_time: Mapped[str] = mapped_column(String(64), default='', nullable=True, comment="流出时间")
     flow_out_reason: Mapped[str] = mapped_column(String(64), nullable=True, comment="流出原因")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
+
+

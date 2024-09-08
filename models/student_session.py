@@ -26,5 +26,6 @@ class StudentSession(BaseDBModel):
     session_status: Mapped[str] = mapped_column(String(64), nullable=False, comment="届别状态")
     year: Mapped[str] = mapped_column(String(64), nullable=True, comment="年度",default='')
     school_id: Mapped[int] = mapped_column( BigInteger,nullable=True  , comment="学校id",default=0)
-
+    section: Mapped[str] = mapped_column(String(64), nullable=True, comment="学段",default='')
+    major: Mapped[str] = mapped_column(String(64), nullable=True, comment="专业",default='')
 

@@ -26,7 +26,7 @@ class StudentInnerTransaction(BaseDBModel):
     school_id: Mapped[int] = mapped_column(BigInteger,nullable=True, comment="学校ID", default=0)
     class_id: Mapped[str] = mapped_column(String(30), nullable=True, comment="班级id", default='')
 
-    transaction_type: Mapped[str] = mapped_column(String(255),  nullable=True, comment="异动类型",default='')
+    transaction_type: Mapped[str] = mapped_column(String(255),  nullable=True, comment="异动类型,枚举transaction_type",default='')
     transaction_reason: Mapped[str] = mapped_column(String(255),  nullable=True, comment="异动原因",default='')
     transaction_remark: Mapped[str] = mapped_column(String(255),  nullable=True, comment="备注",default='')
     transaction_time: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, nullable=False, comment="操作时间")
@@ -40,8 +40,3 @@ class StudentInnerTransaction(BaseDBModel):
     approval_status: Mapped[str] = mapped_column(String(255), nullable=False, comment="审批状态",
                                                          default="")
     is_deleted: Mapped[bool] = mapped_column( nullable=False  , comment="删除态",default=False)
-
-
-
-
-

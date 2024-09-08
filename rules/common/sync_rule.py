@@ -21,12 +21,11 @@ from views.models.campus_eduinfo import CampusEduInfo as CampusEduInfoModel
 from views.models.planning_school import PlanningSchoolSyncModel
 from views.models.planning_school_communications import PlanningSchoolCommunications as PlanningSchoolCommunicationModel
 from views.models.planning_school_eduinfo import PlanningSchoolEduInfo as PlanningSchoolEduInfoModel
-from views.models.school import School as SchoolModel
+from views.models.school import SchoolSyncModel
 from views.models.school_and_teacher_sync import SchoolSyncQueryModel, SupervisorSyncQueryModel, \
-    SupervisorSyncQueryReModel, SchoolSyncQueryReModel, SchoolInfoSyncModel, StudentSyncModel,TeacherSyncToArtModel
+    SupervisorSyncQueryReModel, SchoolSyncQueryReModel, SchoolInfoSyncModel, StudentSyncModel, TeacherSyncToArtModel
 from views.models.school_communications import SchoolCommunications as SchoolCommunicationModel
 from views.models.school_eduinfo import SchoolEduInfo as SchoolEduInfoModel
-from views.models.school import SchoolSyncModel
 
 
 @dataclass_inject
@@ -109,7 +108,9 @@ class SyncRule(object):
                 sync_school_list.append(school_info)
                 continue
             if sync_campus:
-                campus = orm_model_to_view_model(sync_campus, CampusModel)
+                campus = orm_model_to_view_model(sync_campus, CampusModel,
+                                                 exclude=["primary_campus_system", "junior_middle_campus_system",
+                                                          "senior_middle_planning_school_system"])
                 school_info["school"] = campus
                 campus_id = campus.id
                 school_id = campus.school_id
@@ -168,10 +169,9 @@ class SyncRule(object):
             sync_student_list.append(orm_model_to_view_model(item, StudentSyncModel))
         return sync_student_list
 
-    async def get_sync_teacher_to_art(self,school_no):
+    async def get_sync_teacher_to_art(self, school_no):
         result = await self.teachers_info_dao.get_sync_teacher_by_school_no(school_no)
         sync_sync_list = []
         for item in result:
             sync_sync_list.append(orm_model_to_view_model(item, TeacherSyncToArtModel))
         return sync_sync_list
-
