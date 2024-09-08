@@ -175,12 +175,14 @@ class TenantRule(object):
 
     async def sync_tenant_all(self, school_id):
         """市   用 市编号      当前用区号 +行政单位筛选    备用的 产品会定义一个机构编号 其中的第几位标识这个单位是否有管理全区学校的权限
-         区     区号
+         区     区号  todo 如果是 规划校 则把id 写入到 code
           学校   学校ID
             事业单位
              行政单位
               """
         print(school_id)
+        new_code =  None
+
         items =  await self.plannning_school_dao.get_planning_school_by_id(school_id)
         tenant_type= 'planning_school' # 表示 租户类型
         if items is None:
@@ -203,6 +205,7 @@ class TenantRule(object):
         else:
             # 规划校用编号
             code = items.planning_school_no
+            new_code = items.id
             description = items.planning_school_name
             pass
 
@@ -225,15 +228,17 @@ class TenantRule(object):
                 code = str(items.id)
                 pass
 
+            code_ultra = code if new_code is None  else new_code
+            if isinstance(code_ultra,int):
+                code_ultra = str(code_ultra)
             tenant_db = Tenant(
                 id=SnowflakeIdGenerator(1, 1).generate_id(),
                 tenant_type=  tenant_type,
                 status= 'active',
-                code=code,
+                code=  code_ultra,
                 name=value['name'],
                 client_id=value['clientId'],
                 description=description,
-                # school_id=school_id,
                 origin_id=int(school_id),
                 client_secret=value['clientSecret'],
                 cert_public_key=value['certPublicKey'],
