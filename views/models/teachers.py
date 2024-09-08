@@ -122,14 +122,14 @@ class Teachers(BaseModel):
     def check_id_before(self, data: dict):
         _change_list = ["teacher_id", "teacher_employer"]
         # 需要给身份证脱敏
-        if isinstance(data["teacher_id"], int):
-            if data.get("teacher_id_number"):
-                if len(data["teacher_id_number"]) == 18:
-                    data["teacher_id_number"] = data["teacher_id_number"][0:6] + "********" + data["teacher_id_number"][
-                                                                                              -4:]
-                # 其他类型的证件号码值只对最后四位脱敏
-                elif len(data["teacher_id_number"]) > 0:
-                    data["teacher_id_number"] = data["teacher_id_number"][0:-4] + "****"
+        # if isinstance(data["teacher_id"], int):
+        #     if data.get("teacher_id_number"):
+        #         if len(data["teacher_id_number"]) == 18:
+        #             data["teacher_id_number"] = data["teacher_id_number"][0:6] + "********" + data["teacher_id_number"][
+        #                                                                                       -4:]
+        #         # 其他类型的证件号码值只对最后四位脱敏
+        #         elif len(data["teacher_id_number"]) > 0:
+        #             data["teacher_id_number"] = data["teacher_id_number"][0:-4] + "****"
         for _change in _change_list:
             if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
@@ -169,6 +169,7 @@ class EducateUserModel(BaseModel):
     userCode: str | None = Field("", title="用户编码", description="用户编码")
     userId: str | None = Field("", title="用户ID", description="用户ID")
     userStatus: str | None = Field("", title="用户状态", description="用户状态")
+    user_account_status: str | None = Field("", title="", description="")
 
     @model_validator(mode='before')
     @classmethod
@@ -179,7 +180,7 @@ class EducateUserModel(BaseModel):
                 data[_change] = str(data[_change])
             else:
                 pass
-        if data.get("userCode") is None:
+        if data.get("userCode") is None and 'idCardNumber' in data:
             data["userCode"] = data["idCardNumber"]
         data["phoneNumber"] = data["name"] if data.get("name") else ""
         return data
@@ -1927,13 +1928,13 @@ class CurrentTeacherQueryRe(BaseModel):
     @classmethod
     def check_id_before(self, data: dict):
         _change_list = ["teacher_employer", "teacher_base_id", "teacher_id"]
-        if data.get("teacher_id_number"):
-            if len(data["teacher_id_number"]) == 18:
-                data["teacher_id_number"] = data["teacher_id_number"][0:6] + "********" + data["teacher_id_number"][
-                                                                                          -4:]
-            # 其他类型的证件号码值只对最后四位脱敏
-            elif len(data["teacher_id_number"]) > 0:
-                data["teacher_id_number"] = data["teacher_id_number"][0:-4] + "****"
+        # if data.get("teacher_id_number"):
+        #     if len(data["teacher_id_number"]) == 18:
+        #         data["teacher_id_number"] = data["teacher_id_number"][0:6] + "********" + data["teacher_id_number"][
+        #                                                                                   -4:]
+        #     # 其他类型的证件号码值只对最后四位脱敏
+        #     elif len(data["teacher_id_number"]) > 0:
+        #         data["teacher_id_number"] = data["teacher_id_number"][0:-4] + "****"
         for _change in _change_list:
             if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])

@@ -1,4 +1,6 @@
 from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.multi_tenant.registry import tenant_registry
+from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
@@ -6,7 +8,7 @@ from starlette.requests import Request
 from common.decorators import require_role_permission
 # from rules.subject_memebers_rule import SubjectMembersRule
 from rules.subject_rule import  SubjectRule
-from views.common.common_view import get_extend_params
+from views.common.common_view import get_extend_params, get_tenant_current
 # from views.models.subject import Subject
 from views.models.grades import Grades
 
@@ -44,6 +46,9 @@ class SubjectView(BaseView):
         obj =  await get_extend_params(request)
         items = []
         res = await self.subject_rule.query_subject_with_page(page_request,   school_id,subject_name, obj )
+
+
+    # tenant = tenant_registry.get_tenant()
         return res
 
     # 删除

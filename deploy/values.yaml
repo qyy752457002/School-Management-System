@@ -1,7 +1,7 @@
 # 应用相关的配置
 app:
   name: schooloms       # 应用的名称
-  replicas: 4               # 副本数量，定义了应用的副本数
+  replicas: 2               # 副本数量，定义了应用的副本数
   stage: dev                # 部署阶段，例如开发(dev)、生产(prod)
   image: docker-hub.f123.pub/lfun/school-oms  # 应用使用的镜像
   tag: dev-min-v0.0.4  # 镜像版本

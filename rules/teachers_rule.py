@@ -208,7 +208,7 @@ class TeachersRule(object):
         teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
-        await self.add_teacher_organization_members(teachers_work.teacher_id)
+        # await self.add_teacher_organization_members(int(teachers_work.teacher_id))
         return teachers_work.teacher_id
 
     async def query_teacher_operation_record_with_page(self, query_model: TeacherChangeLogQueryModel,
@@ -226,6 +226,14 @@ class TeachersRule(object):
         """
         teachers.teacher_main_status = "employed"
         teachers.teacher_sub_status = "submitted"
+        teacher_id_number = teachers.teacher_id_number
+        teacher_id_type = teachers.teacher_id_type
+        teacher_name = teachers.teacher_name
+        teacher_gender = teachers.teacher_gender
+        length = await self.teachers_dao.get_teachers_info_by_prams(teacher_id_number, teacher_id_type,
+                                                                    teacher_name, teacher_gender)
+        if length > 0:
+            raise TeacherExistsError()
         teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
         teachers_db.is_approval = True
         teachers_db.teacher_id = SnowflakeIdGenerator(1, 1).generate_id()
@@ -237,6 +245,24 @@ class TeachersRule(object):
         # 获取老师信息
         teachers = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
         return teachers
+
+    async def add_transfer_teachers_in(self, teachers: TeacherAdd):
+        """
+        系统内调入时，在调入的学校中加入的信息
+        """
+        teachers.teacher_main_status = "employed"
+        teachers.teacher_sub_status = "active"
+        teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
+        teachers_db.is_approval = True
+        teachers_db.teacher_id = SnowflakeIdGenerator(1, 1).generate_id()
+        if teachers_db.teacher_id_type == 'resident_id_card':
+            idstatus = check_id_number(teachers_db.teacher_id_number)
+            if not idstatus:
+                raise IdCardError()
+        teachers_db = await self.teachers_dao.add_teachers(teachers_db)
+        # 获取老师信息
+        teachers = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
+        return teachers.teacher_id
 
     async def update_teachers(self, teachers, user_id):
         exists_teachers = await self.teachers_dao.get_teachers_by_id(teachers.teacher_id)
@@ -535,6 +561,7 @@ class TeachersRule(object):
         user_id = result["data2"]
         user_org_relation_rule = get_injector(UserOrgRelationRule)
         await user_org_relation_rule.add_user_org_relation(int(teacher_id), user_id)
+        await self.send_user_department_to_org_center(teacher_id, user_id)
         return result
 
     async def send_user_department_to_org_center(self, teacher_id, user_id):

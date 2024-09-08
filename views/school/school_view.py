@@ -12,6 +12,7 @@ from starlette.requests import Request
 
 from business_exceptions.school import SchoolStatusError
 from common.decorators import require_role_permission
+from daos.school_dao import SchoolDAO
 from models.student_transaction import AuditAction
 from rules.operation_record import OperationRecordRule
 from rules.system_rule import SystemRule
@@ -46,6 +47,8 @@ class SchoolView(BaseView):
         self.school_communication_rule = get_injector(SchoolCommunicationRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
         self.system_rule = get_injector(SystemRule)
+        self.school_dao=get_injector(SchoolDAO)
+
 
     @require_role_permission("school", "view")
     async def get(self,
@@ -234,8 +237,9 @@ class SchoolView(BaseView):
         items = []
         obj= await get_extend_params(request)
         if not institution_category:
-            # institution_category = [InstitutionType.SCHOOL, ]
+            # institution_category = [InstitutionType.SCHOOL]
             pass
+        # todo  规划校的 只能看自己下面的分校   完整的 资源策略清单 给出
 
         paging_result = await self.school_rule.query_school_with_page(page_request,
                                                                       school_name, school_no, school_code,
@@ -251,7 +255,6 @@ class SchoolView(BaseView):
 
     async def patch_open(self, school_id: str = Query(..., title="学校编号", description="学校id/园所id", min_length=1,
                                                       max_length=20, example='SC2032633')):
-        # print(school)
         # res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.NORMAL.value, 'open')
         # 检测 是否允许修改
         is_draft = await self.school_rule.is_can_not_add_workflow(school_id)
@@ -274,6 +277,14 @@ class SchoolView(BaseView):
                 res.id = str(res.id)
 
             pass
+        # 改为开设中
+        school = await self.school_dao.get_school_by_id( school_id)
+        if school:
+            # 回退改草稿
+            need_update_list = ['status']
+            school.status =  PlanningSchoolStatus.OPENING.value
+
+            schoolres = await self.school_dao.update_school_byargs(school, *need_update_list)
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         res_op = await self.operation_record_rule.add_operation_record(OperationRecord(
@@ -361,7 +372,7 @@ class SchoolView(BaseView):
         origin = await self.school_rule.get_school_by_id(school.id)
         log_con = compare_modify_fields(school, origin)
 
-        res = await self.school_rule.update_school_byargs(school)
+        res = await self.school_rule.update_school_byargs(school,modify_status= False)
         convert_snowid_in_model(res )
         res_com = await self.school_communication_rule.update_school_communication_byargs(
             school_communication)

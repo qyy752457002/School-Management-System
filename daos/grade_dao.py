@@ -12,6 +12,18 @@ class GradeDAO(DAOBase):
         session = await self.slave_db()
         result = await session.execute(select(Grade).where(Grade.id == int(grade_id)).where(Grade.is_deleted == False))
         return result.scalar_one_or_none()
+    async def get_grade_by_id_and_school_id(self, grade_id, school_id, section):
+        session = await self.slave_db()
+        result = await session.execute(
+            select(Grade).where(Grade.id == int(grade_id), Grade.section == section, Grade.school_id == int(school_id),
+                                Grade.is_deleted == False))
+        return result.scalar_one_or_none()
+    async def get_grade_by_index_and_school_id(self, grade_index, school_id, section):
+        session = await self.slave_db()
+        result = await session.execute(
+            select(Grade).where(Grade.grade_index == grade_index, Grade.section == section, Grade.school_id == int(school_id),
+                                Grade.is_deleted == False))
+        return result.scalar_one_or_none()
 
     async def get_grade_by_grade_name(self, grade_name, grade=None):
         session = await self.slave_db()
@@ -81,8 +93,8 @@ class GradeDAO(DAOBase):
         return result.scalar()
 
     async def query_grade_with_page(self, grade_name, school_id, page_request: PageRequest, city='',
-                                    district='') -> Paging:
-        query = select(Grade).where(Grade.is_deleted == False).order_by(desc(Grade.id))
+                                    district='',obj=None) -> Paging:
+        query = select(Grade).where(Grade.is_deleted == False).order_by(Grade.grade_index)
         if grade_name:
             query = query.where(Grade.grade_name.like(f'%{grade_name}%'))
         if school_id:
@@ -91,6 +103,15 @@ class GradeDAO(DAOBase):
             query = query.where(Grade.city == city)
         if district:
             query = query.where(Grade.district == district)
+        if obj :
+            if obj.edu_type == 'kg':
+                query = query.where(Grade.study_section ==  '幼儿园')
+
+                pass
+            elif obj.edu_type == 'k12' :
+                query = query.where(Grade.study_section.in_( ['小学','初中','高中' ]))
+
+                pass
         paging = await self.query_page(query, page_request)
         return paging
 

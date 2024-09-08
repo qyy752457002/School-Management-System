@@ -1,4 +1,4 @@
-from mini_framework.design_patterns.depend_inject import get_injector
+
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.views import BaseView
@@ -13,6 +13,8 @@ from views.models.teachers import Teachers, TeacherInfo, CurrentTeacherQuery, \
 from fastapi import Query, Depends, Body
 from mini_framework.utils.json import JsonUtils
 from common.decorators import require_role_permission
+from daos.school_dao import SchoolDAO
+from daos.tenant_dao import TenantDAO
 
 
 class TeachersView(BaseView):
@@ -56,8 +58,26 @@ class TeachersView(BaseView):
         """
         extend_param = {}
         ob = await get_extend_params(request)
-        if ob.unit_type == UnitType.SCHOOL.value:
-            teacher_approval_query.teacher_employer = ob.school_id
+        if ob.tenant:
+            tenant_dao = get_injector(TenantDAO)
+            tenant = await tenant_dao.get_tenant_by_code(ob.tenant.code)
+            if ob.tenant.code == "210100":
+                pass
+            elif tenant.tenant_type == "planning_school":
+                pass
+            elif tenant.tenant_type == "school":
+                school_dao = get_injector(SchoolDAO)
+                school = await school_dao.get_school_by_id(tenant.origin_id)
+                if not school:
+                    return "学校不存在"
+                #如果是事业单位，则就是自己查询自己事业单位的信息
+                if school.institution_category == "institution":
+                    teacher_approval_query.teacher_employer = tenant.origin_id
+                # 如果是行政单位，则查询行政单位下的所有学校的信息
+                elif school.institution_category == "institution":
+                    extend_param["borough"] = school.borough
+                else:
+                    teacher_approval_query.teacher_employer = tenant.origin_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             extend_param["borough"] = ob.county_id
         extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
@@ -75,8 +95,26 @@ class TeachersView(BaseView):
         """
         extend_param = {}
         ob = await get_extend_params(request)
-        if ob.unit_type == UnitType.SCHOOL.value:
-            teacher_approval_query.teacher_employer = ob.school_id
+        if ob.tenant:
+            tenant_dao = get_injector(TenantDAO)
+            tenant = await tenant_dao.get_tenant_by_code(ob.tenant.code)
+            if ob.tenant.code == "210100":
+                pass
+            elif tenant.tenant_type == "planning_school":
+                pass
+            elif tenant.tenant_type == "school":
+                school_dao = get_injector(SchoolDAO)
+                school = await school_dao.get_school_by_id(tenant.origin_id)
+                if not school:
+                    return "学校不存在"
+                #如果是事业单位，则就是自己查询自己事业单位的信息
+                if school.institution_category == "institution":
+                    teacher_approval_query.teacher_employer = tenant.origin_id
+                # 如果是行政单位，则查询行政单位下的所有学校的信息
+                elif school.institution_category == "institution":
+                    extend_param["borough"] = school.borough
+                else:
+                    teacher_approval_query.teacher_employer = tenant.origin_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             extend_param["borough"] = ob.county_id
         extend_param["applicant_name"] = request_context_manager.current().current_login_account.name

@@ -197,7 +197,7 @@ class TeacherImportRule:
         return file_storage_resp
 
     async def import_teachers_save_test(self,org_id):
-        local_file_path = "821.xlsx"
+        local_file_path = os.path.join("rules", "821.xlsx")
         teacher_id_list = []
         reader = ExcelReader()
         reader.set_data(local_file_path)
@@ -212,14 +212,16 @@ class TeacherImportRule:
             school = await self.school_dao.get_school_by_school_name(item["teacher_employer"])
             if school:
                 school = school._asdict()['School']
-                item["teacher_employer"] = school.id
+                # item["teacher_employer"]= school.id
+                item["teacher_employer"] = 1499316981106720770
             else:
                 raise SchoolNotFoundError()
-            item["org_id"] = str(org_id)
+            item["org_id"] = "7228553981755265024"
             teacher_model = TeachersSaveImportCreatTestModel(**item)
             logger.info(type(item))
             try:
                 teacher_id = await self.teacher_rule.add_teachers_import_save_test(teacher_model)
+                teacher_id_list.append(teacher_id)
             except Exception as ex:
                 return ex
         return teacher_id_list

@@ -2,9 +2,12 @@ from datetime import datetime
 
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
+from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest
 from sqlalchemy import select, func, update
 
+from daos.school_dao import SchoolDAO
+from daos.tenant_dao import TenantDAO
 from models.school import School
 from models.teacher_entry_approval import TeacherEntryApproval
 from models.teachers import Teacher
@@ -62,14 +65,15 @@ class TeachersInfoDao(DAOBase):
         #         TeacherLearnExperience.teacher_id == Teacher.teacher_id, TeacherLearnExperience.is_deleted == False,
         #     ).order_by(
         #         TeacherLearnExperience.degree_award_date.desc()).limit(1).subquery())
-        query = select(School.school_no,Teacher.teacher_name, Teacher.teacher_gender, Teacher.teacher_date_of_birth,
+        query = select(School.school_no, Teacher.teacher_name, Teacher.teacher_gender, Teacher.teacher_date_of_birth,
                        func.coalesce(TeacherInfo.teacher_number, "").label("teacher_number"),
                        func.coalesce(TeacherInfo.political_status, "").label("political_status"),
-                       func.coalesce(TeacherInfo.institution_of_highest_education, "").label("institution_of_highest_education")).outerjoin(TeacherInfo,
-                                                                                                  Teacher.teacher_id == TeacherInfo.teacher_id,
-                                                                                                  ).join(School,
-                                                                                                         Teacher.teacher_employer == School.id,
-                                                                                                         ).where(
+                       func.coalesce(TeacherInfo.institution_of_highest_education, "").label(
+                           "institution_of_highest_education")).outerjoin(TeacherInfo,
+                                                                          Teacher.teacher_id == TeacherInfo.teacher_id,
+                                                                          ).join(School,
+                                                                                 Teacher.teacher_employer == School.id,
+                                                                                 ).where(
             Teacher.teacher_main_status == "employed", Teacher.teacher_sub_status == "active",
             Teacher.is_deleted == False, Teacher.is_approval == False, School.school_no == school_no,
             School.status == "normal").order_by(
@@ -164,13 +168,17 @@ class TeachersInfoDao(DAOBase):
                                                                                        Teacher.teacher_employer == School.id,
                                                                                        ).where(
             Teacher.teacher_main_status == "employed", Teacher.is_deleted == False)
-        if extend_params:
-            if extend_params.unit_type == UnitType.SCHOOL.value:
-                query = query.where(Teacher.teacher_employer == extend_params.school_id)
-            elif extend_params.unit_type == UnitType.COUNTRY.value:
-                query = query.where(School.borough == extend_params.county_id)
-            else:
-                pass
+        if extend_params.tenant:
+            # 读取类型  读取ID  加到条件里
+            tenant_dao = get_injector(TenantDAO)
+            school_dao = get_injector(SchoolDAO)
+            tenant = await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
+            if tenant.tenant_type == "school":
+                school = await school_dao.get_school_by_id(tenant.origin_id)
+                if school.institution_category == "institution":
+                    query = query.where(School.borough == school.borough)
+                else:
+                    query = query.where(Teacher.teacher_employer == school.id)
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
         if query_model.teacher_id_number:

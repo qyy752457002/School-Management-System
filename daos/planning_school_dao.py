@@ -1,12 +1,15 @@
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
+from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest
 from sqlalchemy import select, func, update, desc
 
+from daos.tenant_dao import TenantDAO
 from models.planning_school import PlanningSchool
 from models.planning_school_communication import PlanningSchoolCommunication
 from views.models.extend_params import ExtendParams
 from views.models.school_and_teacher_sync import SchoolSyncQueryModel
+from views.models.system import EduType
 
 
 class PlanningSchoolDAO(DAOBase):
@@ -128,6 +131,14 @@ class PlanningSchoolDAO(DAOBase):
                 block = extend_params.county_id
                 # query = query.where(PlanningSchool.city == extend_params.city)
             pass
+        # 扩展参数的 类型映射 到 字段 进行筛选
+        if extend_params is not None and extend_params.edu_type:
+            planning_school_category = EduType.get_mapper(extend_params.edu_type)
+            if planning_school_category is not None:
+                if isinstance(planning_school_category, list):
+                    query = query.where(PlanningSchool.planning_school_category.in_(planning_school_category))
+                else:
+                    query = query.where(PlanningSchool.planning_school_category ==  planning_school_category)
 
         if planning_school_name:
             query = query.where(PlanningSchool.planning_school_name == planning_school_name)

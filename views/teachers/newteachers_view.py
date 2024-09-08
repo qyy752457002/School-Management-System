@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import Query, Depends, Body
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task.task import Task
@@ -8,6 +10,8 @@ from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
 from common.decorators import require_role_permission
+from daos.school_dao import SchoolDAO
+from daos.tenant_dao import TenantDAO
 from rules.common.common_rule import get_org_center_user_info
 from rules.teacher_import_rule import TeacherImportRule
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
@@ -19,7 +23,6 @@ from views.models.teachers import NewTeacher
 from views.models.teachers import Teachers, TeachersCreatModel, CurrentTeacherInfoSaveModel, \
     TeacherInfoSaveModel, TeacherInfoSubmit, CurrentTeacherQuery, \
     TeacherApprovalQuery, TeacherChangeLogQueryModel
-from typing import List
 
 
 class NewTeachersView(BaseView):
@@ -75,8 +78,24 @@ class NewTeachersView(BaseView):
         """
         extend_param = {}
         ob = await get_extend_params(request)
-        if ob.unit_type == UnitType.SCHOOL.value:
-            new_teacher.teacher_employer = ob.school_id
+        if ob.tenant:
+            tenant_dao = get_injector(TenantDAO)
+            tenant = await tenant_dao.get_tenant_by_code(ob.tenant.code)
+            if ob.tenant.code == "210100":
+                pass
+            elif tenant.tenant_type == "planning_school":
+                pass
+            elif tenant.tenant_type == "school":
+                school_dao = get_injector(SchoolDAO)
+                school = await school_dao.get_school_by_id(tenant.origin_id)
+                if not school:
+                    return "学校不存在"
+                if school.institution_category == "institution":
+                    extend_param["borough"] = school.borough
+                else:
+                    new_teacher.teacher_employer = tenant.origin_id
+        # if ob.unit_type == UnitType.SCHOOL.value:
+        #     new_teacher.teacher_employer = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             extend_param["borough"] = ob.county_id
         extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
@@ -264,8 +283,24 @@ class NewTeachersView(BaseView):
         """
         extend_param = {}
         ob = await get_extend_params(request)
-        if ob.unit_type == UnitType.SCHOOL.value:
-            teacher_approval_query.teacher_employer = ob.school_id
+        if ob.tenant:
+            tenant_dao = get_injector(TenantDAO)
+            tenant = await tenant_dao.get_tenant_by_code(ob.tenant.code)
+            if ob.tenant.code == "210100":
+                pass
+            elif tenant.tenant_type == "planning_school":
+                pass
+            elif tenant.tenant_type == "school":
+                school_dao = get_injector(SchoolDAO)
+                school = await school_dao.get_school_by_id(tenant.origin_id)
+                if not school:
+                    return "学校不存在"
+                if school.institution_category == "institution":
+                    extend_param["borough"] = school.borough
+                else:
+                    teacher_approval_query.teacher_employer = tenant.origin_id
+        # if ob.unit_type == UnitType.SCHOOL.value:
+        #     teacher_approval_query.teacher_employer = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             extend_param["borough"] = ob.county_id
         extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
@@ -282,8 +317,22 @@ class NewTeachersView(BaseView):
         """
         extend_param = {}
         ob = await get_extend_params(request)
-        if ob.unit_type == UnitType.SCHOOL.value:
-            teacher_approval_query.teacher_employer = ob.school_id
+        if ob.tenant:
+            tenant_dao = get_injector(TenantDAO)
+            tenant = await tenant_dao.get_tenant_by_code(ob.tenant.code)
+            if ob.tenant.code == "210100":
+                pass
+            elif tenant.tenant_type == "planning_school":
+                pass
+            elif tenant.tenant_type == "school":
+                school_dao = get_injector(SchoolDAO)
+                school = await school_dao.get_school_by_id(tenant.origin_id)
+                if not school:
+                    return "学校不存在"
+                if school.institution_category == "institution":
+                    extend_param["borough"] = school.borough
+                else:
+                    teacher_approval_query.teacher_employer = tenant.origin_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             extend_param["borough"] = ob.county_id
         extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
@@ -342,9 +391,10 @@ class NewTeachersView(BaseView):
         res = await self.teacher_rule.send_teacher_to_org_center(teacher_id)
         return res
 
-    async def post_teacher_organization_members_test(self, teacher_id_list:List[str] | None = Body(None, title="",
-                                                                                description="身份证件号",
-                                                                                examples=['3425301994'])) :
+    async def post_teacher_organization_members_test(self, teacher_id_list: List[str] | None = Body(None, title="",
+                                                                                                    description="身份证件号",
+                                                                                                    examples=[
+                                                                                                        '3425301994'])):
         for teacher_id in teacher_id_list:
             try:
                 await self.teacher_rule.add_teacher_organization_members(teacher_id)
@@ -364,4 +414,3 @@ class NewTeachersView(BaseView):
     async def get_account_info_test(self):
         user_info = await get_org_center_user_info()
         return user_info
-

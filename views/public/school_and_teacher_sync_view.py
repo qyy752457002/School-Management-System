@@ -7,6 +7,7 @@ from mini_framework.web.views import BaseView
 
 from rules.common.sync_rule import SyncRule
 from rules.teacher_import_rule import TeacherImportRule
+from rules.teachers_rule import TeachersRule
 from views.models.school_and_teacher_sync import SchoolSyncQueryModel, SupervisorSyncQueryModel, \
     SupervisorSyncQueryReModel
 
@@ -16,6 +17,7 @@ class SchoolTeacherView(BaseView):
         super().__init__()
         self.sync_rule = get_injector(SyncRule)
         self.teacher_import_rule = get_injector(TeacherImportRule)
+        self.teacher_rule = get_injector(TeachersRule)
 
     async def page_school(self, query_model=Depends(SchoolSyncQueryModel),
                           page_request=Depends(PageRequest)) -> PaginatedResponse:
@@ -67,3 +69,21 @@ class SchoolTeacherView(BaseView):
                                                                       example=123)):
         result = await self.teacher_import_rule.import_teachers_save_test(org_id)
         return result
+
+    async def post_single_teacher_to_org_center(self,
+                                                teacher_id: int | str = Body(..., title="教师编号",
+                                                                             description="教师编号",
+                                                                             example=123)):
+        teacher_id = int(teacher_id)
+        res = await self.teacher_rule.send_teacher_to_org_center(teacher_id)
+        return res
+
+    async def post_teacher_list_to_org_center(self, teacher_id_list: List[str] | None = Body(None, title="",
+                                                                                             description="身份证件号",
+                                                                                             examples=['3425301994'])):
+        for teacher_id in teacher_id_list:
+            try:
+                await self.teacher_rule.send_teacher_to_org_center(int(teacher_id))
+            except Exception as e:
+                print(f'编号{teacher_id}的发生错误{e}')
+                return f'编号{teacher_id}的发生错误{e}'

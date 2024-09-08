@@ -4,6 +4,7 @@ from typing import List
 from mini_framework.async_task.app.app_factory import app
 from mini_framework.async_task.task.task import Task
 from mini_framework.design_patterns.depend_inject import get_injector
+from mini_framework.multi_tenant.registry import tenant_registry
 from mini_framework.utils.json import JsonUtils
 from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
@@ -12,6 +13,7 @@ from starlette.requests import Request
 from business_exceptions.planning_school import PlanningSchoolValidateError, \
     PlanningSchoolStatusError
 from common.decorators import require_role_permission
+from daos.planning_school_dao import PlanningSchoolDAO
 from models.student_transaction import AuditAction
 from rules.common.common_rule import get_org_center_userinfo, verify_auth
 from rules.leader_info_rule import LeaderInfoRule
@@ -21,7 +23,7 @@ from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
 from views.common.common_view import compare_modify_fields, convert_dates_to_strings, \
-    serialize, convert_query_to_none, convert_snowid_in_model, get_extend_params
+    serialize, convert_query_to_none, convert_snowid_in_model, get_extend_params,  get_tenant_by_code
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationTarget
 from views.models.planning_school import PlanningSchoolBaseInfo, PlanningSchoolKeyInfo, \
     PlanningSchoolStatus, PlanningSchoolFounderType, PlanningSchoolPageSearch, PlanningSchoolKeyAddInfo, \
@@ -60,7 +62,8 @@ class PlanningSchoolView(BaseView):
         self.school_eduinfo_rule = get_injector(SchoolEduinfoRule)
         self.school_communication_rule = get_injector(SchoolCommunicationRule)
         self.leaderinfo_rule = get_injector(LeaderInfoRule)
-        # self.common_rule = get_injector(SchoolCommunicationRule)
+        self.pschool_dao=get_injector(PlanningSchoolDAO)
+
 
     #   包含3部分信息 1.基本信息 2.通讯信息 3.教育信息
     @require_role_permission("planning_school", "view")
@@ -90,7 +93,7 @@ class PlanningSchoolView(BaseView):
     @require_role_permission("planning_school", "open")
     async def post(self, planning_school: PlanningSchoolKeyAddInfo,
                    ):
-        # 保存 模型
+        # 保存 模型 生产    必填 改掉    字段不变
         res = await self.planning_school_rule.add_planning_school(planning_school)
         resc = PlanningSchoolCommunications(id=0)
         newid = str(res.id)
@@ -260,7 +263,6 @@ class PlanningSchoolView(BaseView):
         is_draft = await self.planning_school_rule.is_can_not_add_workflow(planning_school_id)
         if is_draft:
             raise PlanningSchoolStatusError()
-
         planning_school, extra_model = await self.planning_school_rule.get_planning_school_by_id(planning_school_id,
                                                                                                  PlanningSchoolBaseInfo)
 
@@ -289,6 +291,14 @@ class PlanningSchoolView(BaseView):
             convert_snowid_in_model(res, extra_colums=['process_instance_id', ])
 
             pass
+        # 改为开设中
+        school = await self.pschool_dao.get_planning_school_by_id( planning_school_id)
+        if school:
+            # 回退改草稿
+            need_update_list = ['status']
+            school.status =  PlanningSchoolStatus.OPENING.value
+
+            schoolres = await self.pschool_dao.update_planning_school_byargs(school, *need_update_list)
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         if is_add_log:
@@ -392,9 +402,9 @@ class PlanningSchoolView(BaseView):
         origin = await self.planning_school_rule.get_planning_school_by_id(planning_school.id)
         log_con = compare_modify_fields(planning_school, origin)
         # 保存时 进到暂存状态 
-        planning_school.status = PlanningSchoolStatus.OPENING.value
+        # planning_school.status = PlanningSchoolStatus.OPENING.value
 
-        res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
+        res = await self.planning_school_rule.update_planning_school_byargs(planning_school,modify_status= False)
         res_com = await self.planning_school_communication_rule.update_planning_school_communication_byargs(
             planning_school_communication)
         res_edu = await self.planning_school_eduinfo_rule.update_planning_school_eduinfo_byargs(planning_school_eduinfo)
@@ -598,6 +608,10 @@ class PlanningSchoolView(BaseView):
 
         items = []
         obj= await get_extend_params(request)
+        print(tenant_registry)
+        # code =tenant_registry.get_tenant(request)
+        # temp = get_tenant_by_code()
+
 
         paging_result = await self.planning_school_rule.query_planning_school_with_page(page_request,
                                                                                         planning_school_name,

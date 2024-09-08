@@ -1,0 +1,22 @@
+[
+  {
+    "appCode": "1238915324217024",
+    "policyCode": "planning_school_manager_rule",
+    "displayName": "规划校管理员策略",
+    "description": "规划校管理员策略",
+    "authorizationModel": "RBAC",  
+    "ruleCode": [
+      "p,  planning_school, view",
+      "p,  planning_school, add",
+      "p,  planning_school, open",
+      "p,  planning_school, detail",
+      "p,  planning_school, import",
+      "p,  planning_school, edit",
+      "p,  planning_school, relation",
+      "p,  planning_school, close",
+      "p,  planning_school, change_baseinfo",
+      "p,  planning_school, change_keyinfo",
+      "p,  planning_school, delete"
+    ]
+  }
+]

@@ -6,6 +6,8 @@ from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
 from common.decorators import require_role_permission
+from daos.school_dao import SchoolDAO
+from daos.tenant_dao import TenantDAO
 from rules.course_rule import CourseRule
 from views.common.common_view import get_extend_params, convert_snowid_to_strings, convert_snowid_in_model
 from views.models.course import Course
@@ -50,12 +52,26 @@ class CourseView(BaseView):
                    # campus_name:str= Query(None, description="校区名称" ,min_length=1,max_length=20,example='XX小学'),
                    school_id: int | str = Query(0, description="学校ID", example='1'),
                    ):
-        print(page_request)
-        obj = await get_extend_params(request)
-        if obj.school_id:
+        extend_params= obj= await get_extend_params(request)
+        print('rucan',page_request,obj)
+
+        if obj.school_id and school_id==0:
             school_id = obj.school_id
 
         items = []
+        if extend_params.tenant:
+            # 读取类型  读取ID  加到条件里
+            tenant_dao=get_injector(TenantDAO)
+            school_dao=get_injector(SchoolDAO)
+            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
+
+
+            if tenant is   not None and  tenant.tenant_type== 'school' and len(tenant.code)>=10:
+                school =  await  school_dao.get_school_by_id(tenant.origin_id)
+                if school:
+                    school_id = school.id
+
+            pass
 
         res = await self.course_rule.query_course_with_page(page_request, school_id, extobj=obj)
         return res
@@ -73,17 +89,30 @@ class CourseView(BaseView):
     # 修改 当前用的这个  学校的课程选择 的变更 区的配置课程也是这个接口
     async def put(self,
                   request: Request,
-
                   school_id: int | str = Query(0, description="学校ID", example='1'),
                   course_list: List[Course] = Body([], description="选择的课程", example=[
                       {"grade_id": 1, "course_name": "语文", "course_no": "13", }
-                  ]),
+                  ])
                   ):
-        obj = await get_extend_params(request)
+        extend_params=obj = await get_extend_params(request)
+        if extend_params.tenant:
+            # 读取类型  读取ID  加到条件里
+            tenant_dao=get_injector(TenantDAO)
+            school_dao=get_injector(SchoolDAO)
+            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
+
+            if tenant is   not None and  tenant.tenant_type== 'school' and len(tenant.code)>=10:
+                school =  await  school_dao.get_school_by_id(tenant.origin_id)
+                if school:
+                    school_id = school.id
+                    obj.school_id= school_id
+                    print('使用了 租户的学校ID',school_id)
+
+            pass
 
         # print(planning_school)
-        if obj.school_id:
-            school_id = obj.school_id
+        # if obj.school_id:
+        #     school_id = obj.school_id
         if obj.county_id:
             res = await self.course_rule.softdelete_course_by_district(obj.county_id)
 
@@ -94,11 +123,29 @@ class CourseView(BaseView):
         return res
 
     # 获取所有的课程列表 给下拉 在用
-    async def get_all(self):
+
+    async def get_all(self,request: Request,):
         # print(page_request)
         items = []
+        extend_params= obj= await get_extend_params(request)
+        # print('rucan',page_request,obj)
 
-        res = await self.course_rule.get_course_all({'school_id': 0})
+        items = []
+        school_id=0
+        if extend_params.tenant:
+            # 读取类型  读取ID  加到条件里
+            tenant_dao=get_injector(TenantDAO)
+            school_dao=get_injector(SchoolDAO)
+            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
+
+            if tenant is   not None and  tenant.tenant_type== 'school' and len(tenant.code)>=10:
+                school =  await  school_dao.get_school_by_id(tenant.origin_id)
+                if school:
+                    # school_id = school.id
+                    pass
+
+            pass
+        res = await self.course_rule.get_course_all({'school_id': school_id,'is_deleted': False})
         return res
 
     async def post_add_init_course(self, course: Course):

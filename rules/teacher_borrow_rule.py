@@ -22,7 +22,9 @@ from views.models.operation_record import OperationRecord, OperationTarget, Chan
 from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTransactionQueryRe, TeacherBorrowModel, \
     TeacherBorrowReModel, TeacherBorrowGetModel, TeacherBorrowQueryModel, TeacherBorrowQueryReModel
 from views.models.teacher_transaction import WorkflowQueryModel
-from views.models.teachers import TeacherRe, TeacherAdd
+from views.models.teachers import TeacherRe, TeacherAdd,TeacherInfoSubmit
+from models.teachers_info import TeacherInfo
+from daos.teachers_info_dao import TeachersInfoDao
 
 
 @dataclass_inject
@@ -36,6 +38,7 @@ class TeacherBorrowRule(object):
     operation_record_dao: OperationRecordDAO
     teachers_rule: TeachersRule
     school_dao: SchoolDAO
+    teachers_info_dao: TeachersInfoDao
 
     async def get_teacher_borrow_by_teacher_borrow_id(self, teacher_borrow_id):
         teacher_borrow_db = await self.teacher_borrow_dao.get_teacher_borrow_by_teacher_borrow_id(teacher_borrow_id)
@@ -95,7 +98,7 @@ class TeacherBorrowRule(object):
 
     async def add_teacher_borrow_in_outer(self, add_teacher: TeacherAdd, teacher_borrow: TeacherBorrowModel,
                                           user_id):
-
+        add_teacher.teacher_employer = teacher_borrow.current_unit_id
         teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
         teachers.teacher_id = int(teachers.teacher_id)
         teachers.teacher_employer = int(teachers.teacher_employer)
@@ -263,13 +266,20 @@ class TeacherBorrowRule(object):
         return result
 
     async def query_borrow_in_with_page(self, type, query_model: TeacherBorrowQueryModel,
-                                        page_request: PageRequest, extend_param):
+                                        page_request: PageRequest, extend_param,query_type=None):
         params = {}  # 这个是条件参数
         if type == "launch":
             params = {"process_code": "t_borrow_in", }
             params.update(extend_param)
         elif type == "approval":
-            params = {"process_code": "t_borrow_in", }
+            if query_type=="school":
+
+                # params = {"process_code": "t_transfer_in_approval",
+                #           }
+                params = {"process_code": "t_borrow_in",
+                          }
+            else:
+                params = {"process_code": "t_borrow_in",}
             params.update(extend_param)
         result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
                                                                                       query_model,
@@ -318,6 +328,18 @@ class TeacherBorrowRule(object):
                 teachers_db.teacher_sub_status = "borrow_in"
                 await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status")
                 await self.teachers_rule.teacher_pending(int(teacher_id))
+                #添加新的老师
+                # result_after = await self.teacher_work_flow_rule.get_work_flow_instance_by_process_instance_id(
+                #     process_instance_id)
+                # teacher = await self.teacher_work_flow_rule.create_model_from_workflow(result_after, TeacherAdd)
+                # teacher.teacher_employer = result_after.get("current_unit_id")
+                # teacher_id = await self.teachers_rule.add_transfer_teachers_in(teacher)
+                # teacher_info = await self.teacher_work_flow_rule.create_model_from_workflow(result_after,
+                #                                                                             TeacherInfoSubmit)
+                # teacher_info.teacher_id = teacher_id
+                # teachers_inf_db = view_model_to_orm_model(teacher_info, TeacherInfo, exclude=["teacher_base_id"])
+                # teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
+                # await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
             elif process_code == "t_borrow_in_outer":
                 """增加老师再添加新老师"""
                 update_params = {"teacher_sub_status": "borrow_in"}

@@ -17,6 +17,11 @@ class StudentSessionDao(DAOBase):
         await session.refresh(student_session)
         return student_session
 
+
+
+
+
+
     async def update_student_session(self, student_session: StudentSession, *args, is_commit: bool = True):
         """
         编辑类别
@@ -33,6 +38,13 @@ class StudentSessionDao(DAOBase):
         """
         session = await self.slave_db()
         result = await session.execute(select(StudentSession).where(StudentSession.session_id == int(session_id)))
+        return result.scalar_one_or_none()
+    async def get_student_session_by_year(self,year):
+        """
+        获取单个类别
+        """
+        session = await self.slave_db()
+        result = await session.execute(select(StudentSession).where(StudentSession.year == year))
         return result.scalar_one_or_none()
 
     async def get_student_session_by_param(self, **kwargs):

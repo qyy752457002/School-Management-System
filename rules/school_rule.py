@@ -2,6 +2,8 @@
 import copy
 import json
 import os
+import random
+import traceback
 from copy import deepcopy
 from datetime import datetime, date
 
@@ -22,12 +24,14 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from sqlalchemy import select, or_
 
+from business_exceptions.institution import InstitutionExistError
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from business_exceptions.school import SchoolExistsError
 from daos.enum_value_dao import EnumValueDAO
 from daos.planning_school_dao import PlanningSchoolDAO
 from daos.school_communication_dao import SchoolCommunicationDAO
 from daos.school_dao import SchoolDAO
+from daos.tenant_dao import TenantDAO
 from models.planning_school import PlanningSchool
 from models.public_enum import IdentityType
 from models.school import School
@@ -36,6 +40,7 @@ from rules.common.common_rule import send_request, send_orgcenter_request, get_i
     check_social_credit_code, check_school_no
 from rules.enum_value_rule import EnumValueRule
 from rules.system_rule import SystemRule
+from rules.tenant_rule import TenantRule
 from views.common.common_view import workflow_service_config, convert_snowid_in_model, convert_snowid_to_strings, \
     frontend_enum_mapping, convert_dates_to_strings
 from views.common.constant import Constant
@@ -51,7 +56,7 @@ from views.models.system import SCHOOL_OPEN_WORKFLOW_CODE, \
     SCHOOL_CLOSE_WORKFLOW_CODE, SCHOOL_KEYINFO_CHANGE_WORKFLOW_CODE, DISTRICT_ENUM_KEY, PROVINCE_ENUM_KEY, \
     CITY_ENUM_KEY, \
     PLANNING_SCHOOL_STATUS_ENUM_KEY, FOUNDER_TYPE_LV2_ENUM_KEY, SCHOOL_ORG_FORM_ENUM_KEY, FOUNDER_TYPE_LV3_ENUM_KEY, \
-    FOUNDER_TYPE_ENUM_KEY, OrgCenterInstitutionType
+    FOUNDER_TYPE_ENUM_KEY, OrgCenterInstitutionType, InstitutionType
 from views.models.teachers import EducateUserModel
 
 
@@ -98,11 +103,35 @@ class SchoolRule(object):
         exists_school = await self.school_dao.get_school_by_school_name(
             school.school_name)
         if exists_school:
-            raise SchoolExistsError()
-        school_db = view_model_to_orm_model(school, School, exclude=["id"])
-        if hasattr(school, "school_no"):
+            if hasattr(school, "institution_category") and school.institution_category  in [ InstitutionType.ADMINISTRATION,InstitutionType.INSTITUTION]  :
+                raise InstitutionExistError()
 
+                pass
+            else:
+                raise SchoolExistsError()
+
+                pass
+        if hasattr(school, "planning_school_id") and   school.planning_school_id != "" and  school.planning_school_id  is not None  :
+            pschool  =await self.p_school_dao.get_planning_school_by_id(school.planning_school_id)
+            if pschool:
+                school.school_no = pschool.planning_school_no+str( random.randint(10,99) )
+            pass
+        if hasattr(school, "institution_category"):
+            school_no= school.block
+
+            if school.institution_category== InstitutionType.INSTITUTION.value:
+                school_no =  school_no+ "X10"
+            elif school.institution_category== InstitutionType.ADMINISTRATION.value:
+                school_no =  school_no+ "X20"
+
+            else:
+                pass
+            school_no =  school_no+str( random.randint(100,999) )
+            print( '生成机构编码' , school_no )
+            school.school_no = school_no
+        if hasattr(school, "school_no"):
             await check_school_no(school.school_no)
+        school_db = view_model_to_orm_model(school, School, exclude=["id"])
 
         school_db.status = PlanningSchoolStatus.DRAFT.value
         school_db.created_uid = 0
@@ -151,7 +180,7 @@ class SchoolRule(object):
         dicta = planning_school.__dict__
         dicta['school_name'] = planning_school.planning_school_name
         dicta['planning_school_id'] = planning_school.id
-        dicta['school_no'] = planning_school.planning_school_no
+        dicta['school_no'] = planning_school.planning_school_no+'00'
         dicta['school_edu_level'] = planning_school.planning_school_edu_level
         dicta['school_category'] = planning_school.planning_school_category
         dicta['school_operation_type'] = planning_school.planning_school_operation_type
@@ -207,7 +236,7 @@ class SchoolRule(object):
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""])
         return school_db
 
-    async def update_school_byargs(self, school, changed_fields: list=None, ):
+    async def update_school_byargs(self, school, changed_fields: list = None,modify_status=None ):
         exists_school = await self.school_dao.get_school_by_id(school.id)
         if not exists_school:
             raise Exception(f"单位{school.id}不存在")
@@ -216,13 +245,13 @@ class SchoolRule(object):
             # 取消 和 驳回等 不校验
             if 'social_credit_code' in changed_fields:
                 if hasattr(school, 'social_credit_code'):
-                    await check_social_credit_code(school.social_credit_code,exists_school)
+                    await check_social_credit_code(school.social_credit_code, exists_school)
             pass
         else:
             # 默认校验
             if hasattr(school, 'social_credit_code'):
-                await check_social_credit_code(school.social_credit_code,exists_school)
-        if exists_school.status == PlanningSchoolStatus.DRAFT.value:
+                await check_social_credit_code(school.social_credit_code, exists_school)
+        if exists_school.status == PlanningSchoolStatus.DRAFT.value and modify_status:
             if hasattr(school, 'status'):
                 # school.status= PlanningSchoolStatus.OPENING.value
                 pass
@@ -290,6 +319,25 @@ class SchoolRule(object):
                                                                                     founder_type_lv2)
             for item in founder_type_lv3_res:
                 founder_type_lv3.append(item.enum_value)
+
+        if extend_params.tenant:
+            # 读取类型  读取ID  加到条件里
+            tenant_dao=get_injector(TenantDAO)
+            # school_dao=get_injector(SchoolDAO)
+            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
+
+            if  tenant is   not None and  tenant.tenant_type== 'school' and tenant.code!='210100' and len(tenant.code)>=10:
+                # 分校
+                school =  await self.school_dao.get_school_by_id(tenant.origin_id)
+                print('获取租户的学校对象',school)
+                if school is not None:
+                    school_no= school.school_no
+            elif tenant is not None and tenant.tenant_type=='planning_school'  :
+                school =  await self.p_school_dao.get_planning_school_by_id(tenant.origin_id)
+                print('获取租户的学校对象',school)
+                if school is not None:
+                    planning_school_id= school.id
+                pass
 
         paging = await self.school_dao.query_school_with_page(page_request, school_name, school_no, school_code,
                                                               block, school_level, borough, status, founder_type,
@@ -486,6 +534,18 @@ class SchoolRule(object):
         if audit_info.transaction_audit_action == AuditAction.PASS.value:
             # 成功则写入数据
             res2 = await self.deal_school(audit_info.process_instance_id, action)
+        elif audit_info.transaction_audit_action == AuditAction.REFUSE.value:
+            school = await self.school_dao.get_school_by_process_instance_id(audit_info.process_instance_id)
+            if school:
+                # 回退改草稿
+                need_update_list = ['status']
+                school.status =  PlanningSchoolStatus.DRAFT.value
+
+                schoolres = await self.school_dao.update_school_byargs(school, *need_update_list)
+
+
+
+            pass
         # 发起审批流的 处理
 
         datadict = dict()
@@ -546,11 +606,17 @@ class SchoolRule(object):
                 # 部门对接
                 res_org, data_org = await self.send_org_to_org_center(org, res_unit)
                 # 管理员 对接
-                res_admin = await self.send_admin_to_org_center(school,data_org)
+                res_admin = await self.send_admin_to_org_center(school, data_org)
                 # 添加 用户和组织关系 就是部门
                 await self.send_user_org_relation_to_org_center(school, res_unit, data_org, res_admin)
+                #     todo 自懂获取秘钥
+                tenant_rule = get_injector(TenantRule)
+                print('开始 获取租户信息-单位')
+                await tenant_rule.sync_tenant_all(school.id)
+
             except Exception as e:
                 print('异常', e)
+                traceback.print_exc()
                 # raise e
 
         if action == 'close':
@@ -650,20 +716,21 @@ class SchoolRule(object):
         if tinfo:
             tinfo.workflow_status = status.value
             if status == AuditAction.PASS.value:
-                await self.update_school_byargs(tinfo,)
+                await self.update_school_byargs(tinfo, )
 
                 pass
             else:
                 # 不校验
-                await self.update_school_byargs(tinfo,['workflow_status'])
+                await self.update_school_byargs(tinfo, ['workflow_status'])
 
         pass
 
     async def is_can_not_add_workflow(self, student_id, is_all_status_allow=False):
         tinfo = await self.get_school_by_id(student_id)
         if not is_all_status_allow:
-            if tinfo and tinfo.status == PlanningSchoolStatus.DRAFT.value:
-                return True
+            # if tinfo and tinfo.status == PlanningSchoolStatus.DRAFT.value:
+            #     return True
+            pass
         # 检查是否有占用
         if tinfo and tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
             return True
@@ -893,8 +960,9 @@ class SchoolRule(object):
             # return paging_result
 
         # 发送规划校到组织中心的方法
+
     # 单位对接
-    async def send_school_to_org_center(self, exists_planning_school_origin:School):
+    async def send_school_to_org_center(self, exists_planning_school_origin: School):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if isinstance(exists_planning_school.updated_at, (date, datetime)):
             exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
@@ -904,7 +972,8 @@ class SchoolRule(object):
             exists_planning_school.id)
         cn_exists_planning_school = await self.convert_school_to_export_format(exists_planning_school)
         # todo 多组织 是否支持逗号分隔
-        dict_data = {'administrativeDivisionCity': '',
+        dict_data = {
+                     'administrativeDivisionCity': '',
                      'administrativeDivisionCounty': exists_planning_school.block,
                      'administrativeDivisionProvince': planning_school_communication.loc_area_pro,
                      'createdTime': exists_planning_school.create_school_date,
@@ -916,7 +985,8 @@ class SchoolRule(object):
                      # 单位的唯一标识 是code
                      'unitCode': exists_planning_school.school_no, 'unitId': '',
                      'unitName': exists_planning_school.school_name,
-                     'unitType': OrgCenterInstitutionType.get_mapper(exists_planning_school.institution_category) if exists_planning_school.institution_category  else 'school',
+                     'unitType': OrgCenterInstitutionType.get_mapper(
+                         exists_planning_school.institution_category) if exists_planning_school.institution_category else 'school',
                      'updatedTime': exists_planning_school.updated_at
 
                      }
@@ -940,9 +1010,9 @@ class SchoolRule(object):
                 unitid = response['data2'] if 'data2' in response.keys() else ''
                 exists_planning_school_origin.org_center_info = unitid
                 need_update_list = []
-                need_update_list.append( 'org_center_info')
+                need_update_list.append('org_center_info')
                 datadict['unitId'] = unitid
-                await self.school_dao.update_school_byargs(exists_planning_school_origin,  *need_update_list)
+                await self.school_dao.update_school_byargs(exists_planning_school_origin, *need_update_list)
             return response, datadict
 
             # return response
@@ -952,8 +1022,9 @@ class SchoolRule(object):
             return response
 
         return None
+
     # 用户对接
-    async def send_admin_to_org_center(self, exists_planning_school_origin,data_org):
+    async def send_admin_to_org_center(self, exists_planning_school_origin, data_org):
 
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         school = exists_planning_school
@@ -971,8 +1042,10 @@ class SchoolRule(object):
                 school_operation_type.append(school.school_operation_type)
         identity_type, identity = await get_identity_by_job(school_operation_type, '')
 
-        school  = await self.school_dao.get_school_by_id(
+        school = await self.school_dao.get_school_by_id(
             exists_planning_school_origin.id)
+        # 学校综合管理系统  教育单位管理系统
+        # 'unitType': ,
 
         dict_data = EducateUserModel(**exists_planning_school_origin.__dict__,
                                      # 所在单位
@@ -983,15 +1056,20 @@ class SchoolRule(object):
                                      # 组织
                                      owner=exists_planning_school_origin.school_no,
                                      userCode=exists_planning_school_origin.admin,
-                                     #userId=exists_planning_school_origin.admin_phone,
+                                     # userId=exists_planning_school_origin.admin_phone,
                                      phoneNumber=exists_planning_school_origin.admin_phone,
                                      # 部门group 的显示名字
                                      departmentNames=data_org['displayName'],
                                      # 部门group的name
                                      departmentId=data_org['name'],
                                      realName=exists_planning_school_origin.admin,
-                                     identity = identity,
-                                     identityType = IdentityType.STAFF.value,
+                                     identity=identity,
+                                     identityType=IdentityType.STAFF.value,
+                                     user_account_status='active',
+
+                                     sourceApp='教育单位管理系统' if exists_planning_school.institution_category in [
+                                         InstitutionType.ADMINISTRATION.value,
+                                         InstitutionType.INSTITUTION.value] else '学校综合管理系统'
                                      )
         dict_data = dict_data.__dict__
         # params_data = JsonUtils.dict_to_json_str(dict_data)
@@ -1000,7 +1078,7 @@ class SchoolRule(object):
         datadict = dict_data
         print(datadict, '参数')
         response = await send_orgcenter_request(api_name, datadict, 'post', False)
-        print('  管理员 对接 ',response, )
+        print('  管理员 对接 ', response, )
         try:
             # print(response)
             return response
@@ -1011,7 +1089,7 @@ class SchoolRule(object):
         return None
 
     # # 单位的组织 对接
-    async def send_unit_orgnization_to_org_center(self, exists_planning_school_origin:School, data_unit):
+    async def send_unit_orgnization_to_org_center(self, exists_planning_school_origin: School, data_unit):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if isinstance(exists_planning_school.updated_at, (date, datetime)):
             exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
@@ -1020,12 +1098,12 @@ class SchoolRule(object):
         planning_school_communication = await self.school_communication_dao.get_school_communication_by_school_id(
             exists_planning_school.id)
 
-        school  = await self.school_dao.get_school_by_id(
+        school = await self.school_dao.get_school_by_id(
             exists_planning_school.id)
         # cn_exists_planning_school = await self.convert_school_to_import_format(exists_planning_school)
-        dict_data = {'administrativeDivisionCity':  '',
+        dict_data = {'administrativeDivisionCity': '',
                      'administrativeDivisionCounty': exists_planning_school.block,
-                     'administrativeDivisionProvince':  '',
+                     'administrativeDivisionProvince': '',
                      'createdTime': exists_planning_school.create_school_date,
                      'locationAddress': planning_school_communication.detailed_address,
                      'locationCity': '',
@@ -1036,7 +1114,8 @@ class SchoolRule(object):
                      # 'unitId': '',
                      'unitName': exists_planning_school.school_name,
                      # 'unitType': 'school', todo 需要调试
-                     'unitType': OrgCenterInstitutionType.get_mapper(exists_planning_school.institution_category) if exists_planning_school.institution_category  else 'school',
+                     'unitType': OrgCenterInstitutionType.get_mapper(
+                         exists_planning_school.institution_category) if exists_planning_school.institution_category else 'school',
                      'updatedTime': exists_planning_school.updated_at,
                      # "appHomeUrl": "http://tgiibjya.nr/xxhsh",
                      # "appName": exists_planning_school.planning_school_name,
@@ -1054,12 +1133,13 @@ class SchoolRule(object):
                      "defaultPassword": "",
                      "displayName": exists_planning_school.school_name,
                      "logo": "",
-                     "orgType": OrgCenterInstitutionType.get_mapper(exists_planning_school.institution_category) if exists_planning_school.institution_category  else 'school',
+                     # 这里会决定放入哪个应用
+                     "orgType": OrgCenterInstitutionType.get_mapper(
+                         exists_planning_school.institution_category) if exists_planning_school.institution_category else 'school',
                      "overview": "",
                      "status": "",
                      "unitCount": "",
                      # "unitId": exists_planning_school.planning_school_no,
-
 
                      }
         #  URL修改
@@ -1092,7 +1172,6 @@ class SchoolRule(object):
 
         return None
 
-
     # 部门对接
     async def send_org_to_org_center(self, exists_planning_school_origin: Organization, res_unit):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
@@ -1121,11 +1200,11 @@ class SchoolRule(object):
             "manager": "",
             "name": exists_planning_school.org_name + "默认部门",
             # "name":  exists_planning_school_origin.org_name,
-            #名称唯一
+            # 名称唯一
             "newCode": exists_planning_school.org_code,
             "newType": "organization",  # 组织类型 特殊参数必须穿这个
-            "owner": school.school_no,#隶属的组织  是 自动的 组织
-            "parentId": str(exists_planning_school.parent_id), #0表示顶级部门
+            "owner": school.school_no,  # 隶属的组织  是 自动的 组织
+            "parentId": str(exists_planning_school.parent_id),  # 0表示顶级部门
             "parentName": "",
             "tags": [
                 ""
@@ -1213,21 +1292,21 @@ class SchoolRule(object):
             return response
 
         return None
+
     # 发送 服务单位 给 组织中心
-    async def send_service_unit_to_org_center(self, exists_planning_school_origin:School, data_unit):
+    async def send_service_unit_to_org_center(self, exists_planning_school_origin: School, data_unit):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
 
-        school  = await self.school_dao.get_school_by_id(
+        school = await self.school_dao.get_school_by_id(
             exists_planning_school.id)
         dict_data = {
             # 组织的code
 
             'orgCode': exists_planning_school.school_no,
 
-            'unitId':  school.org_center_info,
+            'unitId': school.org_center_info,
 
-
-                     }
+        }
         #  URL修改
         apiname = '/api/add-service-unit'
         # 字典参数
@@ -1253,3 +1332,9 @@ class SchoolRule(object):
             return response
 
         return None
+    # 获取区教育局
+    async def get_country_edu_institution_by_code(self, tenant_code ):
+        school  = await self.school_dao.get_school_by_args(block=tenant_code,planning_school_id =  0)
+
+
+        return school

@@ -4,10 +4,15 @@ from enum import Enum
 
 from fastapi.params import Query
 from id_validator import validator
+from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.design_patterns.singleton import singleton
+from mini_framework.multi_tenant.registry import tenant_registry
+from mini_framework.web.request_context import request_context_manager
 
-
+from business_exceptions.tenant import TenantNotFoundOrUnActiveError
 from daos.enum_value_dao import EnumValueDAO
+from daos.school_dao import SchoolDAO
+from rules.tenant_rule import TenantRule
 from views.common.constant import Constant
 from views.models.extend_params import ExtendParams
 from views.models.system import UnitType, OrgCenterApiStatus
@@ -144,9 +149,12 @@ async def get_extend_params(request) -> ExtendParams:
 
     if 'Extendparams' in headers:
         extparam = headers['Extendparams']
-        if isinstance(extparam, str):
+        # 判断字符串里存在 {
+        if isinstance(extparam, str) and extparam.find('{') > -1:
             extparam = eval(extparam)
-        obj = ExtendParams(**extparam)
+            obj = ExtendParams(**extparam)
+        else:
+            obj = ExtendParams( )
         if obj.unit_type == UnitType.CITY.value:
             obj.city = Constant.CURRENT_CITY
         if obj.county_id:
@@ -154,8 +162,21 @@ async def get_extend_params(request) -> ExtendParams:
             enuminfo = await (EnumValueDAO()).get_enum_value_by_value(obj.county_id, 'country')
             if enuminfo:
                 obj.county_name = enuminfo.description
-
     print('Extendparams', obj)
+
+    tenant_code = request_context_manager.current().tenant_code
+    tenant =await tenant_registry.get_tenant(tenant_code)
+    print('租户22',tenant)
+    obj.tenant = tenant
+    if  len(tenant.code)<10:
+        # 查区教育局的 具体 单位信息
+        school_dao= get_injector(SchoolDAO)
+
+        school  = await  school_dao.get_school_by_tenant_code(tenant_code )
+        #  区的教育局自动复制上去
+        if school and school.block!='210100':
+            obj.county_id = school.block
+        pass
 
     return obj
 
@@ -402,4 +423,33 @@ def write_json_to_log( data_list,filename='a.log'):
             # 将字典转换为 JSON 格式字符串，并确保每条记录后换行
             file.write(json.dumps(data,cls=DateEncoder) + '\n')
 
+from mini_framework.multi_tenant.tenant import Tenant, TenantStatus
 
+
+async def get_tenant_by_code(code: str):
+    rule = get_injector(TenantRule)
+    tenant = await rule.get_tenant_by_code(code)
+    print('解析到租户',tenant)
+    if tenant is None and code=='210100':
+        tenant =  Tenant(
+        code=code,
+        name="租户1",
+        description="租户1",
+        status=TenantStatus.active,
+        client_id="9c49aa8d79c97951c242",
+        client_secret="b83838efbd8669d325fdc5b5e7ce1173aacb85a4",
+        redirect_url= "",
+        home_url="http://localhost:8000",
+        )
+    # print(tt)
+    print('解析到租户最终',tenant)
+
+    if tenant is None:
+        raise TenantNotFoundOrUnActiveError()
+
+    return tenant
+async def get_tenant_current( ):
+    tenant_code = request_context_manager.current().tenant_code
+    tenant =await tenant_registry.get_tenant(tenant_code)
+
+    return tenant

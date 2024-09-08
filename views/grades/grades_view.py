@@ -1,6 +1,6 @@
-
 from starlette.requests import Request
 
+from typing import List
 from common.decorators import require_role_permission
 from views.common.common_view import get_extend_params
 
@@ -49,19 +49,25 @@ class GradesView(BaseView):
                    district :str= Query(None, title="区", description="",min_length=1,max_length=20,example=''),
                    ):
         print(page_request)
+        # 现阶段 全市只有一个年级配置  不支持各学校配置
+        is_grade_school_config = False
         obj= await get_extend_params(request)
         if school_id is  not None:
             school_id = int(school_id)
         else:
 
-            if obj.school_id:
+            if obj.school_id and is_grade_school_config:
                 school_id = int(obj.school_id)
         if obj.city:
             city = str(obj.city)
         if obj.county_id:
             district = str(obj.county_id)
 
-        paging_result = await self.grade_rule.query_grade_with_page(page_request, grade_name, school_id,city, district)
+        print('扩展对象',obj)
+        if not  is_grade_school_config:
+            school_id = None
+
+        paging_result = await self.grade_rule.query_grade_with_page(page_request, grade_name, school_id,city, district,obj)
 
         return paging_result
 
@@ -105,7 +111,7 @@ class GradesView(BaseView):
         # todo 记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         # if grade_id:
 
-            # grades.id = grade_id
+        # grades.id = grade_id
         grades.created_at = None
         delattr(grades, 'created_at')
 
@@ -119,6 +125,22 @@ class GradesView(BaseView):
 
         return res
 
+    async def put_all_grades(
+        self,
+        grade_list: List[Grades] = Body(
+            [],
+            description="所有年级列表",
+            example=[
+                {
+                    "id": 1,
+                    "grade_alias": "别名",
+                }
+            ],
+        ),
+    ):
+        res = await self.grade_rule.update_grade_batch(grade_list)
+        return res
+
         # 手动进行 年级的继承
     async def put_grade_extend(self,
                   request:Request,
@@ -129,9 +151,7 @@ class GradesView(BaseView):
 
                   ):
 
-
         obj= await get_extend_params(request)
-
 
         res = await self.grade_rule.update_grade(None)
 

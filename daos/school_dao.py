@@ -32,12 +32,17 @@ class SchoolDAO(DAOBase):
         result = await session.execute(
             select(School).where(School.school_name == school_name).where(School.is_deleted == False))
         return result.first()
+    async def get_school_by_no(self, school_no):
+        session = await self.slave_db()
+        result = await session.execute(
+            select(School).where(School.school_no == school_no).where(School.is_deleted == False))
+        return result.scalar_one_or_none()
 
     async def get_school_by_args(self, obj=None, **kwargs):
         """
         """
         session = await self.slave_db()
-        query = select(School)
+        query = select(School).order_by(School.id.desc())
         for key, value in kwargs.items():
             query = query.where(getattr(School, key) == value)
         if obj is not None and hasattr(obj, 'id'):
@@ -143,9 +148,9 @@ class SchoolDAO(DAOBase):
             School.founder_type_lv3, School.founder_name, School.founder_code, School.location_economic_attribute,
             School.urban_ethnic_nature, School.leg_repr_certificatenumber, School.urban_rural_nature,
             School.school_org_form, School.school_closure_date, School.department_unit_number, School.sy_zones,
-            School.historical_evolution, School.sy_zones_pro, School.primary_school_system,
-            School.primary_school_entry_age, School.junior_middle_school_system, School.junior_middle_school_entry_age,
-            School.senior_middle_school_system, School.membership_no, School.is_entity, School.process_instance_id,
+            School.historical_evolution, School.sy_zones_pro,
+            School.primary_school_entry_age, School.junior_middle_school_entry_age,
+            School.membership_no, School.is_entity, School.process_instance_id,
             School.workflow_status, School.created_uid, School.updated_uid, School.created_at, School.updated_at,
             School.is_deleted,
 
@@ -389,3 +394,7 @@ class SchoolDAO(DAOBase):
             School.school_no == school_no)
         result = await session.execute(query_school)
         return result.first()
+    async def get_school_by_tenant_code(self, tenant_code):
+        school  = await self.get_school_by_args(block=tenant_code,planning_school_id =  0)
+
+        return school
