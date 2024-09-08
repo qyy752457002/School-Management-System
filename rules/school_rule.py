@@ -23,6 +23,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from sqlalchemy import select, or_
 
+from business_exceptions.institution import InstitutionExistError
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from business_exceptions.school import SchoolExistsError
 from daos.enum_value_dao import EnumValueDAO
@@ -100,7 +101,14 @@ class SchoolRule(object):
         exists_school = await self.school_dao.get_school_by_school_name(
             school.school_name)
         if exists_school:
-            raise SchoolExistsError()
+            if hasattr(school, "institution_category") and school.institution_category  in [ InstitutionType.ADMINISTRATION,InstitutionType.INSTITUTION]  :
+                raise InstitutionExistError()
+
+                pass
+            else:
+                raise SchoolExistsError()
+
+                pass
         if hasattr(school, "planning_school_id") and   school.planning_school_id != "" and  school.planning_school_id  is not None  :
             pschool  =await self.p_school_dao.get_planning_school_by_id(school.planning_school_id)
             if pschool:
