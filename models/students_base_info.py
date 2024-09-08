@@ -90,6 +90,7 @@ class StudentBaseInfo(BaseDBModel):
     religious_belief: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="宗教信仰,枚举religious_belief")
     residence_nature: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="户口性质")
     enrollment_date: Mapped[date] = mapped_column(Date, default=date(1970, 1, 1), nullable=True, comment="入学日期")
+    study_section: Mapped[str] = mapped_column(String(64), nullable=True,default='', comment="教育阶段")
     # 入学年月(admission_date)健康状况(health_status)
     admission_date: Mapped[date] = mapped_column(Date, default=date(1970, 1, 1), nullable=True, comment="入学年月new")
     contact_number: Mapped[str] = mapped_column(String(64), nullable=True, default='', comment="联系电话")

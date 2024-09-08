@@ -148,9 +148,9 @@ class SchoolDAO(DAOBase):
             School.founder_type_lv3, School.founder_name, School.founder_code, School.location_economic_attribute,
             School.urban_ethnic_nature, School.leg_repr_certificatenumber, School.urban_rural_nature,
             School.school_org_form, School.school_closure_date, School.department_unit_number, School.sy_zones,
-            School.historical_evolution, School.sy_zones_pro, School.primary_school_system,
-            School.primary_school_entry_age, School.junior_middle_school_system, School.junior_middle_school_entry_age,
-            School.senior_middle_school_system, School.membership_no, School.is_entity, School.process_instance_id,
+            School.historical_evolution, School.sy_zones_pro,
+            School.primary_school_entry_age, School.junior_middle_school_entry_age,
+            School.membership_no, School.is_entity, School.process_instance_id,
             School.workflow_status, School.created_uid, School.updated_uid, School.created_at, School.updated_at,
             School.is_deleted,
 
