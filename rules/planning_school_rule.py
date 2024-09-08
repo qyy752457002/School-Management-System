@@ -307,14 +307,14 @@ class PlanningSchoolRule(object):
 
         return planning_school_db
 
-    async def update_planning_school_byargs(self, planning_school, need_update_list=None):
+    async def update_planning_school_byargs(self, planning_school, need_update_list=None,modify_status= False):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school.id)
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
         if hasattr(planning_school, 'social_credit_code'):
             await check_social_credit_code(planning_school.social_credit_code, exists_planning_school)
 
-        if exists_planning_school.status == PlanningSchoolStatus.DRAFT.value:
+        if exists_planning_school.status == PlanningSchoolStatus.DRAFT.value  and modify_status:
             if hasattr(planning_school, 'status'):
                 # planning_school.status= PlanningSchoolStatus.OPENING.value
                 pass
