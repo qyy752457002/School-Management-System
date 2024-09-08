@@ -1114,6 +1114,7 @@ class SchoolRule(object):
                      "defaultPassword": "",
                      "displayName": exists_planning_school.school_name,
                      "logo": "",
+                     # 这里会决定放入哪个应用
                      "orgType": OrgCenterInstitutionType.get_mapper(
                          exists_planning_school.institution_category) if exists_planning_school.institution_category else 'school',
                      "overview": "",

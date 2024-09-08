@@ -182,7 +182,7 @@ class TenantRule(object):
               """
         print(school_id)
         items =  await self.plannning_school_dao.get_planning_school_by_id(school_id)
-        tenant_type= 'planning_school'
+        tenant_type= 'planning_school' # 表示 租户类型
         if items is None:
             print('学校未找到当前租户')
             items =  await self.school_dao.get_school_by_id(school_id)
@@ -211,7 +211,7 @@ class TenantRule(object):
         if tenant is not  None:
             return
         # 请求接口  解析放入表里
-        res  =await  get_org_center_application(code)
+        res  =await  get_org_center_application(code,tenant_type,items)
         for value in  res['data']:
             if value['owner']!= code:
                 continue

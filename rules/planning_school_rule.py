@@ -984,7 +984,7 @@ class PlanningSchoolRule(object):
 
                      "logo": "",
 
-                     "orgType": "school",
+                     "orgType": "school",#这个决定了  组织中心把它放入 学校综合管理还是教育单位管理
                      "overview": "",
                      "status": "",
                      "unitCount": "",
