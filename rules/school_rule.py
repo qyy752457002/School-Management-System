@@ -531,8 +531,12 @@ class SchoolRule(object):
         elif audit_info.transaction_audit_action == AuditAction.REFUSE.value:
             school = await self.school_dao.get_school_by_process_instance_id(audit_info.process_instance_id)
             if school:
+                # 回退改草稿
+                need_update_list = ['status']
 
-                res = await self.update_school_status(school.id, PlanningSchoolStatus.DRAFT.value  )
+                schoolres = await self.school_dao.update_school_byargs(school, need_update_list)
+
+
 
             pass
         # 发起审批流的 处理
