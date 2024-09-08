@@ -28,6 +28,9 @@ class SchoolEduInfo(BaseModel):
     affil_univ_name: str | None = Field(None, title="", description="附属高校（机构）名称", examples=['是'])
     is_last_yr_revok: bool | None = Field(None, title="", description="是否上年撤销", examples=[False])
     is_school_counted: bool | None = Field(None, title="", description="是否计校数", examples=[False])
+    primary_school_system: str | None = Field(None, title="", description="小学学制", examples=['是'])
+    junior_middle_school_system: str | None = Field(None, title="", description="初中学制", examples=['是'])
+    senior_middle_school_system: str | None = Field(None, title="", description="高中学制", examples=['是'])
 
     @model_validator(mode="before")
     @classmethod

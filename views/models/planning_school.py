@@ -158,13 +158,13 @@ class PlanningSchoolSyncModel(BaseModel):
     historical_evolution: str | None = Field(None, title="历史沿革", description="历史沿革", examples=['xxxxxxxxxxxxxxxxxxxx'])
     sy_zones_pro: str | None = Field(None, title="属地管理教育行政部门所在地（省级）",
                               description="属地管理教育行政部门所在地（省级）", examples=['沈阳'])
-    primary_planning_school_system: str | None = Field(None, title="小学学制", description="小学学制", examples=['6'])
+    # primary_planning_school_system: str | None = Field(None, title="小学学制", description="小学学制", examples=['6'])
     primary_planning_school_entry_age: str | None = Field(None, title="小学入学年龄", description="小学入学年龄",
                                                    examples=['6'])
-    junior_middle_planning_school_system: str | None = Field(None, title="初中学制", description="初中学制", examples=['3'])
+    # junior_middle_planning_school_system: str | None = Field(None, title="初中学制", description="初中学制", examples=['3'])
     junior_middle_planning_school_entry_age: str | None = Field(None, title="初中入学年龄", description="初中入学年龄",
                                                          examples=['12'])
-    senior_middle_planning_school_system: str | None = Field(None, title="高中学制", description="高中学制", examples=['3'])
+    # senior_middle_planning_school_system: str | None = Field(None, title="高中学制", description="高中学制", examples=['3'])
     province: str | None = Field('', title="省份", description="", examples=[''], max_length=30)
     city: str | None = Field('', title="城市", description="", examples=[''], max_length=30)
     workflow_status: str | None = Field(None, title="", description="", examples=[''])
