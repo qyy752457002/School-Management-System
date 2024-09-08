@@ -61,7 +61,9 @@ class GradesView(BaseView):
         if obj.county_id:
             district = str(obj.county_id)
 
-        paging_result = await self.grade_rule.query_grade_with_page(page_request, grade_name, school_id,city, district)
+        print('扩展对象',obj)
+
+        paging_result = await self.grade_rule.query_grade_with_page(page_request, grade_name, school_id,city, district,obj)
 
         return paging_result
 
