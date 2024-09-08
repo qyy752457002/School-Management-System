@@ -122,14 +122,14 @@ class Teachers(BaseModel):
     def check_id_before(self, data: dict):
         _change_list = ["teacher_id", "teacher_employer"]
         # 需要给身份证脱敏
-        if isinstance(data["teacher_id"], int):
-            if data.get("teacher_id_number"):
-                if len(data["teacher_id_number"]) == 18:
-                    data["teacher_id_number"] = data["teacher_id_number"][0:6] + "********" + data["teacher_id_number"][
-                                                                                              -4:]
-                # 其他类型的证件号码值只对最后四位脱敏
-                elif len(data["teacher_id_number"]) > 0:
-                    data["teacher_id_number"] = data["teacher_id_number"][0:-4] + "****"
+        # if isinstance(data["teacher_id"], int):
+        #     if data.get("teacher_id_number"):
+        #         if len(data["teacher_id_number"]) == 18:
+        #             data["teacher_id_number"] = data["teacher_id_number"][0:6] + "********" + data["teacher_id_number"][
+        #                                                                                       -4:]
+        #         # 其他类型的证件号码值只对最后四位脱敏
+        #         elif len(data["teacher_id_number"]) > 0:
+        #             data["teacher_id_number"] = data["teacher_id_number"][0:-4] + "****"
         for _change in _change_list:
             if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
@@ -1928,13 +1928,13 @@ class CurrentTeacherQueryRe(BaseModel):
     @classmethod
     def check_id_before(self, data: dict):
         _change_list = ["teacher_employer", "teacher_base_id", "teacher_id"]
-        if data.get("teacher_id_number"):
-            if len(data["teacher_id_number"]) == 18:
-                data["teacher_id_number"] = data["teacher_id_number"][0:6] + "********" + data["teacher_id_number"][
-                                                                                          -4:]
-            # 其他类型的证件号码值只对最后四位脱敏
-            elif len(data["teacher_id_number"]) > 0:
-                data["teacher_id_number"] = data["teacher_id_number"][0:-4] + "****"
+        # if data.get("teacher_id_number"):
+        #     if len(data["teacher_id_number"]) == 18:
+        #         data["teacher_id_number"] = data["teacher_id_number"][0:6] + "********" + data["teacher_id_number"][
+        #                                                                                   -4:]
+        #     # 其他类型的证件号码值只对最后四位脱敏
+        #     elif len(data["teacher_id_number"]) > 0:
+        #         data["teacher_id_number"] = data["teacher_id_number"][0:-4] + "****"
         for _change in _change_list:
             if _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
