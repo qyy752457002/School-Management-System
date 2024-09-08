@@ -174,7 +174,7 @@ async def get_extend_params(request) -> ExtendParams:
 
         school  = await  school_dao.get_school_by_tenant_code(tenant_code )
         # school  =  school_rule.get_country_edu_institution_by_code(tenant_code)
-        if school:
+        if school and school.block!='210100':
             obj.county_id = school.block
         pass
 
