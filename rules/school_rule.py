@@ -528,6 +528,18 @@ class SchoolRule(object):
         if audit_info.transaction_audit_action == AuditAction.PASS.value:
             # 成功则写入数据
             res2 = await self.deal_school(audit_info.process_instance_id, action)
+        elif audit_info.transaction_audit_action == AuditAction.REFUSE.value:
+            school = await self.school_dao.get_school_by_process_instance_id(audit_info.process_instance_id)
+            if school:
+                # 回退改草稿
+                need_update_list = ['status']
+                school.status =  PlanningSchoolStatus.DRAFT.value
+
+                schoolres = await self.school_dao.update_school_byargs(school, *need_update_list)
+
+
+
+            pass
         # 发起审批流的 处理
 
         datadict = dict()
