@@ -60,7 +60,7 @@ class SystemView(BaseView):
             resource_codes=None
 
         res, title = await self.system_rule.query_system_with_kwargs(role_id, unit_type, edu_type, system_type,
-                                                                     resource_codes=resource_codes,obj=obj)
+                                                                     resource_codes=resource_codes,extend_params=obj)
         # res,title  = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
 
         # v = await verify_auth("alice","grade","add")

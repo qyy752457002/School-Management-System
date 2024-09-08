@@ -104,18 +104,18 @@ class SystemRule(object):
         paging = await self.permission_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
                                                                                 role_id, parent_id)
         # 校验已配置的权限
+        filter = [ ]
+
         if extend_params.tenant:
             # 读取类型  读取ID  加到条件里
             tenant_dao=get_injector(TenantDAO)
             school_dao=get_injector(SchoolDAO)
             tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
-            print(tenant)
+            print(333,tenant)
 
-            if  tenant is   not None and  tenant.tenant_type== 'school':
-                school =  await school_dao.get_school_by_id(tenant.origin_id)
-                print('获取租户的学校对象',school)
-                if school is not None:
-                    school_no= school.school_no
+            if  tenant is   not None and  len(tenant.code) == 6 :
+                filter = [39 ]
+
             pass
         file_name=None
         processed_dict={}
@@ -182,7 +182,7 @@ class SystemRule(object):
         # print(list(paging))
         # 三级次啊单
         paging3 = await self.permission_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
-                                                                                 role_id, ids_3,resource_codes)
+                                                                                 role_id, ids_3,resource_codes,filter)
         for _, pm in res.items():
             for item in pm.children:
                 print(item.id, item.children)

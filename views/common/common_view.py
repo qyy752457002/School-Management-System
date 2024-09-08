@@ -154,7 +154,7 @@ async def get_extend_params(request) -> ExtendParams:
             extparam = eval(extparam)
             obj = ExtendParams(**extparam)
         else:
-            obj = ExtendParams(**extparam)
+            obj = ExtendParams( )
         if obj.unit_type == UnitType.CITY.value:
             obj.city = Constant.CURRENT_CITY
         if obj.county_id:
