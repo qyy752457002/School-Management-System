@@ -142,12 +142,13 @@
   "workflow_service": {
     "name": "workflow_service",
     "description": "",
-    "url": "https://school-workflow-dev.f123.pub"
+    "url": "http://127.0.0.1:8081"
   },
   "orgcenter_service": {
     "name": "orgcenter_service",
     "description": "",
     "app_code": "1238915324217024",
+    "app_code_student": "1240540919845696",
     "url": "https://org-center.f123.pub"
   },
   "transaction_service": {
