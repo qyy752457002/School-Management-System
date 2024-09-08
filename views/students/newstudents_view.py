@@ -14,6 +14,8 @@ from starlette.requests import Request
 
 from business_exceptions.student import StudentStatusError
 from common.decorators import require_role_permission
+from daos.school_dao import SchoolDAO
+from daos.tenant_dao import TenantDAO
 from rules.class_division_records_rule import ClassDivisionRecordsRule
 from rules.operation_record import OperationRecordRule
 from views.common.common_view import compare_modify_fields, get_client_ip, convert_query_to_none, get_extend_params
@@ -52,10 +54,27 @@ class NewsStudentsView(BaseView):
         self.operation_record_rule = get_injector(OperationRecordRule)
     # 新增学生 只含基本信息
     @require_role_permission("new_student", "open")
-    async def post_newstudent(self, students: NewStudents):
+    async def post_newstudent(self,
+                              request:Request,
+                              students: NewStudents):
         """
         新增新生信息
         """
+        extend_params= await get_extend_params(request)
+        if extend_params.tenant:
+            # 读取类型  读取ID  加到条件里
+            tenant_dao=get_injector(TenantDAO)
+            school_dao=get_injector(SchoolDAO)
+            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
+            print(333,tenant)
+
+            if  tenant is   not None and  tenant.tenant_type  == 'school' :
+                school = await school_dao.get_school_by_id(tenant.code)
+                if school is not None:
+                    students.school_id = school.id
+                # filter = [39 ]
+
+            pass
         res = await self.students_rule.add_students(students)
         students.student_id = res.student_id
         special_date = datetime.datetime.now()
@@ -203,7 +222,10 @@ class NewsStudentsInfoView(BaseView):
         res = await self.students_base_info_rule.get_students_base_info_by_student_id(student_id)
         return res
     # 新增学生基本信息
-    async def post_newstudentbaseinfo(self, new_students_base_info: NewBaseInfoCreate):
+    async def post_newstudentbaseinfo(self,
+
+
+                                      new_students_base_info: NewBaseInfoCreate):
         """
         新生新增基本信息
         """
@@ -213,10 +235,30 @@ class NewsStudentsInfoView(BaseView):
         res = await self.students_base_info_rule.add_students_base_info(new_students_base_info)
         return res
     # 保存学生基本信息 todo  触发对接组织中心 这里已经选择了班级
-    async def put_newstudentbaseinfo(self, new_students_base_info: NewBaseInfoUpdate, request: Request):
+    async def put_newstudentbaseinfo(self,
+                                     request:Request,
+
+
+                                     new_students_base_info: NewBaseInfoUpdate, ):
         """
         新生编辑基本信息
         """
+        extend_params= await get_extend_params(request)
+        if extend_params.tenant:
+            # 读取类型  读取ID  加到条件里
+            tenant_dao=get_injector(TenantDAO)
+            school_dao=get_injector(SchoolDAO)
+            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
+            print(333,tenant)
+
+            if  tenant is   not None and  tenant.tenant_type  == 'school' :
+                school = await school_dao.get_school_by_id(tenant.code)
+                if school is not None:
+                    # new_students_base_info.school_id = school.id
+                    pass
+                # filter = [39 ]
+
+            pass
         check = await self.students_rule.is_can_update_student(new_students_base_info.student_id)
         if not check:
             raise StudentStatusError()

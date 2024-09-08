@@ -149,9 +149,12 @@ async def get_extend_params(request) -> ExtendParams:
 
     if 'Extendparams' in headers:
         extparam = headers['Extendparams']
-        if isinstance(extparam, str):
+        # 判断字符串里存在 {
+        if isinstance(extparam, str) and extparam.find('{') > -1:
             extparam = eval(extparam)
-        obj = ExtendParams(**extparam)
+            obj = ExtendParams(**extparam)
+        else:
+            obj = ExtendParams( )
         if obj.unit_type == UnitType.CITY.value:
             obj.city = Constant.CURRENT_CITY
         if obj.county_id:
@@ -171,7 +174,7 @@ async def get_extend_params(request) -> ExtendParams:
 
         school  = await  school_dao.get_school_by_tenant_code(tenant_code )
         # school  =  school_rule.get_country_edu_institution_by_code(tenant_code)
-        if school:
+        if school and school.block!='210100':
             obj.county_id = school.block
         pass
 

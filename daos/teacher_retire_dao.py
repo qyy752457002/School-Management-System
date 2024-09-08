@@ -11,6 +11,10 @@ from views.models.extend_params import ExtendParams
 from views.models.teacher_transaction import TeacherRetireQuery
 from views.models.teachers import TeacherMainStatus
 from views.models.system import UnitType
+from daos.school_dao import SchoolDAO
+from daos.tenant_dao import TenantDAO
+from mini_framework.design_patterns.depend_inject import get_injector
+
 
 class TeachersRetireDao(DAOBase):
     # 新增教师基本信息
@@ -54,13 +58,25 @@ class TeachersRetireDao(DAOBase):
             TeacherInfo, Teacher.teacher_id == TeacherInfo.teacher_id, isouter=True
         ).join(School, Teacher.teacher_employer == School.id,
                )
-        if extend_params:
-            if extend_params.unit_type == UnitType.SCHOOL.value:
-                query = query.where(Teacher.teacher_employer == extend_params.school_id)
-            elif extend_params.unit_type == UnitType.COUNTRY.value:
-                query = query.where(School.borough == extend_params.county_id)
-            else:
-                pass
+        # if extend_params:
+        #     if extend_params.unit_type == UnitType.SCHOOL.value:
+        #         query = query.where(Teacher.teacher_employer == extend_params.school_id)
+        #     elif extend_params.unit_type == UnitType.COUNTRY.value:
+        #         query = query.where(School.borough == extend_params.county_id)
+        #     else:
+        #         pass
+        if extend_params.tenant:
+            # 读取类型  读取ID  加到条件里
+            tenant_dao = get_injector(TenantDAO)
+            school_dao = get_injector(SchoolDAO)
+            tenant = await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
+            if tenant.tenant_type == "school":
+                school = await school_dao.get_school_by_id(tenant.origin_id)
+                # 如果是事业单位，则就是自己查询自己事业单位的信息
+                if school.institution_category == "institution":
+                    query = query.where(School.borough == school.borough)
+                else:
+                    query = query.where(Teacher.teacher_employer == school.id)
         if query_model.in_post != None:
             query = query.where(Teacher.teacher_main_status == TeacherMainStatus.RETIRED.value,
                                 TeacherInfo.in_post == query_model.in_post)
@@ -79,8 +95,8 @@ class TeachersRetireDao(DAOBase):
             query = query.where(TeacherInfo.highest_education == query_model.highest_education)
         if query_model.political_status:
             query = query.where(TeacherInfo.political_status == query_model.political_status)
-        # if query_model.in_post:
-        #     query = query.where(TeacherInfo.in_post == query_model.in_post)
+        if query_model.in_post is not None:
+            query = query.where(TeacherInfo.in_post == query_model.in_post)
         if query_model.enter_school_time_s and query_model.enter_school_time_e:
             query = query.where(
                 TeacherInfo.enter_school_time >= query_model.enter_school_time_s,

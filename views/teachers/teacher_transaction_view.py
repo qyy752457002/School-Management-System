@@ -21,7 +21,8 @@ from views.models.teacher_transaction import TeacherTransactionModel, TeacherTra
     TeacherTransferQueryModel, TeacherTransactionQueryModel
 from views.models.teacher_transaction import TransferDetailsModel
 from views.models.teachers import TeacherAdd
-
+from daos.school_dao import SchoolDAO
+from daos.tenant_dao import TenantDAO
 
 class TransferDetailsView(BaseView):
     def __init__(self):
@@ -110,8 +111,26 @@ class TransferDetailsView(BaseView):
         """
         extend_param = {}
         ob = await get_extend_params(request)
-        if ob.unit_type == UnitType.SCHOOL.value:
-            transfer_details.original_unit_id = ob.school_id
+        if ob.tenant:
+            tenant_dao = get_injector(TenantDAO)
+            tenant = await tenant_dao.get_tenant_by_code(ob.tenant.code)
+            if ob.tenant.code == "210100":
+                pass
+            elif tenant.tenant_type == "planning_school":
+                pass
+            elif tenant.tenant_type == "school":
+                school_dao = get_injector(SchoolDAO)
+                school = await school_dao.get_school_by_id(tenant.origin_id)
+                if not school:
+                    return "学校不存在"
+                if school.institution_category == "institution":
+                    transfer_details.original_district_area_id =school.borough
+                else:
+                    transfer_details.original_district_area_id = tenant.origin_id
+        # extend_param = {}
+        # ob = await get_extend_params(request)
+        # if ob.unit_type == UnitType.SCHOOL.value:
+        #     transfer_details.original_unit_id = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             transfer_details.original_district_area_id = ob.county_id
         type = "launch"
@@ -128,8 +147,22 @@ class TransferDetailsView(BaseView):
         """
         extend_param = {}
         ob = await get_extend_params(request)
-        if ob.unit_type == UnitType.SCHOOL.value:
-            transfer_details.original_unit_id = ob.school_id
+        if ob.tenant:
+            tenant_dao = get_injector(TenantDAO)
+            tenant = await tenant_dao.get_tenant_by_code(ob.tenant.code)
+            if ob.tenant.code == "210100":
+                pass
+            elif tenant.tenant_type == "planning_school":
+                pass
+            elif tenant.tenant_type == "school":
+                school_dao = get_injector(SchoolDAO)
+                school = await school_dao.get_school_by_id(tenant.origin_id)
+                if not school:
+                    return "学校不存在"
+                if school.institution_category == "institution":
+                    transfer_details.original_district_area_id =school.borough
+                else:
+                    transfer_details.original_district_area_id = tenant.origin_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             transfer_details.original_district_area_id = ob.county_id
         type = "approval"
@@ -147,8 +180,22 @@ class TransferDetailsView(BaseView):
         type = "launch"
         extend_param = {}
         ob = await get_extend_params(request)
-        if ob.unit_type == UnitType.SCHOOL.value:
-            transfer_details.current_unit_id = ob.school_id
+        if ob.tenant:
+            tenant_dao = get_injector(TenantDAO)
+            tenant = await tenant_dao.get_tenant_by_code(ob.tenant.code)
+            if ob.tenant.code == "210100":
+                pass
+            elif tenant.tenant_type == "planning_school":
+                pass
+            elif tenant.tenant_type == "school":
+                school_dao = get_injector(SchoolDAO)
+                school = await school_dao.get_school_by_id(tenant.origin_id)
+                if not school:
+                    return "学校不存在"
+                if school.institution_category == "institution":
+                    transfer_details.current_district_area_id =school.borough
+                else:
+                    transfer_details.current_district_area_id = tenant.origin_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             transfer_details.current_district_area_id = ob.county_id
         extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
@@ -162,16 +209,41 @@ class TransferDetailsView(BaseView):
         """
         我审批的调入
         """
+        # todo 调入审批需要做两次查询，一次是系统内调入，需要查询之前单位，一次是系统外调入，需要查询之间的单位
         type = "approval"
+
+        query_type = ""
         extend_param = {}
         ob = await get_extend_params(request)
-        if ob.unit_type == UnitType.SCHOOL.value:
-            transfer_details.current_unit_id = ob.school_id
+        if ob.tenant:
+            tenant_dao = get_injector(TenantDAO)
+            tenant = await tenant_dao.get_tenant_by_code(ob.tenant.code)
+            if ob.tenant.code == "210100":
+                pass
+            elif tenant.tenant_type == "planning_school":
+                pass
+            elif tenant.tenant_type == "school":
+                school_dao = get_injector(SchoolDAO)
+                school = await school_dao.get_school_by_id(tenant.origin_id)
+                if not school:
+                    return "学校不存在"
+                if school.institution_category == "institution":
+                    transfer_details.current_district_area_id =school.borough
+                else:
+                    transfer_details.current_unit_id = tenant.origin_id
+                    query_type = "school"
+                    # transfer_details.original_unit_id = ob.school_id
+        # if ob.unit_type == UnitType.SCHOOL.value:
+        #     transfer_details.current_unit_id = ob.school_id
+        #     query_type = "school"
+
+            # transfer_details.original_unit_id = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             transfer_details.current_district_area_id = ob.county_id
         extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
         paging_result = await self.transfer_details_rule.query_transfer_in_with_page(type, transfer_details,
-                                                                                     page_request, extend_param)
+                                                                                     page_request, extend_param,
+                                                                                     query_type)
         return paging_result
 
     # 调动审批
@@ -441,11 +513,27 @@ class TeacherBorrowView(BaseView):
         """
         extend_param = {}
         ob = await get_extend_params(request)
-        if ob.unit_type == UnitType.SCHOOL.value:
-            teacher_borrow.original_unit_id = ob.school_id
+        if ob.tenant:
+            tenant_dao = get_injector(TenantDAO)
+            tenant = await tenant_dao.get_tenant_by_code(ob.tenant.code)
+            if ob.tenant.code == "210100":
+                pass
+            elif tenant.tenant_type == "planning_school":
+                pass
+            elif tenant.tenant_type == "school":
+                school_dao = get_injector(SchoolDAO)
+                school = await school_dao.get_school_by_id(tenant.origin_id)
+                if not school:
+                    return "学校不存在"
+                if school.institution_category == "institution":
+                    teacher_borrow.original_district_area_id =school.borough
+                else:
+                    teacher_borrow.original_unit_id = tenant.origin_id
+        # if ob.unit_type == UnitType.SCHOOL.value:
+        #     teacher_borrow.original_unit_id = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             teacher_borrow.original_district_area_id = ob.county_id
-        extend_param["applicant_name"] = "asdfasdf"
+        extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
         type = "launch"
         paging_result = await self.teacher_borrow_rule.query_borrow_out_with_page(type, teacher_borrow, page_request,
                                                                                   extend_param)
@@ -459,11 +547,27 @@ class TeacherBorrowView(BaseView):
         """
         extend_param = {}
         ob = await get_extend_params(request)
-        if ob.unit_type == UnitType.SCHOOL.value:
-            teacher_borrow.original_unit_id = ob.school_id
+        if ob.tenant:
+            tenant_dao = get_injector(TenantDAO)
+            tenant = await tenant_dao.get_tenant_by_code(ob.tenant.code)
+            if ob.tenant.code == "210100":
+                pass
+            elif tenant.tenant_type == "planning_school":
+                pass
+            elif tenant.tenant_type == "school":
+                school_dao = get_injector(SchoolDAO)
+                school = await school_dao.get_school_by_id(tenant.origin_id)
+                if not school:
+                    return "学校不存在"
+                if school.institution_category == "institution":
+                    teacher_borrow.original_district_area_id =school.borough
+                else:
+                    teacher_borrow.original_unit_id = tenant.origin_id
+        # if ob.unit_type == UnitType.SCHOOL.value:
+        #     teacher_borrow.original_unit_id = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             teacher_borrow.original_district_area_id = ob.county_id
-        extend_param["applicant_name"] = "asdfasdf"
+        extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
         type = "approval"
         paging_result = await self.teacher_borrow_rule.query_borrow_out_with_page(type, teacher_borrow, page_request,
                                                                                   extend_param)
@@ -477,11 +581,27 @@ class TeacherBorrowView(BaseView):
         """
         extend_param = {}
         ob = await get_extend_params(request)
-        if ob.unit_type == UnitType.SCHOOL.value:
-            teacher_borrow.current_unit_id = ob.school_id
+        if ob.tenant:
+            tenant_dao = get_injector(TenantDAO)
+            tenant = await tenant_dao.get_tenant_by_code(ob.tenant.code)
+            if ob.tenant.code == "210100":
+                pass
+            elif tenant.tenant_type == "planning_school":
+                pass
+            elif tenant.tenant_type == "school":
+                school_dao = get_injector(SchoolDAO)
+                school = await school_dao.get_school_by_id(tenant.origin_id)
+                if not school:
+                    return "学校不存在"
+                if school.institution_category == "institution":
+                    teacher_borrow.current_district_area_id =school.borough
+                else:
+                    teacher_borrow.current_unit_id = tenant.origin_id
+        # if ob.unit_type == UnitType.SCHOOL.value:
+        #     teacher_borrow.current_unit_id = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             teacher_borrow.current_district_area_id = ob.county_id
-        extend_param["applicant_name"] = "asdfasdf"
+        extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
         type = "launch"
         paging_result = await self.teacher_borrow_rule.query_borrow_in_with_page(type, teacher_borrow, page_request,
                                                                                  extend_param)
@@ -493,16 +613,38 @@ class TeacherBorrowView(BaseView):
         """
         我审批的借入
         """
+        # todo 调入审批需要做两次查询，一次是系统内调入，需要查询之前单位，一次是系统外调入，需要查询之间的单位
+        query_type = ""
         extend_param = {}
         ob = await get_extend_params(request)
-        if ob.unit_type == UnitType.SCHOOL.value:
-            teacher_borrow.current_unit_id = ob.school_id
+        if ob.tenant:
+            tenant_dao = get_injector(TenantDAO)
+            tenant = await tenant_dao.get_tenant_by_code(ob.tenant.code)
+            if ob.tenant.code == "210100":
+                pass
+            elif tenant.tenant_type == "planning_school":
+                pass
+            elif tenant.tenant_type == "school":
+                school_dao = get_injector(SchoolDAO)
+                school = await school_dao.get_school_by_id(tenant.origin_id)
+                if not school:
+                    return "学校不存在"
+                if school.institution_category == "institution":
+                    teacher_borrow.current_district_area_id =school.borough
+                else:
+                    teacher_borrow.current_unit_id  = tenant.origin_id
+                    query_type = "school"
+        # if ob.unit_type == UnitType.SCHOOL.value:
+        #     teacher_borrow.current_unit_id = ob.school_id
+        #     query_type = "school"
+
+            # teacher_borrow.original_unit_id = ob.school_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             teacher_borrow.current_district_area_id = ob.county_id
-        extend_param["applicant_name"] = "asdfasdf"
+        extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
         type = "approval"
         paging_result = await self.teacher_borrow_rule.query_borrow_in_with_page(type, teacher_borrow, page_request,
-                                                                                 extend_param)
+                                                                                 extend_param,query_type)
         return paging_result
 
     # 审批相关

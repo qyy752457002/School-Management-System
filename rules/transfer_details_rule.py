@@ -11,6 +11,7 @@ from daos.operation_record_dao import OperationRecordDAO
 from daos.school_dao import SchoolDAO
 from daos.teacher_change_dao import TeacherChangeLogDAO
 from daos.teachers_dao import TeachersDao
+from daos.teachers_info_dao import TeachersInfoDao
 from daos.transfer_details_dao import TransferDetailsDAO
 from models.transfer_details import TransferDetails
 from rules.enum_value_rule import EnumValueRule
@@ -40,6 +41,7 @@ class TransferDetailsRule(object):
     operation_record_dao: OperationRecordDAO
     teachers_rule: TeachersRule
     school_dao: SchoolDAO
+    teachers_info_dao: TeachersInfoDao
 
     async def get_transfer_details_by_transfer_details_id(self, transfer_details_id):
         transfer_details_db = await self.transfer_details_dao.get_transfer_details_by_transfer_details_id(
@@ -148,8 +150,8 @@ class TransferDetailsRule(object):
             transfer_details.original_unit_name = school.school_name
             transfer_details.original_district_area_id = int(school.borough)
             transfer_details.original_district_city_id = int(school.block)
-            transfer_details.original_district_province_id = 210000 #辽宁省编号
-            transfer_details.original_region_area_id=210100 #沈阳市编号
+            transfer_details.original_district_province_id = 210000  # 辽宁省编号
+            transfer_details.original_region_area_id = 210100  # 沈阳市编号
             transfer_details.transfer_type = TransferType.OUT.value
             transfer_details.original_unit_id = int(original_unit_id)
             transfer_details_db = view_model_to_orm_model(transfer_details, TransferDetails)
@@ -252,7 +254,7 @@ class TransferDetailsRule(object):
                                            page_request: PageRequest, extend_param):
         params = {}
         if type == "launch":
-            params = { "process_code": "t_transfer_out", }
+            params = {"process_code": "t_transfer_out", }
             params.update(extend_param)
         elif type == "approval":
             params = {"process_code": "t_transfer_out", }
@@ -264,7 +266,7 @@ class TransferDetailsRule(object):
         return result
 
     async def query_transfer_in_with_page(self, type, query_model: TeacherTransferQueryModel,
-                                          page_request: PageRequest, extend_param):
+                                          page_request: PageRequest, extend_param, query_type=None):
         result = []
         if type == "launch":
             params = {"process_code": "t_transfer_in"}
@@ -275,8 +277,14 @@ class TransferDetailsRule(object):
                                                                                           params)
 
         elif type == "approval":
-            params = {"process_code": "t_transfer_in",
-                      }
+            if query_type == "school":
+
+                # params = {"process_code": "t_transfer_in_approval",
+                #           }
+                params = {"process_code": "t_transfer_in",
+                          }
+            else:
+                params = {"process_code": "t_transfer_in", }
             params.update(extend_param)
             result = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request,
                                                                                           query_model,
@@ -327,7 +335,6 @@ class TransferDetailsRule(object):
             teachers_db = await self.teachers_dao.get_teachers_by_id(teacher_id)
             if process_code == "t_transfer_out":
                 """需要删除本校老师"""
-
                 # 原本学校需要做的事情
                 # 更新状态
                 teachers_db.teacher_sub_status = "transfer_out"
@@ -336,11 +343,28 @@ class TransferDetailsRule(object):
                 # 删除本校老师
                 await self.teachers_dao.delete_teachers(teachers_db)
             elif process_code == "t_transfer_in_inner":
-                """需要先修改本校老师状态，包括is_deleted和teacher_sub_status，然后再添加新的老师，以及增加老师的调入记录"""
+                """需要先修改本校老师状态，包括is_deleted和teacher_sub_status，然后再添加新的老师，调入记录因为数据库是放在一起的所以可以先不用管"""
+                # 现在共用一个库，不用删除，简单的更新一下现任职单位
+                # result_after = await self.teacher_work_flow_rule.get_work_flow_instance_by_process_instance_id(
+                #     process_instance_id)
                 teachers_db.teacher_sub_status = "transfer_in"
+                # teachers_db.teacher_employer = result_after.get("current_unit_id")
+                # await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status", "teacher_employer")
                 await self.teachers_dao.update_teachers(teachers_db, "teacher_sub_status")
                 await self.teachers_rule.teacher_pending(teachers_db.teacher_id)
                 await self.teachers_dao.delete_teachers(teachers_db)
+                # 添加新的老师
+                # result_after = await self.teacher_work_flow_rule.get_work_flow_instance_by_process_instance_id(
+                #     process_instance_id)
+                # teacher = await self.teacher_work_flow_rule.create_model_from_workflow(result_after, TeacherAdd)
+                # teacher.teacher_employer = result_after.get("current_unit_id")
+                # teacher_id = await self.teachers_rule.add_transfer_teachers_in(teacher)
+                # teacher_info = await self.teacher_work_flow_rule.create_model_from_workflow(result_after,
+                #                                                                             TeacherInfoSubmit)
+                # teacher_info.teacher_id = teacher_id
+                # teachers_inf_db = view_model_to_orm_model(teacher_info, TeacherInfo, exclude=["teacher_base_id"])
+                # teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
+                # await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
             elif process_code == "t_transfer_in_outer":
                 """增加老师再添加新老师"""
                 update_params = {"teacher_sub_status": "active"}
