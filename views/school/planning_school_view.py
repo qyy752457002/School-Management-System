@@ -13,6 +13,7 @@ from starlette.requests import Request
 from business_exceptions.planning_school import PlanningSchoolValidateError, \
     PlanningSchoolStatusError
 from common.decorators import require_role_permission
+from daos.planning_school_dao import PlanningSchoolDAO
 from models.student_transaction import AuditAction
 from rules.common.common_rule import get_org_center_userinfo, verify_auth
 from rules.leader_info_rule import LeaderInfoRule
@@ -61,6 +62,8 @@ class PlanningSchoolView(BaseView):
         self.school_eduinfo_rule = get_injector(SchoolEduinfoRule)
         self.school_communication_rule = get_injector(SchoolCommunicationRule)
         self.leaderinfo_rule = get_injector(LeaderInfoRule)
+        self.pschool_dao=get_injector(PlanningSchoolDAO)
+
 
     #   包含3部分信息 1.基本信息 2.通讯信息 3.教育信息
     @require_role_permission("planning_school", "view")
@@ -260,7 +263,6 @@ class PlanningSchoolView(BaseView):
         is_draft = await self.planning_school_rule.is_can_not_add_workflow(planning_school_id)
         if is_draft:
             raise PlanningSchoolStatusError()
-
         planning_school, extra_model = await self.planning_school_rule.get_planning_school_by_id(planning_school_id,
                                                                                                  PlanningSchoolBaseInfo)
 
@@ -289,6 +291,14 @@ class PlanningSchoolView(BaseView):
             convert_snowid_in_model(res, extra_colums=['process_instance_id', ])
 
             pass
+        # 改为开设中
+        school = await self.pschool_dao.get_planning_school_by_id( planning_school_id)
+        if school:
+            # 回退改草稿
+            need_update_list = ['status']
+            school.status =  PlanningSchoolStatus.OPENING.value
+
+            schoolres = await self.pschool_dao.update_planning_school_byargs(school, *need_update_list)
 
         #  记录操作日志到表   参数发进去   暂存 就 如果有 则更新  无则插入
         if is_add_log:
