@@ -533,8 +533,9 @@ class SchoolRule(object):
             if school:
                 # 回退改草稿
                 need_update_list = ['status']
+                school.status =  PlanningSchoolStatus.DRAFT.value
 
-                schoolres = await self.school_dao.update_school_byargs(school, need_update_list)
+                schoolres = await self.school_dao.update_school_byargs(school, *need_update_list)
 
 
 
