@@ -226,6 +226,14 @@ class TeachersRule(object):
         """
         teachers.teacher_main_status = "employed"
         teachers.teacher_sub_status = "submitted"
+        teacher_id_number = teachers.teacher_id_number
+        teacher_id_type = teachers.teacher_id_type
+        teacher_name = teachers.teacher_name
+        teacher_gender = teachers.teacher_gender
+        length = await self.teachers_dao.get_teachers_info_by_prams(teacher_id_number, teacher_id_type,
+                                                                    teacher_name, teacher_gender)
+        if length > 0:
+            raise TeacherExistsError()
         teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[""])
         teachers_db.is_approval = True
         teachers_db.teacher_id = SnowflakeIdGenerator(1, 1).generate_id()
@@ -237,6 +245,7 @@ class TeachersRule(object):
         # 获取老师信息
         teachers = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
         return teachers
+
     async def add_transfer_teachers_in(self, teachers: TeacherAdd):
         """
         系统内调入时，在调入的学校中加入的信息
@@ -254,11 +263,6 @@ class TeachersRule(object):
         # 获取老师信息
         teachers = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
         return teachers.teacher_id
-
-
-
-
-
 
     async def update_teachers(self, teachers, user_id):
         exists_teachers = await self.teachers_dao.get_teachers_by_id(teachers.teacher_id)
