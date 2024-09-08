@@ -327,11 +327,17 @@ class SchoolRule(object):
             tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
 
             if  tenant is   not None and  tenant.tenant_type== 'school' and tenant.code!='210100' and len(tenant.code)>=10:
+                # 分校
                 school =  await self.school_dao.get_school_by_id(tenant.origin_id)
                 print('获取租户的学校对象',school)
                 if school is not None:
                     school_no= school.school_no
-            pass
+            elif tenant is not None and tenant.tenant_type=='planning_school'  :
+                school =  await self.p_school_dao.get_planning_school_by_id(tenant.origin_id)
+                print('获取租户的学校对象',school)
+                if school is not None:
+                    planning_school_id= school.id
+                pass
 
         paging = await self.school_dao.query_school_with_page(page_request, school_name, school_no, school_code,
                                                               block, school_level, borough, status, founder_type,

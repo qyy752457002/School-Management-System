@@ -236,6 +236,7 @@ class SchoolView(BaseView):
         if not institution_category:
             # institution_category = [InstitutionType.SCHOOL]
             pass
+        # todo  规划校的 只能看自己下面的分校   完整的 资源策略清单 给出
 
         paging_result = await self.school_rule.query_school_with_page(page_request,
                                                                       school_name, school_no, school_code,
