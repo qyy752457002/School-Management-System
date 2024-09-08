@@ -347,6 +347,12 @@ class TeachersRule(object):
         teachers_db = await self.teachers_dao.get_all_teachers()
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=["hash_password"])
         return teachers
+    async def get_all_teachers_id_list(self):
+        teacher_id_list=[]
+        teachers_db = await self.teachers_dao.get_all_teachers_id_list()
+        for teacher in teachers_db:
+            teacher_id_list.append(str(teacher))
+        return teacher_id_list
 
     async def get_teachers_count(self):
         teachers_count = await self.teachers_dao.get_teachers_count()

@@ -1344,3 +1344,10 @@ class SchoolRule(object):
         school = await self.school_dao.get_school_by_args(block=tenant_code, planning_school_id=0)
 
         return school
+
+    async def get_all_school_no(self):
+        school_list=[]
+        res=await self.school_dao.get_all_school_no()
+        # for school in res:
+        #     school_list.append(school.school_no)
+        return res

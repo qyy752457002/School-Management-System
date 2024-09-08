@@ -98,6 +98,8 @@ class PlanningSchoolRule(object):
             planning_school_name)
         planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""])
         return planning_school
+    async def get_all_planning_school_no(self):
+        return await self.planning_school_dao.get_all_planning_school_no()
 
     async def add_planning_school(self, planning_school: PlanningSchoolModel | PlanningSchoolOptional):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_planning_school_name(

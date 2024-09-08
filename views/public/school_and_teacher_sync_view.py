@@ -33,6 +33,9 @@ class SchoolTeacherView(BaseView):
         res = await self.sync_rule.query_sync_teacher_with_page(query_model, page_request)
         return res
 
+    async def get_all_teachers_id_list(self):
+        return await self.teacher_rule.get_all_teachers_id_list()
+
     async def post_sync_teacher(self,
                                 teacher_id_number_list: List[str] | None = Body(None, title="",
                                                                                 description="身份证件号",
@@ -123,5 +126,10 @@ class SchoolTeacherView(BaseView):
         return 'success'
 
     async def get_all_planning_school_no(self):
-        res = await self.planning_school_rule.get_all_planning_school()
+        res = await self.planning_school_rule.get_all_planning_school_no()
         return res
+
+    async def get_all_school_no(self):
+        res = await self.school_rule.get_all_school_no()
+        return res
+

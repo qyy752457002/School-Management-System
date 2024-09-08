@@ -1,7 +1,7 @@
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
-from sqlalchemy import select, func, update, desc, union_all, or_, and_
+from sqlalchemy import select, func, update, desc, union_all, or_
 
 from models.campus import Campus
 from models.campus_communication import CampusCommunication
@@ -32,6 +32,7 @@ class SchoolDAO(DAOBase):
         result = await session.execute(
             select(School).where(School.school_name == school_name).where(School.is_deleted == False))
         return result.first()
+
     async def get_school_by_no(self, school_no):
         session = await self.slave_db()
         result = await session.execute(
@@ -49,6 +50,12 @@ class SchoolDAO(DAOBase):
             query = query.where(School.id != obj.id)
         result = await session.execute(query)
         return result.scalar()
+
+    async def get_all_school_no(self):
+        session = await self.slave_db()
+        result = await session.execute(
+            select(School.school_no).where(School.is_deleted == False, School.status == "normal"))
+        return result.scalars().all()
 
     async def add_school(self, school):
         session = await self.master_db()
@@ -180,8 +187,8 @@ class SchoolDAO(DAOBase):
             else:
                 query = query.where(School.institution_category == institution_category)
         else:
-            cond1 =  School.institution_category.not_in([InstitutionType.INSTITUTION, InstitutionType.ADMINISTRATION, ])
-            cond2 =  School.institution_category.is_(None)
+            cond1 = School.institution_category.not_in([InstitutionType.INSTITUTION, InstitutionType.ADMINISTRATION, ])
+            cond2 = School.institution_category.is_(None)
             mcond = or_(cond1, cond2)
 
             query = query.filter(
@@ -192,12 +199,12 @@ class SchoolDAO(DAOBase):
 
         if school_name:
             query = query.where(School.school_name == school_name)
-        print('参数',type(planning_school_id), planning_school_id)
+        print('参数', type(planning_school_id), planning_school_id)
 
         if planning_school_id:
-            if isinstance(planning_school_id, str) and len(planning_school_id)>0:
+            if isinstance(planning_school_id, str) and len(planning_school_id) > 0:
                 planning_school_id = int(planning_school_id)
-            if planning_school_id >0 :
+            if planning_school_id > 0:
                 query = query.where(School.planning_school_id == planning_school_id)
 
         if school_no:
@@ -394,8 +401,9 @@ class SchoolDAO(DAOBase):
             School.school_no == school_no)
         result = await session.execute(query_school)
         return result.first()
+
     async def get_school_by_tenant_code(self, tenant_code):
-        school  = await self.get_school_by_args(block=tenant_code,planning_school_id =  0)
+        school = await self.get_school_by_args(block=tenant_code, planning_school_id=0)
 
         return school
 
@@ -406,5 +414,3 @@ class SchoolDAO(DAOBase):
             School.school_no == school_no)
         result = await session.execute(query_school)
         return result.scalar_one_or_none()
-
-
