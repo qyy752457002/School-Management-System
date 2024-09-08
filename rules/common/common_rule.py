@@ -787,15 +787,11 @@ async def get_org_center_application(school_no):
         apiname = "/api/get-applications"
         # owner = "sysjyyjyorg"
         from views.common.common_view import  orgcenter_service_config
-        appCode = orgcenter_service_config.orgcenter_config.get("app_code")
+        appCode = orgcenter_service_config.orgcenter_config.get("app_code_student")
 
         params = {
-            # "id": f"{owner}/{account.name}",
-            # "clientId": authentication_config.oauth2.client_id,
-            # "clientSecret": authentication_config.oauth2.client_secret,
             "owner": school_no,
             "name":  appCode, #
-            # "id_token_hint": token,
         }
         datadict = params
         response = await send_orgcenter_request(apiname, datadict, 'get', True)
