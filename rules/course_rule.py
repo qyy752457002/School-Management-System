@@ -127,6 +127,7 @@ class CourseRule(object):
 
     async def add_course_school(self,school_id,course_list:List[CourseModel],obj:ExtendParams=None):
         res=None
+        print("add_course_school",school_id,obj)
         if school_id:
             exists_course = await self.course_dao.get_course_by_school_id(      school_id)
             if exists_course:
@@ -135,6 +136,8 @@ class CourseRule(object):
         cousrnos= [ ]
 
         for course in course_list:
+            if school_id:
+                course.school_id = school_id
             if course.course_no in cousrnos:
                 print("重复课程",course.course_no)
                 continue
