@@ -49,12 +49,14 @@ class GradesView(BaseView):
                    district :str= Query(None, title="区", description="",min_length=1,max_length=20,example=''),
                    ):
         print(page_request)
+        # 现阶段 全市只有一个年级配置  不支持各学校配置
+        is_grade_school_config = False
         obj= await get_extend_params(request)
         if school_id is  not None:
             school_id = int(school_id)
         else:
 
-            if obj.school_id:
+            if obj.school_id and is_grade_school_config:
                 school_id = int(obj.school_id)
         if obj.city:
             city = str(obj.city)
@@ -62,6 +64,8 @@ class GradesView(BaseView):
             district = str(obj.county_id)
 
         print('扩展对象',obj)
+        if not  is_grade_school_config:
+            school_id = None
 
         paging_result = await self.grade_rule.query_grade_with_page(page_request, grade_name, school_id,city, district,obj)
 
