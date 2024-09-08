@@ -1,0 +1,233 @@
+/*
+ Navicat PostgreSQL Dump SQL
+
+ Source Server         : 10.0.0.42
+ Source Server Type    : PostgreSQL
+ Source Server Version : 120001 (120001)
+ Source Host           : 10.0.0.42:54321
+ Source Catalog        : school_oms_test
+ Source Schema         : public
+
+ Target Server Type    : PostgreSQL
+ Target Server Version : 120001 (120001)
+ File Encoding         : 65001
+
+ Date: 08/09/2024 20:25:22
+*/
+
+
+-- ----------------------------
+-- Table structure for lfun_tenant
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."lfun_tenant";
+CREATE TABLE "public"."lfun_tenant" (
+  "id" int8 NOT NULL,
+  "tenant_type" varchar(64) COLLATE "pg_catalog"."default",
+  "code" varchar(64) COLLATE "pg_catalog"."default",
+  "name" varchar(64) COLLATE "pg_catalog"."default",
+  "description" varchar(64) COLLATE "pg_catalog"."default",
+  "status" varchar(64) COLLATE "pg_catalog"."default",
+  "client_id" varchar(64) COLLATE "pg_catalog"."default",
+  "client_secret" varchar(128) COLLATE "pg_catalog"."default",
+  "home_url" varchar(128) COLLATE "pg_catalog"."default",
+  "redirect_url" varchar(512) COLLATE "pg_catalog"."default",
+  "origin_id" int8,
+  "is_deleted" bool NOT NULL,
+  "created_at" timestamp(6),
+  "cert_public_key" varchar(4096) COLLATE "pg_catalog"."default"
+)
+;
+COMMENT ON COLUMN "public"."lfun_tenant"."id" IS '年级ID';
+COMMENT ON COLUMN "public"."lfun_tenant"."is_deleted" IS '删除态';
+COMMENT ON COLUMN "public"."lfun_tenant"."created_at" IS '创建时间';
+COMMENT ON TABLE "public"."lfun_tenant" IS '租户表模型';
+
+-- ----------------------------
+-- Records of lfun_tenant
+-- ----------------------------
+INSERT INTO "public"."lfun_tenant" VALUES (7231020002227392512, 'school', '210102', '1238915324217024', '沈阳市和平区教育局', 'active', 'f1857519b5164d7cc3aa', 'dd38b57fb7145ff8a4c12b6205cee0dbcb81ddf9', '', '', 7231017330116005888, 'f', '2024-09-06 09:48:42.412268', '-----BEGIN CERTIFICATE-----
+MIIE3TCCAsWgAwIBAgIDAeJAMA0GCSqGSIb3DQEBCwUAMCgxDjAMBgNVBAoTBWFk
+bWluMRYwFAYDVQQDEw1jZXJ0LWJ1aWx0LWluMB4XDTIzMTEyNDA4NDAwNVoXDTQz
+MTEyNDA4NDAwNVowKDEOMAwGA1UEChMFYWRtaW4xFjAUBgNVBAMTDWNlcnQtYnVp
+bHQtaW4wggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDIlZAgj+y1NXnt
+zJ7sfbP42F+Q81e+ZP+gp+WB+Knf1nnRGokwYm24uRr+6ZUJFQ70lmbetJwryhYw
+xYblHutouBjF27SpAdBxrNbVKqNbjVUxQXYotdMaIrepmyzsw/hmNwBBr+hf1Ow1
+tS0aseO1G/wEF9xNcW65YQbUgzU+9qvYBwVEHHJUc6lyvtKi7+ejXoLExtqUaZq5
+sDvck2Oo/F5/jYYr4XSo86jLEkqT+oO0AgGiaVchJsXzmpy0CmccAvOIlvKjKtPx
+B0Wart4js/4Rk6fogbw1XEsvXNi5tXbyibXSWl2nS7qYH6Yh5zV/D8xjLXLiBjiw
+vhDZNRbam9bbWdsy8ZPZmNf55R1xu3Rd21944+Um3FaFrZoi+6Uxeos+mCPtb7wv
+PZQF15vxx/rQil+qlecZLsf/ka4uKib3TGuw0vfgQyD+UeQITNWy97whCSaCL7LA
+GTdyqKA1z+YagcF+tqwuiMfz0MVjuCi3vFZC2lHX7PPo4J4LDWOIpi/te2VQb7s4
+fdASAtAbuEy63grwgVFkPuSe721y6ZMOQkwKnv70L5FdyLKaaf3yhrVVcCyaJjmB
+qPV4zinsybrpCgLL22RfJdNSkWVY2Wu6KEc8GlPhRzAkgj+FqLPuX+fpxnVQawDJ
+764mUIWnXou09B3jNHxqBXAj86ckaQIDAQABoxAwDjAMBgNVHRMBAf8EAjAAMA0G
+CSqGSIb3DQEBCwUAA4ICAQA6s/nI2hDKJ3cLxz45OKLC3W8xjcImcyb1XGFKb8+s
+XNNmY6t6D80UIxS5n/svHUHodKAYHr232iNpKoSeD9fAqDDYvEzNMtkrSDh2DkKe
+MdAr/6Up7aUzvs6w3sb2PZ0kgcKmcFBVaDkq3hPIpdgxApOu3uyiSSlT5dghyDDy
+O0BWWZb6eVQOYmDJWIVMdpnOTFWpmjJwBZhaN99KfuM3lEhQ5EcqzgkhTZ8ifrpa
+peL7ag6tSMu2p1j5I4aYbxkyETgy73amAuqFl4KOFZUFhSaqI7dtM20OM1kO0Nqu
+St5eOeMKBn1VQG5PxWZjDIL7YgcLTKWF72QkiwPaYoqtDXlR/THxPZH5thpPWo+E
+LzCMKMZzSgK/g1bB6wgiR3b34C60eugM+5Hwxe9P9le9/wX4GbO+iZhFXPtL2icG
+i1ciYOcoUyU0+efvRzcbl4B9cucn2Qtw2W3+MxRQ+HtFprTYee3/MsjUDEcXpWTS
++dc+7KlHuj6yVWbSuqNohgbbsu22FZrqY3fFceVLO6tA/pOeT3nQYzW5nMT9n7Uv
+M0+FshfxcJrAlI8AnvCOgE6Jym4w7/UuzWUwQ0oOMUzA+7VGzrU5ZcKvrnOWVRxA
+jJXTkqvkHlitXxTyX1FSw1qiMIWQ3EvoNrS7j5Tm8RtuGkWHr7IfCdrClT5U7nMC
+Hg==
+-----END CERTIFICATE-----
+');
+INSERT INTO "public"."lfun_tenant" VALUES (7231032872881229824, 'school', 'dyzxxx', '1238915324217024', '和平区第一中心小学', 'active', '81db2f70ada76b87f0d0', '10c8697ac25e5f99e8d49b48c420f26874a29082', '', '', 7231020326535172096, 'f', '2024-09-06 10:39:51.097950', '-----BEGIN CERTIFICATE-----
+MIIE3TCCAsWgAwIBAgIDAeJAMA0GCSqGSIb3DQEBCwUAMCgxDjAMBgNVBAoTBWFk
+bWluMRYwFAYDVQQDEw1jZXJ0LWJ1aWx0LWluMB4XDTIzMTEyNDA4NDAwNVoXDTQz
+MTEyNDA4NDAwNVowKDEOMAwGA1UEChMFYWRtaW4xFjAUBgNVBAMTDWNlcnQtYnVp
+bHQtaW4wggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDIlZAgj+y1NXnt
+zJ7sfbP42F+Q81e+ZP+gp+WB+Knf1nnRGokwYm24uRr+6ZUJFQ70lmbetJwryhYw
+xYblHutouBjF27SpAdBxrNbVKqNbjVUxQXYotdMaIrepmyzsw/hmNwBBr+hf1Ow1
+tS0aseO1G/wEF9xNcW65YQbUgzU+9qvYBwVEHHJUc6lyvtKi7+ejXoLExtqUaZq5
+sDvck2Oo/F5/jYYr4XSo86jLEkqT+oO0AgGiaVchJsXzmpy0CmccAvOIlvKjKtPx
+B0Wart4js/4Rk6fogbw1XEsvXNi5tXbyibXSWl2nS7qYH6Yh5zV/D8xjLXLiBjiw
+vhDZNRbam9bbWdsy8ZPZmNf55R1xu3Rd21944+Um3FaFrZoi+6Uxeos+mCPtb7wv
+PZQF15vxx/rQil+qlecZLsf/ka4uKib3TGuw0vfgQyD+UeQITNWy97whCSaCL7LA
+GTdyqKA1z+YagcF+tqwuiMfz0MVjuCi3vFZC2lHX7PPo4J4LDWOIpi/te2VQb7s4
+fdASAtAbuEy63grwgVFkPuSe721y6ZMOQkwKnv70L5FdyLKaaf3yhrVVcCyaJjmB
+qPV4zinsybrpCgLL22RfJdNSkWVY2Wu6KEc8GlPhRzAkgj+FqLPuX+fpxnVQawDJ
+764mUIWnXou09B3jNHxqBXAj86ckaQIDAQABoxAwDjAMBgNVHRMBAf8EAjAAMA0G
+CSqGSIb3DQEBCwUAA4ICAQA6s/nI2hDKJ3cLxz45OKLC3W8xjcImcyb1XGFKb8+s
+XNNmY6t6D80UIxS5n/svHUHodKAYHr232iNpKoSeD9fAqDDYvEzNMtkrSDh2DkKe
+MdAr/6Up7aUzvs6w3sb2PZ0kgcKmcFBVaDkq3hPIpdgxApOu3uyiSSlT5dghyDDy
+O0BWWZb6eVQOYmDJWIVMdpnOTFWpmjJwBZhaN99KfuM3lEhQ5EcqzgkhTZ8ifrpa
+peL7ag6tSMu2p1j5I4aYbxkyETgy73amAuqFl4KOFZUFhSaqI7dtM20OM1kO0Nqu
+St5eOeMKBn1VQG5PxWZjDIL7YgcLTKWF72QkiwPaYoqtDXlR/THxPZH5thpPWo+E
+LzCMKMZzSgK/g1bB6wgiR3b34C60eugM+5Hwxe9P9le9/wX4GbO+iZhFXPtL2icG
+i1ciYOcoUyU0+efvRzcbl4B9cucn2Qtw2W3+MxRQ+HtFprTYee3/MsjUDEcXpWTS
++dc+7KlHuj6yVWbSuqNohgbbsu22FZrqY3fFceVLO6tA/pOeT3nQYzW5nMT9n7Uv
+M0+FshfxcJrAlI8AnvCOgE6Jym4w7/UuzWUwQ0oOMUzA+7VGzrU5ZcKvrnOWVRxA
+jJXTkqvkHlitXxTyX1FSw1qiMIWQ3EvoNrS7j5Tm8RtuGkWHr7IfCdrClT5U7nMC
+Hg==
+-----END CERTIFICATE-----
+');
+INSERT INTO "public"."lfun_tenant" VALUES (1, 'xx', '1002', 'xx', 'xx', 'active', '9c49aa8d79c97951c242', 'xx', 'xx', 'https://school-oms-test.f123.pub/auth/oauth2/callback/210100', 0, 'f', '2024-09-04 17:24:49.000000', NULL);
+INSERT INTO "public"."lfun_tenant" VALUES (7231019903082434560, 'school', '210100', '1238915324217024', '沈阳市教育局', 'active', 'e02f6e97cce1c1c2bf73', '251eb7a72c6cb4b26dfed6ecf5aea8d929f213e2', '', 'https://school-oms-test.f123.pub/auth/oauth2/callback/210100', 7231012488354074624, 'f', '2024-09-06 09:48:18.839762', '-----BEGIN CERTIFICATE-----
+MIIE3TCCAsWgAwIBAgIDAeJAMA0GCSqGSIb3DQEBCwUAMCgxDjAMBgNVBAoTBWFk
+bWluMRYwFAYDVQQDEw1jZXJ0LWJ1aWx0LWluMB4XDTIzMTEyNDA4NDAwNVoXDTQz
+MTEyNDA4NDAwNVowKDEOMAwGA1UEChMFYWRtaW4xFjAUBgNVBAMTDWNlcnQtYnVp
+bHQtaW4wggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDIlZAgj+y1NXnt
+zJ7sfbP42F+Q81e+ZP+gp+WB+Knf1nnRGokwYm24uRr+6ZUJFQ70lmbetJwryhYw
+xYblHutouBjF27SpAdBxrNbVKqNbjVUxQXYotdMaIrepmyzsw/hmNwBBr+hf1Ow1
+tS0aseO1G/wEF9xNcW65YQbUgzU+9qvYBwVEHHJUc6lyvtKi7+ejXoLExtqUaZq5
+sDvck2Oo/F5/jYYr4XSo86jLEkqT+oO0AgGiaVchJsXzmpy0CmccAvOIlvKjKtPx
+B0Wart4js/4Rk6fogbw1XEsvXNi5tXbyibXSWl2nS7qYH6Yh5zV/D8xjLXLiBjiw
+vhDZNRbam9bbWdsy8ZPZmNf55R1xu3Rd21944+Um3FaFrZoi+6Uxeos+mCPtb7wv
+PZQF15vxx/rQil+qlecZLsf/ka4uKib3TGuw0vfgQyD+UeQITNWy97whCSaCL7LA
+GTdyqKA1z+YagcF+tqwuiMfz0MVjuCi3vFZC2lHX7PPo4J4LDWOIpi/te2VQb7s4
+fdASAtAbuEy63grwgVFkPuSe721y6ZMOQkwKnv70L5FdyLKaaf3yhrVVcCyaJjmB
+qPV4zinsybrpCgLL22RfJdNSkWVY2Wu6KEc8GlPhRzAkgj+FqLPuX+fpxnVQawDJ
+764mUIWnXou09B3jNHxqBXAj86ckaQIDAQABoxAwDjAMBgNVHRMBAf8EAjAAMA0G
+CSqGSIb3DQEBCwUAA4ICAQA6s/nI2hDKJ3cLxz45OKLC3W8xjcImcyb1XGFKb8+s
+XNNmY6t6D80UIxS5n/svHUHodKAYHr232iNpKoSeD9fAqDDYvEzNMtkrSDh2DkKe
+MdAr/6Up7aUzvs6w3sb2PZ0kgcKmcFBVaDkq3hPIpdgxApOu3uyiSSlT5dghyDDy
+O0BWWZb6eVQOYmDJWIVMdpnOTFWpmjJwBZhaN99KfuM3lEhQ5EcqzgkhTZ8ifrpa
+peL7ag6tSMu2p1j5I4aYbxkyETgy73amAuqFl4KOFZUFhSaqI7dtM20OM1kO0Nqu
+St5eOeMKBn1VQG5PxWZjDIL7YgcLTKWF72QkiwPaYoqtDXlR/THxPZH5thpPWo+E
+LzCMKMZzSgK/g1bB6wgiR3b34C60eugM+5Hwxe9P9le9/wX4GbO+iZhFXPtL2icG
+i1ciYOcoUyU0+efvRzcbl4B9cucn2Qtw2W3+MxRQ+HtFprTYee3/MsjUDEcXpWTS
++dc+7KlHuj6yVWbSuqNohgbbsu22FZrqY3fFceVLO6tA/pOeT3nQYzW5nMT9n7Uv
+M0+FshfxcJrAlI8AnvCOgE6Jym4w7/UuzWUwQ0oOMUzA+7VGzrU5ZcKvrnOWVRxA
+jJXTkqvkHlitXxTyX1FSw1qiMIWQ3EvoNrS7j5Tm8RtuGkWHr7IfCdrClT5U7nMC
+Hg==
+-----END CERTIFICATE-----
+');
+INSERT INTO "public"."lfun_tenant" VALUES (7231406142512041984, 'school', '7231375152880160768', '1238915324217024', '0905二十三集团校', 'active', 'f0a53c996080b820f1cb', '1400f2f7225be9d90cf969f5c39f6c8202cc2019', '', '', 7231375152880160768, 'f', '2024-09-07 11:23:05.469648', '-----BEGIN CERTIFICATE-----
+MIIE3TCCAsWgAwIBAgIDAeJAMA0GCSqGSIb3DQEBCwUAMCgxDjAMBgNVBAoTBWFk
+bWluMRYwFAYDVQQDEw1jZXJ0LWJ1aWx0LWluMB4XDTIzMTEyNDA4NDAwNVoXDTQz
+MTEyNDA4NDAwNVowKDEOMAwGA1UEChMFYWRtaW4xFjAUBgNVBAMTDWNlcnQtYnVp
+bHQtaW4wggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDIlZAgj+y1NXnt
+zJ7sfbP42F+Q81e+ZP+gp+WB+Knf1nnRGokwYm24uRr+6ZUJFQ70lmbetJwryhYw
+xYblHutouBjF27SpAdBxrNbVKqNbjVUxQXYotdMaIrepmyzsw/hmNwBBr+hf1Ow1
+tS0aseO1G/wEF9xNcW65YQbUgzU+9qvYBwVEHHJUc6lyvtKi7+ejXoLExtqUaZq5
+sDvck2Oo/F5/jYYr4XSo86jLEkqT+oO0AgGiaVchJsXzmpy0CmccAvOIlvKjKtPx
+B0Wart4js/4Rk6fogbw1XEsvXNi5tXbyibXSWl2nS7qYH6Yh5zV/D8xjLXLiBjiw
+vhDZNRbam9bbWdsy8ZPZmNf55R1xu3Rd21944+Um3FaFrZoi+6Uxeos+mCPtb7wv
+PZQF15vxx/rQil+qlecZLsf/ka4uKib3TGuw0vfgQyD+UeQITNWy97whCSaCL7LA
+GTdyqKA1z+YagcF+tqwuiMfz0MVjuCi3vFZC2lHX7PPo4J4LDWOIpi/te2VQb7s4
+fdASAtAbuEy63grwgVFkPuSe721y6ZMOQkwKnv70L5FdyLKaaf3yhrVVcCyaJjmB
+qPV4zinsybrpCgLL22RfJdNSkWVY2Wu6KEc8GlPhRzAkgj+FqLPuX+fpxnVQawDJ
+764mUIWnXou09B3jNHxqBXAj86ckaQIDAQABoxAwDjAMBgNVHRMBAf8EAjAAMA0G
+CSqGSIb3DQEBCwUAA4ICAQA6s/nI2hDKJ3cLxz45OKLC3W8xjcImcyb1XGFKb8+s
+XNNmY6t6D80UIxS5n/svHUHodKAYHr232iNpKoSeD9fAqDDYvEzNMtkrSDh2DkKe
+MdAr/6Up7aUzvs6w3sb2PZ0kgcKmcFBVaDkq3hPIpdgxApOu3uyiSSlT5dghyDDy
+O0BWWZb6eVQOYmDJWIVMdpnOTFWpmjJwBZhaN99KfuM3lEhQ5EcqzgkhTZ8ifrpa
+peL7ag6tSMu2p1j5I4aYbxkyETgy73amAuqFl4KOFZUFhSaqI7dtM20OM1kO0Nqu
+St5eOeMKBn1VQG5PxWZjDIL7YgcLTKWF72QkiwPaYoqtDXlR/THxPZH5thpPWo+E
+LzCMKMZzSgK/g1bB6wgiR3b34C60eugM+5Hwxe9P9le9/wX4GbO+iZhFXPtL2icG
+i1ciYOcoUyU0+efvRzcbl4B9cucn2Qtw2W3+MxRQ+HtFprTYee3/MsjUDEcXpWTS
++dc+7KlHuj6yVWbSuqNohgbbsu22FZrqY3fFceVLO6tA/pOeT3nQYzW5nMT9n7Uv
+M0+FshfxcJrAlI8AnvCOgE6Jym4w7/UuzWUwQ0oOMUzA+7VGzrU5ZcKvrnOWVRxA
+jJXTkqvkHlitXxTyX1FSw1qiMIWQ3EvoNrS7j5Tm8RtuGkWHr7IfCdrClT5U7nMC
+Hg==
+-----END CERTIFICATE-----
+');
+INSERT INTO "public"."lfun_tenant" VALUES (7231847641771020288, 'planning_school', '2101012342', '1240540919845696', 'xjj测试规jj2342', 'active', '344b2e38e89e72a58e2a', 'dff7037dc203ac2b033448780fc3a8cd36bb20ba', '', '', 7231827684127543296, 'f', '2024-09-08 16:37:27.034840', '-----BEGIN CERTIFICATE-----
+MIIE3TCCAsWgAwIBAgIDAeJAMA0GCSqGSIb3DQEBCwUAMCgxDjAMBgNVBAoTBWFk
+bWluMRYwFAYDVQQDEw1jZXJ0LWJ1aWx0LWluMB4XDTIzMTEyNDA4NDAwNVoXDTQz
+MTEyNDA4NDAwNVowKDEOMAwGA1UEChMFYWRtaW4xFjAUBgNVBAMTDWNlcnQtYnVp
+bHQtaW4wggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDIlZAgj+y1NXnt
+zJ7sfbP42F+Q81e+ZP+gp+WB+Knf1nnRGokwYm24uRr+6ZUJFQ70lmbetJwryhYw
+xYblHutouBjF27SpAdBxrNbVKqNbjVUxQXYotdMaIrepmyzsw/hmNwBBr+hf1Ow1
+tS0aseO1G/wEF9xNcW65YQbUgzU+9qvYBwVEHHJUc6lyvtKi7+ejXoLExtqUaZq5
+sDvck2Oo/F5/jYYr4XSo86jLEkqT+oO0AgGiaVchJsXzmpy0CmccAvOIlvKjKtPx
+B0Wart4js/4Rk6fogbw1XEsvXNi5tXbyibXSWl2nS7qYH6Yh5zV/D8xjLXLiBjiw
+vhDZNRbam9bbWdsy8ZPZmNf55R1xu3Rd21944+Um3FaFrZoi+6Uxeos+mCPtb7wv
+PZQF15vxx/rQil+qlecZLsf/ka4uKib3TGuw0vfgQyD+UeQITNWy97whCSaCL7LA
+GTdyqKA1z+YagcF+tqwuiMfz0MVjuCi3vFZC2lHX7PPo4J4LDWOIpi/te2VQb7s4
+fdASAtAbuEy63grwgVFkPuSe721y6ZMOQkwKnv70L5FdyLKaaf3yhrVVcCyaJjmB
+qPV4zinsybrpCgLL22RfJdNSkWVY2Wu6KEc8GlPhRzAkgj+FqLPuX+fpxnVQawDJ
+764mUIWnXou09B3jNHxqBXAj86ckaQIDAQABoxAwDjAMBgNVHRMBAf8EAjAAMA0G
+CSqGSIb3DQEBCwUAA4ICAQA6s/nI2hDKJ3cLxz45OKLC3W8xjcImcyb1XGFKb8+s
+XNNmY6t6D80UIxS5n/svHUHodKAYHr232iNpKoSeD9fAqDDYvEzNMtkrSDh2DkKe
+MdAr/6Up7aUzvs6w3sb2PZ0kgcKmcFBVaDkq3hPIpdgxApOu3uyiSSlT5dghyDDy
+O0BWWZb6eVQOYmDJWIVMdpnOTFWpmjJwBZhaN99KfuM3lEhQ5EcqzgkhTZ8ifrpa
+peL7ag6tSMu2p1j5I4aYbxkyETgy73amAuqFl4KOFZUFhSaqI7dtM20OM1kO0Nqu
+St5eOeMKBn1VQG5PxWZjDIL7YgcLTKWF72QkiwPaYoqtDXlR/THxPZH5thpPWo+E
+LzCMKMZzSgK/g1bB6wgiR3b34C60eugM+5Hwxe9P9le9/wX4GbO+iZhFXPtL2icG
+i1ciYOcoUyU0+efvRzcbl4B9cucn2Qtw2W3+MxRQ+HtFprTYee3/MsjUDEcXpWTS
++dc+7KlHuj6yVWbSuqNohgbbsu22FZrqY3fFceVLO6tA/pOeT3nQYzW5nMT9n7Uv
+M0+FshfxcJrAlI8AnvCOgE6Jym4w7/UuzWUwQ0oOMUzA+7VGzrU5ZcKvrnOWVRxA
+jJXTkqvkHlitXxTyX1FSw1qiMIWQ3EvoNrS7j5Tm8RtuGkWHr7IfCdrClT5U7nMC
+Hg==
+-----END CERTIFICATE-----
+');
+INSERT INTO "public"."lfun_tenant" VALUES (7231848787554209792, 'school', '7231847640114270208', '1240540919845696', 'xjj测试规jj23423', 'active', 'c60c2eb92463cf7e4773', '85d64b64546ebf0545d07aab564e282bf37c9ef8', '', '', 7231847640114270208, 'f', '2024-09-08 16:42:00.222302', '-----BEGIN CERTIFICATE-----
+MIIE3TCCAsWgAwIBAgIDAeJAMA0GCSqGSIb3DQEBCwUAMCgxDjAMBgNVBAoTBWFk
+bWluMRYwFAYDVQQDEw1jZXJ0LWJ1aWx0LWluMB4XDTIzMTEyNDA4NDAwNVoXDTQz
+MTEyNDA4NDAwNVowKDEOMAwGA1UEChMFYWRtaW4xFjAUBgNVBAMTDWNlcnQtYnVp
+bHQtaW4wggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDIlZAgj+y1NXnt
+zJ7sfbP42F+Q81e+ZP+gp+WB+Knf1nnRGokwYm24uRr+6ZUJFQ70lmbetJwryhYw
+xYblHutouBjF27SpAdBxrNbVKqNbjVUxQXYotdMaIrepmyzsw/hmNwBBr+hf1Ow1
+tS0aseO1G/wEF9xNcW65YQbUgzU+9qvYBwVEHHJUc6lyvtKi7+ejXoLExtqUaZq5
+sDvck2Oo/F5/jYYr4XSo86jLEkqT+oO0AgGiaVchJsXzmpy0CmccAvOIlvKjKtPx
+B0Wart4js/4Rk6fogbw1XEsvXNi5tXbyibXSWl2nS7qYH6Yh5zV/D8xjLXLiBjiw
+vhDZNRbam9bbWdsy8ZPZmNf55R1xu3Rd21944+Um3FaFrZoi+6Uxeos+mCPtb7wv
+PZQF15vxx/rQil+qlecZLsf/ka4uKib3TGuw0vfgQyD+UeQITNWy97whCSaCL7LA
+GTdyqKA1z+YagcF+tqwuiMfz0MVjuCi3vFZC2lHX7PPo4J4LDWOIpi/te2VQb7s4
+fdASAtAbuEy63grwgVFkPuSe721y6ZMOQkwKnv70L5FdyLKaaf3yhrVVcCyaJjmB
+qPV4zinsybrpCgLL22RfJdNSkWVY2Wu6KEc8GlPhRzAkgj+FqLPuX+fpxnVQawDJ
+764mUIWnXou09B3jNHxqBXAj86ckaQIDAQABoxAwDjAMBgNVHRMBAf8EAjAAMA0G
+CSqGSIb3DQEBCwUAA4ICAQA6s/nI2hDKJ3cLxz45OKLC3W8xjcImcyb1XGFKb8+s
+XNNmY6t6D80UIxS5n/svHUHodKAYHr232iNpKoSeD9fAqDDYvEzNMtkrSDh2DkKe
+MdAr/6Up7aUzvs6w3sb2PZ0kgcKmcFBVaDkq3hPIpdgxApOu3uyiSSlT5dghyDDy
+O0BWWZb6eVQOYmDJWIVMdpnOTFWpmjJwBZhaN99KfuM3lEhQ5EcqzgkhTZ8ifrpa
+peL7ag6tSMu2p1j5I4aYbxkyETgy73amAuqFl4KOFZUFhSaqI7dtM20OM1kO0Nqu
+St5eOeMKBn1VQG5PxWZjDIL7YgcLTKWF72QkiwPaYoqtDXlR/THxPZH5thpPWo+E
+LzCMKMZzSgK/g1bB6wgiR3b34C60eugM+5Hwxe9P9le9/wX4GbO+iZhFXPtL2icG
+i1ciYOcoUyU0+efvRzcbl4B9cucn2Qtw2W3+MxRQ+HtFprTYee3/MsjUDEcXpWTS
++dc+7KlHuj6yVWbSuqNohgbbsu22FZrqY3fFceVLO6tA/pOeT3nQYzW5nMT9n7Uv
+M0+FshfxcJrAlI8AnvCOgE6Jym4w7/UuzWUwQ0oOMUzA+7VGzrU5ZcKvrnOWVRxA
+jJXTkqvkHlitXxTyX1FSw1qiMIWQ3EvoNrS7j5Tm8RtuGkWHr7IfCdrClT5U7nMC
+Hg==
+-----END CERTIFICATE-----
+');
+
+-- ----------------------------
+-- Primary Key structure for table lfun_tenant
+-- ----------------------------
+ALTER TABLE "public"."lfun_tenant" ADD CONSTRAINT "lfun_tenant_pkey" PRIMARY KEY ("id");
