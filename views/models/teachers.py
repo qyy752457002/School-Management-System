@@ -192,7 +192,7 @@ class TeachersSchool(BaseModel):
     teacher_sub_status: str = Field("", title="子状态", description="子状态")
     school_name: str = Field("", title="学校名称", description="学校名称")
     borough: str = Field("", title="行政管辖区", description="行政管辖区")
-    employment_form: str = Field("", title="用人形式", description="用人形式")
+
 
 
 
