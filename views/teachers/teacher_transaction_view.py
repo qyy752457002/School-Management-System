@@ -455,6 +455,7 @@ class TeacherBorrowView(BaseView):
         """
         user_id = request_context_manager.current().current_login_account.name
         if add_teacher != None:
+
             res = await self.teacher_borrow_rule.add_teacher_borrow_in_outer(add_teacher, teacher_borrow, user_id)
         else:
             res = await self.teacher_borrow_rule.add_teacher_borrow_in_inner(teacher_borrow, user_id)
