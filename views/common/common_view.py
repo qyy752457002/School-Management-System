@@ -432,6 +432,8 @@ async def get_tenant_by_code(code: str):
     tenant = await rule.get_tenant_by_code(code)
     print('解析到租户',tenant)
     if tenant is None and code=='210100':
+        redirect_url_template=authentication_config.oauth2.redirect_url
+        redirect_url_new = redirect_url_template.format(tenant=code)
         tenant =  Tenant(
         code=code,
         name="租户1",
@@ -439,7 +441,7 @@ async def get_tenant_by_code(code: str):
         status=TenantStatus.active,
         client_id= authentication_config.oauth2.client_id,
         client_secret=authentication_config.oauth2.client_secret,
-        redirect_url= "",
+        redirect_url= redirect_url_new,
         home_url="http://localhost:8000",
         )
     # print(tt)
