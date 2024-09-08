@@ -98,7 +98,7 @@ class TeacherBorrowRule(object):
 
     async def add_teacher_borrow_in_outer(self, add_teacher: TeacherAdd, teacher_borrow: TeacherBorrowModel,
                                           user_id):
-
+        add_teacher.teacher_employer = teacher_borrow.current_unit_id
         teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
         teachers.teacher_id = int(teachers.teacher_id)
         teachers.teacher_employer = int(teachers.teacher_employer)

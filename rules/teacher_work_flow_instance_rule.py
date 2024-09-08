@@ -48,6 +48,7 @@ class TeacherWorkFlowRule(object):
         work_instance_instance = await self.create_work_flow_model_from_multi_model(model_list, params)
         parameters = work_instance_instance.dict()
         params_data = JsonUtils.dict_to_json_str(parameters)
+        print(f"参数是{parameters}")
         httpreq = HTTPRequest()
         url = workflow_service_config.workflow_config.get("url")
         api_name = '/api/school/v1/teacher-workflow/work-flow-instance-initiate-test'

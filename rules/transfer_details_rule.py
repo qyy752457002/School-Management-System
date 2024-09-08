@@ -101,6 +101,7 @@ class TransferDetailsRule(object):
                                             transfer_details: TransferDetailsModel,
                                             user_id):
         try:
+            add_teacher.teacher_employer = transfer_details.current_unit_id
             teachers = await self.teachers_rule.add_transfer_teachers(add_teacher)
             teachers.teacher_id = int(teachers.teacher_id)
             teachers.teacher_employer = int(teachers.teacher_employer)
