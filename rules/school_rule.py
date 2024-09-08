@@ -3,6 +3,7 @@ import copy
 import json
 import os
 import random
+import traceback
 from copy import deepcopy
 from datetime import datetime, date
 
@@ -39,6 +40,7 @@ from rules.common.common_rule import send_request, send_orgcenter_request, get_i
     check_social_credit_code, check_school_no
 from rules.enum_value_rule import EnumValueRule
 from rules.system_rule import SystemRule
+from rules.tenant_rule import TenantRule
 from views.common.common_view import workflow_service_config, convert_snowid_in_model, convert_snowid_to_strings, \
     frontend_enum_mapping, convert_dates_to_strings
 from views.common.constant import Constant
@@ -589,8 +591,14 @@ class SchoolRule(object):
                 res_admin = await self.send_admin_to_org_center(school, data_org)
                 # 添加 用户和组织关系 就是部门
                 await self.send_user_org_relation_to_org_center(school, res_unit, data_org, res_admin)
+                #     todo 自懂获取秘钥
+                tenant_rule = get_injector(TenantRule)
+                print('开始 获取租户信息-单位')
+                await tenant_rule.sync_tenant_all(school.id)
+
             except Exception as e:
                 print('异常', e)
+                traceback.print_exc()
                 # raise e
 
         if action == 'close':
