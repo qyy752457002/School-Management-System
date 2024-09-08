@@ -10,6 +10,9 @@ from models.teachers_info import TeacherInfo
 from views.models.extend_params import ExtendParams
 from views.models.system import UnitType
 from views.models.teacher_transaction import TeacherTransactionQueryModel
+from daos.school_dao import SchoolDAO
+from daos.tenant_dao import TenantDAO
+from mini_framework.design_patterns.depend_inject import get_injector
 
 
 class TeacherTransactionDAO(DAOBase):
@@ -94,13 +97,24 @@ class TeacherTransactionDAO(DAOBase):
         cond3 = TeacherTransaction.is_active == False
         query = query.where(cond1, cond2, cond3)
 
-        if extend_params:
-            if extend_params.unit_type == UnitType.SCHOOL.value:
-                query = query.where(Teacher.teacher_employer == extend_params.school_id)
-            elif extend_params.unit_type == UnitType.COUNTRY.value:
-                query = query.where(School.borough == extend_params.county_id)
-            else:
-                pass
+        # if extend_params:
+        #     if extend_params.unit_type == UnitType.SCHOOL.value:
+        #         query = query.where(Teacher.teacher_employer == extend_params.school_id)
+        #     elif extend_params.unit_type == UnitType.COUNTRY.value:
+        #         query = query.where(School.borough == extend_params.county_id)
+        #     else:
+        #         pass
+        if extend_params.tenant:
+            # 读取类型  读取ID  加到条件里
+            tenant_dao = get_injector(TenantDAO)
+            school_dao = get_injector(SchoolDAO)
+            tenant = await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
+            if tenant.tenant_type == "school":
+                school = await school_dao.get_school_by_id(tenant.origin_id)
+                if school.institution_category == "institution":
+                    query = query.where(School.borough == school.borough)
+                else:
+                    query = query.where(Teacher.teacher_employer == school.id)
         if query_model.teacher_name:
             query = query.where(Teacher.teacher_name.like(f"%{query_model.teacher_name}%"))
         if query_model.teacher_number:
