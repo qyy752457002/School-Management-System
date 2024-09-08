@@ -156,7 +156,7 @@ class SystemRule(object):
             print(system)
         #     读取二级菜单
         paging2 = await self.permission_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
-                                                                                 role_id, ids)
+                                                                                 role_id, ids,filter=filter)
         print(paging2, res.keys())
         ids_3 = []
 
@@ -182,7 +182,7 @@ class SystemRule(object):
         # print(list(paging))
         # 三级次啊单
         paging3 = await self.permission_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
-                                                                                 role_id, ids_3,resource_codes,filter)
+                                                                                 role_id, ids_3,resource_codes)
         for _, pm in res.items():
             for item in pm.children:
                 print(item.id, item.children)
