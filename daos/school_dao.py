@@ -1,7 +1,7 @@
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
-from sqlalchemy import select, func, update, desc, union_all, or_
+from sqlalchemy import select, func, update, desc, union_all, or_, and_
 
 from models.campus import Campus
 from models.campus_communication import CampusCommunication
@@ -53,8 +53,11 @@ class SchoolDAO(DAOBase):
 
     async def get_all_school_no(self):
         session = await self.slave_db()
-        result = await session.execute(
-            select(School.school_no).where(School.is_deleted == False, School.status == "normal"))
+        cond1 = School.institution_category.not_in([InstitutionType.INSTITUTION, InstitutionType.ADMINISTRATION, ])
+        cond2 = School.is_deleted == False
+        cond3 = School.status == "normal"
+        query = select(School.school_no).where(and_(cond1, cond2, cond3))
+        result = await session.execute(query)
         return result.scalars().all()
 
     async def add_school(self, school):
@@ -217,7 +220,6 @@ class SchoolDAO(DAOBase):
             query = query.where(School.school_level == school_level)
         if borough:
             query = query.where(School.borough == borough)
-
         if status:
             query = query.where(School.status == status)
         if province:
@@ -276,6 +278,7 @@ class SchoolDAO(DAOBase):
 
     async def get_sync_school(self, school_no):
         session = await self.slave_db()
+
         query = select(School).where(
             School.is_deleted == False, School.status == "normal",
             School.school_no == school_no)
@@ -330,7 +333,6 @@ class SchoolDAO(DAOBase):
             PlanningSchoolCommunication.planning_school_id == PlanningSchool.id).where(
             PlanningSchool.is_deleted == False, PlanningSchool.status == "normal",
             PlanningSchoolCommunication.is_deleted == False)
-
         query = union_all(query_school, query_campus, query_planning_school)
         result = await session.execute(query)
         return result.all()
@@ -404,13 +406,11 @@ class SchoolDAO(DAOBase):
 
     async def get_school_by_tenant_code(self, tenant_code):
         school = await self.get_school_by_args(block=tenant_code, planning_school_id=0)
-
         return school
 
     async def get_school_by_school_no_to_org(self, school_no):
         session = await self.slave_db()
-        query_school = select(School).where(
-            School.is_deleted == False, School.status == "normal",
-            School.school_no == school_no)
+        query_school = select(School).where(School.school_no == school_no, School.is_deleted == False,
+                                            School.status == "normal")
         result = await session.execute(query_school)
         return result.scalar_one_or_none()
