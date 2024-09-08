@@ -126,7 +126,7 @@ class TransferDetailsView(BaseView):
                 if school.institution_category == "institution":
                     transfer_details.original_district_area_id =school.borough
                 else:
-                    transfer_details.original_district_area_id = tenant.origin_id
+                    transfer_details.original_unit_id = tenant.origin_id
         # extend_param = {}
         # ob = await get_extend_params(request)
         # if ob.unit_type == UnitType.SCHOOL.value:
@@ -162,7 +162,7 @@ class TransferDetailsView(BaseView):
                 if school.institution_category == "institution":
                     transfer_details.original_district_area_id =school.borough
                 else:
-                    transfer_details.original_district_area_id = tenant.origin_id
+                    transfer_details.original_unit_id = tenant.origin_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             transfer_details.original_district_area_id = ob.county_id
         type = "approval"
@@ -195,7 +195,7 @@ class TransferDetailsView(BaseView):
                 if school.institution_category == "institution":
                     transfer_details.current_district_area_id =school.borough
                 else:
-                    transfer_details.current_district_area_id = tenant.origin_id
+                    transfer_details.current_unit_id= tenant.origin_id
         elif ob.unit_type == UnitType.COUNTRY.value:
             transfer_details.current_district_area_id = ob.county_id
         extend_param["applicant_name"] = request_context_manager.current().current_login_account.name
