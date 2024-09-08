@@ -3,7 +3,7 @@ import pprint
 import traceback
 from urllib.parse import urlencode
 
-from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import dataclass_inject, get_injector
 from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.storage.view_model import FileStorageModel
@@ -14,6 +14,8 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 
 from daos.permission_menu_dao import PermissionMenuDAO
 from daos.roles_dao import RolesDAO
+from daos.school_dao import SchoolDAO
+from daos.tenant_dao import TenantDAO
 from rules.common.common_rule import process_userinfo, filter_action_by_file_name, read_file_to_permission_dict
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from views.common.common_view import workflow_service_config, convert_snowid_in_model, system_config
@@ -98,10 +100,23 @@ class SystemRule(object):
                     title = role.app_name
         return paging_result, title
 
-    async def query_system_with_kwargs(self, role_id, unit_type, edu_type, system_type, parent_id='',resource_codes=''):
+    async def query_system_with_kwargs(self, role_id, unit_type, edu_type, system_type, parent_id='',resource_codes='',extend_params=None ):
         paging = await self.permission_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
                                                                                 role_id, parent_id)
         # 校验已配置的权限
+        if extend_params.tenant:
+            # 读取类型  读取ID  加到条件里
+            tenant_dao=get_injector(TenantDAO)
+            school_dao=get_injector(SchoolDAO)
+            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
+            print(tenant)
+
+            if  tenant is   not None and  tenant.tenant_type== 'school':
+                school =  await school_dao.get_school_by_id(tenant.origin_id)
+                print('获取租户的学校对象',school)
+                if school is not None:
+                    school_no= school.school_no
+            pass
         file_name=None
         processed_dict={}
         is_permission_verify = system_config.system_config.get("permission_verify")

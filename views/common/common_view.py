@@ -149,9 +149,12 @@ async def get_extend_params(request) -> ExtendParams:
 
     if 'Extendparams' in headers:
         extparam = headers['Extendparams']
-        if isinstance(extparam, str):
+        # 判断字符串里存在 {
+        if isinstance(extparam, str) and extparam.find('{') > -1:
             extparam = eval(extparam)
-        obj = ExtendParams(**extparam)
+            obj = ExtendParams(**extparam)
+        else:
+            obj = ExtendParams(**extparam)
         if obj.unit_type == UnitType.CITY.value:
             obj.city = Constant.CURRENT_CITY
         if obj.county_id:
