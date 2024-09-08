@@ -228,11 +228,14 @@ class TenantRule(object):
                 code = str(items.id)
                 pass
 
+            code_ultra = code if new_code is None  else new_code
+            if isinstance(code_ultra,int):
+                code_ultra = str(code_ultra)
             tenant_db = Tenant(
                 id=SnowflakeIdGenerator(1, 1).generate_id(),
                 tenant_type=  tenant_type,
                 status= 'active',
-                code=code if new_code is None  else new_code,
+                code=  code_ultra,
                 name=value['name'],
                 client_id=value['clientId'],
                 description=description,
