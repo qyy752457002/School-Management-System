@@ -1,9 +1,0 @@
-[
-  {
-    "appCode": "1238915324217024",
-    "resourceCode": "system_config",
-    "displayName": "系统配置",
-    "description": "系统配置",
-    "action": "add、view、edit、detail"
-  }
-]
