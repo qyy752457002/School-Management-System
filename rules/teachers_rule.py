@@ -282,14 +282,20 @@ class TeachersRule(object):
             #                                                  exclude=[""])
             res = compare_modify_fields(teachers, old_teachers)
             params = {"process_code": "t_keyinfo", "teacher_id": teachers.teacher_id, "applicant_name": user_id}
+
             school = await self.school_dao.get_school_by_id(teachers.teacher_employer)
             school_name = ""
             borough = ""
+            employment_form=""
             if school:
                 school_name = school.school_name
                 borough = school.borough
+            teacher_info_db = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teachers.teacher_id)
+            if teacher_info_db:
+                if teacher_info_db.employment_form:
+                    employment_form = teacher_info_db.employment_form
             teachers_school = TeachersSchool(school_name=school_name, teacher_main_status="employed",
-                                             teacher_sub_status="active", borough=borough)
+                                             teacher_sub_status="active", borough=borough,employment_form=employment_form)
             model_list = [teachers, teachers_school]
             work_flow_instance = await self.teacher_work_flow_rule.add_work_flow_by_multi_model(model_list, params)
             await self.teacher_progressing(teachers.teacher_id)

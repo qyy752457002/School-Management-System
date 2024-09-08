@@ -398,3 +398,13 @@ class SchoolDAO(DAOBase):
         school  = await self.get_school_by_args(block=tenant_code,planning_school_id =  0)
 
         return school
+
+    async def get_school_by_school_no_to_org(self, school_no):
+        session = await self.slave_db()
+        query_school = select(School).where(
+            School.is_deleted == False, School.status == "normal",
+            School.school_no == school_no)
+        result = await session.execute(query_school)
+        return result.scalar_one_or_none()
+
+

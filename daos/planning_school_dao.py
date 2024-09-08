@@ -249,3 +249,11 @@ class PlanningSchoolDAO(DAOBase):
             PlanningSchoolCommunication.is_deleted == False, PlanningSchool.planning_school_no == school_no)
         result = await session.execute(query_planning_school)
         return result.first()
+
+    async def get_planning_school_by_planning_school_no_to_org(self, planning_school_no):
+        session = await self.slave_db()
+        query_planning_school = select(PlanningSchool).where(
+            PlanningSchool.is_deleted == False, PlanningSchool.status == "normal",
+            PlanningSchool.planning_school_no == planning_school_no)
+        result = await session.execute(query_planning_school)
+        return result.first()

@@ -296,6 +296,32 @@ class PlanningSchoolRule(object):
 
         return planning_school_db
 
+    async def send_planning_school_to_org_center_by_school_no(self,planning_school_no):
+        exists_planning_school=await self.planning_school_dao.get_planning_school_by_planning_school_no_to_org(planning_school_no)
+        if not exists_planning_school:
+            raise PlanningSchoolNotFoundError()
+        res_unit, data_unit = await self.send_planning_school_to_org_center(exists_planning_school)
+        #  自动添加一个组织
+        res_oigna = await self.send_unit_orgnization_to_org_center(exists_planning_school, data_unit)
+        # 添加组织结构 部门
+        org = Organization(org_name=exists_planning_school.planning_school_name,
+                           school_id=exists_planning_school.id,
+                           org_type='校',
+                           parent_id=0,
+                           org_code=exists_planning_school.planning_school_no,
+                           # 多一个参数 比分校
+                           org_code_type='school',
+                           )
+
+        res_org, data_org = await self.send_org_to_org_center(org, res_unit)
+        # 添加 管理员 用户
+        res_admin = await self.send_admin_to_org_center(exists_planning_school, data_org)
+        # 添加 用户和组织关系 就是部门
+        await self.send_user_org_relation_to_org_center(exists_planning_school, res_unit, data_org, res_admin)
+        return True
+
+
+
     async def update_planning_school_byargs(self, planning_school, need_update_list=None):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school.id)
         if not exists_planning_school:
