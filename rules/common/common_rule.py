@@ -801,7 +801,7 @@ async def get_org_center_application(school_no,tenant_type,items):
         }
         datadict = params
         response = await send_orgcenter_request(apiname, datadict, 'get', True)
-        print('登出res',response)
+        print('get_org_center_application',len(response))
         if response["status"] == "ok":
             # raise Exception(response["msg"])
             pass
