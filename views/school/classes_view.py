@@ -4,9 +4,12 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
+from starlette.requests import Request
 
 from common.decorators import require_role_permission
-from views.common.common_view import convert_snowid_in_model
+from daos.school_dao import SchoolDAO
+from daos.tenant_dao import TenantDAO
+from views.common.common_view import convert_snowid_in_model, get_extend_params
 from views.models.classes import Classes
 from views.models.grades import Grades
 
@@ -22,8 +25,25 @@ class ClassesView(BaseView):
         super().__init__()
         self.classes_rule = get_injector(ClassesRule)
     @require_role_permission("class", "add")
-    async def post(self, classes: Classes):
+    async def post(self,
+                   request:Request,
+                   classes: Classes):
         print(classes)
+        extend_params= await get_extend_params(request)
+        if extend_params.tenant:
+            # 读取类型  读取ID  加到条件里
+            tenant_dao=get_injector(TenantDAO)
+            school_dao=get_injector(SchoolDAO)
+            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
+            print(333,tenant)
+
+            if  tenant is   not None and  tenant.tenant_type  == 'school' :
+                school = await school_dao.get_school_by_id(tenant.code)
+                if school is not None:
+                    classes.school_id = school.id
+                # filter = [39 ]
+
+            pass
         res = await  self.classes_rule.add_classes(classes)
         convert_snowid_in_model(res ,["id", "school_id",'grade_id','session_id','teacher_id','care_teacher_id'])
 

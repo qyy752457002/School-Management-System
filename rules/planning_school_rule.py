@@ -38,6 +38,7 @@ from rules.school_communication_rule import SchoolCommunicationRule
 from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
 from rules.system_rule import SystemRule
+from rules.tenant_rule import TenantRule
 from views.common.common_view import workflow_service_config, convert_snowid_to_strings, convert_snowid_in_model, \
     frontend_enum_mapping, convert_dates_to_strings
 from views.common.constant import Constant
@@ -205,6 +206,11 @@ class PlanningSchoolRule(object):
                 if school:
                     planning_school_no= school.planning_school_no
                 # kdict["school_id"] = school.id
+            if tenant is   not None and  tenant.tenant_type== 'school' and len(tenant.code)>=10:
+                school =  await  school_dao.get_school_by_id(tenant.origin_id)
+                if school:
+                    pschool =  await self.planning_school_dao.get_planning_school_by_id(school.planning_school_id)
+                    planning_school_no= pschool.planning_school_no
             pass
         paging = await self.planning_school_dao.query_planning_school_with_page(page_request, planning_school_name,
                                                                                 planning_school_no,
@@ -287,6 +293,11 @@ class PlanningSchoolRule(object):
             print('自动创建分校的教育信息')
 
             await school_eduinfo_rule.add_school_eduinfo_from_planning_school(res_edu, school_res)
+            #     todo 自懂获取秘钥
+            tenant_rule = get_injector(TenantRule)
+            print('开始 获取租户信息-单位')
+            await tenant_rule.sync_tenant_all(planning_school_id)
+
 
         # planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""],)
         print('更新规划校主体信息')
@@ -329,7 +340,7 @@ class PlanningSchoolRule(object):
         if hasattr(planning_school, 'social_credit_code'):
             await check_social_credit_code(planning_school.social_credit_code, exists_planning_school)
 
-        if exists_planning_school.status == PlanningSchoolStatus.DRAFT.value:
+        if exists_planning_school.status == PlanningSchoolStatus.DRAFT.value  and modify_status:
             if hasattr(planning_school, 'status'):
                 # planning_school.status= PlanningSchoolStatus.OPENING.value
                 pass
@@ -998,7 +1009,7 @@ class PlanningSchoolRule(object):
 
                      "logo": "",
 
-                     "orgType": "school",
+                     "orgType": "school",#这个决定了  组织中心把它放入 学校综合管理还是教育单位管理
                      "overview": "",
                      "status": "",
                      "unitCount": "",

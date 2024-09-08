@@ -93,7 +93,7 @@ class GradeDAO(DAOBase):
         return result.scalar()
 
     async def query_grade_with_page(self, grade_name, school_id, page_request: PageRequest, city='',
-                                    district='') -> Paging:
+                                    district='',obj=None) -> Paging:
         query = select(Grade).where(Grade.is_deleted == False).order_by(Grade.grade_index)
         if grade_name:
             query = query.where(Grade.grade_name.like(f'%{grade_name}%'))
@@ -103,6 +103,15 @@ class GradeDAO(DAOBase):
             query = query.where(Grade.city == city)
         if district:
             query = query.where(Grade.district == district)
+        if obj :
+            if obj.edu_type == 'kg':
+                query = query.where(Grade.study_section ==  '幼儿园')
+
+                pass
+            elif obj.edu_type == 'k12' :
+                query = query.where(Grade.study_section.in_( ['小学','初中','高中' ]))
+
+                pass
         paging = await self.query_page(query, page_request)
         return paging
 

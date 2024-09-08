@@ -5,6 +5,7 @@ from fastapi import Query, Depends
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest
 from mini_framework.web.views import BaseView
+from starlette.requests import Request
 
 from common.decorators import require_role_permission
 from rules.common import common_rule
@@ -14,7 +15,7 @@ from rules.system_config_rule import SystemConfigRule
 from rules.system_rule import SystemRule
 from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from rules.teachers_info_rule import TeachersInfoRule
-from views.common.common_view import system_config
+from views.common.common_view import system_config, get_extend_params
 from views.models.system import SystemConfig
 from views.models.teachers import TeacherInfoImportSubmit
 
@@ -30,6 +31,8 @@ class SystemView(BaseView):
         self.teachers_info_rule = get_injector(TeachersInfoRule)
 
     async def page_menu(self,
+                        request:Request,
+
                         page_request=Depends(PageRequest),
                         role_id: int | str = Query(None, title="", description="角色id",
                                                    example='1'),
@@ -41,6 +44,8 @@ class SystemView(BaseView):
                                                  min_length=1, max_length=20, example='unit'),
                         ):
         print(page_request)
+        obj= await get_extend_params(request)
+
         items = []
         title = ''
         if system_type == 'teacher' or system_type == 'student':
@@ -55,7 +60,7 @@ class SystemView(BaseView):
             resource_codes=None
 
         res, title = await self.system_rule.query_system_with_kwargs(role_id, unit_type, edu_type, system_type,
-                                                                     resource_codes=resource_codes)
+                                                                     resource_codes=resource_codes,extend_params=obj)
         # res,title  = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
 
         # v = await verify_auth("alice","grade","add")

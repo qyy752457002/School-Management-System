@@ -22,7 +22,7 @@ from daos.school_dao import SchoolDAO
 from daos.student_session_dao import StudentSessionDao
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
-
+from views.models.system import InstitutionType
 
 APP_CODE = "1238914398508736"
 
@@ -781,25 +781,27 @@ async def request_org_center_login_out():
     except Exception as e:
         print('获取登出异常', e)
         return None
-async def get_org_center_application(school_no):
+async def get_org_center_application(school_no,tenant_type,items):
     try:
         token = request_context_manager.current().token
         apiname = "/api/get-applications"
         # owner = "sysjyyjyorg"
         from views.common.common_view import  orgcenter_service_config
-        appCode = orgcenter_service_config.orgcenter_config.get("app_code")
+
+        if tenant_type == 'school' and   items.institution_category not  in [InstitutionType.INSTITUTION,InstitutionType.ADMINISTRATION] :
+            appCode = orgcenter_service_config.orgcenter_config.get("app_code_student")
+
+            pass
+        else:
+            appCode = orgcenter_service_config.orgcenter_config.get("app_code")
 
         params = {
-            # "id": f"{owner}/{account.name}",
-            # "clientId": authentication_config.oauth2.client_id,
-            # "clientSecret": authentication_config.oauth2.client_secret,
             "owner": school_no,
             "name":  appCode, #
-            # "id_token_hint": token,
         }
         datadict = params
         response = await send_orgcenter_request(apiname, datadict, 'get', True)
-        print('登出res',response)
+        print('get_org_center_application',len(response))
         if response["status"] == "ok":
             # raise Exception(response["msg"])
             pass

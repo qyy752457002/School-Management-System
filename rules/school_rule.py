@@ -3,6 +3,7 @@ import copy
 import json
 import os
 import random
+import traceback
 from copy import deepcopy
 from datetime import datetime, date
 
@@ -23,6 +24,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 from sqlalchemy import select, or_
 
+from business_exceptions.institution import InstitutionExistError
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
 from business_exceptions.school import SchoolExistsError
 from daos.enum_value_dao import EnumValueDAO
@@ -38,6 +40,7 @@ from rules.common.common_rule import send_request, send_orgcenter_request, get_i
     check_social_credit_code, check_school_no
 from rules.enum_value_rule import EnumValueRule
 from rules.system_rule import SystemRule
+from rules.tenant_rule import TenantRule
 from views.common.common_view import workflow_service_config, convert_snowid_in_model, convert_snowid_to_strings, \
     frontend_enum_mapping, convert_dates_to_strings
 from views.common.constant import Constant
@@ -100,10 +103,16 @@ class SchoolRule(object):
         exists_school = await self.school_dao.get_school_by_school_name(
             school.school_name)
         if exists_school:
-            raise SchoolExistsError()
-        if hasattr(school,
-                   "planning_school_id") and school.planning_school_id != "" and school.planning_school_id is not None:
-            pschool = await self.p_school_dao.get_planning_school_by_id(school.planning_school_id)
+            if hasattr(school, "institution_category") and school.institution_category  in [ InstitutionType.ADMINISTRATION,InstitutionType.INSTITUTION]  :
+                raise InstitutionExistError()
+
+                pass
+            else:
+                raise SchoolExistsError()
+
+                pass
+        if hasattr(school, "planning_school_id") and   school.planning_school_id != "" and  school.planning_school_id  is not None  :
+            pschool  =await self.p_school_dao.get_planning_school_by_id(school.planning_school_id)
             if pschool:
                 school.school_no = pschool.planning_school_no + str(random.randint(10, 99))
             pass
@@ -227,7 +236,7 @@ class SchoolRule(object):
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""])
         return school_db
 
-    async def update_school_byargs(self, school, changed_fields: list = None, ):
+    async def update_school_byargs(self, school, changed_fields: list = None,modify_status=None ):
         exists_school = await self.school_dao.get_school_by_id(school.id)
         if not exists_school:
             raise Exception(f"单位{school.id}不存在")
@@ -242,7 +251,7 @@ class SchoolRule(object):
             # 默认校验
             if hasattr(school, 'social_credit_code'):
                 await check_social_credit_code(school.social_credit_code, exists_school)
-        if exists_school.status == PlanningSchoolStatus.DRAFT.value:
+        if exists_school.status == PlanningSchoolStatus.DRAFT.value and modify_status:
             if hasattr(school, 'status'):
                 # school.status= PlanningSchoolStatus.OPENING.value
                 pass
@@ -317,9 +326,9 @@ class SchoolRule(object):
             # school_dao=get_injector(SchoolDAO)
             tenant = await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
 
-            if tenant is not None and tenant.tenant_type == 'school':
-                school = await self.school_dao.get_school_by_id(tenant.origin_id)
-                print('获取租户的学校对象', school)
+            if  tenant is   not None and  tenant.tenant_type== 'school' and tenant.code!='210100' and len(tenant.code)>=10:
+                school =  await self.school_dao.get_school_by_id(tenant.origin_id)
+                print('获取租户的学校对象',school)
                 if school is not None:
                     school_no = school.school_no
             pass
@@ -608,8 +617,14 @@ class SchoolRule(object):
                 res_admin = await self.send_admin_to_org_center(school, data_org)
                 # 添加 用户和组织关系 就是部门
                 await self.send_user_org_relation_to_org_center(school, res_unit, data_org, res_admin)
+                #     todo 自懂获取秘钥
+                tenant_rule = get_injector(TenantRule)
+                print('开始 获取租户信息-单位')
+                await tenant_rule.sync_tenant_all(school.id)
+
             except Exception as e:
                 print('异常', e)
+                traceback.print_exc()
                 # raise e
 
         if action == 'close':
@@ -1124,6 +1139,7 @@ class SchoolRule(object):
                      "defaultPassword": "",
                      "displayName": exists_planning_school.school_name,
                      "logo": "",
+                     # 这里会决定放入哪个应用
                      "orgType": OrgCenterInstitutionType.get_mapper(
                          exists_planning_school.institution_category) if exists_planning_school.institution_category else 'school',
                      "overview": "",

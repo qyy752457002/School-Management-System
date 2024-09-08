@@ -42,7 +42,7 @@ class StudentSessionRule(object):
         session = orm_model_to_view_model(session_db, StudentSessionModel, exclude=[""])
         convert_snowid_in_model(session, ["id", 'student_id', 'school_id', 'class_id', 'session_id'])
         # 发送组织中心
-        await self.send_org_to_org_center(session_db)
+        # await self.send_org_to_org_center(session_db)
         return session
 
     async def update_student_session(self, session):

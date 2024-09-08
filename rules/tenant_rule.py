@@ -182,7 +182,7 @@ class TenantRule(object):
               """
         print(school_id)
         items =  await self.plannning_school_dao.get_planning_school_by_id(school_id)
-        tenant_type= 'planning_school'
+        tenant_type= 'planning_school' # 表示 租户类型
         if items is None:
             print('学校未找到当前租户')
             items =  await self.school_dao.get_school_by_id(school_id)
@@ -211,16 +211,19 @@ class TenantRule(object):
         if tenant is not  None:
             return
         # 请求接口  解析放入表里
-        res  =await  get_org_center_application(code)
+        res  =await  get_org_center_application(code,tenant_type,items)
+        is_match = False
         for value in  res['data']:
             if value['owner']!= code:
                 continue
+            else:
+                is_match = True
+
 
             if tenant_type == 'school' and   items.institution_category not  in [InstitutionType.INSTITUTION,InstitutionType.ADMINISTRATION] :
                 # 学校用的是 ID  事业单位用的是区号 school_no
                 code = str(items.id)
                 pass
-
 
             tenant_db = Tenant(
                 id=SnowflakeIdGenerator(1, 1).generate_id(),
@@ -239,5 +242,6 @@ class TenantRule(object):
             print('保存结果',res_add )
 
         # for item in items:
+        print('匹配秘钥的结果',is_match,code)
         # convert_snowid_in_model(item,["id", "school_id",'grade_id',])
         return items
