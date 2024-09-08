@@ -236,7 +236,7 @@ class SchoolRule(object):
         # school = orm_model_to_view_model(school_db, SchoolModel, exclude=[""])
         return school_db
 
-    async def update_school_byargs(self, school, changed_fields: list = None, ):
+    async def update_school_byargs(self, school, changed_fields: list = None,modify_status=None ):
         exists_school = await self.school_dao.get_school_by_id(school.id)
         if not exists_school:
             raise Exception(f"单位{school.id}不存在")
@@ -251,7 +251,7 @@ class SchoolRule(object):
             # 默认校验
             if hasattr(school, 'social_credit_code'):
                 await check_social_credit_code(school.social_credit_code, exists_school)
-        if exists_school.status == PlanningSchoolStatus.DRAFT.value:
+        if exists_school.status == PlanningSchoolStatus.DRAFT.value and modify_status:
             if hasattr(school, 'status'):
                 # school.status= PlanningSchoolStatus.OPENING.value
                 pass

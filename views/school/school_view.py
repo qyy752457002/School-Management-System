@@ -361,7 +361,7 @@ class SchoolView(BaseView):
         origin = await self.school_rule.get_school_by_id(school.id)
         log_con = compare_modify_fields(school, origin)
 
-        res = await self.school_rule.update_school_byargs(school)
+        res = await self.school_rule.update_school_byargs(school,modify_status= False)
         convert_snowid_in_model(res )
         res_com = await self.school_communication_rule.update_school_communication_byargs(
             school_communication)

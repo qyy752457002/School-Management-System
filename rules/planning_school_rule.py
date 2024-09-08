@@ -206,11 +206,10 @@ class PlanningSchoolRule(object):
                 if school:
                     planning_school_no= school.planning_school_no
                 # kdict["school_id"] = school.id
-            if tenant is   not None and  tenant.tenant_type== 'school':
+            if tenant is   not None and  tenant.tenant_type== 'school' and len(tenant.code)>=10:
                 school =  await  school_dao.get_school_by_id(tenant.origin_id)
                 if school:
                     pschool =  await self.planning_school_dao.get_planning_school_by_id(school.planning_school_id)
-
                     planning_school_no= pschool.planning_school_no
             pass
         paging = await self.planning_school_dao.query_planning_school_with_page(page_request, planning_school_name,
@@ -308,14 +307,14 @@ class PlanningSchoolRule(object):
 
         return planning_school_db
 
-    async def update_planning_school_byargs(self, planning_school, need_update_list=None):
+    async def update_planning_school_byargs(self, planning_school, need_update_list=None,modify_status= False):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school.id)
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
         if hasattr(planning_school, 'social_credit_code'):
             await check_social_credit_code(planning_school.social_credit_code, exists_planning_school)
 
-        if exists_planning_school.status == PlanningSchoolStatus.DRAFT.value:
+        if exists_planning_school.status == PlanningSchoolStatus.DRAFT.value  and modify_status:
             if hasattr(planning_school, 'status'):
                 # planning_school.status= PlanningSchoolStatus.OPENING.value
                 pass

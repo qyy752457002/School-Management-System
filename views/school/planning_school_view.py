@@ -392,9 +392,9 @@ class PlanningSchoolView(BaseView):
         origin = await self.planning_school_rule.get_planning_school_by_id(planning_school.id)
         log_con = compare_modify_fields(planning_school, origin)
         # 保存时 进到暂存状态 
-        planning_school.status = PlanningSchoolStatus.OPENING.value
+        # planning_school.status = PlanningSchoolStatus.OPENING.value
 
-        res = await self.planning_school_rule.update_planning_school_byargs(planning_school)
+        res = await self.planning_school_rule.update_planning_school_byargs(planning_school,modify_status= False)
         res_com = await self.planning_school_communication_rule.update_planning_school_communication_byargs(
             planning_school_communication)
         res_edu = await self.planning_school_eduinfo_rule.update_planning_school_eduinfo_byargs(planning_school_eduinfo)
