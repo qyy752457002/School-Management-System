@@ -24,6 +24,7 @@ from views.common.common_view import page_none_deal, convert_snowid_to_strings, 
 from views.models.school import School
 from views.models.students import NewBaseInfoCreate, StudentsBaseInfo
 from views.models.students import NewStudentsQuery, NewStudentsQueryRe
+from views.models.system import InstitutionType
 from views.models.teachers import EducateUserModel
 
 
@@ -206,8 +207,15 @@ class StudentsBaseInfoRule(object):
             if tenant is   not None and tenant.tenant_type== 'school':
                 school =  await self.school_dao.get_school_by_id(tenant.origin_id)
                 print('获取租户的学校对象',school)
-                if school:
+                # 学校才 筛选
+                if school and school.institution_category not in [ InstitutionType.INSTITUTION,InstitutionType.ADMINISTRATION]:
                     extend_params.school_id= school.id
+                elif school and school.institution_category in [ InstitutionType.INSTITUTION,InstitutionType.ADMINISTRATION] and tenant.code  != '210100':
+                    #     区也筛选
+                    # extend_params.country_id=   school.id
+
+
+                    pass
             pass
 
         paging = await self.students_base_info_dao.query_students_with_page(query_model, page_request, extend_params)
