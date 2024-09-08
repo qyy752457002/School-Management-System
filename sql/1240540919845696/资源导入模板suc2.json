@@ -152,5 +152,75 @@
     "displayName": "事业单位关键信息审核",
     "description": "事业单位关键信息审核",
     "action": "start、view、cancel、pass、refuse"
+  },
+  {
+    "appCode": "1240540919845696",
+    "resourceCode": "system_config",
+    "displayName": "系统配置",
+    "description": "系统配置",
+    "action": "add、view、edit、detail"
+  },
+  {
+    "appCode": "1240540919845696",
+    "resourceCode": "new_student",
+    "displayName": "新生入学管理",
+    "description": "新生入学管理",
+    "action": "open、import、view、edit、flowout、sync、formaladmission、delete_student_keyinfo"
+  },
+  {
+    "appCode": "1240540919845696",
+    "resourceCode": "classdivision",
+    "displayName": "分班管理",
+    "description": "分班管理",
+    "action": "view、lottery_classdivision、import、banding、batch_banding、export"
+  },
+  {
+    "appCode": "1240540919845696",
+    "resourceCode": "student_session",
+    "displayName": "届别管理",
+    "description": "届别管理",
+    "action": "add、view、edit、delete、status"
+  },
+  {
+    "appCode": "1240540919845696",
+    "resourceCode": "instudent_transfer",
+    "displayName": "转学信息管理",
+    "description": "转学信息管理",
+    "action": "in_view、in_pass、in_refuse、out_view、out_pass、out_refuse"
+  },
+  {
+    "appCode": "1240540919845696",
+    "resourceCode": "student_inner_transaction",
+    "displayName": "异动信息管理",
+    "description": "异动信息管理",
+    "action": "start、view、cancel、pass、refuse"
+  },
+  {
+    "appCode": "1240540919845696",
+    "resourceCode": "current_student_keyinfo_change",
+    "displayName": "关键信息变更管理",
+    "description": "关键信息变更管理",
+    "action": "view、start、cancel、pass、refuse"
+  },
+  {
+    "appCode": "1240540919845696",
+    "resourceCode": "graduation",
+    "displayName": "毕业生信息管理",
+    "description": "毕业生信息管理",
+    "action": "add、view、set、start"
+  },
+  {
+    "appCode": "1240540919845696",
+    "resourceCode": "temporary_study",
+    "displayName": "临时就读",
+    "description": "临时就读",
+    "action": "view"
+  },
+  {
+    "appCode": "1240540919845696",
+    "resourceCode": "infomanage",
+    "displayName": "在校生信息管理",
+    "description": "在校生信息管理",
+    "action": "temporary_study_start、temporary_study_cancel、temporary_study_view、current_student_view、current_student_change、current_student_keyinfo_change"
   }
 ]
