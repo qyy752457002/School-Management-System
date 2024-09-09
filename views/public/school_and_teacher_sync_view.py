@@ -76,8 +76,9 @@ class SchoolTeacherView(BaseView):
         res = await self.sync_rule.get_sync_teacher_to_art(school_no)
         return res
 
-    async def get_import_teachers_save_test(self, org_id: int = Query(..., title="组织id", description="组织id",
-                                                                      example=123)):
+    async def get_import_teachers_save_test(self, org_id: int | str = Query(..., title="组织id", description="组织id",
+                                                                            example=123)):
+        org_id = int(org_id)
         result = await self.teacher_import_rule.import_teachers_save_test(org_id)
         return result
 

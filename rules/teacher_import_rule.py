@@ -209,8 +209,15 @@ class TeacherImportRule:
             raise ValueError("数据格式错误")
         for idx, item in enumerate(data):
             item = item.dict()
-            item["teacher_employer"] = 7225316120776019968
-            item["org_id"] = "7228553981755265024"
+            school = await self.school_dao.get_school_by_school_name(item["teacher_employer"])
+            if school:
+                school = school._asdict()['School']
+                item["teacher_employer"]= school.id
+                # item["teacher_employer"] = 7225316120776019968
+            else:
+                raise SchoolNotFoundError()
+            # item["org_id"] = "7228553981755265024"
+            item["org_id"] = org_id
             teacher_model = TeachersSaveImportCreatTestModel(**item)
             logger.info(type(item))
             try:
