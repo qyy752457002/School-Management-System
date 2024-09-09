@@ -87,6 +87,13 @@ class TeachersDao(DAOBase):
                                              Teacher.teacher_main_status == 'employed'))
         return result.scalars().all()
 
+    async def get_all_teachers_id_list_by_school_id(self, school_id):
+        session = await self.slave_db()
+        result = await session.execute(
+            select(Teacher.teacher_id).where(Teacher.is_deleted == False, Teacher.is_approval == False,
+                                             Teacher.teacher_main_status == 'employed', Teacher.teacher_employer == school_id))
+        return result.scalars().all()
+
     # 获取教师数量
     async def get_teachers_count(self):
         session = await self.slave_db()
