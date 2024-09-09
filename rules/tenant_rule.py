@@ -205,7 +205,7 @@ class TenantRule(object):
         else:
             # 规划校用编号
             code = items.planning_school_no
-            new_code = items.id
+            new_code = items.planning_school_no
             description = items.planning_school_name
             pass
 
