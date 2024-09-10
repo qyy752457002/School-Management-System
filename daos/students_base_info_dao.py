@@ -172,6 +172,9 @@ class StudentsBaseInfoDao(DAOBase):
             if extend_params.school_id:
                 query_model.school_id = extend_params.school_id
             pass
+        if extend_params is not None and len(extend_params.school_ids)>0:
+            query = query.where(StudentBaseInfo.school_id.in_(extend_params.school_ids))
+            # query = query.where(StudentBaseInfo.school_id == int(query_model.school_id))
 
         if query_model.student_name:
             query = query.where(Student.student_name == query_model.student_name)

@@ -13,7 +13,6 @@ from mini_framework.web.request_context import request_context_manager
 from business_exceptions.tenant import TenantNotFoundOrUnActiveError
 from daos.enum_value_dao import EnumValueDAO
 from daos.school_dao import SchoolDAO
-from rules.school_rule import SchoolRule
 from rules.tenant_rule import TenantRule
 from views.common.constant import Constant
 from views.models.extend_params import ExtendParams
@@ -189,9 +188,15 @@ async def get_extend_params(request) -> ExtendParams:
         if tenant_type==SchoolType.PLANING_SCHOOL:
             obj.planning_school_id = tenantinfo.id
             #查询下属的学校ID list
-            school_rule = get_injector(SchoolRule)
-            school_ids = await school_rule.query_schools( None ,obj)
-            print('查询下属的学校ID',school_ids)
+            school_dao = get_injector(SchoolDAO)
+            school_ids= []
+            school_ids_res   = await school_dao.get_schools_by_args(is_deleted=False,planning_school_id =    obj.planning_school_id)
+            for school in school_ids_res:
+                school_ids.append(school.id)
+
+            # school_ids = await school_rule.query_schools( None ,obj)
+            obj.school_ids = school_ids
+            print('查询下属的学校ID',school_ids, )
 
         elif tenant_type==SchoolType.SCHOOL:
             obj.school_id = tenantinfo.id
