@@ -259,13 +259,24 @@ class SchoolView(BaseView):
     # 开办
     @require_role_permission("school", "open")
 
-    async def patch_open(self, school_id: str = Query(..., title="学校编号", description="学校id/园所id", min_length=1,
+    async def put_open(self,
+                       school: SchoolBaseInfoOptional,
+                       # school: SchoolBaseInfo,
+                       school_communication: SchoolCommunications,
+                       school_eduinfo: SchoolEduInfo,
+
+                       school_id: str = Query(..., title="学校编号", description="学校id/园所id", min_length=1,
                                                       max_length=20, example='SC2032633')):
         # res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.NORMAL.value, 'open')
+
         # 检测 是否允许修改
         is_draft = await self.school_rule.is_can_not_add_workflow(school_id)
         if is_draft:
             raise SchoolStatusError()
+
+        school.id = school_id
+        print('开办的入参', school)
+        res = await self.school_rule.update_school_byargs(school )
 
         # 请求工作流
         school = await self.school_rule.get_school_by_id(school_id,)
@@ -401,7 +412,7 @@ class SchoolView(BaseView):
     # 正式开办  传全部  插入或者更新
     @require_role_permission("school", "open")
 
-    async def put_open(self,
+    async def put_open_complete(self,
 
                        school: SchoolBaseInfo,
                        school_communication: SchoolCommunications,
