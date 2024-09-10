@@ -52,11 +52,17 @@ class SchoolView(BaseView):
 
     @require_role_permission("school", "view")
     async def get(self,
+                  request:Request,
+
                   school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1, max_length=20,
                                          example=''),
                   school_name: str = Query(None, description="学校名称", min_length=1, max_length=20, example=''),
-                  school_id: int|str = Query(..., description="学校id|根据学校查规划校", example='1'),
+                  school_id: int|str = Query( None, description="学校id|根据学校查规划校", example='1'),
                   ):
+        obj= await get_extend_params(request)
+        if obj.school_id:
+            school_id=obj.school_id
+
         school = await self.school_rule.get_school_by_id(school_id)
         school_keyinfo = await self.school_rule.get_school_by_id(school_id, extra_model=SchoolKeyInfo)
 
