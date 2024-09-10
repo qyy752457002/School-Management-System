@@ -79,7 +79,8 @@ class NewStudentsQuery(BaseModel):
     id_number: Optional[str] = Query('', title="证件号码", description="证件号码")
     school: Optional[str | None] = Query('', title="学校", description="学校")
     school_id: Optional[int | str] = Query(0, title="", description="学校id")
-    class_id: Optional[int | str] = Query(0, title="", description="班级ID")
+    # class_id: Optional[int | str] = Query(0, title="", description="班级ID")
+    # class_id: int | str |None = Query(0, title="", description="班级ID")
 
     enrollment_date: Optional[date] = Query(None, title="登记时间", description="登记时间")
     enrollment_date_range: Optional[str] = Query(None, title="登记时间", description="登记时间区间 逗号分隔")
