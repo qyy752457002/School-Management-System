@@ -252,3 +252,26 @@ class TenantRule(object):
         print('匹配秘钥的结果',is_match,code)
         # convert_snowid_in_model(item,["id", "school_id",'grade_id',])
         return items
+    async def get_tenant_plannning_and_school(self, tenant_code):
+
+        print(tenant_code)
+        new_code =  None
+        res_tenant   = await self.tenant_dao.get_tenant_by_code(tenant_code)
+        school_id= res_tenant.origin_id
+
+        items =  await self.plannning_school_dao.get_planning_school_by_id(school_id)
+        tenant_type= 'planning_school' # 表示 租户类型
+        if items is None:
+            print('学校未找到当前租户')
+            items =  await self.school_dao.get_school_by_id(school_id)
+            if items is None:
+                print('分校未找到当前租户')
+                # return
+            else:
+                tenant_type= 'school'
+        else:
+            pass
+            # return
+
+        print('查询租户的学校和分校res',tenant_type, items)
+        return tenant_type, items
