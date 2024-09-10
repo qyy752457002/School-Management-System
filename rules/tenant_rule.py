@@ -205,7 +205,7 @@ class TenantRule(object):
         else:
             # 规划校用编号
             code = items.planning_school_no
-            new_code = items.id
+            new_code = items.planning_school_no
             description = items.planning_school_name
             pass
 
@@ -225,7 +225,9 @@ class TenantRule(object):
 
             if tenant_type == 'school' and   items.institution_category not  in [InstitutionType.INSTITUTION,InstitutionType.ADMINISTRATION] :
                 # 学校用的是 ID  事业单位用的是区号 school_no
-                code = str(items.id)
+                # code = str(items.id)
+                code = items.school_no
+
                 pass
 
             code_ultra = code if new_code is None  else new_code
