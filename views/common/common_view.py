@@ -187,6 +187,17 @@ async def get_extend_params(request) -> ExtendParams:
         tenant_type,tenantinfo = await tenant_rule.get_tenant_plannning_and_school(tenant_code)
         if tenant_type==SchoolType.PLANING_SCHOOL:
             obj.planning_school_id = tenantinfo.id
+            #查询下属的学校ID list
+            school_dao = get_injector(SchoolDAO)
+            school_ids= []
+            school_ids_res   = await school_dao.get_schools_by_args(is_deleted=False,planning_school_id =    obj.planning_school_id)
+            for school in school_ids_res:
+                school_ids.append(school.id)
+
+            # school_ids = await school_rule.query_schools( None ,obj)
+            obj.school_ids = school_ids
+            print('查询下属的学校ID',school_ids, )
+
         elif tenant_type==SchoolType.SCHOOL:
             obj.school_id = tenantinfo.id
         pass
