@@ -12,10 +12,12 @@ from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
-from business_exceptions.student import StudentStatusError
+from business_exceptions.student import StudentStatusError, StudentSessionNotFoundError
 from common.decorators import require_role_permission
 from daos.school_dao import SchoolDAO
+from daos.student_session_dao import StudentSessionDao
 from daos.tenant_dao import TenantDAO
+from models.student_session import StudentSessionstatus
 from rules.class_division_records_rule import ClassDivisionRecordsRule
 from rules.operation_record import OperationRecordRule
 from views.common.common_view import compare_modify_fields, get_client_ip, convert_query_to_none, get_extend_params
@@ -52,6 +54,9 @@ class NewsStudentsView(BaseView):
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
         self.class_division_records_rule = get_injector(ClassDivisionRecordsRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
+        self.student_session_dao = get_injector(StudentSessionDao)
+        # student_session_dao: StudentSessionDao
+
     # 新增学生 只含基本信息
     @require_role_permission("new_student", "open")
     async def post_newstudent(self,
@@ -74,6 +79,14 @@ class NewsStudentsView(BaseView):
                     students.school_id = school.id
                 # filter = [39 ]
 
+            pass
+        # 读取当前开启的届别  赋值
+        param = {"session_status": StudentSessionstatus.ENABLE.value}
+        res = await self.student_session_dao.get_student_session_by_param(**param)
+        print('读取当前开启的届别',res )
+        # session = orm_model_to_view_model(res, StudentSessionModel, exclude=[""])
+        if not res or not res.session_id:
+            raise StudentSessionNotFoundError()
             pass
         students.school_id = extend_params.school_id
         res = await self.students_rule.add_students(students)
