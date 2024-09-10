@@ -49,6 +49,18 @@ class SchoolDAO(DAOBase):
             query = query.where(School.id != obj.id)
         result = await session.execute(query)
         return result.scalar()
+    async def get_schools_by_args(self, obj=None, **kwargs):
+        """
+        """
+        session = await self.slave_db()
+        query = select(School).order_by(School.id.desc())
+        for key, value in kwargs.items():
+            query = query.where(getattr(School, key) == value)
+        if obj is not None and hasattr(obj, 'id'):
+            query = query.where(School.id != obj.id)
+        result = await session.execute(query)
+        return result.scalars().all()
+
 
     async def add_school(self, school):
         session = await self.master_db()

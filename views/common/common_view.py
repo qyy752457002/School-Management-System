@@ -16,6 +16,7 @@ from daos.school_dao import SchoolDAO
 from rules.tenant_rule import TenantRule
 from views.common.constant import Constant
 from views.models.extend_params import ExtendParams
+from views.models.school_and_teacher_sync import SchoolType
 from views.models.system import UnitType, OrgCenterApiStatus
 import json
 import logging
@@ -177,6 +178,28 @@ async def get_extend_params(request) -> ExtendParams:
         #  区的教育局自动复制上去
         if school and school.block!='210100':
             obj.county_id = school.block
+        pass
+    else:
+        # 读取租户表  分校和学校的ID自动赋值
+        #    加一个获取详细的 租户信息的方法 读2个表
+        tenant_rule = get_injector(TenantRule)
+
+        tenant_type,tenantinfo = await tenant_rule.get_tenant_plannning_and_school(tenant_code)
+        if tenant_type==SchoolType.PLANING_SCHOOL:
+            obj.planning_school_id = tenantinfo.id
+            #查询下属的学校ID list
+            school_dao = get_injector(SchoolDAO)
+            school_ids= []
+            school_ids_res   = await school_dao.get_schools_by_args(is_deleted=False,planning_school_id =    obj.planning_school_id)
+            for school in school_ids_res:
+                school_ids.append(school.id)
+
+            # school_ids = await school_rule.query_schools( None ,obj)
+            obj.school_ids = school_ids
+            print('查询下属的学校ID',school_ids, )
+
+        elif tenant_type==SchoolType.SCHOOL:
+            obj.school_id = tenantinfo.id
         pass
 
     return obj

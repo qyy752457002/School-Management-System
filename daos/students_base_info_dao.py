@@ -172,6 +172,9 @@ class StudentsBaseInfoDao(DAOBase):
             if extend_params.school_id:
                 query_model.school_id = extend_params.school_id
             pass
+        if extend_params is not None and len(extend_params.school_ids)>0:
+            query = query.where(StudentBaseInfo.school_id.in_(extend_params.school_ids))
+            # query = query.where(StudentBaseInfo.school_id == int(query_model.school_id))
 
         if query_model.student_name:
             query = query.where(Student.student_name == query_model.student_name)
@@ -185,7 +188,7 @@ class StudentsBaseInfoDao(DAOBase):
             query = query.where(StudentBaseInfo.school == query_model.school)
         if query_model.school_id:
             query = query.where(StudentBaseInfo.school_id == int(query_model.school_id))
-        if query_model.class_id:
+        if hasattr(query_model, 'class_id') and  query_model.class_id:
             query = query.where(StudentBaseInfo.class_id == int(query_model.class_id))
         if query_model.enrollment_date:
             query = query.where(StudentBaseInfo.enrollment_date == query_model.enrollment_date)
