@@ -4,6 +4,7 @@ from enum import Enum
 
 from fastapi.params import Query
 from id_validator import validator
+from mini_framework.authentication.config import authentication_config
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.design_patterns.singleton import singleton
 from mini_framework.multi_tenant.registry import tenant_registry
@@ -431,14 +432,16 @@ async def get_tenant_by_code(code: str):
     tenant = await rule.get_tenant_by_code(code)
     print('解析到租户',tenant)
     if tenant is None and code=='210100':
+        redirect_url_template=authentication_config.oauth2.redirect_url
+        redirect_url_new = redirect_url_template.format(tenant=code)
         tenant =  Tenant(
         code=code,
         name="租户1",
         description="租户1",
         status=TenantStatus.active,
-        client_id="9c49aa8d79c97951c242",
-        client_secret="b83838efbd8669d325fdc5b5e7ce1173aacb85a4",
-        redirect_url= "",
+        client_id= authentication_config.oauth2.client_id,
+        client_secret=authentication_config.oauth2.client_secret,
+        redirect_url= redirect_url_new,
         home_url="http://localhost:8000",
         )
     # print(tt)
