@@ -88,6 +88,7 @@ class NewsStudentsView(BaseView):
         if not res or not res.session_id:
             raise StudentSessionNotFoundError()
             pass
+        students.school_id = extend_params.school_id
         res = await self.students_rule.add_students(students)
         students.student_id = res.student_id
         special_date = datetime.datetime.now()
