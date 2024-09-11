@@ -12,7 +12,7 @@
  Target Server Version : 120001 (120001)
  File Encoding         : 65001
 
- Date: 08/09/2024 20:30:53
+ Date: 11/09/2024 15:22:07
 */
 
 
@@ -127,7 +127,6 @@ INSERT INTO "public"."lfun_permission_menu" VALUES (45, '异动管理', '/instud
 INSERT INTO "public"."lfun_permission_menu" VALUES (44, '转出信息管理', '/instudent/checkout', '', 'menu', '', '', '36', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'instudent_checkout', 0, 'instudent_transfer', 'in_view、in_pass、in_refuse、out_view、out_pass、out_refuse、approval');
 INSERT INTO "public"."lfun_permission_menu" VALUES (43, '转入信息管理', '/instudent/checkin', '', 'menu', '', '', '36', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'instudent_checkin', 0, 'instudent_transfer', 'in_view、in_pass、in_refuse、out_view、out_pass、out_refuse、approval');
 INSERT INTO "public"."lfun_permission_menu" VALUES (42, '转学信息管理', '/instudent/transfer', '', 'menu', '', '', '36', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'instudent_transfer', 0, 'instudent_transfer', 'in_view、in_pass、in_refuse、out_view、out_pass、out_refuse、approval');
-INSERT INTO "public"."lfun_permission_menu" VALUES (40, '届别管理', '/newstudent/academia', '', 'menu', '', '', '35', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'newstudent_academia', 0, 'student_session', 'add、view、edit、delete、approval');
 INSERT INTO "public"."lfun_permission_menu" VALUES (36, '在校学生信息管理', '', '', 'root', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'instudent', 0, 'infomanage', 'temporary_study_start、temporary_study_cancel、temporary_study_view、current_student_view、current_student_change、current_student_keyinfo_change、approval');
 INSERT INTO "public"."lfun_permission_menu" VALUES (35, '新学生信息管理', '', '', 'root', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'newstudent', 0, 'new_student', 'open、import、view、edit、flowout、sync、formaladmission、approval');
 INSERT INTO "public"."lfun_permission_menu" VALUES (11, '职高信息管理（分校）', '/school', '', 'menu', '', '', '0', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'school', 0, 'school', 'open、import、view、edit、delete、change_baseinfo、change_keyinfo、close、approval');
@@ -160,6 +159,7 @@ INSERT INTO "public"."lfun_permission_menu" VALUES (54, '离退休信息管理',
 INSERT INTO "public"."lfun_permission_menu" VALUES (20, '学科管理', '/course', '', 'menu', '', '中小学', '9', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'course', 0, 'course', 'add、view、change');
 INSERT INTO "public"."lfun_permission_menu" VALUES (39, '分班管理', '/newstudent/classroom', '', 'menu', '', '', '35', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'newstudent_classroom', 0, 'classdivision', 'view、lottery_classdivision、import,batch_banding');
 INSERT INTO "public"."lfun_permission_menu" VALUES (41, '在校学生信息管理', '/instudent', '', 'menu', '', '', '36', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'instudent', 0, 'infomanage', 'start_in、start_out、current_student_view、change');
+INSERT INTO "public"."lfun_permission_menu" VALUES (40, '届别管理', '/newstudent/academia', '', 'menu', '', '', '35', 1, 0, 0, '2024-06-04 10:43:11.170994', '2024-06-04 10:43:11.170994', 'f', 'newstudent_academia', 0, 'student_session', 'add、view、edit、delete、approval,status');
 
 -- ----------------------------
 -- Primary Key structure for table lfun_permission_menu
