@@ -796,6 +796,8 @@ async def get_org_center_application(school_no,tenant_type,items):
             appCode = orgcenter_service_config.orgcenter_config.get("app_code_student")
 
             pass
+        elif tenant_type == 'planning_school'  :
+            appCode = orgcenter_service_config.orgcenter_config.get("app_code_student")
         else:
             appCode = orgcenter_service_config.orgcenter_config.get("app_code")
 
@@ -803,6 +805,8 @@ async def get_org_center_application(school_no,tenant_type,items):
             "owner": school_no,
             "name":  appCode, #
         }
+        print('get_org_center_application的参数', params)
+
         datadict = params
         response = await send_orgcenter_request(apiname, datadict, 'get', True)
         print('get_org_center_application',len(response))

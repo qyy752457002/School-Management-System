@@ -89,11 +89,10 @@ class CourseView(BaseView):
     # 修改 当前用的这个  学校的课程选择 的变更 区的配置课程也是这个接口
     async def put(self,
                   request: Request,
-
                   school_id: int | str = Query(0, description="学校ID", example='1'),
                   course_list: List[Course] = Body([], description="选择的课程", example=[
                       {"grade_id": 1, "course_name": "语文", "course_no": "13", }
-                  ]),
+                  ])
                   ):
         extend_params=obj = await get_extend_params(request)
         if extend_params.tenant:
@@ -101,7 +100,6 @@ class CourseView(BaseView):
             tenant_dao=get_injector(TenantDAO)
             school_dao=get_injector(SchoolDAO)
             tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
-
 
             if tenant is   not None and  tenant.tenant_type== 'school' and len(tenant.code)>=10:
                 school =  await  school_dao.get_school_by_id(tenant.origin_id)
@@ -125,11 +123,32 @@ class CourseView(BaseView):
         return res
 
     # 获取所有的课程列表 给下拉 在用
-    async def get_all(self):
+
+    async def get_all(self,request: Request,):
         # print(page_request)
         items = []
+        extend_params= obj= await get_extend_params(request)
+        # print('rucan',page_request,obj)
 
-        res = await self.course_rule.get_course_all({'school_id': 0})
+        items = []
+        school=None
+        filter_dict = { 'is_deleted': False}
+        school_id=0
+        if extend_params.school_id  :
+            filter_dict['school_id'] = school_id
+            # 读取类型  读取ID  加到条件里
+            school_dao=get_injector(SchoolDAO)
+            school =  await  school_dao.get_school_by_id(extend_params.school_id)
+            if school:
+                # school_id = school.id
+                # filter_dict['school_nature'] = school.school_category
+
+                pass
+
+
+
+            pass
+        res = await self.course_rule.get_course_all(filter_dict,school)
         return res
 
     async def post_add_init_course(self, course: Course):

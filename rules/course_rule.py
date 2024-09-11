@@ -9,6 +9,7 @@ from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, 
 
 from business_exceptions.course import CourseNotFoundError, CourseAlreadyExistError
 from daos.course_dao import CourseDAO
+from daos.course_school_nature_dao import CourseSchoolNatureDAO
 from daos.school_dao import SchoolDAO
 from models.course import Course
 from views.common.common_view import convert_snowid_to_strings, convert_snowid_in_model
@@ -19,6 +20,7 @@ from views.models.extend_params import ExtendParams
 @dataclass_inject
 class CourseRule(object):
     course_dao: CourseDAO
+    course_school_nature_dao: CourseSchoolNatureDAO
     school_dao: SchoolDAO
 
     async def get_course_by_id(self, course_id):
@@ -117,7 +119,13 @@ class CourseRule(object):
         return paging_result
 
 
-    async def get_course_all(self, filterdict):
+    async def get_course_all(self, filterdict,school=None ):
+        # 过滤 课程编码范围
+        course_no= [ ]
+        courenores  = await self.course_school_nature_dao.get_course_school_nature_by_school_nature(school.school_category)
+        for item in courenores:
+            course_no.append(item.course_no)
+        filterdict['course_no'] = course_no
         items =  await self.course_dao.get_all_course(filterdict)
         items = copy.deepcopy(items)
         for item in items:

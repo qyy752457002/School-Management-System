@@ -12,10 +12,12 @@ from mini_framework.web.request_context import request_context_manager
 from mini_framework.web.views import BaseView
 from starlette.requests import Request
 
-from business_exceptions.student import StudentStatusError
+from business_exceptions.student import StudentStatusError, StudentSessionNotFoundError
 from common.decorators import require_role_permission
 from daos.school_dao import SchoolDAO
+from daos.student_session_dao import StudentSessionDao
 from daos.tenant_dao import TenantDAO
+from models.student_session import StudentSessionstatus
 from rules.class_division_records_rule import ClassDivisionRecordsRule
 from rules.operation_record import OperationRecordRule
 from views.common.common_view import compare_modify_fields, get_client_ip, convert_query_to_none, get_extend_params
@@ -52,6 +54,9 @@ class NewsStudentsView(BaseView):
         self.students_base_info_rule = get_injector(StudentsBaseInfoRule)
         self.class_division_records_rule = get_injector(ClassDivisionRecordsRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
+        self.student_session_dao = get_injector(StudentSessionDao)
+        # student_session_dao: StudentSessionDao
+
     # 新增学生 只含基本信息
     @require_role_permission("new_student", "open")
     async def post_newstudent(self,
@@ -61,20 +66,18 @@ class NewsStudentsView(BaseView):
         新增新生信息
         """
         extend_params= await get_extend_params(request)
-        if extend_params.tenant:
-            # 读取类型  读取ID  加到条件里
-            tenant_dao=get_injector(TenantDAO)
-            school_dao=get_injector(SchoolDAO)
-            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
-            print(333,tenant)
+        if extend_params.school_id is not None:
+            students.school_id = extend_params.school_id
 
-            if  tenant is   not None and  tenant.tenant_type  == 'school' :
-                school = await school_dao.get_school_by_id(tenant.code)
-                if school is not None:
-                    students.school_id = school.id
-                # filter = [39 ]
-
+        # 读取当前开启的届别  赋值
+        param = {"session_status": StudentSessionstatus.ENABLE.value}
+        res = await self.student_session_dao.get_student_session_by_param(**param)
+        print('读取当前开启的届别',res )
+        # session = orm_model_to_view_model(res, StudentSessionModel, exclude=[""])
+        if not res or not res.session_id:
+            raise StudentSessionNotFoundError()
             pass
+        students.school_id = extend_params.school_id
         res = await self.students_rule.add_students(students)
         students.student_id = res.student_id
         special_date = datetime.datetime.now()
@@ -244,21 +247,7 @@ class NewsStudentsInfoView(BaseView):
         新生编辑基本信息
         """
         extend_params= await get_extend_params(request)
-        if extend_params.tenant:
-            # 读取类型  读取ID  加到条件里
-            tenant_dao=get_injector(TenantDAO)
-            school_dao=get_injector(SchoolDAO)
-            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
-            print(333,tenant)
 
-            if  tenant is   not None and  tenant.tenant_type  == 'school' :
-                school = await school_dao.get_school_by_id(tenant.code)
-                if school is not None:
-                    # new_students_base_info.school_id = school.id
-                    pass
-                # filter = [39 ]
-
-            pass
         check = await self.students_rule.is_can_update_student(new_students_base_info.student_id)
         if not check:
             raise StudentStatusError()

@@ -4,6 +4,7 @@ from enum import Enum
 
 from fastapi.params import Query
 from id_validator import validator
+from mini_framework.authentication.config import authentication_config
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.design_patterns.singleton import singleton
 from mini_framework.multi_tenant.registry import tenant_registry
@@ -15,6 +16,7 @@ from daos.school_dao import SchoolDAO
 from rules.tenant_rule import TenantRule
 from views.common.constant import Constant
 from views.models.extend_params import ExtendParams
+from views.models.school_and_teacher_sync import SchoolType
 from views.models.system import UnitType, OrgCenterApiStatus
 import json
 import logging
@@ -176,6 +178,28 @@ async def get_extend_params(request) -> ExtendParams:
         #  区的教育局自动复制上去
         if school and school.block!='210100':
             obj.county_id = school.block
+        pass
+    else:
+        # 读取租户表  分校和学校的ID自动赋值
+        #    加一个获取详细的 租户信息的方法 读2个表
+        tenant_rule = get_injector(TenantRule)
+
+        tenant_type,tenantinfo = await tenant_rule.get_tenant_plannning_and_school(tenant_code)
+        if tenant_type==SchoolType.PLANING_SCHOOL:
+            obj.planning_school_id = tenantinfo.id
+            #查询下属的学校ID list
+            school_dao = get_injector(SchoolDAO)
+            school_ids= []
+            school_ids_res   = await school_dao.get_schools_by_args(is_deleted=False,planning_school_id =    obj.planning_school_id)
+            for school in school_ids_res:
+                school_ids.append(school.id)
+
+            # school_ids = await school_rule.query_schools( None ,obj)
+            obj.school_ids = school_ids
+            print('查询下属的学校ID',school_ids, )
+
+        elif tenant_type==SchoolType.SCHOOL:
+            obj.school_id = tenantinfo.id
         pass
 
     return obj
@@ -431,14 +455,16 @@ async def get_tenant_by_code(code: str):
     tenant = await rule.get_tenant_by_code(code)
     print('解析到租户',tenant)
     if tenant is None and code=='210100':
+        redirect_url_template=authentication_config.oauth2.redirect_url
+        redirect_url_new = redirect_url_template.format(tenant=code)
         tenant =  Tenant(
         code=code,
         name="租户1",
         description="租户1",
         status=TenantStatus.active,
-        client_id="9c49aa8d79c97951c242",
-        client_secret="b83838efbd8669d325fdc5b5e7ce1173aacb85a4",
-        redirect_url= "",
+        client_id= authentication_config.oauth2.client_id,
+        client_secret=authentication_config.oauth2.client_secret,
+        redirect_url= redirect_url_new,
         home_url="http://localhost:8000",
         )
     # print(tt)

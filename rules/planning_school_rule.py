@@ -488,6 +488,18 @@ class PlanningSchoolRule(object):
                 # 成功则写入数据
                 res2 = await self.deal_planning_school(audit_info.process_instance_id, action)
                 pass
+            elif audit_info.transaction_audit_action == AuditAction.REFUSE.value:
+                school = await self.planning_school_dao.get_planning_school_by_process_instance_id(audit_info.process_instance_id)
+                if school:
+                    # 回退改草稿
+                    need_update_list = ['status']
+                    school.status =  PlanningSchoolStatus.DRAFT.value
+
+                    schoolres = await self.planning_school_dao.update_planning_school_byargs(school, *need_update_list)
+
+
+
+                pass
             # 发起审批流的 处理
 
             datadict = audit_info.__dict__
@@ -614,9 +626,10 @@ class PlanningSchoolRule(object):
         tinfo = await self.get_planning_school_by_id(student_id)
         print('当前信息', tinfo)
         if not is_all_status_allow:
+            pass
             # 如果 是草稿态 则锁定
-            if tinfo and tinfo.status == PlanningSchoolStatus.DRAFT.value:
-                return True
+            # if tinfo and tinfo.status == PlanningSchoolStatus.DRAFT.value:
+            #     return True
         # 检查是否有占用 如果有待处理的流程ID 则锁定
         if tinfo and tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
             return True

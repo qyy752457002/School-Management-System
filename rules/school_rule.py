@@ -327,11 +327,17 @@ class SchoolRule(object):
             tenant = await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
 
             if  tenant is   not None and  tenant.tenant_type== 'school' and tenant.code!='210100' and len(tenant.code)>=10:
+                # 分校
                 school =  await self.school_dao.get_school_by_id(tenant.origin_id)
                 print('获取租户的学校对象',school)
                 if school is not None:
-                    school_no = school.school_no
-            pass
+                    school_no= school.school_no
+            elif tenant is not None and tenant.tenant_type=='planning_school'  :
+                school =  await self.p_school_dao.get_planning_school_by_id(tenant.origin_id)
+                print('获取租户的学校对象',school)
+                if school is not None:
+                    planning_school_id= school.id
+                pass
 
         paging = await self.school_dao.query_school_with_page(page_request, school_name, school_no, school_code,
                                                               block, school_level, borough, status, founder_type,
@@ -395,7 +401,7 @@ class SchoolRule(object):
             else:
                 query = query.where(School.school_name.like(f'%{school_name}%'))
         if school_id:
-            if ',' in school_id:
+            if isinstance(school_id, str) and  ',' in school_id:
                 school_id = school_id.split(',')
                 if isinstance(school_id, list):
                     query = query.where(School.id.in_(school_id))
@@ -528,6 +534,18 @@ class SchoolRule(object):
         if audit_info.transaction_audit_action == AuditAction.PASS.value:
             # 成功则写入数据
             res2 = await self.deal_school(audit_info.process_instance_id, action)
+        elif audit_info.transaction_audit_action == AuditAction.REFUSE.value:
+            school = await self.school_dao.get_school_by_process_instance_id(audit_info.process_instance_id)
+            if school:
+                # 回退改草稿
+                need_update_list = ['status']
+                school.status =  PlanningSchoolStatus.DRAFT.value
+
+                schoolres = await self.school_dao.update_school_byargs(school, *need_update_list)
+
+
+
+            pass
         # 发起审批流的 处理
 
         datadict = dict()
@@ -735,8 +753,9 @@ class SchoolRule(object):
     async def is_can_not_add_workflow(self, student_id, is_all_status_allow=False):
         tinfo = await self.get_school_by_id(student_id)
         if not is_all_status_allow:
-            if tinfo and tinfo.status == PlanningSchoolStatus.DRAFT.value:
-                return True
+            # if tinfo and tinfo.status == PlanningSchoolStatus.DRAFT.value:
+            #     return True
+            pass
         # 检查是否有占用
         if tinfo and tinfo.workflow_status == AuditAction.NEEDAUDIT.value:
             return True
