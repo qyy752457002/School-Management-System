@@ -131,21 +131,24 @@ class CourseView(BaseView):
         # print('rucan',page_request,obj)
 
         items = []
+        school=None
+        filter_dict = { 'is_deleted': False}
         school_id=0
-        if extend_params.tenant:
+        if extend_params.school_id  :
+            filter_dict['school_id'] = school_id
             # 读取类型  读取ID  加到条件里
-            tenant_dao=get_injector(TenantDAO)
             school_dao=get_injector(SchoolDAO)
-            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
+            school =  await  school_dao.get_school_by_id(extend_params.school_id)
+            if school:
+                # school_id = school.id
+                # filter_dict['school_nature'] = school.school_category
 
-            if tenant is   not None and  tenant.tenant_type== 'school' and len(tenant.code)>=10:
-                school =  await  school_dao.get_school_by_id(tenant.origin_id)
-                if school:
-                    # school_id = school.id
-                    pass
+                pass
+
+
 
             pass
-        res = await self.course_rule.get_course_all({'school_id': school_id,'is_deleted': False})
+        res = await self.course_rule.get_course_all(filter_dict,school)
         return res
 
     async def post_add_init_course(self, course: Course):
