@@ -101,5 +101,8 @@ class LeaderInfoRule(object):
         leader_info_db = await self.leader_info_dao.get_all_leader_info(**kdict)
         leader_info = []
         for item in leader_info_db:
-            leader_info.append(orm_model_to_view_model(item, LeaderInfoModel))
+            obj = orm_model_to_view_model(item, LeaderInfoModel)
+            convert_snowid_in_model(obj, ['id', 'school_id','institution_id','planning_school_id'])
+
+            leader_info.append( obj )
         return leader_info

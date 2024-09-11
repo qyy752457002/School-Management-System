@@ -216,8 +216,10 @@ class SystemRule(object):
             paging = await self.teacher_work_flow_rule.query_work_flow_instance_with_page(page_request, query_model,
                                                                                           result_model, params)
             # 针对如果是 关闭的 审核列表  遍历处理里面的 每个图片信息 取获取转换一个URL附上
+            sortlist = []
             if paging and hasattr(paging, 'items'):
                 for item in paging.items:
+                    sortlist.append(item['start_time'])
                     if process_code == PLANNING_SCHOOL_CLOSE_WORKFLOW_CODE or process_code == SCHOOL_CLOSE_WORKFLOW_CODE or process_code == INSTITUTION_CLOSE_WORKFLOW_CODE:
                         if isinstance(item, dict)  :
 
@@ -254,6 +256,7 @@ class SystemRule(object):
                     else :
                         print('非关闭的流程', )
 
+            print('排序 ',sortlist)
             return paging
         except Exception as e:
             print('异常', e, )
