@@ -469,7 +469,6 @@ class SchoolView(BaseView):
     # 学校搜索 模糊搜索 TODO 增加 区域ID  学校ID 支持多个传入
     async def get_search(self,
                          request: Request  ,
-
                          school_name: str = Query("", title="学校名称", description="1-20字符", ),
                          school_id: str = Query("", title="多个逗号分割", description="", ),
                          block: str = Query("", title="地域管辖区", description="", ),
@@ -479,8 +478,12 @@ class SchoolView(BaseView):
 
     ):
         items = []
+        obj= await get_extend_params(request)
+        if obj.school_id:
+            school_id=obj.school_id
+
         # 学校 区 只能看自己的范围内的数据
-        paging_result = await self.school_rule.query_schools(school_name,await get_extend_params(request),school_id,block,borough,)
+        paging_result = await self.school_rule.query_schools(school_name, obj,school_id,block,borough,)
         return paging_result
     # 学校开设审核
     @require_role_permission("school_open_audit", "pass")
@@ -589,6 +592,8 @@ class SchoolView(BaseView):
     @require_role_permission("school", "view")
 
     async def page_school_audit(self,
+                                request:Request,
+
                                 block: str = Query("", title=" ", description="地域管辖区", ),
                                 school_code: str = Query("", title="", description=" 园所标识码", ),
                                 school_level: str = Query("", title="", description=" 学校星级", ),
@@ -616,6 +621,15 @@ class SchoolView(BaseView):
         items = []
         #PlanningSchoolBaseInfoOptional
         print('入参接收',page_request,status)
+        obj= await get_extend_params(request)
+        if obj.school_id:
+            school = await self.school_rule.get_school_by_id(obj.school_id)
+            if school:
+                school_name = school.school_name
+                print('租户赋值学校名称筛选审核', school_name)
+            pass
+
+
         req= SchoolPageSearch(block=block,
                                       planning_school_code=planning_school_code,
                                       borough=borough,
@@ -634,7 +648,7 @@ class SchoolView(BaseView):
 
                                       )
         print('入参接收2',req)
-        paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,  )
+        paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,extend_params=obj  )
         print('333',page_request)
         return paging_result
     @require_role_permission("school_open_audit", "cancel")

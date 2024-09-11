@@ -66,20 +66,9 @@ class NewsStudentsView(BaseView):
         新增新生信息
         """
         extend_params= await get_extend_params(request)
-        if extend_params.tenant:
-            # 读取类型  读取ID  加到条件里
-            tenant_dao=get_injector(TenantDAO)
-            school_dao=get_injector(SchoolDAO)
-            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
-            print(333,tenant)
+        if extend_params.school_id is not None:
+            students.school_id = extend_params.school_id
 
-            if  tenant is   not None and  tenant.tenant_type  == 'school' :
-                school = await school_dao.get_school_by_id(tenant.code)
-                if school is not None:
-                    students.school_id = school.id
-                # filter = [39 ]
-
-            pass
         # 读取当前开启的届别  赋值
         param = {"session_status": StudentSessionstatus.ENABLE.value}
         res = await self.student_session_dao.get_student_session_by_param(**param)
@@ -258,21 +247,7 @@ class NewsStudentsInfoView(BaseView):
         新生编辑基本信息
         """
         extend_params= await get_extend_params(request)
-        if extend_params.tenant:
-            # 读取类型  读取ID  加到条件里
-            tenant_dao=get_injector(TenantDAO)
-            school_dao=get_injector(SchoolDAO)
-            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
-            print(333,tenant)
 
-            if  tenant is   not None and  tenant.tenant_type  == 'school' :
-                school = await school_dao.get_school_by_id(tenant.code)
-                if school is not None:
-                    # new_students_base_info.school_id = school.id
-                    pass
-                # filter = [39 ]
-
-            pass
         check = await self.students_rule.is_can_update_student(new_students_base_info.student_id)
         if not check:
             raise StudentStatusError()
