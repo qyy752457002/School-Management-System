@@ -310,7 +310,9 @@ class PlanningSchoolRule(object):
         return planning_school_db
 
     async def send_planning_school_to_org_center_by_school_no(self,planning_school_no):
+        print('根据学校编号获取规划校信息',planning_school_no)
         exists_planning_school=await self.planning_school_dao.get_planning_school_by_planning_school_no_to_org(planning_school_no)
+        print(exists_planning_school)
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()
         res_unit, data_unit = await self.send_planning_school_to_org_center(exists_planning_school)
@@ -854,8 +856,8 @@ class PlanningSchoolRule(object):
     # 发送规划校到组织中心的方法
     async def send_planning_school_to_org_center(self, exists_planning_school_origin):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
-        if isinstance(exists_planning_school.updated_at, (date, datetime)):
-            exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
+        # if isinstance(exists_planning_school.updated_at, (date, datetime)):
+        #     exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
 
         # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer
         planning_school_communication = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(

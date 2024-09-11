@@ -15,7 +15,7 @@
         "port": 54321,
         "user": "schooloms",
         "password": "J16s10Wp08yfEskmVAJH",
-        "database": "school_oms_dev"
+        "database": "school_oms_test"
       },
       "slaves": [
         {
@@ -23,14 +23,14 @@
           "port": 54321,
           "user": "schooloms",
           "password": "J16s10Wp08yfEskmVAJH",
-          "database": "school_oms_dev"
+          "database": "school_oms_test"
         },
         {
           "host": "10.0.0.42",
           "port": 54321,
           "user": "schooloms",
           "password": "J16s10Wp08yfEskmVAJH",
-          "database": "school_oms_dev"
+          "database": "school_oms_test"
         }
       ]
     }
@@ -138,6 +138,12 @@
   "system_config": {
     "add_class": 0,
     "permission_verify": false
+  },
+  "sync_scheduler": {
+    "is_enable": true,
+    "scheduler_type": "cron",
+    "scheduler_unit": "minute",
+    "cron_expression": "*/5"
   },
   "workflow_service": {
     "name": "workflow_service",

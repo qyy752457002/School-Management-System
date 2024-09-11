@@ -9,6 +9,8 @@ from mini_framework.web.web_command import WebCommand
 import warnings
 from pydantic import json_schema
 
+from common.scheduler_task_command import SchedulerTaskCommand
+
 warnings.filterwarnings('ignore', category=sqlalchemy.exc.SAWarning)
 
 # 创建一个过滤器来忽略 PydanticJsonSchemaWarning
@@ -24,6 +26,8 @@ def main():
     cli.register('dao-gen', DAOGenerateCommand, model_list=[('models.course_school_nature', 'CourseSchoolNature'),
                                                           ])
     cli.register('web', WebCommand, router_func_module="views.router.init_router")
+    cli.register('scheduler-task', SchedulerTaskCommand)
+
     cli.setup()
 
 
