@@ -21,7 +21,7 @@ def main():
     cli.register('task', AsyncTaskCommand, router_func_module="views.tasks.router.init_task_router")
 
     cli.register('db-init', DatabaseInitCommand, metadata_model="models.metadata")
-    cli.register('dao-gen', DAOGenerateCommand, model_list=[('models.tenant', 'Tenant'),
+    cli.register('dao-gen', DAOGenerateCommand, model_list=[('models.course_school_nature', 'CourseSchoolNature'),
                                                           ])
     cli.register('web', WebCommand, router_func_module="views.router.init_router")
     cli.setup()

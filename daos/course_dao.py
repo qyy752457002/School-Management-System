@@ -106,8 +106,10 @@ class CourseDAO(DAOBase):
         temodel = select(Course).order_by(Course.course_no.asc())
         if filterdict:
             for key, value in filterdict.items():
-                temodel = temodel.where(getattr(Course, key) == value)
-            # result = await session.execute(select(Course).where(getattr(Course, key) == value))
-            # return result.scalars().all()
+                # if hasattr()
+                if isinstance(value, list):
+                    temodel = temodel.where(getattr(Course, key).in_(value))
+                else:
+                    temodel = temodel.where(getattr(Course, key) == value)
         result = await session.execute(temodel)
         return result.scalars().all()
