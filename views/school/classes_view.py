@@ -30,18 +30,10 @@ class ClassesView(BaseView):
                    classes: Classes):
         print(classes)
         extend_params= await get_extend_params(request)
-        if extend_params.tenant:
-            # 读取类型  读取ID  加到条件里
-            tenant_dao=get_injector(TenantDAO)
-            school_dao=get_injector(SchoolDAO)
-            tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
-            print(333,tenant)
+        print('扩展对象',extend_params)
+        if extend_params.school_id is not None:
+            classes.school_id = extend_params.school_id
 
-            if  tenant is   not None and  tenant.tenant_type  == 'school' :
-                school = await school_dao.get_school_by_id(tenant.code)
-                if school is not None:
-                    classes.school_id = school.id
-                # filter = [39 ]
 
             pass
         res = await  self.classes_rule.add_classes(classes)
@@ -51,6 +43,8 @@ class ClassesView(BaseView):
     @require_role_permission("class", "view")
 
     async def page(self,
+                   request:Request,
+
                    page_request=Depends(PageRequest),
 
                    borough: str = Query('', title=" ", description=" 行政管辖区", examples=['铁西区']),
@@ -63,7 +57,11 @@ class ClassesView(BaseView):
                    class_name: str = Query('', title="Grade_name", description="班级名称", examples=['一年级'])
 
                    ):
+        extend_params= await get_extend_params(request)
+
         school_id= int(school_id)
+        if extend_params.school_id is not None:
+            school_id = extend_params.school_id
         # grade_id= int(grade_id)
         print(page_request)
         items = []
