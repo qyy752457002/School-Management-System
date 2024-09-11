@@ -1,4 +1,5 @@
 from datetime import datetime
+import copy
 
 from mini_framework.design_patterns.depend_inject import dataclass_inject
 from mini_framework.utils.snowflake import SnowflakeIdGenerator
@@ -25,7 +26,7 @@ from views.models.teacher_transaction import TeacherTransactionQuery, TeacherTra
     TransferAndBorrowExtraModel
 from views.models.teacher_transaction import TransferDetailsModel, TransferType
 from views.models.teacher_transaction import WorkflowQueryModel
-from views.models.teachers import TeacherRe, TeacherAdd
+from views.models.teachers import TeacherRe, TeacherAdd, TeacherInfoSubmit
 
 
 @dataclass_inject
@@ -334,6 +335,9 @@ class TransferDetailsRule(object):
                 process_instance_id)
             process_code = result.get("process_code")
             teachers_db = await self.teachers_dao.get_teachers_by_id(teacher_id)
+            teachers_info_db = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teacher_id)
+            teacher_info = orm_model_to_view_model(teachers_info_db, TeacherInfoSubmit)
+            teacher_info_copy = copy.deepcopy(teacher_info)
             if process_code == "t_transfer_out":
                 """需要删除本校老师"""
                 # 原本学校需要做的事情
@@ -360,9 +364,11 @@ class TransferDetailsRule(object):
                 # teacher = await self.teacher_work_flow_rule.create_model_from_workflow(result_after, TeacherAdd)
                 # teacher.teacher_employer = result_after.get("current_unit_id")
                 # teacher_id = await self.teachers_rule.add_transfer_teachers_in(teacher)
+                # 这里考虑的是从工作流拿，但现在在同一个库，可以直接复制
                 # teacher_info = await self.teacher_work_flow_rule.create_model_from_workflow(result_after,
                 #                                                                             TeacherInfoSubmit)
-                # teacher_info.teacher_id = teacher_id
+                # 这里就是复制，然后添加
+                # teacher_info_copy.teacher_id = teacher_id
                 # teachers_inf_db = view_model_to_orm_model(teacher_info, TeacherInfo, exclude=["teacher_base_id"])
                 # teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
                 # await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
