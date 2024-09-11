@@ -207,7 +207,7 @@ class SystemRule(object):
 
     # 通用型 工作流获取方法
     async def query_workflow_with_page(self, query_model, page_request: PageRequest, user_id=None, process_code=None,
-                                       result_model=None):
+                                       result_model=None,extend_params=None):
         params = {"applicant_name": user_id, "process_code": process_code, }
         # params= {**params,**query_model.dict()}
         print('params--', params)

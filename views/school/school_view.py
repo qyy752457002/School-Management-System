@@ -589,6 +589,8 @@ class SchoolView(BaseView):
     @require_role_permission("school", "view")
 
     async def page_school_audit(self,
+                                request:Request,
+
                                 block: str = Query("", title=" ", description="地域管辖区", ),
                                 school_code: str = Query("", title="", description=" 园所标识码", ),
                                 school_level: str = Query("", title="", description=" 学校星级", ),
@@ -616,6 +618,15 @@ class SchoolView(BaseView):
         items = []
         #PlanningSchoolBaseInfoOptional
         print('入参接收',page_request,status)
+        obj= await get_extend_params(request)
+        if obj.school_id:
+            school = await self.school_rule.get_school_by_id(obj.school_id)
+            if school:
+                school_name = school.school_name
+                print('租户赋值学校名称筛选审核', school_name)
+            pass
+
+
         req= SchoolPageSearch(block=block,
                                       planning_school_code=planning_school_code,
                                       borough=borough,
@@ -634,7 +645,7 @@ class SchoolView(BaseView):
 
                                       )
         print('入参接收2',req)
-        paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,  )
+        paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,extend_params=obj  )
         print('333',page_request)
         return paging_result
     @require_role_permission("school_open_audit", "cancel")
