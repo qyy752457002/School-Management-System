@@ -142,7 +142,7 @@
   "workflow_service": {
     "name": "workflow_service",
     "description": "",
-    "url": "http://127.0.0.1:8081"
+    "url": "https://school-workflow-dev.f123.pub"
   },
   "orgcenter_service": {
     "name": "orgcenter_service",
