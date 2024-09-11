@@ -401,7 +401,7 @@ class SchoolRule(object):
             else:
                 query = query.where(School.school_name.like(f'%{school_name}%'))
         if school_id:
-            if ',' in school_id:
+            if isinstance(school_id, str) and  ',' in school_id:
                 school_id = school_id.split(',')
                 if isinstance(school_id, list):
                     query = query.where(School.id.in_(school_id))
