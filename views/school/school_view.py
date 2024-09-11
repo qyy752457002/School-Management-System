@@ -59,14 +59,24 @@ class SchoolView(BaseView):
                   school_name: str = Query(None, description="学校名称", min_length=1, max_length=20, example=''),
                   school_id: int|str = Query( None, description="学校id|根据学校查规划校", example='1'),
                   ):
+        school_eduinfo={}
+        school={}
+        school_communication={}
+        school_keyinfo={}
+
         obj= await get_extend_params(request)
         if obj.school_id:
             school_id=obj.school_id
 
+        print('入参 ', school_id )
+        if school_id is None:
+
+            return {'school': school, 'school_communication': school_communication, 'school_eduinfo': school_eduinfo,
+                'school_keyinfo': school_keyinfo}
+            pass
         school = await self.school_rule.get_school_by_id(school_id)
         school_keyinfo = await self.school_rule.get_school_by_id(school_id, extra_model=SchoolKeyInfo)
 
-        school_eduinfo={}
         school_communication = await self.school_communication_rule.get_school_communication_by_school_id(school_id)
         # todo 异常可能导致orm转换时 的链接释放
         try:
