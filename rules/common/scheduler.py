@@ -7,7 +7,7 @@ from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.request_context import current_request_id
 
 from rules.planning_school_rule import PlanningSchoolRule
-
+import sys
 
 def sync_survey_data():
     # supervisor_rule = get_injector(SurveyExtractRule)
@@ -38,6 +38,15 @@ class SchedulerTask(object):
         self.planning_school_rule = get_injector(PlanningSchoolRule)
 
     async def add_job_cron(self):
+        # 获取命令行参数
+        params= [ ]
+        for i, arg in enumerate(sys.argv):
+            print(f"参数{i}: {arg}")
+            params.append(arg)
+            if i==2:
+                paramstr = arg
+
+        print(params)
         planning_school_no_list= [ '2101031118342' ]
         for planning_school_code in planning_school_no_list:
             try:
