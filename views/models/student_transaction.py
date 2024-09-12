@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 from typing import Iterable
 
@@ -67,6 +68,8 @@ class StudentEduInfo(BaseModel):
     relation_id: int | str | None = Query(0, description="关联id", examples=["1"], example="1"),
     remark: str | None = Query('', title="", description="", examples=["备注"])
     process_instance_id: int | None | str = Field(0, title="", description="", examples=['1'])
+    created_at: datetime | None | str = Field(None, title="", description="", examples=['1'])
+    updated_at: datetime | None | str = Field(None, title="", description="", examples=['1'])
 
     @model_validator(mode="before")
     @classmethod
@@ -103,7 +106,7 @@ class StudentEduInfoOut(BaseModel):
     class_id: str | int = Query('', title="", description="班级id", examples=["125"])
     classes: str = Query(..., title="", description="班级", examples=["二2班"])
     major_id: str | int = Query(0, title="", description="专业", examples=["农业"])
-    transfer_time: str = Query("", description="转学时间", min_length=1, max_length=20, examples=["2020-10-10"]),
+    transfer_time: str|None = Query("", description="转学时间", min_length=1, max_length=20, examples=["2020-10-10"]),
     transfer_reason: str = Query("", description="转学原因", min_length=1, max_length=20, examples=["家庭搬迁..."]),
     status: str = Query('', description="", min_length=1, max_length=20, examples=["..."]),
     doc_upload: str = Field('', description=" 附件", examples=[''])
@@ -112,7 +115,7 @@ class StudentEduInfoOut(BaseModel):
     id: int | str = Query(0, description="id", examples=["1"], example="1"),
     relation_id: int | str = Query(0, description="关联id", examples=["1"], example="1"),
     apply_user: str = Query('', title="", description="", examples=["申请人"])
-    apply_time: str = Query('', title="", description="", examples=["申请时间"])
+    apply_time: str|None = Query('', title="", description="", examples=["申请时间"])
     student_gender: str | None = Query('', title="", description="", examples=[""])
     student_name: str | None = Query('', title="", description="", examples=[""])
     edu_number: str | None = Query("", description="国家学籍号码", min_length=1, max_length=30, examples=["DF23321312"])

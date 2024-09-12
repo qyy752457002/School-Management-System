@@ -263,10 +263,19 @@ def convert_dates_to_strings(stuinfoadddict):
             stuinfoadddict[key] = value.strftime("%Y-%m-%d %H:%M:%S")
         if isinstance(value, Query) or isinstance(value, tuple):
             stuinfoadddict[key] = None
-        # if isinstance(value,InstanceState):
-        #     stuinfoadddict[key] = value.value
     return stuinfoadddict
-
+def convert_obj_datetime_to_strings(obj):
+    for attr_name in dir(obj):
+        # 跳过特殊方法和属性
+        if attr_name.startswith('__'):
+            continue
+        attr_value = getattr(obj, attr_name)
+        if isinstance(attr_value, datetime):
+            # 转换datetime对象为字符串
+            str_value = attr_value.strftime("%Y-%m-%d %H:%M:%S")
+            # 将字符串赋值回对象的属性
+            setattr(obj, attr_name, str_value)
+    return obj
 
 def convert_snowid_to_strings(paging_result, extra_colums=None):
     """

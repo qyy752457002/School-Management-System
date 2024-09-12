@@ -18,7 +18,8 @@ from daos.students_base_info_dao import StudentsBaseInfoDao
 from daos.students_dao import StudentsDao
 from models.student_transaction import StudentTransaction, TransactionDirection
 from models.students import StudentApprovalAtatus
-from views.common.common_view import workflow_service_config, convert_snowid_to_strings, convert_snowid_in_model
+from views.common.common_view import workflow_service_config, convert_snowid_to_strings, convert_snowid_in_model, \
+    convert_dates_to_strings, convert_obj_datetime_to_strings
 from views.models.student_transaction import StudentEduInfo as StudentTransactionModel, StudentEduInfo, \
     StudentEduInfoOut, StudentTransactionStatus
 from views.models.student_transaction import StudentTransaction as StudentTransactionVM
@@ -147,9 +148,17 @@ class StudentTransactionRule(object):
         student_transaction_db.edu_number=''
         # print(student_transaction_db)
         # print(vars(student_transaction_db))
+        # student_transaction_db_dict = student_transaction_db.__dict__
+        # created_at= student_transaction_db.created_at
+        # updated_at= student_transaction_db.updated_at
 
-        student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=[""],
-                                                      other_mapper=flipped_dict)
+        # convert_obj_datetime_to_strings(student_transaction_db )
+        # delattr(student_transaction_db, 'created_at')
+        # delattr(student_transaction_db, 'updated_at')
+
+        student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel,  exclude=["created_at", 'updated_at'],other_mapper=flipped_dict)
+        # student_transaction_db.created_at=created_at
+        # student_transaction_db.updated_at=updated_at
         # print(student_transaction)
         # print(vars(student_transaction))
         convert_snowid_in_model(student_transaction, ["id",'student_id','school_id','class_id','session_id','relation_id','process_instance_id','in_school_id','grade_id','transferin_audit_id'])

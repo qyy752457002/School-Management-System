@@ -369,6 +369,9 @@ class CurrentStudentsView(BaseView):
 
                                           ):
         # print(new_students_key_info)
+        if isinstance(student_id, str):
+            student_id = int(student_id)
+        student_edu_info_in.student_id = student_id
         # 检测 重复发起
         is_lock = await self.student_transaction_rule.exist_undealed_student_transaction(student_id)
         if is_lock:
@@ -383,7 +386,7 @@ class CurrentStudentsView(BaseView):
         student_edu_info_out = await self.student_transaction_rule.get_student_edu_info_by_id(student_id, )
 
         student_edu_info_out.status = AuditAction.NEEDAUDIT.value
-        student_edu_info_out.student_id = res_student.student_id
+        student_edu_info_out.student_id = student_id
         # student_edu_info_out.process_instance_id = process_instance_id
 
         res_out = await self.student_transaction_rule.add_student_transaction(student_edu_info_out,
@@ -408,10 +411,10 @@ class CurrentStudentsView(BaseView):
         # 转入
 
         student_edu_info_in.status = AuditAction.NEEDAUDIT.value
-        student_edu_info_in.student_id = res_student.student_id
+        student_edu_info_in.student_id =  student_id
         student_edu_info_in.relation_id = res_out.id
         # print(  res_out.id,000000)
-        student_edu_info_in.process_instance_id = process_instance_id
+        student_edu_info_in.process_instance_id = int(process_instance_id) if isinstance(process_instance_id, str) else process_instance_id
 
 
         res = await self.student_transaction_rule.add_student_transaction(student_edu_info_in,
