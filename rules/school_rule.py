@@ -608,9 +608,9 @@ class SchoolRule(object):
         # 部门对接
         res_org, data_org = await self.send_org_to_org_center(org, res_unit)
         # 管理员 对接
-        res_admin = await self.send_admin_to_org_center(school, data_org)
+        # res_admin = await self.send_admin_to_org_center(school, data_org)
         # 添加 用户和组织关系 就是部门
-        await self.send_user_org_relation_to_org_center(school, res_unit, data_org, res_admin)
+        # await self.send_user_org_relation_to_org_center(school, res_unit, data_org, res_admin)
         return True
 
     async def deal_school(self, process_instance_id, action, ):
