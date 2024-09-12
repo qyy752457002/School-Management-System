@@ -340,7 +340,7 @@ class PlanningSchoolRule(object):
         await self.send_user_org_relation_to_org_center(exists_planning_school, res_unit, data_org, res_admin)
         return True
 
-    async def update_planning_school_byargs(self, planning_school, need_update_list=None):
+    async def update_planning_school_byargs(self, planning_school, need_update_list=None,modify_status= False):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school.id)
         if not exists_planning_school:
             raise PlanningSchoolNotFoundError()

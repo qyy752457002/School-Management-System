@@ -67,7 +67,7 @@ class SchedulerTask(object):
         # planning_school_no_list= [ '2101031118342' ]
         for planning_school_code in planning_school_no_list:
             try:
-                departname = '国际交流处'
+                departname = '国际交流'
                 if school_type== SchoolType.PLANING_SCHOOL:
                     checked = await self.planning_school_rule.is_sended(planning_school_code)
                     if checked and not is_repush:
