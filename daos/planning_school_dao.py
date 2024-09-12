@@ -1,10 +1,8 @@
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
 from mini_framework.databases.queries.pages import Paging
-from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.web.std_models.page import PageRequest
 from sqlalchemy import select, func, update, desc
 
-from daos.tenant_dao import TenantDAO
 from models.planning_school import PlanningSchool
 from models.planning_school_communication import PlanningSchoolCommunication
 from views.models.extend_params import ExtendParams
@@ -53,6 +51,13 @@ class PlanningSchoolDAO(DAOBase):
         await session.commit()
         await session.refresh(planning_school)
         return planning_school
+
+    async def get_all_planning_school_no(self):
+        session = await self.slave_db()
+        result = await session.execute(
+            select(PlanningSchool.planning_school_no).where(PlanningSchool.is_deleted == False,
+                                                            PlanningSchool.status == "normal"))
+        return result.scalars().all()
 
     async def update_planning_school(self, planning_school, ctype=1):
         session = await self.master_db()
@@ -138,7 +143,7 @@ class PlanningSchoolDAO(DAOBase):
                 if isinstance(planning_school_category, list):
                     query = query.where(PlanningSchool.planning_school_category.in_(planning_school_category))
                 else:
-                    query = query.where(PlanningSchool.planning_school_category ==  planning_school_category)
+                    query = query.where(PlanningSchool.planning_school_category == planning_school_category)
 
         if planning_school_name:
             query = query.where(PlanningSchool.planning_school_name == planning_school_name)
@@ -249,3 +254,12 @@ class PlanningSchoolDAO(DAOBase):
             PlanningSchoolCommunication.is_deleted == False, PlanningSchool.planning_school_no == school_no)
         result = await session.execute(query_planning_school)
         return result.first()
+
+    async def get_planning_school_by_planning_school_no_to_org(self, planning_school_no):
+        session = await self.slave_db()
+        query_planning_school = select(PlanningSchool).where(
+            # PlanningSchool.is_deleted == False,
+            # PlanningSchool.status == "normal",
+            PlanningSchool.planning_school_no == planning_school_no)
+        result = await session.execute(query_planning_school)
+        return result.scalar_one_or_none()

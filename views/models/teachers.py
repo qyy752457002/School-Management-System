@@ -11,6 +11,8 @@ from models.public_enum import Gender
 from views.models.operation_record import ChangeModule
 
 
+
+
 class TeacherMainStatus(str, Enum):
     """
     未入职：unemployed
@@ -194,6 +196,8 @@ class TeachersSchool(BaseModel):
     borough: str = Field("", title="行政管辖区", description="行政管辖区")
 
 
+
+
 class TeachersCreatModel(BaseModel):
     """
     姓名：teacher_name
@@ -285,6 +289,8 @@ class TeachersSaveImportRegisterCreatTestTestModel(BaseModel):
     teacher_employer: str = Field(..., title="所在单位", description="单位部门", )
     mobile: int = Field("", title="手机号码", description="手机号")
     org_id: str | int = Field("", title="所在部门", description="组织ID")
+    identity_type: str = Field("", title="身份类型", description="身份类型")
+    identity: str = Field("", title="身份", description="身份")
 
 
 class TeacherImportSaveResulRestModel(TeachersSaveImportRegisterCreatTestTestModel):
@@ -308,6 +314,8 @@ class TeachersSaveImportCreatTestModel(BaseModel):
     teacher_employer: int = Field(..., title="任职单位", description="单位部门", )
     mobile: str = Field("", title="手机号", description="手机号")
     org_id: str | int = Field("", title="组织ID", description="组织ID")
+    # identity_type: str = Field("", title="身份类型", description="身份类型")
+    # identity: str = Field("", title="身份", description="身份")
 
     @model_validator(mode='before')
     @classmethod

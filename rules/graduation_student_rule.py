@@ -286,6 +286,16 @@ class GraduationStudentRule(object):
         else:
             return result
 
+    async def update_graduation_student_by_school_id_new(self, school_id):
+        """
+        按照年级是否是毕业年级来更新学生的毕业状态
+        """
+        school_db = await self.school_dao.get_school_by_id(school_id)
+        if not school_db:
+            raise SchoolNotFoundError()
+        result = await self.graduation_student_dao.update_graduation_student_by_school_id_new(school_id)
+
+
     async def query_graduation_student_by_model_with_page(
         self, page_request: PageRequest, query_model
     ):

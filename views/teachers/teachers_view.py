@@ -70,11 +70,7 @@ class TeachersView(BaseView):
                 school = await school_dao.get_school_by_id(tenant.origin_id)
                 if not school:
                     return "学校不存在"
-                #如果是事业单位，则就是自己查询自己事业单位的信息
                 if school.institution_category == "institution":
-                    teacher_approval_query.teacher_employer = tenant.origin_id
-                # 如果是行政单位，则查询行政单位下的所有学校的信息
-                elif school.institution_category == "institution":
                     extend_param["borough"] = school.borough
                 else:
                     teacher_approval_query.teacher_employer = tenant.origin_id
@@ -107,11 +103,7 @@ class TeachersView(BaseView):
                 school = await school_dao.get_school_by_id(tenant.origin_id)
                 if not school:
                     return "学校不存在"
-                #如果是事业单位，则就是自己查询自己事业单位的信息
                 if school.institution_category == "institution":
-                    teacher_approval_query.teacher_employer = tenant.origin_id
-                # 如果是行政单位，则查询行政单位下的所有学校的信息
-                elif school.institution_category == "institution":
                     extend_param["borough"] = school.borough
                 else:
                     teacher_approval_query.teacher_employer = tenant.origin_id

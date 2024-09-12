@@ -42,7 +42,7 @@ class OrganizationRule(object):
         organization = orm_model_to_view_model(organization_db, Organization, exclude=[""])
         return organization
 
-    async def add_organization(self, organization: Organization):
+    async def add_organization(self, organization: Organization,is_need_send=True):
         exists_organization = await self.organization_dao.get_organization_by_name(
             organization.org_name, organization)
         if exists_organization:
@@ -60,7 +60,8 @@ class OrganizationRule(object):
         convert_snowid_in_model(organization, ["id", "school_id", 'parent_id', ])
         # todo 发送组织中心
         try:
-            await self.send_org_to_org_center(organization)
+            if is_need_send:
+                await self.send_org_to_org_center(organization)
         except Exception as e:
             print("发送组织中心失败", e)
         return organization
