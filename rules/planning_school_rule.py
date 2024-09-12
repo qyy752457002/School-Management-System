@@ -34,6 +34,7 @@ from models.public_enum import IdentityType
 from models.student_transaction import AuditAction
 from rules.common.common_rule import send_request, send_orgcenter_request, get_identity_by_job, check_social_credit_code
 from rules.enum_value_rule import EnumValueRule
+from rules.organization_rule import OrganizationRule
 from rules.school_communication_rule import SchoolCommunicationRule
 from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
@@ -327,6 +328,10 @@ class PlanningSchoolRule(object):
                            # 多一个参数 比分校
                            org_code_type='school',
                            )
+        # todo 加部门
+        organization_rule= get_injector(OrganizationRule)
+        res = await  organization_rule.add_organization(org,False)
+
 
         res_org, data_org = await self.send_org_to_org_center(org, res_unit,departmentname)
         # 添加 管理员 用户

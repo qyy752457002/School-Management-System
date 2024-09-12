@@ -39,6 +39,7 @@ from models.student_transaction import AuditAction
 from rules.common.common_rule import send_request, send_orgcenter_request, get_identity_by_job, \
     check_social_credit_code, check_school_no
 from rules.enum_value_rule import EnumValueRule
+from rules.organization_rule import OrganizationRule
 from rules.system_rule import SystemRule
 from rules.tenant_rule import TenantRule
 from views.common.common_view import workflow_service_config, convert_snowid_in_model, convert_snowid_to_strings, \
@@ -598,6 +599,10 @@ class SchoolRule(object):
                            parent_id=0,
                            org_code=school.school_no,
                            )
+        # todo 加部门
+        organization_rule= get_injector(OrganizationRule)
+        res = await  organization_rule.add_organization(org,False)
+
         # 部门对接
         res_org, data_org = await self.send_org_to_org_center(org, res_unit)
         # 管理员 对接
