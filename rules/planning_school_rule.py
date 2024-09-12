@@ -1225,3 +1225,15 @@ class PlanningSchoolRule(object):
             return response
 
         return None
+
+    async def is_sended(self, planning_school_no):
+        exists_planning_school=await self.planning_school_dao.get_planning_school_by_planning_school_no_to_org(planning_school_no)
+        print(exists_planning_school)
+        if not exists_planning_school:
+            raise PlanningSchoolNotFoundError()
+        if exists_planning_school.org_center_info:
+            print('已发送过', planning_school_no,exists_planning_school.org_center_info)
+            return True
+
+        return False
+

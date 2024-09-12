@@ -50,7 +50,7 @@ class SchedulerTask(object):
             if i==2:
                 school_no = arg
             if i==3:
-                school_type = arg
+                school_type =  'planning_school' if int(arg)==0 else 'school'
             if i==4:
                 is_repush =  int(arg) ==1
 
@@ -63,6 +63,10 @@ class SchedulerTask(object):
         for planning_school_code in planning_school_no_list:
             try:
                 departname = '国际交流处'
+                checked = await self.planning_school_rule.is_sended(planning_school_code)
+                if checked and not is_repush:
+                    print(f'编号{planning_school_code}已经发送过')
+                    continue
                 await self.planning_school_rule.send_planning_school_to_org_center_by_school_no(planning_school_code,departname)
             except Exception as e:
                 print(f'编号{planning_school_code}的发生错误{e}')
@@ -70,32 +74,7 @@ class SchedulerTask(object):
                 return f'编号{planning_school_code}的发生错误{e}'
         return 'success'
         # self.supervisor_rule.sync_survey_data()
-        return
-        if self.is_enable:
-            print("timer enable=true, add job cron")
-            if self.scheduler_unit == "minute":
-                minute = self.cron_expression
-                second = 0
-            if self.scheduler_unit == "second":
-                minute = None
-                second = self.cron_expression
-            cron_expression = {
-                'year': None,
-                'month': None,
-                'day': None,
-                'week': None,
-                'day_of_week': None,
-                'hour': None,
-                'minute': minute,  # 每 5 分钟
-                'second': second,
-                'start_date': None,
-                'end_date': None,
-                'timezone': None,
-                'jitter': None,
-            }
-            self.scheduler.add_job(self.supervisor_rule.sync_survey_data, "cron", **cron_expression)
-        else:
-            print("timer enable=false, add job cron")
+
 
     async def add_job_interval(self, func, number: int):
         if self.is_enable:
