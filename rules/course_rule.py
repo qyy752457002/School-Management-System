@@ -122,10 +122,12 @@ class CourseRule(object):
     async def get_course_all(self, filterdict,school=None ):
         # 过滤 课程编码范围
         course_no= [ ]
-        courenores  = await self.course_school_nature_dao.get_course_school_nature_by_school_nature(school.school_category)
-        for item in courenores:
-            course_no.append(item.course_no)
-        filterdict['course_no'] = course_no
+        if school:
+
+            courenores  = await self.course_school_nature_dao.get_course_school_nature_by_school_nature(school.school_category)
+            for item in courenores:
+                course_no.append(item.course_no)
+            filterdict['course_no'] = course_no
         items =  await self.course_dao.get_all_course(filterdict)
         items = copy.deepcopy(items)
         for item in items:
