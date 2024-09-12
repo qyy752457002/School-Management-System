@@ -123,9 +123,10 @@ class SchoolRule(object):
             school_no = school.block
 
             if school.institution_category == InstitutionType.INSTITUTION.value:
-                school_no = school_no + "X10"
-            elif school.institution_category == InstitutionType.ADMINISTRATION.value:
                 school_no = school_no + "X20"
+
+            elif school.institution_category == InstitutionType.ADMINISTRATION.value:
+                school_no = school_no + "X10"
 
             else:
                 pass
@@ -265,7 +266,7 @@ class SchoolRule(object):
 
         need_update_list = []
         for key, value in school.__dict__.items():
-            if key.startswith('_'):
+            if key.startswith('_') or key in ['school_no']:
                 continue
             if value:
                 need_update_list.append(key)
