@@ -9,6 +9,10 @@ from mini_framework.web.request_context import current_request_id
 from rules.planning_school_rule import PlanningSchoolRule
 import sys
 
+from rules.school_rule import SchoolRule
+from views.models.school_and_teacher_sync import SchoolType
+
+
 def sync_survey_data():
     # supervisor_rule = get_injector(SurveyExtractRule)
     current_request_id.set(shortuuid.uuid())
@@ -36,6 +40,7 @@ class SchedulerTask(object):
         # print("scheduler enable:" + str(self.is_enable))
         # self.supervisor_rule = get_injector(SurveyExtractRule)
         self.planning_school_rule = get_injector(PlanningSchoolRule)
+        self.school_rule = get_injector(SchoolRule)
 
     async def add_job_cron(self):
         # 获取命令行参数
@@ -63,11 +68,19 @@ class SchedulerTask(object):
         for planning_school_code in planning_school_no_list:
             try:
                 departname = '国际交流处'
-                checked = await self.planning_school_rule.is_sended(planning_school_code)
-                if checked and not is_repush:
-                    print(f'编号{planning_school_code}已经发送过')
-                    continue
-                await self.planning_school_rule.send_planning_school_to_org_center_by_school_no(planning_school_code,departname)
+                if school_type== SchoolType.PLANING_SCHOOL:
+                    checked = await self.planning_school_rule.is_sended(planning_school_code)
+                    if checked and not is_repush:
+                        print(f'编号{planning_school_code}已经发送过')
+                        continue
+                    await self.planning_school_rule.send_planning_school_to_org_center_by_school_no(planning_school_code,departname)
+                else:
+                    checked = await self.school_rule.is_sended(planning_school_code)
+                    if checked and not is_repush:
+                        print(f'编号{planning_school_code}已经发送过')
+                        continue
+                    await self.school_rule.send_school_to_org_center_by_school_no(planning_school_code,departname)
+
             except Exception as e:
                 print(f'编号{planning_school_code}的发生错误{e}')
                 traceback.print_exc()

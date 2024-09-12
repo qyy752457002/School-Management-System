@@ -26,7 +26,7 @@ from sqlalchemy import select, or_
 
 from business_exceptions.institution import InstitutionExistError
 from business_exceptions.planning_school import PlanningSchoolNotFoundError
-from business_exceptions.school import SchoolExistsError
+from business_exceptions.school import SchoolExistsError, SchoolNotFoundError
 from daos.enum_value_dao import EnumValueDAO
 from daos.planning_school_dao import PlanningSchoolDAO
 from daos.school_communication_dao import SchoolCommunicationDAO
@@ -580,7 +580,7 @@ class SchoolRule(object):
         return response
         pass
 
-    async def send_school_to_org_center_by_school_no(self, school_no):
+    async def send_school_to_org_center_by_school_no(self, school_no,departmentname=None ):
         """
         一期同步过来的数据送到组织中心
         """
@@ -592,7 +592,7 @@ class SchoolRule(object):
         # 单位的组织 对接
         await self.send_unit_orgnization_to_org_center(school, data_unit)
         # 添加组织结构 部门
-        org = Organization(org_name=school.school_name,
+        org = Organization(org_name=school.school_name if departmentname is None else departmentname ,
                            school_id=school.id,
                            org_type='校',
                            parent_id=0,
@@ -1223,7 +1223,8 @@ class SchoolRule(object):
             "isTopGroup": exists_planning_school.parent_id == 0,
             "key": "sit",
             "manager": "",
-            "name": exists_planning_school.org_name + "默认部门",
+            #  + "默认部门"
+            "name": exists_planning_school.org_name,
             # "name":  exists_planning_school_origin.org_name,
             # 名称唯一
             "newCode": exists_planning_school.org_code,
@@ -1370,3 +1371,13 @@ class SchoolRule(object):
         # for school in res:
         #     school_list.append(school.school_no)
         return res
+    async def is_sended(self, planning_school_no):
+        exists_planning_school=await self.school_dao.get_school_by_school_no_to_org(planning_school_no)
+        print(exists_planning_school)
+        if not exists_planning_school:
+            raise SchoolNotFoundError()
+        if exists_planning_school.org_center_info:
+            print('已发送过', planning_school_no,exists_planning_school.org_center_info)
+            return True
+
+        return False
