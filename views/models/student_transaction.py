@@ -77,7 +77,7 @@ class StudentEduInfo(BaseModel):
         for _change in _change_list:
             if _change not in data:
                 continue
-            if isinstance(data[_change], str):
+            if isinstance(data[_change], str) and len(data[_change]) >0 :
                 data[_change] = int(data[_change])
             elif isinstance(data[_change], int):
                 pass

@@ -275,6 +275,9 @@ def convert_obj_datetime_to_strings(obj):
             str_value = attr_value.strftime("%Y-%m-%d %H:%M:%S")
             # 将字符串赋值回对象的属性
             setattr(obj, attr_name, str_value)
+        if isinstance(attr_value, Query) or isinstance(attr_value, tuple):
+            setattr(obj, attr_name, None)
+
     return obj
 
 def convert_snowid_to_strings(paging_result, extra_colums=None):

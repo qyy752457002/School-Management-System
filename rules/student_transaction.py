@@ -157,8 +157,9 @@ class StudentTransactionRule(object):
         # convert_obj_datetime_to_strings(student_transaction_db )
         # delattr(student_transaction_db, 'created_at')
         # delattr(student_transaction_db, 'updated_at')
+        student_transaction_db.edu_number = ''
 
-        student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=['updated_at','created_at'],
+        student_transaction = orm_model_to_view_model(student_transaction_db, StudentTransactionModel, exclude=['updated_at','created_at','edu_number'],
                                                       other_mapper=flipped_dict)
         # student_transaction_db.created_at=created_at
         # student_transaction_db.updated_at=updated_at

@@ -29,7 +29,7 @@ from rules.students_family_info_rule import StudentsFamilyInfoRule
 from rules.students_key_info_change_rule import StudentsKeyInfoChangeRule
 from rules.students_rule import StudentsRule
 from rules.system_rule import SystemRule
-from views.common.common_view import compare_modify_fields, convert_dates_to_strings
+from views.common.common_view import compare_modify_fields, convert_dates_to_strings, convert_obj_datetime_to_strings
 from views.models.operation_record import OperationRecord, ChangeModule, OperationType, OperationTarget
 from views.models.student_temporary_study import StudentTemporaryStudy, StudentTemporaryStudyOptional
 from views.models.student_transaction import StudentTransactionStatus, \
@@ -429,6 +429,7 @@ class CurrentStudentsView(BaseView):
             student_edu_info_in.status = AuditAction.NEEDAUDIT.value
             student_edu_info_in.student_id = student_id
             student_edu_info_in.relation_id = res_out.id
+            student_edu_info_in.edu_number = ''
             # print(  res_out.id,000000)
             student_edu_info_in.process_instance_id = int(process_instance_id) if isinstance(process_instance_id,  str) else process_instance_id
 
@@ -449,9 +450,12 @@ class CurrentStudentsView(BaseView):
                 # change_data=json_string,
                 process_instance_id=process_instance_id
             ))
+            print('执行完成')
+            convert_obj_datetime_to_strings(res)
+            convert_obj_datetime_to_strings(res3)
             pass
         except Exception as e:
-            print(e)
+            print('异常',e)
             traceback.print_exc()
 
         return res, res3
