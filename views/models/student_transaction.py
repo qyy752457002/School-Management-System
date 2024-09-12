@@ -221,7 +221,7 @@ class StudentTransactionAudit(BaseModel):
 
 
 class StudentTransactionPageSearch(BaseModel):
-    audit_status: StudentTransactionStatus = Query("", title="", description="状态", examples=['needaudit'])
+    audit_status: StudentTransactionStatus|None  = Query(None , title="", description="状态", examples=['needaudit'])
     student_name: str = Query("", title="", description="学生姓名", min_length=1, max_length=20),
 
     school_id: int = Query(0, title="", description="学校ID", )

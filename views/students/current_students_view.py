@@ -97,7 +97,7 @@ class CurrentStudentsView(BaseView):
 
     # 转学申请的 列表
     async def page_student_transaction(self,
-                                       audit_status: StudentTransactionStatus = Query("", title="", description="状态",
+                                       audit_status: StudentTransactionStatus|None = Query(None , title="", description="状态",
                                                                                       examples=['needaudit']),
                                        student_name: str = Query("", title="",
                                                                  description="学生姓名", min_length=1, max_length=20),
@@ -113,7 +113,7 @@ class CurrentStudentsView(BaseView):
                                                            max_length=20),
 
                                        page_request=Depends(PageRequest)):
-        print(audit_status, )
+        # print(audit_status, )
         items = []
         # exit(1)
         # return page_search
