@@ -420,9 +420,17 @@ class SchoolDAO(DAOBase):
         school = await self.get_school_by_args(block=tenant_code, planning_school_id=0)
         return school
 
-    async def get_school_by_school_no_to_org(self, school_no):
+    async def get_school_by_school_no_to_org_bad(self, school_no):
         session = await self.slave_db()
         query_school = select(School).where(School.school_no == school_no, School.is_deleted == False,
                                             School.status == "normal")
         result = await session.execute(query_school)
+        return result.scalar_one_or_none()
+    async def get_school_by_school_no_to_org(self, planning_school_no):
+        session = await self.slave_db()
+        query_planning_school = select(School).where(
+            # PlanningSchool.is_deleted == False,
+            # PlanningSchool.status == "normal",
+            School.school_no == planning_school_no)
+        result = await session.execute(query_planning_school)
         return result.scalar_one_or_none()

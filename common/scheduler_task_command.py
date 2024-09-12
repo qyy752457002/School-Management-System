@@ -3,7 +3,7 @@ from venv import logger
 from mini_framework.commands.command_base import Command
 
 
-class SchedulerTaskCommand(Command):
+class SchoolSendCommand(Command):
     def __init__(self):
         super().__init__()
 
@@ -25,7 +25,7 @@ class SchedulerTaskCommand(Command):
             #     while True:
             #         await asyncio.sleep(5)
             # except KeyboardInterrupt:
-            #     logger.info("SchedulerTaskCommand stop...")
+            #     logger.info("SchoolSendCommand stop...")
             #     scheduler_task.scheduler.shutdown()
         # asyncio.run(task_run())
         await task_run()
