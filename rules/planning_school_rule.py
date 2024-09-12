@@ -866,7 +866,8 @@ class PlanningSchoolRule(object):
         planning_school_communication = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(
             exists_planning_school.id)
         cn_exists_planning_school = await self.convert_planning_school_to_export_format(exists_planning_school)
-        dict_data = {'administrativeDivisionCity': '沈阳市',
+        dict_data = {
+            'administrativeDivisionCity': '沈阳市',
                      'administrativeDivisionCounty': cn_exists_planning_school.block,
                      'administrativeDivisionProvince': planning_school_communication.loc_area_pro,
                      'createdTime': exists_planning_school.create_planning_school_date,

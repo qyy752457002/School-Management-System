@@ -1005,12 +1005,16 @@ class SchoolRule(object):
         cn_exists_planning_school = await self.convert_school_to_export_format(exists_planning_school)
         # todo 多组织 是否支持逗号分隔
         dict_data = {
-            'administrativeDivisionCity': '',
+            # 'administrativeDivisionCity': '',
+            'administrativeDivisionCity': '沈阳市',
+
             'administrativeDivisionCounty': exists_planning_school.block,
             'administrativeDivisionProvince': planning_school_communication.loc_area_pro,
             'createdTime': exists_planning_school.create_school_date,
             'locationAddress': planning_school_communication.detailed_address,
-            'locationCity': '',
+            # 'locationCity': '',
+            'locationCity': '沈阳市',
+
             'locationCounty': planning_school_communication.loc_area,
             'locationProvince': planning_school_communication.loc_area_pro,
             'owner': exists_planning_school.school_no,
@@ -1022,6 +1026,11 @@ class SchoolRule(object):
             'updatedTime': exists_planning_school.updated_at
 
         }
+        # 判断键 administrativeDivisionProvince 如果值为none或者空字符串 则给默认值
+        if dict_data['administrativeDivisionProvince'] == None or dict_data['administrativeDivisionProvince'] == '':
+            dict_data['administrativeDivisionProvince'] = '辽宁省'
+        if dict_data['locationProvince'] == None or dict_data['locationProvince'] == '':
+            dict_data['locationProvince'] = '辽宁省'
 
         apiname = '/api/add-educate-unit'
         # 字典参数
