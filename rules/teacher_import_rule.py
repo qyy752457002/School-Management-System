@@ -62,7 +62,6 @@ class TeacherSyncRule:
                 if organization:
                     org_id = str(organization.id)
                     item["org_id"] = org_id
-                # item["org_id"] = 7225316120776019968
             else:
                 raise SchoolNotFoundError()
             teacher_identity_type = OrgIdentityType.from_chinese(item["identity_type"])

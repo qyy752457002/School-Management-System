@@ -15,6 +15,7 @@ class OrgIdentity(str, Enum):
     九年一贯制学校专任教师-nine_year_teacher
     十二年一贯制学校专任教师-twelve_year_teacher
     特殊教育学校专任教师-special_education_teacher
+    完全中学专任老师-full_secondary_school_teacher
     幼儿园职工-kindergarten_staff
     小学职工-primary_school_staff
     初中职工-middle_school_staff
@@ -77,6 +78,7 @@ class OrgIdentity(str, Enum):
     VOCATIONAL_PARENT = "vocational_parent"
     TECHNICAL_STAFF = "technical_staff"
     OPERATION_STAFF = "operation_staff"
+    FULL_SECONDARY_SCHOOL_TEACHER = "full_secondary_school_teacher"
 
     @classmethod
     def to_dict(cls):
@@ -117,7 +119,8 @@ class OrgIdentity(str, Enum):
             "高中家长": cls.HIGH_SCHOOL_PARENT,
             "中等职业学校家长": cls.VOCATIONAL_PARENT,
             "技术人员": cls.TECHNICAL_STAFF,
-            "运维人员": cls.OPERATION_STAFF
+            "运维人员": cls.OPERATION_STAFF,
+            "完全中学专任教师": cls.FULL_SECONDARY_SCHOOL_TEACHER
         }
 
     @classmethod

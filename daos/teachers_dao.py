@@ -91,7 +91,8 @@ class TeachersDao(DAOBase):
         session = await self.slave_db()
         result = await session.execute(
             select(Teacher.teacher_id).where(Teacher.is_deleted == False, Teacher.is_approval == False,
-                                             Teacher.teacher_main_status == 'employed', Teacher.teacher_employer == school_id))
+                                             Teacher.teacher_main_status == 'employed',
+                                             Teacher.teacher_employer == school_id))
         return result.scalars().all()
 
     # 获取教师数量
@@ -125,7 +126,18 @@ class TeachersDao(DAOBase):
         query = select(Teacher).where(Teacher.teacher_id_number == teacher_id_number,
                                       Teacher.teacher_id_type == teacher_id_type,
                                       Teacher.teacher_name == teacher_name,
-                                      Teacher.teacher_gender == teacher_gender)
+                                      Teacher.teacher_gender == teacher_gender,Teacher.is_deleted == False)
+        result = await session.execute(query)
+        length = len(result.scalars().all())
+        return length
+
+    async def get_teachers_info_by_prams_school_id(self, teacher_id_number, teacher_id_type, teacher_name,
+                                                   teacher_employer):
+        session = await self.slave_db()
+        query = select(Teacher).where(Teacher.teacher_id_number == teacher_id_number,
+                                      Teacher.teacher_id_type == teacher_id_type,
+                                      Teacher.teacher_name == teacher_name,
+                                      Teacher.teacher_employer == teacher_employer,Teacher.is_deleted == False)
         result = await session.execute(query)
         length = len(result.scalars().all())
         return length
