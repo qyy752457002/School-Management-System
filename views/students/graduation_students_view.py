@@ -35,7 +35,17 @@ class GraduationStudentsView(BaseView):
         )
         return res
 
-    # 修改毕业状态
+
+    # 发起毕业 用新字段
+    async def get_graduation_student_by_school_id_new(
+        self, school_id: int | str = Query(..., title="学校id", description="学校id")
+    ):
+        res = await self.graduation_student_rule.update_graduation_student_by_school_id_new(
+            school_id
+        )
+        return res
+
+    # 修改单个学生毕业状态
     async def post_student_graduate_status_by_student_id(
         self,
         student_id: int | str = Body(..., title="学生编号", description="学生编号"),
@@ -46,7 +56,7 @@ class GraduationStudentsView(BaseView):
         )
         return res
 
-    # 归档
+    # 区归档
     async def get_student_graduate_archive_status_by_school_id(
         self,
         school_id: int | str = Query(..., title="学校编号", description="学校编号"),
@@ -63,15 +73,15 @@ class GraduationStudentsView(BaseView):
         return res
 
     # 区查询学校的归档状态
-    async def page_school_archive_status(
-        self,
-        query_model: CountySchoolArchiveQueryModel,
-        page_request=Depends(PageRequest),
-    ):
-        res = await self.graduation_student_rule.query_school_archive_status_with_page(
-            page_request, query_model
-        )
-        return res
+    # async def page_school_archive_status(
+    #     self,
+    #     query_model: CountySchoolArchiveQueryModel,
+    #     page_request=Depends(PageRequest),
+    # ):
+    #     res = await self.graduation_student_rule.query_school_archive_status_with_page(
+    #         page_request, query_model
+    #     )
+    #     return res
 
     # 学生升级
     async def get_upgrade_all_student(

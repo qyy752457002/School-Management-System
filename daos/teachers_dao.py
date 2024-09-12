@@ -1,6 +1,4 @@
 from mini_framework.databases.entities.dao_base import DAOBase, get_update_contents
-from mini_framework.databases.queries.pages import Paging
-from mini_framework.web.std_models.page import PageRequest
 from sqlalchemy import and_
 from sqlalchemy import select, func, update
 
@@ -10,7 +8,6 @@ from models.school import School
 from models.teachers import Teacher
 from models.teachers_info import TeacherInfo
 from views.models.teacher_transaction import TeacherTransactionQuery
-from views.models.teachers import TeacherApprovalQuery
 
 
 class TeachersDao(DAOBase):
@@ -42,7 +39,7 @@ class TeachersDao(DAOBase):
                        Teacher.teacher_name.label("realName"),
                        Teacher.teacher_id_type.label("idCardType"),
                        Teacher.teacher_id_number.label("idCardNumber"),
-                       func.coalesce(School.org_center_info,'').label("currentUnit"),
+                       func.coalesce(School.org_center_info, '').label("currentUnit"),
                        Organization.org_name.label("departmentId"),
                        Teacher.teacher_gender.label("gender"),
                        OrganizationMembers.identity.label("identity"),
@@ -58,7 +55,8 @@ class TeachersDao(DAOBase):
         query = query.where(Teacher.teacher_id == teachers_id,
                             Teacher.is_deleted == False,
                             TeacherInfo.org_id == org_id,
-                            Organization.id == org_id,OrganizationMembers.is_deleted == False,Teacher.is_deleted == False)
+                            Organization.id == org_id, OrganizationMembers.is_deleted == False,
+                            Teacher.is_deleted == False)
         result = await session.execute(query)
         return result.first()
 
@@ -80,6 +78,20 @@ class TeachersDao(DAOBase):
     async def get_all_teachers(self):
         session = await self.slave_db()
         result = await session.execute(select(Teacher))
+        return result.scalars().all()
+
+    async def get_all_teachers_id_list(self):
+        session = await self.slave_db()
+        result = await session.execute(
+            select(Teacher.teacher_id).where(Teacher.is_deleted == False, Teacher.is_approval == False,
+                                             Teacher.teacher_main_status == 'employed'))
+        return result.scalars().all()
+
+    async def get_all_teachers_id_list_by_school_id(self, school_id):
+        session = await self.slave_db()
+        result = await session.execute(
+            select(Teacher.teacher_id).where(Teacher.is_deleted == False, Teacher.is_approval == False,
+                                             Teacher.teacher_main_status == 'employed', Teacher.teacher_employer == school_id))
         return result.scalars().all()
 
     # 获取教师数量
@@ -117,4 +129,3 @@ class TeachersDao(DAOBase):
         result = await session.execute(query)
         length = len(result.scalars().all())
         return length
-

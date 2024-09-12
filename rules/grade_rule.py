@@ -58,7 +58,7 @@ class GradeRule(object):
         if auto_gen and grade.city:
             # 区的转换   or todo
             districts = await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY, grade.city)
-            print('区域', districts, '')
+            # print('区域', districts, '')
             for district in districts:
                 grade_db = view_model_to_orm_model(grade, Grade, exclude=["id"])
                 grade_db.created_at = datetime.now()

@@ -208,7 +208,7 @@ class TeachersRule(object):
         teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
-        # await self.add_teacher_organization_members(int(teachers_work.teacher_id))
+        await self.add_teacher_organization_members(int(teachers_work.teacher_id))
         return teachers_work.teacher_id
 
     async def query_teacher_operation_record_with_page(self, query_model: TeacherChangeLogQueryModel,
@@ -244,6 +244,10 @@ class TeachersRule(object):
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         # 获取老师信息
         teachers = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
+        teachers_info = TeacherInfoSaveModel(teacher_id=teachers.teacher_id)
+        teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
+        teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
+        await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         return teachers
 
     async def add_transfer_teachers_in(self, teachers: TeacherAdd):
@@ -282,6 +286,7 @@ class TeachersRule(object):
             #                                                  exclude=[""])
             res = compare_modify_fields(teachers, old_teachers)
             params = {"process_code": "t_keyinfo", "teacher_id": teachers.teacher_id, "applicant_name": user_id}
+
             school = await self.school_dao.get_school_by_id(teachers.teacher_employer)
             school_name = ""
             borough = ""
@@ -346,6 +351,21 @@ class TeachersRule(object):
         teachers_db = await self.teachers_dao.get_all_teachers()
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=["hash_password"])
         return teachers
+    async def get_all_teachers_id_list(self):
+        teacher_id_list=[]
+        teachers_db = await self.teachers_dao.get_all_teachers_id_list()
+        for teacher in teachers_db:
+            teacher_id_list.append(str(teacher))
+        return teacher_id_list
+
+    #为了找出督导人员
+    async def get_all_teachers_id_list_by_school_id(self, school_id):
+        teacher_id_list=[]
+        teachers_db = await self.teachers_dao.get_all_teachers_id_list_by_school_id(school_id)
+        for teacher in teachers_db:
+            teacher_id_list.append(str(teacher))
+        return teacher_id_list
+
 
     async def get_teachers_count(self):
         teachers_count = await self.teachers_dao.get_teachers_count()

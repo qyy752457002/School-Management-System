@@ -312,8 +312,12 @@ async def get_identity_by_job(school_operation_type: List, post_type=None):
     if post_type is None :
         identity_type = IdentityType.STAFF.value
         identity = "education_unit_staff"
+        for i in range(len(school_operation_type), 0, -1):
+            key = '_'.join(school_operation_type[:i])
+            if key in staff_map:
+                identity = staff_map.get(key)
+                break
         return identity_type, identity
-
     parts = post_type.split(',')
     if parts[0] == "student":
         identity_type = IdentityType.STUDENT.value

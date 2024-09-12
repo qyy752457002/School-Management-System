@@ -34,6 +34,7 @@ from models.public_enum import IdentityType
 from models.student_transaction import AuditAction
 from rules.common.common_rule import send_request, send_orgcenter_request, get_identity_by_job, check_social_credit_code
 from rules.enum_value_rule import EnumValueRule
+from rules.organization_rule import OrganizationRule
 from rules.school_communication_rule import SchoolCommunicationRule
 from rules.school_eduinfo_rule import SchoolEduinfoRule
 from rules.school_rule import SchoolRule
@@ -98,6 +99,8 @@ class PlanningSchoolRule(object):
             planning_school_name)
         planning_school = orm_model_to_view_model(planning_school_db, PlanningSchoolModel, exclude=[""])
         return planning_school
+    async def get_all_planning_school_no(self):
+        return await self.planning_school_dao.get_all_planning_school_no()
 
     async def add_planning_school(self, planning_school: PlanningSchoolModel | PlanningSchoolOptional):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_planning_school_name(
@@ -306,6 +309,36 @@ class PlanningSchoolRule(object):
                                                                                           is_commit=True)
 
         return planning_school_db
+    # 通用方法 多处都有使用
+    async def send_planning_school_to_org_center_by_school_no(self,planning_school_no,departmentname=None ):
+        print('根据学校编号获取规划校信息',planning_school_no)
+        exists_planning_school=await self.planning_school_dao.get_planning_school_by_planning_school_no_to_org(planning_school_no)
+        print(exists_planning_school)
+        if not exists_planning_school:
+            raise PlanningSchoolNotFoundError()
+        res_unit, data_unit = await self.send_planning_school_to_org_center(exists_planning_school)
+        #  自动添加一个组织
+        res_oigna = await self.send_unit_orgnization_to_org_center(exists_planning_school, data_unit)
+        # 添加组织结构 部门
+        org = Organization(org_name=exists_planning_school.planning_school_name if departmentname is None else departmentname,
+                           school_id=exists_planning_school.id,
+                           org_type='校',
+                           parent_id=0,
+                           org_code=exists_planning_school.planning_school_no,
+                           # 多一个参数 比分校
+                           org_code_type='school',
+                           )
+        # todo 加部门
+        organization_rule= get_injector(OrganizationRule)
+        res = await  organization_rule.add_organization(org,False)
+
+
+        res_org, data_org = await self.send_org_to_org_center(org, res_unit,departmentname)
+        # 添加 管理员 用户
+        res_admin = await self.send_admin_to_org_center(exists_planning_school, data_org)
+        # 添加 用户和组织关系 就是部门
+        await self.send_user_org_relation_to_org_center(exists_planning_school, res_unit, data_org, res_admin)
+        return True
 
     async def update_planning_school_byargs(self, planning_school, need_update_list=None,modify_status= False):
         exists_planning_school = await self.planning_school_dao.get_planning_school_by_id(planning_school.id)
@@ -724,7 +757,7 @@ class PlanningSchoolRule(object):
                                                                    return_keys='enum_value')
         school_org_form = await enum_value_rule.query_enum_values(SCHOOL_ORG_FORM_ENUM_KEY, None,
                                                                   return_keys='enum_value')
-        print('区域', districts, '')
+        # print('区域', districts, '')
         enum_mapper = frontend_enum_mapping
         # todo 这4个 目前 城乡类型 逗号3级   教学点类型 经济属性 民族属性
         if hasattr(paging_result, 'items'):
@@ -802,7 +835,7 @@ class PlanningSchoolRule(object):
         enum_value_rule = get_injector(EnumValueRule)
         self.districts = await enum_value_rule.query_enum_values(DISTRICT_ENUM_KEY, Constant.CURRENT_CITY,
                                                                  return_keys='description')
-        print('区域', self.districts)
+        # print('区域', self.districts)
         self.enum_mapper = {value: key for key, value in frontend_enum_mapping.items()}
         print('枚举映射', self.enum_mapper)
         return self
@@ -826,8 +859,8 @@ class PlanningSchoolRule(object):
     # 发送规划校到组织中心的方法
     async def send_planning_school_to_org_center(self, exists_planning_school_origin):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
-        if isinstance(exists_planning_school.updated_at, (date, datetime)):
-            exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
+        # if isinstance(exists_planning_school.updated_at, (date, datetime)):
+        #     exists_planning_school.updated_at = exists_planning_school.updated_at.strftime("%Y-%m-%d %H:%M:%S")
 
         # 教育单位的类型-必填 administrative_unit|public_institutions|school|developer
         planning_school_communication = await self.planning_school_communication_dao.get_planning_school_communication_by_planning_shool_id(
@@ -1031,7 +1064,7 @@ class PlanningSchoolRule(object):
 
         return None
 
-    async def send_org_to_org_center(self, exists_planning_school_origin: Organization, res_unit):
+    async def send_org_to_org_center(self, exists_planning_school_origin: Organization, res_unit,departmentname=None):
         exists_planning_school = copy.deepcopy(exists_planning_school_origin)
         if hasattr(exists_planning_school, 'updated_at') and isinstance(exists_planning_school.updated_at,
                                                                         (date, datetime)):
@@ -1056,7 +1089,8 @@ class PlanningSchoolRule(object):
             "isTopGroup": exists_planning_school.parent_id == 0,
             "key": "sit",
             "manager": "",
-            "name": exists_planning_school.org_name + "默认部门",
+            # + "默认部门"
+            "name": exists_planning_school.org_name ,
             # "name": "基础信息管理系统",
             "newCode": exists_planning_school.org_code,
             "newType": "organization",  # 组织类型 特殊参数必须穿这个
@@ -1196,3 +1230,15 @@ class PlanningSchoolRule(object):
             return response
 
         return None
+
+    async def is_sended(self, planning_school_no):
+        exists_planning_school=await self.planning_school_dao.get_planning_school_by_planning_school_no_to_org(planning_school_no)
+        print(exists_planning_school)
+        if not exists_planning_school:
+            raise PlanningSchoolNotFoundError()
+        if exists_planning_school.org_center_info:
+            print('已发送过', planning_school_no,exists_planning_school.org_center_info)
+            return True
+
+        return False
+

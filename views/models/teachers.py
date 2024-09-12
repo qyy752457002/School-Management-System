@@ -194,6 +194,8 @@ class TeachersSchool(BaseModel):
     borough: str = Field("", title="行政管辖区", description="行政管辖区")
 
 
+
+
 class TeachersCreatModel(BaseModel):
     """
     姓名：teacher_name
