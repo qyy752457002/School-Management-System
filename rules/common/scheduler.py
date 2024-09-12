@@ -62,7 +62,8 @@ class SchedulerTask(object):
         # planning_school_no_list= [ '2101031118342' ]
         for planning_school_code in planning_school_no_list:
             try:
-                await self.planning_school_rule.send_planning_school_to_org_center_by_school_no(planning_school_code)
+                departname = '国际交流处'
+                await self.planning_school_rule.send_planning_school_to_org_center_by_school_no(planning_school_code,departname)
             except Exception as e:
                 print(f'编号{planning_school_code}的发生错误{e}')
                 traceback.print_exc()
