@@ -82,9 +82,9 @@ class SchedulerTask(object):
                     await self.school_rule.send_school_to_org_center_by_school_no(planning_school_code,departname)
 
             except Exception as e:
-                print(f'编号{planning_school_code}的发生错误{e}')
+                print(f'编号{planning_school_code}的发生错误{e} 跳过 继续执行')
                 traceback.print_exc()
-                return f'编号{planning_school_code}的发生错误{e}'
+                # return f'编号{planning_school_code}的发生错误{e}'
         return 'success'
         # self.supervisor_rule.sync_survey_data()
 
