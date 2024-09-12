@@ -27,27 +27,39 @@ class SchedulerTask(object):
         manager = config_injection.get_config_manager()
         sync_scheduler_dict = manager.get_domain_config("sync_scheduler")
         self.scheduler_type = sync_scheduler_dict.get("scheduler_type")
-        print("scheduler type:" + self.scheduler_type)
+        # print("scheduler type:" + self.scheduler_type)
         self.scheduler_unit = sync_scheduler_dict.get("scheduler_unit")
-        print("scheduler unit:" + self.scheduler_unit)
+        # print("scheduler unit:" + self.scheduler_unit)
         self.cron_expression = sync_scheduler_dict.get("cron_expression")
-        print("scheduler expression:" + self.cron_expression)
+        # print("scheduler expression:" + self.cron_expression)
         self.is_enable = bool(sync_scheduler_dict.get("is_enable", False))
-        print("scheduler enable:" + str(self.is_enable))
+        # print("scheduler enable:" + str(self.is_enable))
         # self.supervisor_rule = get_injector(SurveyExtractRule)
         self.planning_school_rule = get_injector(PlanningSchoolRule)
 
     async def add_job_cron(self):
         # 获取命令行参数
         params= [ ]
+        school_no = 0
+        school_type = 'planning_school'
+        is_repush= False
+
         for i, arg in enumerate(sys.argv):
             print(f"参数{i}: {arg}")
             params.append(arg)
             if i==2:
-                paramstr = arg
+                school_no = arg
+            if i==3:
+                school_type = arg
+            if i==4:
+                is_repush =  int(arg) ==1
 
-        print(params)
-        planning_school_no_list= [ '2101031118342' ]
+        print(params,school_no,school_type,is_repush)
+        if ',' in school_no:
+            planning_school_no_list= school_no.split(',')
+        else:
+            planning_school_no_list= [ school_no ]
+        # planning_school_no_list= [ '2101031118342' ]
         for planning_school_code in planning_school_no_list:
             try:
                 await self.planning_school_rule.send_planning_school_to_org_center_by_school_no(planning_school_code)
