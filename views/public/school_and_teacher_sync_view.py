@@ -79,7 +79,7 @@ class SchoolTeacherView(BaseView):
     async def get_import_teachers_save_test(self, org_id: int | str = Query(..., title="组织id", description="组织id",
                                                                             example=123)):
         org_id = int(org_id)
-        result = await self.teacher_import_rule.import_teachers_save_test(org_id)
+        result = await self.teacher_import_rule.import_teachers_save_test()
         return result
 
     async def post_single_teacher_to_org_center(self,

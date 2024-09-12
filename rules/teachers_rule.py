@@ -208,7 +208,7 @@ class TeachersRule(object):
         teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
-        # await self.add_teacher_organization_members(int(teachers_work.teacher_id))
+        await self.add_teacher_organization_members(int(teachers_work.teacher_id))
         return teachers_work.teacher_id
 
     async def query_teacher_operation_record_with_page(self, query_model: TeacherChangeLogQueryModel,

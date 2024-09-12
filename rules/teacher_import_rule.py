@@ -27,6 +27,51 @@ from views.models.teachers import TeacherImportSaveResultModel, \
     TeachersSaveImportCreatModel, TeacherImportResultModel, \
     TeacherInfoImportSubmit, TeachersSaveImportRegisterCreatTestModel, TeachersSaveImportRegisterCreatTestTestModel, \
     TeacherImportSaveResulRestModel, TeachersSaveImportCreatTestModel
+from mini_framework.design_patterns.depend_inject import get_injector
+class TeacherSyncRule:
+    def __init__(self):
+        self.school_dao= get_injector(SchoolDAO)
+        self.organization_dao = get_injector(OrganizationDAO)
+        self.teacher_rule = get_injector(TeachersRule)
+
+    async def import_teachers_save_test(self):
+        teacher_id_list = ["12345678890"]
+        print(teacher_id_list)
+        local_file_path = os.path.join("rules", "821.xlsx")
+        teacher_id_list = []
+        reader = ExcelReader()
+        reader.set_data(local_file_path)
+        logger.info("Test开始注册模型")
+        reader.register_model("Sheet1", TeachersSaveImportRegisterCreatTestTestModel, header=1)
+        logger.info("Test开始读取模型")
+        data = reader.execute()["Sheet1"]
+        if not isinstance(data, list):
+            raise ValueError("数据格式错误")
+        for idx, item in enumerate(data):
+            item = item.dict()
+            school = await self.school_dao.get_school_by_school_name(item["teacher_employer"])
+            if school:
+                school = school._asdict()['School']
+                item["teacher_employer"]= school.id
+                org_name=item["org_id"]
+                organization = await self.organization_dao.get_organization_by_name_and_school_id(
+                    org_name, school.id)
+                if organization:
+                    org_id = str(organization.id)
+                    item["org_id"] = org_id
+                # item["teacher_employer"] = 7225316120776019968
+            else:
+                raise SchoolNotFoundError()
+            teacher_model = TeachersSaveImportCreatTestModel(**item)
+            logger.info(type(item))
+            try:
+                teacher_id = await self.teacher_rule.add_teachers_import_save_test(teacher_model)
+                teacher_id_list.append(teacher_id)
+            except Exception as ex:
+                return ex
+        return teacher_id_list
+
+
 
 
 @dataclass_inject
@@ -196,35 +241,42 @@ class TeacherImportRule:
         # await self.task_dao.add_task_result(task_result)
         return file_storage_resp
 
-    async def import_teachers_save_test(self,org_id):
-        local_file_path = os.path.join("rules", "821.xlsx")
-        teacher_id_list = []
-        reader = ExcelReader()
-        reader.set_data(local_file_path)
-        logger.info("Test开始注册模型")
-        reader.register_model("Sheet1", TeachersSaveImportRegisterCreatTestTestModel, header=1)
-        logger.info("Test开始读取模型")
-        data = reader.execute()["Sheet1"]
-        if not isinstance(data, list):
-            raise ValueError("数据格式错误")
-        for idx, item in enumerate(data):
-            item = item.dict()
-            school = await self.school_dao.get_school_by_school_name(item["teacher_employer"])
-            if school:
-                school = school._asdict()['School']
-                item["teacher_employer"]= school.id
-                # item["teacher_employer"] = 7225316120776019968
-            else:
-                raise SchoolNotFoundError()
-            # item["org_id"] = "7228553981755265024"
-            item["org_id"] = org_id
-            teacher_model = TeachersSaveImportCreatTestModel(**item)
-            logger.info(type(item))
-            try:
-                teacher_id = await self.teacher_rule.add_teachers_import_save_test(teacher_model)
-                teacher_id_list.append(teacher_id)
-            except Exception as ex:
-                return ex
+    async def import_teachers_save_test(self):
+        teacher_id_list = ["12345678890"]
+        print(teacher_id_list)
+        # local_file_path = os.path.join("rules", "821.xlsx")
+        # teacher_id_list = []
+        # reader = ExcelReader()
+        # reader.set_data(local_file_path)
+        # logger.info("Test开始注册模型")
+        # reader.register_model("Sheet1", TeachersSaveImportRegisterCreatTestTestModel, header=1)
+        # logger.info("Test开始读取模型")
+        # data = reader.execute()["Sheet1"]
+        # if not isinstance(data, list):
+        #     raise ValueError("数据格式错误")
+        # for idx, item in enumerate(data):
+        #     item = item.dict()
+        #     school = await self.school_dao.get_school_by_school_name(item["teacher_employer"])
+        #     if school:
+        #         school = school._asdict()['School']
+        #         item["teacher_employer"]= school.id
+        #         org_name=item["org_id"]
+        #         organization = await self.organization_dao.get_organization_by_name_and_school_id(
+        #             org_name, school.id)
+        #         if organization:
+        #             org_id = str(organization.id)
+        #             item["org_id"] = org_id
+        #         # item["teacher_employer"] = 7225316120776019968
+        #     else:
+        #         raise SchoolNotFoundError()
+        #     # item["org_id"] = "7228553981755265024"
+        #     teacher_model = TeachersSaveImportCreatTestModel(**item)
+        #     logger.info(type(item))
+        #     try:
+        #         teacher_id = await self.teacher_rule.add_teachers_import_save_test(teacher_model)
+        #         teacher_id_list.append(teacher_id)
+        #     except Exception as ex:
+        #         return ex
         return teacher_id_list
 
     async def teachers_export(self, task: Task):
