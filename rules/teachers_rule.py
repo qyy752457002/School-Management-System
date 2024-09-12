@@ -211,6 +211,32 @@ class TeachersRule(object):
         await self.add_teacher_organization_members(int(teachers_work.teacher_id))
         return teachers_work.teacher_id
 
+    async def add_teachers_import_to_org(self, teachers: TeachersSaveImportCreatTestModel, teacher_identity_type,
+                                         teacher_identity):
+        teacher_id_number = teachers.teacher_id_number
+        teacher_id_type = teachers.teacher_id_type
+        teacher_name = teachers.teacher_name
+        teacher_gender = teachers.teacher_gender
+        length = await self.teachers_dao.get_teachers_info_by_prams(teacher_id_number, teacher_id_type,
+                                                                    teacher_name, teacher_gender)
+        if length > 0:
+            raise TeacherExistsError()
+        teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[])
+        teachers_db.teacher_id = SnowflakeIdGenerator(1, 1).generate_id()
+        teachers_db.teacher_main_status = "employed"
+        teachers_db.teacher_sub_status = "active"
+        teachers_db = await self.teachers_dao.add_teachers(teachers_db)
+        teachers_work = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
+        teachers_info = TeacherInfoSaveModel(teacher_id=teachers_work.teacher_id, org_id=teachers.org_id,
+                                             department=str(teachers.org_id), )
+        teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
+        teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
+        teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
+        teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
+        await self.add_teacher_organization_members_to_org(int(teachers_work.teacher_id), teacher_identity_type,
+                                                           teacher_identity)
+        return teachers_work.teacher_id
+
     async def query_teacher_operation_record_with_page(self, query_model: TeacherChangeLogQueryModel,
                                                        page_request: PageRequest):
         """
@@ -351,21 +377,21 @@ class TeachersRule(object):
         teachers_db = await self.teachers_dao.get_all_teachers()
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=["hash_password"])
         return teachers
+
     async def get_all_teachers_id_list(self):
-        teacher_id_list=[]
+        teacher_id_list = []
         teachers_db = await self.teachers_dao.get_all_teachers_id_list()
         for teacher in teachers_db:
             teacher_id_list.append(str(teacher))
         return teacher_id_list
 
-    #为了找出督导人员
+    # 为了找出督导人员
     async def get_all_teachers_id_list_by_school_id(self, school_id):
-        teacher_id_list=[]
+        teacher_id_list = []
         teachers_db = await self.teachers_dao.get_all_teachers_id_list_by_school_id(school_id)
         for teacher in teachers_db:
             teacher_id_list.append(str(teacher))
         return teacher_id_list
-
 
     async def get_teachers_count(self):
         teachers_count = await self.teachers_dao.get_teachers_count()
@@ -652,4 +678,16 @@ class TeachersRule(object):
         organization.teacher_id = int(teacher_id)
         organization.member_type = identity_type
         organization.identity = identity
+        return await self.organization_members_rule.add_organization_members(organization)
+
+    async def add_teacher_organization_members_to_org(self, teacher_id, teacher_identity_type, teacher_identity):
+        # 这是国际交流系统往组织中心送人的代码
+        teacher_info_db = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teacher_id)
+        org_id = teacher_info_db.org_id
+        organization = OrganizationMembers()
+        organization.id = SnowflakeIdGenerator(1, 1).generate_id()
+        organization.org_id = int(org_id)
+        organization.teacher_id = int(teacher_id)
+        organization.member_type = teacher_identity_type
+        organization.identity = teacher_identity
         return await self.organization_members_rule.add_organization_members(organization)

@@ -8,6 +8,7 @@ from mini_framework.async_task.data_access.task_dao import TaskDAO
 from mini_framework.async_task.task.task import Task, TaskState
 from mini_framework.data.tasks.excel_tasks import ExcelWriter, ExcelReader
 from mini_framework.design_patterns.depend_inject import dataclass_inject
+from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.storage.manager import storage_manager
 from mini_framework.storage.persistent.file_storage_dao import FileStorageDAO
 from mini_framework.utils.logging import logger
@@ -17,6 +18,7 @@ from business_exceptions.school import SchoolNotFoundError
 from daos.organization_dao import OrganizationDAO
 from daos.school_dao import SchoolDAO
 from daos.teachers_info_dao import TeachersInfoDao
+from models.public_enum import OrgIdentityType, OrgIdentity
 from rules.common.common_rule import excel_fields_to_enum
 from rules.teachers_info_rule import TeachersInfoRule
 from rules.teachers_rule import TeachersRule
@@ -26,11 +28,12 @@ from views.models.teachers import TeacherImportSaveResultModel, \
     TeacherFileStorageModel, CurrentTeacherQuery, CurrentTeacherQueryRe, \
     TeachersSaveImportCreatModel, TeacherImportResultModel, \
     TeacherInfoImportSubmit, TeachersSaveImportRegisterCreatTestModel, TeachersSaveImportRegisterCreatTestTestModel, \
-    TeacherImportSaveResulRestModel, TeachersSaveImportCreatTestModel
-from mini_framework.design_patterns.depend_inject import get_injector
+    TeachersSaveImportCreatTestModel
+
+
 class TeacherSyncRule:
     def __init__(self):
-        self.school_dao= get_injector(SchoolDAO)
+        self.school_dao = get_injector(SchoolDAO)
         self.organization_dao = get_injector(OrganizationDAO)
         self.teacher_rule = get_injector(TeachersRule)
 
@@ -52,25 +55,25 @@ class TeacherSyncRule:
             school = await self.school_dao.get_school_by_school_name(item["teacher_employer"])
             if school:
                 school = school._asdict()['School']
-                item["teacher_employer"]= school.id
+                item["teacher_employer"] = school.id
                 org_name=item["org_id"]
                 organization = await self.organization_dao.get_organization_by_name_and_school_id(
                     org_name, school.id)
                 if organization:
                     org_id = str(organization.id)
                     item["org_id"] = org_id
-                # item["teacher_employer"] = 7225316120776019968
+                # item["org_id"] = 7225316120776019968
             else:
                 raise SchoolNotFoundError()
+            teacher_identity_type = OrgIdentityType.from_chinese(item["identity_type"])
+            teacher_identity = OrgIdentity.from_chinese(item["identity"])
             teacher_model = TeachersSaveImportCreatTestModel(**item)
             logger.info(type(item))
             try:
-                await self.teacher_rule.add_teachers_import_save_test(teacher_model)
+                await self.teacher_rule.add_teachers_import_to_org(teacher_model,teacher_identity_type,teacher_identity)
             except Exception as ex:
                 return ex
         return True
-
-
 
 
 @dataclass_inject

@@ -273,13 +273,17 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
 
 
 async def get_identity_by_job(school_operation_type: List, post_type=None):
+    """
+    技术人员-technical_staff
+    运维人员-operation_staff
+    """
     identity = ""
 
     staff_student_map = {"preSchoolEducation_kindergarten": "kindergarten_student",
                          "primaryEducation_primarySchool": "primary_school_student",
                          "secondaryEducation_ordinaryJuniorHigh_ordinaryJuniorHighSchool": "middle_school_student",
                          "secondaryEducation_ordinaryHighSchool": "high_school_student",
-                         "secondaryEducation_secondaryVocationalSchool": "vocational_student"}
+                             "secondaryEducation_secondaryVocationalSchool": "vocational_student"}
     staff_teacher_map = {"preSchoolEducation_kindergarten": "kindergarten_teacher",
                          "primaryEducation_primarySchool": "primary_school_teacher",
                          "secondaryEducation_ordinaryJuniorHigh_ordinaryJuniorHighSchool": "middle_school_teacher",
