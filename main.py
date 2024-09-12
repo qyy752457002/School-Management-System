@@ -27,6 +27,7 @@ def main():
     cli.register('dao-gen', DAOGenerateCommand, model_list=[('models.course_school_nature', 'CourseSchoolNature'),
                                                           ])
     cli.register('web', WebCommand, router_func_module="views.router.init_router")
+    cli.register('scheduler-task', SchedulerTaskCommand)
     cli.register('teacher-sync', TeacherSyncCommand)
     cli.setup()
 
