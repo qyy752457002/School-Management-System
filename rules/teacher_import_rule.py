@@ -65,11 +65,10 @@ class TeacherSyncRule:
             teacher_model = TeachersSaveImportCreatTestModel(**item)
             logger.info(type(item))
             try:
-                teacher_id = await self.teacher_rule.add_teachers_import_save_test(teacher_model)
-                teacher_id_list.append(teacher_id)
+                await self.teacher_rule.add_teachers_import_save_test(teacher_model)
             except Exception as ex:
                 return ex
-        return teacher_id_list
+        return True
 
 
 
