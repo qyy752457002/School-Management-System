@@ -18,8 +18,8 @@ class SchoolSyncService(object):
         from mini_framework.configurations import config_injection
 
         manager = config_injection.get_config_manager()
-        sync_scheduler_dict = manager.get_domain_config("sync_scheduler")
-        self.scheduler_type = sync_scheduler_dict.get("scheduler_type")
+        # sync_scheduler_dict = manager.get_domain_config("sync_scheduler")
+        # self.scheduler_type = sync_scheduler_dict.get("scheduler_type")
 
         # print("scheduler enable:" + str(self.is_enable))
         # self.supervisor_rule = get_injector(SurveyExtractRule)

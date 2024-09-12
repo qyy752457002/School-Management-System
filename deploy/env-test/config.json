@@ -147,8 +147,14 @@
     }
   },
   "system_config": {
-    "permission_verify": false,
-    "add_class": 0
+    "add_class": 0,
+    "permission_verify": false
+  },
+  "sync_scheduler": {
+    "is_enable": true,
+    "scheduler_type": "cron",
+    "scheduler_unit": "minute",
+    "cron_expression": "*/5"
   },
   "workflow_service": {
     "name": "workflow_service",
