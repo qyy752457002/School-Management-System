@@ -273,16 +273,21 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
 
 
 async def get_identity_by_job(school_operation_type: List, post_type=None):
+    """
+    技术人员-technical_staff
+    运维人员-operation_staff
+    """
     identity = ""
 
     staff_student_map = {"preSchoolEducation_kindergarten": "kindergarten_student",
                          "primaryEducation_primarySchool": "primary_school_student",
                          "secondaryEducation_ordinaryJuniorHigh_ordinaryJuniorHighSchool": "middle_school_student",
                          "secondaryEducation_ordinaryHighSchool": "high_school_student",
-                         "secondaryEducation_secondaryVocationalSchool": "vocational_student"}
+                             "secondaryEducation_secondaryVocationalSchool": "vocational_student"}
     staff_teacher_map = {"preSchoolEducation_kindergarten": "kindergarten_teacher",
                          "primaryEducation_primarySchool": "primary_school_teacher",
                          "secondaryEducation_ordinaryJuniorHigh_ordinaryJuniorHighSchool": "middle_school_teacher",
+                         "secondaryEducation_ordinaryHighSchool_comprehensiveHighSchool": "full_secondary_school_teacher",
                          "secondaryEducation_ordinaryHighSchool": "high_school_teacher",
                          "secondaryEducation_secondaryVocationalSchool": "vocational_teacher",
                          "secondaryEducation_ordinaryJuniorHigh_nineYearSystemSchool": "nine_year_teacher",
@@ -309,7 +314,7 @@ async def get_identity_by_job(school_operation_type: List, post_type=None):
                   "secondaryEducation_ordinaryJuniorHigh_ordinaryJuniorHighSchool": "middle_school_parent",
                   "secondaryEducation_ordinaryHighSchool": "high_school_parent",
                   "secondaryEducation_secondaryVocationalSchool": "vocational_parent"},
-    if post_type is None :
+    if post_type is None:
         identity_type = IdentityType.STAFF.value
         identity = "education_unit_staff"
         for i in range(len(school_operation_type), 0, -1):
