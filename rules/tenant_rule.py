@@ -180,8 +180,10 @@ class TenantRule(object):
             事业单位
              行政单位
               """
-        print(school_id)
         new_code =  None
+        if isinstance(school_id, str):
+            school_id = int(school_id)
+        print('入参',  type(school_id)  ,  school_id)
 
         items =  await self.plannning_school_dao.get_planning_school_by_id(school_id)
         tenant_type= 'planning_school' # 表示 租户类型
