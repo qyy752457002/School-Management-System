@@ -36,7 +36,13 @@ class TenantView(BaseView):
 
         """
         paging_result = None
-        paging_result = await self.tenant_rule.sync_tenant_all( school_id)
+        # 如果是逗号分割 则转为list 遍历执行""
+        if isinstance(school_id, str) and  school_id and ',' in school_id:
+            school_id_list = school_id.split(',')
+            for school_id in school_id_list:
+                paging_result = await self.tenant_rule.sync_tenant_all( school_id)
+        else:
+            paging_result = await self.tenant_rule.sync_tenant_all( school_id)
 
         return {"status": OrgCenterApiStatus.SUCCESS.value, "data": paging_result}
 
