@@ -41,7 +41,7 @@ class Institutions(BaseModel):
     leg_repr_certificatenumber: str |None = Field("",   title='法人证书号',  description=" 法人证书号",examples=['DF1256565656'])
     is_entity: bool |None = Field(None,   title='是否实体',  description=" 是否实体",examples=[''])
 
-    website_url: str = Field(...,   title='网址',  description=" 网址",examples=['WWW.BDIUFD.COM'])
+    website_url: str |None = Field(...,   title='网址',  description=" 网址",examples=['WWW.BDIUFD.COM'])
     status: str = Field(...,   title='状态',  description=" 状态",examples=[''])
     membership_no: str = Field(...,   title='隶属单位号',  description=" 隶属单位号",examples=['DFF1565165656'])
     membership_category: str = Field(...,   title='隶属单位类型',  description=" 隶属单位类型",examples=['行政'])
@@ -264,4 +264,4 @@ class InstitutionBaseInfo(BaseModel):
 
 class InstitutionCommunications(SchoolCommunications):
 
-    school_web_url: str = Field(None,alias='website_url', title="网址", description="网址",examples=['WW.SS.CC'])
+    school_web_url: str|None  = Field(None,alias='website_url', title="网址", description="网址",examples=['WW.SS.CC'])
