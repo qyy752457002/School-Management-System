@@ -247,6 +247,10 @@ class InstitutionBaseInfo(BaseModel):
 
     admin: str |None = Field("",   title='管理员',  description=" ",examples=[''])
     admin_phone: str |None = Field("",   title='管理员手机',  description=" ",examples=[''])
+    block: str |None = Field("",   title='',  description=" ",examples=[''])
+    borough: str |None = Field("",   title='',  description=" ",examples=[''])
+    membership_no: str |None = Field("",   title='',  description=" ",examples=[''])
+
     @model_validator(mode="before")
     @classmethod
     def check_id_before(self, data: dict):

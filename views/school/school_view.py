@@ -54,9 +54,9 @@ class SchoolView(BaseView):
     async def get(self,
                   request:Request,
 
-                  school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1, max_length=20,
+                  school_no: str = Query(None, title="学校编号", description="学校编号",  max_length=20,
                                          example=''),
-                  school_name: str = Query(None, description="学校名称", min_length=1, max_length=20, example=''),
+                  school_name: str = Query(None, description="学校名称",   max_length=20, example=''),
                   school_id: int|str = Query( None, description="学校id|根据学校查规划校", example='1'),
                   ):
         school_eduinfo={}

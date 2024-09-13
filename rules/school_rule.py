@@ -611,6 +611,12 @@ class SchoolRule(object):
         # res_admin = await self.send_admin_to_org_center(school, data_org)
         # 添加 用户和组织关系 就是部门
         # await self.send_user_org_relation_to_org_center(school, res_unit, data_org, res_admin)
+        #      自懂获取秘钥
+        tenant_rule = get_injector(TenantRule)
+        print('开始 获取租户信息-单位')
+        await tenant_rule.sync_tenant_all(school.id)
+
+
         return True
 
     async def deal_school(self, process_instance_id, action, ):
@@ -642,7 +648,7 @@ class SchoolRule(object):
                 res_admin = await self.send_admin_to_org_center(school, data_org)
                 # 添加 用户和组织关系 就是部门
                 await self.send_user_org_relation_to_org_center(school, res_unit, data_org, res_admin)
-                #     todo 自懂获取秘钥
+                #      自懂获取秘钥
                 tenant_rule = get_injector(TenantRule)
                 print('开始 获取租户信息-单位')
                 await tenant_rule.sync_tenant_all(school.id)
@@ -1009,14 +1015,12 @@ class SchoolRule(object):
             'administrativeDivisionCity': '沈阳市',
 
             'administrativeDivisionCounty': exists_planning_school.block,
-            'administrativeDivisionProvince': planning_school_communication.loc_area_pro,
+            'administrativeDivisionProvince':  '辽宁省',
             'createdTime': exists_planning_school.create_school_date,
-            'locationAddress': planning_school_communication.detailed_address,
-            # 'locationCity': '',
+            'locationAddress':  '辽宁省'+'沈阳市'+ exists_planning_school.borough,
             'locationCity': '沈阳市',
-
-            'locationCounty': planning_school_communication.loc_area,
-            'locationProvince': planning_school_communication.loc_area_pro,
+            'locationCounty':  exists_planning_school.borough,
+            'locationProvince':  '辽宁省',
             'owner': exists_planning_school.school_no,
             # 单位的唯一标识 是code
             'unitCode': exists_planning_school.school_no, 'unitId': '',
@@ -1024,7 +1028,6 @@ class SchoolRule(object):
             'unitType': OrgCenterInstitutionType.get_mapper(
                 exists_planning_school.institution_category) if exists_planning_school.institution_category else 'school',
             'updatedTime': exists_planning_school.updated_at
-
         }
         # 判断键 administrativeDivisionProvince 如果值为none或者空字符串 则给默认值
         if dict_data['administrativeDivisionProvince'] == None or dict_data['administrativeDivisionProvince'] == '':
@@ -1038,10 +1041,7 @@ class SchoolRule(object):
         if isinstance(datadict['createdTime'], (date, datetime)):
             datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
 
-        # if isinstance(datadict['createdTime'], (date, datetime)):
-        #     datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
         datadict = convert_dates_to_strings(datadict)
-        # print(datadict, '字典参数')
 
         response = await send_orgcenter_request(apiname, datadict, 'post', False)
         try:

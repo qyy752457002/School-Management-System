@@ -792,7 +792,7 @@ async def request_org_center_login_out():
         return None
 async def get_org_center_application(school_no,tenant_type,items):
     try:
-        token = request_context_manager.current().token
+        # token = request_context_manager.current().token
         apiname = "/api/get-applications"
         # owner = "sysjyyjyorg"
         from views.common.common_view import  orgcenter_service_config
