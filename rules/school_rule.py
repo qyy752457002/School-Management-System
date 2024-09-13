@@ -1011,11 +1011,10 @@ class SchoolRule(object):
             'administrativeDivisionCounty': exists_planning_school.block,
             'administrativeDivisionProvince': planning_school_communication.loc_area_pro,
             'createdTime': exists_planning_school.create_school_date,
-            'locationAddress': planning_school_communication.detailed_address,
-            # 'locationCity': '',
+            'locationAddress':  exists_planning_school.borough,
             'locationCity': '沈阳市',
 
-            'locationCounty': planning_school_communication.loc_area,
+            'locationCounty':  exists_planning_school.borough,
             'locationProvince': planning_school_communication.loc_area_pro,
             'owner': exists_planning_school.school_no,
             # 单位的唯一标识 是code
@@ -1024,7 +1023,6 @@ class SchoolRule(object):
             'unitType': OrgCenterInstitutionType.get_mapper(
                 exists_planning_school.institution_category) if exists_planning_school.institution_category else 'school',
             'updatedTime': exists_planning_school.updated_at
-
         }
         # 判断键 administrativeDivisionProvince 如果值为none或者空字符串 则给默认值
         if dict_data['administrativeDivisionProvince'] == None or dict_data['administrativeDivisionProvince'] == '':
@@ -1038,10 +1036,7 @@ class SchoolRule(object):
         if isinstance(datadict['createdTime'], (date, datetime)):
             datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
 
-        # if isinstance(datadict['createdTime'], (date, datetime)):
-        #     datadict['createdTime'] = datadict['createdTime'].strftime("%Y-%m-%d %H:%M:%S")
         datadict = convert_dates_to_strings(datadict)
-        # print(datadict, '字典参数')
 
         response = await send_orgcenter_request(apiname, datadict, 'post', False)
         try:
