@@ -611,6 +611,12 @@ class SchoolRule(object):
         # res_admin = await self.send_admin_to_org_center(school, data_org)
         # 添加 用户和组织关系 就是部门
         # await self.send_user_org_relation_to_org_center(school, res_unit, data_org, res_admin)
+        #      自懂获取秘钥
+        tenant_rule = get_injector(TenantRule)
+        print('开始 获取租户信息-单位')
+        await tenant_rule.sync_tenant_all(school.id)
+
+
         return True
 
     async def deal_school(self, process_instance_id, action, ):
@@ -642,7 +648,7 @@ class SchoolRule(object):
                 res_admin = await self.send_admin_to_org_center(school, data_org)
                 # 添加 用户和组织关系 就是部门
                 await self.send_user_org_relation_to_org_center(school, res_unit, data_org, res_admin)
-                #     todo 自懂获取秘钥
+                #      自懂获取秘钥
                 tenant_rule = get_injector(TenantRule)
                 print('开始 获取租户信息-单位')
                 await tenant_rule.sync_tenant_all(school.id)
