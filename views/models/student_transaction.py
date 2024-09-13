@@ -226,7 +226,7 @@ class StudentTransactionPageSearch(BaseModel):
 
     school_id: int = Query(0, title="", description="学校ID", )
     school_name: str = Query('', title="", description="学校", )
-    student_gender: str = Query("", title="", description=" 学生性别", min_length=1, max_length=20)
+    student_gender: str = Query("", title="", description=" 学生性别",  max_length=20)
 
     applicant_name: str = Query("", alias='apply_user', title="", description="申请人", min_length=1, max_length=20, )
     edu_number: str = Query("", alias='edu_no', title="  ", description=" 学籍号码", min_length=1, max_length=20)

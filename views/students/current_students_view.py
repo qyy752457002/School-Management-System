@@ -100,17 +100,17 @@ class CurrentStudentsView(BaseView):
                                        audit_status: StudentTransactionStatus|None = Query(None , title="", description="状态",
                                                                                       examples=['needaudit']),
                                        student_name: str = Query("", title="",
-                                                                 description="学生姓名", min_length=1, max_length=20),
+                                                                 description="学生姓名",   max_length=50),
 
                                        school_id: int = Query(0, title="", description="学校ID", ),
-                                       student_gender: str = Query("", title="", description=" 学生性别", min_length=1,
-                                                                   max_length=20),
+                                       student_gender: str = Query("", title="", description=" 学生性别",
+                                                                   max_length=50),
 
                                        apply_user: str = Query("", title="",
-                                                               description="申请人", min_length=1,
-                                                               max_length=20, ),
-                                       edu_no: str = Query("", title="  ", description=" 学籍号码", min_length=1,
-                                                           max_length=20),
+                                                               description="申请人",
+                                                               max_length=50, ),
+                                       edu_no: str = Query("", title="  ", description=" 学籍号码",
+                                                           max_length=50),
 
                                        page_request=Depends(PageRequest)):
         # print(audit_status, )
