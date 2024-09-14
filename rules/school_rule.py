@@ -583,7 +583,7 @@ class SchoolRule(object):
         return response
         pass
 
-    async def send_school_to_org_center_by_school_no(self, school_no, departmentname=None):
+    async def send_school_to_org_center_by_school_no(self, school_no, departmentname_list=None):
         """
         一期同步过来的数据送到组织中心
         """
@@ -594,19 +594,23 @@ class SchoolRule(object):
         res_unit, data_unit = await self.send_school_to_org_center(school)
         # 单位的组织 对接
         await self.send_unit_orgnization_to_org_center(school, data_unit)
-        # 添加组织结构 部门
-        org = Organization(org_name=school.school_name if departmentname is None else departmentname,
-                           school_id=school.id,
-                           org_type='校',
-                           parent_id=0,
-                           org_code=school.school_no,
-                           )
-        # todo 加部门
         organization_rule = get_injector(OrganizationRule)
-        res = await  organization_rule.add_organization(org, False)
+        for departmentname in departmentname_list:
 
-        # 部门对接
-        res_org, data_org = await self.send_org_to_org_center(org, res_unit)
+            # 添加组织结构 部门
+            org = Organization(org_name=school.school_name if departmentname is None else departmentname,
+                               school_id=school.id,
+                               org_type='校',
+                               parent_id=0,
+                               org_code=school.school_no,
+                               )
+            # todo 加部门
+            res = await  organization_rule.add_organization(org, False)
+
+            # 部门对接
+            res_org, data_org = await self.send_org_to_org_center(org, res_unit)
+            pass
+
         # 管理员 对接
         # res_admin = await self.send_admin_to_org_center(school, data_org)
         # 添加 用户和组织关系 就是部门
