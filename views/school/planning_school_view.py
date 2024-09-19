@@ -89,7 +89,7 @@ class PlanningSchoolView(BaseView):
             print(e)
 
         return {'planning_school': planning_school, 'planning_school_communication': planning_school_communication,
-                'planning_school_eduinfo': planning_school_eduinfo, 'planning_school_keyinfo': extra_model}
+                'planning_school_eduinfo': planning_school_eduinfo, 'planning_school_keyinfo': extra_model, 'leader_info': leaderinfo}
     @require_role_permission("planning_school", "open")
     async def post(self, planning_school: PlanningSchoolKeyAddInfo,
                    ):

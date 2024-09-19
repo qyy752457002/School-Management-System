@@ -52,15 +52,31 @@ class SchoolView(BaseView):
 
     @require_role_permission("school", "view")
     async def get(self,
-                  school_no: str = Query(None, title="学校编号", description="学校编号", min_length=1, max_length=20,
+                  request:Request,
+
+                  school_no: str = Query(None, title="学校编号", description="学校编号",  max_length=20,
                                          example=''),
-                  school_name: str = Query(None, description="学校名称", min_length=1, max_length=20, example=''),
-                  school_id: int|str = Query(..., description="学校id|根据学校查规划校", example='1'),
+                  school_name: str = Query(None, description="学校名称",   max_length=20, example=''),
+                  school_id: int|str = Query( None, description="学校id|根据学校查规划校", example='1'),
                   ):
+        school_eduinfo={}
+        school={}
+        school_communication={}
+        school_keyinfo={}
+
+        obj= await get_extend_params(request)
+        if obj.school_id:
+            school_id=obj.school_id
+
+        print('入参 ', school_id )
+        if school_id is None:
+
+            return {'school': school, 'school_communication': school_communication, 'school_eduinfo': school_eduinfo,
+                'school_keyinfo': school_keyinfo}
+            pass
         school = await self.school_rule.get_school_by_id(school_id)
         school_keyinfo = await self.school_rule.get_school_by_id(school_id, extra_model=SchoolKeyInfo)
 
-        school_eduinfo={}
         school_communication = await self.school_communication_rule.get_school_communication_by_school_id(school_id)
         # todo 异常可能导致orm转换时 的链接释放
         try:
@@ -253,13 +269,24 @@ class SchoolView(BaseView):
     # 开办
     @require_role_permission("school", "open")
 
-    async def patch_open(self, school_id: str = Query(..., title="学校编号", description="学校id/园所id", min_length=1,
+    async def put_open(self,
+                       school: SchoolBaseInfoOptional,
+                       # school: SchoolBaseInfo,
+                       school_communication: SchoolCommunications,
+                       school_eduinfo: SchoolEduInfo,
+
+                       school_id: str = Query(..., title="学校编号", description="学校id/园所id", min_length=1,
                                                       max_length=20, example='SC2032633')):
         # res = await self.school_rule.update_school_status(school_id, PlanningSchoolStatus.NORMAL.value, 'open')
+
         # 检测 是否允许修改
         is_draft = await self.school_rule.is_can_not_add_workflow(school_id)
         if is_draft:
             raise SchoolStatusError()
+
+        school.id = school_id
+        print('开办的入参', school)
+        res = await self.school_rule.update_school_byargs(school )
 
         # 请求工作流
         school = await self.school_rule.get_school_by_id(school_id,)
@@ -395,7 +422,7 @@ class SchoolView(BaseView):
     # 正式开办  传全部  插入或者更新
     @require_role_permission("school", "open")
 
-    async def put_open(self,
+    async def put_open_complete(self,
 
                        school: SchoolBaseInfo,
                        school_communication: SchoolCommunications,
@@ -442,7 +469,6 @@ class SchoolView(BaseView):
     # 学校搜索 模糊搜索 TODO 增加 区域ID  学校ID 支持多个传入
     async def get_search(self,
                          request: Request  ,
-
                          school_name: str = Query("", title="学校名称", description="1-20字符", ),
                          school_id: str = Query("", title="多个逗号分割", description="", ),
                          block: str = Query("", title="地域管辖区", description="", ),
@@ -452,8 +478,12 @@ class SchoolView(BaseView):
 
     ):
         items = []
+        obj= await get_extend_params(request)
+        if obj.school_id:
+            school_id=obj.school_id
+
         # 学校 区 只能看自己的范围内的数据
-        paging_result = await self.school_rule.query_schools(school_name,await get_extend_params(request),school_id,block,borough,)
+        paging_result = await self.school_rule.query_schools(school_name, obj,school_id,block,borough,)
         return paging_result
     # 学校开设审核
     @require_role_permission("school_open_audit", "pass")
@@ -562,6 +592,8 @@ class SchoolView(BaseView):
     @require_role_permission("school", "view")
 
     async def page_school_audit(self,
+                                request:Request,
+
                                 block: str = Query("", title=" ", description="地域管辖区", ),
                                 school_code: str = Query("", title="", description=" 园所标识码", ),
                                 school_level: str = Query("", title="", description=" 学校星级", ),
@@ -589,6 +621,15 @@ class SchoolView(BaseView):
         items = []
         #PlanningSchoolBaseInfoOptional
         print('入参接收',page_request,status)
+        obj= await get_extend_params(request)
+        if obj.school_id:
+            school = await self.school_rule.get_school_by_id(obj.school_id)
+            if school:
+                school_name = school.school_name
+                print('租户赋值学校名称筛选审核', school_name)
+            pass
+
+
         req= SchoolPageSearch(block=block,
                                       planning_school_code=planning_school_code,
                                       borough=borough,
@@ -607,7 +648,7 @@ class SchoolView(BaseView):
 
                                       )
         print('入参接收2',req)
-        paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,  )
+        paging_result = await self.system_rule.query_workflow_with_page(req,page_request,'',process_code,extend_params=obj  )
         print('333',page_request)
         return paging_result
     @require_role_permission("school_open_audit", "cancel")

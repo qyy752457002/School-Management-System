@@ -113,9 +113,13 @@ class TeachersRule(object):
             school_name = school.school_name
             borough = school.borough
         params = {"process_code": "t_entry", "applicant_name": user_id, "school_name": school_name, "borough": borough}
-        await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
-            teachers_work.teacher_id)
-        work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teachers_work, params)
+        try:
+            await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
+                teachers_work.teacher_id)
+            work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teachers_work, params)
+        except Exception as e:
+            await self.teachers_dao.delete_teachers(teachers_db)
+            raise e
         # update_params = {"teacher_sub_status": "submitted"}
         # await self.teacher_work_flow_rule.update_work_flow_by_param(work_flow_instance["process_instance_id"],
         #                                                             update_params)
@@ -208,7 +212,33 @@ class TeachersRule(object):
         teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
         teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
-        # await self.add_teacher_organization_members(int(teachers_work.teacher_id))
+        await self.add_teacher_organization_members(int(teachers_work.teacher_id))
+        return teachers_work.teacher_id
+
+    async def add_teachers_import_to_org(self, teachers: TeachersSaveImportCreatTestModel, teacher_identity_type,
+                                         teacher_identity):
+        teacher_id_number = teachers.teacher_id_number
+        teacher_id_type = teachers.teacher_id_type
+        teacher_name = teachers.teacher_name
+        teacher_employer = int(teachers.teacher_employer)
+        length = await self.teachers_dao.get_teachers_info_by_prams_school_id(teacher_id_number, teacher_id_type,
+                                                                              teacher_name, teacher_employer)
+        if length > 0:
+            raise TeacherExistsError()
+        teachers_db = view_model_to_orm_model(teachers, Teacher, exclude=[])
+        teachers_db.teacher_id = SnowflakeIdGenerator(1, 1).generate_id()
+        teachers_db.teacher_main_status = "employed"
+        teachers_db.teacher_sub_status = "active"
+        teachers_db = await self.teachers_dao.add_teachers(teachers_db)
+        teachers_work = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
+        teachers_info = TeacherInfoSaveModel(teacher_id=teachers_work.teacher_id, org_id=teachers.org_id,
+                                             department=str(teachers.org_id), )
+        teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
+        teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
+        teachers_inf_db = await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
+        teachers_info = orm_model_to_view_model(teachers_inf_db, CurrentTeacherInfoSaveModel, exclude=[""])
+        await self.add_teacher_organization_members_to_org(int(teachers_work.teacher_id), teacher_identity_type,
+                                                           teacher_identity)
         return teachers_work.teacher_id
 
     async def query_teacher_operation_record_with_page(self, query_model: TeacherChangeLogQueryModel,
@@ -244,6 +274,10 @@ class TeachersRule(object):
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         # 获取老师信息
         teachers = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
+        teachers_info = TeacherInfoSaveModel(teacher_id=teachers.teacher_id)
+        teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
+        teachers_inf_db.teacher_base_id = SnowflakeIdGenerator(1, 1).generate_id()
+        await self.teachers_info_dao.add_teachers_info(teachers_inf_db)
         return teachers
 
     async def add_transfer_teachers_in(self, teachers: TeacherAdd):
@@ -282,6 +316,7 @@ class TeachersRule(object):
             #                                                  exclude=[""])
             res = compare_modify_fields(teachers, old_teachers)
             params = {"process_code": "t_keyinfo", "teacher_id": teachers.teacher_id, "applicant_name": user_id}
+
             school = await self.school_dao.get_school_by_id(teachers.teacher_employer)
             school_name = ""
             borough = ""
@@ -346,6 +381,21 @@ class TeachersRule(object):
         teachers_db = await self.teachers_dao.get_all_teachers()
         teachers = orm_model_to_view_model(teachers_db, TeachersModel, exclude=["hash_password"])
         return teachers
+
+    async def get_all_teachers_id_list(self):
+        teacher_id_list = []
+        teachers_db = await self.teachers_dao.get_all_teachers_id_list()
+        for teacher in teachers_db:
+            teacher_id_list.append(str(teacher))
+        return teacher_id_list
+
+    # 为了找出督导人员
+    async def get_all_teachers_id_list_by_school_id(self, school_id):
+        teacher_id_list = []
+        teachers_db = await self.teachers_dao.get_all_teachers_id_list_by_school_id(school_id)
+        for teacher in teachers_db:
+            teacher_id_list.append(str(teacher))
+        return teacher_id_list
 
     async def get_teachers_count(self):
         teachers_count = await self.teachers_dao.get_teachers_count()
@@ -632,4 +682,16 @@ class TeachersRule(object):
         organization.teacher_id = int(teacher_id)
         organization.member_type = identity_type
         organization.identity = identity
+        return await self.organization_members_rule.add_organization_members(organization)
+
+    async def add_teacher_organization_members_to_org(self, teacher_id, teacher_identity_type, teacher_identity):
+        # 这是国际交流系统往组织中心送人的代码
+        teacher_info_db = await self.teachers_info_dao.get_teachers_info_by_teacher_id(teacher_id)
+        org_id = teacher_info_db.org_id
+        organization = OrganizationMembers()
+        organization.id = SnowflakeIdGenerator(1, 1).generate_id()
+        organization.org_id = int(org_id)
+        organization.teacher_id = int(teacher_id)
+        organization.member_type = teacher_identity_type
+        organization.identity = teacher_identity
         return await self.organization_members_rule.add_organization_members(organization)

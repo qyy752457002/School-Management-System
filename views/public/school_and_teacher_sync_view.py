@@ -6,6 +6,8 @@ from mini_framework.web.std_models.page import PageRequest, PaginatedResponse
 from mini_framework.web.views import BaseView
 
 from rules.common.sync_rule import SyncRule
+from rules.planning_school_rule import PlanningSchoolRule
+from rules.school_rule import SchoolRule
 from rules.teacher_import_rule import TeacherImportRule
 from rules.teachers_rule import TeachersRule
 from views.models.school_and_teacher_sync import SchoolSyncQueryModel, SupervisorSyncQueryModel, \
@@ -18,6 +20,8 @@ class SchoolTeacherView(BaseView):
         self.sync_rule = get_injector(SyncRule)
         self.teacher_import_rule = get_injector(TeacherImportRule)
         self.teacher_rule = get_injector(TeachersRule)
+        self.school_rule = get_injector(SchoolRule)
+        self.planning_school_rule = get_injector(PlanningSchoolRule)
 
     async def page_school(self, query_model=Depends(SchoolSyncQueryModel),
                           page_request=Depends(PageRequest)) -> PaginatedResponse:
@@ -28,6 +32,13 @@ class SchoolTeacherView(BaseView):
                             page_request=Depends(PageRequest)) -> PaginatedResponse:
         res = await self.sync_rule.query_sync_teacher_with_page(query_model, page_request)
         return res
+
+    async def get_all_teachers_id_list(self):
+        return await self.teacher_rule.get_all_teachers_id_list()
+
+    async def get_all_teachers_id_list_by_school_id(self):
+        school_id = 7225316120776019968
+        return await self.teacher_rule.get_all_teachers_id_list_by_school_id(school_id)
 
     async def post_sync_teacher(self,
                                 teacher_id_number_list: List[str] | None = Body(None, title="",
@@ -65,9 +76,10 @@ class SchoolTeacherView(BaseView):
         res = await self.sync_rule.get_sync_teacher_to_art(school_no)
         return res
 
-    async def get_import_teachers_save_test(self, org_id: int = Query(..., title="组织id", description="组织id",
-                                                                      example=123)):
-        result = await self.teacher_import_rule.import_teachers_save_test(org_id)
+    async def get_import_teachers_save_test(self, org_id: int | str = Query(..., title="组织id", description="组织id",
+                                                                            example=123)):
+        org_id = int(org_id)
+        result = await self.teacher_import_rule.import_teachers_save_test()
         return result
 
     async def post_single_teacher_to_org_center(self,
@@ -87,3 +99,41 @@ class SchoolTeacherView(BaseView):
             except Exception as e:
                 print(f'编号{teacher_id}的发生错误{e}')
                 return f'编号{teacher_id}的发生错误{e}'
+
+    async def post_school_list_to_org_center(self, school_no_list: List[str] | None = Body([], title="",
+                                                                                           description="学校代码",
+                                                                                           examples=['3425301994'])):
+        """
+        为了让一期学校同步到二期，并且能够同步到组织中心
+        """
+        for school_no in school_no_list:
+            try:
+                await self.school_rule.send_school_to_org_center_by_school_no(school_no)
+                return 'success'
+            except Exception as e:
+                print(f'编号{school_no}的发生错误{e}')
+                return f'编号{school_no}的发生错误{e}'
+
+    async def post_planning_school_list_to_org_center(self,
+                                                      planning_school_no_list: List[str] | None = Body([], title="",
+                                                                                                       description="学校代码",
+                                                                                                       examples=[
+                                                                                                           '3425301994'])):
+        """
+        为了让一期学校同步到二期，并且能够同步到组织中心
+        """
+        for planning_school_code in planning_school_no_list:
+            try:
+                await self.planning_school_rule.send_planning_school_to_org_center_by_school_no(planning_school_code)
+            except Exception as e:
+                print(f'编号{planning_school_code}的发生错误{e}')
+                return f'编号{planning_school_code}的发生错误{e}'
+        return 'success'
+
+    async def get_all_planning_school_no(self):
+        res = await self.planning_school_rule.get_all_planning_school_no()
+        return res
+
+    async def get_all_school_no(self):
+        res = await self.school_rule.get_all_school_no()
+        return res

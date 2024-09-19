@@ -21,6 +21,7 @@ from models.public_enum import Section
 from models.school import School
 from models.student_county_school_archive import CountyGraduationStudent
 from models.student_session import StudentSession
+from models.grade import Grade
 
 
 class GraduationStudentDAO(DAOBase):
@@ -228,6 +229,67 @@ class GraduationStudentDAO(DAOBase):
         finally:
             await session.close()
 
+
+    async def update_graduation_student_by_school_id_new(self,school_id: int,is_commit=True):
+        session = await self.master_db()
+        current_year = datetime.now().year
+        try:
+            # 1 筛选符合要求的学生
+            stmt_select = (
+                select(StudentBaseInfo, School, Student)
+                .join(School, School.id == StudentBaseInfo.school_id)
+                .join(Student, Student.student_id == StudentBaseInfo.student_id)
+                .join(Grade,StudentBaseInfo.grade_id == Grade.id)
+                .where(
+                    StudentBaseInfo.school_id == school_id,
+                    StudentBaseInfo.graduation_type == None,  # 状态为未毕业
+                    Student.is_deleted == False,
+                    Grade.is_graduation_grade == True,
+                )
+            )
+            result = await session.execute(stmt_select)
+            students_to_graduate = result.all()
+            if not students_to_graduate:
+                return {"message": "没有符合条件的学生"}
+            # 2 更新学生状态
+            for student_base, school, student in students_to_graduate:
+                update_contents = {"graduation_type": "graduation"}
+                query = update(StudentBaseInfo).where(StudentBaseInfo.student_id == student_base.student_id).values(
+                    **update_contents)
+                await self.update(
+                    session, query, student_base, update_contents, is_commit=False
+                )
+                # 3 将学生放入毕业表中
+                graduation_student = GraduationStudent(
+                    student_id=student_base.student_id,
+                    student_name=student.student_name,
+                    school=school.school_name,
+                    school_id=student_base.school_id,
+                    borough=school.borough,
+                    edu_number=student_base.edu_number,
+                    class_id=student_base.class_id,
+                    session=student_base.session,
+                    session_id=student_base.session_id,
+                    status=student_base.graduation_type,
+                    graduation_date=datetime.now().date(),
+                    graduation_year=str(current_year),
+                    graduation_remark="",
+                    archive_status=False,
+                )
+                session.add(graduation_student)
+            # 4. 提交所有事务
+            if is_commit:
+                await session.commit()
+                return True
+        except Exception as e:
+            # 5. 回滚操作，如果有任何失败
+            await session.rollback()
+            return {"error": f"更新失败，已回滚，错误: {str(e)}"}
+        finally:
+            # 6. 关闭会话
+            await session.close()
+
+
     async def update_graduation_student_by_school_id(
         self, school_id: int, grade_level: int, is_commit=True
     ):
@@ -259,11 +321,7 @@ class GraduationStudentDAO(DAOBase):
             # 2 更新学生状态
             for student_base, school, student in students_to_graduate:
                 update_contents = {"graduation_type": "graduation"}
-                query = (
-                    await session.update(StudentBaseInfo)
-                    .where(StudentBaseInfo.student_id == student_base.student_id)
-                    .values(**update_contents)
-                )
+                query = update(StudentBaseInfo).where(StudentBaseInfo.student_id == student_base.student_id).values(**update_contents)
                 await self.update(
                     session, query, student_base, update_contents, is_commit=False
                 )
@@ -298,67 +356,7 @@ class GraduationStudentDAO(DAOBase):
             # 6. 关闭会话
             await session.close()
 
-        # todo 中职和特殊教育的学制不一样，这里需要特别说明
 
-        # try:
-        #     # 1. 查询需要毕业的学生，根据学校ID、学制和届别
-        #     # 假设 StudentBaseInfo 包含 school_id, program_id (专业ID), grade (届别), is_graduated
-        #     stmt_select = select(StudentBaseInfo).where(
-        #         StudentBaseInfo.school_id == school_id,
-        #         StudentBaseInfo.is_graduated == False  # 只选择未毕业的学生
-        #     )
-        #     result = await session.execute(stmt_select)
-        #     students_to_check = result.scalars().all()
-        #
-        #     if not students_to_check:
-        #         return {"message": "没有符合条件的学生"}
-        #
-        #     # 2. 遍历所有学生，计算他们的学制和届别是否达到毕业条件
-        #     graduated_students = []
-        #     for student in students_to_check:
-        #         # 假设每个学生有 program_id 和 program_duration 表示专业学制
-        #         # 查询专业对应的学制
-        #         stmt_program = select(ProgramInfo).where(ProgramInfo.program_id == student.program_id)
-        #         program_result = await session.execute(stmt_program)
-        #         program_info = program_result.scalar_one_or_none()
-        #
-        #         if not program_info:
-        #             continue  # 如果没有查询到对应的专业信息，跳过这个学生
-        #
-        #         program_duration = program_info.program_duration  # 专业的学制（年数）
-        #         graduation_year = student.grade + program_duration  # 计算毕业年份
-        #
-        #         # 判断该学生是否应当毕业
-        #         if current_year >= graduation_year:
-        #             # 3. 更新学生的毕业状态
-        #             update_contents = {"is_graduated": True, "graduation_year": current_year}
-        #             query = update(StudentBaseInfo).where(StudentBaseInfo.student_id == student.student_id).values(
-        #                 **update_contents)
-        #             await self.update(session, query, student, update_contents, is_commit=False)  # 延迟提交
-        #
-        #             # 4. 将毕业学生记录添加到毕业表
-        #             graduation_record = GraduationRecord(
-        #                 student_id=student.student_id,
-        #                 school_id=school_id,
-        #                 graduation_year=current_year
-        #             )
-        #             session.add(graduation_record)
-        #
-        #             graduated_students.append(student)
-        #
-        #     # 5. 提交所有事务
-        #     if is_commit and graduated_students:
-        #         await session.commit()
-        #         return {"message": f"{len(graduated_students)} 位学生毕业状态更新成功"}
-        #
-        # except Exception as e:
-        #     # 6. 回滚操作，如果有任何失败
-        #     await session.rollback()
-        #     return {"error": f"更新失败，已回滚，错误: {str(e)}"}
-        #
-        # finally:
-        #     # 7. 关闭会话
-        #     await session.close()
 
     async def query_graduation_student_by_model_with_page(
         self, page_request: PageRequest, query_model: GraduateStudentQueryModel

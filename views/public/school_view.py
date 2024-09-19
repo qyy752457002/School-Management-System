@@ -14,9 +14,8 @@ from views.models.class_division_records import ClassDivisionRecordsImport
 from views.models.system import OrgCenterApiStatus
 
 
-class TenantView(BaseView):
+class SchoolView(BaseView):
     """
-    新生基本信息
     """
 
     def __init__(self):
@@ -26,8 +25,8 @@ class TenantView(BaseView):
         self.class_division_records_rule = get_injector(ClassDivisionRecordsRule)
         self.operation_record_rule = get_injector(OperationRecordRule)
 
-    #  检查  把 租户的 秘钥等都同步进来
-    async def get_sync_tenant(self,
+    #
+    async def get_parseSchoolCode(self,
                               school_id: int |str= Query(0, title="学校ID", description="学校ID", examples=[1]),
 
 
@@ -36,13 +35,7 @@ class TenantView(BaseView):
 
         """
         paging_result = None
-        # 如果是逗号分割 则转为list 遍历执行""
-        if isinstance(school_id, str) and  school_id and ',' in school_id:
-            school_id_list = school_id.split(',')
-            for school_id in school_id_list:
-                paging_result = await self.tenant_rule.sync_tenant_all( school_id)
-        else:
-            paging_result = await self.tenant_rule.sync_tenant_all( school_id)
+        paging_result = await self.tenant_rule.sync_tenant_all( school_id)
 
         return {"status": OrgCenterApiStatus.SUCCESS.value, "data": paging_result}
 
