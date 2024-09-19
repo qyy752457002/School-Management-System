@@ -156,7 +156,7 @@ async def get_extend_params(request) -> ExtendParams:
             extparam = eval(extparam)
             obj = ExtendParams(**extparam)
         else:
-            obj = ExtendParams( )
+            obj = ExtendParams()
         if obj.unit_type == UnitType.CITY.value:
             obj.city = Constant.CURRENT_CITY
         if obj.county_id:
@@ -167,16 +167,16 @@ async def get_extend_params(request) -> ExtendParams:
     print('Extendparams', obj)
 
     tenant_code = request_context_manager.current().tenant_code
-    tenant =await tenant_registry.get_tenant(tenant_code)
-    print('租户22',tenant)
+    tenant = await tenant_registry.get_tenant(tenant_code)
+    print('租户22', tenant)
     obj.tenant = tenant
-    if  len(tenant.code)<10:
+    if len(tenant.code) < 10:
         # 查区教育局的 具体 单位信息
-        school_dao= get_injector(SchoolDAO)
+        school_dao = get_injector(SchoolDAO)
 
-        school  = await  school_dao.get_school_by_tenant_code(tenant_code )
+        school = await  school_dao.get_school_by_tenant_code(tenant_code)
         #  区的教育局自动复制上去
-        if school and school.block!='210100':
+        if school and school.block != '210100':
             obj.county_id = school.block
         pass
     else:
@@ -184,21 +184,22 @@ async def get_extend_params(request) -> ExtendParams:
         #    加一个获取详细的 租户信息的方法 读2个表
         tenant_rule = get_injector(TenantRule)
 
-        tenant_type,tenantinfo = await tenant_rule.get_tenant_plannning_and_school(tenant_code)
-        if tenant_type==SchoolType.PLANING_SCHOOL:
+        tenant_type, tenantinfo = await tenant_rule.get_tenant_plannning_and_school(tenant_code)
+        if tenant_type == SchoolType.PLANING_SCHOOL:
             obj.planning_school_id = tenantinfo.id
             #查询下属的学校ID list
             school_dao = get_injector(SchoolDAO)
-            school_ids= []
-            school_ids_res   = await school_dao.get_schools_by_args(is_deleted=False,planning_school_id =    obj.planning_school_id)
+            school_ids = []
+            school_ids_res = await school_dao.get_schools_by_args(is_deleted=False,
+                                                                  planning_school_id=obj.planning_school_id)
             for school in school_ids_res:
                 school_ids.append(school.id)
 
             # school_ids = await school_rule.query_schools( None ,obj)
             obj.school_ids = school_ids
-            print('查询下属的学校ID',school_ids, )
+            print('查询下属的学校ID', school_ids, )
 
-        elif tenant_type==SchoolType.SCHOOL:
+        elif tenant_type == SchoolType.SCHOOL:
             obj.school_id = tenantinfo.id
         pass
 
@@ -226,6 +227,7 @@ class WorkflowServiceConfig:
 
 
 workflow_service_config = WorkflowServiceConfig()
+
 
 @singleton
 class SystemConfig:
@@ -264,6 +266,8 @@ def convert_dates_to_strings(stuinfoadddict):
         if isinstance(value, Query) or isinstance(value, tuple):
             stuinfoadddict[key] = None
     return stuinfoadddict
+
+
 def convert_obj_datetime_to_strings(obj):
     for attr_name in dir(obj):
         # 跳过特殊方法和属性
@@ -279,6 +283,7 @@ def convert_obj_datetime_to_strings(obj):
             setattr(obj, attr_name, None)
 
     return obj
+
 
 def convert_snowid_to_strings(paging_result, extra_colums=None):
     """
@@ -401,9 +406,9 @@ def check_result_org_center_api(result):
         raise Exception(f"orgcenter api error {result.get('msg')}")
 
 
-
 # 配置日志
 logging.basicConfig(filename='app.log', filemode='a', format='%(name)s - %(levelname)s - %(message)s')
+
 
 def log_json(json_data, log_file='app.log'):
     """
@@ -435,15 +440,18 @@ def log_json(json_data, log_file='app.log'):
 import json
 from datetime import date
 
+
 class DateEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, date):
             return obj.isoformat()  # 或者 obj.strftime('%Y-%m-%d')
         return super(DateEncoder, self).default(obj)
 
+
 # sample_dict = {"name": "Alice", "birthdate": date(1990, 5, 17)}
 import json
 from datetime import date
+
 
 def json_date_hook(json_dict):
     for (key, value) in json_dict.items():
@@ -453,11 +461,13 @@ def json_date_hook(json_dict):
             pass
     return json_dict
 
-def write_json_to_log( data_list,filename='a.log'):
+
+def write_json_to_log(data_list, filename='a.log'):
     with open(filename, 'a') as file:  # 使用 'a' 模式来追加数据
         for data in data_list:
             # 将字典转换为 JSON 格式字符串，并确保每条记录后换行
-            file.write(json.dumps(data,cls=DateEncoder) + '\n')
+            file.write(json.dumps(data, cls=DateEncoder) + '\n')
+
 
 from mini_framework.multi_tenant.tenant import Tenant, TenantStatus
 
@@ -465,29 +475,31 @@ from mini_framework.multi_tenant.tenant import Tenant, TenantStatus
 async def get_tenant_by_code(code: str):
     rule = get_injector(TenantRule)
     tenant = await rule.get_tenant_by_code(code)
-    print('解析到租户',tenant)
-    if tenant is None and code=='210100':
-        redirect_url_template=authentication_config.oauth2.redirect_url
+    print('解析到租户', tenant)
+    if tenant is None and code == '210100':
+        redirect_url_template = authentication_config.oauth2.redirect_url
         redirect_url_new = redirect_url_template.format(tenant=code)
-        tenant =  Tenant(
-        code=code,
-        name="租户1",
-        description="租户1",
-        status=TenantStatus.active,
-        client_id= authentication_config.oauth2.client_id,
-        client_secret=authentication_config.oauth2.client_secret,
-        redirect_url= redirect_url_new,
-        home_url="http://localhost:8000",
+        tenant = Tenant(
+            code=code,
+            name="租户1",
+            description="租户1",
+            status=TenantStatus.active,
+            client_id=authentication_config.oauth2.client_id,
+            client_secret=authentication_config.oauth2.client_secret,
+            redirect_url=redirect_url_new,
+            home_url="http://localhost:8000",
         )
     # print(tt)
-    print('解析到租户最终',tenant)
+    print('解析到租户最终', tenant)
 
     if tenant is None:
         raise TenantNotFoundOrUnActiveError()
 
     return tenant
-async def get_tenant_current( ):
+
+
+async def get_tenant_current():
     tenant_code = request_context_manager.current().tenant_code
-    tenant =await tenant_registry.get_tenant(tenant_code)
+    tenant = await tenant_registry.get_tenant(tenant_code)
 
     return tenant
