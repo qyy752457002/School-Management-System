@@ -41,8 +41,8 @@ class TeacherSyncRule:
         teacher_id_list = ["12345678890"]
         print(teacher_id_list)
         file_name=sys.argv[2]
-        # local_file_path = os.path.join("rules", file_name)
-        local_file_path = os.path.join("rules", "821.xlsx")
+        local_file_path = os.path.join("rules", file_name)
+        # local_file_path = os.path.join("rules", "821.xlsx")
         teacher_id_list = []
         reader = ExcelReader()
         reader.set_data(local_file_path)
