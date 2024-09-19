@@ -53,9 +53,15 @@ class SchoolSyncService(object):
             planning_school_no_list = [school_no]
         for planning_school_code in planning_school_no_list:
             try:
+                # 默认部门
                 departname = ['国际交流']
                 if extra_depart_name:
-                    departname.append(extra_depart_name)
+                    # 如果有部门 以传入为主 且支持分割逗号
+                    departname =  extra_depart_name.split(',')
+
+                    # departname.append(extra_depart_name)
+                print( '部门',departname)
+
                 if school_type == SchoolType.PLANING_SCHOOL:
                     checked = await self.planning_school_rule.is_sended(planning_school_code)
                     if checked and not is_repush:
