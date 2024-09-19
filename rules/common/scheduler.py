@@ -31,6 +31,7 @@ class SchoolSyncService(object):
         params = []
         school_no = 0
         school_type = 'school'
+        extra_depart_name =  None
         is_repush = False
 
         for i, arg in enumerate(sys.argv):
@@ -42,15 +43,19 @@ class SchoolSyncService(object):
                 school_type = 'planning_school' if int(arg) == 1 else 'school'
             if i == 4:
                 is_repush = int(arg) == 1
+            if i == 5:
+                extra_depart_name =  arg
 
-        print(params, school_no, school_type, is_repush)
+        print(params, school_no, school_type, is_repush,'额外部门',extra_depart_name)
         if ',' in school_no:
             planning_school_no_list = school_no.split(',')
         else:
             planning_school_no_list = [school_no]
         for planning_school_code in planning_school_no_list:
             try:
-                departname = '国际交流'
+                departname = ['国际交流']
+                if extra_depart_name:
+                    departname.append(extra_depart_name)
                 if school_type == SchoolType.PLANING_SCHOOL:
                     checked = await self.planning_school_rule.is_sended(planning_school_code)
                     if checked and not is_repush:

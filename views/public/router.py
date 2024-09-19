@@ -23,7 +23,7 @@ def routers():
     router.include_api_view_class(CurrentStudentsView, "/v1/public/new-student", description="在校生管理")
     router.include_api_view_class(ClassesView, "/v1/public/class", description="班级管理")
     router.include_api_view_class(SchoolTeacherView, "/v1/sync", description="同步管理")
-    router.include_api_view_class(TenantView, "/v1/tenant", description="同步租户的信息")
+    router.include_api_view_class(TenantView, "/v1/public/tenant", description="同步租户的信息")
 
 
     return router
