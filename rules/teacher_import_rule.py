@@ -1,7 +1,7 @@
 # from rules.teachers_info_rule import TeachersInfoRule
 import os
 from datetime import datetime
-
+import sys
 import shortuuid
 from mini_framework.async_task.data_access.models import TaskResult
 from mini_framework.async_task.data_access.task_dao import TaskDAO
@@ -40,6 +40,8 @@ class TeacherSyncRule:
     async def import_teachers_save_test(self):
         teacher_id_list = ["12345678890"]
         print(teacher_id_list)
+        file_name=sys.argv[2]
+        # local_file_path = os.path.join("rules", file_name)
         local_file_path = os.path.join("rules", "821.xlsx")
         teacher_id_list = []
         reader = ExcelReader()
@@ -56,7 +58,7 @@ class TeacherSyncRule:
             if school:
                 school = school._asdict()['School']
                 item["teacher_employer"] = school.id
-                org_name=item["org_id"]
+                org_name = item["org_id"]
                 organization = await self.organization_dao.get_organization_by_name_and_school_id(
                     org_name, school.id)
                 if organization:
@@ -69,7 +71,8 @@ class TeacherSyncRule:
             teacher_model = TeachersSaveImportCreatTestModel(**item)
             logger.info(type(item))
             try:
-                await self.teacher_rule.add_teachers_import_to_org(teacher_model,teacher_identity_type,teacher_identity)
+                await self.teacher_rule.add_teachers_import_to_org(teacher_model, teacher_identity_type,
+                                                                   teacher_identity)
             except Exception as ex:
                 return ex
         return True
