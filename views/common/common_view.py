@@ -491,10 +491,8 @@ async def get_tenant_by_code(code: str):
         )
     # print(tt)
     print('解析到租户最终', tenant)
-
     if tenant is None:
         raise TenantNotFoundOrUnActiveError()
-
     return tenant
 
 
