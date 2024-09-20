@@ -1018,12 +1018,12 @@ class SchoolRule(object):
             # 'administrativeDivisionCity': '',
             'administrativeDivisionCity': '沈阳市',
 
-            'administrativeDivisionCounty': exists_planning_school.block,
+            'administrativeDivisionCounty': exists_planning_school.borough,
             'administrativeDivisionProvince':  '辽宁省',
             'createdTime': exists_planning_school.create_school_date,
-            'locationAddress':  '辽宁省'+'沈阳市'+ exists_planning_school.borough,
+            'locationAddress':  '辽宁省'+'沈阳市'+ exists_planning_school.block,
             'locationCity': '沈阳市',
-            'locationCounty':  exists_planning_school.borough,
+            'locationCounty':  exists_planning_school.block,
             'locationProvince':  '辽宁省',
             'owner': exists_planning_school.school_no,
             # 单位的唯一标识 是code
