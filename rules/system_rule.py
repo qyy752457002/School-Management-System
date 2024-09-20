@@ -105,17 +105,14 @@ class SystemRule(object):
                                                                                 role_id, parent_id)
         # 校验已配置的权限
         filter = [ ]
-
         if extend_params.tenant:
             # 读取类型  读取ID  加到条件里
             tenant_dao=get_injector(TenantDAO)
             school_dao=get_injector(SchoolDAO)
             tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
             print(333,tenant)
-
             if  tenant is   not None and  len(tenant.code) == 6 :
                 filter = [39 ]
-
             pass
         file_name=None
         processed_dict={}
@@ -144,7 +141,6 @@ class SystemRule(object):
             if item['action'] and '、' in item['action']:
                 item['action'] = item['action'].replace('、', ',')
             await filter_action_by_file_name(item,processed_dict)
-
             system = orm_model_to_view_model(item, PermissionMenuModel, other_mapper={
                 "menu_name": "power_name",
                 "menu_path": "power_url",
@@ -176,9 +172,7 @@ class SystemRule(object):
                     "menu_type": "power_type",
                 })
                 convert_snowid_in_model(system,["id",'permission_id'])
-
                 res[int(item['parent_id'])].children.append(system)
-
         # print(list(paging))
         # 三级次啊单
         paging3 = await self.permission_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
@@ -191,7 +185,6 @@ class SystemRule(object):
                         if value['action'] and '、' in value['action']:
                             value['action'] = value['action'].replace('、', ',')
                         await filter_action_by_file_name(value,processed_dict)
-
                         system = orm_model_to_view_model(value, PermissionMenuModel, other_mapper={
                             "menu_name": "power_name",
                             "menu_path": "power_url",
@@ -199,7 +192,6 @@ class SystemRule(object):
                             "menu_type": "power_type",
                         })
                         convert_snowid_in_model(system,["id",'permission_id'])
-
                         item.children.append(system)
 
         # print(dict(paging))

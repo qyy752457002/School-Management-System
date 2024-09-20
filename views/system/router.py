@@ -7,6 +7,7 @@ from views.system.storage_view import StorageView
 from views.system.sub_system_view import SubSystemView
 from views.system.system_view import SystemView
 from views.system.task_view import TaskView
+from views.system.get_permission import PermissionView
 
 
 def routers():
@@ -22,5 +23,7 @@ def routers():
     router.include_api_view_class(StorageView, "/v1/storage", description="文件上传下载接口",
                                   # response_cls=FileStorageResponseModel
                                   )
+    router.include_api_view_class(PermissionView, "/v1/permission", description="获取用户权限")
+
 
     return router

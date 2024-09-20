@@ -38,6 +38,9 @@ class NewTeachersView(BaseView):
     async def post_newteacher(self, teachers: TeachersCreatModel):
         print(teachers)
         user_id = request_context_manager.current().current_login_account.name
+        tenant_code = request_context_manager.tenant_code
+        tenant_dao = get_injector(TenantDAO)
+        tenant = await tenant_dao.get_tenant_by_code(tenant_code)
         res, teacher_base_id = await self.teacher_rule.add_teachers(teachers, user_id)
         result = {}
         result.update(res)

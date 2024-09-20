@@ -1,14 +1,10 @@
 import json
-import random
 import traceback
-from datetime import datetime
 from typing import List, Type, Dict
 
 from mini_framework.authentication.config import authentication_config
 from mini_framework.design_patterns.depend_inject import get_injector
 from mini_framework.utils.http import HTTPRequest
-from mini_framework.utils.json import JsonUtils
-from mini_framework.utils.logging import logger
 from mini_framework.web.middlewares.auth import get_auth_url
 from mini_framework.web.request_context import request_context_manager
 from pydantic import BaseModel
@@ -23,7 +19,7 @@ from daos.student_session_dao import StudentSessionDao
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
 from views.models.system import InstitutionType
-
+from collections import defaultdict
 APP_CODE = "1238914398508736"
 
 from datetime import datetime, timedelta
@@ -31,6 +27,7 @@ from datetime import datetime, timedelta
 # 缓存数据和过期时间
 user_info_cache = {}
 cache_expiry = timedelta(minutes=30)  # 缓存过期时间设置为30分钟
+
 
 async def send_request(apiname, datadict, method='get', is_need_query_param=False):
     # 发起审批流的 处理
@@ -56,15 +53,15 @@ async def send_request(apiname, datadict, method='get', is_need_query_param=Fals
     # print(response, '接口响应')
     # 示例使用
     json_data = response
-    from views.common.common_view import    log_json
+    from views.common.common_view import log_json
     log_json(json_data)
     # 示例数据
     data = [
         response
     ]
-    from views.common.common_view import      write_json_to_log
+    from views.common.common_view import write_json_to_log
     # 调用函数
-    write_json_to_log(  data)
+    write_json_to_log(data)
     if response is None:
         return {}
     if isinstance(response, str):
@@ -217,7 +214,7 @@ async def get_address_by_description(description: str):
 async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_param=False):
     # 发起审批流的 处理
     httpreq = HTTPRequest()
-    from views.common.common_view import  orgcenter_service_config
+    from views.common.common_view import orgcenter_service_config
     url = orgcenter_service_config.orgcenter_config.get("url")
 
     url = url + apiname
@@ -238,21 +235,19 @@ async def send_orgcenter_request(apiname, datadict, method='get', is_need_query_
             # print(type(datadict), "数据类型")
             response = await httpreq.post_json(url, datadict, headerdict)
 
-
-        from views.common.common_view import       convert_dates_to_strings
-        response=convert_dates_to_strings(response)
+        from views.common.common_view import convert_dates_to_strings
+        response = convert_dates_to_strings(response)
         # 示例数据
         data = [
             response
         ]
-        from views.common.common_view import      write_json_to_log
-        write_json_to_log(  data)
+        from views.common.common_view import write_json_to_log
+        write_json_to_log(data)
 
         # 示例使用
         json_data = response
-        from views.common.common_view import    log_json
+        from views.common.common_view import log_json
         log_json(json_data)
-
 
         # 调用函数
 
@@ -283,7 +278,7 @@ async def get_identity_by_job(school_operation_type: List, post_type=None):
                          "primaryEducation_primarySchool": "primary_school_student",
                          "secondaryEducation_ordinaryJuniorHigh_ordinaryJuniorHighSchool": "middle_school_student",
                          "secondaryEducation_ordinaryHighSchool": "high_school_student",
-                             "secondaryEducation_secondaryVocationalSchool": "vocational_student"}
+                         "secondaryEducation_secondaryVocationalSchool": "vocational_student"}
     staff_teacher_map = {"preSchoolEducation_kindergarten": "kindergarten_teacher",
                          "primaryEducation_primarySchool": "primary_school_teacher",
                          "secondaryEducation_ordinaryJuniorHigh_ordinaryJuniorHighSchool": "middle_school_teacher",
@@ -404,19 +399,20 @@ async def get_class_map(keycolum: str, ):
     return schools
 
 
-async def check_social_credit_code(social_credit_code: str | None,current_school=None  ):
+async def check_social_credit_code(social_credit_code: str | None, current_school=None):
     if social_credit_code is None or social_credit_code == "":
         return
     pschool_dao = get_injector(PlanningSchoolDAO)
     school_dao = get_injector(SchoolDAO)
     campus_dao = get_injector(CampusDAO)
-    exist = await pschool_dao.get_planning_school_by_args(current_school,social_credit_code=social_credit_code, is_deleted=False)
+    exist = await pschool_dao.get_planning_school_by_args(current_school, social_credit_code=social_credit_code,
+                                                          is_deleted=False)
     if exist:
         print("唯一检测1", social_credit_code, exist)
         raise SocialCreditCodeExistError()
     not_equal_age = dict()
 
-    exist = await school_dao.get_school_by_args(current_school,social_credit_code=social_credit_code, is_deleted=False)
+    exist = await school_dao.get_school_by_args(current_school, social_credit_code=social_credit_code, is_deleted=False)
     if exist:
         print("唯一检测2", social_credit_code, exist)
 
@@ -522,13 +518,13 @@ Get the user from Casdoor providing the user_id.
         resource_codes_dict = {}
         for value in resource_codes_actions:
             # value = resource_codes[i]
-            temp= value.split( ',')
+            temp = value.split(',')
             # print('temp',temp)
-            key =  temp[0]
-            action  = temp[1]
+            key = temp[0]
+            action = temp[1]
             if key not in resource_codes_dict.keys():
                 resource_codes_dict[key] = []
-                resource_codes_dict[key] .append(action)
+                resource_codes_dict[key].append(action)
             else:
                 resource_codes_dict[key].append(action)
             # print('资源编码', resource_codes_dict)
@@ -575,7 +571,7 @@ async def verify_auth_by_obj_and_act(obj, act):
     account_name = account.name
 
     file_name = await process_userinfo(account_name)
-    print( '验证结果',file_name,)
+    print('验证结果', file_name, )
     if file_name is None:
         return False
     # 当abac是 这里是一个字典 包含了属性
@@ -593,16 +589,13 @@ async def verify_auth_by_obj_and_act(obj, act):
 
 
 async def process_userinfo(account_name):
-    # print(222, authentication_config.oauth2)
-    # appCode = authentication_config.oauth2.app_code
-    from views.common.common_view import  orgcenter_service_config
+    from views.common.common_view import orgcenter_service_config
     appCode = orgcenter_service_config.orgcenter_config.get("app_code")
-
     user_info = await get_cached_userinfo(account_name)
     if user_info is None:
         return None
     lines = []  # 使用列表收集所有要写入的行
-    from views.common.common_view import        json_date_hook
+    from views.common.common_view import json_date_hook
     filename = account_name + 'policy.csv'
     for rule in user_info['roles']:
         if rule["appCode"] == appCode:
@@ -612,24 +605,19 @@ async def process_userinfo(account_name):
             for policy in role_policies:
                 if not policy:
                     continue
-                json_str= policy['rule_code']
+                json_str = policy['rule_code']
                 if json_str.strip():
-                    # data = json.loads(json_str)
                     try:
-                        data_str = json.loads(policy['rule_code'], object_hook=json_date_hook )
+                        data_str = json.loads(policy['rule_code'], object_hook=json_date_hook)
                         for item in data_str:
                             p_list = item.split(",")
                             p_list.insert(1, role)
                             join_str = ','.join(p_list)
                             lines.append(join_str + '\n')
-
                     except json.JSONDecodeError as e:
                         print(f"解析错误：{e}")
-
-
                 else:
                     print("字符串为空或只包含空白字符")
-
             lines.append(g_str + '\n')
         else:
             continue
@@ -637,7 +625,7 @@ async def process_userinfo(account_name):
         return None
     with open(filename, 'w', encoding='utf-8') as file:
         file.writelines(lines)
-    print('策略文件',filename)
+    print('策略文件', filename)
     return filename
 
 
@@ -666,7 +654,7 @@ async def get_org_center_user_info():
         }
         datadict = params
         response = await send_orgcenter_request(apiname, datadict, 'get', False)
-        print('获取用户权限信息 status',response["status"])
+        print('获取用户权限信息 status', response["status"])
         # print(response)
         if response["status"] != "ok":
             raise Exception(response["msg"])
@@ -683,7 +671,8 @@ async def get_org_center_user_info():
         print('获取用户权限信息异常', e)
         return None
 
-async def verify_auth_by_file_name(sub: str|dict, obj, act, file_name):
+
+async def verify_auth_by_file_name(sub: str | dict, obj, act, file_name):
     import casbin
     e = casbin.Enforcer("model.conf", file_name)
     print("校验权限  ", sub, obj, act)
@@ -695,14 +684,16 @@ async def verify_auth_by_file_name(sub: str|dict, obj, act, file_name):
         print("deny the request, 权限 不足")
         return False
     pass
-async def filter_action_by_file_name( item , processed_dict):
-    #读取文件 获取数据 匹配里面的内容
+
+
+async def filter_action_by_file_name(item, processed_dict):
+    # 读取文件 获取数据 匹配里面的内容
     # print(11,item,)
     if item['action'] and item['resource_code']:
-        if  item['resource_code']  in processed_dict.keys():
+        if item['resource_code'] in processed_dict.keys():
             listtt = item['action'].split(',')
             newlist = []
-            for action in  listtt:
+            for action in listtt:
                 if action in processed_dict[item['resource_code']]:
                     print('匹配到权限', action)
                     newlist.append(action)
@@ -710,16 +701,17 @@ async def filter_action_by_file_name( item , processed_dict):
                     # return True
                 else:
                     listtt.remove(action)
-                    print('移除这个权限 ',action, processed_dict[item['resource_code']])
+                    print('移除这个权限 ', action, processed_dict[item['resource_code']])
             # print('匹配到权限', item)
-            item['action']= ','.join(newlist)
-            print('过滤后res',item)
+            item['action'] = ','.join(newlist)
+            print('过滤后res', item)
             return True
         else:
             return False
 
-
     pass
+
+
 def read_file_to_permission_dict(file_content):
     # 初始化一个空字典
     result_dict = {}
@@ -744,8 +736,6 @@ def read_file_to_permission_dict(file_content):
     return result_dict
 
 
-
-
 # 退出
 async def login_out():
     """
@@ -757,14 +747,14 @@ async def login_out():
     # file_name = await process_userinfo(account_name)
     user_info = await request_org_center_login_out()
 
-    print( '验证结果',user_info,)
-    request=request_context_manager.current()
+    print('验证结果', user_info, )
+    request = request_context_manager.current()
 
     auth_uri = await get_auth_url(request)
 
-
-
     return auth_uri
+
+
 async def request_org_center_login_out():
     try:
         token = request_context_manager.current().token
@@ -774,13 +764,13 @@ async def request_org_center_login_out():
             # "id": f"{owner}/{account.name}",
             # "clientId": authentication_config.oauth2.client_id,
             # "clientSecret": authentication_config.oauth2.client_secret,
-            "state":  'application-center',
-            "post_logout_redirect_uri":  '', #如果是要跳转 传入要跳的url
+            "state": 'application-center',
+            "post_logout_redirect_uri": '',  # 如果是要跳转 传入要跳的url
             "id_token_hint": token,
         }
         datadict = params
         response = await send_orgcenter_request(apiname, datadict, 'get', True)
-        print('登出res',response)
+        print('登出res', response)
         if response["status"] == "ok":
             # raise Exception(response["msg"])
             pass
@@ -790,31 +780,34 @@ async def request_org_center_login_out():
     except Exception as e:
         print('获取登出异常', e)
         return None
-async def get_org_center_application(school_no,tenant_type,items):
+
+
+async def get_org_center_application(school_no, tenant_type, items):
     try:
         # token = request_context_manager.current().token
         apiname = "/api/get-applications"
         # owner = "sysjyyjyorg"
-        from views.common.common_view import  orgcenter_service_config
+        from views.common.common_view import orgcenter_service_config
 
-        if tenant_type == 'school' and   items.institution_category not  in [InstitutionType.INSTITUTION,InstitutionType.ADMINISTRATION] :
+        if tenant_type == 'school' and items.institution_category not in [InstitutionType.INSTITUTION,
+                                                                          InstitutionType.ADMINISTRATION]:
             appCode = orgcenter_service_config.orgcenter_config.get("app_code_student")
 
             pass
-        elif tenant_type == 'planning_school'  :
+        elif tenant_type == 'planning_school':
             appCode = orgcenter_service_config.orgcenter_config.get("app_code_student")
         else:
             appCode = orgcenter_service_config.orgcenter_config.get("app_code")
 
         params = {
             "owner": school_no,
-            "name":  appCode, #
+            "name": appCode,  #
         }
         print('get_org_center_application的参数', params)
 
         datadict = params
         response = await send_orgcenter_request(apiname, datadict, 'get', True)
-        print('get_org_center_application',len(response))
+        print('get_org_center_application', len(response))
         if response["status"] == "ok":
             # raise Exception(response["msg"])
             pass
@@ -824,3 +817,38 @@ async def get_org_center_application(school_no,tenant_type,items):
     except Exception as e:
         print('get_org_center_application异常', e)
         return None
+
+
+async def send_permission_to_front():
+    """
+    发送用户权限到前端
+    :return:
+    """
+    from views.common.common_view import orgcenter_service_config
+    appCode = orgcenter_service_config.orgcenter_config.get("app_code")
+    result = [{'code': '', 'permissions': ['']}]
+    user_info = await get_org_center_user_info()
+    permissions_dict = defaultdict(set)
+    rule_code_list = []
+    if user_info is None:
+        return result
+    for role in user_info['roles']:
+        if role["appCode"] == appCode:
+            role_policies = role['rolepolicies']
+            for i in range(len(role_policies)):
+                rule_code_list.append(role_policies[i]['rule_code'])
+        else:
+            continue
+    if not rule_code_list:
+        return result
+    for rule_code in rule_code_list:
+        # 解析JSON字符串为Python列表
+        if not rule_code:
+            continue
+        rules = json.loads(rule_code)
+        # 遍历所有权限并填充字典
+        for rule in rules:
+            _, code, action = rule.split(', ')
+            permissions_dict[code].add(action)
+    result = [{'code': code, 'permissions': list(actions)} for code, actions in permissions_dict.items()]
+    return result

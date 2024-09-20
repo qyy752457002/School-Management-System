@@ -43,18 +43,12 @@ class PermissionMenuDAO(DAOBase):
 
         if unit_type:
             query = query.where(Role.unit_type == unit_type)
-
         if edu_type:
             query = query.where(Role.edu_type == edu_type)
-
         if role_id:
             query = query.where(Role.id == role_id)
-
         if system_type:
             query = query.where(Role.system_type == system_type)
-
-        ### �˴���д��ѯ����
-
         paging = await self.query_page(query, page_request)
         return paging
 
@@ -111,10 +105,7 @@ class PermissionMenuDAO(DAOBase):
                 pass
             else:
                 query = query.where(PermissionMenu.resource_code ==   resouce_codes )
-
                 pass
-
-
         if system_type:
             query = query.where(Role.system_type == system_type)
 
