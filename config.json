@@ -84,6 +84,11 @@
         "db": 3,
         "prefix": "",
         "server_key": "default"
+      },
+      "teacher_code_counter": {
+        "db": 5,
+        "prefix": "",
+        "server_key": "default"
       }
     }
   },

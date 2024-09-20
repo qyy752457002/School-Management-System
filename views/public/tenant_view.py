@@ -12,6 +12,7 @@ from rules.students_rule import StudentsRule
 from rules.tenant_rule import TenantRule
 from views.models.class_division_records import ClassDivisionRecordsImport
 from views.models.system import OrgCenterApiStatus
+from views.common.common_view import get_next_teacher_code
 
 
 class TenantView(BaseView):
@@ -45,5 +46,10 @@ class TenantView(BaseView):
             paging_result = await self.tenant_rule.sync_tenant_all( school_id)
 
         return {"status": OrgCenterApiStatus.SUCCESS.value, "data": paging_result}
+
+    async def get_teacher_redis(self):
+        return get_next_teacher_code()
+
+
 
 

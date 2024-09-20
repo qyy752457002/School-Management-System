@@ -22,7 +22,7 @@ from views.models.system import UnitType
 from views.models.teachers import NewTeacher
 from views.models.teachers import Teachers, TeachersCreatModel, CurrentTeacherInfoSaveModel, \
     TeacherInfoSaveModel, TeacherInfoSubmit, CurrentTeacherQuery, \
-    TeacherApprovalQuery, TeacherChangeLogQueryModel
+    TeacherApprovalQuery, TeacherChangeLogQueryModel,TeachersUpdateModel
 
 
 class NewTeachersView(BaseView):
@@ -38,9 +38,10 @@ class NewTeachersView(BaseView):
     async def post_newteacher(self, teachers: TeachersCreatModel):
         print(teachers)
         user_id = request_context_manager.current().current_login_account.name
-        tenant_code = request_context_manager.tenant_code
+        tenant_code = request_context_manager.current().tenant_code
         tenant_dao = get_injector(TenantDAO)
         tenant = await tenant_dao.get_tenant_by_code(tenant_code)
+        teachers.teacher_employer = tenant.origin_id
         res, teacher_base_id = await self.teacher_rule.add_teachers(teachers, user_id)
         result = {}
         result.update(res)
@@ -67,7 +68,7 @@ class NewTeachersView(BaseView):
 
     @require_role_permission("newTeacherEntry", "edit")
     # 编辑新教职工登记信息
-    async def put_newteacher(self, teachers: Teachers):
+    async def put_newteacher(self, teachers: TeachersUpdateModel):
         print(teachers)
         user_id = request_context_manager.current().current_login_account.name
         res = await self.teacher_rule.update_teachers(teachers, user_id)

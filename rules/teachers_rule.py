@@ -34,6 +34,7 @@ from rules.teacher_work_flow_instance_rule import TeacherWorkFlowRule
 from rules.user_org_relation_rule import UserOrgRelationRule
 from views.common.common_view import check_id_number
 from views.common.common_view import compare_modify_fields
+from views.common.common_view import get_next_teacher_code
 from views.common.common_view import orgcenter_service_config
 from views.models.operation_record import OperationRecord, OperationTarget, ChangeModule, OperationType
 from views.models.organization import OrganizationMembers
@@ -104,25 +105,24 @@ class TeachersRule(object):
             idstatus = check_id_number(teachers_db.teacher_id_number)
             if not idstatus:
                 raise IdCardError()
+        teachers_db.teacher_code = get_next_teacher_code()
         teachers_db = await self.teachers_dao.add_teachers(teachers_db)
         teachers_work = orm_model_to_view_model(teachers_db, TeacherRe, exclude=[""])
-        school = await self.school_dao.get_school_by_id(teachers.teacher_employer)
-        school_name = ""
-        borough = ""
-        if school:
-            school_name = school.school_name
-            borough = school.borough
-        params = {"process_code": "t_entry", "applicant_name": user_id, "school_name": school_name, "borough": borough}
-        try:
-            await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
-                teachers_work.teacher_id)
-            work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teachers_work, params)
-        except Exception as e:
-            await self.teachers_dao.delete_teachers(teachers_db)
-            raise e
-        # update_params = {"teacher_sub_status": "submitted"}
-        # await self.teacher_work_flow_rule.update_work_flow_by_param(work_flow_instance["process_instance_id"],
-        #                                                             update_params)
+        # 先去除审批流的内容
+        # school = await self.school_dao.get_school_by_id(teachers.teacher_employer)
+        # school_name = ""
+        # borough = ""
+        # if school:
+        #     school_name = school.school_name
+        #     borough = school.borough
+        # params = {"process_code": "t_entry", "applicant_name": user_id, "school_name": school_name, "borough": borough}
+        # try:
+        #     await self.teacher_work_flow_rule.delete_teacher_save_work_flow_instance(
+        #         teachers_work.teacher_id)
+        #     work_flow_instance = await self.teacher_work_flow_rule.add_teacher_work_flow(teachers_work, params)
+        # except Exception as e:
+        #     await self.teachers_dao.delete_teachers(teachers_db)
+        #     raise e
         teacher_entry_log = OperationRecord(
             action_target_id=int(teachers_work.teacher_id),
             target=OperationTarget.TEACHER.value,
@@ -136,7 +136,7 @@ class TeachersRule(object):
             status="/",
             operator_id=1,
             operator_name=user_id,
-            process_instance_id=int(work_flow_instance["process_instance_id"]))
+            process_instance_id=0)
         await self.operation_record_rule.add_operation_record(teacher_entry_log)
         teachers_info = TeacherInfoSaveModel(teacher_id=teachers_work.teacher_id)
         teachers_inf_db = view_model_to_orm_model(teachers_info, TeacherInfo, exclude=["teacher_base_id"])
@@ -353,6 +353,7 @@ class TeachersRule(object):
         return str(teachers.teacher_id)
 
     async def delete_teachers(self, teachers_id, user_id):
+        # todo 删除老师需要判断一下是不是已入职的老师
         exists_teachers = await self.teachers_dao.get_teachers_by_id(teachers_id)
         if not exists_teachers:
             raise TeacherNotFoundError()

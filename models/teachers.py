@@ -1,10 +1,8 @@
-from sqlalchemy import String, Date, BigInteger
-from sqlalchemy.orm import mapped_column, Mapped
+from datetime import date
 
 from mini_framework.databases.entities import BaseDBModel
-
-from datetime import date
-from enum import Enum
+from sqlalchemy import String, Date, BigInteger
+from sqlalchemy.orm import mapped_column, Mapped
 
 
 class Teacher(BaseDBModel):
@@ -42,5 +40,6 @@ class Teacher(BaseDBModel):
     identity: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份", default='')
     identity_type: Mapped[str] = mapped_column(String(64), nullable=True, comment="身份类型", default='')
     mobile: Mapped[str] = mapped_column(String(64), nullable=True, default="", comment="手机号")
+    teacher_code: Mapped[str] = mapped_column(String(7), nullable=True, default="", comment="教师编号")
     is_deleted: Mapped[bool] = mapped_column(default=False, comment="是否删除")
     is_approval: Mapped[bool] = mapped_column(default=False, comment="是否在审批中")
