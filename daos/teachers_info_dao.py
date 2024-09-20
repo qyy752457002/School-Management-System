@@ -16,6 +16,7 @@ from views.models.extend_params import ExtendParams
 from views.models.school_and_teacher_sync import SupervisorSyncQueryModel
 from views.models.system import UnitType
 from views.models.teachers import CurrentTeacherQuery, NewTeacher
+from business_exceptions.school import SchoolNotFoundError
 
 
 class TeachersInfoDao(DAOBase):
@@ -175,6 +176,8 @@ class TeachersInfoDao(DAOBase):
             tenant = await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
             if tenant.tenant_type == "school":
                 school = await school_dao.get_school_by_id(tenant.origin_id)
+                if not school:
+                    raise SchoolNotFoundError()
                 if school.institution_category == "institution":
                     query = query.where(School.borough == school.borough)
                 else:
