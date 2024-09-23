@@ -33,6 +33,8 @@ class SchoolSyncService(object):
         school_type = 'school'
         extra_depart_name =  None
         is_repush = False
+        # 只加部门
+        is_add_depart = False
 
         for i, arg in enumerate(sys.argv):
             print(f"参数{i}: {arg}")
@@ -45,8 +47,10 @@ class SchoolSyncService(object):
                 is_repush = int(arg) == 1
             if i == 5:
                 extra_depart_name =  arg
+            if i == 6:
+                is_add_depart =  True
 
-        print(params, school_no, school_type, is_repush,'额外部门',extra_depart_name)
+        print(params, school_no, school_type, is_repush,'额外部门',extra_depart_name,is_add_depart)
         if ',' in school_no:
             planning_school_no_list = school_no.split(',')
         else:
@@ -70,6 +74,11 @@ class SchoolSyncService(object):
                     await self.planning_school_rule.send_planning_school_to_org_center_by_school_no(
                         planning_school_code, departname)
                 else:
+                    if is_add_depart:
+                        await self.school_rule.send_school_to_org_center_by_school_no(planning_school_code, departname,is_add_depart)
+                        return
+
+                        # await self.school_rule.add_depart_to_school(planning_school_code, departname)
                     checked = await self.school_rule.is_sended(planning_school_code)
                     if checked and not is_repush:
                         print(f'编号{planning_school_code}已经发送过')
