@@ -5,7 +5,7 @@ from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
 from models.permission_reset_menu import PermissionResetMenu
-from models.role_permission import RolePermission
+from models.role_permission_reset import RolePermissionReset
 from models.role import Role
 
 
@@ -35,9 +35,9 @@ class PermissionResetMenuDAO(DAOBase):
 
     async def query_permission_menu_with_page(self, page_request: PageRequest, unit_type, edu_type, system_type,
                                               role_id: int = None, ):
-        query = select(PermissionResetMenu).join(RolePermission, RolePermission.menu_id == PermissionResetMenu.id,
-                                            isouter=True).order_by(desc(RolePermission.id)).join(Role,
-                                                                                                 Role.id == RolePermission.role_id,
+        query = select(PermissionResetMenu).join(RolePermissionReset, RolePermissionReset.menu_id == PermissionResetMenu.id,
+                                            isouter=True).order_by(desc(RolePermissionReset.id)).join(Role,
+                                                                                                 Role.id == RolePermissionReset.role_id,
                                                                                                  isouter=True)
         query = query.where(PermissionResetMenu.is_deleted == False)
 
@@ -68,12 +68,12 @@ class PermissionResetMenuDAO(DAOBase):
                         PermissionResetMenu.action,
                         PermissionResetMenu.updated_uid,
                         Role.app_name
-                        ).select_from(PermissionResetMenu).join(RolePermission, RolePermission.menu_id == PermissionResetMenu.id,
-                                                           isouter=True).join(Role, Role.id == RolePermission.role_id,
+                        ).select_from(PermissionResetMenu).join(RolePermissionReset, RolePermissionReset.menu_id == PermissionResetMenu.id,
+                                                           isouter=True).join(Role, Role.id == RolePermissionReset.role_id,
                                                                               isouter=True).order_by(
-            asc(RolePermission.sort_order)).order_by(asc(PermissionResetMenu.sort_order)).order_by(asc(RolePermission.id)))
+            asc(RolePermissionReset.sort_order)).order_by(asc(PermissionResetMenu.sort_order)).order_by(asc(RolePermissionReset.id)))
         query = query.where(PermissionResetMenu.is_deleted == False).where(Role.is_deleted == False).where(
-            RolePermission.is_deleted == False)
+            RolePermissionReset.is_deleted == False)
         if filter and len(filter) >0:
             # 不在filter里面
             query = query.where(PermissionResetMenu.id.not_in(filter))
