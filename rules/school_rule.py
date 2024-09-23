@@ -583,17 +583,22 @@ class SchoolRule(object):
         return response
         pass
 
-    async def send_school_to_org_center_by_school_no(self, school_no, departmentname_list=None):
+    async def send_school_to_org_center_by_school_no(self, school_no, departmentname_list=None,is_add_depart=None):
         """
         一期同步过来的数据送到组织中心
         """
         school = await self.school_dao.get_school_by_school_no_to_org(school_no)
         if not school:
             raise Exception(f"单位{school_no}不存在")
-        # 单位发送过去
-        res_unit, data_unit = await self.send_school_to_org_center(school)
-        # 单位的组织 对接
-        await self.send_unit_orgnization_to_org_center(school, data_unit)
+        if is_add_depart :
+            # is_add_depart = True
+            res_unit={ "data2":school.org_center_info}
+            pass
+        else :
+            # 单位发送过去
+            res_unit, data_unit = await self.send_school_to_org_center(school)
+            # 单位的组织 对接
+            await self.send_unit_orgnization_to_org_center(school, data_unit)
         organization_rule = get_injector(OrganizationRule)
         for departmentname in departmentname_list:
 
