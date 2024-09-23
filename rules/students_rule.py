@@ -296,15 +296,12 @@ class StudentsRule(ImportCommonAbstractRule, object):
             if not task_result.result_file_id:
                 task_result.result_file_id = 0
             print('拼接数据task_result ', task_result)
-
             resadd = await self.task_dao.add_task_result(task_result)
             print('task_result写入结果', resadd)
         except Exception as e:
             logger.debug('保存文件记录和插入taskresult 失败')
-
             logger.error(e)
             task_result = TaskResult()
-
         return task_result
 
     async def complete_info_students_by_id(self, student_edu_info):

@@ -13,6 +13,7 @@ from mini_framework.web.std_models.page import PaginatedResponse, PageRequest
 from mini_framework.web.toolkit.model_utilities import orm_model_to_view_model, view_model_to_orm_model
 
 from daos.permission_menu_dao import PermissionMenuDAO
+from daos.permission_reset_menu_dao import PermissionResetMenuDAO
 from daos.roles_dao import RolesDAO
 from daos.school_dao import SchoolDAO
 from daos.tenant_dao import TenantDAO
@@ -34,6 +35,7 @@ class SystemRule(object):
     teacher_work_flow_rule: TeacherWorkFlowRule
     file_storage_dao: FileStorageDAO
     system_dao: SubSystemDAO
+    permission_reset_menu_dao: PermissionResetMenuDAO
 
     async def get_system_by_id(self, system_id):
         system_db = await self.system_dao.get_subsystem_by_id(system_id)
@@ -101,21 +103,18 @@ class SystemRule(object):
         return paging_result, title
 
     async def query_system_with_kwargs(self, role_id, unit_type, edu_type, system_type, parent_id='',resource_codes='',extend_params=None ):
-        paging = await self.permission_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
+        paging = await self.permission_reset_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
                                                                                 role_id, parent_id)
         # 校验已配置的权限
         filter = [ ]
-
         if extend_params.tenant:
             # 读取类型  读取ID  加到条件里
             tenant_dao=get_injector(TenantDAO)
             school_dao=get_injector(SchoolDAO)
             tenant =  await  tenant_dao.get_tenant_by_code(extend_params.tenant.code)
             print(333,tenant)
-
-            if  tenant is   not None and  len(tenant.code) == 6 :
+            if  tenant is   not None and  len(tenant.code) == 6:
                 filter = [39 ]
-
             pass
         file_name=None
         processed_dict={}
@@ -125,14 +124,12 @@ class SystemRule(object):
             account = request_context_manager.current().current_login_account
             account_name = account.name
             print('开始菜单的权限过滤方法 --')
-
             file_name = await process_userinfo(account_name)
             with open(file_name, 'r') as file:
             # 读取文件的全部内容
                 file_content = file.read()
             processed_dict = read_file_to_permission_dict(file_content)
             pass
-
         res = dict()
         ids = []
         title = ''
@@ -144,7 +141,6 @@ class SystemRule(object):
             if item['action'] and '、' in item['action']:
                 item['action'] = item['action'].replace('、', ',')
             await filter_action_by_file_name(item,processed_dict)
-
             system = orm_model_to_view_model(item, PermissionMenuModel, other_mapper={
                 "menu_name": "power_name",
                 "menu_path": "power_url",
@@ -155,20 +151,18 @@ class SystemRule(object):
             # res.append(system)
             print(system)
         #     读取二级菜单
-        paging2 = await self.permission_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
+        paging2 = await self.permission_reset_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
                                                                                  role_id, ids,filter=filter)
         print(paging2, res.keys())
         ids_3 = []
 
         for item in paging2:
             ids_3.append(item['id'])
-
             if int(item['parent_id']) in res.keys():
                 # 判断如果action里有汉字的顿号 则提换为英文的逗号
                 if item['action'] and '、' in item['action']:
                     item['action'] = item['action'].replace('、', ',')
                 await filter_action_by_file_name(item,processed_dict)
-
                 system = orm_model_to_view_model(item, PermissionMenuModel, other_mapper={
                     "menu_name": "power_name",
                     "menu_path": "power_url",
@@ -176,12 +170,10 @@ class SystemRule(object):
                     "menu_type": "power_type",
                 })
                 convert_snowid_in_model(system,["id",'permission_id'])
-
                 res[int(item['parent_id'])].children.append(system)
-
         # print(list(paging))
         # 三级次啊单
-        paging3 = await self.permission_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
+        paging3 = await self.permission_reset_menu_dao.query_permission_menu_with_args(unit_type, edu_type, system_type,
                                                                                  role_id, ids_3,resource_codes)
         for _, pm in res.items():
             for item in pm.children:
@@ -191,7 +183,6 @@ class SystemRule(object):
                         if value['action'] and '、' in value['action']:
                             value['action'] = value['action'].replace('、', ',')
                         await filter_action_by_file_name(value,processed_dict)
-
                         system = orm_model_to_view_model(value, PermissionMenuModel, other_mapper={
                             "menu_name": "power_name",
                             "menu_path": "power_url",
@@ -199,10 +190,8 @@ class SystemRule(object):
                             "menu_type": "power_type",
                         })
                         convert_snowid_in_model(system,["id",'permission_id'])
-
                         item.children.append(system)
 
-        # print(dict(paging))
         return res, title
 
     # 通用型 工作流获取方法

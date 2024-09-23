@@ -15,7 +15,7 @@
         "port": 54321,
         "user": "schooloms",
         "password": "J16s10Wp08yfEskmVAJH",
-        "database": "school_oms_test"
+        "database": "school_oms_dev"
       },
       "slaves": [
         {
@@ -23,14 +23,14 @@
           "port": 54321,
           "user": "schooloms",
           "password": "J16s10Wp08yfEskmVAJH",
-          "database": "school_oms_test"
+          "database": "school_oms_dev"
         },
         {
           "host": "10.0.0.42",
           "port": 54321,
           "user": "schooloms",
           "password": "J16s10Wp08yfEskmVAJH",
-          "database": "school_oms_test"
+          "database": "school_oms_dev"
         }
       ]
     }
@@ -82,6 +82,11 @@
       },
       "account": {
         "db": 3,
+        "prefix": "",
+        "server_key": "default"
+      },
+      "teacher_code_counter": {
+        "db": 5,
         "prefix": "",
         "server_key": "default"
       }

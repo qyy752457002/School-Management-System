@@ -75,6 +75,8 @@ from . import user_org_relation
 from . import students_info_biz_record
 from . import tenant
 from . import student_county_school_archive
+from . import permission_reset_menu
+from . import role_permission_reset
 
 #教师工作流定以相关
 

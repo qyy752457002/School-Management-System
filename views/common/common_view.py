@@ -1,7 +1,9 @@
+import logging
 import math
-from datetime import date, datetime
+from datetime import datetime
 from enum import Enum
 
+import redis
 from fastapi.params import Query
 from id_validator import validator
 from mini_framework.authentication.config import authentication_config
@@ -18,8 +20,6 @@ from views.common.constant import Constant
 from views.models.extend_params import ExtendParams
 from views.models.school_and_teacher_sync import SchoolType
 from views.models.system import UnitType, OrgCenterApiStatus
-import json
-import logging
 
 frontend_enum_mapping = {'preSchoolEducation': '学前教育', 'kindergarten': '幼儿园',
                          'attachedKindergartenClass': '附设幼儿班',
@@ -187,7 +187,7 @@ async def get_extend_params(request) -> ExtendParams:
         tenant_type, tenantinfo = await tenant_rule.get_tenant_plannning_and_school(tenant_code)
         if tenant_type == SchoolType.PLANING_SCHOOL:
             obj.planning_school_id = tenantinfo.id
-            #查询下属的学校ID list
+            # 查询下属的学校ID list
             school_dao = get_injector(SchoolDAO)
             school_ids = []
             school_ids_res = await school_dao.get_schools_by_args(is_deleted=False,
@@ -227,6 +227,39 @@ class WorkflowServiceConfig:
 
 
 workflow_service_config = WorkflowServiceConfig()
+
+
+@singleton
+class TeacherRedisServiceConfig:
+    def __init__(self):
+        from mini_framework.configurations import config_injection
+        manager = config_injection.get_config_manager()
+        teacher_redis_service_dict = manager.get_domain_config("redis")
+        if not teacher_redis_service_dict:
+            raise ValueError('teacher_redis_service configuration is required')
+        self.host = teacher_redis_service_dict["servers"]["default"]["host"]
+        self.port = teacher_redis_service_dict["servers"]["default"]["port"]
+        self.db = teacher_redis_service_dict["dbs"]["teacher_code_counter"]["db"]
+        self.key = "teacher_code_counter"
+
+
+teacher_redis_service_config = TeacherRedisServiceConfig()
+
+r = redis.StrictRedis(host=teacher_redis_service_config.host, port=teacher_redis_service_config.port,
+                      db=teacher_redis_service_config.db, decode_responses=True)
+
+
+def get_next_teacher_code():
+    # 生成教师编号
+    key = teacher_redis_service_config.key
+    current_code = r.get(key)
+    if current_code is None:
+        current_code = 1  # 初始序号
+    else:
+        current_code = int(current_code) + 1
+    r.set(key, current_code)
+    teacher_code = str(current_code).zfill(7)
+    return teacher_code
 
 
 @singleton
@@ -438,7 +471,6 @@ def log_json(json_data, log_file='app.log'):
 
 
 import json
-from datetime import date
 
 
 class DateEncoder(json.JSONEncoder):

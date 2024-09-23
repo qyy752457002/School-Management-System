@@ -6,13 +6,13 @@ from sqlalchemy.orm import mapped_column, Mapped
 from mini_framework.databases.entities import BaseDBModel
 
 
-class RolePermission(BaseDBModel):
+class RolePermissionReset(BaseDBModel):
 
     """
     角色权限
     """
-    __tablename__ = 'lfun_role_permission'
-    __table_args__ = {'comment': '角色权限表'}
+    __tablename__ = 'lfun_role_permission_reset'
+    __table_args__ = {'comment': '角色重构表权限表'}
 
     id: Mapped[int] = mapped_column(BigInteger,primary_key=True, comment="班级ID",autoincrement=False)
     role_id: Mapped[int] = mapped_column(BigInteger,nullable=True, comment="角色ID",default=0)
