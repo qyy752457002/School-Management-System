@@ -537,15 +537,12 @@ Get the user from Casdoor providing the user_id.
         traceback.print_exc()
         # raise e
         return None, None, None
-
     return None
 
 
 async def verify_auth(sub: str, obj, act):
     import casbin
-
     e = casbin.Enforcer("model.conf", "0policy.csv")
-
     if e.enforce(sub, obj, act):
         # permit alice to read data1
         print("permit alice to read data1")

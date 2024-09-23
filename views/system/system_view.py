@@ -31,7 +31,7 @@ class SystemView(BaseView):
         self.teachers_info_rule = get_injector(TeachersInfoRule)
 
     async def page_menu(self,
-                        request:Request,
+                        request: Request,
 
                         page_request=Depends(PageRequest),
                         role_id: int | str = Query(None, title="", description="角色id",
@@ -44,27 +44,52 @@ class SystemView(BaseView):
                                                  min_length=1, max_length=20, example='unit'),
                         ):
         print(page_request)
-        obj= await get_extend_params(request)
+        obj = await get_extend_params(request)
 
         items = []
         title = ''
         if system_type == 'teacher' or system_type == 'student':
-            # title='学校版'
             unit_type = ''
             edu_type = ''
         info, resource_codes, resource_codes_actions = await get_org_center_userinfo()
-        print( '资源和action',resource_codes, resource_codes_actions)
+        print('资源和action', resource_codes, resource_codes_actions)
         is_permission_verify = system_config.system_config.get("permission_verify")
-        print('permission verify',  is_permission_verify)
+        print('permission verify', is_permission_verify)
         if not is_permission_verify:
-            resource_codes=None
-
+            resource_codes = None
         res, title = await self.system_rule.query_system_with_kwargs(role_id, unit_type, edu_type, system_type,
-                                                                     resource_codes=resource_codes,extend_params=obj)
-        # res,title  = await self.system_rule.query_system_with_page(page_request, role_id, unit_type, edu_type, system_type )
+                                                                     resource_codes=resource_codes, extend_params=obj)
+        return {'app_name': title,
+                'menu': list(res.values()),
+                'resource_code': resource_codes_actions
+                }
 
-        # v = await verify_auth("alice","grade","add")
-        # print(v)
+    async def page_menu_reset(self,
+                              request: Request,
+                              page_request=Depends(PageRequest),
+                              role_id: int | str = Query(None, title="", description="角色id",
+                                                         example='1'),
+                              unit_type: str = Query(None, title="单位类型 例如学校 市/区", description="",
+                                                     min_length=1,
+                                                     max_length=20, example='city'),
+                              edu_type: str = Query(None, title="教育阶段类型 例如幼儿园 中小学 职高", description="",
+                                                    min_length=1, max_length=20, example='kg'),
+                              system_type: str = Query(None, title="系统类型 例如老师 单位 学生", description="",
+                                                       min_length=1, max_length=20, example='unit'),
+                              ):
+
+        obj = await get_extend_params(request)
+        if system_type == 'teacher' or system_type == 'student':
+            unit_type = ''
+            edu_type = ''
+        info, resource_codes, resource_codes_actions = await get_org_center_userinfo()
+        print('资源和action', resource_codes, resource_codes_actions)
+        is_permission_verify = system_config.system_config.get("permission_verify")
+        print('permission verify', is_permission_verify)
+        if not is_permission_verify:
+            resource_codes = None
+        res, title = await self.system_rule.query_system_with_kwargs(role_id, unit_type, edu_type, system_type,
+                                                                     resource_codes=resource_codes, extend_params=obj)
         return {'app_name': title,
                 'menu': list(res.values()),
                 'resource_code': resource_codes_actions
@@ -183,7 +208,8 @@ class SystemView(BaseView):
         user_id = "asgfhjk"
         await self.teachers_info_rule.update_teachers_info_import(info_model, user_id)
         return
+
     # 退出的接口
-    async def get_login_out(self,  ):
+    async def get_login_out(self, ):
         res = await common_rule.login_out()
-        return {'home_url':res ,'msg':'退出成功' }
+        return {'home_url': res, 'msg': '退出成功'}
