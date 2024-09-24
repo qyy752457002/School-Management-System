@@ -47,9 +47,13 @@ class SystemView(BaseView):
         obj = await get_extend_params(request)
         items = []
         title = ''
-        if system_type == 'teacher' or system_type == 'student':
+        if system_type == 'teacher':
             unit_type = ''
             edu_type = ''
+        if system_type == 'student':
+            if edu_type !="vocational":
+                unit_type = ''
+                edu_type = ''
         info, resource_codes, resource_codes_actions = await get_org_center_userinfo()
         print('资源和action', resource_codes, resource_codes_actions)
         is_permission_verify = system_config.system_config.get("permission_verify")

@@ -1,5 +1,6 @@
 import json
 import traceback
+from collections import defaultdict
 from typing import List, Type, Dict
 
 from mini_framework.authentication.config import authentication_config
@@ -19,7 +20,7 @@ from daos.student_session_dao import StudentSessionDao
 from models.public_enum import IdentityType
 from rules.enum_value_rule import EnumValueRule
 from views.models.system import InstitutionType
-from collections import defaultdict
+
 APP_CODE = "1238914398508736"
 
 from datetime import datetime, timedelta
@@ -643,6 +644,8 @@ async def get_org_center_user_info():
     try:
         account = request_context_manager.current().current_login_account
         apiname = "/api/get-user"
+        # owner = "0905-1"
+        # owner  = request_context_manager.current().tenant_code
         owner = "sysjyyjyorg"
         params = {
             "id": f"{owner}/{account.name}",
@@ -823,7 +826,8 @@ async def send_permission_to_front():
     """
     from views.common.common_view import orgcenter_service_config
     appCode = orgcenter_service_config.orgcenter_config.get("app_code")
-    result = [{'code': '', 'permissions': ['']}]
+    # appCode="1240540919845696"
+    result = [{"resource_code": "", "action": [""]}]
     user_info = await get_org_center_user_info()
     permissions_dict = defaultdict(set)
     rule_code_list = []
@@ -847,5 +851,5 @@ async def send_permission_to_front():
         for rule in rules:
             _, code, action = rule.split(', ')
             permissions_dict[code].add(action)
-    result = [{'code': code, 'permissions': list(actions)} for code, actions in permissions_dict.items()]
+    result = [{"resource_code": code, "action": list(actions)} for code, actions in permissions_dict.items()]
     return result

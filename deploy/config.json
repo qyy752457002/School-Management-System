@@ -16,8 +16,8 @@
         "user": "schooloms",
         "password": "J16s10Wp08yfEskmVAJH",
         "database": "school_oms_dev",
-        "pool_size": 5,
-        "max_overflow": 10
+        "pool_size": 35,
+        "max_overflow": 15
       },
       "slaves": [
         {
