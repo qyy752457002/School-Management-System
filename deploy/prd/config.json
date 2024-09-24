@@ -87,6 +87,11 @@
         "db": 7,
         "prefix": "",
         "server_key": "default"
+      },
+      "teacher_code_counter": {
+        "db": 5,
+        "prefix": "",
+        "server_key": "default"
       }
     }
   },
@@ -179,7 +184,6 @@
       "sms_api_key": ""
     },
     "task_types": {
-
       "teacher_import": {
         "topic": "teacher_import",
         "name": "教师导入",
