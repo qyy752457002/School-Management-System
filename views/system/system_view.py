@@ -45,7 +45,6 @@ class SystemView(BaseView):
                         ):
         print(page_request)
         obj = await get_extend_params(request)
-
         items = []
         title = ''
         if system_type == 'teacher' or system_type == 'student':
