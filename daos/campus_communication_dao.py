@@ -4,23 +4,30 @@ from mini_framework.databases.entities.dao_base import DAOBase, get_update_conte
 from mini_framework.databases.queries.pages import Paging
 from mini_framework.web.std_models.page import PageRequest
 
+# 从models.campus_communication模块中导入CampusCommunication类
 from models.campus_communication import CampusCommunication
-
 
 class CampusCommunicationDAO(DAOBase):
 
     async def get_campus_communication_by_id(self, campus_communication_id):
+        # 获取从数据库的会话
         session = await self.slave_db()
+        # 将campus_communication_id转换为整数
         campus_communication_id= int(campus_communication_id)
+        # 执行查询，查询CampusCommunication表中id等于campus_communication_id的记录
         result = await session.execute(select(CampusCommunication).where(CampusCommunication.id == campus_communication_id))
+        # 返回查询结果的第一条记录，如果没有记录则返回None
         return result.scalar_one_or_none()
 
-
     async def get_campus_communication_by_campus_id(self, campus_communication_id):
+        # 获取从数据库的会话
         session = await self.slave_db()
+        # 将campus_communication_id转换为整数类型
         campus_communication_id= int(campus_communication_id)
 
+        # 执行查询，查询campus_id等于campus_communication_id的CampusCommunication表中的数据
         result = await session.execute(select(CampusCommunication).where(CampusCommunication.campus_id == campus_communication_id))
+        # 返回查询结果的第一条数据，如果没有数据则返回None
         return result.scalar_one_or_none()
 
     async def add_campus_communication(self, campus_communication):
@@ -72,14 +79,21 @@ class CampusCommunicationDAO(DAOBase):
 
 
     async def softdelete_campus_communication(self, campus_communication):
+        # 获取数据库会话
         session = await self.master_db()
+        # 设置删除状态为1
         deleted_status= 1
+        # 更新CampusCommunication表中的deleted字段为1
         update_stmt = update(CampusCommunication).where(CampusCommunication.id == campus_communication.id).values(
             deleted= deleted_status,
         )
+        # 执行更新操作
         await session.execute(update_stmt)
+        # # 删除campus_communication
         # await session.delete(campus_communication)
+        # 提交事务
         await session.commit()
+        # 返回campus_communication
         return campus_communication
 
 

@@ -1,12 +1,10 @@
 from mini_framework.web.router import Router
-
 from views.models.teachers import Teachers
+
 from views.students.current_students_view import CurrentStudentsView, CurrentStudentsBaseInfoView, CurrentStudentsFamilyView
 from views.students.graduation_students_view import GraduationStudentsView
-
 from views.students.newstudents_view import NewsStudentsView, NewsStudentsInfoView,NewsStudentsFamilyInfoView
 from views.students.student_inner_transaction_view import StudentInnerTransactionView
-
 
 def routers():
     router = Router()

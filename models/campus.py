@@ -5,7 +5,6 @@ from sqlalchemy.orm import mapped_column, Mapped
 
 from mini_framework.databases.entities import BaseDBModel
 
-
 class Campus(BaseDBModel):
     """
     校区 action_reason=None,related_license_upload=None

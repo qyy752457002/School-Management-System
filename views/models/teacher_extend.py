@@ -1331,17 +1331,25 @@ class AnnualReviewUpdateModel(BaseModel):
     assessment_result: str = Field(..., title="考核结果", description="考核结果")
     assessment_institution_name: str = Field("", title="考核单位名称", description="考核单位名称")
 
+    # 在模型验证之前执行
     @model_validator(mode='before')
+    # 定义一个类方法
     @classmethod
     def check_id_before(self, data: dict):
+        # 定义需要转换的键列表
         _change_list = ["teacher_id", "annual_review_id"]
+        # 遍历键列表
         for _change in _change_list:
+            # 如果键存在于数据中且值为整数，则将值转换为字符串
             if _change in data and isinstance(data[_change], int):
                 data[_change] = str(data[_change])
+            # 如果键存在于数据中且值为字符串，则将值转换为整数
             elif _change in data and isinstance(data[_change], str):
                 data[_change] = int(data[_change])
+            # 如果键不存在于数据中，则不做任何操作
             else:
                 pass
+        # 返回转换后的数据
         return data
 
 

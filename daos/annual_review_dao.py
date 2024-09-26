@@ -26,9 +26,12 @@ class AnnualReviewDAO(DAOBase):
         return await self.delete(session, annual_review)
 
     async def get_annual_review_by_annual_review_id(self, annual_review_id):
+        # 从数据库中获取一个会话
         session = await self.slave_db()
+        # 执行查询，查询条件为年审ID和是否删除
         result = await session.execute(select(AnnualReview).where(AnnualReview.annual_review_id == annual_review_id,
                                                                   AnnualReview.is_deleted == False))
+        # 返回查询结果的第一条记录，如果没有记录则返回None
         return result.scalar_one_or_none()
 
     async def query_annual_review_with_page(self, pageQueryModel, page_request: PageRequest):

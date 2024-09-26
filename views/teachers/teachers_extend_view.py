@@ -598,11 +598,15 @@ class AnnualReviewView(BaseView):
 
         self.annual_review_rule = get_injector(AnnualReviewRule)
 
+    # 定义一个异步函数，用于获取年度评审
     async def get_annual_review(self,
+                                # 定义一个参数，类型为int，默认值为Query(..., title="annual_reviewID"，description="annual_reviewID"，example=1234)
                                 annual_review_id: int = Query(..., title="annual_reviewID",
                                                               description="annual_reviewID", example=1234)
                                 ):
+        # 调用annual_review_rule中的get_annual_review_by_annual_review_id函数，传入annual_review_id参数，并将返回值赋给res
         res = await self.annual_review_rule.get_annual_review_by_annual_review_id(annual_review_id)
+        # 返回res
         return res
 
     async def post_annual_review(self, annual_review: AnnualReviewModel):
