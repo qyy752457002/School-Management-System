@@ -55,37 +55,52 @@ class TeacherLearnExperienceView(BaseView):
         super().__init__()
         self.teacher_learn_experience_rule = get_injector(TeacherLearnExperienceRule)
 
+    # 根据teacher_learn_experience_id获取教师学习经验
     async def get_teacher_learn_experience(self,
                                            teacher_learn_experience_id: int = Query(...,
                                                                                     title="teacher_learn_experienceID",
                                                                                     description="teacher_learn_experienceID",
                                                                                     example=1234)
                                            ):
+        # 根据teacher_learn_experience_id调用teacher_learn_experience_rule的get_teacher_learn_experience_by_teacher_learn_experience_id方法获取教师学习经验
         res = await self.teacher_learn_experience_rule.get_teacher_learn_experience_by_teacher_learn_experience_id(
             teacher_learn_experience_id)
+        # 返回教师学习经验
         return res
 
+    # 添加教师学习经验
     async def post_teacher_learn_experience(self, teacher_learn_experience: TeacherLearnExperienceModel):
+        # 调用teacher_learn_experience_rule的add_teacher_learn_experience方法添加教师学习经验
         res = await self.teacher_learn_experience_rule.add_teacher_learn_experience(teacher_learn_experience)
+        # 返回添加结果
         return res
 
+    # 根据teacher_learn_experience_id删除教师学习经验
     async def delete_teacher_learn_experience(self,
                                               teacher_learn_experience_id: int = Query(...,
                                                                                        title="teacher_learn_experienceID",
                                                                                        description="teacher_learn_experienceID",
                                                                                        example=1234)
                                               ):
+        # 调用teacher_learn_experience_rule的delete_teacher_learn_experience方法删除教师学习经验
         await self.teacher_learn_experience_rule.delete_teacher_learn_experience(teacher_learn_experience_id)
+        # 返回删除结果
         return str(teacher_learn_experience_id)
 
+    # 根据teacher_learn_experience_id更新教师学习经验
     async def put_teacher_learn_experience(self, teacher_learn_experience: TeacherLearnExperienceUpdateModel):
+        # 调用teacher_learn_experience_rule的update_teacher_learn_experience方法更新教师学习经验
         res = await self.teacher_learn_experience_rule.update_teacher_learn_experience(teacher_learn_experience)
+        # 返回更新结果
         return res
 
+    # 根据teacher_id获取所有教师学习经验
     async def get_teacher_learn_experience_all(self, teacher_id: int|str = Query(..., title="teacher_id",
                                                                              description="teacher_id",
                                                                              example=1234)):
+        # 将teacher_id转换为int类型
         teacher_id = int(teacher_id)
+        # 调用teacher_learn_experience_rule的get_all_teacher_learn_experience方法获取所有教师学习经验
         return await self.teacher_learn_experience_rule.get_all_teacher_learn_experience(teacher_id)
 
 

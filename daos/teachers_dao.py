@@ -13,23 +13,36 @@ from views.models.teacher_transaction import TeacherTransactionQuery
 class TeachersDao(DAOBase):
     # 新增教师关键信息
     async def add_teachers(self, teachers):
+        # 获取数据库会话
         session = await self.master_db()
+        # 添加教师信息到会话
         session.add(teachers)
+        # 提交会话
         await session.commit()
+        # 刷新会话
         await session.refresh(teachers)
+        # 返回教师信息
         return teachers
 
+    # 异步更新教师信息
     async def update_teachers(self, teachers, *args, is_commit: bool = True):
+        # 获取数据库会话
         session = await self.master_db()
+        # 获取更新内容
         update_contents = get_update_contents(teachers, *args)
+        # 构建更新查询
         query = update(Teacher).where(Teacher.teacher_id == teachers.teacher_id).values(**update_contents)
+        # 执行更新操作
         return await self.update(session, query, teachers, update_contents, is_commit=is_commit)
 
     # 获取单个教师信息
     async def get_teachers_by_id(self, teachers_id):
+        # 获取从数据库的会话
         session = await self.slave_db()
+        # 执行查询，查询Teacher表中teacher_id等于teachers_id且is_deleted为False的记录
         result = await session.execute(
-            select(Teacher).where(Teacher.teacher_id == teachers_id, Teacher.is_deleted == False))
+            select(Teacher).where(Teacher.teacher_id == teachers_id, Teacher.is_deleted is False))
+        # 返回查询结果的第一条记录，如果没有记录则返回None
         return result.scalar_one_or_none()
 
     async def get_teachers_arg_by_id(self, teachers_id, org_id):
@@ -53,19 +66,18 @@ class TeachersDao(DAOBase):
             OrganizationMembers.org_id == Organization.id, OrganizationMembers.teacher_id == Teacher.teacher_id
         ))
         query = query.where(Teacher.teacher_id == teachers_id,
-                            Teacher.is_deleted == False,
+                            Teacher.is_deleted is False,
                             TeacherInfo.org_id == org_id,
-                            Organization.id == org_id, OrganizationMembers.is_deleted == False,
-                            Teacher.is_deleted == False)
+                            Organization.id == org_id, OrganizationMembers.is_deleted is False,
+                            Teacher.is_deleted is False)
         result = await session.execute(query)
         return result.first()
 
     # 根据身份证号获取教师信息
-
     async def get_teachers_by_teacher_id_number(self, teacher_id_number):
         session = await self.slave_db()
         result = await session.execute(
-            select(Teacher).where(Teacher.teacher_id_number == teacher_id_number, Teacher.is_deleted == False))
+            select(Teacher).where(Teacher.teacher_id_number == teacher_id_number, Teacher.is_deleted is False))
         return result.scalar_one_or_none()
 
     # 删除单个教师信息
@@ -83,14 +95,14 @@ class TeachersDao(DAOBase):
     async def get_all_teachers_id_list(self):
         session = await self.slave_db()
         result = await session.execute(
-            select(Teacher.teacher_id).where(Teacher.is_deleted == False, Teacher.is_approval == False,
+            select(Teacher.teacher_id).where(Teacher.is_deleted is False, Teacher.is_approval is False,
                                              Teacher.teacher_main_status == 'employed'))
         return result.scalars().all()
 
     async def get_all_teachers_id_list_by_school_id(self, school_id):
         session = await self.slave_db()
         result = await session.execute(
-            select(Teacher.teacher_id).where(Teacher.is_deleted == False, Teacher.is_approval == False,
+            select(Teacher.teacher_id).where(Teacher.is_deleted is False, Teacher.is_approval is False,
                                              Teacher.teacher_main_status == 'employed',
                                              Teacher.teacher_employer == school_id))
         return result.scalars().all()
@@ -106,7 +118,7 @@ class TeachersDao(DAOBase):
         query = select(Teacher).where(Teacher.teacher_name == teacher_transaction.teacher_name,
                                       Teacher.teacher_id_type == teacher_transaction.teacher_id_type,
                                       Teacher.teacher_id_number == teacher_transaction.teacher_id_number,
-                                      Teacher.is_deleted == False
+                                      Teacher.is_deleted is False
                                       )
         result = await session.execute(query)
         return result.scalar_one_or_none()
@@ -116,8 +128,8 @@ class TeachersDao(DAOBase):
         query = select(Teacher).where(Teacher.teacher_id_number == teacher_id_number,
                                       Teacher.teacher_id_type == teacher_id_type,
                                       Teacher.teacher_name == teacher_name,
-                                      Teacher.is_deleted == False, Teacher.teacher_main_status == 'employed',
-                                      Teacher.is_approval == False)
+                                      Teacher.is_deleted is False, Teacher.teacher_main_status == 'employed',
+                                      Teacher.is_approval is False)
         result = await session.execute(query)
         return result.scalar_one_or_none()
 
@@ -126,7 +138,7 @@ class TeachersDao(DAOBase):
         query = select(Teacher).where(Teacher.teacher_id_number == teacher_id_number,
                                       Teacher.teacher_id_type == teacher_id_type,
                                       Teacher.teacher_name == teacher_name,
-                                      Teacher.teacher_gender == teacher_gender,Teacher.is_deleted == False)
+                                      Teacher.teacher_gender == teacher_gender,Teacher.is_deleted is False)
         result = await session.execute(query)
         length = len(result.scalars().all())
         return length
@@ -137,7 +149,7 @@ class TeachersDao(DAOBase):
         query = select(Teacher).where(Teacher.teacher_id_number == teacher_id_number,
                                       Teacher.teacher_id_type == teacher_id_type,
                                       Teacher.teacher_name == teacher_name,
-                                      Teacher.teacher_employer == teacher_employer,Teacher.is_deleted == False)
+                                      Teacher.teacher_employer == teacher_employer,Teacher.is_deleted is False)
         result = await session.execute(query)
         length = len(result.scalars().all())
         return length
